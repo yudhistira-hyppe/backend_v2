@@ -5615,6 +5615,43 @@ export class AdsService {
 
         var dateend = currentdate.toISOString();
 
+
+        var n1 = new Date(new Date().setDate(new Date().getDate() - 6));
+        var dt1 = n1.toISOString();
+        var splitdt1 = dt1.split('T');
+        var dateend1 = splitdt1[0].toString();
+
+        var n2 = new Date(new Date().setDate(new Date().getDate() - 5));
+        var dt2 = n2.toISOString();
+        var splitdt2 = dt2.split('T');
+        var dateend2 = splitdt2[0].toString();
+
+        var n3 = new Date(new Date().setDate(new Date().getDate() - 4));
+        var dt3 = n3.toISOString();
+        var splitdt3 = dt3.split('T');
+        var dateend3 = splitdt3[0].toString();
+
+
+        var n4 = new Date(new Date().setDate(new Date().getDate() - 3));
+        var dt4 = n4.toISOString();
+        var splitdt4 = dt4.split('T');
+        var dateend4 = splitdt4[0].toString();
+
+        var n5 = new Date(new Date().setDate(new Date().getDate() - 2));
+        var dt5 = n5.toISOString();
+        var splitdt5 = dt5.split('T');
+        var dateend5 = splitdt5[0].toString();
+
+        var n6 = new Date(new Date().setDate(new Date().getDate() - 1));
+        var dt6 = n6.toISOString();
+        var splitdt6 = dt6.split('T');
+        var dateend6 = splitdt6[0].toString();
+
+        var n7 = new Date();
+        var dt7 = n7.toISOString();
+        var splitdt7 = dt7.split('T');
+        var dateend7 = splitdt7[0].toString();
+
         var query = await this.adsModel.aggregate([
             {
                 $match: {
@@ -5622,6 +5659,7 @@ export class AdsService {
 
                 }
             },
+
             {
                 $lookup: {
                     from: "adsplaces",
@@ -5668,6 +5706,8 @@ export class AdsService {
                     creditFree: 1,
                     creditValue: 1,
                     totalCredit: 1,
+                    timeStart: 1,
+                    timeEnd: 1,
                     namePlace: {
                         $arrayElemAt: ['$placeData.namePlace', 0]
                     },
@@ -5803,6 +5843,8 @@ export class AdsService {
                     duration: 1,
                     tayang: 1,
                     type: 1,
+                    timeStart: 1,
+                    timeEnd: 1,
                     usedCredit: 1,
                     usedCreditFree: 1,
                     creditFree: 1,
@@ -5849,7 +5891,8 @@ export class AdsService {
                                 statusView: true,
                                 createdAt: {
                                     $gte: startdate,
-                                    $lte: dateend
+                                    $lte: dateend,
+
                                 }
                             }
                         },
@@ -5890,7 +5933,8 @@ export class AdsService {
                                 statusClick: true,
                                 createdAt: {
                                     $gte: startdate,
-                                    $lte: dateend
+                                    $lte: dateend,
+
                                 }
                             }
                         },
@@ -5931,7 +5975,8 @@ export class AdsService {
                                 statusView: true,
                                 createdAt: {
                                     $gte: startdate,
-                                    $lte: dateend
+                                    $lte: dateend,
+
                                 }
                             }
                         },
@@ -6001,7 +6046,8 @@ export class AdsService {
                                 statusClick: true,
                                 createdAt: {
                                     $gte: startdate,
-                                    $lte: dateend
+                                    $lte: dateend,
+
                                 }
                             }
                         },
@@ -6079,6 +6125,8 @@ export class AdsService {
                     duration: 1,
                     tayang: 1,
                     type: 1,
+                    timeStart: 1,
+                    timeEnd: 1,
                     usedCredit: 1,
                     usedCreditFree: 1,
                     creditFree: 1,
@@ -6148,10 +6196,10 @@ export class AdsService {
 
                                 "type": "rewards",
                                 "timestamp": {
-                                    $gte: startdate,
-                                    $lte: dateend
-                                }
+                                    $gte: "2023-01-12",
+                                    $lte: "2023-01-13",
 
+                                }
                             }
                         },
                         {
@@ -6199,7 +6247,8 @@ export class AdsService {
                                 statusClick: true,
                                 createdAt: {
                                     $gte: startdate,
-                                    $lte: dateend
+                                    $lte: dateend,
+
                                 }
                             }
                         },
@@ -6222,6 +6271,8 @@ export class AdsService {
                     status: 1,
                     totalUsedCredit: 1,
                     urlLink: 1,
+                    timeStart: 1,
+                    timeEnd: 1,
                     isActive: 1,
                     namePlace: 1,
                     nameType: 1,
@@ -6282,6 +6333,8 @@ export class AdsService {
                     totalCredit: 1,
                     totalView: 1,
                     totalClick: 1,
+                    timeStart: 1,
+                    timeEnd: 1,
                     view: 1,
                     click: 1,
                     totalbiaya: {
@@ -6621,7 +6674,8 @@ export class AdsService {
                                 statusView: true,
                                 createdAt: {
                                     $gte: startdate,
-                                    $lte: dateend
+                                    $lte: dateend,
+
                                 }
                             }
                         },
@@ -6755,8 +6809,7 @@ export class AdsService {
                     "from": "userads",
                     "as": "male",
                     "let": {
-                        "local_id": "$_id",
-
+                        "local_id": '$_id'
                     },
                     "pipeline": [
                         {
@@ -6780,13 +6833,16 @@ export class AdsService {
                             }
                         },
                         {
-                            $match: {
+                            $match:
+                            {
                                 statusView: true,
+
                                 createdAt: {
-                                    $gte: "2023-01-12",
-                                    $lte: "2023-01-13"
-                                }
-                            }
+                                    $regex: dateend7,
+                                    $options: 'i'
+                                },
+                            },
+
                         },
                         {
                             "$lookup": {
@@ -6902,36 +6958,6 @@ export class AdsService {
                         {
                             $match: {
                                 gender: "MALE"
-                            }
-                        },
-                        {
-                            $group: {
-                                _id: {
-
-                                    tanggal: {
-                                        $substrCP: [
-                                            "$createdAt",
-                                            0,
-                                            10
-                                        ]
-                                    }
-                                },
-                                total: {
-                                    $sum: 1
-                                }
-                            }
-                        },
-                        {
-                            $project: {
-                                _id: 0,
-                                date: "$_id.tanggal",
-                                total: 1,
-                                gender: "MALE"
-                            }
-                        },
-                        {
-                            $sort: {
-                                date: 1
                             }
                         },
 
@@ -6945,8 +6971,7 @@ export class AdsService {
                     "from": "userads",
                     "as": "female",
                     "let": {
-                        "local_id": "$_id",
-
+                        "local_id": '$_id'
                     },
                     "pipeline": [
                         {
@@ -6970,13 +6995,16 @@ export class AdsService {
                             }
                         },
                         {
-                            $match: {
+                            $match:
+                            {
                                 statusView: true,
+
                                 createdAt: {
-                                    $gte: "2023-01-12",
-                                    $lte: "2023-01-13"
-                                }
-                            }
+                                    $regex: dateend7,
+                                    $options: 'i'
+                                },
+                            },
+
                         },
                         {
                             "$lookup": {
@@ -7094,34 +7122,166 @@ export class AdsService {
                                 gender: "FEMALE"
                             }
                         },
-                        {
-                            $group: {
-                                _id: {
 
-                                    tanggal: {
-                                        $substrCP: [
-                                            "$createdAt",
-                                            0,
-                                            10
-                                        ]
-                                    }
-                                },
-                                total: {
-                                    $sum: 1
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "other",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
                                 }
                             }
                         },
                         {
                             $project: {
-                                _id: 0,
-                                date: "$_id.tanggal",
-                                total: 1,
-                                gender: "FEMALE"
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
                             }
                         },
                         {
-                            $sort: {
-                                date: 1
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend7,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "OTHER"
                             }
                         },
 
@@ -7167,8 +7327,3238 @@ export class AdsService {
                     sumview: 1,
                     sumclick: 1,
                     male: 1,
-                    female: 1
-                }
+                    female: 1,
+                    Day7: {
+                        "_id": "Day7",
+                        "date": dateend7,
+                        "male": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$male"
+                                },
+                                then: {
+                                    $size: "$male"
+                                },
+                                else: 0
+                            }
+                        },
+                        "female": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$female"
+                                },
+                                then: {
+                                    $size: "$female"
+                                },
+                                else: 0
+                            }
+                        },
+                        "other": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$other"
+                                },
+                                then: {
+                                    $size: "$other"
+                                },
+                                else: 0
+                            }
+                        },
+
+                    }
+                },
+
+            },
+
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "male2",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend6,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "MALE"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "female2",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend6,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "FEMALE"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "other2",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend6,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "OTHER"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "male3",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend5,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "MALE"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "female3",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend5,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "FEMALE"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "other3",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend5,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "OTHER"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "male4",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend4,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "MALE"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "female4",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend4,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "FEMALE"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "other4",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend4,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "OTHER"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "male5",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend3,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "MALE"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "female5",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend3,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "FEMALE"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "other5",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend3,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "OTHER"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "male6",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend2,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "MALE"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "female6",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend2,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "FEMALE"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "other6",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend2,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "OTHER"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "male7",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend1,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "MALE"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "female7",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend1,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "FEMALE"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "other7",
+                    "let": {
+                        "local_id": '$_id'
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match:
+                            {
+                                statusView: true,
+
+                                createdAt: {
+                                    $regex: dateend1,
+                                    $options: 'i'
+                                },
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "OTHER"
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                $project: {
+                    userID: 1,
+                    fullName: 1,
+                    email: 1,
+                    timestamp: 1,
+                    expiredAt: 1,
+                    liveAt: 1,
+                    name: 1,
+                    description: 1,
+                    objectifitas: 1,
+                    status: 1,
+                    totalUsedCredit: 1,
+                    urlLink: 1,
+                    isActive: 1,
+                    namePlace: 1,
+                    nameType: 1,
+                    idApsara: 1,
+                    duration: 1,
+                    tayang: 1,
+                    type: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    totalView: 1,
+                    totalClick: 1,
+                    view: 1,
+                    click: 1,
+                    totalbiaya: 1,
+                    wilayah: 1,
+                    age: 1,
+                    gender: 1,
+                    sumview: 1,
+                    sumclick: 1,
+                    Day7: 1,
+                    Day6: {
+                        "_id": "Day6",
+                        "date": dateend6,
+                        "male": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$male2"
+                                },
+                                then: {
+                                    $size: "$male2"
+                                },
+                                else: 0
+                            }
+                        },
+                        "female": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$female2"
+                                },
+                                then: {
+                                    $size: "$female2"
+                                },
+                                else: 0
+                            }
+                        },
+                        "other": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$other2"
+                                },
+                                then: {
+                                    $size: "$other2"
+                                },
+                                else: 0
+                            }
+                        },
+
+                    },
+                    Day5: {
+                        "_id": "Day5",
+                        "date": dateend5,
+                        "male": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$male3"
+                                },
+                                then: {
+                                    $size: "$male3"
+                                },
+                                else: 0
+                            }
+                        },
+                        "female": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$female3"
+                                },
+                                then: {
+                                    $size: "$female3"
+                                },
+                                else: 0
+                            }
+                        },
+                        "other": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$other3"
+                                },
+                                then: {
+                                    $size: "$other3"
+                                },
+                                else: 0
+                            }
+                        },
+
+                    },
+                    Day4: {
+                        "_id": "Day4",
+                        "date": dateend4,
+                        "male": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$male4"
+                                },
+                                then: {
+                                    $size: "$male4"
+                                },
+                                else: 0
+                            }
+                        },
+                        "female": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$female4"
+                                },
+                                then: {
+                                    $size: "$female4"
+                                },
+                                else: 0
+                            }
+                        },
+                        "other": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$other4"
+                                },
+                                then: {
+                                    $size: "$other4"
+                                },
+                                else: 0
+                            }
+                        },
+
+                    },
+                    Day3: {
+                        "_id": "Day3",
+                        "date": dateend3,
+                        "end": "$timeEnd5",
+                        "male": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$male5"
+                                },
+                                then: {
+                                    $size: "$male5"
+                                },
+                                else: 0
+                            }
+                        },
+                        "female": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$female5"
+                                },
+                                then: {
+                                    $size: "$female5"
+                                },
+                                else: 0
+                            }
+                        },
+                        "other": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$other5"
+                                },
+                                then: {
+                                    $size: "$other5"
+                                },
+                                else: 0
+                            }
+                        },
+
+                    },
+                    Day2: {
+                        "_id": "Day2",
+                        "date": dateend2,
+                        "male": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$male6"
+                                },
+                                then: {
+                                    $size: "$male6"
+                                },
+                                else: 0
+                            }
+                        },
+                        "female": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$female6"
+                                },
+                                then: {
+                                    $size: "$female6"
+                                },
+                                else: 0
+                            }
+                        },
+                        "other": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$other6"
+                                },
+                                then: {
+                                    $size: "$other6"
+                                },
+                                else: 0
+                            }
+                        },
+
+                    },
+                    Day1: {
+                        "_id": "Day1",
+                        "date": dateend1,
+                        "male": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$male7"
+                                },
+                                then: {
+                                    $size: "$male7"
+                                },
+                                else: 0
+                            }
+                        },
+                        "female": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$female7"
+                                },
+                                then: {
+                                    $size: "$female7"
+                                },
+                                else: 0
+                            }
+                        },
+                        "other": {
+                            $cond: {
+                                if: {
+                                    $isArray: "$other7"
+                                },
+                                then: {
+                                    $size: "$other7"
+                                },
+                                else: 0
+                            }
+                        },
+
+                    }
+                },
+
             },
         ]);
         var arrayData = [];
