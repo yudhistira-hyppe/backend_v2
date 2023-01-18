@@ -336,7 +336,7 @@ export class UserticketsController {
             }
           });
 
-          res.status(HttpStatus.OK).json({
+          return res.status(HttpStatus.OK).json({
             response_code: 202,
             "data": data,
             "message": messages
@@ -344,7 +344,7 @@ export class UserticketsController {
 
 
         } else {
-          res.status(HttpStatus.OK).json({
+          return res.status(HttpStatus.OK).json({
             response_code: 202,
             "data": datausertiket,
             "message": messages
@@ -498,12 +498,12 @@ export class UserticketsController {
     var idobj = mongoose.Types.ObjectId(id);
     try {
       let data = await this.userticketsService.delete(idobj);
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
         response_code: 202,
         "message": messages
       });
     } catch (e) {
-      res.status(HttpStatus.BAD_REQUEST).json({
+      return res.status(HttpStatus.BAD_REQUEST).json({
 
         "message": messagesEror
       });
@@ -592,12 +592,12 @@ export class UserticketsController {
       datalogticket.type = "change status";
       datalogticket.remark = remark;
       await this.logticketsService.create(datalogticket);
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
         response_code: 202,
         "message": messages
       });
     } catch (e) {
-      res.status(HttpStatus.BAD_REQUEST).json({
+      return res.status(HttpStatus.BAD_REQUEST).json({
 
         "message": messagesEror
       });

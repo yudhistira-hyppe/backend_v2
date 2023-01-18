@@ -97,13 +97,13 @@ export class UserbasicsController {
 
     try {
       let data = await this.userbasicsService.update(id, createUserbasicDto);
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
         response_code: 202,
         "data": data,
         "message": messages
       });
     } catch (e) {
-      res.status(HttpStatus.BAD_REQUEST).json({
+      return res.status(HttpStatus.BAD_REQUEST).json({
 
         "message": messagesEror
       });
@@ -152,7 +152,7 @@ export class UserbasicsController {
   async getkyc(
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
-    @Query('search') search: string, 
+    @Query('search') search: string,
     @Query('skip') skip: number,
     @Query('limit') limit: number,
     @Headers('x-auth-token') auth: string) {
@@ -161,7 +161,7 @@ export class UserbasicsController {
     var search_ = "";
     var skip_ = null;
     var limit_ = null;
-    if (startDate != undefined && startDate != ""){
+    if (startDate != undefined && startDate != "") {
       startDate_ = startDate;
     }
     if (endDate != undefined && endDate != "") {
