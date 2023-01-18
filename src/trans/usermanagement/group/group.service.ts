@@ -355,7 +355,7 @@ export class GroupService {
                     from: "userbasics",
                     localField: "userbasics",
                     foreignField: "_id",
-                    as: "user"
+                    as: "data_userbasics"
                 }
             },
             {
@@ -364,9 +364,140 @@ export class GroupService {
                     "nameGroup": "$nameGroup",
                     "createAt": "$createAt",
                     "desc": "$desc",
-                    "user": "$user"
+                    "data_userbasics": "$data_userbasics"
                 }
             },
+            {
+                $unwind: {
+                    path: "$data_userbasics",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    "divisionId": "$divisionId",
+                    "nameGroup": "$nameGroup",
+                    "createAt": "$createAt",
+                    "desc": "$desc",
+                    "email": "$data_userbasics.email",
+                    "data_userbasics": "$data_userbasics"
+                }
+            },
+            {
+                $lookup:{
+                    from: "userauths",
+                    let: { local_id: '$email' },
+                    pipeline: [
+                        { 
+                            $match: {
+                                $and: [
+                                    { $expr: { $eq: ['$email', '$$local_id'] } },
+                                    { roles: { $in: ["ROLE_ADMIN"] } } 
+                                ]
+                            } 
+                        },
+                    ],
+                    as: "data_userauths",
+                }
+            },
+            {
+                $unwind: {
+                    path: "$data_userauths",
+                    preserveNullAndEmptyArrays: false
+                }
+            },
+            {
+                $facet: {
+                    "_id": [
+                        {
+                            "$group": {
+                                "_id": "$_id",
+
+                            }
+                        }
+                    ],
+                    "divisionId": [
+                        {
+                            "$group": {
+                                "_id": "$divisionId",
+
+                            }
+                        }
+                    ],
+                    "nameGroup": [
+                        {
+                            "$group": {
+                                "_id": "$nameGroup",
+
+                            }
+                        }
+                    ],
+                    "createAt": [
+                        {
+                            "$group": {
+                                "_id": "$createAt",
+
+                            }
+                        }
+                    ],
+                    "desc": [
+                        {
+                            "$group": {
+                                "_id": "$desc",
+
+                            }
+                        }
+                    ],
+                    "data_userbasics": [
+                        {
+                            "$group": {
+                                "_id": "$data_userbasics",
+
+                            }
+                        }
+                    ],
+                }
+            },
+            {
+                $project: {
+                    _id: {
+                        $arrayElemAt: ['$_id', 0]
+                    },
+                    divisionId: {
+                        $arrayElemAt: ['$divisionId', 0]
+                    },
+                    nameGroup: {
+                        $arrayElemAt: ['$nameGroup', 0]
+                    },
+                    createAt: {
+                        $arrayElemAt: ['$createAt', 0]
+                    },
+                    desc: {
+                        $arrayElemAt: ['$desc', 0]
+                    },
+                    data_userbasics: 1
+                }
+            },
+            {
+                $project: {
+                    _id: '$_id._id',
+                    divisionId: '$divisionId._id',
+                    nameGroup: '$nameGroup._id',
+                    createAt: '$createAt._id',
+                    desc: '$desc._id',
+                    user: '$data_userbasics._id',
+                }
+            }
+            // {
+            //     $project: {
+            //         "divisionId": "$divisionId",
+            //         "nameGroup": "$nameGroup",
+            //         "createAt": "$createAt",
+            //         "desc": "$desc",
+            //         "role": "$data_userbasics.data_userauths.",
+            //         "user": "$data_userbasics"
+            //     }
+            // },
 
         ]);
 
