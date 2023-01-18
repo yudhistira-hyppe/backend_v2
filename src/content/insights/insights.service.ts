@@ -941,132 +941,162 @@ export class InsightsService {
           }
       },
       {
-          "$set":
-          {
-              "selisihdatalike":
-              {
-                  "$toInt":
-                  {
-                      "$subtract":
-                      [
-                          { 
-                              "$arrayElemAt": 
-                              [ 
-                                  "$likestoday.totallike", 0 
-                              ] 
-                          },
-                          { 
-                              "$arrayElemAt": 
-                              [ 
-                                  "$datalikesyesterday.totallike", 0 
-                              ] 
-                          },
-                      ]
-                  }
-              },
-              "totallikenow" : 
-              { 
-                  "$toInt":
-                  {
-                      "$arrayElemAt": 
-                      [ 
-                          "$likestoday.totallike", 0 
-                      ]
-                  } 
-              },
-              "totallikeyesterday" : 
-              { 
-                  "$toInt":
-                  {
-                      "$arrayElemAt": 
-                      [ 
-                          "$datalikesyesterday.totallike", 0 
-                      ]
-                  } 
-              },
-              "selisihdatafollowing":
-              {
-                  "$toInt":
-                  {
-                      "$subtract":
-                      [
-                          { 
-                              "$arrayElemAt": 
-                              [ 
-                                  "$followingtoday.totalfollowing", 0 
-                              ] 
-                          },
-                          { 
-                              "$arrayElemAt": 
-                              [ 
-                                  "$datafollowingyesterday.totalfollowing", 0 
-                              ] 
-                          },
-                      ]
-                  }
-              },
-              "totalfollowingnow" : 
-              { 
-                  "$toInt":
-                  {
-                      "$arrayElemAt": 
-                      [ 
-                          "$followingtoday.totalfollowing", 0 
-                      ]
-                  } 
-              },
-              "totalfollowingyesterday" : 
-              { 
-                  "$toInt":
-                  {
-                      "$arrayElemAt": 
-                      [ 
-                          "$datafollowingyesterday.totalfollowing", 0 
-                      ]
-                  } 
-              },
-              "selisihdatafollower":
-              {
-                  "$toInt":
-                  {
-                      "$subtract":
-                      [
-                          { 
-                              "$arrayElemAt": 
-                              [ 
-                                  "$followertoday.totalfollower", 0 
-                              ] 
-                          },
-                          { 
-                              "$arrayElemAt": 
-                              [ 
-                                  "$datafolloweryesterday.totalfollower", 0 
-                              ] 
-                          },
-                      ]
-                  }
-              },
-              "totalfollowernow" : 
-              { 
-                  "$toInt":
-                  {
-                      "$arrayElemAt": 
-                      [ 
-                          "$followertoday.totalfollower", 0 
-                      ]
-                  } 
-              },
-              "totalfolloweryesterday" : 
-              { 
-                  "$toInt":
-                  {
-                      "$arrayElemAt": 
-                      [ 
-                          "$datafolloweryesterday.totalfollower", 0 
-                      ]
-                  } 
-              },
-          },
+        "$set":
+        {
+            "selisihdatalike":
+            {
+                "$toInt":
+                {
+                    "$subtract":
+                    [
+                        { 
+                            "$arrayElemAt": 
+                            [ 
+                                "$likestoday.totallike", 0 
+                            ] 
+                        },
+                        { 
+                            "$arrayElemAt": 
+                            [ 
+                                "$datalikesyesterday.totallike", 0 
+                            ] 
+                        },
+                    ]
+                }
+            },
+            "totallikenow" : 
+            { 
+                "$toInt":
+                {
+                    "$ifNull": 
+                    [
+                        {
+                            "$arrayElemAt": 
+                            [ 
+                                "$likestoday.totallike", 0 
+                            ]
+                        } , 0
+                    ]
+                } 
+            },
+            "totallikeyesterday" : 
+            { 
+                "$toInt":
+                {
+                    "$ifNull": 
+                    [
+                        {
+                            "$arrayElemAt": 
+                            [ 
+                                "$datalikesyesterday.totallike", 0 
+                            ]
+                        } , 0
+                    ]
+                } 
+            },
+            "selisihdatafollowing":
+            {
+                "$toInt":
+                {
+                    "$subtract":
+                    [
+                        { 
+                            "$arrayElemAt": 
+                            [ 
+                                "$followingtoday.totalfollowing", 0 
+                            ] 
+                        },
+                        { 
+                            "$arrayElemAt": 
+                            [ 
+                                "$datafollowingyesterday.totalfollowing", 0 
+                            ] 
+                        },
+                    ]
+                }
+            },
+            "totalfollowingnow" : 
+            { 
+                "$toInt":
+                {
+                    "$ifNull": 
+                    [
+                        {
+                            "$arrayElemAt": 
+                            [ 
+                                "$followingtoday.totalfollowing", 0 
+                            ]
+                        } , 0
+                    ]
+                } 
+            },
+            "totalfollowingyesterday" : 
+            { 
+                "$toInt":
+                {
+                    "$ifNull": 
+                    [
+                        {
+                            "$arrayElemAt": 
+                            [ 
+                                "$datafollowingyesterday.totalfollowing", 0 
+                            ]
+                        } , 0
+                    ]
+                } 
+            },
+            "selisihdatafollower":
+            {
+                "$toInt":
+                {
+                    "$subtract":
+                    [
+                        { 
+                            "$arrayElemAt": 
+                            [ 
+                                "$followertoday.totalfollower", 0 
+                            ] 
+                        },
+                        { 
+                            "$arrayElemAt": 
+                            [ 
+                                "$datafolloweryesterday.totalfollower", 0 
+                            ] 
+                        },
+                    ]
+                }
+            },
+            "totalfollowernow" : 
+            { 
+                "$toInt":
+                {
+                    "$ifNull": 
+                    [
+                        {
+                            "$arrayElemAt": 
+                            [ 
+                                "$followertoday.totalfollower", 0 
+                            ]
+                        } , 0 
+                    ] 
+                } 
+            },
+            "totalfolloweryesterday" : 
+            { 
+                "$toInt":
+                {
+                    "$ifNull":
+                    [
+                        {
+                            "$arrayElemAt": 
+                            [ 
+                                "$datafolloweryesterday.totalfollower", 0 
+                            ]
+                        } , 0
+                    ]
+                } 
+            },
+        },
       },
       {
           "$project":
