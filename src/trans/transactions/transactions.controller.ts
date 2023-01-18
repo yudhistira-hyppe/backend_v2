@@ -7684,7 +7684,6 @@ export class TransactionsController {
         var withdrawal = null;
         var boost = null;
         var rewards = null;
-        var ownership = null;
         var descending = null;
         var datasearch = null;
         var totalsearch = null;
@@ -7711,7 +7710,6 @@ export class TransactionsController {
         withdrawal = request_json["withdrawal"];
         boost = request_json["boost"];
         rewards = request_json["rewards"];
-        ownership = request_json["ownership"];
         descending = request_json["descending"];
         if (request_json["page"] !== undefined) {
             page = request_json["page"];
@@ -7731,7 +7729,7 @@ export class TransactionsController {
 
 
         try {
-            data = await this.userbasicsService.transaksiHistoryBisnis(email, startdate, enddate, sell, buy, withdrawal, rewards, boost, ownership, page, limit, descending);
+            data = await this.userbasicsService.transaksiHistoryBisnis(email, startdate, enddate, sell, buy, withdrawal, rewards, boost, page, limit, descending);
         } catch (e) {
             data = [];
         }
@@ -7741,7 +7739,7 @@ export class TransactionsController {
             total = 0;
         }
         try {
-            datasearch = await this.userbasicsService.transaksiHistoryBisnisCount(email, startdate, enddate, sell, buy, withdrawal, rewards, boost, ownership);
+            datasearch = await this.userbasicsService.transaksiHistoryBisnisCount(email, startdate, enddate, sell, buy, withdrawal, rewards, boost);
             totalsearch = datasearch[0].totalpost;
         } catch (e) {
             totalsearch = 0;
@@ -7749,7 +7747,7 @@ export class TransactionsController {
 
         try {
 
-            dataall = await this.userbasicsService.transaksiHistoryBisnisCount(email, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+            dataall = await this.userbasicsService.transaksiHistoryBisnisCount(email, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
             totalallrow = dataall[0].totalpost;
 
         } catch (e) {

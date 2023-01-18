@@ -252,4 +252,435 @@ export class ActivityeventsService {
     return query;
 
   }
+
+  async filteruser(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number, descending: any) {
+
+    var arrlokasi = [];
+    var idlokasi = null;
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+    var lenglokasi = null;
+    var order = null;
+
+    if (descending === true) {
+      order = -1;
+    } else {
+      order = 1;
+    }
+    try {
+      lenglokasi = lokasi.length;
+    } catch (e) {
+      lenglokasi = 0;
+    }
+    if (lenglokasi > 0) {
+
+      for (let i = 0; i < lenglokasi; i++) {
+        let idkat = lokasi[i];
+        idlokasi = mongoose.Types.ObjectId(idkat);
+        arrlokasi.push(idlokasi);
+      }
+    }
+
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+    var dt = dateend.substring(0, 10);
+    try {
+      var currentdatelogin = new Date(new Date(endlogin).setDate(new Date(endlogin).getDate() + 1));
+
+      var dateendlogin = currentdatelogin.toISOString();
+    } catch (e) {
+      dateendlogin = "";
+    }
+    var dtlogin = dateendlogin.substring(0, 10);
+    var pipeline = [];
+
+
+    pipeline.push(
+      {
+        $match:
+        {
+          "event": "LOGIN"
+        }
+      },
+      {
+        $group: {
+          _id: "$payload.email",
+          createAt: {
+            $last: "$createdAt"
+          }
+        }
+      },
+      {
+        $project: {
+          createdAt: "$createAt",
+          email: "$_id",
+        }
+      },
+      {
+        $sort: {
+          "createdAt": - 1
+        }
+      },
+      {
+        $lookup: {
+          from: 'userbasics',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'user',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts',
+          localField: 'user.profilePict.$id',
+          foreignField: '_id',
+          as: 'avatar',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'countries',
+          localField: 'user.countries.$id',
+          foreignField: '_id',
+          as: 'countries',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'cities',
+          localField: 'user.cities.$id',
+          foreignField: '_id',
+          as: 'cities',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'areas',
+          localField: 'user.states.$id',
+          foreignField: '_id',
+          as: 'areas_data',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'userName',
+
+        },
+
+      },
+
+      {
+        $project: {
+          jenis: {
+            $cond: {
+              if: {
+
+                $eq: [{
+                  $arrayElemAt: ["$user.isIdVerified", 0]
+                }, true]
+              },
+              then: "PREMIUM",
+              else: "BASIC"
+            },
+
+          },
+          age: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $gt: [{
+                      $arrayElemAt: ["$user.dob", 0]
+                    }, 44]
+                  },
+                  then: "< 44 Tahun"
+                },
+                {
+                  case: {
+                    $and: [{
+                      $gte: [{
+                        $arrayElemAt: ["$user.dob", 0]
+                      }, 36]
+                    }, {
+                      $lte: [{
+                        $arrayElemAt: ["$user.dob", 0]
+                      }, 44]
+                    }]
+                  },
+                  then: "35-44 Tahun"
+                },
+                {
+                  case: {
+                    $and: [{
+                      $gte: [{
+                        $arrayElemAt: ["$user.dob", 0]
+                      }, 25]
+                    }, {
+                      $lte: [{
+                        $arrayElemAt: ["$user.dob", 0]
+                      }, 35]
+                    }]
+                  },
+                  then: "24-35 Tahun"
+                },
+                {
+                  case: {
+                    $and: [{
+                      $gte: [{
+                        $arrayElemAt: ["$user.dob", 0]
+                      }, 14]
+                    }, {
+                      $lte: [{
+                        $arrayElemAt: ["$user.dob", 0]
+                      }, 24]
+                    }]
+                  },
+                  then: "14-24 Tahun"
+                },
+                {
+                  case: {
+                    $and: [{
+                      $gte: [{
+                        $arrayElemAt: ["$user.dob", 0]
+                      }, 1]
+                    }, {
+                      $lt: [{
+                        $arrayElemAt: ["$user.dob", 0]
+                      }, 14]
+                    }]
+                  },
+                  then: "< 14 Tahun"
+                }
+              ],
+              "default": "other"
+            }
+          },
+          email: 1,
+          gender: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: ['$user.gender', 'FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$user.gender', ' FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$user.gender', 'Perempuan']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$user.gender', 'Wanita']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$user.gender', 'MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$user.gender', ' MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$user.gender', 'Laki-laki']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$user.gender', 'Pria']
+                  },
+                  then: 'MALE',
+
+                },
+
+              ],
+              default: "OTHER",
+
+            },
+
+          },
+          username: {
+            $arrayElemAt: ["$userName.username", 0]
+          },
+          role: {
+            $arrayElemAt: ["$userName.roles", 0]
+          },
+          countries: {
+            $arrayElemAt: ["$countries.country", 0]
+          },
+          cities: {
+            $arrayElemAt: ["$cities.cityName", 0]
+          },
+          areas: {
+            $arrayElemAt: ["$areas.stateName", 0]
+          },
+          avatar: {
+            mediaBasePath: {
+              $arrayElemAt: ['$avatar.mediaBasePath', 0]
+            },
+            mediaUri: {
+              $arrayElemAt: ['$avatar.mediaUri', 0]
+            },
+            mediaType: {
+              $arrayElemAt: ['$avatar.mediaType', 0]
+            },
+            mediaEndpoint:
+            {
+              $concat: [
+                '/profilepict/',
+                {
+                  $replaceOne: {
+                    input: {
+                      $arrayElemAt: ["$avatar.mediaUri", 0]
+                    },
+                    find: "_0001.jpeg",
+                    replacement: ""
+                  }
+                },
+
+              ]
+            },
+
+          },
+          createdAt: 1
+
+        }
+      },
+
+
+    );
+
+    if (username && username !== undefined) {
+
+      pipeline.push({
+        $match: {
+          username: {
+            $regex: username,
+            $options: 'i'
+          },
+
+        }
+      },);
+
+    }
+
+    if (regender && regender !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              gender: {
+                $in: regender
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (startage && startage !== undefined) {
+      pipeline.push({ $match: { age: { $gt: startage } } });
+    }
+    if (endage && endage !== undefined) {
+      pipeline.push({ $match: { age: { $lt: endage } } });
+    }
+
+    if (startdate && startdate !== undefined) {
+      pipeline.push({ $match: { createdAt: { $gte: startdate } } });
+    }
+    if (enddate && enddate !== undefined) {
+      pipeline.push({ $match: { createdAt: { $lte: dt } } });
+    }
+
+    if (jenis && jenis !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              jenis: {
+                $in: jenis
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (lokasi && lokasi !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              areaId: {
+                $in: arrlokasi
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (startlogin && startlogin !== undefined) {
+      pipeline.push({ $match: { createdAt: { $gte: startlogin } } });
+    }
+    if (endlogin && endlogin !== undefined) {
+      pipeline.push({ $match: { createdAt: { $lte: dtlogin } } });
+    }
+    if (page > 0) {
+      pipeline.push({ $skip: (page * limit) });
+    }
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
+
+    let query = await this.activityeventsModel.aggregate(pipeline);
+
+    return query;
+
+  }
+
 }
