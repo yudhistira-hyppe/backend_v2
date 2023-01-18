@@ -458,12 +458,12 @@ export class TransactionsController {
 
 
                             } catch (e) {
-                                res.status(HttpStatus.BAD_REQUEST).json({
+                                return res.status(HttpStatus.BAD_REQUEST).json({
 
                                     "message": messagesEror + " " + e.toString()
                                 });
                             }
-                            res.status(HttpStatus.OK).json({
+                            return res.status(HttpStatus.OK).json({
                                 response_code: 202,
                                 "data": data,
                                 "message": messages
@@ -608,12 +608,12 @@ export class TransactionsController {
                                 "_id": datatr._id
                             };
                         } catch (e) {
-                            res.status(HttpStatus.BAD_REQUEST).json({
+                            return res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror + " " + e.toString()
                             });
                         }
-                        res.status(HttpStatus.OK).json({
+                        return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "data": data,
                             "message": messages
@@ -708,7 +708,7 @@ export class TransactionsController {
                         // var totalUsePending = tusedvoucher + pendingUsed;
 
                         if (qty >= qtyvoucher) {
-                            res.status(HttpStatus.BAD_REQUEST).json({
+                            return res.status(HttpStatus.BAD_REQUEST).json({
                                 "message": "Maaf quantity Voucher melebihi quota.."
                             });
                             process.exit(0);
@@ -872,12 +872,12 @@ export class TransactionsController {
 
 
                             } catch (e) {
-                                res.status(HttpStatus.BAD_REQUEST).json({
+                                return res.status(HttpStatus.BAD_REQUEST).json({
 
                                     "message": messagesEror + " " + e.toString()
                                 });
                             }
-                            res.status(HttpStatus.OK).json({
+                            return res.status(HttpStatus.OK).json({
                                 response_code: 202,
                                 "data": data,
                                 "message": messages
@@ -1031,13 +1031,13 @@ export class TransactionsController {
                             };
 
                         } catch (e) {
-                            res.status(HttpStatus.BAD_REQUEST).json({
+                            return res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror + " " + e.toString()
                             });
                         }
 
-                        res.status(HttpStatus.OK).json({
+                        return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "data": data,
                             "message": messages
@@ -1355,12 +1355,12 @@ export class TransactionsController {
                         // await this.postsService.updateGenerateUserPlaylist(idusersell, CreateUserplaylistDto_);
                         await this.postContentService.generateCertificate(postid, langIso);
 
-                        res.status(HttpStatus.OK).json({
+                        return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": messages
                         });
                     } else {
-                        res.status(HttpStatus.OK).json({
+                        return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": messagesnull
                         });
@@ -1475,12 +1475,12 @@ export class TransactionsController {
                             await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
                         }
 
-                        res.status(HttpStatus.OK).json({
+                        return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": messages
                         });
                     } else {
-                        res.status(HttpStatus.OK).json({
+                        return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": messagesnull
                         });
@@ -1534,12 +1534,12 @@ export class TransactionsController {
                         //this.sendemail(emailbuyer.toString(), "BOOST_SUCCES_TEST", datatransaksi, OwnerShip);
 
                         //RESPONSE SUCCES
-                        res.status(HttpStatus.OK).json({
+                        return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": messages
                         });
                     } else {
-                        res.status(HttpStatus.OK).json({
+                        return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": messagesnull
                         });
@@ -1928,13 +1928,13 @@ export class TransactionsController {
                             }
 
 
-                            res.status(HttpStatus.OK).json({
+                            return res.status(HttpStatus.OK).json({
                                 response_code: 202,
                                 "data": data,
                                 "message": messages
                             });
                         } catch (e) {
-                            res.status(HttpStatus.BAD_REQUEST).json({
+                            return res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror
                             });
@@ -1999,13 +1999,13 @@ export class TransactionsController {
                             }
 
 
-                            res.status(HttpStatus.OK).json({
+                            return res.status(HttpStatus.OK).json({
                                 response_code: 202,
                                 "data": data,
                                 "message": messages
                             });
                         } catch (e) {
-                            res.status(HttpStatus.BAD_REQUEST).json({
+                            return res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror
                             });
@@ -2101,7 +2101,7 @@ export class TransactionsController {
 
                 await this.withdrawsService.updateone(partner_trx_id, payload);
 
-                res.status(HttpStatus.OK).json({
+                return res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "message": messages
                 });
@@ -2112,7 +2112,7 @@ export class TransactionsController {
 
                 await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload);
 
-                res.status(HttpStatus.OK).json({
+                return res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "message": "Request is Rejected (Amount is not valid)"
                 });
@@ -2123,7 +2123,7 @@ export class TransactionsController {
 
                 await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
 
-                res.status(HttpStatus.OK).json({
+                return res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "message": "Disbursement is FAILED"
                 });
@@ -2133,7 +2133,7 @@ export class TransactionsController {
 
                 await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload);
 
-                res.status(HttpStatus.OK).json({
+                return res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "message": "Pending (When there is a unclear answer from Banks Network)"
                 });
@@ -2141,7 +2141,7 @@ export class TransactionsController {
             } else {
                 await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
 
-                res.status(HttpStatus.OK).json({
+                return res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "message": "Disbursement is FAILED"
                 });
@@ -2277,7 +2277,7 @@ export class TransactionsController {
                             "chargeInquiry": valuebankcharge,
                             "statusInquiry": statusInquiry
                         }
-                        res.status(HttpStatus.OK).json({
+                        return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "data": data,
                             "message": "Inquiry is success"
@@ -2299,7 +2299,7 @@ export class TransactionsController {
                             "bankCode": bankcode,
                             "statusInquiry": statusInquiry
                         }
-                        res.status(HttpStatus.OK).json({
+                        return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "data": data,
                             "message": "Nama Akun bank tidak sama"
@@ -2323,7 +2323,7 @@ export class TransactionsController {
                         "bankCode": bankcode,
                         "statusInquiry": statusInquiry
                     }
-                    res.status(HttpStatus.OK).json({
+                    return res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
                         "message": "Request is Rejected (User ID is not Found)"
@@ -2346,7 +2346,7 @@ export class TransactionsController {
                         "bankCode": bankcode,
                         "statusInquiry": statusInquiry
                     }
-                    res.status(HttpStatus.OK).json({
+                    return res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
                         "message": "Request is Rejected (API Key is not Valid)"
@@ -2369,7 +2369,7 @@ export class TransactionsController {
                         "bankCode": bankcode,
                         "statusInquiry": statusInquiry
                     }
-                    res.status(HttpStatus.OK).json({
+                    return res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
                         "message": "Request is Rejected (Bank Account is not found)"
@@ -2390,7 +2390,7 @@ export class TransactionsController {
                         "bankCode": bankcode,
                         "statusInquiry": statusInquiry
                     }
-                    res.status(HttpStatus.OK).json({
+                    return res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
                         "message": "Request is Rejected"
@@ -2409,7 +2409,7 @@ export class TransactionsController {
                     "chargeInquiry": 0,
                     "statusInquiry": statusInquiry
                 }
-                res.status(HttpStatus.OK).json({
+                return res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "data": data,
                     "message": "Inquiry is success"
@@ -3694,131 +3694,6 @@ export class TransactionsController {
         };
 
         await this.accountbalancesService.createdata(dataacountbalance);
-    }
-
-    @Post('api/transactions/list')
-    @UseGuards(JwtAuthGuard)
-    async searchhistory(@Req() request: Request): Promise<any> {
-        var startdate = null;
-        var enddate = null;
-        var iduser = null;
-        var email = null;
-        var datasell = null;
-        var datasellcount = null;
-        var skip = null;
-        var limit = null;
-        var databuy = null;
-        var databuycount = null;
-        var datawithdraw = null;
-        var datawithdrawcount = null;
-        var sell = null;
-        var buy = null;
-        var withdrawal = null;
-        var data = [];
-        var datacount = null;
-        var dtcount = [];
-        var status = null;
-        var rewards = null;
-        var datarewards = null;
-        var datarewardscount = null;
-        var titleinsukses = "Pembayaran Diajukan!";
-        var titleensukses = "Payment Filed!";
-        var bodyinsukses = "Periode pembayaran telah berlalu waktu kadaluarsa. konten Anda terdaftar tidak akan diposting";
-        var bodyensukses = "The payment period has passed the expiration time. The content you registered will not posted";
-        var eventType = "TRANSACTION";
-        var event = "TRANSACTION";
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["email"] !== undefined) {
-            email = request_json["email"];
-            var ubasic = await this.userbasicsService.findOne(email);
-
-            iduser = ubasic._id;
-
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-        status = request_json["status"];
-        startdate = request_json["startdate"];
-        enddate = request_json["enddate"];
-
-        if (request_json["sell"] !== undefined) {
-            sell = request_json["sell"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        if (request_json["buy"] !== undefined) {
-            buy = request_json["buy"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        if (request_json["withdrawal"] !== undefined) {
-            withdrawal = request_json["withdrawal"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        if (request_json["skip"] !== undefined) {
-            skip = request_json["skip"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        if (request_json["rewards"] !== undefined) {
-            rewards = request_json["rewards"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-        const messages = {
-            "info": ["The process successful"],
-        };
-        var totalsaldo = null;
-
-        const mongoose = require('mongoose');
-        var ObjectId = require('mongodb').ObjectId;
-        var idadmin = mongoose.Types.ObjectId(iduser);
-
-        try {
-            totalsaldo = await this.accountbalancesService.findsaldo(idadmin);
-        } catch (e) {
-            totalsaldo = 0;
-        }
-        if (sell) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, 0, 0);
-            data = data.concat(datasell);
-        }
-        if (buy) {
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, 0, 0);
-            data = data.concat(databuy);
-        }
-        if (withdrawal) {
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, 0, 0);
-            data = data.concat(datawithdraw);
-        }
-        if (rewards) {
-            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, 0, 0);
-            data = data.concat(datarewards);
-        }
-        datacount = data.length;
-        data.sort((first, second) => {
-            if (first.timestamp > second.timestamp) return -1;
-            if (first.timestamp < second.timestamp) return 1;
-            return 0;
-        });
-        const fData = [];
-        var j = 0;
-        for (var i = data.length - (skip + 1); i >= 0; i--, j++) {
-            if (limit > 0 && j == limit)
-                break;
-            fData.push(data[i]);
-        }
-        return { response_code: 202, totalsaldo, fData, skip, limit, datacount, messages };
     }
 
     @Post('api/transactions/historys/details')
@@ -7788,6 +7663,195 @@ export class TransactionsController {
             };
         }
 
+    }
+
+    @Post('api/transactions/list')
+    @UseGuards(JwtAuthGuard)
+    async searchhistorylist(@Req() request: Request): Promise<any> {
+        var startdate = null;
+        var enddate = null;
+        var iduser = null;
+        var email = null;
+        var type = null;
+
+        var page = null;
+        var limit = null;
+
+        var data = [];
+        var status = null;
+        var sell = null;
+        var buy = null;
+        var withdrawal = null;
+        var boost = null;
+        var rewards = null;
+        var ownership = null;
+        var descending = null;
+        var datasearch = null;
+        var totalsearch = null;
+        var totalpage = null;
+        var dataall = null;
+        var totalallrow = null;
+        var total = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+            var ubasic = await this.userbasicsService.findOne(email);
+
+            iduser = ubasic._id;
+
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        status = request_json["status"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        type = request_json["type"];
+        sell = request_json["sell"];
+        buy = request_json["buy"];
+        withdrawal = request_json["withdrawal"];
+        boost = request_json["boost"];
+        rewards = request_json["rewards"];
+        ownership = request_json["ownership"];
+        descending = request_json["descending"];
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+
+
+        try {
+            data = await this.userbasicsService.transaksiHistoryBisnis(email, startdate, enddate, sell, buy, withdrawal, rewards, boost, ownership, page, limit, descending);
+        } catch (e) {
+            data = [];
+        }
+        try {
+            total = data.length;
+        } catch (e) {
+            total = 0;
+        }
+        try {
+            datasearch = await this.userbasicsService.transaksiHistoryBisnisCount(email, startdate, enddate, sell, buy, withdrawal, rewards, boost, ownership);
+            totalsearch = datasearch[0].totalpost;
+        } catch (e) {
+            totalsearch = 0;
+        }
+
+        try {
+
+            dataall = await this.userbasicsService.transaksiHistoryBisnisCount(email, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+            totalallrow = dataall[0].totalpost;
+
+        } catch (e) {
+            totalallrow = 0;
+        }
+
+        var datatrpending = null;
+        var datatrpendingjual = null;
+
+        try {
+
+            datatrpending = await this.transactionsService.findExpirednew(iduser);
+
+
+        } catch (e) {
+            datatrpending = null;
+
+        }
+
+        if (datatrpending !== null) {
+            var datenow = new Date(Date.now());
+
+
+            var lengdatatr = datatrpending.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpending[i].idva;
+                var idtransaction = datatrpending[i]._id;
+                var expiredva = new Date(datatrpending[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        this.transactionsService.updatestatuscancel(idtransaction);
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
+
+        try {
+
+            datatrpendingjual = await this.transactionsService.findExpiredSell(iduser);
+
+
+        } catch (e) {
+            datatrpendingjual = null;
+
+        }
+
+        if (datatrpendingjual !== null) {
+            var datenow = new Date(Date.now());
+
+
+            var lengdatatr = datatrpendingjual.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpendingjual[i].idva;
+                var idtransaction = datatrpendingjual[i]._id;
+                var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        await this.transactionsService.updatestatuscancel(idtransaction);
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
+
+
+
+        var tpage = null;
+        var tpage2 = null;
+
+        tpage2 = (totalsearch / limit).toFixed(0);
+        tpage = (totalsearch % limit);
+        if (tpage > 0 && tpage < 5) {
+            totalpage = parseInt(tpage2) + 1;
+
+        } else {
+            totalpage = parseInt(tpage2);
+        }
+
+        return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
 }
 

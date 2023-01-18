@@ -82,13 +82,13 @@ export class VouchersController {
             let data = await this.vouchersService.create(CreateVouchersDto);
 
 
-            res.status(HttpStatus.OK).json({
+            return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": data,
                 "message": messages
             });
         } catch (e) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror
             });
@@ -213,12 +213,12 @@ export class VouchersController {
             CreateVouchersDto.creditTotal = creditTotal;
             let data = await this.vouchersService.update(id, CreateVouchersDto);
 
-            res.status(HttpStatus.OK).json({
+            return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "message": messages
             });
         } catch (e) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror + " " + e
             });
@@ -312,13 +312,13 @@ export class VouchersController {
 
         try {
             var data = { "orderList": arrayId, "totalAmount": tamount, "adminCharge": nominalmradmin, "prosentaseAdmin": valuemradmin + ' %', "totalCredit": sumCredittotal, "totalVoucher": sumqty };
-            res.status(HttpStatus.OK).json({
+            return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": data,
                 "message": messages
             });
         } catch (e) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror
             });
@@ -352,13 +352,13 @@ export class VouchersController {
 
             createVouchersDto.updatedAt = dt.toISOString();
             let data = await this.vouchersService.update(id, createVouchersDto);
-            res.status(HttpStatus.OK).json({
+            return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": data,
                 "message": messages
             });
         } catch (e) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror
             });

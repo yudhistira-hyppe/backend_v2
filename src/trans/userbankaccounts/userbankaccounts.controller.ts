@@ -169,19 +169,19 @@ export class UserbankaccountsController {
                     CreateUserbankaccountsDto.active = true;
 
                     let data = await this.userbankaccountsService.create(CreateUserbankaccountsDto);
-                    res.status(HttpStatus.OK).json({
+                    return res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
                         "message": messages
                     });
                 } catch (e) {
-                    res.status(HttpStatus.OK).json({
+                    return res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "message": messagesEror
                     });
                 }
             } else {
-                res.status(HttpStatus.OK).json({
+                return res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "message": messageRespon
                 });
@@ -192,7 +192,7 @@ export class UserbankaccountsController {
 
             await this.userbankaccountsService.updateactivetrue(idakun);
             let data = await this.userbankaccountsService.findOneid(idakun);
-            res.status(HttpStatus.OK).json({
+            return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": data,
                 "message": messages
@@ -521,13 +521,13 @@ export class UserbankaccountsController {
 
         try {
             let data = await this.userbankaccountsService.update(id, createUserbankaccountsDto);
-            res.status(HttpStatus.OK).json({
+            return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": data,
                 "message": messages
             });
         } catch (e) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror
             });

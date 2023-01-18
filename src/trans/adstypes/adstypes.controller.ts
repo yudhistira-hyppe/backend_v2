@@ -20,13 +20,13 @@ export class AdstypesController {
 
         try {
             let data = await this.adstypesService.create(CreateAdstypesDto);
-            res.status(HttpStatus.OK).json({
+            return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": data,
                 "message": messages
             });
         } catch (e) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror
             });
@@ -68,13 +68,13 @@ export class AdstypesController {
 
         try {
             let data = await this.adstypesService.update(id, createAdstypesDto);
-            res.status(HttpStatus.OK).json({
+            return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": data,
                 "message": messages
             });
         } catch (e) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror
             });

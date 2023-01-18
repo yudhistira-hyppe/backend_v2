@@ -39,13 +39,13 @@ export class UservouchersController {
             CreateUservouchersDto.createdAt = dt.toISOString();
             CreateUservouchersDto.userID = iduser;
             let data = await this.uservouchersService.create(CreateUservouchersDto);
-            res.status(HttpStatus.OK).json({
+            return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": data,
                 "message": messages
             });
         } catch (e) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror
             });
@@ -86,13 +86,13 @@ export class UservouchersController {
 
             createUservouchersDto.updatedAt = dt.toISOString();
             let data = await this.uservouchersService.update(id, createUservouchersDto);
-            res.status(HttpStatus.OK).json({
+            return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": data,
                 "message": messages
             });
         } catch (e) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror
             });
@@ -317,13 +317,13 @@ export class UservouchersController {
 
         try {
             var data = { "voucherList": arrayId, "totalCredit": sumCredittotal };
-            res.status(HttpStatus.OK).json({
+            return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": data,
                 "message": messages
             });
         } catch (e) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror
             });

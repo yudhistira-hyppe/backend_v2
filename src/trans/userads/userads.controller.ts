@@ -69,7 +69,7 @@ export class UserAdsController {
                         createUserAdsDto.viewed = viewewd + 1;
                         data = await this.userAdsService.updatesdata(adsid, createUserAdsDto);
                         var ads = await this.adsService.updateStatusView(adsid, totalView + 1);
-                        res.status(HttpStatus.OK).json({
+                        return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "data": data,
                             "message": messages
@@ -81,7 +81,7 @@ export class UserAdsController {
                         createUserAdsDto.viewed = viewewd + 1;
                         data = await this.userAdsService.updatesdata(adsid, createUserAdsDto);
                         var ads = await this.adsService.updateStatusClick(adsid, totalClick + 1);
-                        res.status(HttpStatus.OK).json({
+                        return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "data": data,
                             "message": messages
@@ -98,7 +98,7 @@ export class UserAdsController {
 
 
         } catch (e) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": e.toString()
             });

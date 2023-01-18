@@ -34,13 +34,13 @@ export class FaqsController {
     CreateFaqsDto.active = true;
     try {
       let data = await this.faqService.create(CreateFaqsDto);
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
         response_code: 202,
         "data": data,
         "message": messages
       });
     } catch (e) {
-      res.status(HttpStatus.BAD_REQUEST).json({
+      return res.status(HttpStatus.BAD_REQUEST).json({
 
         "message": messagesEror
       });
@@ -83,13 +83,13 @@ export class FaqsController {
 
     try {
       let data = await this.faqService.update(id, createFaqsDto);
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
         response_code: 202,
         "data": data,
         "message": messages
       });
     } catch (e) {
-      res.status(HttpStatus.BAD_REQUEST).json({
+      return res.status(HttpStatus.BAD_REQUEST).json({
 
         "message": messagesEror
       });
@@ -110,12 +110,12 @@ export class FaqsController {
 
     try {
       let data = await this.faqService.delete(id);
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
         response_code: 202,
         "message": messages
       });
     } catch (e) {
-      res.status(HttpStatus.BAD_REQUEST).json({
+      return res.status(HttpStatus.BAD_REQUEST).json({
 
         "message": messagesEror
       });
