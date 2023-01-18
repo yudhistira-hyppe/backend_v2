@@ -240,30 +240,30 @@ export class AdsController {
         }
 
         if (lengname > titleMax) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": "Maksimal jumlah karakter judul iklan konten " + titleMax
             });
         }
         if (sizeFile > sizeMax) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": "Maksimal ukuran media " + sizeMax
             });
         }
         if (lengdesc > descriptionMax) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": "Maksimal jumlah karakter deskripsi iklan konten " + descriptionMax
             });
         }
         if (duration > durationMax) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": "Maksimal duration iklan konten " + durationMax + " detik"
             });
         } else if (duration < durationMin) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": "Minimal duration iklan konten " + durationMin + " detik"
             });
@@ -359,9 +359,9 @@ export class AdsController {
                         sumCredittotal += arrayTotalCredit[i];
                     }
 
-                    if (totalCreditusvoucher < (creditValue * tayang)) {
+                    if (totalCreditusvoucher < total_credit_data) {
 
-                        res.status(HttpStatus.BAD_REQUEST).json({
+                        return res.status(HttpStatus.BAD_REQUEST).json({
 
                             "message": "Voucher credit is not sufficient, please buy a voucher first"
                         });
@@ -443,20 +443,20 @@ export class AdsController {
                     CreateAdsDto.totalCredit = sumCredittotal;
                     // CreateAdsDto.mediaAds = mongoose.Types.ObjectId(idmedia);;
                     let data = await this.adsService.create(CreateAdsDto);
-                    res.status(HttpStatus.OK).json({
+                    return res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
                         "message": messages
                     });
 
                 } catch (e) {
-                    res.status(HttpStatus.BAD_REQUEST).json({
+                    return res.status(HttpStatus.BAD_REQUEST).json({
 
                         "message": e.toString()
                     });
                 }
             } else {
-                res.status(HttpStatus.BAD_REQUEST).json({
+                return res.status(HttpStatus.BAD_REQUEST).json({
 
                     "message": "Silahkan beli voucher dahulu.."
                 });
@@ -464,7 +464,7 @@ export class AdsController {
 
 
         } else {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror
             });
