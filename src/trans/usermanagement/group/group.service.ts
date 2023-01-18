@@ -347,7 +347,8 @@ export class GroupService {
         var query = await this.groupModel.aggregate([
             {
                 $match: {
-                    "divisionId": divisionId
+                    "divisionId": divisionId,
+                    "roles": { $in: ["ROLE_ADMIN"] }
                 }
             },
             {
