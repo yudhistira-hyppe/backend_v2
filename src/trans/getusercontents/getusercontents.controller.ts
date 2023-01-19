@@ -1125,10 +1125,10 @@ export class GetusercontentsController {
         var startdate = null;
         var enddate = null;
         var limit = null;
-        var totalpage = null;
-        var totalallrow = null;
-        var totalsearch = null;
-        var total = null;
+        var totalpage = 0;
+        var totalallrow = 0;
+        var totalsearch = 0;
+        var total = 0;
         var username = null;
         var kepemilikan = [];
         var statusjual = [];
@@ -1194,53 +1194,53 @@ export class GetusercontentsController {
 
 
 
-        try {
-            total = query.length;
-        } catch (e) {
-            total = 0;
-        }
+        // try {
+        //     total = query.length;
+        // } catch (e) {
+        //     total = 0;
+        // }
 
-        if (total < 10) {
-            totalsearch = total;
-        } else {
+        // if (total < 10) {
+        //     totalsearch = total;
+        // } else {
 
-            if (iduser !== undefined) {
-                try {
-                    datasearch = await this.getusercontentsService.databasenewcount(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
-                    totalsearch = datasearch[0].totalpost;
-                } catch (e) {
-                    totalsearch = 0;
-                }
-            } else {
-                try {
-                    datasearch = await this.getusercontentsService.databasenewcount(undefined, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
-                    totalsearch = datasearch[0].totalpost;
-                } catch (e) {
-                    totalsearch = 0;
-                }
-            }
-        }
+        //     if (iduser !== undefined) {
+        //         try {
+        //             datasearch = await this.getusercontentsService.databasenewcount(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+        //             totalsearch = datasearch[0].totalpost;
+        //         } catch (e) {
+        //             totalsearch = 0;
+        //         }
+        //     } else {
+        //         try {
+        //             datasearch = await this.getusercontentsService.databasenewcount(undefined, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+        //             totalsearch = datasearch[0].totalpost;
+        //         } catch (e) {
+        //             totalsearch = 0;
+        //         }
+        //     }
+        // }
 
-        try {
+        // try {
 
-            dataall = await this.getusercontentsService.findcountall();
-            totalallrow = dataall[0].totalpost;
+        //     dataall = await this.getusercontentsService.findcountall();
+        //     totalallrow = dataall[0].totalpost;
 
-        } catch (e) {
-            totalallrow = 0;
-        }
+        // } catch (e) {
+        //     totalallrow = 0;
+        // }
 
-        var tpage = null;
-        var tpage2 = null;
+        // var tpage = null;
+        // var tpage2 = null;
 
-        tpage2 = (totalsearch / limit).toFixed(0);
-        tpage = (totalsearch % limit);
-        if (tpage > 0 && tpage < 5) {
-            totalpage = parseInt(tpage2) + 1;
+        // tpage2 = (totalsearch / limit).toFixed(0);
+        // tpage = (totalsearch % limit);
+        // if (tpage > 0 && tpage < 5) {
+        //     totalpage = parseInt(tpage2) + 1;
 
-        } else {
-            totalpage = parseInt(tpage2);
-        }
+        // } else {
+        //     totalpage = parseInt(tpage2);
+        // }
 
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }

@@ -109,7 +109,7 @@ export class GetuserprofilesController {
     var endlogin = null;
     var limit = null;
     var datafilter = null;
-    var totalfilter = null;
+    var totalfilter = 0;
     var descending = null;
     const messages = {
       "info": ["The process successful"],
@@ -126,9 +126,10 @@ export class GetuserprofilesController {
     startlogin = request_json["startlogin"];
     endlogin = request_json["endlogin"];
     descending = request_json["descending"];
-    var allrow = null;
-    var totalallrow = null;
-    var totalrow = null;
+    var allrow = 0;
+    var totalallrow = 0;
+    var totalrow = 0;
+    var totalpage = 0;
     if (request_json["page"] !== undefined) {
       page = request_json["page"];
     } else {
@@ -151,12 +152,12 @@ export class GetuserprofilesController {
 
 
 
-    try {
-      allrow = await this.getuserprofilesService.totalcount();
-      totalallrow = allrow[0].countrow;
-    } catch (e) {
-      totalallrow = 0;
-    }
+    // try {
+    //   allrow = await this.getuserprofilesService.totalcount();
+    //   totalallrow = allrow[0].countrow;
+    // } catch (e) {
+    //   totalallrow = 0;
+    // }
 
 
     // if (startlogin === undefined && endlogin === undefined && jenis === undefined && lokasi === undefined && gender === undefined && username === undefined && startdate === undefined && enddate === undefined && startage === undefined && endage === undefined) {
@@ -170,19 +171,19 @@ export class GetuserprofilesController {
     //     totalfilter = 0;
     //   }
     // }
-    totalfilter = totalallrow;
-    var tpage = null;
-    var tpage2 = null;
-    var totalpage = null;
+    //totalfilter = totalallrow;
+    // var tpage = null;
+    // var tpage2 = null;
 
-    tpage2 = (totalfilter / limit).toFixed(0);
-    tpage = (totalfilter % limit);
-    if (tpage > 0 && tpage < 5) {
-      totalpage = parseInt(tpage2) + 1;
 
-    } else {
-      totalpage = parseInt(tpage2);
-    }
+    // tpage2 = (totalfilter / limit).toFixed(0);
+    // tpage = (totalfilter % limit);
+    // if (tpage > 0 && tpage < 5) {
+    //   totalpage = parseInt(tpage2) + 1;
+
+    // } else {
+    //   totalpage = parseInt(tpage2);
+    // }
 
     return { response_code: 202, data, page, limit, totalrow, totalallrow, totalfilter, totalpage, messages };
 
