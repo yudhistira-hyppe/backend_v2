@@ -11095,7 +11095,7 @@ export class GetusercontentsService {
   }
 
 
-  async databasenew(buy: string, report: string, iduser: Object, username: string, description: string, kepemilikan: any[], statusjual: any[], postType: any[], kategori: any[], startdate: string, enddate: string, startmount: number, endmount: number, descending: boolean, page: number, limit: number) {
+  async databasenew(buy: string, report: string, iduser: Object, username: string, description: string, kepemilikan: any[], statusjual: any[], postType: any[], kategori: any[], startdate: string, enddate: string, startmount: number, endmount: number, descending: boolean, page: number, limit: number, popular: any) {
 
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -11136,12 +11136,6 @@ export class GetusercontentsService {
     }
 
     var pipeline = [];
-    pipeline.push({
-      $sort: {
-        createdAt: order
-      },
-
-    },);
 
 
     if (iduser && iduser !== undefined) {
@@ -12736,6 +12730,24 @@ export class GetusercontentsService {
     if (enddate && enddate !== undefined) {
       pipeline.push({ $match: { createdAt: { $lte: dt } } });
     }
+
+    if (popular !== undefined && popular === true) {
+      pipeline.push({
+        $sort: {
+          views: - 1,
+          likes: - 1
+        },
+
+      },);
+    } else {
+      pipeline.push({
+        $sort: {
+          createdAt: order
+        },
+
+      },);
+    }
+
     if (page > 0) {
       pipeline.push({ $skip: (page * limit) });
     }

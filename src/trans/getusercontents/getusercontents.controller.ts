@@ -1142,6 +1142,7 @@ export class GetusercontentsController {
         var iduser = null;
         var buy = null;
         var reported = null;
+        var popular = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -1169,6 +1170,7 @@ export class GetusercontentsController {
         iduser = request_json["iduser"];
         buy = request_json["buy"];
         reported = request_json["reported"];
+        popular = request_json["popular"];
         var userid = mongoose.Types.ObjectId(iduser);
         var query = null;
         var datasearch = null;
@@ -1176,7 +1178,7 @@ export class GetusercontentsController {
 
         if (iduser !== undefined) {
             try {
-                query = await this.getusercontentsService.databasenew(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
+                query = await this.getusercontentsService.databasenew(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
                 data = query;
             } catch (e) {
                 query = null;
@@ -1184,7 +1186,7 @@ export class GetusercontentsController {
             }
         } else {
             try {
-                query = await this.getusercontentsService.databasenew(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
+                query = await this.getusercontentsService.databasenew(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
                 data = query;
             } catch (e) {
                 query = null;
