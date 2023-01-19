@@ -11136,7 +11136,22 @@ export class GetusercontentsService {
     }
 
     var pipeline = [];
+    if (popular !== undefined && popular === true) {
+      pipeline.push({
+        $sort: {
+          views: - 1,
+          likes: - 1
+        },
 
+      },);
+    } else {
+      pipeline.push({
+        $sort: {
+          createdAt: order
+        },
+
+      },);
+    }
 
     if (iduser && iduser !== undefined) {
       pipeline.push(
@@ -12731,22 +12746,7 @@ export class GetusercontentsService {
       pipeline.push({ $match: { createdAt: { $lte: dt } } });
     }
 
-    if (popular !== undefined && popular === true) {
-      pipeline.push({
-        $sort: {
-          views: - 1,
-          likes: - 1
-        },
 
-      },);
-    } else {
-      pipeline.push({
-        $sort: {
-          createdAt: order
-        },
-
-      },);
-    }
 
     if (page > 0) {
       pipeline.push({ $skip: (page * limit) });
