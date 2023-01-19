@@ -11334,6 +11334,7 @@ export class GetusercontentsService {
             postType: 1,
             views: 1,
             likes: 1,
+            comments: 1,
             shares: 1,
             description: 1,
             title: 1,
@@ -11416,6 +11417,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
+            comments: 1,
             buy: {
               $cond: {
                 if: {
@@ -11559,6 +11561,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
+            comments: 1,
             type: 1,
             description: 1,
             title: 1,
@@ -11639,6 +11642,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
+            comments: 1,
             mediaBasePath: {
               $switch: {
                 branches: [
@@ -12051,6 +12055,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
+            comments: 1,
             certified:
             {
               $cond: {
@@ -12122,6 +12127,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
+            comments: 1,
             type: {
               $switch: {
                 branches: [
@@ -12264,7 +12270,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
-
+            comments: 1,
           }
         },
         {
@@ -12331,6 +12337,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
+            comments: 1,
             mediaBasePath: {
               $switch: {
                 branches: [
