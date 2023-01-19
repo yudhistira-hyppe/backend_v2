@@ -1205,7 +1205,7 @@ export class InsightsService {
                               {
                                   "total_now" : "$totallikenow",
                                   "total_yesterday" : "$totallikeyesterday",
-                                  "likes" : "$selisihdatalike",
+                                  "like" : "$selisihdatalike",
                                   "status" : "down",
                                   "totalsekarang":
                                   {
@@ -1230,7 +1230,7 @@ export class InsightsService {
                               {
                                   "total_now" : "$totallikenow",
                                   "total_yesterday" : "$totallikeyesterday",
-                                  "likes" : "$selisihdatalike",
+                                  "like" : "$selisihdatalike",
                                   "status" : "up",
                                   "totalsekarang":
                                   {
@@ -1247,7 +1247,7 @@ export class InsightsService {
                       {
                           "total_now" : "$totallikenow",
                           "total_yesterday" : "$totallikeyesterday",
-                          "likes" : "$selisihdatalike",
+                          "like" : "$selisihdatalike",
                           "status" : "down",
                           "totalsekarang":
                           {
@@ -1279,7 +1279,7 @@ export class InsightsService {
                               {
                                   "total_now" : "$totalfollowingnow",
                                   "total_yesterday" : "$totalfollowingyesterday",
-                                  "following" : "$selisihdatafollowing",
+                                  "followings" : "$selisihdatafollowing",
                                   "status" : "down",
                                   "totalsekarang":
                                   {
@@ -1304,7 +1304,7 @@ export class InsightsService {
                               {
                                   "total_now" : "$totalfollowingnow",
                                   "total_yesterday" : "$totalfollowingyesterday",
-                                  "following" : "$selisihdatafollowing",
+                                  "followings" : "$selisihdatafollowing",
                                   "status" : "up",
                                   "totalsekarang":
                                   {
@@ -1321,7 +1321,7 @@ export class InsightsService {
                       {
                           "total_now" : "$totalfollowingnow",
                           "total_yesterday" : "$totalfollowingyesterday",
-                          "following" : "$selisihdatafollowing",
+                          "followings" : "$selisihdatafollowing",
                           "status" : "down",
                           "totalsekarang":
                           {
@@ -1353,7 +1353,7 @@ export class InsightsService {
                               {
                                   "total_now" : "$totalfollowernow",
                                   "total_yesterday" : "$totalfolloweryesterday",
-                                  "follower" : "$selisihdatafollower",
+                                  "followers" : "$selisihdatafollower",
                                   "status" : "down",
                                   "totalsekarang":
                                   {
@@ -1378,7 +1378,7 @@ export class InsightsService {
                               {
                                   "total_now" : "$totalfollowernow",
                                   "total_yesterday" : "$totalfolloweryesterday",
-                                  "follower" : "$selisihdatafollower",
+                                  "followers" : "$selisihdatafollower",
                                   "status" : "up",
                                   "totalsekarang":
                                   {
@@ -1395,7 +1395,7 @@ export class InsightsService {
                       {
                           "total_now" : "$totalfollowernow",
                           "total_yesterday" : "$totalfolloweryesterday",
-                          "follower" : "$selisihdatafollower",
+                          "followers" : "$selisihdatafollower",
                           "status" : "down",
                           "totalsekarang":
                           {
