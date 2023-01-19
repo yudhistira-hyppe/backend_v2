@@ -386,7 +386,29 @@ export class ActivityeventsService {
         },
 
       },
-
+      {
+        $set: {
+          age: {
+            $cond: {
+              if: {
+                $and: [{ $arrayElemAt: ["$user.dob", 0] }, {
+                  $ne: [{ $arrayElemAt: ["$user.dob", 0] }, ""]
+                }]
+              },
+              then: {
+                $toInt: {
+                  $divide: [{
+                    $subtract: [new Date(), {
+                      $toDate: { $arrayElemAt: ["$user.dob", 0] }
+                    }]
+                  }, (365 * 24 * 60 * 60 * 1000)]
+                }
+              },
+              else: 0
+            }
+          },
+        }
+      },
       {
         $project: {
           jenis: {
@@ -402,78 +424,10 @@ export class ActivityeventsService {
             },
 
           },
-          age: {
-            $switch: {
-              branches: [
-                {
-                  case: {
-                    $gt: [{
-                      $arrayElemAt: ["$user.dob", 0]
-                    }, 44]
-                  },
-                  then: "< 44 Tahun"
-                },
-                {
-                  case: {
-                    $and: [{
-                      $gte: [{
-                        $arrayElemAt: ["$user.dob", 0]
-                      }, 36]
-                    }, {
-                      $lte: [{
-                        $arrayElemAt: ["$user.dob", 0]
-                      }, 44]
-                    }]
-                  },
-                  then: "35-44 Tahun"
-                },
-                {
-                  case: {
-                    $and: [{
-                      $gte: [{
-                        $arrayElemAt: ["$user.dob", 0]
-                      }, 25]
-                    }, {
-                      $lte: [{
-                        $arrayElemAt: ["$user.dob", 0]
-                      }, 35]
-                    }]
-                  },
-                  then: "24-35 Tahun"
-                },
-                {
-                  case: {
-                    $and: [{
-                      $gte: [{
-                        $arrayElemAt: ["$user.dob", 0]
-                      }, 14]
-                    }, {
-                      $lte: [{
-                        $arrayElemAt: ["$user.dob", 0]
-                      }, 24]
-                    }]
-                  },
-                  then: "14-24 Tahun"
-                },
-                {
-                  case: {
-                    $and: [{
-                      $gte: [{
-                        $arrayElemAt: ["$user.dob", 0]
-                      }, 1]
-                    }, {
-                      $lt: [{
-                        $arrayElemAt: ["$user.dob", 0]
-                      }, 14]
-                    }]
-                  },
-                  then: "< 14 Tahun"
-                }
-              ],
-              "default": "other"
-            }
-          },
+          age: 1,
           email: 1,
+          createdAt: { $arrayElemAt: ["$user.createdAt", 0] },
+          fullName: { $arrayElemAt: ["$user.fullName", 0] },
           gender: {
             $switch: {
               branches: [
@@ -553,7 +507,10 @@ export class ActivityeventsService {
             $arrayElemAt: ["$cities.cityName", 0]
           },
           areas: {
-            $arrayElemAt: ["$areas.stateName", 0]
+            $arrayElemAt: ["$areas_data.stateName", 0]
+          },
+          areasId: {
+            $arrayElemAt: ["$areas_data._id", 0]
           },
           avatar: {
             mediaBasePath: {
@@ -583,12 +540,15 @@ export class ActivityeventsService {
             },
 
           },
-          createdAt: 1
+          lastlogin: "$createdAt"
 
         }
       },
-
-
+      {
+        $sort: {
+          lastlogin: order
+        }
+      },
     );
 
     if (username && username !== undefined) {
@@ -665,10 +625,10 @@ export class ActivityeventsService {
     }
 
     if (startlogin && startlogin !== undefined) {
-      pipeline.push({ $match: { createdAt: { $gte: startlogin } } });
+      pipeline.push({ $match: { lastlogin: { $gte: startlogin } } });
     }
     if (endlogin && endlogin !== undefined) {
-      pipeline.push({ $match: { createdAt: { $lte: dtlogin } } });
+      pipeline.push({ $match: { lastlogin: { $lte: dtlogin } } });
     }
     if (page > 0) {
       pipeline.push({ $skip: (page * limit) });

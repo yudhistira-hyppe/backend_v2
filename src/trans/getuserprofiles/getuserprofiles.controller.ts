@@ -142,7 +142,7 @@ export class GetuserprofilesController {
     }
 
     try {
-      data = await this.getuserprofilesService.filteruser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin, page, limit, descending);
+      data = await this.activityeventsService.filteruser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin, page, limit, descending);
       totalrow = data.length;
     } catch (e) {
       data = [];
