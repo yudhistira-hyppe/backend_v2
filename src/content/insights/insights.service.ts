@@ -438,911 +438,978 @@ export class InsightsService {
     );
   }
 
-  async getInsightbyEmail(email: string) {
+  async getInsightbyEmail(email: string)
+  {
+    var input = new Date();
+    var today = input.toISOString().split("T")[0];
     var query = await this.InsightsModel.aggregate([
+      //ganti tanggal masih pake cara barbar
       {
-        "$match":
-        {
-          $and:
-            [
-              {
-                email: "ilhamarahman97@gmail.com",
-              },
-            ]
-        },
+          "$match": 
+          {
+              $and:
+              [
+                  {
+                      email: email,
+                  },
+              ]
+          },
       },
+      // {
+      //     "$limit":1
+      // },
       {
-        "$limit": 1
-      },
-      {
-        "$facet":
-        {
-          "insightdata":
-            [
-              {
-                "$project":
-                {
-                  _id: "$_id",
-                  insightID: "$insightID",
-                  email: "$email",
-                  active: "$active",
-                  followers: "$followers",
-                  following: "$followings",
-                  likes: "$likes",
-                }
-              },
-            ],
-          "datalikesyesterday":
-            [
-              {
-                $lookup:
-                {
-                  from: "insightlogs",
-                  as: "insightlogs_fk",
-                  let:
+          "$facet":
+          {
+              "insightdata":
+              [
                   {
-                    insightfk: "$insightID"
-                  },
-                  pipeline:
-                    [
+                      "$project":
                       {
-                        "$match":
-                        {
-                          "$and":
-                            [
-                              {
-                                "eventInsight": "LIKE"
-                              },
-                              {
-                                "$expr":
-                                {
-                                  "$eq":
-                                    [
-                                      "$insightID",
-                                      "$$insightfk"
-                                    ]
-                                }
-                              },
-                              {
-                                "$expr":
-                                {
-                                  "$lt":
-                                    [
-                                      "$createdAt", "2023-01-18"
-                                    ]
-                                },
-                              }
-                            ]
-                        }
-                      },
-                    ]
-                },
-              },
-              {
-                "$unwind":
-                {
-                  path: "$insightlogs_fk",
-                }
-              },
-              {
-                "$project":
-                {
-                  "data": "$insightlogs_fk",
-                }
-              },
-              {
-                "$group":
-                {
-                  _id:
-                  {
-                    "$substrCP":
-                      [
-                        "$data.createdAt", 0, 10
-                      ]
-                  },
-                  totallike:
-                  {
-                    $sum: 1
-                  }
-                }
-              },
-              {
-                $sort:
-                {
-                  _id: -1
-                }
-              },
-              {
-                $limit: 1
-              }
-            ],
-          "likestoday":
-            [
-              {
-                $lookup:
-                {
-                  from: "insightlogs",
-                  as: "insightlogs_fk",
-                  let:
-                  {
-                    insightfk: "$insightID"
-                  },
-                  pipeline:
-                    [
-                      {
-                        "$match":
-                        {
-                          "$and":
-                            [
-                              {
-                                "eventInsight": "LIKE"
-                              },
-                              {
-                                "$expr":
-                                {
-                                  "$eq":
-                                    [
-                                      "$insightID",
-                                      "$$insightfk"
-                                    ]
-                                }
-                              },
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$expr":
-                                      {
-                                        "$gte": ["$createdAt", "2023-01-18 00:00:00"]
-                                      },
-                                    },
-                                    {
-                                      "$expr":
-                                      {
-                                        "$lt": ["$createdAt", "2023-01-18 23:59:59"]
-                                      }
-                                    }
-                                  ]
-                              }
-                            ]
-                        }
-                      },
-                      {
-                        "$sort":
-                        {
-                          "createdAt": -1
-                        }
+                          _id:"$_id",
+                          insightID:"$insightID",
+                          email:"$email",
+                          active:"$active",
+                          followers:"$followers",
+                          following:"$followings",
+                          likes:"$likes",
                       }
-                    ]
-                },
-              },
-              {
-                "$project":
-                {
-                  _id: "likestoday",
-                  "totallike":
-                  {
-                    "$size": "$insightlogs_fk"
                   },
-                }
-              },
-            ],
-          "datafollowingyesterday":
-            [
-              {
-                $lookup:
-                {
-                  from: "insightlogs",
-                  as: "insightlogs_fk",
-                  let:
+              ],
+              "likesyesterday":
+              [
                   {
-                    insightfk: "$insightID"
-                  },
-                  pipeline:
-                    [
+                      $lookup:
                       {
-                        "$match":
-                        {
-                          "$and":
-                            [
+                          from: "insightlogs",
+                          as: "insightlogs_fk",
+                          let:
+                          {
+                              insightfk:"$insightID"
+                          },
+                          pipeline:
+                          [
                               {
-                                "eventInsight": "FOLLOWING"
+                                  "$match":
+                                  {
+                                      "$and":
+                                      [
+                                          {
+                                              "eventInsight":"LIKE"
+                                          },
+                                          {
+                                              "$expr" : 
+                                              {
+                                                  "$eq" : 
+                                                  [
+                                                      "$insightID",
+                                                      "$$insightfk"
+                                                  ]
+                                              }
+                                          },
+                                          {
+                                              "$expr":
+                                              {
+                                                  "ne":
+                                                  [
+                                                      "createdAt",
+                                                      {
+                                                          "$dateToString": 
+                                                          {
+                                                              "format": "%Y-%m-%d",
+                                                              "date": new Date(today)
+                                                          }
+                                                      }
+                                                  ]
+                                              }
+                                          }
+                                      ]
+                                  }
                               },
                               {
-                                "$expr":
-                                {
-                                  "$eq":
-                                    [
-                                      "$insightID",
-                                      "$$insightfk"
-                                    ]
-                                }
+                                  "$unwind":
+                                  {
+                                      path:"$createdAt"
+                                  }
                               },
                               {
-                                "$expr":
-                                {
-                                  "$lt":
-                                    [
-                                      "$createdAt", "2023-01-18"
-                                    ]
-                                },
-                              }
-                            ]
-                        }
-                      },
-                    ]
-                },
-              },
-              {
-                "$unwind":
-                {
-                  path: "$insightlogs_fk",
-                }
-              },
-              {
-                "$project":
-                {
-                  "data": "$insightlogs_fk",
-                }
-              },
-              {
-                "$group":
-                {
-                  _id:
-                  {
-                    "$substrCP":
-                      [
-                        "$data.createdAt", 0, 10
-                      ]
-                  },
-                  totalfollowing:
-                  {
-                    $sum: 1
-                  }
-                }
-              },
-              {
-                $sort:
-                {
-                  _id: -1
-                }
-              },
-              {
-                $limit: 1
-              }
-            ],
-          "followingtoday":
-            [
-              {
-                $lookup:
-                {
-                  from: "insightlogs",
-                  as: "insightlogs_fk",
-                  let:
-                  {
-                    insightfk: "$insightID"
-                  },
-                  pipeline:
-                    [
-                      {
-                        "$match":
-                        {
-                          "$and":
-                            [
-                              {
-                                "eventInsight": "FOLLOWING"
-                              },
-                              {
-                                "$expr":
-                                {
-                                  "$eq":
-                                    [
-                                      "$insightID",
-                                      "$$insightfk"
-                                    ]
-                                }
-                              },
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$expr":
+                                  "$project":
+                                  {
+                                      "tanggal":
                                       {
-                                        "$gte": ["$createdAt", "2023-01-18 00:00:00"]
-                                      },
-                                    },
-                                    {
-                                      "$expr":
-                                      {
-                                        "$lt": ["$createdAt", "2023-01-18 23:59:59"]
+                                          "$split":["$createdAt", " "]
                                       }
-                                    }
-                                  ]
-                              }
-                            ]
-                        }
-                      },
-                      {
-                        "$sort":
-                        {
-                          "createdAt": -1
-                        }
-                      }
-                    ]
-                },
-              },
-              {
-                "$project":
-                {
-                  _id: "followingtoday",
-                  "totalfollowing":
-                  {
-                    "$size": "$insightlogs_fk"
-                  },
-                }
-              },
-            ],
-          "datafolloweryesterday":
-            [
-              {
-                $lookup:
-                {
-                  from: "insightlogs",
-                  as: "insightlogs_fk",
-                  let:
-                  {
-                    insightfk: "$insightID"
-                  },
-                  pipeline:
-                    [
-                      {
-                        "$match":
-                        {
-                          "$and":
-                            [
-                              {
-                                "eventInsight": "FOLLOWER"
+                                  }
                               },
                               {
-                                "$expr":
-                                {
-                                  "$eq":
-                                    [
-                                      "$insightID",
-                                      "$$insightfk"
-                                    ]
-                                }
-                              },
-                              {
-                                "$expr":
-                                {
-                                  "$lt":
-                                    [
-                                      "$createdAt", "2023-01-18"
-                                    ]
-                                },
-                              }
-                            ]
-                        }
-                      },
-                    ]
-                },
-              },
-              {
-                "$unwind":
-                {
-                  path: "$insightlogs_fk",
-                }
-              },
-              {
-                "$project":
-                {
-                  "data": "$insightlogs_fk",
-                }
-              },
-              {
-                "$group":
-                {
-                  _id:
-                  {
-                    "$substrCP":
-                      [
-                        "$data.createdAt", 0, 10
-                      ]
-                  },
-                  totalfollower:
-                  {
-                    $sum: 1
-                  }
-                }
-              },
-              {
-                $sort:
-                {
-                  _id: -1
-                }
-              },
-              {
-                $limit: 1
-              }
-            ],
-          "followertoday":
-            [
-              {
-                $lookup:
-                {
-                  from: "insightlogs",
-                  as: "insightlogs_fk",
-                  let:
-                  {
-                    insightfk: "$insightID"
-                  },
-                  pipeline:
-                    [
-                      {
-                        "$match":
-                        {
-                          "$and":
-                            [
-                              {
-                                "eventInsight": "FOLLOWER"
-                              },
-                              {
-                                "$expr":
-                                {
-                                  "$eq":
-                                    [
-                                      "$insightID",
-                                      "$$insightfk"
-                                    ]
-                                }
-                              },
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$expr":
+                                  "$group":
+                                  {
+                                      _id:
                                       {
-                                        "$gte": ["$createdAt", "2023-01-18 00:00:00"]
+                                          "$arrayElemAt":["$tanggal", 0]
                                       },
-                                    },
-                                    {
-                                      "$expr":
+                                      count:
                                       {
-                                        "$lt": ["$createdAt", "2023-01-18 23:59:59"]
+                                          $sum : 1
                                       }
-                                    }
-                                  ]
+                                  }
+                              },
+                              {
+                                  "$sort":
+                                  {
+                                      _id : -1
+                                  }
+                              },
+                              {
+                                  "$limit":1
                               }
-                            ]
-                        }
+                          ]
                       },
-                      {
-                        "$sort":
-                        {
-                          "createdAt": -1
-                        }
-                      }
-                    ]
-                },
-              },
-              {
-                "$project":
-                {
-                  _id: "followertoday",
-                  "totalfollower":
-                  {
-                    "$size": "$insightlogs_fk"
                   },
-                }
-              },
-            ],
-        }
+                  {
+                      "$project":
+                      {
+                          _id:
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$insightlogs_fk._id", 0
+                              ]
+                          },
+                          totallike:
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$insightlogs_fk.count", 0
+                              ]
+                          },
+                      }
+                  }
+              ],
+              "likestoday":
+              [
+                  {
+                      $lookup:
+                      {
+                          from: "insightlogs",
+                          as: "insightlogs_fk",
+                          let:
+                          {
+                              insightfk:"$insightID"
+                          },
+                          pipeline:
+                          [
+                              {
+                                  "$match":
+                                  {
+                                      "$and":
+                                      [
+                                          {
+                                              "eventInsight":"LIKE"
+                                          },
+                                          {
+                                              "$expr" : 
+                                              {
+                                                  "$eq" : 
+                                                  [
+                                                      "$insightID",
+                                                      "$$insightfk"
+                                                  ]
+                                              }
+                                          },
+                                          {
+                                              "$expr":
+                                              {
+                                                  "$eq":
+                                                  [
+                                                      "$createdAt",
+                                                      {
+                                                          "$dateToString": 
+                                                          {
+                                                              "format": "%Y-%m-%d",
+                                                              "date": new Date(today)
+                                                          }
+                                                      }
+                                                  ]
+                                              },
+                                          }
+                                      ]
+                                  }
+                              },
+                              {
+                                  "$sort":
+                                  {
+                                      "createdAt":-1
+                                  }
+                              }
+                          ]
+                      },
+                  },
+                  {
+                      "$project":
+                      {
+                          _id:"likestoday",
+                          "totallike":
+                          {
+                              "$size":"$insightlogs_fk"
+                          },
+                      }
+                  },
+              ],
+              "followingyesterday":
+              [
+                  {
+                      $lookup:
+                      {
+                          from: "insightlogs",
+                          as: "insightlogs_fk",
+                          let:
+                          {
+                              insightfk:"$insightID"
+                          },
+                          pipeline:
+                          [
+                              {
+                                  "$match":
+                                  {
+                                      "$and":
+                                      [
+                                          {
+                                              "eventInsight":"FOLLOWING"
+                                          },
+                                          {
+                                              "$expr" : 
+                                              {
+                                                  "$eq" : 
+                                                  [
+                                                      "$insightID",
+                                                      "$$insightfk"
+                                                  ]
+                                              }
+                                          },
+                                          {
+                                              "$expr":
+                                              {
+                                                  "ne":
+                                                  [
+                                                      "createdAt",
+                                                      {
+                                                          "$dateToString": 
+                                                          {
+                                                              "format": "%Y-%m-%d",
+                                                              "date": new Date(today)
+                                                          }
+                                                      }
+                                                  ]
+                                              }
+                                          }
+                                      ]
+                                  }
+                              },
+                              {
+                                  "$unwind":
+                                  {
+                                      path:"$createdAt"
+                                  }
+                              },
+                              {
+                                  "$project":
+                                  {
+                                      "tanggal":
+                                      {
+                                          "$split":["$createdAt", " "]
+                                      }
+                                  }
+                              },
+                              {
+                                  "$group":
+                                  {
+                                      _id:
+                                      {
+                                          "$arrayElemAt":["$tanggal", 0]
+                                      },
+                                      count:
+                                      {
+                                          $sum : 1
+                                      }
+                                  }
+                              },
+                              {
+                                  "$sort":
+                                  {
+                                      _id : -1
+                                  }
+                              },
+                              {
+                                  "$limit":1
+                              }
+                          ]
+                      },
+                  },
+                  {
+                      "$project":
+                      {
+                          _id:
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$insightlogs_fk._id", 0
+                              ]
+                          },
+                          totalfollowing:
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$insightlogs_fk.count", 0
+                              ]
+                          },
+                      }
+                  }
+              ],
+              "followingtoday":
+              [
+                  {
+                      $lookup:
+                      {
+                          from: "insightlogs",
+                          as: "insightlogs_fk",
+                          let:
+                          {
+                              insightfk:"$insightID"
+                          },
+                          pipeline:
+                          [
+                              {
+                                  "$match":
+                                  {
+                                      "$and":
+                                      [
+                                          {
+                                              "eventInsight":"FOLLOWING"
+                                          },
+                                          {
+                                              "$expr" : 
+                                              {
+                                                  "$eq" : 
+                                                  [
+                                                      "$insightID",
+                                                      "$$insightfk"
+                                                  ]
+                                              }
+                                          },
+                                          {
+                                              "$expr":
+                                              {
+                                                  "$eq":
+                                                  [
+                                                      "$createdAt",
+                                                      {
+                                                          "$dateToString": 
+                                                          {
+                                                              "format": "%Y-%m-%d",
+                                                              "date": new Date(today)
+                                                          }
+                                                      }
+                                                  ]
+                                              },
+                                          }
+                                      ]
+                                  }
+                              },
+                              {
+                                  "$sort":
+                                  {
+                                      "createdAt":-1
+                                  }
+                              }
+                          ]
+                      },
+                  },
+                  {
+                      "$project":
+                      {
+                          _id:"followingtoday",
+                          "totalfollowing":
+                          {
+                              "$size":"$insightlogs_fk"
+                          },
+                      }
+                  },
+              ],
+              "followeryesterday":
+              [
+                  {
+                      $lookup:
+                      {
+                          from: "insightlogs",
+                          as: "insightlogs_fk",
+                          let:
+                          {
+                              insightfk:"$insightID"
+                          },
+                          pipeline:
+                          [
+                              {
+                                  "$match":
+                                  {
+                                      "$and":
+                                      [
+                                          {
+                                              "eventInsight":"FOLLOWER"
+                                          },
+                                          {
+                                              "$expr" : 
+                                              {
+                                                  "$eq" : 
+                                                  [
+                                                      "$insightID",
+                                                      "$$insightfk"
+                                                  ]
+                                              }
+                                          },
+                                          {
+                                              "$expr":
+                                              {
+                                                  "ne":
+                                                  [
+                                                      "createdAt",
+                                                      {
+                                                          "$dateToString": 
+                                                          {
+                                                              "format": "%Y-%m-%d",
+                                                              "date": new Date(today)
+                                                          }
+                                                      }
+                                                  ]
+                                              }
+                                          }
+                                      ]
+                                  }
+                              },
+                              {
+                                  "$unwind":
+                                  {
+                                      path:"$createdAt"
+                                  }
+                              },
+                              {
+                                  "$project":
+                                  {
+                                      "tanggal":
+                                      {
+                                          "$split":["$createdAt", " "]
+                                      }
+                                  }
+                              },
+                              {
+                                  "$group":
+                                  {
+                                      _id:
+                                      {
+                                          "$arrayElemAt":["$tanggal", 0]
+                                      },
+                                      count:
+                                      {
+                                          $sum : 1
+                                      }
+                                  }
+                              },
+                              {
+                                  "$sort":
+                                  {
+                                      _id : -1
+                                  }
+                              },
+                              {
+                                  "$limit":1
+                              }
+                          ]
+                      },
+                  },
+                  {
+                      "$project":
+                      {
+                          _id:
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$insightlogs_fk._id", 0
+                              ]
+                          },
+                          totalfollower:
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$insightlogs_fk.count", 0
+                              ]
+                          },
+                      }
+                  }
+              ],
+              "followertoday":
+              [
+                  {
+                      $lookup:
+                      {
+                          from: "insightlogs",
+                          as: "insightlogs_fk",
+                          let:
+                          {
+                              insightfk:"$insightID"
+                          },
+                          pipeline:
+                          [
+                              {
+                                  "$match":
+                                  {
+                                      "$and":
+                                      [
+                                          {
+                                              "eventInsight":"FOLLOWER"
+                                          },
+                                          {
+                                              "$expr" : 
+                                              {
+                                                  "$eq" : 
+                                                  [
+                                                      "$insightID",
+                                                      "$$insightfk"
+                                                  ]
+                                              }
+                                          },
+                                          {
+                                              "$expr":
+                                              {
+                                                  "$eq":
+                                                  [
+                                                      "$createdAt",
+                                                      {
+                                                          "$dateToString": 
+                                                          {
+                                                              "format": "%Y-%m-%d",
+                                                              "date": new Date(today)
+                                                          }
+                                                      }
+                                                  ]
+                                              },
+                                          }
+                                      ]
+                                  }
+                              },
+                              {
+                                  "$sort":
+                                  {
+                                      "createdAt":-1
+                                  }
+                              }
+                          ]
+                      },
+                  },
+                  {
+                      "$project":
+                      {
+                          _id:"followertoday",
+                          "totalfollower":
+                          {
+                              "$size":"$insightlogs_fk"
+                          },
+                      }
+                  },
+              ],
+          }
       },
       {
-        "$set":
-        {
-          "selisihdatalike":
+          "$set":
           {
-            "$toInt":
-            {
-              "$subtract":
-                [
+              "selisihdatalike":
+              {
+                  "$toInt":
                   {
-                    "$arrayElemAt":
+                      "$subtract":
                       [
-                        "$likestoday.totallike", 0
+                          { 
+                              "$arrayElemAt": 
+                              [ 
+                                  "$likestoday.totallike", 0 
+                              ] 
+                          },
+                          { 
+                              "$arrayElemAt": 
+                              [ 
+                                  "$likesyesterday.totallike", 0 
+                              ] 
+                          },
                       ]
-                  },
+                  }
+              },
+              "totallikenow" : 
+              { 
+                  "$toInt":
                   {
-                    "$arrayElemAt":
+                      "$ifNull": 
                       [
-                        "$datalikesyesterday.totallike", 0
+                          {
+                              "$arrayElemAt": 
+                              [ 
+                                  "$likestoday.totallike", 0 
+                              ]
+                          } , 0
                       ]
-                  },
-                ]
-            }
-          },
-          "totallikenow":
-          {
-            "$toInt":
-            {
-              "$ifNull":
-                [
+                  } 
+              },
+              "totallikeyesterday" : 
+              { 
+                  "$toInt":
                   {
-                    "$arrayElemAt":
+                      "$ifNull": 
                       [
-                        "$likestoday.totallike", 0
+                          {
+                              "$arrayElemAt": 
+                              [ 
+                                  "$likesyesterday.totallike", 0 
+                              ]
+                          } , 0
                       ]
-                  }, 0
-                ]
-            }
-          },
-          "totallikeyesterday":
-          {
-            "$toInt":
-            {
-              "$ifNull":
-                [
+                  } 
+              },
+              "selisihdatafollowing":
+              {
+                  "$toInt":
                   {
-                    "$arrayElemAt":
+                      "$subtract":
                       [
-                        "$datalikesyesterday.totallike", 0
+                          { 
+                              "$arrayElemAt": 
+                              [ 
+                                  "$followingtoday.totalfollowing", 0 
+                              ] 
+                          },
+                          { 
+                              "$arrayElemAt": 
+                              [ 
+                                  "$followingyesterday.totalfollowing", 0 
+                              ] 
+                          },
                       ]
-                  }, 0
-                ]
-            }
-          },
-          "selisihdatafollowing":
-          {
-            "$toInt":
-            {
-              "$subtract":
-                [
+                  }
+              },
+              "totalfollowingnow" : 
+              { 
+                  "$toInt":
                   {
-                    "$arrayElemAt":
+                      "$ifNull": 
                       [
-                        "$followingtoday.totalfollowing", 0
+                          {
+                              "$arrayElemAt": 
+                              [ 
+                                  "$followingtoday.totalfollowing", 0 
+                              ]
+                          } , 0
                       ]
-                  },
+                  } 
+              },
+              "totalfollowingyesterday" : 
+              { 
+                  "$toInt":
                   {
-                    "$arrayElemAt":
+                      "$ifNull": 
                       [
-                        "$datafollowingyesterday.totalfollowing", 0
+                          {
+                              "$arrayElemAt": 
+                              [ 
+                                  "$followingyesterday.totalfollowing", 0 
+                              ]
+                          } , 0
                       ]
-                  },
-                ]
-            }
-          },
-          "totalfollowingnow":
-          {
-            "$toInt":
-            {
-              "$ifNull":
-                [
+                  } 
+              },
+              "selisihdatafollower":
+              {
+                  "$toInt":
                   {
-                    "$arrayElemAt":
+                      "$subtract":
                       [
-                        "$followingtoday.totalfollowing", 0
+                          { 
+                              "$arrayElemAt": 
+                              [ 
+                                  "$followertoday.totalfollower", 0 
+                              ] 
+                          },
+                          { 
+                              "$arrayElemAt": 
+                              [ 
+                                  "$followeryesterday.totalfollower", 0 
+                              ] 
+                          },
                       ]
-                  }, 0
-                ]
-            }
-          },
-          "totalfollowingyesterday":
-          {
-            "$toInt":
-            {
-              "$ifNull":
-                [
+                  }
+              },
+              "totalfollowernow" : 
+              { 
+                  "$toInt":
                   {
-                    "$arrayElemAt":
+                      "$ifNull": 
                       [
-                        "$datafollowingyesterday.totalfollowing", 0
+                          {
+                              "$arrayElemAt": 
+                              [ 
+                                  "$followertoday.totalfollower", 0 
+                              ]
+                          } , 0
                       ]
-                  }, 0
-                ]
-            }
-          },
-          "selisihdatafollower":
-          {
-            "$toInt":
-            {
-              "$subtract":
-                [
+                  } 
+              },
+              "totalfolloweryesterday" : 
+              { 
+                  "$toInt":
                   {
-                    "$arrayElemAt":
+                      "$ifNull": 
                       [
-                        "$followertoday.totalfollower", 0
+                          {
+                              "$arrayElemAt": 
+                              [ 
+                                  "$followeryesterday.totalfollower", 0 
+                              ]
+                          } , 0
                       ]
-                  },
-                  {
-                    "$arrayElemAt":
-                      [
-                        "$datafolloweryesterday.totalfollower", 0
-                      ]
-                  },
-                ]
-            }
-          },
-          "totalfollowernow":
-          {
-            "$toInt":
-            {
-              "$ifNull":
-                [
-                  {
-                    "$arrayElemAt":
-                      [
-                        "$followertoday.totalfollower", 0
-                      ]
-                  }, 0
-                ]
-            }
-          },
-          "totalfolloweryesterday":
-          {
-            "$toInt":
-            {
-              "$ifNull":
-                [
-                  {
-                    "$arrayElemAt":
-                      [
-                        "$datafolloweryesterday.totalfollower", 0
-                      ]
-                  }, 0
-                ]
-            }
-          },
-        },
+                  } 
+              },
+          }
       },
       {
-        "$project":
-        {
-          // dataliketoday:"$likestoday",
-          // datafollowingtoday:"$followingtoday",
-          // datafolloweryestertoday:"$followertoday",
-          // datalikeyesterday:"$datalikesyesterday",
-          // datafollowingyesterday:"$datafollowingyesterday",
-          // datafolloweryesterday:"$datafolloweryesterday",
-          // insight:
-          // {
-          //     "$arrayElemAt":
-          //     [
-          //         "$insightdata", 0
-          //     ]
-          // },
-          Likes:
+          "$project":
           {
-            "$switch":
-            {
-              branches:
-                [
-                  {
-                    case:
-                    {
-                      "$gt":
-                        [
-                          "$totallikeyesterday",
-                          "$totallikenow",
-                        ]
-                    },
-                    then:
-                    {
-                      //"total_now" : "$totallikenow",
-                      //"total_yesterday" : "$totallikeyesterday",
-                      "like": "$selisihdatalike",
-                      "status": "down",
-                      "totalsekarang":
-                      {
-                        "$arrayElemAt":
-                          [
-                            "$insightdata.likes", 0
-                          ]
-                      },
-                      //"message" : "kemarin lebih besar dari hari ini"
-                    }
-                  },
-                  {
-                    case:
-                    {
-                      "$lt":
-                        [
-                          "$totallikeyesterday",
-                          "$totallikenow",
-                        ]
-                    },
-                    then:
-                    {
-                      //"total_now" : "$totallikenow",
-                      //"total_yesterday" : "$totallikeyesterday",
-                      "like": "$selisihdatalike",
-                      "status": "up",
-                      "totalsekarang":
-                      {
-                        "$arrayElemAt":
-                          [
-                            "$insightdata.likes", 0
-                          ]
-                      },
-                      //"message" : "kemarin lebih kecil dari hari ini"
-                    }
-                  }
-                ],
-              default:
+              // insightdata : 1,
+              // followingtoday:1,
+              // followingyesterday:1,
+              // likestoday:1,
+              // likesyesterday:1,
+              // followertoday:1,
+              // followeryesterday:1,
+              Likes:
               {
-                //"total_now" : "$totallikenow",
-                //"total_yesterday" : "$totallikeyesterday",
-                "like": "$selisihdatalike",
-                "status": "down",
-                "totalsekarang":
-                {
-                  "$arrayElemAt":
-                    [
-                      "$insightdata.likes", 0
-                    ]
-                },
-                //"message" : "default"
-              }
-            }
-          },
-          Following:
-          {
-            "$switch":
-            {
-              branches:
-                [
+                  "$switch":
                   {
-                    case:
-                    {
-                      "$gt":
-                        [
-                          "$totalfollowingyesterday",
-                          "$totalfollowingnow",
-                        ]
-                    },
-                    then:
-                    {
-                      //"total_now" : "$totalfollowingnow",
-                      //"total_yesterday" : "$totalfollowingyesterday",
-                      "followings": "$selisihdatafollowing",
-                      "status": "down",
-                      "totalsekarang":
+                      branches:
+                      [
+                          {
+                              case : 
+                              {
+                                  "$gt":
+                                  [
+                                      "$totallikeyesterday",
+                                      "$totallikenow", 
+                                  ]
+                              },
+                              then:
+                              {
+                                  "total_now" : "$totallikenow",
+                                  "total_yesterday" : "$totallikeyesterday",
+                                  "likes" : "$selisihdatalike",
+                                  "status" : "down",
+                                  "totalsekarang":
+                                  {
+                                      "$arrayElemAt":
+                                      [
+                                          "$insightdata.likes", 0
+                                      ]
+                                  },
+                                  //"message" : "kemarin lebih besar dari hari ini"
+                              }
+                          },
+                          {
+                              case : 
+                              {
+                                  "$lt":
+                                  [
+                                      "$totallikeyesterday",
+                                      "$totallikenow",
+                                  ]
+                              },
+                              then:
+                              {
+                                  "total_now" : "$totallikenow",
+                                  "total_yesterday" : "$totallikeyesterday",
+                                  "likes" : "$selisihdatalike",
+                                  "status" : "up",
+                                  "totalsekarang":
+                                  {
+                                      "$arrayElemAt":
+                                      [
+                                          "$insightdata.likes", 0
+                                      ]
+                                  },
+                                  //"message" : "kemarin lebih kecil dari hari ini"
+                              }
+                          }
+                      ],
+                      default:
                       {
-                        "$arrayElemAt":
-                          [
-                            "$insightdata.following", 0
-                          ]
-                      },
-                      //"message" : "kemarin lebih besar dari hari ini"
-                    }
-                  },
-                  {
-                    case:
-                    {
-                      "$lt":
-                        [
-                          "$totalfollowingyesterday",
-                          "$totalfollowingnow",
-                        ]
-                    },
-                    then:
-                    {
-                      //"total_now" : "$totalfollowingnow",
-                      //"total_yesterday" : "$totalfollowingyesterday",
-                      "followings": "$selisihdatafollowing",
-                      "status": "up",
-                      "totalsekarang":
-                      {
-                        "$arrayElemAt":
-                          [
-                            "$insightdata.following", 0
-                          ]
-                      },
-                      //"message" : "kemarin lebih kecil dari hari ini"
-                    }
+                          "total_now" : "$totallikenow",
+                          "total_yesterday" : "$totallikeyesterday",
+                          "likes" : "$selisihdatalike",
+                          "status" : "down",
+                          "totalsekarang":
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$insightdata.likes", 0
+                              ]
+                          },
+                          //"message" : "default"
+                      }
                   }
-                ],
-              default:
+              },
+              Following:
               {
-                //"total_now" : "$totalfollowingnow",
-                //"total_yesterday" : "$totalfollowingyesterday",
-                "followings":
-                {
-                  "$toInt": "0"
-                },
-                "status": "down",
-                "totalsekarang":
-                {
-                  "$arrayElemAt":
-                    [
-                      "$insightdata.following", 0
-                    ]
-                },
-                //"message" : "default"
-              }
-            }
-          },
-          Follower:
-          {
-            "$switch":
-            {
-              branches:
-                [
+                  "$switch":
                   {
-                    case:
-                    {
-                      "$gt":
-                        [
-                          "$totalfolloweryesterday",
-                          "$totalfollowernow",
-                        ]
-                    },
-                    then:
-                    {
-                      //"total_now" : "$totalfollowernow",
-                      //"total_yesterday" : "$totalfolloweryesterday",
-                      "followers": "$selisihdatafollower",
-                      "status": "down",
-                      "totalsekarang":
+                      branches:
+                      [
+                          {
+                              case : 
+                              {
+                                  "$gt":
+                                  [
+                                      "$totalfollowingyesterday",
+                                      "$totalfollowingnow", 
+                                  ]
+                              },
+                              then:
+                              {
+                                  "total_now" : "$totalfollowingnow",
+                                  "total_yesterday" : "$totalfollowingyesterday",
+                                  "following" : "$selisihdatafollowing",
+                                  "status" : "down",
+                                  "totalsekarang":
+                                  {
+                                      "$arrayElemAt":
+                                      [
+                                          "$insightdata.following", 0
+                                      ]
+                                  },
+                                  //"message" : "kemarin lebih besar dari hari ini"
+                              }
+                          },
+                          {
+                              case : 
+                              {
+                                  "$lt":
+                                  [
+                                      "$totalfollowingyesterday",
+                                      "$totalfollowingnow",
+                                  ]
+                              },
+                              then:
+                              {
+                                  "total_now" : "$totalfollowingnow",
+                                  "total_yesterday" : "$totalfollowingyesterday",
+                                  "following" : "$selisihdatafollowing",
+                                  "status" : "up",
+                                  "totalsekarang":
+                                  {
+                                      "$arrayElemAt":
+                                      [
+                                          "$insightdata.following", 0
+                                      ]
+                                  },
+                                  //"message" : "kemarin lebih kecil dari hari ini"
+                              }
+                          }
+                      ],
+                      default:
                       {
-                        "$arrayElemAt":
-                          [
-                            "$insightdata.followers", 0
-                          ]
-                      },
-                      //"message" : "kemarin lebih besar dari hari ini"
-                    }
-                  },
-                  {
-                    case:
-                    {
-                      "$lt":
-                        [
-                          "$totalfolloweryesterday",
-                          "$totalfollowernow",
-                        ]
-                    },
-                    then:
-                    {
-                      //"total_now" : "$totalfollowernow",
-                      //"total_yesterday" : "$totalfolloweryesterday",
-                      "followers": "$selisihdatafollower",
-                      "status": "up",
-                      "totalsekarang":
-                      {
-                        "$arrayElemAt":
-                          [
-                            "$insightdata.followers", 0
-                          ]
-                      },
-                      //"message" : "kemarin lebih kecil dari hari ini"
-                    }
+                          "total_now" : "$totalfollowingnow",
+                          "total_yesterday" : "$totalfollowingyesterday",
+                          "following" : "$selisihdatafollowing",
+                          "status" : "down",
+                          "totalsekarang":
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$insightdata.following", 0
+                              ]
+                          },
+                          //"message" : "default"
+                      }
                   }
-                ],
-              default:
+              },
+              Follower:
               {
-                //"total_now" : "$totalfollowernow",
-                //"total_yesterday" : "$totalfolloweryesterday",
-                "followers":
-                {
-                  "$toInt": "0"
-                },
-                "status": "down",
-                "totalsekarang":
-                {
-                  "$arrayElemAt":
-                    [
-                      "$insightdata.followers", 0
-                    ]
-                },
-                //"message" : "default"
-              }
-            }
-          },
-        },
-      },
+                  "$switch":
+                  {
+                      branches:
+                      [
+                          {
+                              case : 
+                              {
+                                  "$gt":
+                                  [
+                                      "$totalfolloweryesterday",
+                                      "$totalfollowernow", 
+                                  ]
+                              },
+                              then:
+                              {
+                                  "total_now" : "$totalfollowernow",
+                                  "total_yesterday" : "$totalfolloweryesterday",
+                                  "follower" : "$selisihdatafollower",
+                                  "status" : "down",
+                                  "totalsekarang":
+                                  {
+                                      "$arrayElemAt":
+                                      [
+                                          "$insightdata.followers", 0
+                                      ]
+                                  },
+                                  //"message" : "kemarin lebih besar dari hari ini"
+                              }
+                          },
+                          {
+                              case : 
+                              {
+                                  "$lt":
+                                  [
+                                      "$totalfolloweryesterday",
+                                      "$totalfollowernow",
+                                  ]
+                              },
+                              then:
+                              {
+                                  "total_now" : "$totalfollowernow",
+                                  "total_yesterday" : "$totalfolloweryesterday",
+                                  "follower" : "$selisihdatafollower",
+                                  "status" : "up",
+                                  "totalsekarang":
+                                  {
+                                      "$arrayElemAt":
+                                      [
+                                          "$insightdata.followers", 0
+                                      ]
+                                  },
+                                  //"message" : "kemarin lebih kecil dari hari ini"
+                              }
+                          }
+                      ],
+                      default:
+                      {
+                          "total_now" : "$totalfollowernow",
+                          "total_yesterday" : "$totalfolloweryesterday",
+                          "follower" : "$selisihdatafollower",
+                          "status" : "down",
+                          "totalsekarang":
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$insightdata.followers", 0
+                              ]
+                          },
+                          //"message" : "default"
+                      }
+                  }
+              },
+          }
+      }
     ]);
 
     return query;
