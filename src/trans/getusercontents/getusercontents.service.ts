@@ -293,6 +293,7 @@ export class GetusercontentsService {
       idapsaradefine = idapsara;
     }
     var type = obj[0].postType;
+    mediaType = obj[0].mediaType;
     pict = [idapsara];
 
     if (idapsara === "") {
