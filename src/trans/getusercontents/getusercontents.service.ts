@@ -11095,7 +11095,7 @@ export class GetusercontentsService {
   }
 
 
-  async databasenew(buy: string, report: string, iduser: Object, username: string, description: string, kepemilikan: any[], statusjual: any[], postType: any[], kategori: any[], startdate: string, enddate: string, startmount: number, endmount: number, descending: boolean, page: number, limit: number) {
+  async databasenew(buy: string, report: string, iduser: Object, username: string, description: string, kepemilikan: any[], statusjual: any[], postType: any[], kategori: any[], startdate: string, enddate: string, startmount: number, endmount: number, descending: boolean, page: number, limit: number, popular: any) {
 
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -11136,13 +11136,22 @@ export class GetusercontentsService {
     }
 
     var pipeline = [];
-    pipeline.push({
-      $sort: {
-        createdAt: order
-      },
+    if (popular !== undefined && popular === true) {
+      pipeline.push({
+        $sort: {
+          views: - 1,
+          likes: - 1
+        },
 
-    },);
+      },);
+    } else {
+      pipeline.push({
+        $sort: {
+          createdAt: order
+        },
 
+      },);
+    }
 
     if (iduser && iduser !== undefined) {
       pipeline.push(
@@ -11325,6 +11334,7 @@ export class GetusercontentsService {
             postType: 1,
             views: 1,
             likes: 1,
+            comments: 1,
             shares: 1,
             description: 1,
             title: 1,
@@ -11407,6 +11417,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
+            comments: 1,
             buy: {
               $cond: {
                 if: {
@@ -11550,6 +11561,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
+            comments: 1,
             type: 1,
             description: 1,
             title: 1,
@@ -11630,6 +11642,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
+            comments: 1,
             mediaBasePath: {
               $switch: {
                 branches: [
@@ -12042,6 +12055,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
+            comments: 1,
             certified:
             {
               $cond: {
@@ -12113,6 +12127,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
+            comments: 1,
             type: {
               $switch: {
                 branches: [
@@ -12255,7 +12270,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
-
+            comments: 1,
           }
         },
         {
@@ -12322,6 +12337,7 @@ export class GetusercontentsService {
             views: 1,
             likes: 1,
             shares: 1,
+            comments: 1,
             mediaBasePath: {
               $switch: {
                 branches: [
@@ -12736,6 +12752,9 @@ export class GetusercontentsService {
     if (enddate && enddate !== undefined) {
       pipeline.push({ $match: { createdAt: { $lte: dt } } });
     }
+
+
+
     if (page > 0) {
       pipeline.push({ $skip: (page * limit) });
     }

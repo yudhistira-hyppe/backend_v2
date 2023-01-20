@@ -1353,6 +1353,8 @@ export class GetuserprofilesService {
     return query;
 
   }
+
+
   async totalcount() {
     const query = await this.getuserprofilesModel.aggregate([
       {
