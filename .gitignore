@@ -36,3 +36,4 @@ lerna-debug.log*
 .vscode/launch.json
 yarn.lock
 package-lock.json
+.env
