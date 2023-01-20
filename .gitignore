@@ -1,6 +1,7 @@
 # compiled output
 /dist
 /node_modules
+.env
 
 # Logs
 logs
@@ -36,4 +37,3 @@ lerna-debug.log*
 .vscode/launch.json
 yarn.lock
 package-lock.json
-.env
