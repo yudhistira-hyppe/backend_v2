@@ -4933,6 +4933,11 @@ export class AuthService {
         var id_Activityevents_parent = new mongoose.Types.ObjectId();
         var id_Activityevents_child = new mongoose.Types.ObjectId();
 
+
+        if (datauserauthsService.isEmailVerified != undefined) {
+          this.userauthsService.updatebyId(datauserauthsService._id.toString(), { isEmailVerified: true, loginSource: user_socmedSource });
+        }
+
         var ID_parent_ActivityEvent = (
           await this.utilsService.generateId()
         ).toLowerCase();
@@ -5369,7 +5374,8 @@ export class AuthService {
           data_CreateUserauthDto.isAccountNonLocked = true;
           data_CreateUserauthDto.isCredentialsNonExpired = true;
           data_CreateUserauthDto.roles = ['ROLE_USER'];
-          data_CreateUserauthDto._class = _class_UserAuths;
+          data_CreateUserauthDto.loginSource = user_socmedSource;
+          data_CreateUserauthDto._class = _class_UserAuths; 
           data_CreateUserauthDto.devices = [
             {
               $ref: 'userdevices',
@@ -5794,8 +5800,12 @@ export class AuthService {
         );
       }
 
-      if (_isEmailVerified) {
+      //if (_isEmailVerified) {
 
+
+        if (datauserauthsService.isEmailVerified != undefined) {
+          this.userauthsService.updatebyId(datauserauthsService._id.toString(), { isEmailVerified: true, loginSource: user_socmedSource });
+        }
         let messages;
         //ActivityEvent Parent > 0
         if (Object.keys(user_activityevents).length > 0) {
@@ -6204,11 +6214,11 @@ export class AuthService {
           data,
           messages,
         };
-      } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unexpected problem, please check your email and re-verify the OTP',
-        );
-      }
+      // } else {
+      //   await this.errorHandler.generateNotAcceptableException(
+      //     'Unexpected problem, please check your email and re-verify the OTP',
+      //   );
+      // }
     } else {
 
       return this.signupsosmed(req);

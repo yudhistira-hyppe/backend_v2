@@ -37,4 +37,5 @@ export class CreateUserauthDto {
     latitude: Double;
     longitude: Double;
   }
+  loginSource: String;
 }

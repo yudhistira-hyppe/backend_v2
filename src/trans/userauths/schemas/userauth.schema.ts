@@ -78,6 +78,8 @@ export class Userauth {
     latitude: Double;
     longitude: Double;
   };
+  @Prop()
+  loginSource: String;
 }
 
 export const UserauthSchema = SchemaFactory.createForClass(Userauth);

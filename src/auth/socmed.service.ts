@@ -164,6 +164,9 @@ export class SocmedService {
 
     if ((await this.utilsService.ceckData(datauserbasicsService)) && (await this.utilsService.ceckData(datauserauthsService))) {
       type = 'LOGIN';
+      if (datauserauthsService.isEmailVerified != undefined) {
+        this.userauthsService.updatebyId(datauserauthsService._id.toString(), { isEmailVerified: true, loginSource: user_socmedSource });
+      }
 
       //Ceck User Userdevices
       const user_userdevicesService = await this.userdevicesService.findOneEmail(user_email, user_deviceId);
@@ -193,7 +196,6 @@ export class SocmedService {
       );
 
       if ((await this.utilsService.ceckData(datauserbasicsService)) && (await this.utilsService.ceckData(datajwtrefreshtoken))) {
-
         var ID_user_userdevicesService = null;
         var id_Activityevents_parent = new mongoose.Types.ObjectId();
         var id_Activityevents_child = new mongoose.Types.ObjectId();
@@ -639,6 +641,7 @@ export class SocmedService {
           data_CreateUserauthDto.isCredentialsNonExpired = true;
           data_CreateUserauthDto.roles = ['ROLE_USER'];
           data_CreateUserauthDto._class = _class_UserAuths;
+          data_CreateUserauthDto.loginSource = user_socmedSource;
           data_CreateUserauthDto.devices = [
             {
               $ref: 'userdevices',

@@ -325,7 +325,42 @@ export class MediamusicService {
                 else: 0
               }
             },
-            gender: '$gender',
+            gender: {
+              $switch: {
+                branches: [
+                  {
+                    case: { $eq: ["$gender", "Laki-laki"] },
+                    then: "MALE"
+                  },
+                  {
+                    case: { $eq: ["$gender", "Pria"] },
+                    then: "MALE"
+                  },
+                  {
+                    case: { $eq: ["$gender", "Female"] },
+                    then: "FEMALE"
+                  },
+                  {
+                    case: { $eq: ["$gender", "Wanita"] },
+                    then: "FEMALE"
+                  },
+                  {
+                    case: { $eq: ["$gender", "Perempuan"] },
+                    then: "FEMALE"
+                  },
+                  {
+                    case: { $eq: ["$gender", "MALE"] },
+                    then: "MALE"
+                  },
+                  {
+                    case: { $eq: ["$gender", "FEMALE"] },
+                    then: "FEMALE"
+                  },
+                ],
+                "default": "Other"
+              }
+            },
+            gender_data: '$gender',
             states: '$states',
             stateName: '$areas_data.stateName'
           }
