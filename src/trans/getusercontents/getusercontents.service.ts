@@ -120,7 +120,7 @@ export class GetusercontentsService {
     let apsaradefine = null;
     let idapsaradefine = null;
     let pict = null;
-
+    var mediaType = null;
     try {
       idapsara = obj[n].apsaraId;
     } catch (e) {
@@ -144,6 +144,7 @@ export class GetusercontentsService {
       idapsaradefine = idapsara;
     }
     var type = obj[n].postType;
+    var mediaType = obj[n].mediaType;
     pict = [idapsara];
 
     if (idapsara === "") {
@@ -170,12 +171,23 @@ export class GetusercontentsService {
 
       }
       else if (type === "story") {
-        try {
-          obj[n].apsaraId = idapsaradefine;
-          obj[n].apsara = apsaradefine;
-          obj[n].media = await this.postContentService.getVideoApsara(pict);
-        } catch (e) {
-          obj[n].media = {};
+        if (mediaType === "image") {
+
+          try {
+            obj[n].apsaraId = idapsaradefine;
+            obj[n].apsara = apsaradefine;
+            obj[n].media = await this.postContentService.getImageApsara(pict);
+          } catch (e) {
+            obj[n].media = {};
+          }
+        } else {
+          try {
+            obj[n].apsaraId = idapsaradefine;
+            obj[n].apsara = apsaradefine;
+            obj[n].media = await this.postContentService.getVideoApsara(pict);
+          } catch (e) {
+            obj[n].media = {};
+          }
         }
       }
       else if (type === "diary") {
@@ -257,7 +269,7 @@ export class GetusercontentsService {
     let apsaradefine = null;
     let idapsaradefine = null;
     let pict = null;
-
+    var mediaType = null;
     try {
       idapsara = obj[0].apsaraId;
     } catch (e) {
@@ -315,16 +327,33 @@ export class GetusercontentsService {
 
       }
       else if (type === "story") {
-        try {
-          obj[0].apsaraId = idapsaradefine;
-          obj[0].apsara = apsaradefine;
-          obj[0].total = ((parseInt(days) * 24) + parseInt(hours)).toString() + ":" + minutes + ":" + seconds;
-          obj[0].age = age;
-          obj[0].gender = gender;
-          obj[0].wilayah = wilayah;
-          obj[0].media = await this.postContentService.getVideoApsara(pict);
-        } catch (e) {
-          obj[0].media = {};
+
+
+        if (mediaType === "image") {
+
+          try {
+            obj[0].apsaraId = idapsaradefine;
+            obj[0].apsara = apsaradefine;
+            obj[0].total = ((parseInt(days) * 24) + parseInt(hours)).toString() + ":" + minutes + ":" + seconds;
+            obj[0].age = age;
+            obj[0].gender = gender;
+            obj[0].wilayah = wilayah;
+            obj[0].media = await this.postContentService.getImageApsara(pict);
+          } catch (e) {
+            obj[0].media = {};
+          }
+        } else {
+          try {
+            obj[0].apsaraId = idapsaradefine;
+            obj[0].apsara = apsaradefine;
+            obj[0].total = ((parseInt(days) * 24) + parseInt(hours)).toString() + ":" + minutes + ":" + seconds;
+            obj[0].age = age;
+            obj[0].gender = gender;
+            obj[0].wilayah = wilayah;
+            obj[0].media = await this.postContentService.getVideoApsara(pict);
+          } catch (e) {
+            obj[0].media = {};
+          }
         }
       }
       else if (type === "diary") {
