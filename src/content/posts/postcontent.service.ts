@@ -133,7 +133,9 @@ export class PostContentService {
     post.updatedAt = await this.utilService.getDateTimeString();
     let big = BigInt(this.utilService.generateAddExpirationFromToday(1));
     post.expiration = Long.fromBigInt(big);
-    post.musicId = mongoose.Types.ObjectId(body.musicId)
+    if (body.musicId != undefined) {
+      post.musicId = mongoose.Types.ObjectId(body.musicId)
+    }
     post._class = 'io.melody.hyppe.content.domain.ContentPost';
 
     if (body.description != undefined) {
@@ -462,7 +464,9 @@ export class PostContentService {
 
     post.contentMedias = cm;
     let apost = await this.PostsModel.create(post);
-    await this.mediamusicService.updateUsed(body.musicId);
+    if (body.musicId != undefined) {
+      await this.mediamusicService.updateUsed(body.musicId);
+    }
 
     let fn = file.originalname;
     let ext = fn.split(".");

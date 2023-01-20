@@ -5794,8 +5794,12 @@ export class AuthService {
         );
       }
 
-      if (_isEmailVerified) {
+      //if (_isEmailVerified) {
 
+
+        if (datauserauthsService.isEmailVerified != undefined) {
+          this.userauthsService.updatebyId(datauserauthsService._id.toString(), { isEmailVerified: true });
+        }
         let messages;
         //ActivityEvent Parent > 0
         if (Object.keys(user_activityevents).length > 0) {
@@ -6204,11 +6208,11 @@ export class AuthService {
           data,
           messages,
         };
-      } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unexpected problem, please check your email and re-verify the OTP',
-        );
-      }
+      // } else {
+      //   await this.errorHandler.generateNotAcceptableException(
+      //     'Unexpected problem, please check your email and re-verify the OTP',
+      //   );
+      // }
     } else {
 
       return this.signupsosmed(req);
