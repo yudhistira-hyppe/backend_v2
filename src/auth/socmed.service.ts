@@ -165,7 +165,7 @@ export class SocmedService {
     if ((await this.utilsService.ceckData(datauserbasicsService)) && (await this.utilsService.ceckData(datauserauthsService))) {
       type = 'LOGIN';
       if (datauserauthsService.isEmailVerified != undefined) {
-        this.userauthsService.updatebyId(datauserauthsService._id.toString(), { isEmailVerified: true });
+        this.userauthsService.updatebyId(datauserauthsService._id.toString(), { isEmailVerified: true, loginSource: user_socmedSource });
       }
 
       //Ceck User Userdevices
@@ -641,6 +641,7 @@ export class SocmedService {
           data_CreateUserauthDto.isCredentialsNonExpired = true;
           data_CreateUserauthDto.roles = ['ROLE_USER'];
           data_CreateUserauthDto._class = _class_UserAuths;
+          data_CreateUserauthDto.loginSource = user_socmedSource;
           data_CreateUserauthDto.devices = [
             {
               $ref: 'userdevices',
