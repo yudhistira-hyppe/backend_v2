@@ -440,8 +440,19 @@ export class InsightsService {
 
   async getInsightbyEmail(email: string)
   {
-    var input = new Date();
-    var today = input.toISOString().split("T")[0];
+      var dateNow = new Date();
+
+      var getDateNow = new Date(dateNow.getTime() - (dateNow.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var date_today_start = getDateNow.substring(0, 10) + " 00:00:00";
+      var date_today_end = getDateNow.substring(0, 10) + " 23:59:59";
+      console.log("date_today_start", date_today_start);
+      console.log("date_today_end", date_today_end);
+
+      var getDateNow_1 = new Date(dateNow.setDate(dateNow.getDate() - 1)).toISOString().replace('T', ' ');;
+      var date_today_1_start = getDateNow_1.substring(0, 10) + " 00:00:00";
+      var date_today_1_end = getDateNow_1.substring(0, 10) + " 23:59:59";
+      console.log("date_today_1_start", date_today_1_start);
+      console.log("date_today_1_end", date_today_1_end);
     var query = await this.InsightsModel.aggregate([
       //ganti tanggal masih pake cara barbar
       {
@@ -506,23 +517,18 @@ export class InsightsService {
                                                       "$$insightfk"
                                                   ]
                                               }
-                                          },
-                                          {
-                                              "$expr":
+                                              }, {
+                                                  "$expr":
+                                                  {
+                                                      $gte: ["$createdAt", date_today_1_start,]
+                                                  }
+                                              },
                                               {
-                                                  "ne":
-                                                  [
-                                                      "createdAt",
-                                                      {
-                                                          "$dateToString": 
-                                                          {
-                                                              "format": "%Y-%m-%d",
-                                                              "date": new Date(today)
-                                                          }
-                                                      }
-                                                  ]
+                                                  "$expr":
+                                                  {
+                                                      $lte: ["$createdAt", date_today_1_end,]
+                                                  }
                                               }
-                                          }
                                       ]
                                   }
                               },
@@ -617,22 +623,18 @@ export class InsightsService {
                                                   ]
                                               }
                                           },
-                                          {
-                                              "$expr":
                                               {
-                                                  "$eq":
-                                                  [
-                                                      "$createdAt",
-                                                      {
-                                                          "$dateToString": 
-                                                          {
-                                                              "format": "%Y-%m-%d",
-                                                              "date": new Date(today)
-                                                          }
-                                                      }
-                                                  ]
+                                                  "$expr":
+                                                  {
+                                                      $gte: ["$createdAt", date_today_start,]
+                                                  }
                                               },
-                                          }
+                                              {
+                                                  "$expr":
+                                                  {
+                                                      $lte: ["$createdAt", date_today_end,]
+                                                  }
+                                              }
                                       ]
                                   }
                               },
@@ -687,22 +689,18 @@ export class InsightsService {
                                                   ]
                                               }
                                           },
-                                          {
-                                              "$expr":
                                               {
-                                                  "ne":
-                                                  [
-                                                      "createdAt",
-                                                      {
-                                                          "$dateToString": 
-                                                          {
-                                                              "format": "%Y-%m-%d",
-                                                              "date": new Date(today)
-                                                          }
-                                                      }
-                                                  ]
+                                                  "$expr":
+                                                  {
+                                                      $gte: ["$createdAt", date_today_1_start,]
+                                                  }
+                                              },
+                                              {
+                                                  "$expr":
+                                                  {
+                                                      $lte: ["$createdAt", date_today_1_end,]
+                                                  }
                                               }
-                                          }
                                       ]
                                   }
                               },
@@ -797,22 +795,18 @@ export class InsightsService {
                                                   ]
                                               }
                                           },
-                                          {
-                                              "$expr":
                                               {
-                                                  "$eq":
-                                                  [
-                                                      "$createdAt",
-                                                      {
-                                                          "$dateToString": 
-                                                          {
-                                                              "format": "%Y-%m-%d",
-                                                              "date": new Date(today)
-                                                          }
-                                                      }
-                                                  ]
+                                                  "$expr":
+                                                  {
+                                                      $gte: ["$createdAt", date_today_start,]
+                                                  }
                                               },
-                                          }
+                                              {
+                                                  "$expr":
+                                                  {
+                                                      $lte: ["$createdAt", date_today_end,]
+                                                  }
+                                              }
                                       ]
                                   }
                               },
@@ -867,22 +861,18 @@ export class InsightsService {
                                                   ]
                                               }
                                           },
-                                          {
-                                              "$expr":
                                               {
-                                                  "ne":
-                                                  [
-                                                      "createdAt",
-                                                      {
-                                                          "$dateToString": 
-                                                          {
-                                                              "format": "%Y-%m-%d",
-                                                              "date": new Date(today)
-                                                          }
-                                                      }
-                                                  ]
+                                                  "$expr":
+                                                  {
+                                                      $gte: ["$createdAt", date_today_1_start,]
+                                                  }
+                                              },
+                                              {
+                                                  "$expr":
+                                                  {
+                                                      $lte: ["$createdAt", date_today_1_end,]
+                                                  }
                                               }
-                                          }
                                       ]
                                   }
                               },
@@ -977,22 +967,18 @@ export class InsightsService {
                                                   ]
                                               }
                                           },
-                                          {
-                                              "$expr":
                                               {
-                                                  "$eq":
-                                                  [
-                                                      "$createdAt",
-                                                      {
-                                                          "$dateToString": 
-                                                          {
-                                                              "format": "%Y-%m-%d",
-                                                              "date": new Date(today)
-                                                          }
-                                                      }
-                                                  ]
+                                                  "$expr":
+                                                  {
+                                                      $gte: ["$createdAt", date_today_start,]
+                                                  }
                                               },
-                                          }
+                                              {
+                                                  "$expr":
+                                                  {
+                                                      $lte: ["$createdAt", date_today_end,]
+                                                  }
+                                              }
                                       ]
                                   }
                               },
