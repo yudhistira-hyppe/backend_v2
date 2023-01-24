@@ -762,7 +762,7 @@ export class AdsController {
     @UseGuards(JwtAuthGuard)
     async graphadsanalytics(@Req() request: Request): Promise<any> {
         const mongoose = require('mongoose');
-        var data = null;
+        var data = [];
         var requserid = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         //console.log("masuk");
@@ -777,7 +777,9 @@ export class AdsController {
         };
 
         var userid = mongoose.Types.ObjectId(requserid);
+
         data = await this.adsService.getgraphadsanalytics(userid);
+
 
         return { response_code: 202, data, messages };
     }

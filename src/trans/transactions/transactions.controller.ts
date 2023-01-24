@@ -707,7 +707,7 @@ export class TransactionsController {
                         // var pendingUsed = dataconten.pendingUsed;
                         // var totalUsePending = tusedvoucher + pendingUsed;
 
-                        if (qty >= qtyvoucher) {
+                        if (qty > qtyvoucher) {
                             return res.status(HttpStatus.BAD_REQUEST).json({
                                 "message": "Maaf quantity Voucher melebihi quota.."
                             });
@@ -7851,5 +7851,6 @@ export class TransactionsController {
 
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
+
 }
 

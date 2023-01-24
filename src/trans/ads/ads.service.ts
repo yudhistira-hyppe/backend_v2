@@ -14121,6 +14121,7 @@ export class AdsService {
                 }
             },
 
+
         ]);
 
         console.log(query[0].area);
@@ -14129,21 +14130,33 @@ export class AdsService {
 
         resultquery.forEach(function (data) {
             var getdata = data.percent;
-            data.percent = getdata.toFixed(2);
+            try {
+                data.percent = getdata.toFixed(2);
+            } catch (e) {
+                data.percent = 0;
+            }
         });
 
         var resultquery = query[0].genders;
 
         resultquery.forEach(function (data) {
             var getdata = data.percent;
-            data.percent = getdata.toFixed(2);
+            try {
+                data.percent = getdata.toFixed(2);
+            } catch (e) {
+                data.percent = 0;
+            }
         });
 
         var resultquery = query[0].age;
 
         resultquery.forEach(function (data) {
             var getdata = data.percent;
-            data.percent = getdata.toFixed(2);
+            try {
+                data.percent = getdata.toFixed(2);
+            } catch (e) {
+                data.percent = 0;
+            }
         });
 
         return query;
