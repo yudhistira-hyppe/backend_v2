@@ -120,7 +120,7 @@ export class GetusercontentsService {
     let apsaradefine = null;
     let idapsaradefine = null;
     let pict = null;
-
+    var mediaType = null;
     try {
       idapsara = obj[n].apsaraId;
     } catch (e) {
@@ -144,6 +144,7 @@ export class GetusercontentsService {
       idapsaradefine = idapsara;
     }
     var type = obj[n].postType;
+    var mediaType = obj[n].mediaType;
     pict = [idapsara];
 
     if (idapsara === "") {
@@ -170,12 +171,23 @@ export class GetusercontentsService {
 
       }
       else if (type === "story") {
-        try {
-          obj[n].apsaraId = idapsaradefine;
-          obj[n].apsara = apsaradefine;
-          obj[n].media = await this.postContentService.getVideoApsara(pict);
-        } catch (e) {
-          obj[n].media = {};
+        if (mediaType === "image") {
+
+          try {
+            obj[n].apsaraId = idapsaradefine;
+            obj[n].apsara = apsaradefine;
+            obj[n].media = await this.postContentService.getImageApsara(pict);
+          } catch (e) {
+            obj[n].media = {};
+          }
+        } else {
+          try {
+            obj[n].apsaraId = idapsaradefine;
+            obj[n].apsara = apsaradefine;
+            obj[n].media = await this.postContentService.getVideoApsara(pict);
+          } catch (e) {
+            obj[n].media = {};
+          }
         }
       }
       else if (type === "diary") {
@@ -257,7 +269,7 @@ export class GetusercontentsService {
     let apsaradefine = null;
     let idapsaradefine = null;
     let pict = null;
-
+    var mediaType = null;
     try {
       idapsara = obj[0].apsaraId;
     } catch (e) {
@@ -281,6 +293,7 @@ export class GetusercontentsService {
       idapsaradefine = idapsara;
     }
     var type = obj[0].postType;
+    mediaType = obj[0].mediaType;
     pict = [idapsara];
 
     if (idapsara === "") {
@@ -315,16 +328,33 @@ export class GetusercontentsService {
 
       }
       else if (type === "story") {
-        try {
-          obj[0].apsaraId = idapsaradefine;
-          obj[0].apsara = apsaradefine;
-          obj[0].total = ((parseInt(days) * 24) + parseInt(hours)).toString() + ":" + minutes + ":" + seconds;
-          obj[0].age = age;
-          obj[0].gender = gender;
-          obj[0].wilayah = wilayah;
-          obj[0].media = await this.postContentService.getVideoApsara(pict);
-        } catch (e) {
-          obj[0].media = {};
+
+
+        if (mediaType === "image") {
+
+          try {
+            obj[0].apsaraId = idapsaradefine;
+            obj[0].apsara = apsaradefine;
+            obj[0].total = ((parseInt(days) * 24) + parseInt(hours)).toString() + ":" + minutes + ":" + seconds;
+            obj[0].age = age;
+            obj[0].gender = gender;
+            obj[0].wilayah = wilayah;
+            obj[0].media = await this.postContentService.getImageApsara(pict);
+          } catch (e) {
+            obj[0].media = {};
+          }
+        } else {
+          try {
+            obj[0].apsaraId = idapsaradefine;
+            obj[0].apsara = apsaradefine;
+            obj[0].total = ((parseInt(days) * 24) + parseInt(hours)).toString() + ":" + minutes + ":" + seconds;
+            obj[0].age = age;
+            obj[0].gender = gender;
+            obj[0].wilayah = wilayah;
+            obj[0].media = await this.postContentService.getVideoApsara(pict);
+          } catch (e) {
+            obj[0].media = {};
+          }
         }
       }
       else if (type === "diary") {
@@ -11162,7 +11192,47 @@ export class GetusercontentsService {
             active: true
           }
         },
+        {
+          "$lookup": {
+            "from": "userbasics",
+            "as": "databasic",
+            "let": {
+              "local_id": "$email",
 
+            },
+            "pipeline": [
+              {
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$email', '$$local_id']
+                  }
+                }
+              },
+              {
+                $project: {
+                  iduser: "$_id",
+
+                }
+              },
+
+            ],
+
+          },
+
+        },
+        {
+          $unwind: {
+            path: "$databasic",
+
+          }
+        },
+        {
+          $match: {
+            'databasic.iduser': iduser,
+
+          }
+        },
         {
           $addFields: {
 
@@ -11184,7 +11254,6 @@ export class GetusercontentsService {
 
           }
         },
-
         {
           $lookup: {
             from: 'userauths',
@@ -11218,7 +11287,6 @@ export class GetusercontentsService {
                 }
               },
 
-
             ],
 
           },
@@ -11244,7 +11312,10 @@ export class GetusercontentsService {
               {
                 $project: {
                   iduserbuyer: 1,
+                  idusersell: 1,
+                  noinvoice: 1,
                   status: 1,
+                  amount: 1,
                   timestamp: 1
                 }
               },
@@ -11263,6 +11334,79 @@ export class GetusercontentsService {
               {
                 $limit: 1
               },
+              {
+                "$lookup": {
+                  "from": "userbasics",
+                  "as": "penjual",
+                  "let": {
+                    "local_id": "$idusersell"
+                  },
+                  "pipeline": [
+                    {
+                      "$match": {
+                        "$expr": {
+                          "$eq": [
+                            "$_id",
+                            "$$local_id"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+                        email: 1
+                      }
+                    },
+
+                  ],
+
+                }
+              },
+              {
+                $project: {
+                  emailpenjual: {
+                    $arrayElemAt: ['$penjual.email', 0]
+                  },
+                  amount: 1,
+                  status: 1,
+                  noinvoice: 1,
+                  timestamp: 1
+                }
+              },
+              {
+                "$lookup": {
+                  "from": "userauths",
+                  "as": "authpenjual",
+                  "let": {
+                    "local_id": "$emailpenjual"
+                  },
+                  "pipeline": [
+                    {
+                      "$match": {
+                        "$expr": {
+                          "$eq": [
+                            "$email",
+                            "$$local_id"
+                          ]
+                        }
+                      }
+                    },
+
+                  ],
+
+                }
+              },
+              {
+                $project: {
+                  penjual: {
+                    $arrayElemAt: ['$authpenjual.username', 0]
+                  },
+                  amount: 1,
+                  status: 1,
+                  noinvoice: 1,
+                  timestamp: 1
+                }
+              },
 
             ],
 
@@ -11279,7 +11423,6 @@ export class GetusercontentsService {
             'iduser': {
               $arrayElemAt: ['$basicdata.iduser', 0]
             },
-
 
           }
         },
@@ -11359,6 +11502,7 @@ export class GetusercontentsService {
                 else: "$certified"
               }
             },
+            tr: "$trans",
             visibility: 1,
             saleAmount: {
               $cond: {
@@ -11418,6 +11562,7 @@ export class GetusercontentsService {
             likes: 1,
             shares: 1,
             comments: 1,
+            tr: 1,
             buy: {
               $cond: {
                 if: {
@@ -11569,10 +11714,11 @@ export class GetusercontentsService {
             kategori: 1,
             kepemilikan: 1,
             visibility: 1,
-            saleAmount: 1,
+            amount: "$saleAmount",
             statusJual: 1,
             reported: 1,
             buy: 1,
+            tr: 1,
 
           }
         },
@@ -11627,6 +11773,7 @@ export class GetusercontentsService {
             postID: 1,
             postType: 1,
             iduser: 1,
+            tr: 1,
             email: 1,
             type: 1,
             description: 1,
@@ -11635,7 +11782,22 @@ export class GetusercontentsService {
             kategori: 1,
             kepemilikan: 1,
             visibility: 1,
-            saleAmount: 1,
+            saleAmount: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$buy", "TIDAK"]
+                  },]
+                },
+                then: "$amount",
+                else: {
+                  $arrayElemAt: ['$tr.amount', 0]
+                }
+              }
+            },
+            penjual: {
+              $arrayElemAt: ['$tr.penjual', 0]
+            },
             statusJual: 1,
             reported: 1,
             buy: 1,
@@ -11941,10 +12103,52 @@ export class GetusercontentsService {
           }
         },
         {
-          $match: {
-            iduser: iduser
+          $project: {
+
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            type: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan: 1,
+            visibility: 1,
+            saleAmount: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$saleAmount", null]
+                  },]
+                },
+                then: 0,
+                else: "$saleAmount"
+              }
+            },
+            statusJual: 1,
+            reported: 1,
+            buy: 1,
+            views: 1,
+            likes: 1,
+            shares: 1,
+            comments: 1,
+            mediaBasePath: 1,
+            mediaUri: 1,
+            mediaType: 1,
+            mediaThumbEndpoint: 1,
+            mediaEndpoint: 1,
+            mediaThumbUri: 1,
+            apsaraId: 1,
+            apsara: 1,
+            penjual: 1,
+
           }
-        }
+        },
       );
 
     }

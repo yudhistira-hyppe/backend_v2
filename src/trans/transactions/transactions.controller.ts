@@ -1107,7 +1107,7 @@ export class TransactionsController {
         var datapost = null;
         var datainsight = null;
         var data_media = null;
-        var iduseradmin = "61d9c847548ae516042f0b13";
+        var iduseradmin = "62144381602c354635ed786a";
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         var idadmin = mongoose.Types.ObjectId(iduseradmin);
@@ -1755,7 +1755,7 @@ export class TransactionsController {
         var totalamount = null;
         var idbankverificationcharge = "62bd4104f37a00001a004367";
         var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
-        var iduseradmin = "61d9c847548ae516042f0b13";
+        var iduseradmin = "62144381602c354635ed786a";
         var datainquiry = null;
         var data = null;
         // var valueinquiry = null;
@@ -4944,7 +4944,7 @@ export class TransactionsController {
 
                     var idbankverificationcharge = "62bd4104f37a00001a004367";
                     var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
-                    var iduseradmin = "61d9c847548ae516042f0b13";
+                    var iduseradmin = "62144381602c354635ed786a";
                     var datasettingbankvercharge = null;
                     var datasettingdisbvercharge = null;
                     var valuebankcharge = 0;
@@ -7560,7 +7560,7 @@ export class TransactionsController {
                             }
                             var idbankverificationcharge = "62bd4104f37a00001a004367";
                             var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
-                            var iduseradmin = "61d9c847548ae516042f0b13";
+                            var iduseradmin = "62144381602c354635ed786a";
                             var datasettingbankvercharge = null;
                             var datasettingdisbvercharge = null;
                             var valuebankcharge = 0;

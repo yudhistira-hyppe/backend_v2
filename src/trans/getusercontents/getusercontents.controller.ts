@@ -706,8 +706,7 @@ export class GetusercontentsController {
 
         var email = null;
         var year = null;
-        var datafollower = null;
-        var dataallfollower = null;
+        var datafollower = [];
 
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
@@ -727,10 +726,68 @@ export class GetusercontentsController {
         const messages = {
             "info": ["The process successful"],
         };
+        var sumfollow = null;
+        var lengfollower = null;
+        var resultTime = null;
+        var monthNew = [];
+        var monthNames = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        var currentdate = new Date(new Date().setMonth(new Date().getMonth() + 1));
+        console.log(currentdate)
 
-        datafollower = await this.getcontenteventsService.findfollower(email, year);
-        dataallfollower = await this.getcontenteventsService.findfollowerall(email);
-        var totalallfollower = dataallfollower[0].totalfollowerall;
+        var d;
+        var month;
+        var year;
+        var arrdata = [];
+        for (var i = 6; i > 0; i -= 1) {
+            d = new Date(currentdate.getFullYear(), currentdate.getMonth() - i, 1);
+            month = monthNames[d.getMonth()];
+            year = d.getFullYear();
+            // console.log(month);
+            // console.log(year);
+            monthNew.push(month)
+        }
+
+        resultTime = monthNew.length;
+
+        try {
+            arrdata = await this.getcontenteventsService.findfollower(email, year);
+            lengfollower = arrdata.length;
+        } catch (e) {
+            arrdata = [];
+            lengfollower = 0;
+        }
+
+
+        if (resultTime > 0) {
+            for (var i = 0; i < resultTime; i++) {
+                var months = monthNew[i];
+
+                var count = 0;
+                for (var j = 0; j < lengfollower; j++) {
+                    if (arrdata[j].month == months) {
+                        count = arrdata[j].count;
+                        break;
+                    }
+                }
+                datafollower.push({
+                    'month': months,
+                    'count': count
+                });
+
+            }
+        }
+        if (datafollower.length > 0) {
+
+            for (let i = 0; i < datafollower.length; i++) {
+                sumfollow += datafollower[i].count;
+
+            }
+
+        } else {
+            sumfollow = 0;
+        }
+
+        var totalallfollower = sumfollow;
 
 
         return { response_code: 202, datafollower, totalallfollower, messages };
