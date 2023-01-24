@@ -11271,6 +11271,8 @@ export class GetusercontentsService {
               {
                 $project: {
                   iduserbuyer: 1,
+                  idusersell: 1,
+                  noinvoice: 1,
                   status: 1,
                   amount: 1,
                   timestamp: 1
@@ -11290,6 +11292,79 @@ export class GetusercontentsService {
               },
               {
                 $limit: 1
+              },
+              {
+                "$lookup": {
+                  "from": "userbasics",
+                  "as": "penjual",
+                  "let": {
+                    "local_id": "$idusersell"
+                  },
+                  "pipeline": [
+                    {
+                      "$match": {
+                        "$expr": {
+                          "$eq": [
+                            "$_id",
+                            "$$local_id"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+                        email: 1
+                      }
+                    },
+
+                  ],
+
+                }
+              },
+              {
+                $project: {
+                  emailpenjual: {
+                    $arrayElemAt: ['$penjual.email', 0]
+                  },
+                  amount: 1,
+                  status: 1,
+                  noinvoice: 1,
+                  timestamp: 1
+                }
+              },
+              {
+                "$lookup": {
+                  "from": "userauths",
+                  "as": "authpenjual",
+                  "let": {
+                    "local_id": "$emailpenjual"
+                  },
+                  "pipeline": [
+                    {
+                      "$match": {
+                        "$expr": {
+                          "$eq": [
+                            "$email",
+                            "$$local_id"
+                          ]
+                        }
+                      }
+                    },
+
+                  ],
+
+                }
+              },
+              {
+                $project: {
+                  penjual: {
+                    $arrayElemAt: ['$authpenjual.username', 0]
+                  },
+                  amount: 1,
+                  status: 1,
+                  noinvoice: 1,
+                  timestamp: 1
+                }
               },
 
             ],
@@ -11603,6 +11678,7 @@ export class GetusercontentsService {
             reported: 1,
             buy: 1,
             tr: 1,
+
           }
         },
         {
@@ -11677,6 +11753,9 @@ export class GetusercontentsService {
                   $arrayElemAt: ['$tr.amount', 0]
                 }
               }
+            },
+            penjual: {
+              $arrayElemAt: ['$tr.penjual', 0]
             },
             statusJual: 1,
             reported: 1,
@@ -12025,6 +12104,7 @@ export class GetusercontentsService {
             mediaThumbUri: 1,
             apsaraId: 1,
             apsara: 1,
+            penjual: 1,
 
           }
         },
