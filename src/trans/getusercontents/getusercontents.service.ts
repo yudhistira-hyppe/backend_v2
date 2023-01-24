@@ -11192,7 +11192,6 @@ export class GetusercontentsService {
             active: true
           }
         },
-
         {
           $addFields: {
 
@@ -11214,7 +11213,6 @@ export class GetusercontentsService {
 
           }
         },
-
         {
           $lookup: {
             from: 'userauths',
@@ -11248,7 +11246,6 @@ export class GetusercontentsService {
                 }
               },
 
-
             ],
 
           },
@@ -11275,6 +11272,7 @@ export class GetusercontentsService {
                 $project: {
                   iduserbuyer: 1,
                   status: 1,
+                  amount: 1,
                   timestamp: 1
                 }
               },
@@ -11309,7 +11307,6 @@ export class GetusercontentsService {
             'iduser': {
               $arrayElemAt: ['$basicdata.iduser', 0]
             },
-
 
           }
         },
@@ -11389,6 +11386,7 @@ export class GetusercontentsService {
                 else: "$certified"
               }
             },
+            tr: "$trans",
             visibility: 1,
             saleAmount: {
               $cond: {
@@ -11448,6 +11446,7 @@ export class GetusercontentsService {
             likes: 1,
             shares: 1,
             comments: 1,
+            tr: 1,
             buy: {
               $cond: {
                 if: {
@@ -11599,11 +11598,11 @@ export class GetusercontentsService {
             kategori: 1,
             kepemilikan: 1,
             visibility: 1,
-            saleAmount: 1,
+            amount: "$saleAmount",
             statusJual: 1,
             reported: 1,
             buy: 1,
-
+            tr: 1,
           }
         },
         {
@@ -11657,6 +11656,7 @@ export class GetusercontentsService {
             postID: 1,
             postType: 1,
             iduser: 1,
+            tr: 1,
             email: 1,
             type: 1,
             description: 1,
@@ -11665,7 +11665,19 @@ export class GetusercontentsService {
             kategori: 1,
             kepemilikan: 1,
             visibility: 1,
-            saleAmount: 1,
+            saleAmount: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$buy", "TIDAK"]
+                  },]
+                },
+                then: "$amount",
+                else: {
+                  $arrayElemAt: ['$tr.amount', 0]
+                }
+              }
+            },
             statusJual: 1,
             reported: 1,
             buy: 1,
@@ -11971,10 +11983,57 @@ export class GetusercontentsService {
           }
         },
         {
-          $match: {
-            iduser: iduser
+          $project: {
+
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            type: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan: 1,
+            visibility: 1,
+            saleAmount: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$saleAmount", null]
+                  },]
+                },
+                then: 0,
+                else: "$saleAmount"
+              }
+            },
+            statusJual: 1,
+            reported: 1,
+            buy: 1,
+            views: 1,
+            likes: 1,
+            shares: 1,
+            comments: 1,
+            mediaBasePath: 1,
+            mediaUri: 1,
+            mediaType: 1,
+            mediaThumbEndpoint: 1,
+            mediaEndpoint: 1,
+            mediaThumbUri: 1,
+            apsaraId: 1,
+            apsara: 1,
+
           }
-        }
+        },
+        {
+          $match: {
+            iduser: iduser,
+
+          }
+        },
       );
 
     }
