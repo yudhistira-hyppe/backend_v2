@@ -80,7 +80,7 @@ export class AdsUserCompareController {
         _CreateAdsDto_._id = dataAds._id;
         _CreateAdsDto_.userID = dataAds.userID;
         _CreateAdsDto_.liveAt = dataAds.liveAt;
-        await this.adsUserCompareService.createUserAds(_CreateAdsDto_);
+        this.adsUserCompareService.createUserAds(_CreateAdsDto_);
         return {
             "response_code": 202,
             "messages": {
