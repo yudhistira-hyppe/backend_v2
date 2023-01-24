@@ -11193,6 +11193,47 @@ export class GetusercontentsService {
           }
         },
         {
+          "$lookup": {
+            "from": "userbasics",
+            "as": "databasic",
+            "let": {
+              "local_id": "$email",
+
+            },
+            "pipeline": [
+              {
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$email', '$$local_id']
+                  }
+                }
+              },
+              {
+                $project: {
+                  iduser: "$_id",
+
+                }
+              },
+
+            ],
+
+          },
+
+        },
+        {
+          $unwind: {
+            path: "$databasic",
+
+          }
+        },
+        {
+          $match: {
+            'databasic.iduser': iduser,
+
+          }
+        },
+        {
           $addFields: {
 
             salePrice: {
@@ -12105,12 +12146,6 @@ export class GetusercontentsService {
             apsaraId: 1,
             apsara: 1,
             penjual: 1,
-
-          }
-        },
-        {
-          $match: {
-            iduser: iduser,
 
           }
         },

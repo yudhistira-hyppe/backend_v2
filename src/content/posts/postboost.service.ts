@@ -3013,7 +3013,7 @@ export class PostBoostService {
           if (obj.boosted[0] != undefined) {
             pd.boostJangkauan = (obj.boosted[0].boostViewer != undefined) ? obj.boosted[0].boostViewer.length : 0;
             pd.boosted = obj.boosted;
-          }else{
+          } else {
             pd.boostJangkauan = 0;
             pd.boosted = [];
           }
@@ -6301,22 +6301,22 @@ export class PostBoostService {
                 "boostInterval": 1,
                 "boostSession": 1,
                 "boosted":
-                  {
-                    $cond: {
-                      if: {
-                        $gt: [{
-                          "$dateToString": {
-                            "format": "%Y-%m-%d %H:%M:%S",
-                            "date": {
-                              $add: [new Date(), 25200000]
-                            }
+                {
+                  $cond: {
+                    if: {
+                      $gt: [{
+                        "$dateToString": {
+                          "format": "%Y-%m-%d %H:%M:%S",
+                          "date": {
+                            $add: [new Date(), 25200000]
                           }
-                        }, "$boosted.boostSession.end"]
-                      },
-                      then: "$kampretTaslim",
-                      else: '$boosted'
-                    }
-                  },
+                        }
+                      }, "$boosted.boostSession.end"]
+                    },
+                    then: "$kampretTaslim",
+                    else: '$boosted'
+                  }
+                },
                 "isBoost": 1,
                 "boostViewer": 1,
                 "boostCount": 1,
@@ -6687,22 +6687,22 @@ export class PostBoostService {
                 "saleLike": 1,
                 "saleView": 1,
                 "boosted":
-                  {
-                    $cond: {
-                      if: {
-                        $gt: [{
-                          "$dateToString": {
-                            "format": "%Y-%m-%d %H:%M:%S",
-                            "date": {
-                              $add: [new Date(), 25200000]
-                            }
+                {
+                  $cond: {
+                    if: {
+                      $gt: [{
+                        "$dateToString": {
+                          "format": "%Y-%m-%d %H:%M:%S",
+                          "date": {
+                            $add: [new Date(), 25200000]
                           }
-                        }, "$boosted.boostSession.end"]
-                      },
-                      then: "$kampretTaslim",
-                      else: '$boosted'
-                    }
-                  },
+                        }
+                      }, "$boosted.boostSession.end"]
+                    },
+                    then: "$kampretTaslim",
+                    else: '$boosted'
+                  }
+                },
                 "likes": 1,
                 "views": 1,
                 "shares": 1,
@@ -7086,22 +7086,22 @@ export class PostBoostService {
                 "likes": 1,
                 "views": 1,
                 "boosted":
-                  {
-                    $cond: {
-                      if: {
-                        $gt: [{
-                          "$dateToString": {
-                            "format": "%Y-%m-%d %H:%M:%S",
-                            "date": {
-                              $add: [new Date(), 25200000]
-                            }
+                {
+                  $cond: {
+                    if: {
+                      $gt: [{
+                        "$dateToString": {
+                          "format": "%Y-%m-%d %H:%M:%S",
+                          "date": {
+                            $add: [new Date(), 25200000]
                           }
-                        }, "$boosted.boostSession.end"]
-                      },
-                      then: "$kampretTaslim",
-                      else: '$boosted'
-                    }
-                  },
+                        }
+                      }, "$boosted.boostSession.end"]
+                    },
+                    then: "$kampretTaslim",
+                    else: '$boosted'
+                  }
+                },
                 "shares": 1,
                 "userProfile": 1,
                 "contentMedias": 1,
