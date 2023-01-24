@@ -440,7 +440,7 @@ export class InsightsService {
 
   async getInsightbyEmail(email: string)
   {
-      var dateNow = new Date("2023-01-12");
+      var dateNow = new Date();
 
       var getDateNow = new Date(dateNow.getTime() - (dateNow.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
       var date_today_start = getDateNow.substring(0, 10) + " 00:00:00";
