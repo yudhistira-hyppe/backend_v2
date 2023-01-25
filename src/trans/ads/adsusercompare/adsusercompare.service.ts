@@ -388,14 +388,14 @@ export class AdsUserCompareService {
             }
 
             //Compare Age
-            if ((data_ads[0].startAge != undefined) && (data_ads[0].endAge != undefined) && (data_user.dob != undefined)) {
+            if ((data_ads[i].startAge != undefined) && (data_ads[i].endAge != undefined) && (data_user.dob != undefined)) {
                 console.log("Date Now", new Date(Date.now()));
-                var date_end_age_int = new Date().setFullYear(new Date().getFullYear() - data_ads[0].endAge);
-                var date_end_age = new Date(new Date().setFullYear(new Date().getFullYear() - data_ads[0].endAge));
+                var date_end_age_int = new Date().setFullYear(new Date().getFullYear() - data_ads[i].endAge);
+                var date_end_age = new Date(new Date().setFullYear(new Date().getFullYear() - data_ads[i].endAge));
                 console.log("date_end_age", date_end_age);
                 console.log("date_end_age_int", date_end_age_int);
-                var date_start_age_int = new Date().setFullYear(new Date().getFullYear() - data_ads[0].startAge);
-                var date_start_age = new Date(new Date().setFullYear(new Date().getFullYear() - data_ads[0].startAge));
+                var date_start_age_int = new Date().setFullYear(new Date().getFullYear() - data_ads[i].startAge);
+                var date_start_age = new Date(new Date().setFullYear(new Date().getFullYear() - data_ads[i].startAge));
                 console.log("date_start_age", date_start_age);
                 console.log("date_start_age_int", date_start_age_int);
                 var date_dob_int = new Date(data_user.dob.toString()).getTime();
@@ -412,7 +412,7 @@ export class AdsUserCompareService {
             }
 
             //Compare Gender
-            if (data_ads[0].gender.toLowerCase() == "l") {
+            if (data_ads[i].gender.toLowerCase() == "l") {
                 if (data_user.gender != undefined) {
                     if ((data_user.gender.toLowerCase() == "male") || (data_user.gender.toLowerCase() == "laki-laki")) {
                         priority_gender = true;
@@ -470,23 +470,26 @@ export class AdsUserCompareService {
             console.log("ads priority", priority);
             console.log("----------------------------------------------------------");
 
+            const typeAds = await this.adstypesService.findOne(Object(data_ads[i].typeAdsID.toString()));
             var CreateUserAdsDto_ = new CreateUserAdsDto();
             try {
                 CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
-                CreateUserAdsDto_.adsID = new mongoose.Types.ObjectId(data_ads[0]._id.toString());
+                CreateUserAdsDto_.adsID = new mongoose.Types.ObjectId(data_ads[i]._id.toString());
                 CreateUserAdsDto_.userID = new mongoose.Types.ObjectId(data_user._id.toString());
                 CreateUserAdsDto_.priority = priority;
                 CreateUserAdsDto_.priorityNumber = priority_number;
-                if (data_ads[0].description != undefined) {
-                    CreateUserAdsDto_.description = data_ads[0].description;
+                if (data_ads[i].description != undefined) {
+                    CreateUserAdsDto_.description = data_ads[i].description;
                 }
                 CreateUserAdsDto_.createdAt = current_date;
                 CreateUserAdsDto_.statusClick = false;
                 CreateUserAdsDto_.statusView = false;
+                CreateUserAdsDto_.nameType = typeAds.nameType;
                 CreateUserAdsDto_.viewed = 0;
-                CreateUserAdsDto_.liveAt = data_ads[0].liveAt;
-                CreateUserAdsDto_.liveTypeuserads = data_ads[0].liveTypeAds;
+                CreateUserAdsDto_.liveAt = data_ads[i].liveAt;
+                CreateUserAdsDto_.liveTypeuserads = data_ads[i].liveTypeAds;
                 CreateUserAdsDto_.timeViewSecond = 0;
+                CreateUserAdsDto_.isActive = true;
                 await this.userAdsService.create(CreateUserAdsDto_);
             } catch (s) {
                 await this.errorHandler.generateNotAcceptableException(

@@ -294,6 +294,7 @@ export class AdsController {
             var arrayInterest = [];
             var arrayUservoucher = [];
             var totalCreditusvoucher = 0;
+            var totalCreditusvoucherUsed = 0;
 
             var userid = mongoose.Types.ObjectId(iduser)
             try {
@@ -338,6 +339,7 @@ export class AdsController {
                         var idu = splituserv2[i];
 
                         uservoucherdata = await this.uservouchersService.findOne(idu);
+                        totalCreditusvoucherUsed += uservoucherdata.totalCredit;
                         var voucherid = uservoucherdata.voucherID;
 
                         datavoucher = await this.vouchersService.findOne(voucherid);
@@ -359,7 +361,7 @@ export class AdsController {
                         sumCredittotal += arrayTotalCredit[i];
                     }
 
-                    if (totalCreditusvoucher < total_credit_data) {
+                    if (totalCreditusvoucherUsed < total_credit_data) {
 
                         return res.status(HttpStatus.BAD_REQUEST).json({
 
@@ -367,45 +369,77 @@ export class AdsController {
                         });
                     }
 
+                    var creditAllUse = false;
                     for (var i = 0; i < splituserv2.length; i++) {
                         var idu = splituserv2[i];
                         uservoucherdata = await this.uservouchersService.findOne(idu);
-                        var kredit = uservoucherdata.credit;
-                        var kreditFree = uservoucherdata.creditFree;
+                        var idUserVoucher = uservoucherdata._id.toString();
+
                         var totalCredit = uservoucherdata.totalCredit;
 
-                        var useKredit = 0;
-                        var useKreditFree = 0;
+                        var kredit = uservoucherdata.credit;
+                        var kreditFree = uservoucherdata.creditFree;
 
-                        total_credit_data -= kredit;
+                        var useKredit = uservoucherdata.usedCredit;
+                        var useKreditFree = uservoucherdata.usedCreditFree;
 
-                        if (total_credit_data == 0) {
-                            useKredit = kredit;
-                            totalCredit -= kredit;
-                        } else if (total_credit_data < 0) {
-                            useKredit = (kredit + total_credit_data);
-                            totalCredit -= (kredit + total_credit_data);;
-                        } else if (total_credit_data > 0) {
-                            useKredit = kredit;
-                            totalCredit -= kredit;
-                            total_credit_data -= kreditFree;
-                            if (total_credit_data == 0) {
-                                useKreditFree = kreditFree;
-                                totalCredit -= kreditFree;
-                            } else if (total_credit_data < 0) {
-                                useKreditFree = (kreditFree + total_credit_data);
-                                totalCredit -= (kreditFree + total_credit_data);
-                            } else if (total_credit_data > 0) {
-                                useKreditFree = kreditFree;
-                                totalCredit -= kreditFree;
+                        var LastUseKredit = kredit - useKredit;
+                        var LastUseKreditFree = kreditFree - useKreditFree
+
+                        if (totalCredit > 0) {
+                            if (creditAllUse) {
+                                useKredit = useKredit;
+                                useKreditFree = useKreditFree;
+                                totalCredit = totalCredit;
+                            } else {
+                                if (LastUseKredit > 0) {
+                                    if (total_credit_data < LastUseKredit) {
+                                        total_credit_data = 0;
+                                        useKredit += total_credit_data;
+                                        totalCredit -= total_credit_data;
+                                        creditAllUse = true;
+                                    }else{
+                                        total_credit_data -= LastUseKredit;
+                                        useKredit += LastUseKredit;
+                                        totalCredit -= LastUseKredit;
+                                    }
+                                    if (!creditAllUse) {
+                                        if (LastUseKreditFree > 0) {
+                                            if (total_credit_data < LastUseKreditFree) {
+                                                total_credit_data = 0;
+                                                useKreditFree += total_credit_data;
+                                                totalCredit -= total_credit_data;
+                                                creditAllUse = true;
+                                            } else {
+                                                total_credit_data -= LastUseKreditFree;
+                                                useKreditFree += LastUseKreditFree;
+                                                totalCredit -= LastUseKreditFree;
+                                            }
+                                        }
+                                    }
+                                } else if (LastUseKreditFree > 0) {
+                                    if (total_credit_data < LastUseKreditFree) {
+                                        total_credit_data = 0;
+                                        useKreditFree += total_credit_data;
+                                        totalCredit -= total_credit_data;
+                                        creditAllUse = true;
+                                    } else {
+                                        total_credit_data -= LastUseKreditFree;
+                                        useKreditFree += LastUseKreditFree;
+                                        totalCredit -= LastUseKreditFree;
+                                    }
+                                }
+                                
+                                if (total_credit_data == 0) {
+                                    creditAllUse = true;
+                                }
                             }
                         }
-
                         var CreateUservouchersDto_ = new CreateUservouchersDto();
                         CreateUservouchersDto_.usedCredit = useKredit;
                         CreateUservouchersDto_.usedCreditFree = useKreditFree;
                         CreateUservouchersDto_.totalCredit = totalCredit;
-                        await this.uservouchersService.update(uservoucherdata._id.toString(), CreateUservouchersDto_);
+                        await this.uservouchersService.update(idUserVoucher, CreateUservouchersDto_);
                     }
 
                     //     console.log("dataPlacing", dataPlacing);
