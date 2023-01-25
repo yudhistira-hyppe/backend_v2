@@ -149,42 +149,6 @@ export class GetuserprofilesController {
       totalrow = 0;
     }
 
-
-
-
-    // try {
-    //   allrow = await this.getuserprofilesService.totalcount();
-    //   totalallrow = allrow[0].countrow;
-    // } catch (e) {
-    //   totalallrow = 0;
-    // }
-
-
-    // if (startlogin === undefined && endlogin === undefined && jenis === undefined && lokasi === undefined && gender === undefined && username === undefined && startdate === undefined && enddate === undefined && startage === undefined && endage === undefined) {
-    //   totalfilter = totalallrow;
-    // } else {
-
-    //   try {
-    //     datafilter = await this.getuserprofilesService.countdbuser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin);
-    //     totalfilter = datafilter[0].totalpost;
-    //   } catch (e) {
-    //     totalfilter = 0;
-    //   }
-    // }
-    //totalfilter = totalallrow;
-    // var tpage = null;
-    // var tpage2 = null;
-
-
-    // tpage2 = (totalfilter / limit).toFixed(0);
-    // tpage = (totalfilter % limit);
-    // if (tpage > 0 && tpage < 5) {
-    //   totalpage = parseInt(tpage2) + 1;
-
-    // } else {
-    //   totalpage = parseInt(tpage2);
-    // }
-
     return { response_code: 202, data, page, limit, totalrow, totalallrow, totalfilter, totalpage, messages };
 
 

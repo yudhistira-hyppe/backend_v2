@@ -10585,7 +10585,16 @@ export class AdsService {
                         {
                             "status": "APPROVE"
                         },
-
+                        //{
+                        //    $expr: {
+                        //        $gt: ["$liveAt", "$timeStart"]
+                        //    }
+                        //},
+                        //{
+                        //    $expr: {
+                        //        $lt: ["$liveAt", "$timeEnd"]
+                        //    }
+                        //},
                     ]
                 },
 
@@ -12446,11 +12455,61 @@ export class AdsService {
                     ]
                 }
             },
+            // {
+            //     $project: {
+            //         genders:
+            //         {
+            //             $ifNull: ['$genders.percent', "$kancrut"]
+            //         },
+            //         area:
+            //         {
+            //             $ifNull: ['$area.percent', "$kancrut"]
+            //         },
+            //         age:
+            //         {
+            //             $ifNull: ['$age.percent', "$kancrut"]
+            //         },
+            //         all:
+            //         {
+            //             $ifNull: ['$all', "$kancrut"]
+            //         },
+            //         day:
+            //             [{
+            //                 day7:
+            //                 {
+            //                     $ifNull: ['$day.day7', "$kancrut"]
+            //                 },
+            //                 day6:
+            //                 {
+            //                     $ifNull: ['$day.day6', "$kancrut"]
+            //                 },
+            //                 day5:
+            //                 {
+            //                     $ifNull: ['$day.day5', "$kancrut"]
+            //                 },
+            //                 day4:
+            //                 {
+            //                     $ifNull: ['$day.day4', "$kancrut"]
+            //                 },
+            //                 day3:
+            //                 {
+            //                     $ifNull: ['$day.day3', "$kancrut"]
+            //                 },
+            //                 day2:
+            //                 {
+            //                     $ifNull: ['$day.day2', "$kancrut"]
+            //                 },
+            //                 day1:
+            //                 {
+            //                     $ifNull: ['$day.day1', "$kancrut"]
+            //                 },
 
+            //             }]
+            //     }
+            // }
 
         ]);
         var resultquery = [];
-        console.log(query[0].area);
 
 
         resultquery = query[0].area;
@@ -12486,6 +12545,16 @@ export class AdsService {
             }
         });
 
+        if (query[0].age[0].percent === 0) {
+            query[0].age = [];
+        }
+
+        if (query[0].genders[0].percent === 0) {
+            query[0].genders = [];
+        }
+        if (query[0].area[0].percent === 0) {
+            query[0].area = [];
+        }
         return query;
     }
 }
