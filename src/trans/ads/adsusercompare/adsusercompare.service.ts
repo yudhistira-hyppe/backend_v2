@@ -489,6 +489,7 @@ export class AdsUserCompareService {
                 CreateUserAdsDto_.liveAt = data_ads[i].liveAt;
                 CreateUserAdsDto_.liveTypeuserads = data_ads[i].liveTypeAds;
                 CreateUserAdsDto_.timeViewSecond = 0;
+                CreateUserAdsDto_.isActive = true;
                 await this.userAdsService.create(CreateUserAdsDto_);
             } catch (s) {
                 await this.errorHandler.generateNotAcceptableException(
