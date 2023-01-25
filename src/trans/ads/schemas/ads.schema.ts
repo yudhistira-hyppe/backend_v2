@@ -11,14 +11,22 @@ export class Ads {
     userID: { oid: String; };
     @Prop({ type: Object })
     userIDAssesment: { oid: String; };
-    @Prop({ type: Object })
-    demografisID: {
-        $ref: String;
-        $id: { oid: String };
-        $db: String;
-    };
-    // @Prop([])
-    // interestID: [];
+    // @Prop({ type: Object })
+    // demografisID: {
+    //     $ref: String;
+    //     $id: { oid: String };
+    //     $db: String;
+    // };
+    @Prop([{ type: Object }])
+    demografisID: [
+        {
+            ref: String;
+            id: {
+                oid: String;
+            };
+            db: String;
+        },
+    ];
     @Prop([{ type: Object }])
     interestID: [
         {
@@ -99,6 +107,8 @@ export class Ads {
     contentModerationResponse: string
     @Prop()
     reportedUserHandle: any[];
+    @Prop()
+    age: string;
 }
 
 export const AdsSchema = SchemaFactory.createForClass(Ads);

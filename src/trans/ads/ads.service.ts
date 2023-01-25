@@ -10985,7 +10985,16 @@ export class AdsService {
                         {
                             "status": "APPROVE"
                         },
-
+                        //{
+                        //    $expr: {
+                        //        $gt: ["$liveAt", "$timeStart"]
+                        //    }
+                        //},
+                        //{
+                        //    $expr: {
+                        //        $lt: ["$liveAt", "$timeEnd"]
+                        //    }
+                        //},
                     ]
                 },
 
@@ -12751,6 +12760,7 @@ export class AdsService {
                             $unwind: {
                                 path: "$areas",
                                 preserveNullAndEmptyArrays: true,
+
                             }
                         },
                         {
@@ -12806,7 +12816,7 @@ export class AdsService {
                             }
                         }
                     ],
-                    All: [
+                    all: [
                         {
                             $unwind: {
                                 path: "$view",
@@ -12846,13 +12856,46 @@ export class AdsService {
                     ]
                 }
             },
+            {
+                $project: {
+                    genders:
+                    {
+                        $cond: {
+                            if: {
+                                $gt: ['$genders.percecnt', 0]
+                            },
+                            then: "$genders",
+                            else: '$kancut'
+                        }
+                    },
+                    all: "$all",
+                    area:
+                    {
+                        $cond: {
+                            if: {
+                                $gt: ['$area.percent', 0]
+                            },
+                            then: "$area",
+                            else: '$kancut'
+                        }
+                    },
+                    age:
+                    {
+                        $cond: {
+                            if: {
+                                $gt: ['$age.percent', 0]
+                            },
+                            then: "$age",
+                            else: '$kancut'
+                        }
+                    },
+                    day: 1,
 
+                }
 
+            }
         ]);
         var resultquery = [];
-        console.log(query[0].area);
-
-
         resultquery = query[0].area;
 
         resultquery.forEach(function (data) {
@@ -12886,6 +12929,16 @@ export class AdsService {
             }
         });
 
+        if (query[0].age[0].percent === 0) {
+            query[0].age = [];
+        }
+
+        if (query[0].genders[0].percent === 0) {
+            query[0].genders = [];
+        }
+        if (query[0].area[0].percent === 0) {
+            query[0].area = [];
+        }
         return query;
     }
 }

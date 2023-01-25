@@ -411,6 +411,7 @@ export class ActivityeventsService {
       },
       {
         $project: {
+          iduser: { $arrayElemAt: ["$user._id", 0] },
           jenis: {
             $cond: {
               if: {

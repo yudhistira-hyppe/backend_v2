@@ -6,11 +6,12 @@ export class CreateAdsDto {
     _id: { oid: String; };
     userID: { oid: String; };
     userIDAssesment: { oid: String; };
-    demografisID: {
-        $ref: String;
-        $id: { oid: String };
-        $db: String;
-    };
+    // demografisID: {
+    //     $ref: String;
+    //     $id: { oid: String };
+    //     $db: String;
+    // };
+    demografisID: any[];
     interestID: any[];
     typeAdsID: { oid: String; };
     placingID: { oid: String; };
@@ -47,6 +48,7 @@ export class CreateAdsDto {
     contentModeration: boolean
     contentModerationResponse: string
     reportedUserHandle: any[];
+    age: string;
 }
 
 export class MediaimageadsDto {
