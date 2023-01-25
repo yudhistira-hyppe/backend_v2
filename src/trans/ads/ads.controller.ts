@@ -292,6 +292,7 @@ export class AdsController {
             var dataUservoucher = null;
             var arrObjinterest = [];
             var arrayInterest = [];
+            var arrayDemografis = [];
             var arrayUservoucher = [];
             var totalCreditusvoucher = 0;
             var totalCreditusvoucherUsed = 0;
@@ -313,17 +314,26 @@ export class AdsController {
 
                 }
                 try {
-                    var reqdemografisID = mongoose.Types.ObjectId(CreateAdsDto.demografisID);
+                    var reqdemografisID = CreateAdsDto.demografisID;
 
-                    var demografisIDs = { "$ref": "areas", "$id": reqdemografisID, "$db": "hyppe_infra_db" };
+                    var splitreqdem = reqdemografisID.toString();
+                    var splitreq2dem = splitreqdem.split(',');
+
+                    for (var i = 0; i < splitreq2dem.length; i++) {
+                        let iddem = splitreq2dem[i];
+                        let objintrdem = { "$ref": "areas", "$id": mongoose.Types.ObjectId(iddem), "$db": "ProdAll" }
+                        arrayDemografis.push(objintrdem);
+                    }
+
+
 
                     var reqinterestID = CreateAdsDto.interestID;
                     var splitreq = reqinterestID.toString();
                     var splitreq2 = splitreq.split(',');
 
                     for (var i = 0; i < splitreq2.length; i++) {
-                        var id = splitreq2[i];
-                        var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(id), "$db": "hyppe_infra_db" }
+                        let id = splitreq2[i];
+                        let objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(id), "$db": "ProdAll" }
                         arrayInterest.push(objintr);
                     }
 
@@ -398,7 +408,7 @@ export class AdsController {
                                         useKredit += total_credit_data;
                                         totalCredit -= total_credit_data;
                                         creditAllUse = true;
-                                    }else{
+                                    } else {
                                         total_credit_data -= LastUseKredit;
                                         useKredit += LastUseKredit;
                                         totalCredit -= LastUseKredit;
@@ -429,7 +439,7 @@ export class AdsController {
                                         totalCredit -= LastUseKreditFree;
                                     }
                                 }
-                                
+
                                 if (total_credit_data == 0) {
                                     creditAllUse = true;
                                 }
@@ -461,7 +471,7 @@ export class AdsController {
                     CreateAdsDto.userID = iduser;
                     CreateAdsDto.status = "DRAFT";
                     CreateAdsDto.isActive = false;
-                    CreateAdsDto.demografisID = demografisIDs;
+                    CreateAdsDto.demografisID = arrayDemografis;
                     CreateAdsDto.totalUsedCredit = creditValue * tayang;
                     CreateAdsDto.userVoucherID = arrayUservoucher;
                     CreateAdsDto.typeAdsID = mongoose.Types.ObjectId(CreateAdsDto.typeAdsID);
