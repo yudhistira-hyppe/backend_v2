@@ -1495,7 +1495,28 @@ export class GetusercontentsController {
 
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post('api/getusercontents/boostconsole')
+    async finddataboost(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
 
+        //var request_json = JSON.parse(JSON.stringify(request.body));
+
+        var query = null;
+        var data = null;
+
+        try {
+            query = await this.getusercontentsService.boostlistconsole();
+            data = query;
+        } catch (e) {
+            query = null;
+            data = [];
+        }
+
+        return { response_code: 202, data, messages };
+    }
 }
 
 
