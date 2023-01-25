@@ -4834,16 +4834,16 @@ export class PostBoostService {
                           $gt: ["$boosted.boostSession.end", "$testDate",]
                         }
                       },
-                      {
-                        $expr: {
-                          $lte: ["$timeStart", "$testDate",]
-                        }
-                      },
-                      {
-                        $expr: {
-                          $gt: ["$timeEnd", "$testDate",]
-                        }
-                      },
+                      // {
+                      //   $expr: {
+                      //     $lte: ["$timeStart", "$testDate",]
+                      //   }
+                      // },
+                      // {
+                      //   $expr: {
+                      //     $gt: ["$timeEnd", "$testDate",]
+                      //   }
+                      // },
                       {
 
                         "timeStart": {

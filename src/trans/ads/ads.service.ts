@@ -1054,7 +1054,11 @@ export class AdsService {
         } catch (e) {
             dateend = "";
         }
-        var pipeline = new Array<any>(
+        var pipeline = [];
+        if (userid && userid !== undefined) {
+            pipeline.push({ $match: { userID: userid } });
+        }
+        pipeline.push(
             {
                 $lookup: {
                     from: "adsplaces",
@@ -1242,9 +1246,7 @@ export class AdsService {
                 }
             },
         );
-        if (userid && userid !== undefined) {
-            pipeline.push({ $match: { userID: userid } });
-        }
+
         if (search && search !== undefined && search != "") {
             pipeline.push({
                 $match: {
@@ -1383,7 +1385,11 @@ export class AdsService {
         } catch (e) {
             dateend = "";
         }
-        var pipeline = new Array<any>(
+        var pipeline = [];
+        if (userid && userid !== undefined) {
+            pipeline.push({ $match: { userID: userid } });
+        }
+        pipeline.push(
 
             {
                 $lookup: {
@@ -1405,9 +1411,7 @@ export class AdsService {
 
 
         );
-        if (userid && userid !== undefined) {
-            pipeline.push({ $match: { userID: userid } });
-        }
+
         if (search && search !== undefined && search != "") {
             pipeline.push({
                 $match: {
@@ -1431,7 +1435,7 @@ export class AdsService {
             pipeline.push({ $match: { timestamp: { $gte: startdate } } });
         }
         if (enddate && enddate !== undefined) {
-            pipeline.push({ $match: { timestamp: { $lte: enddate } } });
+            pipeline.push({ $match: { timestamp: { $lte: dateend } } });
         }
         pipeline.push({
             "$group": {
@@ -10581,16 +10585,7 @@ export class AdsService {
                         {
                             "status": "APPROVE"
                         },
-                        //{
-                        //    $expr: {
-                        //        $gt: ["$liveAt", "$timeStart"]
-                        //    }
-                        //},
-                        //{
-                        //    $expr: {
-                        //        $lt: ["$liveAt", "$timeEnd"]
-                        //    }
-                        //},
+
                     ]
                 },
 
@@ -12454,10 +12449,11 @@ export class AdsService {
 
 
         ]);
-
+        var resultquery = [];
         console.log(query[0].area);
 
-        var resultquery = query[0].area;
+
+        resultquery = query[0].area;
 
         resultquery.forEach(function (data) {
             var getdata = data.percent;
@@ -12468,7 +12464,7 @@ export class AdsService {
             }
         });
 
-        var resultquery = query[0].genders;
+        resultquery = query[0].genders;
 
         resultquery.forEach(function (data) {
             var getdata = data.percent;
@@ -12479,7 +12475,7 @@ export class AdsService {
             }
         });
 
-        var resultquery = query[0].age;
+        resultquery = query[0].age;
 
         resultquery.forEach(function (data) {
             var getdata = data.percent;
