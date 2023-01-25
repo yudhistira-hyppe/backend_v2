@@ -12360,6 +12360,7 @@ export class AdsService {
                             $unwind: {
                                 path: "$areas",
                                 preserveNullAndEmptyArrays: true,
+
                             }
                         },
                         {
@@ -12415,7 +12416,7 @@ export class AdsService {
                             }
                         }
                     ],
-                    All: [
+                    all: [
                         {
                             $unwind: {
                                 path: "$view",
@@ -12455,63 +12456,46 @@ export class AdsService {
                     ]
                 }
             },
-            // {
-            //     $project: {
-            //         genders:
-            //         {
-            //             $ifNull: ['$genders.percent', "$kancrut"]
-            //         },
-            //         area:
-            //         {
-            //             $ifNull: ['$area.percent', "$kancrut"]
-            //         },
-            //         age:
-            //         {
-            //             $ifNull: ['$age.percent', "$kancrut"]
-            //         },
-            //         all:
-            //         {
-            //             $ifNull: ['$all', "$kancrut"]
-            //         },
-            //         day:
-            //             [{
-            //                 day7:
-            //                 {
-            //                     $ifNull: ['$day.day7', "$kancrut"]
-            //                 },
-            //                 day6:
-            //                 {
-            //                     $ifNull: ['$day.day6', "$kancrut"]
-            //                 },
-            //                 day5:
-            //                 {
-            //                     $ifNull: ['$day.day5', "$kancrut"]
-            //                 },
-            //                 day4:
-            //                 {
-            //                     $ifNull: ['$day.day4', "$kancrut"]
-            //                 },
-            //                 day3:
-            //                 {
-            //                     $ifNull: ['$day.day3', "$kancrut"]
-            //                 },
-            //                 day2:
-            //                 {
-            //                     $ifNull: ['$day.day2', "$kancrut"]
-            //                 },
-            //                 day1:
-            //                 {
-            //                     $ifNull: ['$day.day1', "$kancrut"]
-            //                 },
+            {
+                $project: {
+                    genders:
+                    {
+                        $cond: {
+                            if: {
+                                $gt: ['$genders.percecnt', 0]
+                            },
+                            then: "$genders",
+                            else: '$kancut'
+                        }
+                    },
+                    all: "$all",
+                    area:
+                    {
+                        $cond: {
+                            if: {
+                                $gt: ['$area.percent', 0]
+                            },
+                            then: "$area",
+                            else: '$kancut'
+                        }
+                    },
+                    age:
+                    {
+                        $cond: {
+                            if: {
+                                $gt: ['$age.percent', 0]
+                            },
+                            then: "$age",
+                            else: '$kancut'
+                        }
+                    },
+                    day: 1,
 
-            //             }]
-            //     }
-            // }
+                }
 
+            }
         ]);
         var resultquery = [];
-
-
         resultquery = query[0].area;
 
         resultquery.forEach(function (data) {
