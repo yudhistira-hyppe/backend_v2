@@ -4916,7 +4916,7 @@ export class TransactionsService {
                                 "noVoucher": 1,
                                 "codeVoucher": 1,
                                 "userID": 1,
-                                "nameAds": "tes",
+                                "nameAds": 1,
                                 "creditValue": 1,
                                 "creditPromo": 1,
                                 "creditTotal": 1,
