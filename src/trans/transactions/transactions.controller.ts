@@ -1465,7 +1465,7 @@ export class TransactionsController {
                             datauservoucher.usedCredit = usedCredit;
                             datauservoucher.voucherID = voucherID;
                             datauservoucher.voucherCredit = totalCredit;
-                            datauservoucher.totalCredit = totalCredit * jml;
+                            datauservoucher.totalCredit = totalCredit;
                             datauservoucher.jmlVoucher = jml;
                             datauservoucher.expiredAt = dex.toISOString();
                             datauservoucher.credit = total_creditValue_voucher;
