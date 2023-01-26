@@ -4,6 +4,7 @@ import { CreateUserbankaccountsDto } from './dto/create-userbankaccounts.dto';
 import { Model, Types } from 'mongoose';
 import { Userbankaccounts, UserbankaccountsDocument } from './schemas/userbankaccounts.schema';
 import { ObjectId } from 'mongodb';
+import { integer } from 'aws-sdk/clients/lightsail';
 
 @Injectable()
 export class UserbankaccountsService {
@@ -192,6 +193,270 @@ export class UserbankaccountsService {
         let data = await this.userbankaccountsModel.updateMany({ "_id": id },
             { $set: { "updatedAt": updatedAt, "userHandle": userHandle } });
         return data;
+    }
+
+    async getlistaccount(startdate: string, enddate:string, namapemohon:string, statusLast: any[], descending:number, page: number, limit:number){
+        //startdate, enddate, namapemohon, statusLast, page, limit
+        //const mongoose = require('mongoose');
+        var querytambahan = [];
+        querytambahan.push({
+                "$project":
+                {
+                    _id:1,
+                    userId:1,
+                    statusInquiry:1,
+                    noRek:1,
+                    nama:1,
+                    active:1,
+                    description:1,
+                    tanggalPengajuan:
+                    {
+                        "$dateFromString": 
+                        {
+                            dateString: 
+                            {
+                                "$last":"$userHandle.createdAt"
+                            }
+                        }
+                    },
+                    updatedAt:1,
+                    userHandle:1,
+                    statusLast:
+                    {
+                        "$last":"$userHandle.status"
+                    },
+                    reasonId:
+                    {
+                        "$last":"$userHandle.reasonId"
+                    },
+                    reasonAdmin:
+                    {
+                        "$last":"$userHandle.valueReason"
+                    },
+                }
+            },
+            {
+                "$match":
+                {
+                    "$and":
+                    [
+                        {
+                            userHandle:
+                            {
+                                "$ne":[]
+                            }
+                        },
+                        {
+                            userHandle:
+                            {
+                                "$ne":null
+                            }
+                        },
+                    ]
+                }
+            },
+            { 
+                "$lookup":
+                {
+                    from:"userbasics",
+                    let:
+                    {
+                        basic_fk:"$userId" 
+                    },
+                    as:'userbasic_data',
+                    pipeline:
+                    [
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$_id",
+                                        "$$basic_fk"
+                                    ]
+                                }
+                            }
+                        },
+                    ]
+                }
+            },
+            { 
+                "$lookup":
+                {
+                    from:"userauths",
+                    let:
+                    {
+                        basic_fk:
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$userbasic_data.email", 0
+                            ]
+                        } 
+                    },
+                    as:'userauth_data',
+                    pipeline:
+                    [
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$email",
+                                                "$$basic_fk"
+                                            ]
+                                        },
+                                    },
+                                ]
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                "$project":
+                {
+                    _id:"$_id",
+                    userId:"$userId",
+                    statusInquiry:"$statusInquiry",
+                    noRek:"$noRek",
+                    nama:"$nama",
+                    active:"$active",
+                    tanggalPengajuan:"$tanggalPengajuan",
+                    // userHandle:"$userHandle",
+                    // fkbasic:"$userbasic_data",
+                    // fkauth:"$userauth_data",
+                    fullName:
+                    {
+                        "$last":"$userbasic_data.fullName"
+                    },
+                    email:
+                    {
+                        "$last":"$userauth_data.email"
+                    },
+                    username:
+                    {
+                        "$last":"$userauth_data.username"
+                    },
+                    statusLast:"$statusLast",
+                    reasonId:"$reasonId",
+                    reasonAdmin:"$reasonAdmin",
+                    avatar:
+                    {
+                        mediaEndpoint: 
+                        {
+                            "$concat":
+                            [
+                                "/profilepict/",
+                                {
+                                    "$last":"$userbasic_data.profilePict.$id"
+                                },
+                            ]
+                        }
+                    },
+                }
+            },);
+
+        if(namapemohon != null)
+        {
+            querytambahan.push({
+                "$match":
+                {
+                    username:
+                    {
+                        "$regex":namapemohon,
+                        "$options":"i"
+                    }
+                }
+            },);
+        }
+
+        if(startdate != null)
+        {
+            querytambahan.push({
+                "$match":
+                {
+                    "$and":
+                    [
+                        {
+                            "$expr":
+                            {
+                                "$gte":
+                                [
+                                    "$tanggalPengajuan", 
+                                    { 
+                                        "$dateFromString": 
+                                        {
+                                            dateString: startdate
+                                        } 
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "$expr":
+                            {
+                                "$lt":
+                                [
+                                    "$tanggalPengajuan", 
+                                    { 
+                                        "$dateFromString": 
+                                        {
+                                            dateString: enddate
+                                        } 
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            });
+        }
+
+        if(statusLast != null)
+        {
+            var temp = [];
+            statusLast.forEach(element => {
+                temp.push({
+                    "$expr":
+                    {
+                        "$eq":["$statusLast", element]
+                    }
+                });
+            });
+            querytambahan.push({
+                "$match":
+                {
+                    "$or":temp
+                }
+            },);
+        }
+
+        querytambahan.push({
+                "$sort":
+                {
+                    tanggalPengajuan:descending
+                }
+            },
+            {
+                "$skip":limit*page
+            },
+            {
+                "$limit":limit
+            },);
+
+        //console.log(querytambahan);
+
+        var query = await this.userbankaccountsModel.aggregate(querytambahan);
+
+        return query;
     }
 
 }

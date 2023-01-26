@@ -16,6 +16,7 @@ import { extname } from 'path';
 import { diskStorage } from 'multer';
 import { UtilsService } from "../../utils/utils.service";
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
+import { start } from "repl";
 
 //import FormData from "form-data";
 const multer = require('multer');
@@ -587,6 +588,86 @@ export class UserbankaccountsController {
         return { response_code: 202, messages };
     }
 
+    @Post('api/userbankaccounts/getAccountList')
+    @UseGuards(JwtAuthGuard)
+    async getAccountList(@Req() request: Request): Promise<any> {
+        var startdate = null;
+        var enddate = null;
+        var statusLast = null;
+        var namapemohon = null;
+        var page = 0;
+        var limit = 10;
+        var data = null;
+        var request_body = JSON.parse(JSON.stringify(request.body));
+        var descending = 1;
+        
+        if (request_body["startdate"] !== undefined && request_body["enddate"] !== undefined) 
+        {
+            //cek validasi apakah format tanggal sudah sesuai atau belum
+            var check = new Date(request_body["startdate"]);
+            if(check.toString() == "Invalid Date")
+            {
+                throw new BadRequestException("Unabled to proceed");
+            }
+            else
+            {
+                startdate = request_body["startdate"];
+                startdate = new Date(startdate).toISOString().split("T")[0] + "T00:00:00.000Z";
+            }
+
+            //cek validasi apakah format tanggal sudah sesuai atau belum
+            var check = new Date(request_body["enddate"]);
+            if(check.toString() == "Invalid Date")
+            {
+                throw new BadRequestException("Unabled to proceed");
+            }
+            else
+            {
+                enddate = request_body["enddate"];
+                enddate = new Date(enddate).toISOString().split("T")[0] + "T23:59:59.000Z";
+                //enddate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1)).toISOString().split("T")[0] + "T23:59:59.000Z";
+            }
+        }
+
+        if (request_body["namapemohon"] !== undefined) 
+        {
+            namapemohon = request_body["namapemohon"];
+        }
+
+        if (request_body["statusLast"] !== undefined) 
+        {
+            statusLast = Object.values(request_body["statusLast"]);
+        }
+
+        if (request_body["page"] !== undefined) 
+        {
+            page = Number(request_body["page"]);
+        }
+
+        if (request_body["limit"] !== undefined) 
+        {
+            limit = Number(request_body["limit"]);
+        }
+
+        if (request_body["descending"] !== undefined)
+        {
+            if(request_body["descending"] == true)
+            {
+                descending = -1;
+            }
+        }
+
+        // console.log(startdate);
+        // console.log(enddate);
+
+        data = await this.userbankaccountsService.getlistaccount(startdate, enddate, namapemohon, statusLast, descending, page, limit);
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        return { response_code: 202, data, messages };
+    }
 
 
 
