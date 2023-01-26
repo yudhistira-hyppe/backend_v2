@@ -307,7 +307,7 @@ export class AdsService {
             },
             {
                 $match: {
-                    status: 'APPROVE', 
+                    status: 'APPROVE',
                     isActive: true,
                     liveAt: { $lte: date },
                     $expr: { $lt: ["$totalView", "$tayang"] }
@@ -365,25 +365,25 @@ export class AdsService {
                         {
                             $lookup: {
                                 from: "interests_repo",
-                            let: {
-                                "localID": "$userInterests.$id",
-                            },
-                            pipeline: [
-                                {
-                                    $match: {
-                                        $expr: {
-                                            $in: ["$_id", "$$localID"]
+                                let: {
+                                    "localID": "$userInterests.$id",
+                                },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $in: ["$_id", "$$localID"]
+                                            }
                                         }
-                                    }
-                                },
-                                {
-                                    $project: {
-                                        "interestName": 1,
-                                        "icon": 1,
+                                    },
+                                    {
+                                        $project: {
+                                            "interestName": 1,
+                                            "icon": 1,
 
-                                    }
-                                },
-                            ],
+                                        }
+                                    },
+                                ],
                                 "as": "user_interests"
                             },
 
@@ -643,7 +643,7 @@ export class AdsService {
                     duration: 1,
                     __v: 1,
                     userIDAssesment: 1,
-                    totalView: 1, 
+                    totalView: 1,
                     userbasics_data: 1,
                     userads_data: 1,
                     userId: '$userId',
@@ -12939,6 +12939,30 @@ export class AdsService {
         if (query[0].area[0].percent === 0) {
             query[0].area = [];
         }
+        return query;
+    }
+
+    async countadsuser(iduser: ObjectID) {
+        var query = await this.adsModel.aggregate(
+
+            [
+
+                {
+                    $match: {
+                        userID: iduser
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalpost: {
+                            $sum: 1
+                        }
+                    }
+                }
+            ]
+        );
+
         return query;
     }
 }
