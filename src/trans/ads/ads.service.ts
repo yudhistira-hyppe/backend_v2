@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { CreateAdsDto } from './dto/create-ads.dto';
 import { Ads, AdsDocument } from './schemas/ads.schema';
 import { UtilsService } from '../../utils/utils.service';
@@ -295,6 +295,406 @@ export class AdsService {
             .findByIdAndRemove({ _id: id })
             .exec();
         return deletedCat;
+    }
+
+    async findAds(userId: mongoose.Types.ObjectId, nameType: string, date?: string) {
+        var query = await this.adsModel.aggregate([
+            {
+                $addFields: {
+                    'user_id': userId,
+
+                }
+            },
+            {
+                $match: {
+                    status: 'APPROVE', 
+                    isActive: true,
+                    liveAt: { $lte: date },
+                    $expr: { $lt: ["$totalView", "$tayang"] }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'userads',
+                    as: 'userads_data',
+                    let: {
+                        localID: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$adsID', '$$localID']
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$userID', userId]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    // localField: 'user_id',
+                    // foreignField: '_id',
+                    as: 'userbasics_data',
+                    let: {
+                        localID: '$user_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr: {
+                                    $eq: ['$_id', '$$localID']
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "interests_repo",
+                            let: {
+                                "localID": "$userInterests.$id",
+                            },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $in: ["$_id", "$$localID"]
+                                        }
+                                    }
+                                },
+                                {
+                                    $project: {
+                                        "interestName": 1,
+                                        "icon": 1,
+
+                                    }
+                                },
+                            ],
+                                "as": "user_interests"
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: "areas",
+                                let: {
+                                    "localID": "$states.$id",
+                                },
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $eq: ["$_id", "$$localID"]
+                                            }
+                                        }
+                                    },
+                                ],
+                                "as": "user_areas"
+                            },
+
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                gender: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'P',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' Female']
+                                                },
+                                                then: 'P',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'P',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'P',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'L',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' Male']
+                                                },
+                                                then: 'L',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'L',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'L',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+                                    },
+                                },
+                                cities: { $arrayElemAt: ['$user_areas', 0] },
+                                dob: {
+                                    $cond: {
+                                        if: {
+                                            $and: ['$dob', {
+                                                $ne: ["$dob", ""]
+                                            }]
+                                        },
+                                        then: {
+                                            $toInt: {
+                                                $divide: [{
+                                                    $subtract: [new Date(), {
+                                                        $toDate: "$dob"
+                                                    }]
+                                                }, (365 * 24 * 60 * 60 * 1000)]
+                                            }
+                                        },
+                                        else: 0
+                                    }
+                                },
+                            }
+                        },
+                        // {
+                        //     $project: {
+                        //         "_id": 1,
+                        //         "gender": 1,
+                        //         "cities": 1,
+                        //         "dob":
+                        //         {
+                        //             $switch: {
+                        //                 branches: [
+                        //                     {
+                        //                         case: {
+                        //                             $gt: ["$dob", 44]
+                        //                         },
+                        //                         then: "< 44 Tahun"
+                        //                     },
+                        //                     {
+                        //                         case: {
+                        //                             $and: [{
+                        //                                 $gte: ["$dob", 36]
+                        //                             }, {
+                        //                                 $lte: ["$dob", 44]
+                        //                             }]
+                        //                         },
+                        //                         then: "35-44 Tahun"
+                        //                     },
+                        //                     {
+                        //                         case: {
+                        //                             $and: [{
+                        //                                 $gte: ["$dob", 25]
+                        //                             }, {
+                        //                                 $lte: ["$dob", 35]
+                        //                             }]
+                        //                         },
+                        //                         then: "24-35 Tahun"
+                        //                     },
+                        //                     {
+                        //                         case: {
+                        //                             $and: [{
+                        //                                 $gte: ["$dob", 14]
+                        //                             }, {
+                        //                                 $lte: ["$dob", 24]
+                        //                             }]
+                        //                         },
+                        //                         then: "14-24 Tahun"
+                        //                     },
+                        //                     {
+                        //                         case: {
+                        //                             $and: [{
+                        //                                 $gte: ["$dob", 1]
+                        //                             }, {
+                        //                                 $lt: ["$dob", 14]
+                        //                             }]
+                        //                         },
+                        //                         then: "< 14 Tahun"
+                        //                     }
+                        //                 ],
+                        //                 "default": "other"
+                        //             }
+                        //         },
+
+                        //     }
+                        // }
+                    ],
+                },
+            },
+            {
+                $lookup: {
+                    from: 'adstypes',
+                    localField: 'typeAdsID',
+                    foreignField: '_id',
+                    as: 'adstypes_data',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'areas',
+                    localField: 'demografisID.$id',
+                    foreignField: '_id',
+                    as: 'areas_data',
+                },
+            },
+            {
+                $lookup: {
+                    from: "interests_repo",
+                    as: "interests_repo_data",
+                    let: {
+                        "localID": "$interestID.$id"
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $in: ["$_id", "$$localID"]
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "interestName": 1,
+                                "icon": 1,
+
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
+                $lookup: {
+                    from: 'adsplaces',
+                    localField: 'placingID',
+                    foreignField: '_id',
+                    as: 'adsplaces_data',
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    userID: 1,
+                    demografisID: '$areas_data',
+                    interestID: '$interests_repo_data',
+                    typeAdsID: { $arrayElemAt: ['$adstypes_data', 0] },
+                    placingID: { $arrayElemAt: ['$adsplaces_data', 0] },
+                    description: 1,
+                    gender: 1,
+                    liveAt: 1,
+                    name: 1,
+                    objectifitas: 1,
+                    status: 1,
+                    timestamp: 1,
+                    totalUsedCredit: 1,
+                    urlLink: 1,
+                    isActive: 1,
+                    type: 1,
+                    tayang: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    liveTypeAds: 1,
+                    idApsara: 1,
+                    duration: 1,
+                    __v: 1,
+                    userIDAssesment: 1,
+                    totalView: 1, 
+                    userbasics_data: 1,
+                    userads_data: 1,
+                    userId: '$userId',
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    userID: 1,
+                    demografisID: 1,
+                    interestID: 1,
+                    typeAdsID: 1,
+                    placingID: 1,
+                    description: 1,
+                    gender: 1,
+                    liveAt: 1,
+                    name: 1,
+                    objectifitas: 1,
+                    status: 1,
+                    timestamp: 1,
+                    totalUsedCredit: 1,
+                    urlLink: 1,
+                    isActive: 1,
+                    type: 1,
+                    tayang: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    liveTypeAds: 1,
+                    idApsara: 1,
+                    duration: 1,
+                    __v: 1,
+                    userIDAssesment: 1,
+                    totalView: 1,
+                    typeAdsName: '$typeAdsID.nameType',
+                    userads_data: 1,
+                    userId: 1,
+                    userbasics_data: 1,
+                    userads_data_count: { $size: "$userads_data" }
+                }
+            },
+            {
+                $match: {
+                    typeAdsName: nameType,
+                    userads_data_count: 0
+                }
+            },
+        ]);
+        return query;
     }
 
     async update(
