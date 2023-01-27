@@ -155,12 +155,19 @@ export class AdsUserCompareController {
         data_response['idUser'] = data_userbasic_ads._id.toString();
         data_response['fullName'] = data_userbasic_ads.fullName;
         data_response['email'] = data_userbasic_ads.email;
-        data_response['avartar'] = {
-            mediaBasePath: get_profilePict.mediaBasePath,
-            mediaUri: get_profilePict.mediaUri,
-            mediaType: get_profilePict.mediaType,
-            mediaEndpoint: '/profilepict/' + get_profilePict.mediaID
-        }
+        
+        data_response['avartar'].mediaBasePath = (get_profilePict.mediaBasePath != undefined) ? get_profilePict.mediaBasePath : null;
+        data_response['avartar'].mediaUri = (get_profilePict.mediaUri != undefined) ? get_profilePict.mediaUri : null;
+        data_response['avartar'].mediaType = (get_profilePict.mediaType != undefined) ? get_profilePict.mediaType : null;
+        data_response['avartar'].mediaEndpoint = (get_profilePict.mediaEndpoint != undefined) ? get_profilePict.mediaEndpoint : null;
+
+        // data_response['avartar'] = {
+        //     mediaBasePath: get_profilePict.mediaBasePath,
+        //     mediaUri: get_profilePict.mediaUri,
+        //     mediaType: get_profilePict.mediaType,
+        //     mediaEndpoint: '/profilepict/' + get_profilePict.mediaID
+        // }
+        
         var dataPlace = await this.adsplacesService.findOne(data_ads.placingID.toString());
         if (await this.utilsService.ceckData(dataPlace)) {
             data_response['adsPlace'] = dataPlace.namePlace;
@@ -215,7 +222,7 @@ export class AdsUserCompareController {
         }
 
         var getDate = await this.utilsService.getDateString();
-        const data_ads = await this.adsService.findAds(new mongoose.Types.ObjectId(data_userbasic._id.toString()),type_, getDate);
+        const data_ads = await this.adsService.findAds(headers['x-auth-user'],type_);
         return data_ads;
         // const data_userads = await this.userAdsService.findOneByuserID(data_userbasic._id.toString(), type_, getDate);
         // if (!(await this.utilsService.ceckData(data_userads))) {
