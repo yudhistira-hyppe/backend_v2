@@ -195,10 +195,12 @@ export class UserbankaccountsService {
         return data;
     }
 
-    async getlistaccount(startdate: string, enddate:string, namapemohon:string, statusLast: any[], descending:number, page: number, limit:number){
+    async getlistaccount(startdate: string, enddate:string, namapemohon:string, liststatus: any[], descending:number, page: number, limit:number){
         //startdate, enddate, namapemohon, statusLast, page, limit
         //const mongoose = require('mongoose');
-        var querytambahan = [];
+
+        /*
+         var querytambahan = [];
         querytambahan.push({
                 "$project":
                 {
@@ -451,8 +453,335 @@ export class UserbankaccountsService {
             {
                 "$limit":limit
             },);
+        */
 
-        //console.log(querytambahan);
+        var querytambahan = [];
+        querytambahan.push({
+                "$match":
+                {
+                    "$and":
+                    [
+                        {
+                            userHandle:
+                            {
+                                "$ne":[]
+                            }
+                        },
+                        {
+                            userHandle:
+                            {
+                                "$ne":null
+                            }
+                        },
+                    ]
+                }
+            },);
+        
+        var subproject = {
+                    _id:1,
+                    tanggalPengajuan:
+                    {
+                        "$dateFromString": 
+                        {
+                            dateString: 
+                            {
+                                "$last":"$userHandle.createdAt"
+                            }
+                        }
+                    },
+                    userHandle:1,
+                    statusLast:
+                    {
+                        "$last":"$userHandle.status"
+                    },
+                    reasonId:
+                    {
+                        "$last":"$userHandle.reasonId"
+                    },
+                    reasonAdmin:
+                    {
+                        "$last":"$userHandle.valueReason"
+                    },
+                };
+        
+        if(limit !== 0)
+        {
+            Object.assign(subproject, {userId:1});
+            Object.assign(subproject, {statusInquiry:1});
+            Object.assign(subproject, {noRek:1});
+            Object.assign(subproject, {nama:1});
+            Object.assign(subproject, {active:1});
+            Object.assign(subproject, {description:1});
+            Object.assign(subproject, {updatedAt:1});    
+        }
+        
+        querytambahan.push(
+            {
+                "$project":
+                subproject,
+            },
+            { 
+                "$lookup":
+                {
+                    from:"userbasics",
+                    let:
+                    {
+                        basic_fk:"$userId" 
+                    },
+                    as:'userbasic_data',
+                    pipeline:
+                    [
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$_id",
+                                        "$$basic_fk"
+                                    ]
+                                }
+                            }
+                        },
+                    ]
+                }
+            },
+            { 
+                "$lookup":
+                {
+                    from:"userauths",
+                    let:
+                    {
+                        basic_fk:
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$userbasic_data.email", 0
+                            ]
+                        }
+                    },
+                    as:'userauth_data',
+                    pipeline:
+                    [
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$email",
+                                                "$$basic_fk"
+                                            ]
+                                        },
+                                    },
+                                ]
+                            }
+                        },
+                    ]
+                }
+            },
+        );
+
+        if(limit !== 0)
+        {
+            querytambahan.push({
+                "$project":
+                {
+                    _id:"$_id",
+                    userId:"$userId",
+                    statusInquiry:"$statusInquiry",
+                    noRek:"$noRek",
+                    nama:"$nama",
+                    active:"$active",
+                    tanggalPengajuan:"$tanggalPengajuan",
+                    // userHandle:"$userHandle",
+                    // fkbasic:"$userbasic_data",
+                    // fkauth:"$userauth_data",
+                    fullName:
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$userbasic_data.fullName", 0
+                        ]
+                    },
+                    email:
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$userauth_data.email", 0
+                        ]
+                    },
+                    username:
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$userauth_data.username", 0
+                        ]
+                    },
+                    statusLast:"$statusLast",
+                    reasonId:"$reasonId",
+                    reasonAdmin:"$reasonAdmin",
+                    avatar:
+                    {
+                        mediaEndpoint: 
+                        {
+                            "$concat":
+                            [
+                                "/profilepict/",
+                                {
+                                    "$last":"$userbasic_data.profilePict.$id"
+                                },
+                            ]
+                        }
+                    },
+                }
+            },);
+        }
+        else
+        {
+            querytambahan.push({
+                "$project":
+                {
+                    _id:"$_id",
+                    tanggalPengajuan:"$tanggalPengajuan",
+                    username:
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$userauth_data.username", 0
+                        ]
+                    },
+                    statusLast:"$statusLast",
+                }
+            },);
+        }
+
+        if(namapemohon != null)
+        {
+            querytambahan.push({
+                "$match":
+                {
+                    username:
+                    {
+                        "$regex":namapemohon,
+                        "$options":"i"
+                    }
+                }
+            },);
+        }
+
+        if(startdate != null)
+        {
+            querytambahan.push({
+                "$match":
+                {
+                    "$and":
+                    [
+                        {
+                            "$expr":
+                            {
+                                "$gte":
+                                [
+                                    "$tanggalPengajuan", 
+                                    { 
+                                        "$dateFromString": 
+                                        {
+                                            dateString: startdate
+                                        } 
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "$expr":
+                            {
+                                "$lt":
+                                [
+                                    "$tanggalPengajuan", 
+                                    { 
+                                        "$dateFromString": 
+                                        {
+                                            dateString: enddate
+                                        } 
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            });
+        }
+
+        if(liststatus != null)
+        {
+            querytambahan.push({
+                "$match":
+                {
+                    statusLast: 
+                    {
+                        $in:liststatus
+                    }
+                },
+            },);
+        }
+
+        if(limit !== 0)
+        {
+            querytambahan.push({
+                    "$sort":
+                    {
+                        tanggalPengajuan:descending
+                    }
+                },
+                {
+                    "$skip":limit*page
+                },
+                {
+                    "$limit":limit
+                },
+                {
+                    "$project":
+                    {
+                        _id:"$_id",
+                        userId:"$userId",
+                        statusInquiry:"$statusInquiry",
+                        noRek:"$noRek",
+                        nama:"$nama",
+                        active:"$active",
+                        tanggalPengajuan:"$tanggalPengajuan",
+                        // userHandle:"$userHandle",
+                        // fkbasic:"$userbasic_data",
+                        // fkauth:"$userauth_data",
+                        fullName:"$fullName",
+                        email:"$email",
+                        username:"$username",
+                        statusLast:"$statusLast",
+                        reasonId:"$reasonId",
+                        reasonAdmin:"$reasonAdmin",
+                        avatar:"$avatar",
+                    }
+                });
+        }
+        else
+        {
+            querytambahan.push({
+                "$group":
+                {
+                    _id:null,
+                    total:
+                    {
+                        "$sum":1
+                    }
+                }
+            });
+        }
+
+        //console.log(JSON.stringify(querytambahan));
 
         var query = await this.userbankaccountsModel.aggregate(querytambahan);
 

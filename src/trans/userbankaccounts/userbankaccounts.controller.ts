@@ -646,7 +646,7 @@ export class UserbankaccountsController {
 
         if (request_body["limit"] !== undefined) 
         {
-            limit = Number(request_body["limit"]);
+            limit = (Number(request_body["limit"]) !== parseInt('0') ? Number(request_body["limit"]) : parseInt('10'));
         }
 
         if (request_body["descending"] !== undefined)
@@ -659,8 +659,16 @@ export class UserbankaccountsController {
 
         // console.log(startdate);
         // console.log(enddate);
-
-        data = await this.userbankaccountsService.getlistaccount(startdate, enddate, namapemohon, statusLast, descending, page, limit);
+        
+        var resultdata = await this.userbankaccountsService.getlistaccount(startdate, enddate, namapemohon, statusLast, descending, page, limit);
+        var totaldata = await this.userbankaccountsService.getlistaccount(startdate, enddate, namapemohon, statusLast, descending, 0, 0);
+        var totalpage = parseInt(totaldata[0].total) / limit;
+        data = {
+            "data":resultdata,
+            "totaldata":totaldata[0].total,
+            "totalpage":parseInt(totalpage.toFixed(0)),
+            "infolimit":limit,
+        }
 
         const messages = {
             "info": ["The process successful"],
