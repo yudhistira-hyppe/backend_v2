@@ -5317,6 +5317,8 @@ export class TransactionsController {
         let datatr = await this.transactionsService.findtransactiondetailvoucher(idtr);
         var detail = datatr[0].detail;
         var lenghdetail = detail.length;
+        var userid = datatr[0].iduser;
+        var iduser = mongoose.Types.ObjectId(userid);
         var data = [];
 
         for (var i = 0; i < lenghdetail; i++) {
@@ -5370,6 +5372,86 @@ export class TransactionsController {
             }
         ];
 
+        var datatrpending = null;
+        var datatrpendingjual = null;
+
+        try {
+
+            datatrpending = await this.transactionsService.findExpirednew(iduser);
+
+
+        } catch (e) {
+            datatrpending = null;
+
+        }
+
+        if (datatrpending !== null) {
+            var datenow = new Date(Date.now());
+
+
+            var lengdatatr = datatrpending.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpending[i].idva;
+                var idtransaction = datatrpending[i]._id;
+                var expiredva = new Date(datatrpending[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        this.transactionsService.updatestatuscancel(idtransaction);
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
+
+        try {
+
+            datatrpendingjual = await this.transactionsService.findExpiredSell(iduser);
+
+
+        } catch (e) {
+            datatrpendingjual = null;
+
+        }
+
+        if (datatrpendingjual !== null) {
+            var datenow = new Date(Date.now());
+
+
+            var lengdatatr = datatrpendingjual.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpendingjual[i].idva;
+                var idtransaction = datatrpendingjual[i]._id;
+                var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        await this.transactionsService.updatestatuscancel(idtransaction);
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
         return { response_code: 202, data, messages };
     }
 
