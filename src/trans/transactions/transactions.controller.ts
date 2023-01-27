@@ -5093,6 +5093,87 @@ export class TransactionsController {
             } else {
                 totalpage = parseInt(tpage2);
             }
+
+            var datatrpending = null;
+            var datatrpendingjual = null;
+
+            try {
+
+                datatrpending = await this.transactionsService.findExpiredAll();
+
+
+            } catch (e) {
+                datatrpending = null;
+
+            }
+
+            if (datatrpending !== null) {
+                var datenow = new Date(Date.now());
+
+
+                var lengdatatr = datatrpending.length;
+
+                for (var i = 0; i < lengdatatr; i++) {
+
+                    var idva = datatrpending[i].idva;
+                    var idtransaction = datatrpending[i]._id;
+                    var expiredva = new Date(datatrpending[i].expiredtimeva);
+                    expiredva.setHours(expiredva.getHours() - 7);
+
+                    if (datenow > expiredva) {
+                        let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                        if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                            this.transactionsService.updatestatuscancel(idtransaction);
+
+                        }
+
+
+                    }
+
+
+                }
+
+            }
+
+            try {
+
+                datatrpendingjual = await this.transactionsService.findExpiredAll();
+
+
+            } catch (e) {
+                datatrpendingjual = null;
+
+            }
+
+            if (datatrpendingjual !== null) {
+                var datenow = new Date(Date.now());
+
+
+                var lengdatatr = datatrpendingjual.length;
+
+                for (var i = 0; i < lengdatatr; i++) {
+
+                    var idva = datatrpendingjual[i].idva;
+                    var idtransaction = datatrpendingjual[i]._id;
+                    var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
+                    expiredva.setHours(expiredva.getHours() - 7);
+
+                    if (datenow > expiredva) {
+                        let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                        if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                            await this.transactionsService.updatestatuscancel(idtransaction);
+
+                        }
+
+
+                    }
+
+
+                }
+
+            }
             return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };
         } else {
             var totalallrowuser = null;
@@ -5118,6 +5199,87 @@ export class TransactionsController {
 
             } else {
                 totalpage = parseInt(tpage2user);
+            }
+
+            var datatrpending = null;
+            var datatrpendingjual = null;
+
+            try {
+
+                datatrpending = await this.transactionsService.findExpirednew(userid);
+
+
+            } catch (e) {
+                datatrpending = null;
+
+            }
+
+            if (datatrpending !== null) {
+                var datenow = new Date(Date.now());
+
+
+                var lengdatatr = datatrpending.length;
+
+                for (var i = 0; i < lengdatatr; i++) {
+
+                    var idva = datatrpending[i].idva;
+                    var idtransaction = datatrpending[i]._id;
+                    var expiredva = new Date(datatrpending[i].expiredtimeva);
+                    expiredva.setHours(expiredva.getHours() - 7);
+
+                    if (datenow > expiredva) {
+                        let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                        if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                            this.transactionsService.updatestatuscancel(idtransaction);
+
+                        }
+
+
+                    }
+
+
+                }
+
+            }
+
+            try {
+
+                datatrpendingjual = await this.transactionsService.findExpiredSell(userid);
+
+
+            } catch (e) {
+                datatrpendingjual = null;
+
+            }
+
+            if (datatrpendingjual !== null) {
+                var datenow = new Date(Date.now());
+
+
+                var lengdatatr = datatrpendingjual.length;
+
+                for (var i = 0; i < lengdatatr; i++) {
+
+                    var idva = datatrpendingjual[i].idva;
+                    var idtransaction = datatrpendingjual[i]._id;
+                    var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
+                    expiredva.setHours(expiredva.getHours() - 7);
+
+                    if (datenow > expiredva) {
+                        let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                        if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                            await this.transactionsService.updatestatuscancel(idtransaction);
+
+                        }
+
+
+                    }
+
+
+                }
+
             }
             return {
                 response_code: 202,
