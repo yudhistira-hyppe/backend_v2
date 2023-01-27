@@ -161,11 +161,13 @@ export class AdsUserCompareController {
         // data_response['avartar'].mediaType = (get_profilePict.mediaType != undefined) ? get_profilePict.mediaType : null;
         // data_response['avartar'].mediaEndpoint = (get_profilePict.mediaEndpoint != undefined) ? get_profilePict.mediaEndpoint : null;
 
-        data_response['avartar'] = {
-            mediaBasePath: (get_profilePict.mediaBasePath != undefined) ? get_profilePict.mediaBasePath : null,
-            mediaUri: (get_profilePict.mediaUri != undefined) ? get_profilePict.mediaUri : null,
-            mediaType: (get_profilePict.mediaType != undefined) ? get_profilePict.mediaType : null,
-            mediaEndpoint: (get_profilePict.mediaID != undefined) ? '/profilepict/' + get_profilePict.mediaID : null,
+        if (await this.utilsService.ceckData(get_profilePict)) {
+            data_response['avartar'] = {
+                mediaBasePath: (get_profilePict.mediaBasePath != undefined) ? get_profilePict.mediaBasePath : null,
+                mediaUri: (get_profilePict.mediaUri != undefined) ? get_profilePict.mediaUri : null,
+                mediaType: (get_profilePict.mediaType != undefined) ? get_profilePict.mediaType : null,
+                mediaEndpoint: (get_profilePict.mediaID != undefined) ? '/profilepict/' + get_profilePict.mediaID : null,
+            }
         }
         
         var dataPlace = await this.adsplacesService.findOne(data_ads.placingID.toString());
