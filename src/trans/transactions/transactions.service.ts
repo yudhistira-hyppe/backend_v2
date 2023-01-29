@@ -60,6 +60,10 @@ export class TransactionsService {
     async findExpirednew(iduserbuyer: ObjectId): Promise<Transactions[]> {
         return this.transactionsModel.find({ status: "WAITING_PAYMENT", iduserbuyer: iduserbuyer }).exec();
     }
+
+    async findExpiredAll(): Promise<Transactions[]> {
+        return this.transactionsModel.find({ status: "WAITING_PAYMENT" }).exec();
+    }
     async findExpiredSell(idusersell: ObjectId): Promise<Transactions[]> {
         return this.transactionsModel.find({ status: "WAITING_PAYMENT", idusersell: idusersell }).exec();
     }
