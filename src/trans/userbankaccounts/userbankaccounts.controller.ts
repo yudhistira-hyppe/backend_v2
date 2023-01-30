@@ -613,8 +613,7 @@ export class UserbankaccountsController {
         var dataall = null;
         var startdate = null;
         var enddate = null;
-        const mongoose = require('mongoose');
-        var ObjectId = require('mongodb').ObjectId;
+
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {

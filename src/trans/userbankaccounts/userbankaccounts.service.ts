@@ -396,19 +396,27 @@ export class UserbankaccountsService {
                 }
             },
         );
-
-
-
         pipeline.push(
             {
-                $match:
+                $sort: {
+                    tanggalPengajuan: order
+                },
+
+            },
+        );
+
+        if (namapemohon && namapemohon !== undefined) {
+            pipeline.push(
                 {
-                    username: {
-                        $regex: namapemohon, $options: 'i'
+                    $match:
+                    {
+                        username: {
+                            $regex: namapemohon, $options: 'i'
+                        }
                     }
                 }
-            }
-        );
+            );
+        }
 
         if (liststatus && liststatus !== undefined) {
             pipeline.push(
@@ -431,16 +439,9 @@ export class UserbankaccountsService {
             pipeline.push({ $match: { tanggalPengajuan: { $gte: startdate } } });
         }
         if (enddate && enddate !== undefined) {
-            pipeline.push({ $match: { tanggalPengajuan: { $lte: dt } } });
+            pipeline.push({ $match: { tanggalPengajuan: { $lte: dateend } } });
         }
-        pipeline.push(
-            {
-                $sort: {
-                    tanggalPengajuan: order
-                },
 
-            },
-        );
         if (page > 0) {
             pipeline.push({ $skip: (page * limit) });
         }
@@ -650,16 +651,18 @@ export class UserbankaccountsService {
         );
 
 
-        pipeline.push(
-            {
-                $match:
+        if (namapemohon && namapemohon !== undefined) {
+            pipeline.push(
                 {
-                    username: {
-                        $regex: namapemohon, $options: 'i'
+                    $match:
+                    {
+                        username: {
+                            $regex: namapemohon, $options: 'i'
+                        }
                     }
                 }
-            }
-        );
+            );
+        }
 
         if (liststatus && liststatus !== undefined) {
             pipeline.push(
