@@ -39,6 +39,8 @@ export class Withdraws {
     totalamount: number
     @Prop({ type: mongoose.Schema.Types.ObjectId })
     idAccountBank: { oid: string }
+    @Prop({ type: Object })
+    responOy: {}
 
 
 }

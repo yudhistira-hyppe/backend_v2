@@ -1,7 +1,5 @@
 export class CreateTransactionsDto {
 
-
-
     noinvoice: string;
     postid: string;
     idusersell: { oid: String; };
@@ -93,6 +91,7 @@ export class CreateWithdraws {
     totalamount: number;
     idAccountBank: { oid: String; };
     updatedAt: string;
+    responOy: {};
 }
 export class OyDisburseCallbacks {
 
