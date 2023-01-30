@@ -470,48 +470,39 @@ export class TransactionsController {
                             });
                             // setTimeout(res, 3000);
                         }
-                        else if (statuscodeva == "208") {
-                            throw new BadRequestException("Request is Rejected (API Key is not Valid)");
-                        }
-                        else if (statuscodeva == "211") {
-                            throw new BadRequestException("Request is Rejected (Bank code is not available for this service)");
-                        }
-                        else if (statuscodeva == "212") {
-                            throw new BadRequestException("Request is Rejected (Given amount are lesser than allowed value for static va)");
-                        }
-                        else if (statuscodeva == "213") {
-                            throw new BadRequestException("Request is Rejected (Given amount are greater than allowed value for static va)");
-                        }
-                        else if (statuscodeva == "214") {
-                            throw new BadRequestException("Request is Rejected (Failed to generate static va)");
-                        }
-                        else if (statuscodeva == "215") {
-                            throw new BadRequestException("Request is Rejected (Amount type is not supported for the requested bank code)");
-                        }
-                        else if (statuscodeva == "216") {
-                            throw new BadRequestException("Request is Rejected (VA Id is empty)");
-                        }
-                        else if (statuscodeva == "217") {
-                            throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
-                        }
-                        else if (statuscodeva == "219") {
-                            throw new BadRequestException("Request is Rejected (Virtual account is not enabled for this bank)");
-                        }
-                        else if (statuscodeva == "226") {
-                            throw new BadRequestException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
-                        }
-                        else if (statuscodeva == "245") {
-                            throw new BadRequestException("Request is rejected (Min expiry time is 60 minutes)");
-                        }
-                        else if (statuscodeva == "246") {
-                            throw new BadRequestException("Request is rejected (Failed update va)");
-                        }
                         else {
-                            throw new BadRequestException("Request is Rejected");
+                            // throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+
+                            CreateTransactionsDto.iduserbuyer = iduser;
+                            CreateTransactionsDto.idusersell = iduserseller;
+                            CreateTransactionsDto.timestamp = dt.toISOString();
+                            CreateTransactionsDto.updatedAt = dt.toISOString();
+                            CreateTransactionsDto.noinvoice = no;
+                            CreateTransactionsDto.amount = saleAmount;
+                            CreateTransactionsDto.status = statusmessage;
+                            CreateTransactionsDto.bank = idbank;
+                            CreateTransactionsDto.idva = idva;
+                            CreateTransactionsDto.nova = nova;
+                            CreateTransactionsDto.accountbalance = null;
+                            CreateTransactionsDto.paymentmethod = idmethode;
+                            // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                            CreateTransactionsDto.ppn = null;
+                            CreateTransactionsDto.totalamount = totalamount;
+                            CreateTransactionsDto.description = statusmessage;
+                            CreateTransactionsDto.payload = null;
+                            CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                            CreateTransactionsDto.detail = arrayDetail;
+                            CreateTransactionsDto.postid = postidTR;
+                            CreateTransactionsDto.response = datareqva;
+                            let datatr = await this.transactionsService.create(CreateTransactionsDto);
+
+                            return res.status(HttpStatus.BAD_REQUEST).json({
+                                response_code: statuscodeva,
+                                message: statusmessage
+                            });
+
                         }
-                        // } else {
-                        //     throw new BadRequestException("This content is already in the process of being purchased");
-                        // }
+
                     }
 
 
@@ -620,45 +611,37 @@ export class TransactionsController {
                         });
                         // setTimeout(res, 3000);
                     }
-                    else if (statuscodeva == "208") {
-                        throw new BadRequestException("Request is Rejected (API Key is not Valid)");
-                    }
-                    else if (statuscodeva == "211") {
-                        throw new BadRequestException("Request is Rejected (Bank code is not available for this service)");
-                    }
-                    else if (statuscodeva == "212") {
-                        throw new BadRequestException("Request is Rejected (Given amount are lesser than allowed value for static va)");
-                    }
-                    else if (statuscodeva == "213") {
-                        throw new BadRequestException("Request is Rejected (Given amount are greater than allowed value for static va)");
-                    }
-                    else if (statuscodeva == "214") {
-                        throw new BadRequestException("Request is Rejected (Failed to generate static va)");
-                    }
-                    else if (statuscodeva == "215") {
-                        throw new BadRequestException("Request is Rejected (Amount type is not supported for the requested bank code)");
-                    }
-                    else if (statuscodeva == "216") {
-                        throw new BadRequestException("Request is Rejected (VA Id is empty)");
-                    }
-                    else if (statuscodeva == "217") {
-                        throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
-                    }
-                    else if (statuscodeva == "219") {
-                        throw new BadRequestException("Request is Rejected (Virtual account is not enabled for this bank)");
-                    }
-                    else if (statuscodeva == "226") {
-                        throw new BadRequestException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
-                    }
-                    else if (statuscodeva == "245") {
-                        throw new BadRequestException("Request is rejected (Min expiry time is 60 minutes)");
-                    }
-                    else if (statuscodeva == "246") {
-                        throw new BadRequestException("Request is rejected (Failed update va)");
-                    }
                     else {
-                        throw new BadRequestException("Request is Rejected");
+                        //throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+                        CreateTransactionsDto.iduserbuyer = iduser;
+                        CreateTransactionsDto.idusersell = iduserseller;
+                        CreateTransactionsDto.timestamp = dt.toISOString();
+                        CreateTransactionsDto.updatedAt = dt.toISOString();
+                        CreateTransactionsDto.noinvoice = no;
+                        CreateTransactionsDto.amount = saleAmount;
+                        CreateTransactionsDto.status = statusmessage;
+                        CreateTransactionsDto.bank = idbank;
+                        CreateTransactionsDto.idva = idva;
+                        CreateTransactionsDto.nova = nova;
+                        CreateTransactionsDto.accountbalance = null;
+                        CreateTransactionsDto.paymentmethod = idmethode;
+                        // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                        CreateTransactionsDto.ppn = null;
+                        CreateTransactionsDto.totalamount = totalamount;
+                        CreateTransactionsDto.description = statusmessage;
+                        CreateTransactionsDto.payload = null;
+                        CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                        CreateTransactionsDto.detail = arrayDetail;
+                        CreateTransactionsDto.postid = postidTR;
+                        CreateTransactionsDto.response = datareqva;
+                        let datatr = await this.transactionsService.create(CreateTransactionsDto);
+
+                        return res.status(HttpStatus.BAD_REQUEST).json({
+                            response_code: statuscodeva,
+                            message: statusmessage
+                        });
                     }
+
                 }
 
             }
@@ -884,47 +867,37 @@ export class TransactionsController {
                         });
                         // setTimeout(res, 3000);
                     }
-                    else if (statuscodeva == "208") {
-                        throw new BadRequestException("Request is Rejected (API Key is not Valid)");
-                    }
-                    else if (statuscodeva == "211") {
-                        throw new BadRequestException("Request is Rejected (Bank code is not available for this service)");
-                    }
-                    else if (statuscodeva == "212") {
-                        throw new BadRequestException("Request is Rejected (Given amount are lesser than allowed value for static va)");
-                    }
-                    else if (statuscodeva == "213") {
-                        throw new BadRequestException("Request is Rejected (Given amount are greater than allowed value for static va)");
-                    }
-                    else if (statuscodeva == "214") {
-                        throw new BadRequestException("Request is Rejected (Failed to generate static va)");
-                    }
-                    else if (statuscodeva == "215") {
-                        throw new BadRequestException("Request is Rejected (Amount type is not supported for the requested bank code)");
-                    }
-                    else if (statuscodeva == "216") {
-                        throw new BadRequestException("Request is Rejected (VA Id is empty)");
-                    }
-                    else if (statuscodeva == "217") {
-                        throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
-                    }
-                    else if (statuscodeva == "219") {
-                        throw new BadRequestException("Request is Rejected (Virtual account is not enabled for this bank)");
-                    }
-                    else if (statuscodeva == "226") {
-                        throw new BadRequestException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
-                    }
-                    else if (statuscodeva == "245") {
-                        throw new BadRequestException("Request is rejected (Min expiry time is 60 minutes)");
-                    }
-                    else if (statuscodeva == "246") {
-                        throw new BadRequestException("Request is rejected (Failed update va)");
-                    }
                     else {
-                        throw new BadRequestException("Request is Rejected");
-                    }
-                    //}
+                        // throw new BadRequestException("Request is Rejected (API Key is not Valid)");
 
+                        CreateTransactionsDto.iduserbuyer = iduser;
+                        CreateTransactionsDto.idusersell = iduserseller;
+                        CreateTransactionsDto.timestamp = dt.toISOString();
+                        CreateTransactionsDto.updatedAt = dt.toISOString();
+                        CreateTransactionsDto.noinvoice = no;
+                        CreateTransactionsDto.amount = saleAmount;
+                        CreateTransactionsDto.status = statusmessage;
+                        CreateTransactionsDto.bank = idbank;
+                        CreateTransactionsDto.idva = idva;
+                        CreateTransactionsDto.nova = nova;
+                        CreateTransactionsDto.accountbalance = null;
+                        CreateTransactionsDto.paymentmethod = idmethode;
+                        // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                        CreateTransactionsDto.ppn = null;
+                        CreateTransactionsDto.totalamount = totalamount;
+                        CreateTransactionsDto.description = statusmessage;
+                        CreateTransactionsDto.payload = null;
+                        CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                        CreateTransactionsDto.detail = arrayDetailvc;
+                        CreateTransactionsDto.postid = postidTRvoucer.toString();
+                        CreateTransactionsDto.response = datareqva;
+                        let datatr = await this.transactionsService.create(CreateTransactionsDto);
+
+                        return res.status(HttpStatus.BAD_REQUEST).json({
+                            response_code: statuscodeva,
+                            message: statusmessage
+                        });
+                    }
 
 
                 }
@@ -1044,45 +1017,37 @@ export class TransactionsController {
                         });
                         //  setTimeout(res, 3000);
                     }
-                    else if (statuscodeva == "208") {
-                        throw new BadRequestException("Request is Rejected (API Key is not Valid)");
-                    }
-                    else if (statuscodeva == "211") {
-                        throw new BadRequestException("Request is Rejected (Bank code is not available for this service)");
-                    }
-                    else if (statuscodeva == "212") {
-                        throw new BadRequestException("Request is Rejected (Given amount are lesser than allowed value for static va)");
-                    }
-                    else if (statuscodeva == "213") {
-                        throw new BadRequestException("Request is Rejected (Given amount are greater than allowed value for static va)");
-                    }
-                    else if (statuscodeva == "214") {
-                        throw new BadRequestException("Request is Rejected (Failed to generate static va)");
-                    }
-                    else if (statuscodeva == "215") {
-                        throw new BadRequestException("Request is Rejected (Amount type is not supported for the requested bank code)");
-                    }
-                    else if (statuscodeva == "216") {
-                        throw new BadRequestException("Request is Rejected (VA Id is empty)");
-                    }
-                    else if (statuscodeva == "217") {
-                        throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
-                    }
-                    else if (statuscodeva == "219") {
-                        throw new BadRequestException("Request is Rejected (Virtual account is not enabled for this bank)");
-                    }
-                    else if (statuscodeva == "226") {
-                        throw new BadRequestException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
-                    }
-                    else if (statuscodeva == "245") {
-                        throw new BadRequestException("Request is rejected (Min expiry time is 60 minutes)");
-                    }
-                    else if (statuscodeva == "246") {
-                        throw new BadRequestException("Request is rejected (Failed update va)");
-                    }
                     else {
-                        throw new BadRequestException("Request is Rejected");
+                        //throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+
+                        CreateTransactionsDto.iduserbuyer = iduser;
+                        CreateTransactionsDto.idusersell = iduserseller;
+                        CreateTransactionsDto.timestamp = dt.toISOString();
+                        CreateTransactionsDto.updatedAt = dt.toISOString();
+                        CreateTransactionsDto.noinvoice = no;
+                        CreateTransactionsDto.amount = saleAmount;
+                        CreateTransactionsDto.status = statusmessage;
+                        CreateTransactionsDto.bank = idbank;
+                        CreateTransactionsDto.idva = idva;
+                        CreateTransactionsDto.nova = nova;
+                        CreateTransactionsDto.accountbalance = null;
+                        CreateTransactionsDto.paymentmethod = idmethode;
+                        // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                        CreateTransactionsDto.ppn = null;
+                        CreateTransactionsDto.totalamount = totalamount;
+                        CreateTransactionsDto.description = statusmessage;
+                        CreateTransactionsDto.payload = null;
+                        CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                        CreateTransactionsDto.detail = arrayDetailvc;
+                        CreateTransactionsDto.postid = postidTRvoucer;
+                        CreateTransactionsDto.response = datareqva;
+                        let datatr = await this.transactionsService.create(CreateTransactionsDto);
+                        return res.status(HttpStatus.BAD_REQUEST).json({
+                            response_code: statuscodeva,
+                            message: statusmessage
+                        });
                     }
+
                 }
 
             }
