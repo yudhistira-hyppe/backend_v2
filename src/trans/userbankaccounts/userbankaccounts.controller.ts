@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UploadedFiles, Logger, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards, Put, Param } from "@nestjs/common";
+import { Body, Controller, Get, Post, UploadedFiles, Logger, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards, Put, Param } from "@nestjs/common";
 import { AnyFilesInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
@@ -677,7 +677,20 @@ export class UserbankaccountsController {
         return { response_code: 202, data, messages };
     }
 
+    @Get('api/userbankaccounts/getAccountList/:id')    
+    @UseGuards(JwtAuthGuard)
+    async getDetailAccountBank(@Param('id') id: string) {
+        var data = null;
 
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        data = await this.userbankaccountsService.getDetailAccountBankById(id);
+        //data = data[0];
+
+        return { response_code: 202, messages, data };
+    }
 
     async sendReportAppealBankFCM(email: string, name: string, event: string, type: string, fullname: string) {
         var Templates_ = new TemplatesRepo();
