@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UploadedFiles, Logger, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards, Put, Param } from "@nestjs/common";
+import { Body, Controller, Get, Post, UploadedFiles, Logger, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards, Put, Param } from "@nestjs/common";
 import { AnyFilesInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
@@ -646,7 +646,7 @@ export class UserbankaccountsController {
 
         if (request_body["limit"] !== undefined) 
         {
-            limit = Number(request_body["limit"]);
+            limit = (Number(request_body["limit"]) !== parseInt('0') ? Number(request_body["limit"]) : parseInt('10'));
         }
 
         if (request_body["descending"] !== undefined)
@@ -659,8 +659,16 @@ export class UserbankaccountsController {
 
         // console.log(startdate);
         // console.log(enddate);
-
-        data = await this.userbankaccountsService.getlistaccount(startdate, enddate, namapemohon, statusLast, descending, page, limit);
+        
+        var resultdata = await this.userbankaccountsService.getlistaccount(startdate, enddate, namapemohon, statusLast, descending, page, limit);
+        var totaldata = await this.userbankaccountsService.getlistaccount(startdate, enddate, namapemohon, statusLast, descending, 0, 0);
+        var totalpage = parseInt(totaldata[0].total) / limit;
+        data = {
+            "data":resultdata,
+            "totaldata":totaldata[0].total,
+            "totalpage":parseInt(totalpage.toFixed(0)),
+            "infolimit":limit,
+        }
 
         const messages = {
             "info": ["The process successful"],
@@ -669,7 +677,20 @@ export class UserbankaccountsController {
         return { response_code: 202, data, messages };
     }
 
+    @Get('api/userbankaccounts/getAccountList/:id')    
+    @UseGuards(JwtAuthGuard)
+    async getDetailAccountBank(@Param('id') id: string) {
+        var data = null;
 
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        data = await this.userbankaccountsService.getDetailAccountBankById(id);
+        //data = data[0];
+
+        return { response_code: 202, messages, data };
+    }
 
     async sendReportAppealBankFCM(email: string, name: string, event: string, type: string, fullname: string) {
         var Templates_ = new TemplatesRepo();
