@@ -2059,7 +2059,7 @@ export class TransactionsController {
                     datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
                     datawithdraw.description = OyDisbursements.note;
                     datawithdraw.idUser = iduser;
-                    datawithdraw.status = statusmessage;
+                    datawithdraw.status = statusmessagedis;
                     datawithdraw.timestamp = dtb;
                     datawithdraw.verified = false;
                     datawithdraw.partnerTrxid = partnertrxid;
