@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UploadedFiles, Logger, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards, Put, Param } from "@nestjs/common";
+import { Body, Controller, Get, Post, UploadedFiles, Logger, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards, Put, Param } from "@nestjs/common";
 import { AnyFilesInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
@@ -16,6 +16,7 @@ import { extname } from 'path';
 import { diskStorage } from 'multer';
 import { UtilsService } from "../../utils/utils.service";
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
+import { start } from "repl";
 
 //import FormData from "form-data";
 const multer = require('multer');
@@ -587,8 +588,105 @@ export class UserbankaccountsController {
         return { response_code: 202, messages };
     }
 
+    @Post('api/userbankaccounts/getAccountList')
+    @UseGuards(JwtAuthGuard)
+    async getAccountList(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var page = null;
+        var startdate = null;
+        var enddate = null;
+        var statusLast = [];
+        var limit = null;
+        var totalpage = 0;
+        var totalallrow = 0;
+        var totalsearch = 0;
+        var total = 0;
+        var descending = null;
+        var namapemohon = null;
+        var query = null;
+        var data = null;
+        var datasearch = null;
+        var dataall = null;
+        var startdate = null;
+        var enddate = null;
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        namapemohon = request_json["namapemohon"];
+        statusLast = request_json["statusLast"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        descending = request_json["descending"];
+        try {
+            query = await this.userbankaccountsService.getlistappeal(startdate, enddate, namapemohon, statusLast, descending, page, limit);
+            data = query;
+        } catch (e) {
+            query = null;
+            data = [];
+        }
+
+        try {
+            total = query.length;
+        } catch (e) {
+            total = 0;
+        }
+
+        try {
+            datasearch = await this.userbankaccountsService.getlistappealcount(startdate, enddate, namapemohon, statusLast);
+            totalsearch = datasearch[0].totalpost;
+        } catch (e) {
+            totalsearch = 0;
+        }
+
+        try {
+            dataall = await this.userbankaccountsService.getlistappealcount(undefined, undefined, undefined, undefined);
+            totalallrow = dataall[0].totalpost;
+
+        } catch (e) {
+            totalallrow = 0;
+        }
 
 
+        var tpage = null;
+        var tpage2 = null;
+
+        tpage2 = (totalsearch / limit).toFixed(0);
+        tpage = (totalsearch % limit);
+        if (tpage > 0 && tpage < 5) {
+            totalpage = parseInt(tpage2) + 1;
+
+        } else {
+            totalpage = parseInt(tpage2);
+        }
+        return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
+    }
+
+    @Get('api/userbankaccounts/getAccountList/:id')
+    @UseGuards(JwtAuthGuard)
+    async getDetailAccountBank(@Param('id') id: string) {
+        var data = null;
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        data = await this.userbankaccountsService.getDetailAccountBankById(id);
+        //data = data[0];
+
+        return { response_code: 202, messages, data };
+    }
 
     async sendReportAppealBankFCM(email: string, name: string, event: string, type: string, fullname: string) {
         var Templates_ = new TemplatesRepo();

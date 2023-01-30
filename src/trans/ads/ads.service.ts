@@ -13917,4 +13917,28 @@ export class AdsService {
         }
         return query;
     }
+
+    async countadsuser(iduser: ObjectID) {
+        var query = await this.adsModel.aggregate(
+
+            [
+
+                {
+                    $match: {
+                        userID: iduser
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalpost: {
+                            $sum: 1
+                        }
+                    }
+                }
+            ]
+        );
+
+        return query;
+    }
 }

@@ -268,6 +268,8 @@ export class UserAdsController {
         var iduser = null;
         var arrdataview = [];
         var arrdataclick = [];
+        var datacountads = null;
+        var countads = 0;
         var arr = [];
         email = request_json["email"];
         iduser = request_json["iduser"];
@@ -320,6 +322,15 @@ export class UserAdsController {
         } catch (e) {
             datadetailclick = null;
             lengclicks = 0;
+
+        }
+
+        try {
+            datacountads = await this.adsService.countadsuser(userid);
+            countads = datacountads[0].totalpost;
+        } catch (e) {
+            datacountads = [];
+            countads = 0;
 
         }
 
@@ -421,7 +432,8 @@ export class UserAdsController {
 
             viewProfile: { totalkunjungan: totalkunjungan, detail: arrdata },
             view: { totalView: sumView, detail: arrdataview },
-            click: { totalClick: sumClick, detail: arrdataclick }
+            click: { totalClick: sumClick, detail: arrdataclick },
+            totalAds: countads
         }
 
         return { response_code: 202, data, messages };

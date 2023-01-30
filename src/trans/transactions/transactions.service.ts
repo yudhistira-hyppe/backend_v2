@@ -60,6 +60,10 @@ export class TransactionsService {
     async findExpirednew(iduserbuyer: ObjectId): Promise<Transactions[]> {
         return this.transactionsModel.find({ status: "WAITING_PAYMENT", iduserbuyer: iduserbuyer }).exec();
     }
+
+    async findExpiredAll(): Promise<Transactions[]> {
+        return this.transactionsModel.find({ status: "WAITING_PAYMENT" }).exec();
+    }
     async findExpiredSell(idusersell: ObjectId): Promise<Transactions[]> {
         return this.transactionsModel.find({ status: "WAITING_PAYMENT", idusersell: idusersell }).exec();
     }
@@ -4916,7 +4920,7 @@ export class TransactionsService {
                                 "noVoucher": 1,
                                 "codeVoucher": 1,
                                 "userID": 1,
-                                "nameAds": "tes",
+                                "nameAds": 1,
                                 "creditValue": 1,
                                 "creditPromo": 1,
                                 "creditTotal": 1,
