@@ -9,7 +9,7 @@ import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
 
 
-@Controller()
+@Controller('api/boostsession')
 export class BoostsessionController {
   constructor(
     private readonly boostsessionService: BoostsessionService,

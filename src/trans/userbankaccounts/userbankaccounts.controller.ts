@@ -591,93 +591,90 @@ export class UserbankaccountsController {
     @Post('api/userbankaccounts/getAccountList')
     @UseGuards(JwtAuthGuard)
     async getAccountList(@Req() request: Request): Promise<any> {
-        var startdate = null;
-        var enddate = null;
-        var statusLast = null;
-        var namapemohon = null;
-        var page = 0;
-        var limit = 10;
-        var data = null;
-        var request_body = JSON.parse(JSON.stringify(request.body));
-        var descending = 1;
-        
-        if (request_body["startdate"] !== undefined && request_body["enddate"] !== undefined) 
-        {
-            //cek validasi apakah format tanggal sudah sesuai atau belum
-            var check = new Date(request_body["startdate"]);
-            if(check.toString() == "Invalid Date")
-            {
-                throw new BadRequestException("Unabled to proceed");
-            }
-            else
-            {
-                startdate = request_body["startdate"];
-                startdate = new Date(startdate).toISOString().split("T")[0] + "T00:00:00.000Z";
-            }
-
-            //cek validasi apakah format tanggal sudah sesuai atau belum
-            var check = new Date(request_body["enddate"]);
-            if(check.toString() == "Invalid Date")
-            {
-                throw new BadRequestException("Unabled to proceed");
-            }
-            else
-            {
-                enddate = request_body["enddate"];
-                enddate = new Date(enddate).toISOString().split("T")[0] + "T23:59:59.000Z";
-                //enddate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1)).toISOString().split("T")[0] + "T23:59:59.000Z";
-            }
-        }
-
-        if (request_body["namapemohon"] !== undefined) 
-        {
-            namapemohon = request_body["namapemohon"];
-        }
-
-        if (request_body["statusLast"] !== undefined) 
-        {
-            statusLast = Object.values(request_body["statusLast"]);
-        }
-
-        if (request_body["page"] !== undefined) 
-        {
-            page = Number(request_body["page"]);
-        }
-
-        if (request_body["limit"] !== undefined) 
-        {
-            limit = (Number(request_body["limit"]) !== parseInt('0') ? Number(request_body["limit"]) : parseInt('10'));
-        }
-
-        if (request_body["descending"] !== undefined)
-        {
-            if(request_body["descending"] == true)
-            {
-                descending = -1;
-            }
-        }
-
-        // console.log(startdate);
-        // console.log(enddate);
-        
-        var resultdata = await this.userbankaccountsService.getlistaccount(startdate, enddate, namapemohon, statusLast, descending, page, limit);
-        var totaldata = await this.userbankaccountsService.getlistaccount(startdate, enddate, namapemohon, statusLast, descending, 0, 0);
-        var totalpage = parseInt(totaldata[0].total) / limit;
-        data = {
-            "data":resultdata,
-            "totaldata":totaldata[0].total,
-            "totalpage":parseInt(totalpage.toFixed(0)),
-            "infolimit":limit,
-        }
-
         const messages = {
             "info": ["The process successful"],
         };
 
-        return { response_code: 202, data, messages };
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var page = null;
+        var startdate = null;
+        var enddate = null;
+        var statusLast = [];
+        var limit = null;
+        var totalpage = 0;
+        var totalallrow = 0;
+        var totalsearch = 0;
+        var total = 0;
+        var descending = null;
+        var namapemohon = null;
+        var query = null;
+        var data = null;
+        var datasearch = null;
+        var dataall = null;
+        var startdate = null;
+        var enddate = null;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        namapemohon = request_json["namapemohon"];
+        statusLast = request_json["statusLast"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        descending = request_json["descending"];
+        try {
+            query = await this.userbankaccountsService.getlistappeal(startdate, enddate, namapemohon, statusLast, descending, page, limit);
+            data = query;
+        } catch (e) {
+            query = null;
+            data = [];
+        }
+
+        try {
+            total = query.length;
+        } catch (e) {
+            total = 0;
+        }
+
+        try {
+            datasearch = await this.userbankaccountsService.getlistappealcount(startdate, enddate, namapemohon, statusLast);
+            totalsearch = datasearch[0].totalpost;
+        } catch (e) {
+            totalsearch = 0;
+        }
+
+        try {
+            dataall = await this.userbankaccountsService.getlistappealcount(undefined, undefined, undefined, undefined);
+            totalallrow = dataall[0].totalpost;
+
+        } catch (e) {
+            totalallrow = 0;
+        }
+
+
+        var tpage = null;
+        var tpage2 = null;
+
+        tpage2 = (totalsearch / limit).toFixed(0);
+        tpage = (totalsearch % limit);
+        if (tpage > 0 && tpage < 5) {
+            totalpage = parseInt(tpage2) + 1;
+
+        } else {
+            totalpage = parseInt(tpage2);
+        }
+        return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
 
-    @Get('api/userbankaccounts/getAccountList/:id')    
+    @Get('api/userbankaccounts/getAccountList/:id')
     @UseGuards(JwtAuthGuard)
     async getDetailAccountBank(@Param('id') id: string) {
         var data = null;
