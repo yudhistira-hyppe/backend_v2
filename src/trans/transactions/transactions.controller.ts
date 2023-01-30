@@ -1107,6 +1107,16 @@ export class TransactionsController {
         var titleensuksesbeli = "Congratulation!";
         var bodyinsuksesbeli = "Konten Berhasil Dibeli";
         var bodyensuksesbeli = "Content Successfully Purchased";
+
+        var titleinsuksesvoucher = "Selamat!";
+        var titleensuksesvoucher = "Congratulation!";
+        var bodyinsuksesvoucher = "Voucher Anda Telah Terjual Saldo akan diteruskan ke akun hype Anda.";
+        var bodyensuksesvoucher = "Your Voucher Has Been Sold The balance will be forwarded to your Hyppe Account.";
+
+        var titleinsuksesbelivoucher = "Selamat!";
+        var titleensuksesbelivoucher = "Congratulation!";
+        var bodyinsuksesbelivoucher = "Voucher Berhasil Dibeli";
+        var bodyensuksesbelivoucher = "Voucher Successfully Purchased";
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
@@ -1330,7 +1340,8 @@ export class TransactionsController {
                             "message": messagesnull
                         });
                     }
-                } else if (type === "VOUCHER") {
+                }
+                else if (type === "VOUCHER") {
                     var datavoucher = null;
                     var saleAmountVoucher = 0;
                     var voucherID = null;
@@ -1402,8 +1413,8 @@ export class TransactionsController {
 
                         var idbalance = databalance._id;
                         await this.transactionsService.updateoneVoucher(idtransaction, idbalance, payload);
-                        await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", noinvoice, "TRANSACTION");
-                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsuksesbeli, titleensuksesbeli, bodyinsuksesbeli, bodyensuksesbeli, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
+                        await this.utilsService.sendFcm(emailseller.toString(), titleinsuksesvoucher, titleensuksesvoucher, bodyinsuksesvoucher, bodyensuksesvoucher, eventType, event, undefined, "TRANSACTION", noinvoice, "TRANSACTION");
+                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsuksesbelivoucher, titleensuksesbelivoucher, bodyinsuksesbelivoucher, bodyensuksesbelivoucher, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
                         for (var i = 0; i < lengtvoucherid; i++) {
                             var postvcid = detail[i].id.toString();
                             var jml = detail[i].qty;
