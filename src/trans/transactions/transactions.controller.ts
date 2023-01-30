@@ -1821,7 +1821,7 @@ export class TransactionsController {
             throw new BadRequestException("The balance is not sufficient...!");
         }
         else {
-            if (norekdb !== null) {
+            if (norekdb !== null && statusInquiry === true) {
 
                 // let datareqinquiry = new OyAccountInquirys();
                 // datareqinquiry.bank_code = recipient_bank;
@@ -1837,8 +1837,8 @@ export class TransactionsController {
 
                 //     if (nama === namaakun) {
                 var stringId = (await this.generateNumber()).toString();
-                // var partnertrxid = "OYO" + stringId;
-                var partnertrxid = stringId;
+                var partnertrxid = "OYO" + stringId;
+
                 // await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
                 // await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
                 //  await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, totalinquiry);
