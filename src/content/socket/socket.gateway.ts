@@ -6,9 +6,11 @@ import {
     OnGatewayConnection,
     OnGatewayDisconnect,
     MessageBody,
+    WsResponse,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
+import { from, map, Observable } from 'rxjs';
 
 @WebSocketGateway({
     cors: {
@@ -36,7 +38,27 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         //this.server.emit(room, payload);
         this.server.emit("event_disqus", payload);
         //this.server.socketsLeave("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256");
-    }            
+    }  
+
+    @SubscribeMessage('TEST_COBA')
+    findAll(@MessageBody() data: any): Observable<WsResponse<number>> {
+        return from([1, 2, 3]).pipe(map(item => ({ event: 'TEST_COBA', data: item })));
+    }
+
+    @SubscribeMessage('identity')
+    async identity(@MessageBody() data: number): Promise<number> {
+        return data;
+    }
+
+    testCoba(payload: string) {
+        this.server.emit('events', payload);
+    } 
+    
+    @SubscribeMessage('TEST_COBA')
+    handleTestCoba(@MessageBody() payload: any): Observable<WsResponse<number>> {
+        console.log("Subscribe: " + payload);
+        return payload;
+    }
 
     @SubscribeMessage('coba')
     coba(@MessageBody() payload: string): void {

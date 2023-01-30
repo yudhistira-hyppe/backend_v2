@@ -528,7 +528,7 @@ export class PostsController {
   @Post('api/posts/cmod')
   async cmod(@Body() body, @Headers() headers) {
     this.logger.log("cmod >>> start: " + JSON.stringify(body));
-    this.cmodService.ws();
+    this.cmodService.ws(body);
     let t = { 'response': 'Done' };
     return JSON.stringify(t);
   }

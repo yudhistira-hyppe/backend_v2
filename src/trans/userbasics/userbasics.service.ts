@@ -5357,6 +5357,54 @@ export class UserbasicsService {
     return query;
   }
 
+  async getUserAssets(email:string){
+    return await this.userbasicModel.aggregate([
+      {
+        $match:
+        {
+          email: email
+        }
+      },
+      {
+        "$addFields": {
+          localID_: [
+            new mongoose.Types.ObjectId("63d21cdd783e42865d1075e8"),
+            new mongoose.Types.ObjectId("63d226b63d6368c0921480f5")
+          ]
+        }
+      },
+      {
+        $lookup: {
+          from: "assetsfilter",
+          let: {
+            localID: "$localID_"
+          },
+          pipeline: [
+            {
+              $match: {
+                _id: {
+                  $nin: ["$$localID"]
+                  // $nin: [
+                  //   new mongoose.Types.ObjectId("63d21cdd783e42865d1075e8"),
+                  //   new mongoose.Types.ObjectId("63d226b63d6368c0921480f5")
+                  // ] 
+                }
+                // $expr: {
+                //   $in: ["$_id", "$$localID"]
+                // }
+              }
+            },
+          ],
+          "as": "user_assets"
+        },
 
+      },
+    ])
+  }
 
+  async updateUserAssets(email: string, assets: mongoose.Types.ObjectId[]){
+    return this.userbasicModel.updateOne(
+      { email: email },
+      { $push: { userAssets: { $each: assets } } })
+  }
 }

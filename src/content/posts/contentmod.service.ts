@@ -1,4 +1,4 @@
-import { Logger, Injectable } from '@nestjs/common';
+import { Logger, Injectable, Body } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
@@ -381,9 +381,8 @@ export class ContentModService {
 
   }
 
-
-  async ws() {
-    this.gtw.coba('fssttertertet');
+  async ws(@Body() body) {
+    this.gtw.testCoba(body);
   }
 
   async getMax(Array_: Array<Object>) {
