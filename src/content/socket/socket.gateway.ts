@@ -15,12 +15,12 @@ import { from, map, Observable } from 'rxjs';
 @WebSocketGateway(
     // 5002, 
     {
-        namespace: 'events',
-        transports: ['websocket','polling'],
+        // namespace: 'events',
+        // transports: ['websocket','polling'],
         cors: {
             origin: '*',
         },
-        allowEIO3:false
+        //allowEIO3:false
     }
 )
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
