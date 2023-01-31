@@ -12,11 +12,17 @@ import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { from, map, Observable } from 'rxjs';
 
-@WebSocketGateway({
-    cors: {
-        origin: '*',
-    },
-})
+@WebSocketGateway(
+    80, 
+    {
+        namespace: 'events',
+        transports: ['websocket','polling'],
+        cors: {
+            origin: '*',
+        },
+        allowEIO3:false
+    }
+)
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
     @WebSocketServer() server: Server;
