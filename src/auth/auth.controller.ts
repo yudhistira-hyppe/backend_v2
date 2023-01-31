@@ -876,7 +876,7 @@ export class AuthController {
   @Post('api/user/recoverpassword')
   @HttpCode(HttpStatus.ACCEPTED)
   async recoverpassword(@Req() request: any) {
-    return await this.authService.recoverpassword(request);
+    return await this.authService.recoverpasswordV2(request);
   }
 
   @UseGuards(JwtAuthGuard)
