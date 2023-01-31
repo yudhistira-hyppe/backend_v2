@@ -405,11 +405,15 @@ export class AdsController {
                             } else {
                                 if (LastUseKredit > 0) {
                                     if (total_credit_data < LastUseKredit) {
+                                        sumCreditValue += total_credit_data;
+
                                         useKredit += total_credit_data;
                                         totalCredit -= total_credit_data;
                                         total_credit_data = 0;
                                         creditAllUse = true;
                                     } else {
+                                        sumCreditValue += LastUseKredit;
+
                                         total_credit_data -= LastUseKredit;
                                         useKredit += LastUseKredit;
                                         totalCredit -= LastUseKredit;
@@ -417,11 +421,15 @@ export class AdsController {
                                     if (!creditAllUse) {
                                         if (LastUseKreditFree > 0) {
                                             if (total_credit_data < LastUseKreditFree) {
+                                                sumFreeCredit += total_credit_data;
+
                                                 total_credit_data = 0;
                                                 useKreditFree += total_credit_data;
                                                 totalCredit -= total_credit_data;
                                                 creditAllUse = true;
                                             } else {
+                                                sumFreeCredit += LastUseKreditFree;
+
                                                 total_credit_data -= LastUseKreditFree;
                                                 useKreditFree += LastUseKreditFree;
                                                 totalCredit -= LastUseKreditFree;
@@ -430,11 +438,15 @@ export class AdsController {
                                     }
                                 } else if (LastUseKreditFree > 0) {
                                     if (total_credit_data < LastUseKreditFree) {
+                                        sumFreeCredit += total_credit_data;
+
                                         useKreditFree += total_credit_data;
                                         totalCredit -= total_credit_data;
                                         total_credit_data = 0;
                                         creditAllUse = true;
                                     } else {
+                                        sumFreeCredit += LastUseKreditFree;
+
                                         total_credit_data -= LastUseKreditFree;
                                         useKreditFree += LastUseKreditFree;
                                         totalCredit -= LastUseKreditFree;
@@ -492,7 +504,7 @@ export class AdsController {
                     CreateAdsDto.usedCreditFree = 0;
                     CreateAdsDto.creditValue = sumCreditValue;
                     CreateAdsDto.creditFree = sumFreeCredit;
-                    CreateAdsDto.totalCredit = sumCredittotal;
+                    CreateAdsDto.totalCredit = sumCreditValue + sumFreeCredit;
                     // CreateAdsDto.mediaAds = mongoose.Types.ObjectId(idmedia);;
                     let data = await this.adsService.create(CreateAdsDto);
                     return res.status(HttpStatus.OK).json({
