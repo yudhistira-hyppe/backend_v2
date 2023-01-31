@@ -31,11 +31,12 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
     room(room: string, payload: string): void {
         //this.server.socketsJoin("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256");
-        //this.server.to(room).emit("event_disqus", payload);
+        this.server.socketsJoin(room);
+        this.server.to(room).emit("event_disqus", payload);
         
         console.log("room emit: " + payload);
         //this.server.emit(room, payload);
-        this.server.emit("event_disqus", payload);
+        //this.server.emit("event_disqus", payload);
         //this.server.socketsLeave("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256");
     }
 
