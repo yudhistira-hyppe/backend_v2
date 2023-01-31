@@ -393,9 +393,9 @@ export class AdsController {
                         var LastUseKreditFree = kreditFree - useKreditFree
 
 
-                        sumCreditValue += 0;
-                        sumFreeCredit += 0;
-                        sumCredittotal += 0;
+                        // sumCreditValue += 0;
+                        // sumFreeCredit += 0;
+                        // sumCredittotal += 0;
 
                         if (totalCredit > 0) {
                             if (creditAllUse) {
@@ -413,8 +413,6 @@ export class AdsController {
                                         total_credit_data -= LastUseKredit;
                                         useKredit += LastUseKredit;
                                         totalCredit -= LastUseKredit;
-
-                                        sumCreditValue=
                                     }
                                     if (!creditAllUse) {
                                         if (LastUseKreditFree > 0) {
