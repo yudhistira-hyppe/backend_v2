@@ -382,7 +382,7 @@ export class ContentModService {
   }
 
   async ws(@Body() body) {
-    this.gtw.testCoba(body);
+    //this.gtw.testCoba(body);
   }
 
   async getMax(Array_: Array<Object>) {
