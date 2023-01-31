@@ -51,7 +51,13 @@ export class AssetsFilterController {
                 return new mongoose.Types.ObjectId(i);
             });
         }
-        return await this.assetsFilterService.find(assetsUser);
+        return {
+            response_code: 202,
+            data: await this.assetsFilterService.find(assetsUser),
+            messages: {
+                info: ['Get assets successfully'],
+            },
+        }; 
     }
 
     @UseGuards(JwtAuthGuard)

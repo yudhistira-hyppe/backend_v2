@@ -7942,6 +7942,7 @@ export class TransactionsController {
         var dataall = null;
         var totalallrow = null;
         var total = null;
+        var dataquery = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
@@ -7980,31 +7981,49 @@ export class TransactionsController {
 
 
         try {
-            data = await this.userbasicsService.transaksiHistoryBisnis(email, startdate, enddate, sell, buy, withdrawal, rewards, boost, page, limit, descending);
+            dataquery = await this.userbasicsService.transaksiHistoryBisnis(email, startdate, enddate, sell, buy, withdrawal, rewards, boost, page, limit, descending);
         } catch (e) {
-            data = [];
+            dataquery = [];
         }
+
+        if (dataquery[0]._id === undefined) {
+            data = [];
+        } else {
+            data = dataquery;
+        }
+
+
         try {
             total = data.length;
         } catch (e) {
             total = 0;
         }
-        try {
-            datasearch = await this.userbasicsService.transaksiHistoryBisnisCount(email, startdate, enddate, sell, buy, withdrawal, rewards, boost);
-            totalsearch = datasearch[0].totalpost;
-        } catch (e) {
+
+        if (dataquery[0]._id === undefined) {
             totalsearch = 0;
+        } else {
+            try {
+                datasearch = await this.userbasicsService.transaksiHistoryBisnisCount(email, startdate, enddate, sell, buy, withdrawal, rewards, boost);
+                totalsearch = datasearch[0].totalpost;
+            } catch (e) {
+                totalsearch = 0;
+            }
         }
 
-        try {
 
-            dataall = await this.userbasicsService.transaksiHistoryBisnisCount(email, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
-            totalallrow = dataall[0].totalpost;
-
-        } catch (e) {
+        if (dataquery[0]._id === undefined) {
             totalallrow = 0;
-        }
+        } else {
 
+            try {
+
+                dataall = await this.userbasicsService.transaksiHistoryBisnisCount(email, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                totalallrow = dataall[0].totalpost;
+
+            } catch (e) {
+                totalallrow = 0;
+            }
+        }
         var datatrpending = null;
         var datatrpendingjual = null;
 
