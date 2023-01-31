@@ -98,8 +98,10 @@ import { IntervalSessionModule } from './content/boostsession/intervarsession/in
 import { TransactionsPostModule } from './trans/transactionpost/transactionspost.module';
 import { DisqusContentEventModule } from './content/contentevents/discus/disqusdisquscontentevent.module';
 import { DeepArModule } from './trans/deepar/deepar.module';
+import { AssetsFilterModule } from './assets/filter/assets-filter.module';
 @Module({
   imports: [
+    AssetsFilterModule,
     DeepArModule,
     DisqusContentEventModule,
     IntervalSessionModule,

@@ -1263,11 +1263,11 @@ export class AuthService {
                 }
 
                 //Create User Ads
-                try {
-                  await this.adsUserCompareService.createNewUserAds(datauserbasicsService._id.toString());
-                } catch (e) {
-                  console.log("Create User Ads", e);
-                }
+                // try {
+                //   await this.adsUserCompareService.createNewUserAds(datauserbasicsService._id.toString());
+                // } catch (e) {
+                //   console.log("Create User Ads", e);
+                // }
 
                 //Create User Playlist
                 // try {
@@ -3714,6 +3714,783 @@ export class AuthService {
               'RECOVER_PASS', lang
             ); 
             
+            var messages = "";
+            if (lang == "en") {
+              messages = "Recovery password request successful";
+            } else {
+              messages = "Permintaan kata sandi pemulihan berhasil";
+            }
+
+            return {
+              response_code: 202,
+              messages: {
+                info: [messages],
+              },
+            };
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Gnerate OTP. Error: ' + error,
+            );
+          }
+        }
+      } else {
+        if (lang == "en") {
+          await this.errorHandler.generateNotAcceptableException(
+            'No users were found. Please check again.',
+          );
+        } else {
+          await this.errorHandler.generateNotAcceptableException(
+            'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
+          );
+        }
+      }
+    } else {
+      if (lang == "en") {
+        await this.errorHandler.generateNotAcceptableException(
+          'No users were found. Please check again.',
+        );
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
+        );
+      }
+    }
+  }
+
+  async recoverpasswordV2(req: any): Promise<any> {
+    if (
+      req.body.email == undefined ||
+      req.body.event == undefined ||
+      req.body.status == undefined
+    ) {
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed'],
+        },
+      });
+    }
+    var user_email = req.body.email;
+    var user_otp = null; 
+    var user_password = null;
+    var current_date = await this.utilsService.getDateTimeString();
+
+    var data_CreateActivityeventsDto_parent = new CreateActivityeventsDto();
+    var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
+
+    var ID_parent_ActivityEvent = (
+      await this.utilsService.generateId()
+    ).toLowerCase();
+    var ID_child_ActivityEvent = (
+      await this.utilsService.generateId()
+    ).toLowerCase();
+
+    //Ceck User Userbasics
+    const datauserbasicsService = await this.userbasicsService.findOne(
+      user_email,
+    );
+
+    var lang = "id";
+    if (req.body.lang != undefined) {
+      lang = req.body.lang;
+    }
+
+
+    if (await this.utilsService.ceckData(datauserbasicsService)) {
+      if (datauserbasicsService.userAuth != null) {
+        //Ceck User ActivityEvent Parent
+        const user_activityevents =
+          await this.activityeventsService.findParentWitoutDevice(
+            user_email,
+            'RECOVER_PASS',
+            false,
+          );
+        //Ceck User Auth
+        const user_userAuth = await this.userauthsService.findOne(user_email);
+
+        //ActivityEvent Parent > 0
+        if (Object.keys(user_activityevents).length > 0) {
+          let last;
+          if (user_activityevents[0].transitions.length > 0) {
+            last = await this.activityeventsService.findbyactivityEventID(
+              user_email,
+              user_activityevents[0].transitions[user_activityevents[0].transitions.length-1].oid,
+              'RECOVER_PASS',
+              false,
+            );
+          } else {
+            last = user_activityevents;
+          }
+
+          let StatusNext;
+          let EventNext;
+
+          if (last[0].status == 'NOTIFY') {
+            StatusNext = 'REPLY';
+            EventNext = 'VERIFY_OTP';
+          } else if (last[0].status == 'REPLY') {
+            StatusNext = 'COMPLETE';
+            EventNext = 'COMPLETE';
+          } else if (last[0].status == 'INITIAL') {
+            StatusNext = user_activityevents[0].status;
+            EventNext = user_activityevents[0].event;
+          }
+
+          const StatusCurrent = req.body.status;
+          const EventCurrent = req.body.event;
+
+          if (
+            StatusNext == 'REPLY' &&
+            StatusNext == StatusCurrent &&
+            EventNext == EventCurrent
+          ) {
+            if ('otp' in req.body) {
+              user_otp = req.body.otp;
+            }
+
+            if (
+              user_userAuth.oneTimePassword != undefined &&
+              EventCurrent == 'VERIFY_OTP' &&
+              StatusCurrent == 'REPLY'
+            ) {
+
+              //Create ActivityEvent child
+              try {
+                var id_child = new mongoose.Types.ObjectId();
+                data_CreateActivityeventsDto_child._id = id_child;
+                data_CreateActivityeventsDto_child.activityEventID =
+                  ID_child_ActivityEvent;
+                data_CreateActivityeventsDto_child.activityType =
+                  'RECOVER_PASS';
+                data_CreateActivityeventsDto_child.active = true;
+                data_CreateActivityeventsDto_child.status = StatusCurrent;
+                data_CreateActivityeventsDto_child.target = 'COMPLETE';
+                data_CreateActivityeventsDto_child.event = EventCurrent;
+                data_CreateActivityeventsDto_child.action =
+                  'VerifyActivityCommand';
+                data_CreateActivityeventsDto_child._class =
+                  'io.melody.hyppe.trans.domain.ActivityEvent';
+                data_CreateActivityeventsDto_child.payload = {
+                  login_location: {
+                    latitude: undefined,
+                    longitude: undefined,
+                  },
+                  logout_date: undefined,
+                  login_date: undefined,
+                  login_device: undefined,
+                  email: user_email,
+                };
+                data_CreateActivityeventsDto_child.createdAt = current_date;
+                data_CreateActivityeventsDto_child.updatedAt = current_date;
+                data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
+                  3,
+                );
+                data_CreateActivityeventsDto_child.flowIsDone = false;
+                data_CreateActivityeventsDto_child.parentActivityEventID =
+                  user_activityevents[0].activityEventID;
+                data_CreateActivityeventsDto_child.userbasic =
+                  datauserbasicsService._id;
+
+                //Insert ActivityEvent child
+                await this.activityeventsService.create(
+                  data_CreateActivityeventsDto_child,
+                );
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Create Activity events Child. Error:' +
+                  error,
+                );
+              }
+
+              //Update ActivityEvent Parent
+              try {
+                const data_transitions = user_activityevents[0].transitions;
+                data_transitions.push({
+                  $ref: 'activityevents',
+                  $id: new Object(ID_child_ActivityEvent),
+                  $db: 'hyppe_trans_db',
+                });
+
+                //Update ActivityEvent Parent
+                const update_activityevents_parent =
+                  await this.activityeventsService.update(
+                    {
+                      _id: user_activityevents[0]._id,
+                    },
+                    {
+                      transitions: data_transitions,
+                    },
+                  );
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Update Activity events Parent. Error:' +
+                  error,
+                );
+              }
+
+              if (
+                await this.utilsService.compareOTPAttemp(
+                  Number(user_userAuth.otpAttempt),
+                )
+              ) {
+                if (
+                  (user_userAuth.oneTimePassword != undefined
+                    ? await this.utilsService.OTPExpires(
+                      Number(await user_userAuth.otpRequestTime),
+                    )
+                    : false) == false &&
+                  user_otp == user_userAuth.oneTimePassword
+                ) {
+                  this.userauthsService.updatebyEmail(user_email, {
+                    isEmailVerified: true,
+                  });
+
+                  this.userauthsService.updatebyEmail(user_email, {
+                    oneTimePassword: null,
+                    otpRequestTime: new Long(0),
+                    otpAttempt: new Long(0),
+                    otpNextAttemptAllow: new Long(0),
+                  });
+
+                  var messages = "";
+                  if (lang == "en") {
+                    messages = "Verify OTP successful";
+                  } else {
+                    messages = "Verifikasi OTP berhasil";
+                  }
+
+                  return {
+                    response_code: 202,
+                    messages: {
+                      info: [messages],
+                    },
+                  };
+                } else {
+                  this.userauthsService.findOneupdatebyEmail(user_email);
+                  const user_userAuth = await this.userauthsService.findOne(
+                    user_email,
+                  );
+                  if (await this.utilsService.ceckData(user_userAuth)) {
+                    if (Number(user_userAuth.otpAttempt) >= 3) {
+                      var OTP_expires =
+                        await this.utilsService.generateOTPExpiresNextAttemptAllow();
+                      this.userauthsService.updatebyEmail(user_email, {
+                        otpNextAttemptAllow: OTP_expires,
+                      });
+                    }
+                    if (lang == "en") {
+                      await this.errorHandler.generateNotAcceptableException(
+                        'The OTP code you entered is incorrect, please check again.',
+                      );
+                    } else {
+                      await this.errorHandler.generateNotAcceptableException(
+                        'Kode OTP yang kamu masukan salah, silahkan cek kembali.',
+                      );
+                    }
+                  } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Unabled to proceed',
+                    );
+                  }
+                }
+              } else {
+                if (
+                  Number(user_userAuth.otpNextAttemptAllow) > 0
+                    ? await this.utilsService.OTPNextAttempExpires(
+                      Number(user_userAuth.otpNextAttemptAllow),
+                    )
+                    : user_userAuth.oneTimePassword != undefined &&
+                    !(await this.utilsService.compareOTPAttemp(
+                      Number(user_userAuth.otpAttempt),
+                    ))
+                ) {
+
+                  //Create ActivityEvent child
+                  try {
+                    var id_child = new mongoose.Types.ObjectId();
+                    data_CreateActivityeventsDto_child._id = id_child;
+                    data_CreateActivityeventsDto_child.activityEventID =
+                      ID_child_ActivityEvent;
+                    data_CreateActivityeventsDto_child.activityType =
+                      'RECOVER_PASS';
+                    data_CreateActivityeventsDto_child.active = true;
+                    data_CreateActivityeventsDto_child.status = 'NOTIFY';
+                    data_CreateActivityeventsDto_child.target = 'REPLY';
+                    data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
+                    data_CreateActivityeventsDto_child._class =
+                      'io.melody.hyppe.trans.domain.ActivityEvent';
+                    data_CreateActivityeventsDto_child.action =
+                      'NotifyActivityCommand';
+                    data_CreateActivityeventsDto_child.payload = {
+                      login_location: {
+                        latitude: undefined,
+                        longitude: undefined,
+                      },
+                      logout_date: undefined,
+                      login_date: undefined,
+                      login_device: undefined,
+                      email: user_email,
+                    };
+                    data_CreateActivityeventsDto_child.createdAt = current_date;
+                    data_CreateActivityeventsDto_child.updatedAt = current_date;
+                    data_CreateActivityeventsDto_child.sequenceNumber =
+                      new Int32(2);
+                    data_CreateActivityeventsDto_child.flowIsDone = false;
+                    data_CreateActivityeventsDto_child.__v = undefined;
+                    data_CreateActivityeventsDto_child.parentActivityEventID =
+                      ID_parent_ActivityEvent;
+                    data_CreateActivityeventsDto_child.userbasic =
+                      datauserbasicsService._id;
+
+                    //Insert ActivityEvent Parent
+                    await this.activityeventsService.create(
+                      data_CreateActivityeventsDto_child,
+                    );
+                  } catch (error) {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Unabled to proceed Create Activity events Child. Error: ' +
+                      error,
+                    );
+                  }
+
+                  //Update ActivityEvent Parent
+                  try {
+                    const data_transitions = user_activityevents[0].transitions;
+                    data_transitions.push({
+                      $ref: 'activityevents',
+                      $id: new Object(ID_child_ActivityEvent),
+                      $db: 'hyppe_trans_db',
+                    });
+
+                    //Update ActivityEvent Parent
+                    await this.activityeventsService.update(
+                      {
+                        _id: user_activityevents[0]._id,
+                      },
+                      {
+                        transitions: data_transitions,
+                      },
+                    );
+                  } catch (error) {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Unabled to proceed Update Activity events Parent. Error:' +
+                      error,
+                    );
+                  }
+
+                  var OTP = await this.utilsService.generateOTP();
+                  var OTP_expires =
+                    await this.utilsService.generateOTPExpires();
+
+                  //Update User Auth
+                  this.userauthsService.updatebyEmail(user_email, {
+                    oneTimePassword: OTP,
+                    otpRequestTime: OTP_expires,
+                    otpAttempt: new Long(0),
+                    otpNextAttemptAllow: new Long(0),
+                  });
+
+                  await this.sendemailOTP(
+                    user_userAuth.email.toString(),
+                    OTP.toString(),
+                    'RECOVER_PASS', lang
+                  );
+
+                  var messages = "";
+                  if (lang == "en") {
+                    messages = "Recovery password request successful";
+                  } else {
+                    messages = "Permintaan kata sandi pemulihan berhasil";
+                  }
+
+                  return {
+                    response_code: 202,
+                    messages: {
+                      info: [messages],
+                    },
+                  };
+                } else {
+                  if (lang == "en") {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'OTP max attempt exceeded, please try after ' +
+                      process.env.OTP_NEXT_ALLOW_MINUTE +
+                      ' minute',
+                    );
+                  } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Upaya maksimal OTP terlampaui, silakan coba setelah ' + process.env.OTP_NEXT_ALLOW_MINUTE +
+                      ' menit',
+                    );
+                  }
+                }
+              }
+            } else {
+              if (lang == "en") {
+                await this.errorHandler.generateNotAcceptableException(
+                  'No users were found. Please check again.',
+                );
+              } else {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
+                );
+              }
+            }
+          } else if (
+            StatusNext == 'COMPLETE' &&
+            StatusNext == StatusCurrent &&
+            EventNext == EventCurrent
+          ) {
+
+            if ('new_password' in req.body) {
+              user_password = req.body.new_password;
+            }else{
+              if (lang == "en") {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Kata sandi baru diperlukan',
+                );
+              } else {
+                await this.errorHandler.generateNotAcceptableException(
+                  'New password is required',
+                );
+              }
+            }
+
+            this.userauthsService.updatebyEmail(user_email, {
+              password: bcrypt.hashSync(user_password, 5),
+            });
+
+            const datajwtrefreshtokenService = await this.jwtrefreshtokenService.findOne(user_email);
+            if (await this.utilsService.ceckData(datajwtrefreshtokenService)) {
+              this.updateRefreshToken(user_email);
+            }
+
+            // Create ActivityEvent child
+            try {
+              var id_child = new mongoose.Types.ObjectId();
+              data_CreateActivityeventsDto_child._id = id_child;
+              data_CreateActivityeventsDto_child.activityEventID =
+                ID_child_ActivityEvent;
+              data_CreateActivityeventsDto_child.activityType =
+                'RECOVER_PASS';
+              data_CreateActivityeventsDto_child.active = true;
+              data_CreateActivityeventsDto_child.status = 'COMPLETE';
+              data_CreateActivityeventsDto_child.target = 'COMPLETE';
+              data_CreateActivityeventsDto_child.event = 'COMPLETE';
+              data_CreateActivityeventsDto_child.action =
+                'VerifyActivityCommand';
+              data_CreateActivityeventsDto_child._class =
+                'io.melody.hyppe.trans.domain.ActivityEvent';
+              data_CreateActivityeventsDto_child.payload = {
+                login_location: {
+                  latitude: undefined,
+                  longitude: undefined,
+                },
+                logout_date: undefined,
+                login_date: undefined,
+                login_device: undefined,
+                email: user_email,
+              };
+              data_CreateActivityeventsDto_child.createdAt = current_date;
+              data_CreateActivityeventsDto_child.updatedAt = current_date;
+              data_CreateActivityeventsDto_child.sequenceNumber =
+                new Int32(4);
+              data_CreateActivityeventsDto_child.flowIsDone = false;
+              data_CreateActivityeventsDto_child.parentActivityEventID =
+                user_activityevents[0].activityEventID;
+              data_CreateActivityeventsDto_child.userbasic =
+                datauserbasicsService._id;
+
+              //Insert ActivityEvent child
+              await this.activityeventsService.create(
+                data_CreateActivityeventsDto_child,
+              );
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create Activity events Child. Error:' +
+                error,
+              );
+            }
+
+            // Update ActivityEvent Parent
+            try {
+              const data_transitions = user_activityevents[0].transitions;
+              data_transitions.push({
+                $ref: 'activityevents',
+                $id: new Object(ID_child_ActivityEvent),
+                $db: 'hyppe_trans_db',
+              });
+              await this.activityeventsService.update(
+                {
+                  _id: user_activityevents[0]._id,
+                },
+                {
+                  payload: {
+                    login_location: {
+                      latitude: undefined,
+                      longitude: undefined,
+                    },
+                    logout_date: current_date,
+                    login_date: user_activityevents[0].payload.login_date,
+                    login_device: undefined,
+                    email: user_email,
+                  },
+                  flowIsDone: true,
+                  transitions: data_transitions,
+                },
+              );
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Update Activity Event Parent. Error:' +
+                error,
+              );
+            }
+
+            // Update ActivityEvent All Child True
+            try {
+              await this.activityeventsService.updateFlowDone(
+                user_activityevents[0].activityEventID,
+              );
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Update ActivityEvent All Child True. Error:' +
+                error,
+              );
+            }
+
+            var messages = "";
+            if (lang == "en") {
+              messages = "Change password successful";
+            } else {
+              messages = "Ganti Kata Sandi berhasil";
+            }
+
+            return {
+              response_code: 202,
+              messages: {
+                info: [messages],
+              },
+            };
+          } else if (
+            StatusNext == 'INITIAL' &&
+            StatusNext == StatusCurrent &&
+            EventNext == EventCurrent
+          ) {
+
+            //Create ActivityEvent child
+            try {
+              var id_child = new mongoose.Types.ObjectId();
+              data_CreateActivityeventsDto_child._id = id_child;
+              data_CreateActivityeventsDto_child.activityEventID =
+                ID_child_ActivityEvent;
+              data_CreateActivityeventsDto_child.activityType = 'RECOVER_PASS';
+              data_CreateActivityeventsDto_child.active = true;
+              data_CreateActivityeventsDto_child.status = 'NOTIFY';
+              data_CreateActivityeventsDto_child.target = 'REPLY';
+              data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
+              data_CreateActivityeventsDto_child._class =
+                'io.melody.hyppe.trans.domain.ActivityEvent';
+              data_CreateActivityeventsDto_child.action =
+                'NotifyActivityCommand';
+              data_CreateActivityeventsDto_child.payload = {
+                login_location: {
+                  latitude: undefined,
+                  longitude: undefined,
+                },
+                logout_date: undefined,
+                login_date: undefined,
+                login_device: undefined,
+                email: user_email,
+              };
+              data_CreateActivityeventsDto_child.createdAt = current_date;
+              data_CreateActivityeventsDto_child.updatedAt = current_date;
+              data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
+              data_CreateActivityeventsDto_child.flowIsDone = false;
+              data_CreateActivityeventsDto_child.__v = undefined;
+              data_CreateActivityeventsDto_child.parentActivityEventID =
+                user_activityevents[0].activityEventID;
+              data_CreateActivityeventsDto_child.userbasic =
+                datauserbasicsService._id;
+
+              //Insert ActivityEvent Parent
+              await this.activityeventsService.create(
+                data_CreateActivityeventsDto_child,
+              );
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create Activity events Child. Error: ' +
+                error,
+              );
+            }
+
+            //Update ActivityEvent Parent
+            try {
+              const data_transitions = user_activityevents[0].transitions;
+              data_transitions.push({
+                $ref: 'activityevents',
+                $id: new Object(ID_child_ActivityEvent),
+                $db: 'hyppe_trans_db',
+              });
+
+              //Update ActivityEvent Parent
+              await this.activityeventsService.update(
+                {
+                  _id: user_activityevents[0]._id,
+                },
+                {
+                  transitions: data_transitions,
+                },
+              );
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Update Activity events Parent. Error:' +
+                error,
+              );
+            }
+
+            var OTP = await this.utilsService.generateOTP();
+            var OTP_expires = await this.utilsService.generateOTPExpires();
+
+            this.userauthsService.updatebyEmail(user_email, {
+              oneTimePassword: OTP,
+              otpRequestTime: OTP_expires,
+              otpAttempt: new Long(0),
+              otpNextAttemptAllow: new Long(0),
+            });
+
+            await this.sendemailOTP(
+              user_userAuth.email.toString(),
+              OTP.toString(),
+              'RECOVER_PASS', lang
+            );
+
+            var messages = "";
+            if (lang == "en") {
+              messages = "Recovery password request successful";
+            } else {
+              messages = "Permintaan kata sandi pemulihan berhasil";
+            }
+
+            return {
+              response_code: 202,
+              messages: {
+                info: [messages],
+              },
+            };
+          }
+        } else {
+
+          //Create ActivityEvent Parent
+          try {
+            var id_parent = new mongoose.Types.ObjectId();
+            data_CreateActivityeventsDto_parent._id = id_parent;
+            data_CreateActivityeventsDto_parent.activityEventID =
+              ID_parent_ActivityEvent;
+            data_CreateActivityeventsDto_parent.activityType = 'RECOVER_PASS';
+            data_CreateActivityeventsDto_parent.active = true;
+            data_CreateActivityeventsDto_parent.status = 'INITIAL';
+            data_CreateActivityeventsDto_parent.target = 'NOTIFY';
+            data_CreateActivityeventsDto_parent.event = 'RECOVER_PASS';
+            data_CreateActivityeventsDto_parent.fork = 'NOTIFY_OTP';
+            data_CreateActivityeventsDto_parent.action = 'RecoverPassCommand';
+            data_CreateActivityeventsDto_parent._class =
+              'io.melody.hyppe.trans.domain.ActivityEvent';
+            data_CreateActivityeventsDto_parent.payload = {
+              login_location: {
+                latitude: undefined,
+                longitude: undefined,
+              },
+              logout_date: undefined,
+              login_date: undefined,
+              login_device: undefined,
+              email: user_email,
+            };
+            data_CreateActivityeventsDto_parent.createdAt = current_date;
+            data_CreateActivityeventsDto_parent.updatedAt = current_date;
+            data_CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
+            data_CreateActivityeventsDto_parent.__v = undefined;
+            data_CreateActivityeventsDto_parent.flowIsDone = false;
+            data_CreateActivityeventsDto_parent.transitions = [
+              {
+                $ref: 'activityevents',
+                $id: Object(ID_child_ActivityEvent),
+                $db: 'hyppe_trans_db',
+              },
+            ];
+            data_CreateActivityeventsDto_parent.userbasic =
+              datauserbasicsService._id;
+
+            //Insert ActivityEvent Parent
+            await this.activityeventsService.create(
+              data_CreateActivityeventsDto_parent,
+            );
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Create Activity events Parent. Error: ' +
+              error,
+            );
+          }
+
+          //Create ActivityEvent child
+          try {
+            var id_child = new mongoose.Types.ObjectId();
+            data_CreateActivityeventsDto_child._id = id_child;
+            data_CreateActivityeventsDto_child.activityEventID =
+              ID_child_ActivityEvent;
+            data_CreateActivityeventsDto_child.activityType = 'RECOVER_PASS';
+            data_CreateActivityeventsDto_child.active = true;
+            data_CreateActivityeventsDto_child.status = 'NOTIFY';
+            data_CreateActivityeventsDto_child.target = 'REPLY';
+            data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
+            data_CreateActivityeventsDto_child._class =
+              'io.melody.hyppe.trans.domain.ActivityEvent';
+            data_CreateActivityeventsDto_child.action = 'NotifyActivityCommand';
+            data_CreateActivityeventsDto_child.payload = {
+              login_location: {
+                latitude: undefined,
+                longitude: undefined,
+              },
+              logout_date: undefined,
+              login_date: undefined,
+              login_device: undefined,
+              email: user_email,
+            };
+            data_CreateActivityeventsDto_child.createdAt = current_date;
+            data_CreateActivityeventsDto_child.updatedAt = current_date;
+            data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
+            data_CreateActivityeventsDto_child.flowIsDone = false;
+            data_CreateActivityeventsDto_child.__v = undefined;
+            data_CreateActivityeventsDto_child.parentActivityEventID =
+              ID_parent_ActivityEvent;
+            data_CreateActivityeventsDto_child.userbasic =
+              datauserbasicsService._id;
+
+            //Insert ActivityEvent Parent
+            await this.activityeventsService.create(
+              data_CreateActivityeventsDto_child,
+            );
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Create Activity events Child. Error: ' +
+              error,
+            );
+          }
+
+          //Generate OTP
+          try {
+            var OTP = await this.utilsService.generateOTP();
+            var OTP_expires = await this.utilsService.generateOTPExpires();
+
+            await this.userauthsService.updatebyEmail(user_email, {
+              oneTimePassword: OTP,
+              otpRequestTime: OTP_expires,
+            });
+
+            await this.sendemailOTP(
+              user_userAuth.email.toString(),
+              OTP.toString(),
+              'RECOVER_PASS', lang
+            );
+
             var messages = "";
             if (lang == "en") {
               messages = "Recovery password request successful";

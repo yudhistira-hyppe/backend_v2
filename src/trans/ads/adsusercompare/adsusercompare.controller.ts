@@ -80,7 +80,7 @@ export class AdsUserCompareController {
         _CreateAdsDto_._id = dataAds._id;
         _CreateAdsDto_.userID = dataAds.userID;
         _CreateAdsDto_.liveAt = dataAds.liveAt;
-        this.adsUserCompareService.createUserAds(_CreateAdsDto_);
+        //this.adsUserCompareService.createUserAds(_CreateAdsDto_);
         return {
             "response_code": 202,
             "messages": {
@@ -180,7 +180,7 @@ export class AdsUserCompareController {
         data_response['videoId'] = data_ads.idApsara;
         data_response['duration'] = data_ads.duration;
         this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, The process successfuly : " + JSON.stringify(data_response));
-
+        
         return {
             "response_code": 202,
             "data": data_response,
@@ -223,67 +223,87 @@ export class AdsUserCompareController {
             );
         }
 
-        var getDate = await this.utilsService.getDateString();
+        var current_date = await this.utilsService.getDateTimeString();
         const data_ads = await this.adsService.findAds(headers['x-auth-user'],type_);
-        return data_ads;
-        // const data_userads = await this.userAdsService.findOneByuserID(data_userbasic._id.toString(), type_, getDate);
-        // if (!(await this.utilsService.ceckData(data_userads))) {
-        //     this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed User Ads Playlist not found");
-        //     await this.errorHandler.generateNotAcceptableException(
-        //         'Unabled to proceed User Ads Playlist not found'
-        //     );
-        // }
+        var genIdUserAds = new mongoose.Types.ObjectId();
+        if (await this.utilsService.ceckData(data_ads)){
+            var CreateUserAdsDto_ = new CreateUserAdsDto();
+            try {
+                CreateUserAdsDto_._id = genIdUserAds;
+                CreateUserAdsDto_.adsID = new mongoose.Types.ObjectId(data_ads[0].adsId);
+                CreateUserAdsDto_.userID = new mongoose.Types.ObjectId(data_ads[0].userID);
+                CreateUserAdsDto_.priority = data_ads[0].priority;
+                CreateUserAdsDto_.priorityNumber = data_ads[0].priorityNumber;
+                if (data_ads[0].description != undefined) {
+                    CreateUserAdsDto_.description = data_ads[0].description;
+                }
+                CreateUserAdsDto_.createdAt = current_date;
+                CreateUserAdsDto_.statusClick = false;
+                CreateUserAdsDto_.statusView = false;
+                CreateUserAdsDto_.viewed = 0;
+                CreateUserAdsDto_.liveAt = data_ads[0].liveAt;
+                CreateUserAdsDto_.liveTypeuserads = data_ads[0].liveTypeAds;
+                CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_ads[0].typeAdsID);
+                CreateUserAdsDto_.nameType = data_ads[0].adsType;
+                CreateUserAdsDto_.isActive = true;
+                const createUserAdsDto = await this.userAdsService.create(CreateUserAdsDto_);
+            } catch (s) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Failed update Ads',
+                );
+            }
 
-        // const data_ads = await this.adsService.findOne(data_userads[0].adsID.toString());
-        // if (!(await this.utilsService.ceckData(data_ads))) {
-        //     this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed User Ads Playlist not found");
-        //     await this.errorHandler.generateNotAcceptableException(
-        //         'Unabled to proceed Ads not found'
-        //     );
-        // }
+            var get_profilePict = null;
+            const data_userbasic_ads = await this.userbasicsService.findbyid(data_ads[0].adsUserId.toString());
+            if (data_userbasic_ads.profilePict != undefined) {
+                if (data_userbasic_ads.profilePict != null) {
+                    var mediaprofilepicts_json = JSON.parse(JSON.stringify(data_userbasic_ads.profilePict));
+                    get_profilePict = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
+                }
+            }
+            var data_response = {};
+            data_response['adsId'] = data_ads[0].adsId.toString();
+            data_response['adsUrlLink'] = data_ads[0].urlLink;
+            data_response['adsDescription'] = data_ads[0].description;
+            data_response['useradsId'] = genIdUserAds.toString();
+            data_response['idUser'] = data_userbasic_ads._id.toString();
+            data_response['fullName'] = data_userbasic_ads.fullName;
+            data_response['email'] = data_userbasic_ads.email;
 
-        // var get_profilePict = null;
-        // const data_userbasic_ads = await this.userbasicsService.findbyid(data_ads.userID.toString());
-        // if (data_userbasic_ads.profilePict != undefined) {
-        //     if (data_userbasic_ads.profilePict != null) {
-        //         var mediaprofilepicts_json = JSON.parse(JSON.stringify(data_userbasic_ads.profilePict));
-        //         get_profilePict = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
-        //     }
-        // }
-        // var data_response = {};
-        // data_response['adsId'] = data_ads._id.toString();
-        // data_response['adsUrlLink'] = data_ads.urlLink;
-        // data_response['adsDescription'] = data_ads.description;
-        // data_response['useradsId'] = data_userads[0]._id.toString();
-        // data_response['idUser'] = data_userbasic_ads._id.toString();
-        // data_response['fullName'] = data_userbasic_ads.fullName;
-        // data_response['email'] = data_userbasic_ads.email;
-        // data_response['avartar'] = {
-        //     mediaBasePath: get_profilePict.mediaBasePath,
-        //     mediaUri: get_profilePict.mediaUri,
-        //     mediaType: get_profilePict.mediaType,
-        //     mediaEndpoint: '/profilepict/' + get_profilePict.mediaID
-        // }
-        // var dataPlace = await this.adsplacesService.findOne(data_ads.placingID.toString());
-        // if (await this.utilsService.ceckData(dataPlace)) {
-        //     data_response['adsPlace'] = dataPlace.namePlace;
-        // }
-        // data_response['adsType'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).nameType;
-        // data_response['adsSkip'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).AdsSkip;
-        // data_response['mediaType'] = data_ads.type;
-        // data_response['videoId'] = data_ads.idApsara;
-        // data_response['duration'] = data_ads.duration;
-        // this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, The process successfuly : " + JSON.stringify(data_response));
+            if (await this.utilsService.ceckData(get_profilePict)) {
+                data_response['avartar'] = {
+                    mediaBasePath: (get_profilePict.mediaBasePath != undefined) ? get_profilePict.mediaBasePath : null,
+                    mediaUri: (get_profilePict.mediaUri != undefined) ? get_profilePict.mediaUri : null,
+                    mediaType: (get_profilePict.mediaType != undefined) ? get_profilePict.mediaType : null,
+                    mediaEndpoint: (get_profilePict.mediaID != undefined) ? '/profilepict/' + get_profilePict.mediaID : null,
+                }
+            }
 
-        // return {
-        //     "response_code": 202,
-        //     "data": data_response,
-        //     "messages": {
-        //         "info": [
-        //             "The process successfuly"
-        //         ]
-        //     }
-        // };
+            var dataPlace = await this.adsplacesService.findOne(data_ads[0].placingID.toString());
+            if (await this.utilsService.ceckData(dataPlace)) {
+                data_response['adsPlace'] = dataPlace.namePlace;
+            }
+            data_response['adsType'] = (await this.adstypesService.findOne(data_ads[0].typeAdsID.toString())).nameType;
+            data_response['adsSkip'] = (await this.adstypesService.findOne(data_ads[0].typeAdsID.toString())).AdsSkip;
+            data_response['mediaType'] = data_ads[0].type;
+            data_response['videoId'] = data_ads[0].idApsara;
+            data_response['duration'] = data_ads[0].duration;
+            this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, The process successfuly : " + JSON.stringify(data_response));
+
+            return {
+                "response_code": 202,
+                "data": data_ads,
+                "messages": {
+                    "info": [
+                        "The process successfuly"
+                    ]
+                }
+            };
+        }else{
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Ads not found'
+            );
+        }
     }
 
     @Get('/getads/stream/:id')
@@ -1065,7 +1085,7 @@ export class AdsUserCompareController {
             };
             CreateAdsDto_.userID = Ads_data.userID;
             CreateAdsDto_.liveAt = Ads_data.liveAt;
-            await this.adsUserCompareService.createUserAds(CreateAdsDto_);
+            //await this.adsUserCompareService.createUserAds(CreateAdsDto_);
         } else {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Ads not found',

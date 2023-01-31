@@ -134,6 +134,8 @@ export class Userbasic {
   reportedUserHandle: any[];
   @Prop()
   listAddKyc: any[];
+  @Prop()
+  userAssets: mongoose.Types.ObjectId[];
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);

@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsString } from "class-validator";
 import { ObjectId } from "mongodb";
+import mongoose, { Document } from 'mongoose';
 
 export class CreateUserbasicDto {
   _id: ObjectId;
@@ -82,6 +83,7 @@ export class CreateUserbasicDto {
   reportedUser: any[];
   reportedUserHandle: any[];
   listAddKyc: any[];
+  userAssets: mongoose.Types.ObjectId[];
 }
 
 export class SearchUserbasicDto {
