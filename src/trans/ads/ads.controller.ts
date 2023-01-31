@@ -357,19 +357,15 @@ export class AdsController {
                         var freeCredit = datavoucher.creditPromo;
                         var creditTotal = datavoucher.creditTotal;
 
-                        arrayCreditvalue.push(valueCredit);
-                        arrayFreeCredit.push(freeCredit);
-                        arrayTotalCredit.push(creditTotal);
-
                         var objuservoucher = mongoose.Types.ObjectId(idu);
                         arrayUservoucher.push(objuservoucher);
                     }
 
-                    for (var i = 0; i < splituserv2.length; i++) {
-                        sumCreditValue += arrayCreditvalue[i];
-                        sumFreeCredit += arrayFreeCredit[i];
-                        sumCredittotal += arrayTotalCredit[i];
-                    }
+                    // for (var i = 0; i < splituserv2.length; i++) {
+                    //     sumCreditValue += arrayCreditvalue[i];
+                    //     sumFreeCredit += arrayFreeCredit[i];
+                    //     sumCredittotal += arrayTotalCredit[i];
+                    // }
 
                     if (totalCreditusvoucherUsed < total_credit_data) {
 
@@ -396,6 +392,11 @@ export class AdsController {
                         var LastUseKredit = kredit - useKredit;
                         var LastUseKreditFree = kreditFree - useKreditFree
 
+
+                        sumCreditValue += 0;
+                        sumFreeCredit += 0;
+                        sumCredittotal += 0;
+
                         if (totalCredit > 0) {
                             if (creditAllUse) {
                                 useKredit = useKredit;
@@ -412,6 +413,8 @@ export class AdsController {
                                         total_credit_data -= LastUseKredit;
                                         useKredit += LastUseKredit;
                                         totalCredit -= LastUseKredit;
+
+                                        sumCreditValue=
                                     }
                                     if (!creditAllUse) {
                                         if (LastUseKreditFree > 0) {
@@ -445,12 +448,19 @@ export class AdsController {
                                 }
                             }
                         }
+
                         var CreateUservouchersDto_ = new CreateUservouchersDto();
                         CreateUservouchersDto_.usedCredit = useKredit;
                         CreateUservouchersDto_.usedCreditFree = useKreditFree;
                         CreateUservouchersDto_.totalCredit = totalCredit;
                         await this.uservouchersService.update(idUserVoucher, CreateUservouchersDto_);
                     }
+
+                    // for (var i = 0; i < splituserv2.length; i++) {
+                    //     sumCreditValue += arrayCreditvalue[i];
+                    //     sumFreeCredit += arrayFreeCredit[i];
+                    //     sumCredittotal += arrayTotalCredit[i];
+                    // }
 
                     //     console.log("dataPlacing", dataPlacing);
 
