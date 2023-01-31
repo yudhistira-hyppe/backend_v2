@@ -92,7 +92,7 @@ export class AdsUserCompareController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('/getads/user/')
+    @Get('/getads/user/v2/') 
     @HttpCode(HttpStatus.ACCEPTED)
     async getads(@Headers() headers,
         @Query('type') type: string): Promise<any> {
@@ -193,7 +193,7 @@ export class AdsUserCompareController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('/getads/user/v2/')
+    @Get('/getads/user/')
     @HttpCode(HttpStatus.ACCEPTED)
     async getadsv2(@Headers() headers,
         @Query('type') type: string): Promise<any> {
