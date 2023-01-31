@@ -3451,26 +3451,26 @@ export class UserbasicsService {
           "amount": 1,
           "totalamount": 1,
           "status": 1,
-          "fullName": 1,
+          // "fullName": 1,
           "email": 1,
           "postID": 1,
           "postType": 1,
           "descriptionContent": 1,
           "title": 1,
-          "kepemilikan":
-          {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$certified", false]
-                }, {
-                  $eq: ["$certified", ""]
-                }]
-              },
-              then: "TIDAK",
-              else: "YA"
-            }
-          },
+          // "kepemilikan":
+          // {
+          //   $cond: {
+          //     if: {
+          //       $or: [{
+          //         $eq: ["$certified", false]
+          //       }, {
+          //         $eq: ["$certified", ""]
+          //       }]
+          //     },
+          //     then: "TIDAK",
+          //     else: "YA"
+          //   }
+          // },
 
         }
       },
@@ -4842,26 +4842,26 @@ export class UserbasicsService {
           "amount": 1,
           "totalamount": 1,
           "status": 1,
-          "fullName": 1,
+          // "fullName": 1,
           "email": 1,
           "postID": 1,
           "postType": 1,
           "descriptionContent": 1,
           "title": 1,
-          "kepemilikan":
-          {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$certified", false]
-                }, {
-                  $eq: ["$certified", ""]
-                }]
-              },
-              then: "TIDAK",
-              else: "YA"
-            }
-          },
+          // "kepemilikan":
+          // {
+          //   $cond: {
+          //     if: {
+          //       $or: [{
+          //         $eq: ["$certified", false]
+          //       }, {
+          //         $eq: ["$certified", ""]
+          //       }]
+          //     },
+          //     then: "TIDAK",
+          //     else: "YA"
+          //   }
+          // },
 
         }
       },
