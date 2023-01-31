@@ -404,9 +404,9 @@ export class AdsController {
                             } else {
                                 if (LastUseKredit > 0) {
                                     if (total_credit_data < LastUseKredit) {
-                                        total_credit_data = 0;
                                         useKredit += total_credit_data;
                                         totalCredit -= total_credit_data;
+                                        total_credit_data = 0;
                                         creditAllUse = true;
                                     } else {
                                         total_credit_data -= LastUseKredit;
@@ -429,9 +429,9 @@ export class AdsController {
                                     }
                                 } else if (LastUseKreditFree > 0) {
                                     if (total_credit_data < LastUseKreditFree) {
-                                        total_credit_data = 0;
                                         useKreditFree += total_credit_data;
                                         totalCredit -= total_credit_data;
+                                        total_credit_data = 0;
                                         creditAllUse = true;
                                     } else {
                                         total_credit_data -= LastUseKreditFree;
