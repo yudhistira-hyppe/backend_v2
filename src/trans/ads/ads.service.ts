@@ -881,9 +881,9 @@ export class AdsService {
                     ads: [{
                         _id: "$_id",
                         description: "$description",
-                        adsUserId: "$userID", 
+                        adsUserId: "$userID",
                         ageStart: "$startAge",
-                        ageEnd: "$endAge", 
+                        ageEnd: "$endAge",
                         placingID: "$placingID",
                         liveTypeAds: "$liveTypeAds",
                         timestamps: "$timestamp",
@@ -973,13 +973,13 @@ export class AdsService {
                 $project: {
                     adsId: "$ads._id",
                     userID: "$userBasic._id",
-                    adsUserId: "$ads.adsUserId", 
+                    adsUserId: "$ads.adsUserId",
                     liveAt: "$ads.liveAt",
                     description: "$ads.description",
                     liveTypeuserads: "$ads.liveTypeAds",
                     nameType: "$types.nameType",
                     timestamps: "$ads.timestamps",
-                    typeAdsID: "$ads.typeAdsID", 
+                    typeAdsID: "$ads.typeAdsID",
                     placingID: "$ads.placingID",
                     type: "$ads.type",
                     placingName: "$ads.placingName",
@@ -1061,13 +1061,13 @@ export class AdsService {
             {
                 $project: {
                     timestamps: 1,
-                    adsId: 1, 
+                    adsId: 1,
                     userID: 1,
                     adsUserId: 1,
-                    liveAt: 1, 
+                    liveAt: 1,
                     liveTypeuserads: 1,
                     typeAdsID: 1,
-                    nameType: 1, 
+                    nameType: 1,
                     placingID: 1,
                     description: 1,
                     createdAt: 1,
@@ -1078,7 +1078,7 @@ export class AdsService {
                     placingName: 1,
                     minat: 1,
                     urlLink: 1,
-                    lapak: 1, 
+                    lapak: 1,
                     umur: 1,
                     // priority:
                     // {
@@ -2622,7 +2622,7 @@ export class AdsService {
                 }
             },
         );
-
+        pipeline.push({ $sort: { timestamp: -1 } });
         if (search && search !== undefined && search != "") {
             pipeline.push({
                 $match: {
@@ -2654,7 +2654,7 @@ export class AdsService {
         if (limit > 0) {
             pipeline.push({ $limit: limit });
         }
-        pipeline.push({ $sort: { timestamp: -1 } });
+
         // const util = require('util');
         // console.log(util.inspect(pipeline, false, null, true));
 
