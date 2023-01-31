@@ -6,23 +6,15 @@ import {
     OnGatewayConnection,
     OnGatewayDisconnect,
     MessageBody,
-    WsResponse,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
-import { from, map, Observable } from 'rxjs';
 
-@WebSocketGateway(
-    // 5002, 
-    {
-        namespace: 'events',
-        transports: ['websocket','polling'],
-        cors: {
-            origin: '*',
-        },
-        allowEIO3:false
-    }
-)
+@WebSocketGateway({
+    cors: {
+        origin: '*',
+    },
+})
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
     @WebSocketServer() server: Server;
@@ -35,41 +27,35 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
     directMessage(email: string, payload: string): void {
         this.server.emit(email, payload);
-    }        
+    }
 
     room(room: string, payload: string): void {
         //this.server.socketsJoin("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256");
-        //this.server.to("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256").emit("payload", payload);
+        this.server.socketsJoin(room);
+        this.server.to(room).emit("event_disqus", payload);
+        
         console.log("room emit: " + payload);
         //this.server.emit(room, payload);
-        this.server.emit("event_disqus", payload);
+        //this.server.emit("event_disqus", payload);
         //this.server.socketsLeave("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256");
-    }  
-
-    @SubscribeMessage('TEST_COBA')
-    findAll(@MessageBody() data: any): Observable<WsResponse<number>> {
-        return from([1, 2, 3]).pipe(map(item => ({ event: 'TEST_COBA', data: item })));
     }
 
-    @SubscribeMessage('identity')
-    async identity(@MessageBody() data: number): Promise<number> {
-        return data;
-    }
+    // @SubscribeMessage('joinRoom')
+    // public joinRoom(client: Socket, room: string): void {
+    //     client.join(room);
+    //     client.emit('joinedRoom', room);
+    // }
 
-    testCoba(payload: string) {
-        this.server.emit('events', payload);
-    } 
-    
-    @SubscribeMessage('TEST_COBA')
-    handleTestCoba(@MessageBody() payload: any): Observable<WsResponse<number>> {
-        console.log("Subscribe: " + payload);
-        return payload;
-    }
+    // @SubscribeMessage('leaveRoom')
+    // public leaveRoom(client: Socket, room: string): void {
+    //     client.leave(room);
+    //     client.emit('leftRoom', room);
+    // }
 
     @SubscribeMessage('coba')
     coba(@MessageBody() payload: string): void {
         this.server.emit('coba', payload);
-    }    
+    }
 
     afterInit(server: Server) {
         this.logger.log('Init');
