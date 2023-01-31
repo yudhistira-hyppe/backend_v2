@@ -198,8 +198,8 @@ export class AdsUserCompareController {
     @HttpCode(HttpStatus.ACCEPTED)
     async getadsv2(@Headers() headers,
         @Query('type') type: string): Promise<any> {
-        this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START headers : " + JSON.stringify(headers));
-        this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START type : " + type);
+        this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START headers : " + JSON.stringify(headers));
+        this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START type : " + type);
         let type_ = "";
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
             this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed token and email not match");
@@ -293,7 +293,7 @@ export class AdsUserCompareController {
 
             return {
                 "response_code": 202,
-                "data": data_ads,
+                "data": data_response,
                 "messages": {
                     "info": [
                         "The process successfuly"
