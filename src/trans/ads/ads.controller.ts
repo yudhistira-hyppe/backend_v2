@@ -386,13 +386,13 @@ export class AdsController {
                         uservoucherdata = await this.uservouchersService.findOne(idu);
                         var idUserVoucher = uservoucherdata._id.toString();
 
-                        var totalCredit = uservoucherdata.totalCredit;
+                        var totalCredit = (uservoucherdata.totalCredit != undefined) ? uservoucherdata.totalCredit : 0;
 
-                        var kredit = uservoucherdata.credit;
-                        var kreditFree = uservoucherdata.creditFree;
+                        var kredit = (uservoucherdata.credit != undefined) ? uservoucherdata.credit : 0;
+                        var kreditFree = (uservoucherdata.creditFree != undefined) ? uservoucherdata.creditFree : 0;
 
-                        var useKredit = uservoucherdata.usedCredit;
-                        var useKreditFree = uservoucherdata.usedCreditFree;
+                        var useKredit = (uservoucherdata.usedCredit != undefined) ? uservoucherdata.usedCredit : 0;
+                        var useKreditFree = (uservoucherdata.usedCreditFree != undefined) ? uservoucherdata.usedCreditFree : 0;
 
                         var LastUseKredit = kredit - useKredit;
                         var LastUseKreditFree = kreditFree - useKreditFree

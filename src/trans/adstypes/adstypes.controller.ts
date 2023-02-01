@@ -38,6 +38,7 @@ export class AdstypesController {
     async findplaces(): Promise<Adstypes[]> {
         return this.adstypesService.findPlaces();
     }
+    
     @UseGuards(JwtAuthGuard)
     @Get()
     async findAll(): Promise<Adstypes[]> {

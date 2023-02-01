@@ -3854,80 +3854,6 @@ export class AuthService {
               StatusCurrent == 'REPLY'
             ) {
 
-              //Create ActivityEvent child
-              try {
-                var id_child = new mongoose.Types.ObjectId();
-                data_CreateActivityeventsDto_child._id = id_child;
-                data_CreateActivityeventsDto_child.activityEventID =
-                  ID_child_ActivityEvent;
-                data_CreateActivityeventsDto_child.activityType =
-                  'RECOVER_PASS';
-                data_CreateActivityeventsDto_child.active = true;
-                data_CreateActivityeventsDto_child.status = StatusCurrent;
-                data_CreateActivityeventsDto_child.target = 'COMPLETE';
-                data_CreateActivityeventsDto_child.event = EventCurrent;
-                data_CreateActivityeventsDto_child.action =
-                  'VerifyActivityCommand';
-                data_CreateActivityeventsDto_child._class =
-                  'io.melody.hyppe.trans.domain.ActivityEvent';
-                data_CreateActivityeventsDto_child.payload = {
-                  login_location: {
-                    latitude: undefined,
-                    longitude: undefined,
-                  },
-                  logout_date: undefined,
-                  login_date: undefined,
-                  login_device: undefined,
-                  email: user_email,
-                };
-                data_CreateActivityeventsDto_child.createdAt = current_date;
-                data_CreateActivityeventsDto_child.updatedAt = current_date;
-                data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
-                  3,
-                );
-                data_CreateActivityeventsDto_child.flowIsDone = false;
-                data_CreateActivityeventsDto_child.parentActivityEventID =
-                  user_activityevents[0].activityEventID;
-                data_CreateActivityeventsDto_child.userbasic =
-                  datauserbasicsService._id;
-
-                //Insert ActivityEvent child
-                await this.activityeventsService.create(
-                  data_CreateActivityeventsDto_child,
-                );
-              } catch (error) {
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Create Activity events Child. Error:' +
-                  error,
-                );
-              }
-
-              //Update ActivityEvent Parent
-              try {
-                const data_transitions = user_activityevents[0].transitions;
-                data_transitions.push({
-                  $ref: 'activityevents',
-                  $id: new Object(ID_child_ActivityEvent),
-                  $db: 'hyppe_trans_db',
-                });
-
-                //Update ActivityEvent Parent
-                const update_activityevents_parent =
-                  await this.activityeventsService.update(
-                    {
-                      _id: user_activityevents[0]._id,
-                    },
-                    {
-                      transitions: data_transitions,
-                    },
-                  );
-              } catch (error) {
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Update Activity events Parent. Error:' +
-                  error,
-                );
-              }
-
               if (
                 await this.utilsService.compareOTPAttemp(
                   Number(user_userAuth.otpAttempt),
@@ -3941,6 +3867,81 @@ export class AuthService {
                     : false) == false &&
                   user_otp == user_userAuth.oneTimePassword
                 ) {
+
+                  //Create ActivityEvent child
+                  try {
+                    var id_child = new mongoose.Types.ObjectId();
+                    data_CreateActivityeventsDto_child._id = id_child;
+                    data_CreateActivityeventsDto_child.activityEventID =
+                      ID_child_ActivityEvent;
+                    data_CreateActivityeventsDto_child.activityType =
+                      'RECOVER_PASS';
+                    data_CreateActivityeventsDto_child.active = true;
+                    data_CreateActivityeventsDto_child.status = StatusCurrent;
+                    data_CreateActivityeventsDto_child.target = 'COMPLETE';
+                    data_CreateActivityeventsDto_child.event = EventCurrent;
+                    data_CreateActivityeventsDto_child.action =
+                      'VerifyActivityCommand';
+                    data_CreateActivityeventsDto_child._class =
+                      'io.melody.hyppe.trans.domain.ActivityEvent';
+                    data_CreateActivityeventsDto_child.payload = {
+                      login_location: {
+                        latitude: undefined,
+                        longitude: undefined,
+                      },
+                      logout_date: undefined,
+                      login_date: undefined,
+                      login_device: undefined,
+                      email: user_email,
+                    };
+                    data_CreateActivityeventsDto_child.createdAt = current_date;
+                    data_CreateActivityeventsDto_child.updatedAt = current_date;
+                    data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
+                      3,
+                    );
+                    data_CreateActivityeventsDto_child.flowIsDone = false;
+                    data_CreateActivityeventsDto_child.parentActivityEventID =
+                      user_activityevents[0].activityEventID;
+                    data_CreateActivityeventsDto_child.userbasic =
+                      datauserbasicsService._id;
+
+                    //Insert ActivityEvent child
+                    await this.activityeventsService.create(
+                      data_CreateActivityeventsDto_child,
+                    );
+                  } catch (error) {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Unabled to proceed Create Activity events Child. Error:' +
+                      error,
+                    );
+                  }
+
+                  //Update ActivityEvent Parent
+                  try {
+                    const data_transitions = user_activityevents[0].transitions;
+                    data_transitions.push({
+                      $ref: 'activityevents',
+                      $id: new Object(ID_child_ActivityEvent),
+                      $db: 'hyppe_trans_db',
+                    });
+
+                    //Update ActivityEvent Parent
+                    const update_activityevents_parent =
+                      await this.activityeventsService.update(
+                        {
+                          _id: user_activityevents[0]._id,
+                        },
+                        {
+                          transitions: data_transitions,
+                        },
+                      );
+                  } catch (error) {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Unabled to proceed Update Activity events Parent. Error:' +
+                      error,
+                    );
+                  }
+
                   this.userauthsService.updatebyEmail(user_email, {
                     isEmailVerified: true,
                   });
