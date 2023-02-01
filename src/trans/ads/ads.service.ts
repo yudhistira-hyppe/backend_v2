@@ -723,6 +723,29 @@ export class AdsService {
                 }
             },
             {
+                $set: {
+                    "testDate":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [new Date(), 25200000]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $set: {
+                    "tayang": {
+                        $concat: [
+                            "$liveAt",
+                            " 00:00:00"
+                        ]
+                    }
+                }
+            },
+            {
                 "$lookup": {
                     from: "userbasics",
                     as: "userBasic",
@@ -816,9 +839,9 @@ export class AdsService {
                                     {
                                         "statusView": true
                                     },
-                                    {
-                                        "isActive": false
-                                    },
+                                    // {
+                                    //     "isActive": false
+                                    // },
                                 ]
                             },
                         },
@@ -864,6 +887,11 @@ export class AdsService {
                                 $not: {
                                     $in: ["$adsUser.adsID"]
                                 }
+                            }
+                        },
+                        {
+                            $expr: {
+                                $lt: ["$tayang", "$testDate"]
                             }
                         },
                         {
@@ -1436,7 +1464,7 @@ export class AdsService {
                                             $lt: ["$umur", 1]
                                         },]
                                     },
-                                    then: 2
+                                    then: "LOWEST"
                                 },
 
                             ],
