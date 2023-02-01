@@ -42,5 +42,64 @@ export class UserauthsController {
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.userauthsService.delete(id);
-  } 
+  }
+  
+  @Post('useractivebychart')
+  @UseGuards(JwtAuthGuard)
+  async getUserActiveBasedDate(@Req() request: Request): Promise<any> {
+      var data = null;
+      var date = null;
+
+      const messages = {
+          "info": ["The process successful"],
+      };
+
+      var request_json = JSON.parse(JSON.stringify(request.body));
+      if (request_json["date"] !== undefined) 
+      {
+        date = request_json["date"];
+      } else 
+      {
+        throw new BadRequestException("Unabled to proceed");
+      }
+
+      var tempdata = await this.userauthsService.getUserActiveByDate(date);
+      var getdata = tempdata[0].resultdata;
+
+      var startdate = new Date(date);
+      startdate.setDate(startdate.getDate() - 1);
+      var tempdate = new Date(startdate).toISOString().split("T")[0];
+      var end = new Date().toISOString().split("T")[0];
+      var array = [];
+      
+      //kalo lama, berarti error disini!!
+      while(tempdate != end)
+      {
+        var temp = new Date(tempdate);
+        temp.setDate(temp.getDate() + 1);
+        tempdate = new Date(temp).toISOString().split("T")[0];
+        //console.log(tempdate);
+      
+        let obj = getdata.find(objs => objs._id === tempdate);
+        //console.log(obj);
+        if(obj == undefined)
+        {
+          obj = 
+          {
+            _id : tempdate,
+            totaldata : 0
+          }
+        }
+        
+        array.push(obj);
+      }      
+
+      data = 
+      {
+        data:array,
+        total:tempdata[0].total
+      }
+
+      return { response_code: 202, messages, data };
+  }
 }

@@ -362,19 +362,15 @@ export class AdsController {
                         var freeCredit = datavoucher.creditPromo;
                         var creditTotal = datavoucher.creditTotal;
 
-                        arrayCreditvalue.push(valueCredit);
-                        arrayFreeCredit.push(freeCredit);
-                        arrayTotalCredit.push(creditTotal);
-
                         var objuservoucher = mongoose.Types.ObjectId(idu);
                         arrayUservoucher.push(objuservoucher);
                     }
 
-                    for (var i = 0; i < splituserv2.length; i++) {
-                        sumCreditValue += arrayCreditvalue[i];
-                        sumFreeCredit += arrayFreeCredit[i];
-                        sumCredittotal += arrayTotalCredit[i];
-                    }
+                    // for (var i = 0; i < splituserv2.length; i++) {
+                    //     sumCreditValue += arrayCreditvalue[i];
+                    //     sumFreeCredit += arrayFreeCredit[i];
+                    //     sumCredittotal += arrayTotalCredit[i];
+                    // }
 
                     if (totalCreditusvoucherUsed < total_credit_data) {
 
@@ -401,6 +397,11 @@ export class AdsController {
                         var LastUseKredit = kredit - useKredit;
                         var LastUseKreditFree = kreditFree - useKreditFree
 
+
+                        // sumCreditValue += 0;
+                        // sumFreeCredit += 0;
+                        // sumCredittotal += 0;
+
                         if (totalCredit > 0) {
                             if (creditAllUse) {
                                 useKredit = useKredit;
@@ -409,11 +410,15 @@ export class AdsController {
                             } else {
                                 if (LastUseKredit > 0) {
                                     if (total_credit_data < LastUseKredit) {
-                                        total_credit_data = 0;
+                                        sumCreditValue += total_credit_data;
+
                                         useKredit += total_credit_data;
                                         totalCredit -= total_credit_data;
+                                        total_credit_data = 0;
                                         creditAllUse = true;
                                     } else {
+                                        sumCreditValue += LastUseKredit;
+
                                         total_credit_data -= LastUseKredit;
                                         useKredit += LastUseKredit;
                                         totalCredit -= LastUseKredit;
@@ -421,11 +426,15 @@ export class AdsController {
                                     if (!creditAllUse) {
                                         if (LastUseKreditFree > 0) {
                                             if (total_credit_data < LastUseKreditFree) {
+                                                sumFreeCredit += total_credit_data;
+
                                                 total_credit_data = 0;
                                                 useKreditFree += total_credit_data;
                                                 totalCredit -= total_credit_data;
                                                 creditAllUse = true;
                                             } else {
+                                                sumFreeCredit += LastUseKreditFree;
+
                                                 total_credit_data -= LastUseKreditFree;
                                                 useKreditFree += LastUseKreditFree;
                                                 totalCredit -= LastUseKreditFree;
@@ -434,11 +443,15 @@ export class AdsController {
                                     }
                                 } else if (LastUseKreditFree > 0) {
                                     if (total_credit_data < LastUseKreditFree) {
-                                        total_credit_data = 0;
+                                        sumFreeCredit += total_credit_data;
+
                                         useKreditFree += total_credit_data;
                                         totalCredit -= total_credit_data;
+                                        total_credit_data = 0;
                                         creditAllUse = true;
                                     } else {
+                                        sumFreeCredit += LastUseKreditFree;
+
                                         total_credit_data -= LastUseKreditFree;
                                         useKreditFree += LastUseKreditFree;
                                         totalCredit -= LastUseKreditFree;
@@ -450,12 +463,19 @@ export class AdsController {
                                 }
                             }
                         }
+
                         var CreateUservouchersDto_ = new CreateUservouchersDto();
                         CreateUservouchersDto_.usedCredit = useKredit;
                         CreateUservouchersDto_.usedCreditFree = useKreditFree;
                         CreateUservouchersDto_.totalCredit = totalCredit;
                         await this.uservouchersService.update(idUserVoucher, CreateUservouchersDto_);
                     }
+
+                    // for (var i = 0; i < splituserv2.length; i++) {
+                    //     sumCreditValue += arrayCreditvalue[i];
+                    //     sumFreeCredit += arrayFreeCredit[i];
+                    //     sumCredittotal += arrayTotalCredit[i];
+                    // }
 
                     //     console.log("dataPlacing", dataPlacing);
 
@@ -489,7 +509,7 @@ export class AdsController {
                     CreateAdsDto.usedCreditFree = 0;
                     CreateAdsDto.creditValue = sumCreditValue;
                     CreateAdsDto.creditFree = sumFreeCredit;
-                    CreateAdsDto.totalCredit = sumCredittotal;
+                    CreateAdsDto.totalCredit = sumCreditValue + sumFreeCredit;
                     // CreateAdsDto.mediaAds = mongoose.Types.ObjectId(idmedia);;
                     let data = await this.adsService.create(CreateAdsDto);
                     return res.status(HttpStatus.OK).json({

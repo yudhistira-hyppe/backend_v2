@@ -80,6 +80,7 @@ export class AdsUserCompareController {
         _CreateAdsDto_._id = dataAds._id;
         _CreateAdsDto_.userID = dataAds.userID;
         _CreateAdsDto_.liveAt = dataAds.liveAt;
+        await this.adsService.update(dataAds._id, _CreateAdsDto_);
         //this.adsUserCompareService.createUserAds(_CreateAdsDto_);
         return {
             "response_code": 202,
@@ -197,8 +198,8 @@ export class AdsUserCompareController {
     @HttpCode(HttpStatus.ACCEPTED)
     async getadsv2(@Headers() headers,
         @Query('type') type: string): Promise<any> {
-        this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START headers : " + JSON.stringify(headers));
-        this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START type : " + type);
+        this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START headers : " + JSON.stringify(headers));
+        this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START type : " + type);
         let type_ = "";
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
             this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed token and email not match");
@@ -292,7 +293,7 @@ export class AdsUserCompareController {
 
             return {
                 "response_code": 202,
-                "data": data_ads,
+                "data": data_response,
                 "messages": {
                     "info": [
                         "The process successfuly"
@@ -1085,7 +1086,7 @@ export class AdsUserCompareController {
             };
             CreateAdsDto_.userID = Ads_data.userID;
             CreateAdsDto_.liveAt = Ads_data.liveAt;
-            //await this.adsUserCompareService.createUserAds(CreateAdsDto_);
+            await this.adsUserCompareService.createUserAds(CreateAdsDto_);
         } else {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Ads not found',
