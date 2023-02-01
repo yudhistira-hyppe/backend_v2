@@ -8747,4 +8747,112 @@ export class TransactionsService {
         }
 
     }
+
+    async getVoucherSellChartByDate(id:string, startdate:string){
+        const mongoose = require('mongoose');
+        var iddata = mongoose.Types.ObjectId(id);
+        var before = new Date(startdate).toISOString().split("T")[0];
+        var input = new Date();
+        input.setDate(input.getDate() + 1);
+        var today = new Date(input).toISOString().split("T")[0];
+        //kalo error, coba ganti jadi set dan jadi object
+        var query = await this.transactionsModel.aggregate([
+            {
+                "$match":
+                {
+                    timestamp:
+                    {
+                        "$gte":before,
+                        "$lte":today
+                    },
+                    idusersell: iddata,
+                    status:"Success",
+                    type:"VOUCHER"
+                }
+            },
+            {
+                "$project":
+                {
+                    timestamp:
+                    {
+                        "$substr":
+                        [
+                            "$timestamp", 0, 10
+                        ]
+                    },
+                    amount:1
+                }
+            },
+            {
+                "$group":
+                {
+                    _id:
+                    {
+                        "$dateFromString": 
+                        {
+                            "format": "%Y-%m-%d",
+                            "dateString": "$timestamp"
+                        }
+                    },
+                    totaldata:
+                    {
+                        "$sum":1
+                    },
+                    totalpenjualanperhari:
+                    {
+                        "$sum":"$amount"
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    _id:1,
+                    totaldata:1,
+                    totalpenjualanperhari:1,
+                }
+            },
+            {
+                "$unwind":
+                {
+                    path:"$_id"
+                }
+            },
+            {
+                "$sort":
+                {
+                    _id:1 
+                }
+            },
+            {
+                "$group":
+                {
+                    _id:null,
+                    total:
+                    {
+                        "$sum":"$totalpenjualanperhari"
+                    },
+                    resultdata:
+                    {
+                        "$push":
+                        {
+                            _id:
+                            {
+                                "$substr":
+                                [
+                                {
+                                    "$toString":"$_id"
+                                },0,10
+                                ]
+                            },
+                            totaldata:"$totaldata",
+                            totalpenjualanperhari:"$totalpenjualanperhari"
+                        }
+                    }
+                }
+            }
+        ]);   
+        
+        return query;
+    }
 }

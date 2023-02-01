@@ -1036,4 +1036,105 @@ export class PostsController {
     }
   }
 
+  @Post('api/posts/postbychart')
+  @UseGuards(JwtAuthGuard)
+  async getPostChartBasedDate(@Req() request: Request): Promise<any> {
+    var data = null;
+    var date = null;
+    var iduser = null;
+
+    const messages = {
+      "info": ["The process successful"],
+  };
+
+  var request_json = JSON.parse(JSON.stringify(request.body));
+  if (request_json["date"] !== undefined) 
+  {
+    date = request_json["date"];
+  } 
+  else 
+  {
+    throw new BadRequestException("Unabled to proceed");
+  }
+
+  var tempdata = await this.PostsService.getPostByDate(date);
+  var getdata = [];
+  try
+  {
+    getdata = tempdata[0].resultdata;
+  }
+  catch(e)
+  {
+    getdata = [];
+  }
+
+  var startdate = new Date(date);
+  startdate.setDate(startdate.getDate() - 1);
+  var tempdate = new Date(startdate).toISOString().split("T")[0];
+  var end = new Date().toISOString().split("T")[0];
+  var array = [];
+  
+  //kalo lama, berarti error disini!!
+  while(tempdate != end)
+  {
+    var temp = new Date(tempdate);
+    temp.setDate(temp.getDate() + 1);
+    tempdate = new Date(temp).toISOString().split("T")[0];
+    //console.log(tempdate);
+  
+    let obj = getdata.find(objs => objs._id === tempdate);
+    //console.log(obj);
+    if(obj == undefined)
+    {
+      obj = 
+      {
+        _id : tempdate,
+        totaldata : 0
+      }
+    }
+    
+    array.push(obj);
+  }      
+
+  data = 
+  {
+    data:array,
+    total:(getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
+  }
+
+  return { response_code: 202, messages, data };
+  }  
+
+  @Get('api/posts/showsertifikasistatbychart')
+  @UseGuards(JwtAuthGuard)
+  async getCertifiedStatByChart(@Req() request: Request): Promise<any> {
+    var data = null;
+
+    const messages = {
+      "info": ["The process successful"],
+  };
+
+  var tempdata = await this.PostsService.getAllSertifikasiChart();
+  try
+  {
+    data = tempdata[0].data;
+  }
+  catch(e)
+  {
+    data = [
+      {
+        "id": "TIDAK BERSERTIFIKAT",
+        "total": 0,
+        "persentase": 0
+      },
+      {
+          "id": "BERSERTIFIKAT",
+          "total": 0,
+          "persentase": 0
+      }
+    ];
+  }
+
+  return { response_code: 202, messages, data };
+  }  
 }

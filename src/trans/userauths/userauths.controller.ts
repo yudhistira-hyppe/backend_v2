@@ -46,7 +46,7 @@ export class UserauthsController {
   
   @Post('useractivebychart')
   @UseGuards(JwtAuthGuard)
-  async getUserActiveBasedDate(@Req() request: Request): Promise<any> {
+  async getUserActiveChartBasedDate(@Req() request: Request): Promise<any> {
       var data = null;
       var date = null;
 
@@ -64,7 +64,15 @@ export class UserauthsController {
       }
 
       var tempdata = await this.userauthsService.getUserActiveByDate(date);
-      var getdata = tempdata[0].resultdata;
+      var getdata = [];
+      try
+      {
+        getdata = tempdata[0].resultdata;
+      }
+      catch(e)
+      {
+        getdata = [];
+      }
 
       var startdate = new Date(date);
       startdate.setDate(startdate.getDate() - 1);
@@ -97,7 +105,7 @@ export class UserauthsController {
       data = 
       {
         data:array,
-        total:tempdata[0].total
+        total:(getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
       }
 
       return { response_code: 202, messages, data };
