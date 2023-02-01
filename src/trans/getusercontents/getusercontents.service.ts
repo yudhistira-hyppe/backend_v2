@@ -15590,41 +15590,41 @@ export class GetusercontentsService {
                 profilePict: '$ubasic.profilePict.$id'
               }
             },
-            {
-              "$lookup": {
-                from: "mediaprofilepicts",
-                as: "avatar",
-                let: {
-                  localID: '$profilePict'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
+            // {
+            //   "$lookup": {
+            //     from: "mediaprofilepicts",
+            //     as: "avatar",
+            //     let: {
+            //       localID: '$profilePict'
+            //     },
+            //     pipeline: [
+            //       {
+            //         $match:
+            //         {
 
-                      $expr: {
-                        $eq: ['$mediaID', '$$localID']
-                      }
-                    }
-                  },
-                  {
-                    $project: {
-                      "mediaBasePath": 1,
-                      "mediaUri": 1,
-                      "originalName": 1,
-                      "fsSourceUri": 1,
-                      "fsSourceName": 1,
-                      "fsTargetUri": 1,
-                      "mediaType": 1,
-                      "mediaEndpoint": {
-                        "$concat": ["/profilepict/", "$mediaID"]
-                      }
-                    }
-                  }
-                ],
+            //           $expr: {
+            //             $eq: ['$mediaID', '$$localID']
+            //           }
+            //         }
+            //       },
+            //       {
+            //         $project: {
+            //           "mediaBasePath": 1,
+            //           "mediaUri": 1,
+            //           "originalName": 1,
+            //           "fsSourceUri": 1,
+            //           "fsSourceName": 1,
+            //           "fsTargetUri": 1,
+            //           "mediaType": 1,
+            //           "mediaEndpoint": {
+            //             "$concat": ["/profilepict/", "$mediaID"]
+            //           }
+            //         }
+            //       }
+            //     ],
 
-              }
-            },
+            //   }
+            // },
 
             {
               $project: {
@@ -15637,7 +15637,9 @@ export class GetusercontentsService {
                 active: 1,
                 emailsender: 1,
 
-                avatar: 1
+                avatar: [{
+                  mediaEndpoint: { "$concat": ["/profilepict/", "$profilePict"] }
+                }]
               }
             },
 

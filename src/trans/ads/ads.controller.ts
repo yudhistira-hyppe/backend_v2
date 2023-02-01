@@ -213,6 +213,7 @@ export class AdsController {
         var description = null;
         var sizeMax = null;
         var size = null;
+        var rounding = Math.round(duration);
         nama = CreateAdsDto.name;
         description = CreateAdsDto.description;
 
@@ -257,7 +258,11 @@ export class AdsController {
                 "message": "Maksimal jumlah karakter deskripsi iklan konten " + descriptionMax
             });
         }
-        if (duration > durationMax) {
+
+
+        if (rounding > durationMax) {
+
+
             return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": "Maksimal duration iklan konten " + durationMax + " detik"
