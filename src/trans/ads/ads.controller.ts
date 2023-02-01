@@ -213,7 +213,7 @@ export class AdsController {
         var description = null;
         var sizeMax = null;
         var size = null;
-        var rounding = Math.round(duration);
+        var rounding = Math.floor(duration);
         nama = CreateAdsDto.name;
         description = CreateAdsDto.description;
 

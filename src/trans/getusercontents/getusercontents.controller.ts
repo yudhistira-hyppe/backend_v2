@@ -1606,6 +1606,201 @@ export class GetusercontentsController {
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
 
     }
+
+    @Post('api/getusercontents/boostconsole/list/details')
+    @UseGuards(JwtAuthGuard)
+    async detailcontentboost(@Req() request: Request): Promise<any> {
+
+        var postID = null;
+        var page = null;
+        var limit = null;
+        var datadetail = null;
+        var lengdetail = null;
+        var startdate = null;
+        var enddate = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        page = request_json["page"];
+        limit = request_json["limit"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        try {
+            datadetail = await this.getusercontentsService.boostdetail(postID, startdate, enddate, page, limit);
+            lengdetail = datadetail.length;
+        } catch (e) {
+            datadetail = null;
+            lengdetail = 0;
+        }
+        if (lengdetail > 0) {
+
+            var dataquery = null;
+            dataquery = datadetail;
+            var data = [];
+            let pict: String[] = [];
+            var dataage = null;
+            var lengage = null;
+            var sumage = null;
+            var objcoun = {};
+            var dataSum = [];
+
+            var datagender = null;
+            var lenggender = null;
+            var sumgender = null;
+            var objcoungender = {};
+            var dataSumgender = [];
+
+            var datawilayah = null;
+            var lengwilayah = null;
+            var sumwilayah = null;
+            var objcounwilayah = {};
+            var dataSumwilayah = [];
+            var createdate = datadetail[0].createdAt;
+
+            // var subtahun = createdate.substring(0, 4);
+            // var subbulan = createdate.substring(7, 5);
+            // var subtanggal = createdate.substring(10, 8);
+            // var datatimestr = subtahun + "-" + subbulan + "-" + subtanggal;
+
+            // var today = new Date();
+            // var date1 = new Date(datatimestr);
+
+            // var diffDays = Math.floor(today.getTime() - date1.getTime()) / (1000 * 60 * 60 * 24);
+            // var diffsec = Math.round(today.getTime() - date1.getTime()) / (1000) % 60;
+            // var diffMins = Math.round(today.getTime() - date1.getTime()) / (1000 * 60) % 60;
+            // var diffHrs = Math.floor(today.getTime() - date1.getTime()) / (1000 * 60 * 60) % 24;
+            // var days = diffDays.toFixed(0);
+            // var hours = diffHrs.toFixed(0);
+            // var minutes = diffMins.toFixed(0);;
+            // var seconds = diffsec.toFixed(0);
+            try {
+                dataage = datadetail.age;
+                lengage = dataage.length;
+            } catch (e) {
+                lengage = 0;
+            }
+            if (lengage > 0) {
+
+                for (let i = 0; i < lengage; i++) {
+                    sumage += dataage[i].count;
+
+                }
+
+            } else {
+                sumage = 0;
+            }
+
+            if (lengage > 0) {
+
+                for (let i = 0; i < lengage; i++) {
+                    let count = dataage[i].count;
+                    let id = dataage[i]._id;
+
+                    let persen = count * 100 / sumage;
+                    objcoun = {
+                        _id: id,
+                        count: count,
+                        persen: persen.toFixed(2)
+                    }
+                    dataSum.push(objcoun);
+                }
+
+            } else {
+                dataSum = [];
+            }
+
+            try {
+                datagender = datadetail.gender;
+                lenggender = datagender.length;
+            } catch (e) {
+                lenggender = 0;
+            }
+            if (lenggender > 0) {
+
+                for (let i = 0; i < lenggender; i++) {
+                    sumgender += datagender[i].count;
+
+                }
+
+            } else {
+                sumgender = 0;
+            }
+
+            if (lenggender > 0) {
+
+                for (let i = 0; i < lenggender; i++) {
+                    let count = datagender[i].count;
+                    let id = datagender[i]._id;
+
+
+                    let persen = count * 100 / sumgender;
+                    objcoungender = {
+                        _id: id,
+                        count: count,
+                        persen: persen.toFixed(2)
+                    }
+                    dataSumgender.push(objcoungender);
+                }
+
+            } else {
+                dataSumgender = [];
+            }
+
+            try {
+                datawilayah = datadetail.wilayah;
+                lengwilayah = datawilayah.length;
+            } catch (e) {
+                lengwilayah = 0;
+            }
+            if (lengwilayah > 0) {
+
+                for (let i = 0; i < lengwilayah; i++) {
+                    sumwilayah += datawilayah[i].count;
+
+                }
+
+            } else {
+                sumwilayah = 0;
+            }
+
+            if (lengwilayah > 0) {
+
+                for (let i = 0; i < lengwilayah; i++) {
+                    let count = datawilayah[i].count;
+                    let id = datawilayah[i]._id;
+
+                    let persen = count * 100 / sumwilayah;
+                    objcounwilayah = {
+                        _id: id,
+                        count: count,
+                        persen: persen.toFixed(2)
+                    }
+                    dataSumwilayah.push(objcounwilayah);
+                }
+
+            } else {
+                dataSumwilayah = [];
+            }
+
+            let datadet = await this.getusercontentsService.getapsaraContenBoostDetail(dataquery, dataSum, dataSumgender, dataSumwilayah);
+            data.push(datadet[0]);
+
+            return { response_code: 202, data, messages };
+        }
+
+        else {
+            throw new BadRequestException("Data is not found..!");
+        }
+
+    }
+
 }
 
 
