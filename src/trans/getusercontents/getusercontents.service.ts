@@ -376,7 +376,7 @@ export class GetusercontentsService {
     return obj;
   }
 
-  async getapsaraContenBoostDetail(obj: object, age: any[], gender: any[], wilayah: any[]) {
+  async getapsaraContenBoostDetail(obj: object, age: any[], gender: any[], wilayah: any[], summary: any[], total: number) {
     let idapsara = null;
     let apsara = null;
     let apsaradefine = null;
@@ -384,12 +384,12 @@ export class GetusercontentsService {
     let pict = null;
     var mediaType = null;
     try {
-      idapsara = obj[0].apsaraId;
+      idapsara = obj[0].data[0].apsaraId;
     } catch (e) {
       idapsara = "";
     }
     try {
-      apsara = obj[0].apsara;
+      apsara = obj[0].data[0].apsara;
     } catch (e) {
       apsara = false;
     }
@@ -405,8 +405,8 @@ export class GetusercontentsService {
     } else {
       idapsaradefine = idapsara;
     }
-    var type = obj[0].postType;
-    mediaType = obj[0].mediaType;
+    var type = obj[0].data[0].postType;
+    mediaType = obj[0].data[0].mediaType;
     pict = [idapsara];
 
     if (idapsara === "") {
@@ -415,26 +415,30 @@ export class GetusercontentsService {
       if (type === "pict") {
 
         try {
-          obj[0].apsaraId = idapsaradefine;
-          obj[0].apsara = apsaradefine;
+          obj[0].data[0].apsaraId = idapsaradefine;
+          obj[0].data[0].apsara = apsaradefine;
           obj[0].age = age;
           obj[0].gender = gender;
           obj[0].wilayah = wilayah;
-          obj[0].media = await this.postContentService.getImageApsara(pict);
+          obj[0].summary = summary;
+          obj[0].data[0].media = await this.postContentService.getImageApsara(pict);
+          obj[0].total = total;
         } catch (e) {
-          obj[0].media = {};
+          obj[0].data[0].media = {};
         }
       }
       else if (type === "vid") {
         try {
-          obj[0].apsaraId = idapsaradefine;
-          obj[0].apsara = apsaradefine;
+          obj[0].data[0].apsaraId = idapsaradefine;
+          obj[0].data[0].apsara = apsaradefine;
           obj[0].age = age;
           obj[0].gender = gender;
           obj[0].wilayah = wilayah;
-          obj[0].media = await this.postContentService.getVideoApsara(pict);
+          obj[0].summary = summary;
+          obj[0].data[0].media = await this.postContentService.getVideoApsara(pict);
+          obj[0].total = total;
         } catch (e) {
-          obj[0].media = {};
+          obj[0].data[0].media = {};
         }
 
       }
@@ -444,38 +448,44 @@ export class GetusercontentsService {
         if (mediaType === "image") {
 
           try {
-            obj[0].apsaraId = idapsaradefine;
-            obj[0].apsara = apsaradefine;
+            obj[0].data[0].apsaraId = idapsaradefine;
+            obj[0].data[0].apsara = apsaradefine;
             obj[0].age = age;
             obj[0].gender = gender;
             obj[0].wilayah = wilayah;
-            obj[0].media = await this.postContentService.getImageApsara(pict);
+            obj[0].summary = summary;
+            obj[0].data[0].media = await this.postContentService.getImageApsara(pict);
+            obj[0].total = total;
           } catch (e) {
-            obj[0].media = {};
+            obj[0].data[0].media = {};
           }
         } else {
           try {
-            obj[0].apsaraId = idapsaradefine;
-            obj[0].apsara = apsaradefine;
+            obj[0].data[0].apsaraId = idapsaradefine;
+            obj[0].data[0].apsara = apsaradefine;
             obj[0].age = age;
             obj[0].gender = gender;
             obj[0].wilayah = wilayah;
-            obj[0].media = await this.postContentService.getVideoApsara(pict);
+            obj[0].summary = summary;
+            obj[0].data[0].media = await this.postContentService.getVideoApsara(pict);
+            obj[0].total = total;
           } catch (e) {
-            obj[0].media = {};
+            obj[0].data[0].media = {};
           }
         }
       }
       else if (type === "diary") {
         try {
-          obj[0].apsaraId = idapsaradefine;
-          obj[0].apsara = apsaradefine;
+          obj[0].data[0].apsaraId = idapsaradefine;
+          obj[0].data[0].apsara = apsaradefine;
           obj[0].age = age;
           obj[0].gender = gender;
           obj[0].wilayah = wilayah;
-          obj[0].media = await this.postContentService.getVideoApsara(pict);
+          obj[0].summary = summary;
+          obj[0].data[0].media = await this.postContentService.getVideoApsara(pict);
+          obj[0].total = total;
         } catch (e) {
-          obj[0].media = {};
+          obj[0].data[0].media = {};
 
         }
       }

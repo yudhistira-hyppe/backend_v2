@@ -1618,6 +1618,8 @@ export class GetusercontentsController {
         var lengdetail = null;
         var startdate = null;
         var enddate = null;
+        var lengviews = 0;
+        var datasummary = [];
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
@@ -1635,9 +1637,11 @@ export class GetusercontentsController {
         try {
             datadetail = await this.getusercontentsService.boostdetail(postID, startdate, enddate, page, limit);
             lengdetail = datadetail.length;
+            lengviews = datadetail[0].summary.length;
         } catch (e) {
             datadetail = null;
             lengdetail = 0;
+            lengviews = 0;
         }
         if (lengdetail > 0) {
 
@@ -1662,26 +1666,44 @@ export class GetusercontentsController {
             var sumwilayah = null;
             var objcounwilayah = {};
             var dataSumwilayah = [];
-            var createdate = datadetail[0].createdAt;
+            var arrdataview = [];
+            datasummary = datadetail[0].summary;
 
-            // var subtahun = createdate.substring(0, 4);
-            // var subbulan = createdate.substring(7, 5);
-            // var subtanggal = createdate.substring(10, 8);
-            // var datatimestr = subtahun + "-" + subbulan + "-" + subtanggal;
+            var date1 = new Date(startdate);
+            var date2 = new Date(enddate);
 
-            // var today = new Date();
-            // var date1 = new Date(datatimestr);
+            //calculate time difference  
+            var time_difference = date2.getTime() - date1.getTime();
 
-            // var diffDays = Math.floor(today.getTime() - date1.getTime()) / (1000 * 60 * 60 * 24);
-            // var diffsec = Math.round(today.getTime() - date1.getTime()) / (1000) % 60;
-            // var diffMins = Math.round(today.getTime() - date1.getTime()) / (1000 * 60) % 60;
-            // var diffHrs = Math.floor(today.getTime() - date1.getTime()) / (1000 * 60 * 60) % 24;
-            // var days = diffDays.toFixed(0);
-            // var hours = diffHrs.toFixed(0);
-            // var minutes = diffMins.toFixed(0);;
-            // var seconds = diffsec.toFixed(0);
+            //calculate days difference by dividing total milliseconds in a day  
+            var resultTime = time_difference / (1000 * 60 * 60 * 24);
+            console.log(resultTime);
+
+            if (resultTime > 0) {
+                for (var i = 0; i < resultTime + 1; i++) {
+                    var dt = new Date(startdate);
+                    dt.setDate(dt.getDate() + i);
+                    var splitdt = dt.toISOString();
+                    var dts = splitdt.split('T');
+                    var stdt = dts[0].toString();
+                    var count = 0;
+                    for (var j = 0; j < lengviews; j++) {
+                        if (datasummary[j].date == stdt) {
+                            count = datasummary[j].jangkauan;
+                            break;
+                        }
+                    }
+                    arrdataview.push({
+                        'date': stdt,
+                        'count': count
+                    });
+
+                }
+
+            }
+
             try {
-                dataage = datadetail.age;
+                dataage = datadetail[0].age;
                 lengage = dataage.length;
             } catch (e) {
                 lengage = 0;
@@ -1717,7 +1739,7 @@ export class GetusercontentsController {
             }
 
             try {
-                datagender = datadetail.gender;
+                datagender = datadetail[0].gender;
                 lenggender = datagender.length;
             } catch (e) {
                 lenggender = 0;
@@ -1754,7 +1776,7 @@ export class GetusercontentsController {
             }
 
             try {
-                datawilayah = datadetail.wilayah;
+                datawilayah = datadetail[0].wilayah;
                 lengwilayah = datawilayah.length;
             } catch (e) {
                 lengwilayah = 0;
@@ -1789,14 +1811,14 @@ export class GetusercontentsController {
                 dataSumwilayah = [];
             }
 
-            let datadet = await this.getusercontentsService.getapsaraContenBoostDetail(dataquery, dataSum, dataSumgender, dataSumwilayah);
+            let datadet = await this.getusercontentsService.getapsaraContenBoostDetail(dataquery, dataSum, dataSumgender, dataSumwilayah, arrdataview, sumage);
             data.push(datadet[0]);
 
             return { response_code: 202, data, messages };
         }
 
         else {
-            throw new BadRequestException("Data is not found..!");
+            return { response_code: 202, data: [], messages };
         }
 
     }
