@@ -1047,65 +1047,59 @@ export class PostsController {
 
     const messages = {
       "info": ["The process successful"],
-  };
+    };
 
-  var request_json = JSON.parse(JSON.stringify(request.body));
-  if (request_json["date"] !== undefined) 
-  {
-    date = request_json["date"];
-  } 
-  else 
-  {
-    throw new BadRequestException("Unabled to proceed");
-  }
-
-  var tempdata = await this.PostsService.getPostByDate(date);
-  var getdata = [];
-  try
-  {
-    getdata = tempdata[0].resultdata;
-  }
-  catch(e)
-  {
-    getdata = [];
-  }
-
-  var startdate = new Date(date);
-  startdate.setDate(startdate.getDate() - 1);
-  var tempdate = new Date(startdate).toISOString().split("T")[0];
-  var end = new Date().toISOString().split("T")[0];
-  var array = [];
-  
-  //kalo lama, berarti error disini!!
-  while(tempdate != end)
-  {
-    var temp = new Date(tempdate);
-    temp.setDate(temp.getDate() + 1);
-    tempdate = new Date(temp).toISOString().split("T")[0];
-    //console.log(tempdate);
-  
-    let obj = getdata.find(objs => objs._id === tempdate);
-    //console.log(obj);
-    if(obj == undefined)
-    {
-      obj = 
-      {
-        _id : tempdate,
-        totaldata : 0
-      }
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["date"] !== undefined) {
+      date = request_json["date"];
     }
-    
-    array.push(obj);
-  }      
+    else {
+      throw new BadRequestException("Unabled to proceed");
+    }
 
-  data = 
-  {
-    data:array,
-    total:(getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
+    var tempdata = await this.PostsService.getPostByDate(date);
+    var getdata = [];
+    try {
+      getdata = tempdata[0].resultdata;
+    }
+    catch (e) {
+      getdata = [];
+    }
+
+    var startdate = new Date(date);
+    startdate.setDate(startdate.getDate() - 1);
+    var tempdate = new Date(startdate).toISOString().split("T")[0];
+    var end = new Date().toISOString().split("T")[0];
+    var array = [];
+
+    //kalo lama, berarti error disini!!
+    while (tempdate != end) {
+      var temp = new Date(tempdate);
+      temp.setDate(temp.getDate() + 1);
+      tempdate = new Date(temp).toISOString().split("T")[0];
+      //console.log(tempdate);
+
+      let obj = getdata.find(objs => objs._id === tempdate);
+      //console.log(obj);
+      if (obj == undefined) {
+        obj =
+        {
+          _id: tempdate,
+          totaldata: 0
+        }
+      }
+
+      array.push(obj);
+    }
+
+    data =
+    {
+      data: array,
+      total: (getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
+    }
+
+    return { response_code: 202, messages, data };
   }
-
-  return { response_code: 202, messages, data };
-  }  
 
   @Get('api/posts/showsertifikasistatbychart')
   @UseGuards(JwtAuthGuard)
@@ -1114,29 +1108,105 @@ export class PostsController {
 
     const messages = {
       "info": ["The process successful"],
-  };
+    };
 
-  var tempdata = await this.PostsService.getAllSertifikasiChart();
-  try
-  {
-    data = tempdata[0].data;
-  }
-  catch(e)
-  {
-    data = [
-      {
-        "id": "TIDAK BERSERTIFIKAT",
-        "total": 0,
-        "persentase": 0
-      },
-      {
+    var tempdata = await this.PostsService.getAllSertifikasiChart();
+    try {
+      data = tempdata[0].data;
+    }
+    catch (e) {
+      data = [
+        {
+          "id": "TIDAK BERSERTIFIKAT",
+          "total": 0,
+          "persentase": 0
+        },
+        {
           "id": "BERSERTIFIKAT",
           "total": 0,
           "persentase": 0
-      }
-    ];
+        }
+      ];
+    }
+
+    return { response_code: 202, messages, data };
   }
 
-  return { response_code: 202, messages, data };
-  }  
+  @Post('api/posts/analityc')
+  @UseGuards(JwtAuthGuard)
+  async getByChart(@Req() request: Request): Promise<any> {
+    var data = null;
+    var startdate = null;
+    var enddate = null;
+    var datasummary = [];
+    var lengviews = 0;
+    var arrdataview = [];
+    const messages = {
+      "info": ["The process successful"],
+    };
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["startdate"] !== undefined) {
+      startdate = request_json["startdate"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["enddate"] !== undefined) {
+      enddate = request_json["enddate"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    var date1 = new Date(startdate);
+    var date2 = new Date(enddate);
+
+    //calculate time difference  
+    var time_difference = date2.getTime() - date1.getTime();
+
+    //calculate days difference by dividing total milliseconds in a day  
+    var resultTime = time_difference / (1000 * 60 * 60 * 24);
+    console.log(resultTime);
+    try {
+      datasummary = await this.PostsService.analiticPost(startdate, enddate);
+      lengviews = datasummary.length;
+    }
+    catch (e) {
+      datasummary = [];
+      lengviews = 0;
+    }
+
+    if (resultTime > 0) {
+      for (var i = 0; i < resultTime + 1; i++) {
+        var dt = new Date(startdate);
+        dt.setDate(dt.getDate() + i);
+        var splitdt = dt.toISOString();
+        var dts = splitdt.split('T');
+        var stdt = dts[0].toString();
+        var diary = 0;
+        var pict = 0;
+        var vid = 0;
+        var story = 0;
+        for (var j = 0; j < lengviews; j++) {
+          if (datasummary[j].date == stdt) {
+            diary = datasummary[j].diary;
+            pict = datasummary[j].pict;
+            vid = datasummary[j].vid;
+            story = datasummary[j].story;
+            break;
+          }
+        }
+        arrdataview.push({
+          'date': stdt,
+          'diary': diary,
+          'pict': pict,
+          'vid': vid,
+          'story': story
+        });
+
+      }
+
+    }
+
+    return { response_code: 202, messages, data: arrdataview };
+  }
 }
