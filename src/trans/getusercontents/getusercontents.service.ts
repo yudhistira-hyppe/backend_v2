@@ -376,7 +376,7 @@ export class GetusercontentsService {
     return obj;
   }
 
-  async getapsaraContenBoostDetail(obj: object, age: any[], gender: any[], wilayah: any[], summary: any[], total: number) {
+  async getapsaraContenBoostDetail(obj: object, age: any[], gender: any[], wilayah: any[], summary: any[], total: number, likes: number, comments: number) {
     let idapsara = null;
     let apsara = null;
     let apsaradefine = null;
@@ -417,6 +417,8 @@ export class GetusercontentsService {
         try {
           obj[0].data[0].apsaraId = idapsaradefine;
           obj[0].data[0].apsara = apsaradefine;
+          obj[0].data[0].likes = likes;
+          obj[0].data[0].comments = comments;
           obj[0].age = age;
           obj[0].gender = gender;
           obj[0].wilayah = wilayah;
@@ -431,6 +433,8 @@ export class GetusercontentsService {
         try {
           obj[0].data[0].apsaraId = idapsaradefine;
           obj[0].data[0].apsara = apsaradefine;
+          obj[0].data[0].likes = likes;
+          obj[0].data[0].comments = comments;
           obj[0].age = age;
           obj[0].gender = gender;
           obj[0].wilayah = wilayah;
@@ -450,6 +454,8 @@ export class GetusercontentsService {
           try {
             obj[0].data[0].apsaraId = idapsaradefine;
             obj[0].data[0].apsara = apsaradefine;
+            obj[0].data[0].likes = likes;
+            obj[0].data[0].comments = comments;
             obj[0].age = age;
             obj[0].gender = gender;
             obj[0].wilayah = wilayah;
@@ -463,6 +469,8 @@ export class GetusercontentsService {
           try {
             obj[0].data[0].apsaraId = idapsaradefine;
             obj[0].data[0].apsara = apsaradefine;
+            obj[0].data[0].likes = likes;
+            obj[0].data[0].comments = comments;
             obj[0].age = age;
             obj[0].gender = gender;
             obj[0].wilayah = wilayah;
@@ -478,6 +486,8 @@ export class GetusercontentsService {
         try {
           obj[0].data[0].apsaraId = idapsaradefine;
           obj[0].data[0].apsara = apsaradefine;
+          obj[0].data[0].likes = likes;
+          obj[0].data[0].comments = comments;
           obj[0].age = age;
           obj[0].gender = gender;
           obj[0].wilayah = wilayah;
@@ -22437,6 +22447,19 @@ export class GetusercontentsService {
                       else: "$saleAmount"
                     }
                   },
+                  monetize: {
+                    $cond: {
+                      if: {
+                        $or: [{
+                          $eq: ["$salePrice", - 1]
+                        }, {
+                          $eq: ["$salePrice", 0]
+                        }]
+                      },
+                      then: false,
+                      else: true
+                    }
+                  },
                   comments: {
                     $cond: {
                       if: {
@@ -22539,6 +22562,17 @@ export class GetusercontentsService {
                   typeboost: 1,
                   kategori: 1,
                   saleAmount: 1,
+                  statusJual:
+                  {
+                    $cond: {
+                      if: {
+
+                        $eq: ["$monetize", false]
+                      },
+                      then: "TIDAK",
+                      else: "YA"
+                    }
+                  },
                   sessionName: {
                     $arrayElemAt: ['$boostSesidata.name', 0]
                   },
@@ -22674,6 +22708,7 @@ export class GetusercontentsService {
                   kategori: 1,
                   saleAmount: 1,
                   dataview: 1,
+                  statusJual: 1,
                   keterangan:
                   {
                     $cond: {
@@ -22798,6 +22833,7 @@ export class GetusercontentsService {
                   boostSessionid: 1,
                   kategori: 1,
                   saleAmount: 1,
+                  statusJual: 1,
                   dataview: 1,
                   mediaBasePath: {
                     $switch: {

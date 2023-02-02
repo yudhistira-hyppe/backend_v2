@@ -1620,6 +1620,12 @@ export class GetusercontentsController {
         var enddate = null;
         var lengviews = 0;
         var datasummary = [];
+        var datacountlike = null;
+        var datacountcomment = null;
+        var startboost = null;
+        var endboost = null;
+        var dtstart = null;
+        var dtend = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
@@ -1638,6 +1644,9 @@ export class GetusercontentsController {
             datadetail = await this.getusercontentsService.boostdetail(postID, startdate, enddate, page, limit);
             lengdetail = datadetail.length;
             lengviews = datadetail[0].summary.length;
+            startboost = datadetail[0].data[0].start;
+            endboost = datadetail[0].data[0].end;
+
         } catch (e) {
             datadetail = null;
             lengdetail = 0;
@@ -1667,8 +1676,11 @@ export class GetusercontentsController {
             var objcounwilayah = {};
             var dataSumwilayah = [];
             var arrdataview = [];
+            var like = 0;
+            var comment = 0;
             datasummary = datadetail[0].summary;
-
+            dtstart = startboost.substring(0, 10);
+            dtend = endboost.substring(0, 10);
             var date1 = new Date(startdate);
             var date2 = new Date(enddate);
 
@@ -1678,6 +1690,30 @@ export class GetusercontentsController {
             //calculate days difference by dividing total milliseconds in a day  
             var resultTime = time_difference / (1000 * 60 * 60 * 24);
             console.log(resultTime);
+
+            try {
+                datacountlike = await this.contenteventsService.countLikeBoost(postID, dtstart, dtend);
+            } catch (e) {
+                datacountlike = null;
+            }
+
+            if (datacountlike.length === 0) {
+                like = 0;
+            } else {
+                like = datacountlike[0].count;
+            }
+
+            try {
+                datacountcomment = await this.contenteventsService.countCommentBoost(postID, dtstart, dtend);
+            } catch (e) {
+                datacountcomment = null;
+            }
+
+            if (datacountcomment.length === 0) {
+                comment = 0;
+            } else {
+                comment = datacountcomment[0].count;
+            }
 
             if (resultTime > 0) {
                 for (var i = 0; i < resultTime + 1; i++) {
@@ -1811,7 +1847,7 @@ export class GetusercontentsController {
                 dataSumwilayah = [];
             }
 
-            let datadet = await this.getusercontentsService.getapsaraContenBoostDetail(dataquery, dataSum, dataSumgender, dataSumwilayah, arrdataview, sumage);
+            let datadet = await this.getusercontentsService.getapsaraContenBoostDetail(dataquery, dataSum, dataSumgender, dataSumwilayah, arrdataview, sumage, like, comment);
             data.push(datadet[0]);
 
             return { response_code: 202, data, messages };

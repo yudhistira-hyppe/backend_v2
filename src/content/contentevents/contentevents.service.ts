@@ -3261,4 +3261,83 @@ export class ContenteventsService {
 
     return query;
   }
+
+  async countLikeBoost(postID: string, startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+
+      var dt = dateend.substring(0, 10);
+    } catch (e) {
+      dateend = "";
+      dt = "";
+    }
+    var query = await this.ContenteventsModel.aggregate(
+      [
+        {
+          $match: {
+            postID: postID,
+            eventType: "LIKE",
+            event: "DONE",
+            createdAt: {
+              $gte: startdate,
+              $lte: dt
+            }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            count: {
+              $sum: 1
+            },
+
+          },
+
+        },
+      ]
+    );
+
+    return query;
+  }
+  async countCommentBoost(postID: string, startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+
+      var dt = dateend.substring(0, 10);
+    } catch (e) {
+      dateend = "";
+      dt = "";
+    }
+    var query = await this.ContenteventsModel.aggregate(
+      [
+        {
+          $match: {
+            postID: postID,
+            eventType: "COMMENT",
+            event: "DONE",
+            createdAt: {
+              $gte: startdate,
+              $lte: dt
+            }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            count: {
+              $sum: 1
+            },
+
+          },
+
+        },
+      ]
+    );
+
+    return query;
+  }
 }
