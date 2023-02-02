@@ -530,6 +530,11 @@ export class PostsController {
     return JSON.stringify(t);
   }
 
+  @Get('api/posts/ads')
+  async getPostAds(@Headers() headers) {
+    return await this.bootsService.sendSoketAds(headers['x-auth-user']);
+  }
+
   @Post('api/posts/notifyapsara/cmod/image')
   async notifyApsaraCmodImage(@Body() body, @Headers() headers) {
     this.logger.log("notifyApsaraCmodImage >>> start: " + JSON.stringify(body));
