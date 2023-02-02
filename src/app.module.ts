@@ -99,6 +99,7 @@ import { TransactionsPostModule } from './trans/transactionpost/transactionspost
 import { DisqusContentEventModule } from './content/contentevents/discus/disqusdisquscontentevent.module';
 import { DeepArModule } from './trans/deepar/deepar.module';
 import { AssetsFilterModule } from './assets/filter/assets-filter.module';
+import { AdsLandingModule } from './content/posts/adslanding/adslanding.module';
 @Module({
   imports: [
     AssetsFilterModule,
@@ -166,6 +167,7 @@ import { AssetsFilterModule } from './assets/filter/assets-filter.module';
     //CommentModule,
     // UserbankaccountsModule,
     FaqdetailsModule,
+    AdsLandingModule,
     UserticketdetailsModule,
     //UtilsModule,
     // GetcontenteventsModule,

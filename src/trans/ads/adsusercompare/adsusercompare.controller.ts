@@ -228,30 +228,34 @@ export class AdsUserCompareController {
         const data_ads = await this.adsService.findAds(headers['x-auth-user'],type_);
         var genIdUserAds = new mongoose.Types.ObjectId();
         if (await this.utilsService.ceckData(data_ads)){
-            var CreateUserAdsDto_ = new CreateUserAdsDto();
-            try {
-                CreateUserAdsDto_._id = genIdUserAds;
-                CreateUserAdsDto_.adsID = new mongoose.Types.ObjectId(data_ads[0].adsId);
-                CreateUserAdsDto_.userID = new mongoose.Types.ObjectId(data_ads[0].userID);
-                CreateUserAdsDto_.priority = data_ads[0].priority;
-                CreateUserAdsDto_.priorityNumber = data_ads[0].priorityNumber;
-                if (data_ads[0].description != undefined) {
-                    CreateUserAdsDto_.description = data_ads[0].description;
+
+            var ceckData = await this.userAdsService.findAdsIDUserID(data_ads[0].adsId.toString(), data_ads[0].userID.toString());
+            if (!(await this.utilsService.ceckData(ceckData))){
+                var CreateUserAdsDto_ = new CreateUserAdsDto();
+                try {
+                    CreateUserAdsDto_._id = genIdUserAds;
+                    CreateUserAdsDto_.adsID = new mongoose.Types.ObjectId(data_ads[0].adsId);
+                    CreateUserAdsDto_.userID = new mongoose.Types.ObjectId(data_ads[0].userID);
+                    CreateUserAdsDto_.priority = data_ads[0].priority;
+                    CreateUserAdsDto_.priorityNumber = data_ads[0].priorityNumber;
+                    if (data_ads[0].description != undefined) {
+                        CreateUserAdsDto_.description = data_ads[0].description;
+                    }
+                    CreateUserAdsDto_.createdAt = current_date;
+                    CreateUserAdsDto_.statusClick = false;
+                    CreateUserAdsDto_.statusView = false;
+                    CreateUserAdsDto_.viewed = 0;
+                    CreateUserAdsDto_.liveAt = data_ads[0].liveAt;
+                    CreateUserAdsDto_.liveTypeuserads = data_ads[0].liveTypeAds;
+                    CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_ads[0].typeAdsID);
+                    CreateUserAdsDto_.nameType = data_ads[0].adsType;
+                    CreateUserAdsDto_.isActive = true;
+                    const createUserAdsDto = await this.userAdsService.create(CreateUserAdsDto_);
+                } catch (s) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed Failed update Ads',
+                    );
                 }
-                CreateUserAdsDto_.createdAt = current_date;
-                CreateUserAdsDto_.statusClick = false;
-                CreateUserAdsDto_.statusView = false;
-                CreateUserAdsDto_.viewed = 0;
-                CreateUserAdsDto_.liveAt = data_ads[0].liveAt;
-                CreateUserAdsDto_.liveTypeuserads = data_ads[0].liveTypeAds;
-                CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_ads[0].typeAdsID);
-                CreateUserAdsDto_.nameType = data_ads[0].adsType;
-                CreateUserAdsDto_.isActive = true;
-                const createUserAdsDto = await this.userAdsService.create(CreateUserAdsDto_);
-            } catch (s) {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Failed update Ads',
-                );
             }
 
             var get_profilePict = null;
@@ -808,7 +812,10 @@ export class AdsUserCompareController {
             var credit_view = data_adstypesService.creditValue;
             var AdsSkip = data_adstypesService.AdsSkip;
             var ads_rewards = data_adstypesService.rewards;
-            var userAds_liveTypeuserads = data_userAdsService.liveTypeuserads;
+            var userAds_liveTypeuserads = (data_userAdsService.liveTypeuserads != undefined) ? data_userAdsService.liveTypeuserads:false;
+            var userAds_statusView = (data_userAdsService.statusView != undefined) ? data_userAdsService.statusView : false;
+            var userAds_statusClick = (data_userAdsService.statusClick != undefined) ? data_userAdsService.statusClick : false;
+            var userAds_timeViewSecond = (data_userAdsService.timeViewSecond != undefined) ? data_userAdsService.timeViewSecond : null;
 
             var ads_tayang = data_adsService.tayang;
             var ads_totalView = 0;

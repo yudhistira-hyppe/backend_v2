@@ -225,7 +225,9 @@ export class UtilsService {
     //SET BODY SAVE
     if ((eventType == "REACTION") || (eventType == "COMMENT") || (eventType == "LIKE") || (eventType == "TRANSACTION") || (event == "POST")) {
       if (event == "BOOST_SUCCES" || event == "ADS VIEW" || event == "ADS CLICK") {
-        data_send['postID'] = idtransaction
+        if (idtransaction != null) {
+          data_send['postID'] = idtransaction
+        }
         data_send['postType'] = eventType
       } else {
         data_send['postID'] = postID

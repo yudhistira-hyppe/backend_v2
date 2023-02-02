@@ -21,5 +21,6 @@ export class CreateUserAdsDto {
     nameType: string;
     timeViewSecond: number;
     isActive: boolean;
+    updateAt: String[];
 
 }

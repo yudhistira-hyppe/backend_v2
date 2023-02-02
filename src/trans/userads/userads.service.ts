@@ -42,6 +42,10 @@ export class UserAdsService {
         }).sort({ priorityNumber: -1, createdAt: -1 }).exec();
     }
 
+    async findAdsIDUserID(userID: string, adsID: string): Promise<UserAds>{
+        return this.userAdsModel.findOne({ adsID: new ObjectId(adsID), userID: new ObjectId(userID) }).exec();
+    }
+
     async findOneByuserIDAds(userID: string, adsId: string): Promise<UserAds> {
         return this.userAdsModel.findOne({ userID: userID, adsID: adsId, statusView: false }).exec();
     }

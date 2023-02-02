@@ -37,9 +37,11 @@ import { SocketModule } from '../socket/socket.module';
 import { PostBoostService } from './postboost.service';
 import { MediamusicModule } from '../mediamusic/mediamusic.module';
 import { TransactionsPostModule } from '../../trans/transactionpost/transactionspost.module';
+import { AdsLandingModule } from './adslanding/adslanding.module';
 @Module({
 
     imports: [
+        AdsLandingModule,
         TransactionsPostModule,
         MediamusicModule,
         MethodepaymentsModule,

@@ -48,6 +48,7 @@ import { use } from 'passport';
 import { PostContentService } from './postcontent.service';
 import { profile } from 'console';
 import { CreateContenteventsDto } from '../contentevents/dto/create-contentevents.dto';
+import { AdsLandingService } from './adslanding/adslanding.service';
 
 
 //import FormData from "form-data";
@@ -67,7 +68,8 @@ export class PostBoostService {
     private userAuthService: UserauthsService,
     private settingsService: SettingsService,
     private contentEventsService: ContenteventsService,
-    private errorHandler: ErrorHandler
+    private errorHandler: ErrorHandler,
+    private adsLandingService: AdsLandingService,
   ) { }
 
   async getBoost(body: any, headers: any): Promise<PostLandingResponseApps> {
@@ -3059,6 +3061,16 @@ export class PostBoostService {
       }
     }
     return cnt;
+  }
+
+  async sendSoketAds(email:string){
+    var dataAds = await this.adsLandingService.getAdsLanding(email);
+    var JsonPayload = {
+      event: "ads_landing",
+      email: email,
+      data: dataAds
+    }
+    return dataAds;
   }
 
   async getBoostV2(body: any, headers: any): Promise<PostLandingResponseApps> {

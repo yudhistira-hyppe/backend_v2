@@ -3758,6 +3758,7 @@ export class AuthService {
   }
 
   async recoverpasswordV2(req: any): Promise<any> {
+    console.log("Request BODY >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", JSON.stringify(req.body));
     if (
       req.body.email == undefined ||
       req.body.event == undefined ||
@@ -3814,7 +3815,7 @@ export class AuthService {
           if (user_activityevents[0].transitions.length > 0) {
             last = await this.activityeventsService.findbyactivityEventID(
               user_email,
-              user_activityevents[0].transitions[user_activityevents[0].transitions.length-1].oid,
+              user_activityevents[0].transitions[(user_activityevents[0].transitions.length)-1].oid,
               'RECOVER_PASS',
               false,
             );
