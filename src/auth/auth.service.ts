@@ -4583,9 +4583,12 @@ export class AuthService {
             var OTP = await this.utilsService.generateOTP();
             var OTP_expires = await this.utilsService.generateOTPExpires();
 
-            await this.userauthsService.updatebyEmail(user_email, {
+            //Update User Auth
+            this.userauthsService.updatebyEmail(user_email, {
               oneTimePassword: OTP,
               otpRequestTime: OTP_expires,
+              otpAttempt: new Long(0),
+              otpNextAttemptAllow: new Long(0),
             });
 
             await this.sendemailOTP(
