@@ -434,56 +434,56 @@ export class ActivityeventsService {
               branches: [
                 {
                   case: {
-                    $eq: ['$user.gender', 'FEMALE']
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, 'FEMALE']
                   },
                   then: 'FEMALE',
 
                 },
                 {
                   case: {
-                    $eq: ['$user.gender', ' FEMALE']
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, ' FEMALE']
                   },
                   then: 'FEMALE',
 
                 },
                 {
                   case: {
-                    $eq: ['$user.gender', 'Perempuan']
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, 'Perempuan']
                   },
                   then: 'FEMALE',
 
                 },
                 {
                   case: {
-                    $eq: ['$user.gender', 'Wanita']
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, 'Wanita']
                   },
                   then: 'FEMALE',
 
                 },
                 {
                   case: {
-                    $eq: ['$user.gender', 'MALE']
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, 'MALE']
                   },
                   then: 'MALE',
 
                 },
                 {
                   case: {
-                    $eq: ['$user.gender', ' MALE']
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, ' MALE']
                   },
                   then: 'MALE',
 
                 },
                 {
                   case: {
-                    $eq: ['$user.gender', 'Laki-laki']
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, 'Laki-laki']
                   },
                   then: 'MALE',
 
                 },
                 {
                   case: {
-                    $eq: ['$user.gender', 'Pria']
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, 'Pria']
                   },
                   then: 'MALE',
 
