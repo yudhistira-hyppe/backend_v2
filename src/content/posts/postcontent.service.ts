@@ -2730,7 +2730,8 @@ export class PostContentService {
 
     let params = {
       "RegionId": this.configService.get("APSARA_REGION_ID"),
-      "VideoId": ids
+      "VideoId": ids,
+      "Definition": "SD"
     }
 
     let requestOption = {
@@ -2744,6 +2745,7 @@ export class PostContentService {
       xres.PlayUrl = result.PlayInfoList.PlayInfo[0].PlayURL;
       xres.Duration = result.PlayInfoList.PlayInfo[0].Duration;
     }
+    console.log("APSARA VIDEO GET", JSON.stringify(xres))
     return xres;
   }
 
