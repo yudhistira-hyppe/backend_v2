@@ -40,6 +40,11 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         //this.server.socketsLeave("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256");
     }
 
+    event(event: string, payload: string): void {
+        console.log("room emit: " + payload);
+        this.server.emit(event, payload);
+    }
+
     // event(event: string, payload: string): void {
     //     //this.server.socketsJoin("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256");
     //     // this.server.socketsJoin(room);

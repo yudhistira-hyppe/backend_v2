@@ -93,11 +93,6 @@ export class PostsController {
     return this.PostsService.getContent(email, type_);
   }
 
-  // @Get(':id')
-  // async findOneId(@Param('id') id: string): Promise<Posts> {
-  //   return this.PostsService.findOne(id);
-  // }
-
   @Get('api/posts:email')
   async findOneId(@Param('email') email: string): Promise<Posts> {
     return this.PostsService.findOne(email);
@@ -525,10 +520,12 @@ export class PostsController {
     return JSON.stringify(t);
   }
 
-  @Post('api/posts/cmod')
-  async cmod(@Body() body, @Headers() headers) {
+  @Post('api/posts/cmod/socket')
+  async cmod(@Body() body) {
     this.logger.log("cmod >>> start: " + JSON.stringify(body));
-    this.cmodService.ws(body);
+    var event = body.event;
+    var payload = body.payload;
+    this.cmodService.ws(event, JSON.stringify(payload));
     let t = { 'response': 'Done' };
     return JSON.stringify(t);
   }
