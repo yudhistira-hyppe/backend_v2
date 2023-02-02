@@ -16407,8 +16407,7 @@ export class PostsService {
     return query;
   }
 
-  async getPostByDate(startdate:string)
-  {
+  async getPostByDate(startdate: string) {
     var before = new Date(startdate).toISOString().split("T")[0];
     var input = new Date();
     input.setDate(input.getDate() + 1);
@@ -16418,195 +16417,344 @@ export class PostsService {
       {
         "$match":
         {
-            createdAt:
-            {
-                "$gte":before,
-                "$lte":today
-            },
+          createdAt:
+          {
+            "$gte": before,
+            "$lte": today
+          },
         }
       },
       {
         "$project":
         {
-            createdAt:
-            {
-                "$substr":
-                [
-                    "$createdAt", 0, 10
-                ]
-            }
+          createdAt:
+          {
+            "$substr":
+              [
+                "$createdAt", 0, 10
+              ]
+          }
         }
       },
       {
         "$group":
         {
-            _id:
+          _id:
+          {
+            "$dateFromString":
             {
-                "$dateFromString": 
-                {
-                    "format": "%Y-%m-%d",
-                    "dateString": "$createdAt"
-                    
-                }
-            },
-            totalperhari:
-            {
-                "$sum":1
+              "format": "%Y-%m-%d",
+              "dateString": "$createdAt"
+
             }
+          },
+          totalperhari:
+          {
+            "$sum": 1
+          }
         }
       },
       {
         "$project":
         {
-            _id:1,
-            totalperhari:1
+          _id: 1,
+          totalperhari: 1
         }
       },
       {
         "$unwind":
         {
-            path:"$_id"
+          path: "$_id"
         }
       },
       {
         "$sort":
         {
-            _id:1 
+          _id: 1
         }
       },
       {
         "$group":
         {
-            _id:null,
-            total:
+          _id: null,
+          total:
+          {
+            "$sum": "$totalperhari"
+          },
+          resultdata:
+          {
+            "$push":
             {
-                "$sum":"$totalperhari"
-            },
-            resultdata:
-            {
-                "$push":
-                {
-                    _id:
-                    {
-                      "$substr":
-                      [
-                        {
-                            "$toString":"$_id"
-                        },0,10
-                      ]
-                    },
-                    totaldata:"$totalperhari"
-                }
-            }
-        }
-      }
-    ]); 
-
-    return query;
-  }
-
-  async getAllSertifikasiChart()
-  {
-    var query = await this.PostsModel.aggregate([
-      {
-          "$project":
-          {
-              certified:
-              {
-                  "$ifNull":
-                  [
-                      "$certified", false
-                  ]
-              }
-          }
-      },
-      {
-          "$group":
-          {
-              _id:"$certified",
-              totaldata:
-              {
-                  "$sum":1
-              },
-          }
-      },
-      {
-          "$project":
-          {
               _id:
               {
-                  "$cond":
-                  {
-                      if:
-                      {
-                          "$eq":["$_id", true]
-                      },
-                      then:"BERSERTIFIKAT",
-                      else:"TIDAK BERSERTIFIKAT"
-                  }
+                "$substr":
+                  [
+                    {
+                      "$toString": "$_id"
+                    }, 0, 10
+                  ]
               },
-              totaldata:1
+              totaldata: "$totalperhari"
+            }
           }
-      },
-      {
-          "$unwind":
-          {
-              path:"$_id"
-          }
-      },
-      {
-          "$group":
-          {
-              _id:null,
-              totaldata:
-              {
-                  "$sum":"$totaldata"
-              },
-              resultdata:
-              {
-                  "$push":
-                  {
-                      _id:"$_id",
-                      total:"$totaldata"
-                  }
-              }
-          }
-      },
-      {
-          "$unwind":
-          {
-              path:"$resultdata"
-          }
-      },
-      {
-          "$group":
-          {
-              _id:null,
-              data:
-              {
-                  "$push":
-                  {
-                      id:"$resultdata._id",
-                      total:"$resultdata.total",
-                      persentase: 
-                      {
-                          $multiply:
-                          [
-                              {
-                                  $divide:
-                                  [
-                                      "$resultdata.total","$totaldata"
-                                  ]
-                              },100
-                          ]
-                      }
-                  }
-              }
-          }
+        }
       }
     ]);
 
     return query;
+  }
+
+  async getAllSertifikasiChart() {
+    var query = await this.PostsModel.aggregate([
+      {
+        "$project":
+        {
+          certified:
+          {
+            "$ifNull":
+              [
+                "$certified", false
+              ]
+          }
+        }
+      },
+      {
+        "$group":
+        {
+          _id: "$certified",
+          totaldata:
+          {
+            "$sum": 1
+          },
+        }
+      },
+      {
+        "$project":
+        {
+          _id:
+          {
+            "$cond":
+            {
+              if:
+              {
+                "$eq": ["$_id", true]
+              },
+              then: "BERSERTIFIKAT",
+              else: "TIDAK BERSERTIFIKAT"
+            }
+          },
+          totaldata: 1
+        }
+      },
+      {
+        "$unwind":
+        {
+          path: "$_id"
+        }
+      },
+      {
+        "$group":
+        {
+          _id: null,
+          totaldata:
+          {
+            "$sum": "$totaldata"
+          },
+          resultdata:
+          {
+            "$push":
+            {
+              _id: "$_id",
+              total: "$totaldata"
+            }
+          }
+        }
+      },
+      {
+        "$unwind":
+        {
+          path: "$resultdata"
+        }
+      },
+      {
+        "$group":
+        {
+          _id: null,
+          data:
+          {
+            "$push":
+            {
+              id: "$resultdata._id",
+              total: "$resultdata.total",
+              persentase:
+              {
+                $multiply:
+                  [
+                    {
+                      $divide:
+                        [
+                          "$resultdata.total", "$totaldata"
+                        ]
+                    }, 100
+                  ]
+              }
+            }
+          }
+        }
+      }
+    ]);
+
+    return query;
+  }
+
+  async analiticPost(startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+
+      var dt = dateend.substring(0, 10);
+    } catch (e) {
+      dt = "";
+    }
+    var query = await this.PostsModel.aggregate(
+      [
+        {
+          "$match":
+          {
+            createdAt:
+            {
+              "$gte": startdate,
+              "$lte": dt
+            },
+            postType:
+            {
+              "$in": ["pict", "vid", "diary", "story"]
+            }
+          }
+        },
+        {
+          "$project":
+          {
+            createdAt:
+            {
+              "$substr":
+                [
+                  "$createdAt", 0, 10
+                ]
+            },
+            postType: 1
+          }
+        },
+
+        {
+          "$group":
+          {
+            _id: "$createdAt",
+            pict:
+            {
+              "$sum":
+              {
+                "$switch":
+                {
+                  branches:
+                    [
+                      {
+                        "case":
+                        {
+                          "$eq": ["$postType", "pict"]
+                        },
+                        "then": 1
+                      }
+                    ],
+                  "default": 0
+                }
+              }
+            },
+            vid:
+            {
+              "$sum":
+              {
+                "$switch":
+                {
+                  branches:
+                    [
+                      {
+                        "case":
+                        {
+                          "$eq": ["$postType", "vid"]
+                        },
+                        "then": 1
+                      }
+                    ],
+                  "default": 0
+                }
+              }
+            },
+            story:
+            {
+              "$sum":
+              {
+                "$switch":
+                {
+                  branches:
+                    [
+                      {
+                        "case":
+                        {
+                          "$eq": ["$postType", "story"]
+                        },
+                        "then": 1
+                      }
+                    ],
+                  "default": 0
+                }
+              }
+            },
+            diary:
+            {
+              "$sum":
+              {
+                "$switch":
+                {
+                  branches:
+                    [
+                      {
+                        "case":
+                        {
+                          "$eq": ["$postType", "diary"]
+                        },
+                        "then": 1
+                      }
+                    ],
+                  "default": 0
+                }
+              }
+            },
+          }
+        },
+
+        {
+          $project: {
+            _id: 0,
+            date: "$_id",
+            diary: "$diary",
+            pict: "$pict",
+            vid: "$vid",
+            story: "$story"
+          }
+        },
+
+        {
+          "$sort":
+          {
+            date: 1
+          }
+        }
+      ]
+    );
+    return query;
+
   }
 }
 

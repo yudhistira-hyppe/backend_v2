@@ -1626,6 +1626,7 @@ export class GetusercontentsController {
         var endboost = null;
         var dtstart = null;
         var dtend = null;
+        var komentar = [];
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
@@ -1679,6 +1680,8 @@ export class GetusercontentsController {
             var like = 0;
             var comment = 0;
             datasummary = datadetail[0].summary;
+            komentar = datadetail[0].komentar;
+
             dtstart = startboost.substring(0, 10);
             dtend = endboost.substring(0, 10);
             var date1 = new Date(startdate);
@@ -1847,7 +1850,13 @@ export class GetusercontentsController {
                 dataSumwilayah = [];
             }
 
-            let datadet = await this.getusercontentsService.getapsaraContenBoostDetail(dataquery, dataSum, dataSumgender, dataSumwilayah, arrdataview, sumage, like, comment);
+            if (komentar[0].createdAt === undefined) {
+                komentar = [];
+            } else {
+                komentar = komentar;
+            }
+
+            let datadet = await this.getusercontentsService.getapsaraContenBoostDetail(dataquery, dataSum, dataSumgender, dataSumwilayah, arrdataview, sumage, like, comment, komentar);
             data.push(datadet[0]);
 
             return { response_code: 202, data, messages };

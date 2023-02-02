@@ -376,7 +376,7 @@ export class GetusercontentsService {
     return obj;
   }
 
-  async getapsaraContenBoostDetail(obj: object, age: any[], gender: any[], wilayah: any[], summary: any[], total: number, likes: number, comments: number) {
+  async getapsaraContenBoostDetail(obj: object, age: any[], gender: any[], wilayah: any[], summary: any[], total: number, likes: number, comments: number, komentar: any[]) {
     let idapsara = null;
     let apsara = null;
     let apsaradefine = null;
@@ -423,6 +423,7 @@ export class GetusercontentsService {
           obj[0].gender = gender;
           obj[0].wilayah = wilayah;
           obj[0].summary = summary;
+          obj[0].komentar = komentar;
           obj[0].data[0].media = await this.postContentService.getImageApsara(pict);
           obj[0].total = total;
         } catch (e) {
@@ -439,6 +440,7 @@ export class GetusercontentsService {
           obj[0].gender = gender;
           obj[0].wilayah = wilayah;
           obj[0].summary = summary;
+          obj[0].komentar = komentar;
           obj[0].data[0].media = await this.postContentService.getVideoApsara(pict);
           obj[0].total = total;
         } catch (e) {
@@ -460,6 +462,7 @@ export class GetusercontentsService {
             obj[0].gender = gender;
             obj[0].wilayah = wilayah;
             obj[0].summary = summary;
+            obj[0].komentar = komentar;
             obj[0].data[0].media = await this.postContentService.getImageApsara(pict);
             obj[0].total = total;
           } catch (e) {
@@ -475,6 +478,7 @@ export class GetusercontentsService {
             obj[0].gender = gender;
             obj[0].wilayah = wilayah;
             obj[0].summary = summary;
+            obj[0].komentar = komentar;
             obj[0].data[0].media = await this.postContentService.getVideoApsara(pict);
             obj[0].total = total;
           } catch (e) {
@@ -492,6 +496,7 @@ export class GetusercontentsService {
           obj[0].gender = gender;
           obj[0].wilayah = wilayah;
           obj[0].summary = summary;
+          obj[0].komentar = komentar;
           obj[0].data[0].media = await this.postContentService.getVideoApsara(pict);
           obj[0].total = total;
         } catch (e) {
@@ -23819,6 +23824,8 @@ export class GetusercontentsService {
 
     return query;
   }
+
+
 }
 
 
