@@ -36,6 +36,7 @@ import { CreateContenteventsDto } from '../content/contentevents/dto/create-cont
 import { CreateGetcontenteventsDto } from '../trans/getusercontents/getcontentevents/dto/create-getcontentevents.dto';
 import { CreateUserbasicnewDto } from '../trans/newuserbasic/dto/create-userbasicnew.dto';
 import { PostsService } from '../content/posts/posts.service';
+import { Response } from 'express';
 
 
 @Injectable()
@@ -3796,17 +3797,13 @@ export class AuthService {
       user_email,
     );
 
-    var login_source = (datauserauthsService.loginSource != undefined) ? datauserauthsService.loginSource.toString() :"MANUAL";
-
+    var login_source = ((datauserauthsService.loginSource != undefined)) ? datauserauthsService.loginSource.toString() :"MANUAL";
+    console.log(login_source);
     if (login_source != "MANUAL"){
       if (lang == "en") {
-        await this.errorHandler.generateNotAcceptableException(
-          'Your account is already registered. Please sign in using your Gmail account.',
-        );
+        await this.errorHandler.generateForbiddenException('Your account is already registered. Please sign in using your Gmail account.');
       } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'Akun Kamu Telah Terdaftar. Silakan masuk menggunakan akun Gmail.',
-        );
+        await this.errorHandler.generateForbiddenException('Akun Kamu Telah Terdaftar. Silakan masuk menggunakan akun Gmail.');
       }
     }
 
