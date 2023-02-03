@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
   NotFoundException,
   ForbiddenException,
+  HttpCode,
 } from '@nestjs/common';
 
 @Injectable()
@@ -56,5 +57,13 @@ export class ErrorHandler {
         info: [messages],
       },
     });
+  }
+
+  async customResponse(messages: string): Promise<any> {
+    return {
+      messages: {
+        info: [messages],
+      },
+    }
   }
 }

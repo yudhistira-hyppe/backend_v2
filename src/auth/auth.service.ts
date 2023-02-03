@@ -36,6 +36,7 @@ import { CreateContenteventsDto } from '../content/contentevents/dto/create-cont
 import { CreateGetcontenteventsDto } from '../trans/getusercontents/getcontentevents/dto/create-getcontentevents.dto';
 import { CreateUserbasicnewDto } from '../trans/newuserbasic/dto/create-userbasicnew.dto';
 import { PostsService } from '../content/posts/posts.service';
+import { Response } from 'express';
 
 
 @Injectable()
@@ -3790,6 +3791,21 @@ export class AuthService {
     const datauserbasicsService = await this.userbasicsService.findOne(
       user_email,
     );
+
+    //Ceck User Userauth
+    const datauserauthsService = await this.userauthsService.findOne(
+      user_email,
+    );
+
+    var login_source = ((datauserauthsService.loginSource != undefined)) ? datauserauthsService.loginSource.toString() :"MANUAL";
+    console.log(login_source);
+    if (login_source != "MANUAL"){
+      if (lang == "en") {
+        await this.errorHandler.generateForbiddenException('Your account is already registered. Please sign in using your Gmail account.');
+      } else {
+        await this.errorHandler.generateForbiddenException('Akun Kamu Telah Terdaftar. Silakan masuk menggunakan akun Gmail.');
+      }
+    }
 
     var lang = "id";
     if (req.body.lang != undefined) {
