@@ -29,7 +29,7 @@ export class DisquslogsService {
   }
 
   async findOne(id: string): Promise<Disquslogs> {
-    return this.DisquslogsModel.findOne({ _id: id, active:true }).exec();
+    return this.DisquslogsModel.findOne({ _id: id, active: true }).exec();
   }
 
   async delete(id: string) {
@@ -52,52 +52,52 @@ export class DisquslogsService {
   async finddisquslog() {
     const query = await this.DisquslogsModel.aggregate([
 
-          {
-            $lookup: {
-              from: 'disquslogs',
-              localField: 'disquslogs.$id',
-              foreignField: '_id',
-              as: 'roless',
-            },
-          }, {
-            $out: {
-              db: 'hyppe_trans_db',
-              coll: 'disquslogs2'
-            }
-          },
+      {
+        $lookup: {
+          from: 'disquslogs',
+          localField: 'disquslogs.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'disquslogs2'
+        }
+      },
 
-        ]);
-        return query;
+    ]);
+    return query;
   }
 
   async update(
-      id: string,
-      createDisquslogsDto: CreateDisquslogsDto,
-    ): Promise < Disquslogs > {
-        let data = await this.DisquslogsModel.findByIdAndUpdate(
-          id,
-          createDisquslogsDto,
-          { new: true },
-        );
+    id: string,
+    createDisquslogsDto: CreateDisquslogsDto,
+  ): Promise<Disquslogs> {
+    let data = await this.DisquslogsModel.findByIdAndUpdate(
+      id,
+      createDisquslogsDto,
+      { new: true },
+    );
 
-        if(!data) {
-          throw new Error('Todo is not found!');
-        }
+    if (!data) {
+      throw new Error('Todo is not found!');
+    }
     return data;
   }
 
-  async deletedicusslog(request: any): Promise < any > {
+  async deletedicusslog(request: any): Promise<any> {
     const data_discuslog = await this.DisquslogsModel.findOne({ _id: request._id }).exec();
-    if(await this.utilsService.ceckData(data_discuslog)) {
+    if (await this.utilsService.ceckData(data_discuslog)) {
       await this.DisquslogsModel.updateOne(
-      { _id: request._id },
-      { active: false, senderActive: false, receiverActive: false },
-      function (err, docs) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(docs);
-        }
+        { _id: request._id },
+        { active: false, senderActive: false, receiverActive: false },
+        function (err, docs) {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(docs);
+          }
         }).clone().exec();
       return {
         status: true,
@@ -117,40 +117,40 @@ export class DisquslogsService {
   }
 
   async updateBydiscusid(disqusID: string, email: string) {
-  if (disqusID != undefined) {
-    this.DisquslogsModel.updateMany(
-      {
-        disqusID: disqusID,
-        sender: email
-      },
-      { receiverActive: false }, function (err, docs) {
-        if (err) {
-          console.log('err' + err);
-        } else {
-          console.log('docs' + docs);
-        }
-      });
-    this.DisquslogsModel.updateMany(
-      {
-        disqusID: disqusID,
-        receiver: email
-      },
-      { senderActive: false }, function (err, docs) {
-        if (err) {
-          console.log('err' + err);
-        } else {
-          console.log('docs' + docs);
-        }
-      });
-  }
+    if (disqusID != undefined) {
+      this.DisquslogsModel.updateMany(
+        {
+          disqusID: disqusID,
+          sender: email
+        },
+        { receiverActive: false }, function (err, docs) {
+          if (err) {
+            console.log('err' + err);
+          } else {
+            console.log('docs' + docs);
+          }
+        });
+      this.DisquslogsModel.updateMany(
+        {
+          disqusID: disqusID,
+          receiver: email
+        },
+        { senderActive: false }, function (err, docs) {
+          if (err) {
+            console.log('err' + err);
+          } else {
+            console.log('docs' + docs);
+          }
+        });
+    }
   }
 
-  async findDisqusLogByParentID(_id: string): Promise<Disquslogs>{
+  async findDisqusLogByParentID(_id: string): Promise<Disquslogs> {
     return this.DisquslogsModel.findOne({ _id: _id, active: true }).exec();
   }
 
   async findLogByDisqusId(disqusId: string, dpage: number, dpageRow: number) {
-    let query = this.DisquslogsModel.find({ disqusID: disqusId, active: true }).sort({ sequenceNumber :1});
+    let query = this.DisquslogsModel.find({ disqusID: disqusId, active: true }).sort({ sequenceNumber: 1 });
 
     let row = 20;
     let page = 0;
@@ -166,7 +166,7 @@ export class DisquslogsService {
     query.sort({ 'createdAt': -1 });
 
     //let res: DisquslogsDto[][] = [];
-    var res =[];
+    var res = [];
     let dt = await query.exec();
     for (let i = 0; i < dt.length; i++) {
       let dat = dt[i];
@@ -175,7 +175,7 @@ export class DisquslogsService {
       obj.createdAt = dat.createdAt;
       obj.txtMessages = dat.txtMessages;
       var profile = await this.utilsService.generateProfile(String(dat.sender), 'PROFILE');
-      
+
       var profile_info = {};
       if (profile.fullName != undefined) {
         profile_info["fullName"] = profile.fullName;
@@ -195,13 +195,13 @@ export class DisquslogsService {
       var replyLogs_ = dat.replyLogs;
 
       var dta = [];
-      if (dat.sequenceNumber==0){
+      if (dat.sequenceNumber == 0) {
         dta.push(obj);
-      }else{
+      } else {
         var index_default = 0;
         res.map((item, index) => {
-          item.filter((item_, index_) =>{
-            if (item_.lineID == dat.parentID){
+          item.filter((item_, index_) => {
+            if (item_.lineID == dat.parentID) {
               index_default = index
             }
             return item_.lineID == dat.parentID
@@ -220,7 +220,7 @@ export class DisquslogsService {
   async flattenDisqus(log: Disquslogs, res: DisquslogsDto[]) {
     let rl = log.replyLogs;
     if (rl != undefined) {
-      
+
     }
   }
 
@@ -230,6 +230,185 @@ export class DisquslogsService {
     }
     let num = ((page - 1) * row);
     return num;
-  }  
+  }
 
+  async komentar(postID: string, startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+
+      var dt = dateend.substring(0, 10);
+    } catch (e) {
+      dt = "";
+    }
+
+    var query = await this.DisquslogsModel.aggregate(
+      [
+        {
+          $match: {
+            postID: postID,
+            active: true,
+            createdAt: {
+              $gte: startdate,
+              $lte: dt
+            }
+          }
+        },
+        {
+          "$lookup": {
+            "from": "userauths",
+            "as": "authsender",
+            "let": {
+              "local_id": "$sender"
+            },
+            "pipeline": [
+              {
+                "$match": {
+                  "$expr": {
+                    "$eq": [
+                      "$email",
+                      "$$local_id"
+                    ]
+                  }
+                }
+              },
+
+            ],
+
+          }
+        },
+        {
+          $project: {
+            authsender: {
+              $arrayElemAt: ['$authsender', 0]
+            },
+            receiver: '$receiver',
+            postID: '$postID',
+            txtMessages: '$txtMessages',
+            createdAt: '$createdAt',
+            active: '$active'
+          }
+        },
+        {
+          "$lookup": {
+            "from": "userauths",
+            "as": "authreceiver",
+            "let": {
+              "local_id": "$receiver"
+            },
+            "pipeline": [
+              {
+                "$match": {
+                  "$expr": {
+                    "$eq": [
+                      "$email",
+                      "$$local_id"
+                    ]
+                  }
+                }
+              },
+
+            ],
+
+          }
+        },
+        {
+          $project: {
+            emailsender: '$authsender.email',
+            sender: '$authsender.username',
+            authreceive: {
+              $arrayElemAt: ['$authreceiver', 0]
+            },
+            postID: 1,
+            txtMessages: 1,
+            receiver: 1,
+            createdAt: 1,
+            active: 1
+          }
+        },
+        {
+          $project: {
+            emailsender: 1,
+            sender: 1,
+            receiver: '$authreceive.username',
+            postID: 1,
+            txtMessages: 1,
+            createdAt: 1,
+            active: 1
+          }
+        },
+        {
+          "$lookup": {
+            "from": "userbasics",
+            "as": "ubasic",
+            "let": {
+              "local_id": "$emailsender"
+            },
+            "pipeline": [
+              {
+                "$match": {
+                  "$expr": {
+                    "$eq": [
+                      "$email",
+                      "$$local_id"
+                    ]
+                  }
+                }
+              },
+
+            ],
+
+          }
+        },
+        {
+          $project: {
+            ubasic: {
+              $arrayElemAt: ['$ubasic', 0]
+            },
+            sender: 1,
+            receiver: 1,
+            postID: 1,
+            txtMessages: 1,
+            createdAt: 1,
+            active: 1,
+            emailsender: 1
+          }
+        },
+        {
+          $project: {
+
+            sender: 1,
+            receiver: 1,
+            postID: 1,
+            txtMessages: 1,
+            createdAt: 1,
+            active: 1,
+            emailsender: 1,
+            profilePict: '$ubasic.profilePict.$id'
+          }
+        },
+        {
+          $project: {
+
+            sender: 1,
+            receiver: 1,
+            postID: 1,
+            txtMessages: 1,
+            createdAt: 1,
+            active: 1,
+            emailsender: 1,
+            avatar: [{
+              mediaEndpoint: {
+                "$concat": ["/profilepict/", "$profilePict"]
+              }
+            }]
+          }
+        },
+
+      ]
+    );
+
+    return query;
+  }
 }

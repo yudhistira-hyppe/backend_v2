@@ -14,6 +14,7 @@ import { GetuserprofilesService } from '../getuserprofiles/getuserprofiles.servi
 import { PostsService } from '../../content/posts/posts.service';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { PostContentService } from '../../content/posts/postcontent.service';
+import { DisquslogsService } from '../../content/disquslogs/disquslogs.service';
 import { ContenteventsService } from '../../content/contentevents/contentevents.service';
 @Controller()
 export class GetusercontentsController {
@@ -28,6 +29,7 @@ export class GetusercontentsController {
         private readonly postContentService: PostContentService,
         private readonly mediaprofilepictsService: MediaprofilepictsService,
         private readonly contenteventsService: ContenteventsService,
+        private readonly disquslogsService: DisquslogsService,
     ) { }
 
     @Post('api/getusercontents/all')
@@ -1626,7 +1628,7 @@ export class GetusercontentsController {
         var endboost = null;
         var dtstart = null;
         var dtend = null;
-        var komentar = [];
+        var datakomentar = [];
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
@@ -1680,7 +1682,7 @@ export class GetusercontentsController {
             var like = 0;
             var comment = 0;
             datasummary = datadetail[0].summary;
-            komentar = datadetail[0].komentar;
+
 
             dtstart = startboost.substring(0, 10);
             dtend = endboost.substring(0, 10);
@@ -1694,6 +1696,11 @@ export class GetusercontentsController {
             var resultTime = time_difference / (1000 * 60 * 60 * 24);
             console.log(resultTime);
 
+            try {
+                datakomentar = await this.disquslogsService.komentar(postID, dtstart, dtend);
+            } catch (e) {
+                datakomentar = [];
+            }
             try {
                 datacountlike = await this.contenteventsService.countLikeBoost(postID, dtstart, dtend);
             } catch (e) {
@@ -1850,13 +1857,7 @@ export class GetusercontentsController {
                 dataSumwilayah = [];
             }
 
-            if (komentar[0].createdAt === undefined) {
-                komentar = [];
-            } else {
-                komentar = komentar;
-            }
-
-            let datadet = await this.getusercontentsService.getapsaraContenBoostDetail(dataquery, dataSum, dataSumgender, dataSumwilayah, arrdataview, sumage, like, comment, komentar);
+            let datadet = await this.getusercontentsService.getapsaraContenBoostDetail(dataquery, dataSum, dataSumgender, dataSumwilayah, arrdataview, sumage, like, comment, datakomentar);
             data.push(datadet[0]);
 
             return { response_code: 202, data, messages };
