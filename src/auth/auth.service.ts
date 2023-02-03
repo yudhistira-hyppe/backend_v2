@@ -3797,13 +3797,22 @@ export class AuthService {
       user_email,
     );
 
-    var login_source = ((datauserauthsService.loginSource != undefined)) ? datauserauthsService.loginSource.toString() :"MANUAL";
-    console.log(login_source);
+    var login_source = "MANUAL";
+    if (await this.utilsService.ceckData(datauserauthsService)){
+      login_source = ((datauserauthsService.loginSource != undefined)) ? datauserauthsService.loginSource.toString() : "MANUAL";
+    }
+
     if (login_source != "MANUAL"){
       if (lang == "en") {
-        await this.errorHandler.generateForbiddenException('Your account is already registered. Please sign in using your Gmail account.');
+        await this.errorHandler.generateResponseCode(
+          800,
+          "Your account is already registered. Please sign in using your Gmail account."
+        );
       } else {
-        await this.errorHandler.generateForbiddenException('Akun Kamu Telah Terdaftar. Silakan masuk menggunakan akun Gmail.');
+        await this.errorHandler.generateResponseCode(
+          800,
+          "Akun Kamu Telah Terdaftar. Silakan masuk menggunakan akun Gmail."
+        );
       }
     }
 
