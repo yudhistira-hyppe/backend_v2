@@ -1202,11 +1202,11 @@ export class UserbankaccountsService {
                 {
                     "$group":
                     {
-                        _id:null,
-                        iduser:
-                        {
-                            "$first":"$id"
-                        },
+                        _id:"$id",
+                        // iduser:
+                        // {
+                        //     "$first":"$id"
+                        // },
                         userId:
                         {
                             "$first":"$userId"
