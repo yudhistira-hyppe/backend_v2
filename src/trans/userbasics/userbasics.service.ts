@@ -5407,4 +5407,256 @@ export class UserbasicsService {
       { email: email },
       { $push: { userAssets: { $each: assets } } })
   }
+
+  async suspendAccountList(startDate: string, endDate: string, username: string, reportReason:any[], reportStatus:any[], skip:number, page:number) {    
+    var pipeline = [];
+    pipeline.push({
+          "$match":
+          {
+              "$and":
+              [
+                  {
+                      reportedStatus:
+                      {
+                          "$ne":null
+                      }
+                  },
+                  {
+                      reportedStatus:
+                      {
+                          "$ne":"ALL"
+                      }
+                  }
+              ]
+          }
+      },
+      {
+          "$project":
+          {
+              _id:1,
+              profileID:1,
+              email:1,
+              fullName:1,
+              reportedUserCount:1,
+              reportedUser:
+              {
+                  "$last":"$reportedUser"
+              },
+              reportedUserHandle:
+              {
+                  "$last":"$reportedUserHandle"
+              },
+              reportedStatus:1
+          }
+      },
+      {
+          "$lookup": 
+          {
+              "from": "userauths",
+              "as": "userfk",
+              "let": 
+              {
+                  "authid": "$email"
+              },
+              "pipeline": 
+              [
+                  {
+                      "$match":
+                      {
+                          "$expr":
+                          {
+                              "$eq":
+                              [
+                                  "$email",
+                                  "$$authid"
+                              ]
+                          }
+                      },
+                  },
+                  {
+                      "$project":
+                      {
+                          username:1
+                      }
+                  }
+              ]
+          }
+      },
+      {
+          "$lookup": 
+          {
+              "from": "reportreasons",
+              "as": "pilihan_laporan",
+              "let": 
+              {
+                  "reportid": "$reportedUser.reportReasonId"
+              },
+              "pipeline": 
+              [
+                  {
+                      "$match":
+                      {
+                          "$expr":
+                          {
+                              "$eq":
+                              [
+                                  "$_id",
+                                  "$$reportid"
+                              ]
+                          }
+                      },
+                  },
+                  {
+                      "$project":
+                      {
+                          reason:1
+                      }
+                  }
+              ]
+          }
+      },
+      {
+          "$project":
+          {
+              _id:1,
+              profileID:1,
+              email:1,
+              fullName:1,
+              username:
+              {
+                  "$arrayElemAt":
+                  [
+                      "$userfk.username", 0
+                  ]
+              },
+              reportedUserCount:1,
+              reportedUser:1,
+              jenislaporan:"$reportedUser.reportReasonId",
+              reportedUserDate:"$reportedUser.createdAt",
+              // Emergency only
+              // reportedUserDate:
+              // {
+              //     "$dateFromString": 
+              //     {
+              //         format: "%Y-%m-%dT%H:%M:%S.%LZ",
+              //         dateString:"$reportedUser.createdAt"
+              //     }
+              // },
+              reportedUserHandle:1,
+              reportedStatus:1,
+              laporan:
+              {
+                  "$arrayElemAt":
+                  [
+                      "$pilihan_laporan", 0
+                  ]
+              },
+          }
+      },
+      {
+          "$sort":
+          {
+              reportedUserDate:1
+          }
+      });
+  
+      //filter by name
+      if(username != null)
+      {
+        pipeline.push({
+              "$match":
+              {
+                  username:
+                  {
+                      "$regex":username,
+                      options:"i"
+                  }
+              }
+        },);
+      }
+
+      //filter by date range
+      if(startDate != null && endDate != null)
+      {
+        var input = new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 1));
+        input.setDate(input.getDate() + 1);
+        var today = input.toISOString().split("T")[0];
+        pipeline.push({
+              "$match":
+              {
+                  "$and":
+                  [
+                      {
+                          "$expr":
+                          {
+                              "$gte":
+                              [
+                                  "$reportedUserDate", 
+                                  startDate
+                              ]
+                          }
+                      },
+                      {
+                          "$expr":
+                          {
+                              "$lt":
+                              [
+                                  "$reportedUserDate", 
+                                  today
+                              ]
+                          }
+                      }
+                  ]
+              }
+          },
+        );
+      }
+  
+      //filter by reportedstatus
+      if(reportStatus != null)
+      {
+        pipeline.push({
+            "$match":
+            {
+                reportedStatus:
+                {
+                    "$in" : ["APPROVED"]
+                }
+            }
+          },);
+      }
+  
+      //filter by alasan di report
+      if(reportReason != null)
+      {
+        const mongoose = require('mongoose');
+        var temparr = [];
+        reportReason.forEach(obj => {
+          temparr.push(mongoose.Types.ObjectId(obj));
+        });
+
+        pipeline.push({
+            "$match":
+            {
+                jenislaporan:
+                {
+                    "$in": temparr
+                } 
+            }
+        });
+      }
+
+      if(skip != null && page != null)
+      {
+        pipeline.push({
+            "$limit":skip
+          },
+          {
+            "$skip":(skip * page)
+          });
+      }
+
+    console.log(pipeline);
+    //var query = this.userbasicModel.aggregate(pipeline);
+  }
 }
