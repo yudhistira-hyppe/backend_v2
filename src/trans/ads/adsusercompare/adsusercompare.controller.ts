@@ -230,7 +230,7 @@ export class AdsUserCompareController {
         var genIdUserAds = new mongoose.Types.ObjectId();
         if (await this.utilsService.ceckData(data_ads)){
 
-            var ceckData = await this.userAdsService.findAdsIDUserID(data_ads[0].adsId.toString(), data_ads[0].userID.toString());
+            var ceckData = await this.userAdsService.findAdsIDUserID(data_ads[0].userID.toString(), data_ads[0].adsId.toString());
             if (!(await this.utilsService.ceckData(ceckData))){
                 var CreateUserAdsDto_ = new CreateUserAdsDto();
                 try {
