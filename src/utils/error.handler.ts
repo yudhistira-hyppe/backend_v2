@@ -59,11 +59,12 @@ export class ErrorHandler {
     });
   }
 
-  async customResponse(messages: string): Promise<any> {
-    return {
+  async generateResponseCode(response_code: number, messages: string): Promise<any> {
+    throw new NotAcceptableException({
+      response_code: response_code,
       messages: {
         info: [messages],
       },
-    }
+    });
   }
 }
