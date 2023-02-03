@@ -4654,11 +4654,13 @@ export class AuthService {
       }
     } else {
       if (lang == "en") {
-        await this.errorHandler.generateNotAcceptableException(
+        await this.errorHandler.generateResponseCode(
+          801,
           'No users were found. Please check again.',
         );
       } else {
-        await this.errorHandler.generateNotAcceptableException(
+        await this.errorHandler.generateResponseCode(
+          801,
           'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
         );
       }
