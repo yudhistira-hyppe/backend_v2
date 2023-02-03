@@ -14,7 +14,7 @@ import { GetuserprofilesService } from '../getuserprofiles/getuserprofiles.servi
 import { PostsService } from '../../content/posts/posts.service';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { PostContentService } from '../../content/posts/postcontent.service';
-import { DisquslogsService } from '../../content/disqusLogs/disquslogs.service';
+import { DisquslogsService } from '../../content/disquslogs/disquslogs.service';
 import { ContenteventsService } from '../../content/contentevents/contentevents.service';
 @Controller()
 export class GetusercontentsController {
