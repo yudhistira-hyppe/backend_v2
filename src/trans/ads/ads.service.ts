@@ -2495,7 +2495,7 @@ export class AdsService {
             {
                 $match:
                 {
-                    "nameType": "Content Ads",
+                    "nameType": nameType,
 
                 }
             },
