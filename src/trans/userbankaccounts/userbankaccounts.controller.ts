@@ -711,6 +711,6 @@ export class UserbankaccountsController {
         }
 
         var eventType = type.toString();
-        await this.utilsService.sendFcm(email, titlein, titleen, repbodyin, repbodyen, eventType, event, undefined, undefined);
+        await this.utilsService.sendFcm(email, titlein, titleen, repbodyin, repbodyen, eventType, event, "", "AKUN BANK", "", "APPEAL");
     }
 }
