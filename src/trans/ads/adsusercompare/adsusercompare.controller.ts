@@ -508,6 +508,10 @@ export class AdsUserCompareController {
                     var userAds_statusView = (data_userAdsService.statusView != undefined) ? data_userAdsService.statusView : false;
                     var userAds_statusClick = (data_userAdsService.statusClick != undefined) ? data_userAdsService.statusClick : false;
                     var userAds_timeViewSecond = (data_userAdsService.timeViewSecond != undefined) ? data_userAdsService.timeViewSecond : null;
+                    var userAds_viewed = (data_userAdsService.viewed != undefined) ? data_userAdsService.viewed : 0;
+
+                    var userID = (data_userAdsService.userID != undefined) ? data_userAdsService.userID.toString() : null;
+                    var adsID = (data_userAdsService.adsID != undefined) ? data_userAdsService.adsID.toString() : null;
 
                     var ads_tayang = data_adsService.tayang;
                     var ads_totalView = 0;
@@ -534,7 +538,18 @@ export class AdsUserCompareController {
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, AdsSkip : " + AdsSkip.toString());
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, watching_time : " + watching_time.toString());
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, rewards : " + rewards.toString());
-                                rewards = true;
+                                if (userAds_liveTypeuserads){
+                                    if ((userID != null) && (adsID != null)) {
+                                        const ceck_rewars = await this.userAdsService.findUserAdsRewars(userID, adsID, AdsSkip);
+                                        if (await this.utilsService.ceckData(ceck_rewars)) {
+                                            rewards = false;
+                                        } else {
+                                            rewards = true;
+                                        }
+                                    }
+                                } else {
+                                    rewards = true;
+                                }
                             }
                             if (sisa_credit < credit_view) {
                                 sisa_credit_view = credit_view - sisa_credit;
@@ -552,39 +567,28 @@ export class AdsUserCompareController {
                         if (ads_totalView == ads_tayang){
                             adsStatus = false;
                         }
-
-                        if (watching_time > 0 && watching_time < AdsSkip) {
-                            //Update userads
-                            try {
-                                var CreateUserAdsDto_ = new CreateUserAdsDto();
-                                CreateUserAdsDto_.statusView = true;
-                                CreateUserAdsDto_.clickAt = current_date;
+                        
+                        //Update userads
+                        try {
+                            var CreateUserAdsDto_ = new CreateUserAdsDto();
+                            CreateUserAdsDto_.statusView = true;
+                            CreateUserAdsDto_.clickAt = current_date;
+                            if (userAds_liveTypeuserads) {
                                 CreateUserAdsDto_.viewed = 1;
-                                CreateUserAdsDto_.timeViewSecond = watching_time;
-                                await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
-                            } catch (e) {
-                                this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed "+e);
-                                await this.errorHandler.generateNotAcceptableException(
-                                    'Unabled to proceed, ' + e,
-                                );
+                            }else{
+                                CreateUserAdsDto_.viewed = userAds_viewed+1;
                             }
-                        } else if (watching_time > 0 && watching_time > AdsSkip) {
-                            //Update userads
-                            try {
-                                var CreateUserAdsDto_ = new CreateUserAdsDto();
-                                CreateUserAdsDto_.statusView = true;
-                                CreateUserAdsDto_.clickAt = current_date;
-                                CreateUserAdsDto_.viewed = 1;
-                                CreateUserAdsDto_.timeViewSecond = watching_time;
-                                await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
+                            CreateUserAdsDto_.timeViewSecond = watching_time;
+                            await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
+                            this.userAdsService.updateUpdateAt(data_userAdsService._id.toString(), current_date);
+                        } catch (e) {
+                            this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed " + e);
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed, ' + e,
+                            );
+                        }
 
-                            } catch (e) {
-                                this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed " + e);
-                                await this.errorHandler.generateNotAcceptableException(
-                                    'Unabled to proceed, ' + e,
-                                );
-                            }
-
+                        if (watching_time > 0 && watching_time > AdsSkip) {
                             //Update ads
                             try {
                                 var CreateAdsDto_ = new CreateAdsDto();
@@ -778,6 +782,10 @@ export class AdsUserCompareController {
             var userAds_statusView = (data_userAdsService.statusView != undefined) ? data_userAdsService.statusView : false;
             var userAds_statusClick = (data_userAdsService.statusClick != undefined) ? data_userAdsService.statusClick : false;
             var userAds_timeViewSecond = (data_userAdsService.timeViewSecond != undefined) ? data_userAdsService.timeViewSecond : null;
+            var userAds_viewed = (data_userAdsService.viewed != undefined) ? data_userAdsService.viewed : 0;
+
+            var userID = (data_userAdsService.userID != undefined) ? data_userAdsService.userID.toString() : null;
+            var adsID = (data_userAdsService.adsID != undefined) ? data_userAdsService.adsID.toString() : null;
 
             var ads_tayang = data_adsService.tayang;
             var ads_totalView = 0;
@@ -801,7 +809,18 @@ export class AdsUserCompareController {
                     }
                 } else if (sisa_credit > 0) {
                     if (watching_time > AdsSkip) {
-                        rewards = true;
+                        if (userAds_liveTypeuserads) {
+                            if ((userID != null) && (adsID != null)) {
+                                const ceck_rewars = await this.userAdsService.findUserAdsRewars(userID, adsID, AdsSkip);
+                                if (await this.utilsService.ceckData(ceck_rewars)) {
+                                    rewards = false;
+                                } else {
+                                    rewards = true;
+                                }
+                            }
+                        } else {
+                            rewards = true;
+                        }
                     }
                     if (sisa_credit < credit_view) {
                         sisa_credit_view = credit_view - sisa_credit;
@@ -826,9 +845,14 @@ export class AdsUserCompareController {
                     CreateUserAdsDto_.statusView = true;
                     CreateUserAdsDto_.statusClick = true;
                     CreateUserAdsDto_.clickAt = current_date;
-                    CreateUserAdsDto_.viewed = 1; 
+                    if (userAds_liveTypeuserads) {
+                        CreateUserAdsDto_.viewed = 1;
+                    } else {
+                        CreateUserAdsDto_.viewed = userAds_viewed + 1;
+                    }
                     CreateUserAdsDto_.timeViewSecond = watching_time;
                     await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
+                    this.userAdsService.updateUpdateAt(data_userAdsService._id.toString(), current_date);
                 } catch (e) {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed, ' + e,

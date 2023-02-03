@@ -46,6 +46,10 @@ export class UserAdsService {
         return this.userAdsModel.findOne({ adsID: new ObjectId(adsID), userID: new ObjectId(userID) }).exec();
     }
 
+    async findUserAdsRewars(userID: string, adsID: string, AdsSkip: number): Promise<UserAds> {
+        return this.userAdsModel.findOne({ adsID: new ObjectId(adsID), userID: new ObjectId(userID), $or: [{ statusClick: true }, { statusView: true }], timeViewSecond: { $gt: AdsSkip } }).exec();
+    }
+
     async findOneByuserIDAds(userID: string, adsId: string): Promise<UserAds> {
         return this.userAdsModel.findOne({ userID: userID, adsID: adsId, statusView: false }).exec();
     }
@@ -270,13 +274,17 @@ export class UserAdsService {
         return data;
     }
 
+    async updateUpdateAt(_id: string,datetime: string) {
+        return await this.userAdsModel.updateOne({ _id: new ObjectId(_id) }, { $push: { updateAt: datetime } }).exec();
+    }
+
     async updatesdataUserId_(id: string, createUserAdsDto: CreateUserAdsDto): Promise<Object> {
         let data = await this.userAdsModel.updateOne(
             {
                 "_id": new ObjectId(id)
             },
             {
-                $set: createUserAdsDto
+                $set: createUserAdsDto,
             });
         return data;
     }

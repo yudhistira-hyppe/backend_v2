@@ -3791,6 +3791,25 @@ export class AuthService {
       user_email,
     );
 
+    //Ceck User Userauth
+    const datauserauthsService = await this.userauthsService.findOne(
+      user_email,
+    );
+
+    var login_source = (datauserauthsService.loginSource != undefined) ? datauserauthsService.loginSource.toString() :"MANUAL";
+
+    if (login_source != "MANUAL"){
+      if (lang == "en") {
+        await this.errorHandler.generateNotAcceptableException(
+          'Your account is already registered. Please sign in using your Gmail account.',
+        );
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Akun Kamu Telah Terdaftar. Silakan masuk menggunakan akun Gmail.',
+        );
+      }
+    }
+
     var lang = "id";
     if (req.body.lang != undefined) {
       lang = req.body.lang;
