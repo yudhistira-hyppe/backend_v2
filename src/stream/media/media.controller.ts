@@ -32,9 +32,9 @@ export const multerConfig = {
 };
 
 export const multerOptions = {
-    limits: {
-        fileSize: +process.env.MAX_FILE_SIZE,
-    },
+    // limits: {
+    //     fileSize: +process.env.MAX_FILE_SIZE,
+    // },
     fileFilter: (req: any, file: any, cb: any) => {
         if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
             cb(null, true);
@@ -171,7 +171,7 @@ export class MediaController {
             */
 
             id_mediaprofilepicts = await this.utilsService.generateId();
-            mongoose_gen_media = new mongoose.Types.ObjectId();            
+            mongoose_gen_media = new mongoose.Types.ObjectId();
             //Ceck cardPict
             if (files.profilePict != undefined) {
                 var FormData_ = new FormData();
