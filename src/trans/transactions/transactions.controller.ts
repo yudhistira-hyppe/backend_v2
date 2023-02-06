@@ -8186,7 +8186,7 @@ export class TransactionsController {
       {
         _id : tempdate,
         totaldata : 0,
-        totalpendapatanperhari:0
+        totalpenjualanperhari:0
       }
     }
     
