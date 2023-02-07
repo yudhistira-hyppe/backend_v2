@@ -298,6 +298,7 @@ export class AdsController {
             var arrObjinterest = [];
             var arrayInterest = [];
             var arrayDemografis = [];
+            var arrayGender = [];
             var arrayUservoucher = [];
             var totalCreditusvoucher = 0;
             var totalCreditusvoucherUsed = 0;
@@ -328,6 +329,17 @@ export class AdsController {
                         let iddem = splitreq2dem[i];
                         let objintrdem = { "$ref": "areas", "$id": mongoose.Types.ObjectId(iddem), "$db": "ProdAll" }
                         arrayDemografis.push(objintrdem);
+                    }
+
+                    var reqgender = CreateAdsDto.gender;
+
+                    var splitreqgen = reqgender.toString();
+                    var splitreq2gen = splitreqgen.split(',');
+
+                    for (var i = 0; i < splitreq2gen.length; i++) {
+                        let gen = splitreq2gen[i];
+
+                        arrayGender.push(gen);
                     }
 
 
@@ -497,6 +509,7 @@ export class AdsController {
                     CreateAdsDto.status = "DRAFT";
                     CreateAdsDto.isActive = false;
                     CreateAdsDto.demografisID = arrayDemografis;
+                    CreateAdsDto.gender = arrayGender;
                     CreateAdsDto.totalUsedCredit = creditValue * tayang;
                     CreateAdsDto.userVoucherID = arrayUservoucher;
                     CreateAdsDto.typeAdsID = mongoose.Types.ObjectId(CreateAdsDto.typeAdsID);
@@ -873,12 +886,10 @@ export class AdsController {
         var getdatabase = await this.adsService.getAdsanalyticsgraph(startdate, enddate);
 
         var getdata = [];
-        try
-        {
+        try {
             getdata = getdatabase[0].data;
         }
-        catch(e)
-        {
+        catch (e) {
             getdata = [];
         }
 
@@ -887,34 +898,32 @@ export class AdsController {
         var tempdate = new Date(startdate).toISOString().split("T")[0];
         var end = new Date(enddate).toISOString().split("T")[0];
         var array = [];
-        
+
         //kalo lama, berarti error disini!!
-        while(tempdate != end)
-        {
+        while (tempdate != end) {
             var temp = new Date(tempdate);
             temp.setDate(temp.getDate() + 1);
             tempdate = new Date(temp).toISOString().split("T")[0];
             //console.log(tempdate);
-        
+
             let obj = getdata.find(objs => objs.createdAt === tempdate);
             //console.log(obj);
-            if(obj == undefined)
-            {
-                obj = 
+            if (obj == undefined) {
+                obj =
                 {
                     createdAt: tempdate,
                     totalview: 0,
                     totalclick: 0
                 }
             }
-            
-            array.push(obj);
-        }      
 
-        data = 
+            array.push(obj);
+        }
+
+        data =
         {
-            data:array,
-            total:(getdata[0].totaldata == parseInt('0') ? parseInt('0') : getdata[0].totaldata)
+            data: array,
+            total: (getdata[0].totaldata == parseInt('0') ? parseInt('0') : getdata[0].totaldata)
         }
 
         const messages = {
@@ -944,41 +953,37 @@ export class AdsController {
         var getdatabase = await this.adsService.getAdsbygender(startdate, enddate);
 
         var getdata = [];
-        try
-        {
+        try {
             getdata = getdatabase[0].gender;
         }
-        catch(e)
-        {
+        catch (e) {
             getdata = [];
         }
-        
+
         var arraygender = [];
         var checkgender = ["OTHER", "MALE", "FEMALE"];
-        for(var i = 0; i < checkgender.length; i++)
-        {
+        for (var i = 0; i < checkgender.length; i++) {
             let obj = getdata.find(objs => objs._id === checkgender[i]);
             //console.log(obj);
-            if(obj == undefined)
-            {
-                obj = 
+            if (obj == undefined) {
+                obj =
                 {
                     _id: checkgender[i],
                     total: 0
                 }
             }
             arraygender.push(obj);
-        }      
+        }
 
         var tempdata = getdatabase[0].area;
         tempdata.forEach(e => {
             e.persentase = e.persentase.toFixed(2);
         });
 
-        data = 
+        data =
         {
-            gender:arraygender,
-            daerah:tempdata,
+            gender: arraygender,
+            daerah: tempdata,
         }
 
         const messages = {
@@ -1007,64 +1012,52 @@ export class AdsController {
 
         var request_json = JSON.parse(JSON.stringify(request.body));
 
-        if (request_json["startdate"] !== undefined && request_json["enddate"] !== undefined) 
-        {
+        if (request_json["startdate"] !== undefined && request_json["enddate"] !== undefined) {
             startdate = request_json["startdate"];
             enddate = request_json["enddate"];
         }
 
-        if (request_json["mincredit"] !== undefined && request_json["maxcredit"] !== undefined) 
-        {
+        if (request_json["mincredit"] !== undefined && request_json["maxcredit"] !== undefined) {
             mincredit = Number(request_json["mincredit"]);
             maxcredit = Number(request_json["maxcredit"]);
         }
 
-        if (request_json["limit"] !== undefined) 
-        {
+        if (request_json["limit"] !== undefined) {
             limit = (Number(request_json["limit"]) !== parseInt('0') ? Number(request_json["limit"]) : parseInt('10'));
         }
 
-        if (request_json["page"] !== undefined) 
-        {
+        if (request_json["page"] !== undefined) {
             page = Number(request_json["page"]);
         }
 
-        if (request_json["status"] !== undefined) 
-        {
+        if (request_json["status"] !== undefined) {
             status = request_json["status"];
         }
 
-        if (request_json["descending"] !== undefined) 
-        {
+        if (request_json["descending"] !== undefined) {
             sorting = request_json["descending"];
         }
-        else 
-        {
+        else {
             throw new BadRequestException("Unabled to proceed");
         }
 
         var getdata = null;
-        try
-        {
+        try {
             var tempdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, page, limit, sorting);
-            var total = tempdata.length; 
-            for(var i = 0; i < total; i++)
-            {
+            var total = tempdata.length;
+            for (var i = 0; i < total; i++) {
                 getdata = await this.adsService.getapsaraDatabaseAdsNew(tempdata, i);
             }
         }
-        catch(e)
-        {
+        catch (e) {
             getdata = [];
         }
 
-        try
-        {
+        try {
             var resultdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, undefined, undefined, sorting);
             var totalsearch = resultdata.length;
         }
-        catch(e)
-        {
+        catch (e) {
             var resultdata = [];
             var totalsearch = 0;
         }
@@ -1072,16 +1065,14 @@ export class AdsController {
         var totalpage = 0;
         var gettotal = (totalsearch / limit).toFixed(0);
         var sisa = (totalsearch % limit);
-        if( sisa == 0)
-        {
+        if (sisa == 0) {
             totalpage = parseInt(gettotal);
         }
-        else
-        {
+        else {
             totalpage = parseInt(gettotal) + 1;
         }
 
-        return { response_code: 202, data:getdata, totalsearch:totalsearch, totalpage : totalpage, limit:limit, page:page, messages };
+        return { response_code: 202, data: getdata, totalsearch: totalsearch, totalpage: totalpage, limit: limit, page: page, messages };
     }
 }
 
