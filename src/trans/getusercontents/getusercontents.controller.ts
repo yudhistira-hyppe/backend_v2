@@ -1714,16 +1714,11 @@ export class GetusercontentsController {
             }
 
             try {
-                datacountcomment = await this.contenteventsService.countCommentBoost(postID, dtstart, dtend);
+                comment = datakomentar.length;
             } catch (e) {
-                datacountcomment = null;
+                comment = 0;
             }
 
-            if (datacountcomment.length === 0) {
-                comment = 0;
-            } else {
-                comment = datacountcomment[0].count;
-            }
 
             if (resultTime > 0) {
                 for (var i = 0; i < resultTime + 1; i++) {
