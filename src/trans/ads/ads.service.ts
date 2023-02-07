@@ -15401,4 +15401,199 @@ export class AdsService {
 
         return query;
     }
+
+    async consolegetlistads(startdate:string, enddate:string, statuslist:any[], mincredit:number, maxcredit:number, page:number, limit:number, sorting:boolean)
+    {
+        var pipeline = [];
+
+        pipeline.push({
+                "$lookup": 
+                {
+                    "from": "adstypes",
+                    "as": "type_data",
+                    "let": 
+                    {
+                        "type_fk": "$typeAdsID"
+                    },
+                    "pipeline": 
+                    [
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$_id",
+                                        "$$type_fk"
+                                    ]
+                                }
+                            },
+                        },
+                        {
+                            "$project":
+                            {
+                                nameType:1
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "$lookup": 
+                {
+                    "from": "adsplaces",
+                    "as": "place_data",
+                    "let": 
+                    {
+                        "place_fk": "$placingID"
+                    },
+                    "pipeline": 
+                    [
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$_id",
+                                        "$$place_fk"
+                                    ]
+                                }
+                            },
+                        },
+                        {
+                            "$project":
+                            {
+                                namePlace:1
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "$project":
+                {
+                    _id:1,
+                    userID:1,
+                    typesID:1,
+                    type_data:
+                    {
+                        "$first":"$type_data.nameType"
+                    },
+                    placingID:1,
+                    place_data:
+                    {
+                        "$first":"$place_data.namePlace"
+                    },
+                    status:1,
+                    timestamp:1,
+                    totalUsedCredit:1,
+                    totalCredit:1,
+                    idApsara:1,
+                    apsara:{
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":["$idApsara", null]
+                            },
+                            then:false,
+                            else:true
+                        }
+                    },
+                    type:1,
+                }
+            },);
+        
+        //filter by date range
+        if(startdate != undefined && enddate != undefined)
+        {
+            var before = new Date(startdate).toISOString().split("T")[0];
+            var input = new Date(enddate);
+            input.setDate(input.getDate() + 1);
+            var today = new Date(input).toISOString().split("T")[0];
+
+            pipeline.push({
+                "$match":
+                {
+                    timestamp:
+                    {
+                        "$gte":before,
+                        "$lte":today
+                    },
+                }
+            },);
+        }
+
+        //filter by status
+        if(statuslist != undefined)
+        {
+            pipeline.push({
+                    "$match":
+                    {
+                        status:
+                        {
+                            "$in":statuslist
+                        }
+                    }
+                });
+        }
+
+        //filter by totalUsedCredit range 
+        if(mincredit != undefined && maxcredit != undefined)
+        {
+            pipeline.push({
+                "$match":
+                {
+                    totalUsedCredit:
+                    {
+                        "$gte":mincredit,
+                        "$lte":maxcredit
+                    },
+                }
+            },);
+        }
+
+
+        if(sorting == true)
+        {
+            pipeline.push({
+                "$sort":
+                {
+                    timestamp:-1
+                }
+            })
+        }
+        else
+        {
+            pipeline.push({
+                "$sort":
+                {
+                    timestamp:1
+                }
+            })
+        }
+
+        if(page > 0)
+        {
+            pipeline.push({
+                "$skip":(limit * (page - 1))
+            });
+        }
+
+        if(limit > 0)
+        {
+            pipeline.push({
+                "$limit":limit
+            });
+        }
+
+        //console.log(JSON.stringify(pipeline));
+
+        var query = await this.adsModel.aggregate(pipeline);
+
+        return query;
+    }
 }
