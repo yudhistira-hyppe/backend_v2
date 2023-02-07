@@ -236,7 +236,7 @@ export class GetusercontentsService {
     if (idapsara === "") {
 
     } else {
-      if (type === "images") {
+      if (type === "images" || type === "image") {
 
         try {
           obj[n].apsaraId = idapsaradefine;
@@ -246,7 +246,7 @@ export class GetusercontentsService {
           obj[n].media = {};
         }
       }
-      else if (type === "video") {
+      else if (type === "video" || type === "videos") {
         try {
           obj[n].apsaraId = idapsaradefine;
           obj[n].apsara = apsaradefine;

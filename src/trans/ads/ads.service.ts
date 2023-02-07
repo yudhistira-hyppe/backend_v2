@@ -218,12 +218,6 @@ export class AdsService {
 
         }
 
-
-
-
-
-
-
         if (idapsara === undefined || idapsara === "" || idapsara === null) {
             idapsaradefine = "";
             apsaradefine = false
@@ -273,6 +267,62 @@ export class AdsService {
         return obj;
     }
 
+    async getapsaraDatabaseAdsNew(obj: object, n: number) {
+        let idapsara = null;
+        let apsara = null;
+        let apsaradefine = null;
+        let idapsaradefine = null;
+        let pict = null;
+
+        try {
+            idapsara = obj[n].idApsara;
+        } catch (e) {
+            idapsara = "";
+        }
+        try {
+            apsara = obj[n].apsara;
+        } catch (e) {
+            apsara = false;
+        }
+
+        if (idapsara === undefined || idapsara === "" || idapsara === null) {
+            idapsaradefine = "";
+            apsaradefine = false
+        } else {
+            idapsaradefine = idapsara;
+            apsaradefine = true
+        }
+        var type = obj[n].type;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+
+        } else {
+            if (type === "images" || type === "image") {
+
+                try {
+                    obj[n].apsaraId = idapsaradefine;
+                    obj[n].apsara = apsaradefine;
+                    obj[n].media = await this.postContentService.getImageApsara(pict);
+                } catch (e) {
+                    obj[n].media = {};
+                }
+            }
+            else if (type === "video" || type === "videos") {
+                try {
+                    obj[n].apsaraId = idapsaradefine;
+                    obj[n].apsara = apsaradefine;
+                    obj[n].media = await this.postContentService.getVideoApsara(pict);
+                } catch (e) {
+                    obj[n].media = {};
+                }
+
+            }
+
+        }
+
+        return obj;
+    }
     async findAll(): Promise<Ads[]> {
         return this.adsModel.find().exec();
 
@@ -297,7 +347,7 @@ export class AdsService {
         return deletedCat;
     }
 
-    async getAdsLanding(email: string){
+    async getAdsLanding(email: string) {
         var query = await this.adsModel.aggregate([
             {
                 $set:
@@ -14787,12 +14837,10 @@ export class AdsService {
         return query;
     }
 
-    async getAdsanalyticsgraph(startdate : string, enddate : string)
-    {
+    async getAdsanalyticsgraph(startdate: string, enddate: string) {
         var pipeline = [];
 
-        if(startdate !== undefined && enddate !== undefined)
-        {
+        if (startdate !== undefined && enddate !== undefined) {
             var before = new Date(startdate).toISOString().split("T")[0];
             var input = new Date(enddate);
             input.setDate(input.getDate() + 1);
@@ -14803,19 +14851,18 @@ export class AdsService {
                 {
                     timestamp:
                     {
-                        "$gte":before,
-                        "$lte":today
+                        "$gte": before,
+                        "$lte": today
                     },
-                    status:"APPROVE"
+                    status: "APPROVE"
                 }
             },);
         }
-        else
-        {
+        else {
             pipeline.push({
                 "$match":
                 {
-                    status:"APPROVE"
+                    status: "APPROVE"
                 }
             },);
         }
@@ -14823,166 +14870,164 @@ export class AdsService {
         pipeline.push({
             "$project":
             {
-                _id:1,
+                _id: 1,
                 createdAt:
                 {
                     "$substr":
-                    [
-                        "$timestamp", 0, 10
-                    ]
+                        [
+                            "$timestamp", 0, 10
+                        ]
                 },
             }
         },
-        {
-            "$lookup":
             {
-                "from": "userads",
-                "as": "recordtayang",
-                "let": {
-                    "userads_fk": "$_id"
-                },
-                "pipeline": 
-                [
-                    {
-                        "$match":
-                        {
-                            "$expr":
-                            {
-                                "$eq":
-                                [
-                                    "$adsID",
-                                    "$$userads_fk"
-                                ]
-                            },
-                            "$or":
-                            [
-                                {
-                                    "$expr":
-                                    {
-                                        "$eq":
-                                        [
-                                            "$statusClick", true
-                                        ]
-                                    }
-                                },
-                                {
-                                    "$expr":
-                                    {
-                                        "$eq":
-                                        [
-                                            "$statusView", true
-                                        ]
-                                    }
-                                }
-                            ]
-                        }
+                "$lookup":
+                {
+                    "from": "userads",
+                    "as": "recordtayang",
+                    "let": {
+                        "userads_fk": "$_id"
                     },
+                    "pipeline":
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                            [
+                                                "$adsID",
+                                                "$$userads_fk"
+                                            ]
+                                    },
+                                    "$or":
+                                        [
+                                            {
+                                                "$expr":
+                                                {
+                                                    "$eq":
+                                                        [
+                                                            "$statusClick", true
+                                                        ]
+                                                }
+                                            },
+                                            {
+                                                "$expr":
+                                                {
+                                                    "$eq":
+                                                        [
+                                                            "$statusView", true
+                                                        ]
+                                                }
+                                            }
+                                        ]
+                                }
+                            },
+                            {
+                                "$group":
+                                {
+                                    _id: "$adsID",
+                                    datatotalview:
+                                    {
+                                        "$sum":
+                                        {
+                                            "$cond":
+                                            {
+                                                if:
+                                                {
+                                                    "$eq": ["$statusView", true]
+                                                },
+                                                then: 1,
+                                                else: 0
+                                            }
+                                        }
+                                    },
+                                    datatotalclick:
+                                    {
+                                        "$sum":
+                                        {
+                                            "$cond":
+                                            {
+                                                if:
+                                                {
+                                                    "$eq": ["$statusClick", true]
+                                                },
+                                                then: 1,
+                                                else: 0
+                                            }
+                                        }
+                                    },
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: 1,
+                    createdAt: 1,
+                    recordtayang:
                     {
-                        "$group":
+                        "$first": "$recordtayang"
+                    }
+                }
+            },
+            {
+                "$group":
+                {
+                    _id: "$createdAt",
+                    totaldata:
+                    {
+                        "$sum": 1
+                    },
+                    totalview:
+                    {
+                        "$sum": "$recordtayang.datatotalview"
+                    },
+                    totalclick:
+                    {
+                        "$sum": "$recordtayang.datatotalclick"
+                    },
+                }
+            },
+            {
+                "$sort":
+                {
+                    _id: 1
+                }
+            },
+            {
+                "$group":
+                {
+                    _id: null,
+                    totaldata:
+                    {
+                        "$sum": "$totaldata"
+                    },
+                    data:
+                    {
+                        "$push":
                         {
-                            _id:"$adsID",
-                            datatotalview:
-                            {
-                                "$sum": 
-                                {
-                                    "$cond": 
-                                    {
-                                        if:
-                                        {
-                                            "$eq":["$statusView", true]
-                                        },
-                                        then: 1, 
-                                        else: 0
-                                    } 
-                                }
-                            },
-                            datatotalclick:
-                            {
-                                "$sum": 
-                                {
-                                    "$cond": 
-                                    {
-                                        if:
-                                        {
-                                            "$eq":["$statusClick", true]
-                                        },
-                                        then: 1, 
-                                        else: 0
-                                    } 
-                                }
-                            },
+                            createdAt: "$_id",
+                            totalview: "$totalview",
+                            totalclick: "$totalclick",
+                            //totaldataharian:"$totaldata"
                         }
                     }
-                ]
-            }
-        },
-        {
-            "$project":
-            {
-                _id:1,
-                createdAt:1,
-                recordtayang:
-                {
-                    "$first":"$recordtayang"
                 }
-            }
-        },
-        {
-            "$group":
-            {
-                _id:"$createdAt",
-                totaldata:
-                {
-                    "$sum":1
-                },
-                totalview:
-                {
-                    "$sum":"$recordtayang.datatotalview"
-                },
-                totalclick:
-                {
-                    "$sum":"$recordtayang.datatotalclick"
-                },
-            }
-        },
-        {
-            "$sort":
-            {
-                _id:1
-            }
-        },
-        {
-            "$group":
-            {
-                _id:null,
-                totaldata:
-                {
-                    "$sum":"$totaldata"
-                },
-                data:
-                {
-                    "$push":
-                    {
-                        createdAt:"$_id",
-                        totalview:"$totalview",
-                        totalclick:"$totalclick",
-                        //totaldataharian:"$totaldata"
-                    }
-                }
-            }
-        });
+            });
 
         var query = await this.adsModel.aggregate(pipeline);
 
         return query;
     }
 
-    async getAdsbygender(startdate : string, enddate : string)
-    {
+    async getAdsbygender(startdate: string, enddate: string) {
         var pipeline = [];
 
-        if(startdate !== undefined && enddate !== undefined)
-        {
+        if (startdate !== undefined && enddate !== undefined) {
             var before = new Date(startdate).toISOString().split("T")[0];
             var input = new Date(enddate);
             input.setDate(input.getDate() + 1);
@@ -14993,26 +15038,25 @@ export class AdsService {
                 {
                     timestamp:
                     {
-                        "$gte":before,
-                        "$lte":today
+                        "$gte": before,
+                        "$lte": today
                     },
-                    status:"APPROVE",
+                    status: "APPROVE",
                     demografisID:
                     {
-                        "$type":"array"
+                        "$type": "array"
                     }
                 }
             },);
         }
-        else
-        {
+        else {
             pipeline.push({
                 "$match":
                 {
-                    status:"APPROVE",
+                    status: "APPROVE",
                     demografisID:
                     {
-                        "$type":"array"
+                        "$type": "array"
                     }
                 }
             },);
@@ -15021,337 +15065,337 @@ export class AdsService {
         pipeline.push({
             "$project":
             {
-                _id:1,
+                _id: 1,
                 createdAt:
                 {
                     "$substr":
-                    [
-                        "$timestamp", 0, 10
-                    ]
+                        [
+                            "$timestamp", 0, 10
+                        ]
                 },
-                demografisID:1
+                demografisID: 1
             }
         },
-        {
-            "$facet":
             {
-                // "data":
-                // [
-                //     {
-                //         "$project":
-                //         {
-                //             _id:1,
-                //             createdAt:1,
-                //             demografisID:1
-                //         }
-                //     }
-                // ],
-                "gender":
-                [
-                    {
-                        "$lookup":
-                        {
-                            "from": "userads",
-                            "as": "recordtayang",
-                            "let": {
-                                "userads_fk": "$_id"
-                            },
-                            "pipeline": 
-                            [
+                "$facet":
+                {
+                    // "data":
+                    // [
+                    //     {
+                    //         "$project":
+                    //         {
+                    //             _id:1,
+                    //             createdAt:1,
+                    //             demografisID:1
+                    //         }
+                    //     }
+                    // ],
+                    "gender":
+                        [
+                            {
+                                "$lookup":
                                 {
-                                    "$match":
-                                    {
-                                        "$expr":
-                                        {
-                                            "$eq":
-                                            [
-                                                "$adsID",
-                                                "$$userads_fk"
-                                            ]
-                                        },
-                                        "$or":
+                                    "from": "userads",
+                                    "as": "recordtayang",
+                                    "let": {
+                                        "userads_fk": "$_id"
+                                    },
+                                    "pipeline":
                                         [
                                             {
-                                                "$expr":
+                                                "$match":
                                                 {
-                                                    "$eq":
-                                                    [
-                                                        "$statusClick", true
-                                                    ]
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                            [
+                                                                "$adsID",
+                                                                "$$userads_fk"
+                                                            ]
+                                                    },
+                                                    "$or":
+                                                        [
+                                                            {
+                                                                "$expr":
+                                                                {
+                                                                    "$eq":
+                                                                        [
+                                                                            "$statusClick", true
+                                                                        ]
+                                                                }
+                                                            },
+                                                            {
+                                                                "$expr":
+                                                                {
+                                                                    "$eq":
+                                                                        [
+                                                                            "$statusView", true
+                                                                        ]
+                                                                }
+                                                            }
+                                                        ]
                                                 }
                                             },
                                             {
-                                                "$expr":
+                                                "$project":
                                                 {
-                                                    "$eq":
-                                                    [
-                                                        "$statusView", true
-                                                    ]
+                                                    _id: 1,
+                                                    userID: 1,
+                                                    statusClick: 1,
+                                                    statusView: 1,
                                                 }
                                             }
                                         ]
-                                    }
-                                },
+                                }
+                            },
+                            {
+                                '$unwind':
                                 {
-                                    "$project":
+                                    path: "$recordtayang"
+                                }
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    "from": "userbasics",
+                                    "as": "recorduser",
+                                    "let": {
+                                        "userbasic_fk": "$recordtayang.userID"
+                                    },
+                                    "pipeline":
+                                        [
+                                            {
+                                                "$match":
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                            [
+                                                                "$_id",
+                                                                "$$userbasic_fk"
+                                                            ]
+                                                    },
+                                                }
+                                            },
+                                            {
+                                                "$project":
+                                                {
+                                                    _id: 1,
+                                                    emaiL: 1,
+                                                    gender: {
+                                                        $switch: {
+                                                            branches: [
+                                                                {
+                                                                    case: {
+                                                                        $eq: ['$gender', 'FEMALE']
+                                                                    },
+                                                                    then: 'FEMALE',
+
+                                                                },
+                                                                {
+                                                                    case: {
+                                                                        $eq: ['$gender', ' FEMALE']
+                                                                    },
+                                                                    then: 'FEMALE',
+
+                                                                },
+                                                                {
+                                                                    case: {
+                                                                        $eq: ['$gender', 'Perempuan']
+                                                                    },
+                                                                    then: 'FEMALE',
+
+                                                                },
+                                                                {
+                                                                    case: {
+                                                                        $eq: ['$gender', 'Wanita']
+                                                                    },
+                                                                    then: 'FEMALE',
+
+                                                                },
+                                                                {
+                                                                    case: {
+                                                                        $eq: ['$gender', 'MALE']
+                                                                    },
+                                                                    then: 'MALE',
+
+                                                                },
+                                                                {
+                                                                    case: {
+                                                                        $eq: ['$gender', ' MALE']
+                                                                    },
+                                                                    then: 'MALE',
+
+                                                                },
+                                                                {
+                                                                    case: {
+                                                                        $eq: ['$gender', 'Laki-laki']
+                                                                    },
+                                                                    then: 'MALE',
+
+                                                                },
+                                                                {
+                                                                    case: {
+                                                                        $eq: ['$gender', 'Pria']
+                                                                    },
+                                                                    then: 'MALE',
+
+                                                                },
+
+                                                            ],
+                                                            default: "OTHER",
+                                                        },
+
+                                                    },
+                                                }
+                                            },
+                                        ]
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    recorduser: 1
+                                }
+                            },
+                            {
+                                "$group":
+                                {
+                                    _id:
                                     {
-                                        _id:1,
-                                        userID:1,
-                                        statusClick:1,
-                                        statusView:1,
+                                        "$first": "$recorduser.gender"
+                                    },
+                                    total:
+                                    {
+                                        "$sum": 1
                                     }
                                 }
-                            ]
-                        }
-                    },
-                    {
-                        '$unwind':
-                        {
-                            path:"$recordtayang"
-                        }
-                    },
-                    {
-                        "$lookup":
-                        {
-                            "from": "userbasics",
-                            "as": "recorduser",
-                            "let": {
-                                "userbasic_fk": "$recordtayang.userID"
-                            },
-                            "pipeline": 
-                            [
-                                {
-                                    "$match":
-                                    {
-                                        "$expr":
-                                        {
-                                            "$eq":
-                                            [
-                                                "$_id",
-                                                "$$userbasic_fk"
-                                            ]
-                                        },
-                                    }
-                                },
-                                {
-                                    "$project":
-                                    {
-                                        _id:1,
-                                        emaiL:1,
-                                        gender: {
-                                            $switch: {
-                                                branches: [
-                                                    {
-                                                        case: {
-                                                            $eq: ['$gender', 'FEMALE']
-                                                        },
-                                                        then: 'FEMALE',
-                                                        
-                                                    },
-                                                    {
-                                                        case: {
-                                                            $eq: ['$gender', ' FEMALE']
-                                                        },
-                                                        then: 'FEMALE',
-                                                        
-                                                    },
-                                                    {
-                                                        case: {
-                                                            $eq: ['$gender', 'Perempuan']
-                                                        },
-                                                        then: 'FEMALE',
-                                                        
-                                                    },
-                                                    {
-                                                        case: {
-                                                            $eq: ['$gender', 'Wanita']
-                                                        },
-                                                        then: 'FEMALE',
-                                                        
-                                                    },
-                                                    {
-                                                        case: {
-                                                            $eq: ['$gender', 'MALE']
-                                                        },
-                                                        then: 'MALE',
-                                                        
-                                                    },
-                                                    {
-                                                        case: {
-                                                            $eq: ['$gender', ' MALE']
-                                                        },
-                                                        then: 'MALE',
-                                                        
-                                                    },
-                                                    {
-                                                        case: {
-                                                            $eq: ['$gender', 'Laki-laki']
-                                                        },
-                                                        then: 'MALE',
-                                                        
-                                                    },
-                                                    {
-                                                        case: {
-                                                            $eq: ['$gender', 'Pria']
-                                                        },
-                                                        then: 'MALE',
-                                                        
-                                                    },
-                                                    
-                                                ],
-                                                default: "OTHER",    
-                                            },
-                                                      
-                                        },
-                                    }
-                                },
-                            ]
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            recorduser:1
-                        }
-                    },
-                    {
-                        "$group":
-                        {
-                            _id:
-                            {
-                                "$first":"$recorduser.gender"
-                            },
-                            total:
-                            {
-                                "$sum":1
                             }
-                        }
-                    }
-                ],
-                "area":
-                [
-                    {
-                        "$unwind":
-                        {
-                            path:"$demografisID"
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            demografisID:1
-                        }
-                    },
-                    {
-                        "$group":
-                        {
-                            _id:"$demografisID.$id",
-                            total:
+                        ],
+                    "area":
+                        [
                             {
-                                "$sum":1
-                            },
-                        }
-                    },
-                    {
-                        "$lookup":
-                        {
-                            "from": "areas",
-                            "as": "listdaerah",
-                            "let": {
-                                "area_fk": "$_id"
-                            },
-                            "pipeline": 
-                            [
+                                "$unwind":
                                 {
-                                    "$match":
+                                    path: "$demografisID"
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    demografisID: 1
+                                }
+                            },
+                            {
+                                "$group":
+                                {
+                                    _id: "$demografisID.$id",
+                                    total:
                                     {
-                                        "$expr":
+                                        "$sum": 1
+                                    },
+                                }
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    "from": "areas",
+                                    "as": "listdaerah",
+                                    "let": {
+                                        "area_fk": "$_id"
+                                    },
+                                    "pipeline":
+                                        [
+                                            {
+                                                "$match":
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq": ["$_id", "$$area_fk"]
+                                                    }
+                                                }
+                                            },
+                                        ]
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    _id:
+                                    {
+                                        "$first": "$listdaerah.stateName"
+                                    },
+                                    total: 1,
+                                }
+                            },
+                            {
+                                "$group":
+                                {
+                                    _id: null,
+                                    totaldata:
+                                    {
+                                        "$sum": "$total"
+                                    },
+                                    data:
+                                    {
+                                        "$push":
                                         {
-                                            "$eq":["$_id", "$$area_fk"]
+                                            _id: "$_id",
+                                            total: "$total"
                                         }
                                     }
-                                },
-                            ]
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            _id:
-                            {
-                                "$first":"$listdaerah.stateName"
+                                }
                             },
-                            total:1,
-                        }
-                    },
-                    {
-                        "$group":
-                        {
-                            _id:null,
-                            totaldata:
                             {
-                                "$sum":"$total"
-                            },
-                            data:
-                            {
-                                "$push":
+                                "$unwind":
                                 {
-                                    _id:"$_id",
-                                    total:"$total"
+                                    path: "$data"
+                                }
+                            },
+                            {
+                                "$sort":
+                                {
+                                    _id: 1
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    _id: "$data._id",
+                                    //total:{}"$data.total",
+                                    persentase:
+                                    {
+                                        "$multiply":
+                                            [
+                                                {
+                                                    "$divide":
+                                                        [
+                                                            "$data.total", "$totaldata"
+                                                        ]
+                                                }, 100
+                                            ]
+                                    }
+                                }
+                            },
+                            {
+                                "$group":
+                                {
+                                    _id: "$_id",
+                                    persentase:
+                                    {
+                                        "$first": "$persentase"
+                                    }
+                                }
+                            },
+                            {
+                                "$sort":
+                                {
+                                    _id: 1
                                 }
                             }
-                        }
-                    },
-                    {
-                        "$unwind":
-                        {
-                            path:"$data"
-                        }
-                    },
-                    {
-                        "$sort":
-                        {
-                            _id:1
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            _id:"$data._id",
-                            //total:{}"$data.total",
-                            persentase:
-                            {
-                                "$multiply":
-                                [
-                                    {
-                                        "$divide":
-                                        [
-                                            "$data.total", "$totaldata"
-                                        ]
-                                    }, 100
-                                ]
-                            }
-                        }
-                    },
-                    {
-                        "$group":
-                        {
-                            _id:"$_id",
-                            persentase:
-                            {
-                                "$first":"$persentase"
-                            }
-                        }
-                    },
-                    {
-                        "$sort":
-                        {
-                            _id:1
-                        }
-                    }
-                ]
-            }
-        });
+                        ]
+                }
+            });
 
         var query = await this.adsModel.aggregate(pipeline);
 
