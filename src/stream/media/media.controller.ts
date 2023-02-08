@@ -363,12 +363,13 @@ export class MediaController {
             if (files.cardPict != undefined) {
                 cardPict_filename = files.cardPict[0].originalname;
                 //cardPict_etx = cardPict_filename.substring(cardPict_filename.lastIndexOf('.'), cardPict_filename.length);
-                var textSplit = cardPict_filename.split('.');
-                if (textSplit.length == 2) {
-                    cardPict_etx = textSplit[1];
-                } else {
-                    cardPict_etx = textSplit[textSplit.length - 1];
-                }
+                // var textSplit = cardPict_filename.split('.');
+                // if (textSplit.length == 2) {
+                //     cardPict_etx = textSplit[1];
+                // } else {
+                //     cardPict_etx = textSplit[textSplit.length - 1];
+                // }
+                cardPict_etx = '.jpeg';
                 cardPict_filename_new = iduserbasic + cardPict_etx;
                 cardPict_mimetype = files.cardPict[0].mimetype;
 
@@ -427,12 +428,13 @@ export class MediaController {
             if (files.selfiepict != undefined) {
                 selfiepict_filename = files.selfiepict[0].originalname;
                 //selfiepict_etx = selfiepict_filename.substring(selfiepict_filename.lastIndexOf('.'), selfiepict_filename.length);
-                var textSplit = selfiepict_filename.split('.');
-                if (textSplit.length == 2) {
-                    selfiepict_etx = textSplit[1];
-                } else {
-                    selfiepict_etx = textSplit[textSplit.length-1];
-                }
+                // var textSplit = selfiepict_filename.split('.');
+                // if (textSplit.length == 2) {
+                //     selfiepict_etx = textSplit[1];
+                // } else {
+                //     selfiepict_etx = textSplit[textSplit.length-1];
+                // }
+                selfiepict_etx = '.jpeg';
                 selfiepict_filename_new = iduserbasic + selfiepict_etx;
                 selfiepict_mimetype = files.selfiepict[0].mimetype;
 

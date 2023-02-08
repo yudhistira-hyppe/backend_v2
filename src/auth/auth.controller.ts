@@ -3386,13 +3386,14 @@ export class AuthController {
 
         var originalName = files.profilePict[0].originalname;
         //var extension = originalName.substring(originalName.lastIndexOf('.'), originalName.length);
-        var textSplit = originalName.split('.');
-        var extension = '.jpg';
-        if (textSplit.length == 2) {
-          extension = textSplit[1];
-        } else {
-          extension = textSplit[textSplit.length - 1];
-        }
+        // var textSplit = originalName.split('.');
+        // var extension = '.jpg';
+        // if (textSplit.length == 2) {
+        //   extension = textSplit[1];
+        // } else {
+        //   extension = textSplit[textSplit.length - 1];
+        // }
+        var extension = '.jpeg';
         var userId = datauserbasicsService._id.toString();
         var fileName = userId + extension;
         var mimetype = files.profilePict[0].mimetype;
