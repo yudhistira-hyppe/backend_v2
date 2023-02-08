@@ -15579,7 +15579,7 @@ export class AdsService {
         if(page > 0)
         {
             pipeline.push({
-                "$skip":(limit * (page - 1))
+                "$skip":(limit * page)
             });
         }
 
