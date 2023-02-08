@@ -353,6 +353,7 @@ export class MediaController {
         const datauserbasicsService = await this.userbasicsService.findOne(
             headers['x-auth-user'],
         );
+        var re = /(?:\.([^.]+))?$/;
 
         if (await this.utilsService.ceckData(datauserbasicsService)) {
             emailuserbasic = datauserbasicsService.email;
@@ -361,7 +362,8 @@ export class MediaController {
             //Ceck cardPict
             if (files.cardPict != undefined) {
                 cardPict_filename = files.cardPict[0].originalname;
-                cardPict_etx = cardPict_filename.substring(cardPict_filename.lastIndexOf('.'), cardPict_filename.length);
+                //cardPict_etx = cardPict_filename.substring(cardPict_filename.lastIndexOf('.'), cardPict_filename.length);
+                cardPict_etx = re.exec(cardPict_filename)[1];
                 cardPict_filename_new = iduserbasic + "." + cardPict_etx;
                 cardPict_mimetype = files.cardPict[0].mimetype;
 
@@ -419,7 +421,8 @@ export class MediaController {
             //Ceck selfiepict
             if (files.selfiepict != undefined) {
                 selfiepict_filename = files.selfiepict[0].originalname;
-                selfiepict_etx = selfiepict_filename.substring(selfiepict_filename.lastIndexOf('.'), selfiepict_filename.length);
+                //selfiepict_etx = selfiepict_filename.substring(selfiepict_filename.lastIndexOf('.'), selfiepict_filename.length);
+                selfiepict_etx = re.exec(selfiepict_filename)[1];
                 selfiepict_filename_new = iduserbasic + "." + selfiepict_etx;
                 selfiepict_mimetype = files.selfiepict[0].mimetype;
 

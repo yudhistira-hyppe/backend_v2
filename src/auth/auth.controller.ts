@@ -3375,6 +3375,8 @@ export class AuthController {
       headers['x-auth-user'],
     );
 
+    var re = /(?:\.([^.]+))?$/;
+
     var current_date = await this.utilsService.getDateTimeString();
     var id_mediaprofilepicts = await this.utilsService.generateId();
     var createMediaproofpictsDto = new CreateMediaprofilepictsDto();
@@ -3383,9 +3385,13 @@ export class AuthController {
       if (files.profilePict != undefined) {
 
         var originalName = files.profilePict[0].originalname;
-        var extension = originalName.substring(originalName.lastIndexOf('.'), originalName.length);
+        console.log(originalName);
+        //var extension = originalName.substring(originalName.lastIndexOf('.'), originalName.length);
+        var extension = re.exec(originalName)[1];
+        console.log(extension);
         var userId = datauserbasicsService._id.toString();
-        var fileName = userId +"."+extension;
+        var fileName = userId + "." + extension;
+        console.log(fileName);
         var mimetype = files.profilePict[0].mimetype;
 
         var result = await this.ossService.uploadFile(files.profilePict[0], userId + "/profilePict/" + fileName);
