@@ -3926,7 +3926,7 @@ export class TransactionsController {
                     "paymentmethode": namamethode,
                     "amount": amounts,
                     "totalamount": databuy[0].totalamount,
-                    "adminFee": nominalmradmin,
+                    // "adminFee": nominalmradmin,
                     "serviceFee": valuevacharge,
                     "status": databuy[0].status,
                     "fullName": databuy[0].fullName,
@@ -4275,7 +4275,7 @@ export class TransactionsController {
                     "paymentmethode": namamethode,
                     "amount": amounts,
                     "totalamount": databuy[0].totalamount,
-                    "adminFee": nominalmradmin,
+                    // "adminFee": nominalmradmin,
                     "serviceFee": valuevacharge,
                     "status": databuy[0].status,
                     "fullName": databuy[0].fullName,
@@ -4625,7 +4625,7 @@ export class TransactionsController {
                     "paymentmethode": namamethode,
                     "amount": amounts,
                     "totalamount": databuy[0].totalamount,
-                    "adminFee": nominalmradmin,
+                    // "adminFee": nominalmradmin,
                     "serviceFee": valuevacharge,
                     "status": databuy[0].status,
                     "fullName": databuy[0].fullName,
@@ -4917,7 +4917,7 @@ export class TransactionsController {
                     "paymentmethode": namamethode,
                     "amount": amounts,
                     "totalamount": databuy[0].totalamount,
-                    "adminFee": nominalmradmin,
+                    //"adminFee": nominalmradmin,
                     "serviceFee": valuevacharge,
                     "status": databuy[0].status,
                     "fullName": userdata[0].fullName,
@@ -8122,85 +8122,77 @@ export class TransactionsController {
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
 
-  @Post('api/transactions/vouchersellchart')
-  @UseGuards(JwtAuthGuard)
-  async getVoucherSellChartBasedDate(@Req() request: Request): Promise<any> {
-    var data = null;
-    var date = null;
-    var idusersell = null;
+    @Post('api/transactions/vouchersellchart')
+    @UseGuards(JwtAuthGuard)
+    async getVoucherSellChartBasedDate(@Req() request: Request): Promise<any> {
+        var data = null;
+        var date = null;
+        var idusersell = null;
 
-    const messages = {
-      "info": ["The process successful"],
-  };
+        const messages = {
+            "info": ["The process successful"],
+        };
 
-  var request_json = JSON.parse(JSON.stringify(request.body));
-  if (request_json["date"] !== undefined) 
-  {
-    date = request_json["date"];
-  } 
-  else 
-  {
-    throw new BadRequestException("Unabled to proceed");
-  }
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["date"] !== undefined) {
+            date = request_json["date"];
+        }
+        else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
-  if (request_json["idusersell"] !== undefined) 
-  {
-    idusersell = request_json["idusersell"];
-  } 
-  else 
-  {
-    throw new BadRequestException("Unabled to proceed");
-  }
+        if (request_json["idusersell"] !== undefined) {
+            idusersell = request_json["idusersell"];
+        }
+        else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
-  var tempdata = await this.transactionsService.getVoucherSellChartByDate(idusersell, date);
-  //console.log(tempdata);
-  var getdata = [];
-  try
-  {
-    getdata = tempdata[0].resultdata;
-  }
-  catch(e)
-  {
-    getdata = [];
-  }
+        var tempdata = await this.transactionsService.getVoucherSellChartByDate(idusersell, date);
+        //console.log(tempdata);
+        var getdata = [];
+        try {
+            getdata = tempdata[0].resultdata;
+        }
+        catch (e) {
+            getdata = [];
+        }
 
-  var startdate = new Date(date);
-  startdate.setDate(startdate.getDate() - 1);
-  var tempdate = new Date(startdate).toISOString().split("T")[0];
-  var end = new Date().toISOString().split("T")[0];
-  var array = [];
-  
-  //kalo lama, berarti error disini!!
-  while(tempdate != end)
-  {
-    var temp = new Date(tempdate);
-    temp.setDate(temp.getDate() + 1);
-    tempdate = new Date(temp).toISOString().split("T")[0];
-    //console.log(tempdate);
-  
-    let obj = getdata.find(objs => objs._id === tempdate);
-    //console.log(obj);
-    if(obj == undefined)
-    {
-      obj = 
-      {
-        _id : tempdate,
-        totaldata : 0,
-        totalpenjualanperhari:0
-      }
+        var startdate = new Date(date);
+        startdate.setDate(startdate.getDate() - 1);
+        var tempdate = new Date(startdate).toISOString().split("T")[0];
+        var end = new Date().toISOString().split("T")[0];
+        var array = [];
+
+        //kalo lama, berarti error disini!!
+        while (tempdate != end) {
+            var temp = new Date(tempdate);
+            temp.setDate(temp.getDate() + 1);
+            tempdate = new Date(temp).toISOString().split("T")[0];
+            //console.log(tempdate);
+
+            let obj = getdata.find(objs => objs._id === tempdate);
+            //console.log(obj);
+            if (obj == undefined) {
+                obj =
+                {
+                    _id: tempdate,
+                    totaldata: 0,
+                    totalpenjualanperhari: 0
+                }
+            }
+
+            array.push(obj);
+        }
+
+        data =
+        {
+            data: array,
+            total: (getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
+        }
+
+        return { response_code: 202, messages, data };
     }
-    
-    array.push(obj);
-  }      
-
-  data = 
-  {
-    data:array,
-    total:(getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
-  }
-
-  return { response_code: 202, messages, data };
-  } 
 
 }
 

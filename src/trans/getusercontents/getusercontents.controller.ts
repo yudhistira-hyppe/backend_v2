@@ -1745,7 +1745,12 @@ export class GetusercontentsController {
 
             try {
                 dataage = datadetail[0].age;
-                lengage = dataage.length;
+                if (dataage[0]._id == "other" && dataage[0].count == 1) {
+                    lengage = 0;
+                } else {
+                    lengage = dataage.length;
+                }
+
             } catch (e) {
                 lengage = 0;
             }
@@ -1781,7 +1786,11 @@ export class GetusercontentsController {
 
             try {
                 datagender = datadetail[0].gender;
-                lenggender = datagender.length;
+                if (datagender[0]._id == "OTHER" && datagender[0].count == 1) {
+                    lenggender = 0;
+                } else {
+                    lenggender = datagender.length;
+                }
             } catch (e) {
                 lenggender = 0;
             }
@@ -1801,11 +1810,17 @@ export class GetusercontentsController {
                 for (let i = 0; i < lenggender; i++) {
                     let count = datagender[i].count;
                     let id = datagender[i]._id;
+                    let idgender = null;
+                    if (id == null) {
+                        idgender = "OTHER";
+                    } else {
+                        idgender = id;
+                    }
 
 
                     let persen = count * 100 / sumgender;
                     objcoungender = {
-                        _id: id,
+                        _id: idgender,
                         count: count,
                         persen: persen.toFixed(2)
                     }
