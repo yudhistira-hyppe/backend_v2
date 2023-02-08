@@ -93,7 +93,7 @@ export class AdsUserCompareController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('/getads/user/v2/') 
+    @Get('/getads/user/v2/')
     @HttpCode(HttpStatus.ACCEPTED)
     async getads(@Headers() headers,
         @Query('type') type: string): Promise<any> {
@@ -139,7 +139,7 @@ export class AdsUserCompareController {
                 'Unabled to proceed Ads not found'
             );
         }
-        
+
         var get_profilePict = null;
         const data_userbasic_ads = await this.userbasicsService.findbyid(data_ads.userID.toString());
         if (data_userbasic_ads.profilePict != undefined) {
@@ -156,7 +156,7 @@ export class AdsUserCompareController {
         data_response['idUser'] = data_userbasic_ads._id.toString();
         data_response['fullName'] = data_userbasic_ads.fullName;
         data_response['email'] = data_userbasic_ads.email;
-        
+
         // data_response['avartar'].mediaBasePath = (get_profilePict.mediaBasePath != undefined) ? get_profilePict.mediaBasePath : null;
         // data_response['avartar'].mediaUri = (get_profilePict.mediaUri != undefined) ? get_profilePict.mediaUri : null;
         // data_response['avartar'].mediaType = (get_profilePict.mediaType != undefined) ? get_profilePict.mediaType : null;
@@ -170,7 +170,7 @@ export class AdsUserCompareController {
                 mediaEndpoint: (get_profilePict.mediaID != undefined) ? '/profilepict/' + get_profilePict.mediaID : null,
             }
         }
-        
+
         var dataPlace = await this.adsplacesService.findOne(data_ads.placingID.toString());
         if (await this.utilsService.ceckData(dataPlace)) {
             data_response['adsPlace'] = dataPlace.namePlace;
@@ -181,7 +181,7 @@ export class AdsUserCompareController {
         data_response['videoId'] = data_ads.idApsara;
         data_response['duration'] = data_ads.duration;
         this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, The process successfuly : " + JSON.stringify(data_response));
-        
+
         return {
             "response_code": 202,
             "data": data_response,
@@ -225,13 +225,13 @@ export class AdsUserCompareController {
         }
 
         var current_date = await this.utilsService.getDateTimeString();
-        const data_ads = await this.adsService.findAds(headers['x-auth-user'],type_);
+        const data_ads = await this.adsService.findAds(headers['x-auth-user'], type_);
         console.log(data_ads);
         var genIdUserAds = new mongoose.Types.ObjectId();
-        if (await this.utilsService.ceckData(data_ads)){
+        if (await this.utilsService.ceckData(data_ads)) {
 
             var ceckData = await this.userAdsService.findAdsIDUserID(data_ads[0].userID.toString(), data_ads[0].adsId.toString());
-            if (!(await this.utilsService.ceckData(ceckData))){
+            if (!(await this.utilsService.ceckData(ceckData))) {
                 var CreateUserAdsDto_ = new CreateUserAdsDto();
                 try {
                     CreateUserAdsDto_._id = genIdUserAds;
@@ -305,7 +305,7 @@ export class AdsUserCompareController {
                     ]
                 }
             };
-        }else{
+        } else {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Ads not found'
             );
@@ -538,7 +538,7 @@ export class AdsUserCompareController {
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, AdsSkip : " + AdsSkip.toString());
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, watching_time : " + watching_time.toString());
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, rewards : " + rewards.toString());
-                                if (userAds_liveTypeuserads){
+                                if (userAds_liveTypeuserads) {
                                     if ((userID != null) && (adsID != null)) {
                                         const ceck_rewars = await this.userAdsService.findUserAdsRewars(userID, adsID, AdsSkip);
                                         if (await this.utilsService.ceckData(ceck_rewars)) {
@@ -564,10 +564,10 @@ export class AdsUserCompareController {
                             }
                         }
 
-                        if (ads_totalView == ads_tayang){
+                        if (ads_totalView == ads_tayang) {
                             adsStatus = false;
                         }
-                        
+
                         //Update userads
                         try {
                             var CreateUserAdsDto_ = new CreateUserAdsDto();
@@ -575,8 +575,8 @@ export class AdsUserCompareController {
                             CreateUserAdsDto_.clickAt = current_date;
                             if (userAds_liveTypeuserads) {
                                 CreateUserAdsDto_.viewed = 1;
-                            }else{
-                                CreateUserAdsDto_.viewed = userAds_viewed+1;
+                            } else {
+                                CreateUserAdsDto_.viewed = userAds_viewed + 1;
                             }
                             CreateUserAdsDto_.timeViewSecond = watching_time;
                             await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
@@ -632,7 +632,7 @@ export class AdsUserCompareController {
                                 // );
                             }
 
-                            try{
+                            try {
                                 // var titleinsukses = "Reward";
                                 // var titleensukses = "Reward";
                                 // var bodyinsukses = "Selamat kamu mendapatkan reward Rp." + ads_rewards;
@@ -646,7 +646,7 @@ export class AdsUserCompareController {
                                 console.log('Unabled to proceed, ' + e);
                             }
                         }
-                    }else{
+                    } else {
                         //Update userads
                         try {
                             var CreateUserAdsDto_ = new CreateUserAdsDto();
@@ -777,8 +777,8 @@ export class AdsUserCompareController {
             var credit_view = data_adstypesService.creditValue;
             var AdsSkip = data_adstypesService.AdsSkip;
             var ads_rewards = data_adstypesService.rewards;
-            
-            var userAds_liveTypeuserads = (data_userAdsService.liveTypeuserads != undefined) ? data_userAdsService.liveTypeuserads:false;
+
+            var userAds_liveTypeuserads = (data_userAdsService.liveTypeuserads != undefined) ? data_userAdsService.liveTypeuserads : false;
             var userAds_statusView = (data_userAdsService.statusView != undefined) ? data_userAdsService.statusView : false;
             var userAds_statusClick = (data_userAdsService.statusClick != undefined) ? data_userAdsService.statusClick : false;
             var userAds_timeViewSecond = (data_userAdsService.timeViewSecond != undefined) ? data_userAdsService.timeViewSecond : null;
@@ -1049,7 +1049,7 @@ export class AdsUserCompareController {
             };
             CreateAdsDto_.userID = Ads_data.userID;
             CreateAdsDto_.liveAt = Ads_data.liveAt;
-            await this.adsUserCompareService.createUserAds(CreateAdsDto_);
+            //await this.adsUserCompareService.createUserAds(CreateAdsDto_);
         } else {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Ads not found',

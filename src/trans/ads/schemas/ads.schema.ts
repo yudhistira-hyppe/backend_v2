@@ -46,7 +46,7 @@ export class Ads {
     @Prop()
     expiredAt: string;
     @Prop()
-    gender: string;
+    gender: any[];
     @Prop()
     liveAt: string;
     @Prop()

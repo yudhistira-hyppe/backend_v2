@@ -17,7 +17,7 @@ export class CreateAdsDto {
     placingID: { oid: String; };
     description: string;
     expiredAt: string;
-    gender: string;
+    gender: any[];
     liveAt: string;
     name: string;
     objectifitas: string;

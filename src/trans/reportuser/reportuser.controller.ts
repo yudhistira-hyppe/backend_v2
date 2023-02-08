@@ -21,6 +21,7 @@ import { MediaproofpictsService } from '../../content/mediaproofpicts/mediaproof
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 import { UtilsService } from '../../utils/utils.service';
 import { GetusercontentsService } from '../getusercontents/getusercontents.service';
+import { UserbankaccountsService } from '../userbankaccounts/userbankaccounts.service';
 @Controller('api/reportuser')
 export class ReportuserController {
 
@@ -39,6 +40,7 @@ export class ReportuserController {
         private readonly userticketsService: UserticketsService,
         private readonly mediaproofpictsService: MediaproofpictsService,
         private readonly getusercontentsService: GetusercontentsService,
+        private readonly userbankaccountsService: UserbankaccountsService,
     ) { }
     @UseGuards(JwtAuthGuard)
     @Get('all')
@@ -2065,6 +2067,88 @@ export class ReportuserController {
         var arrDataAdsModeration = [];
         var lengkyc = null;
         var persen = null;
+
+        var dataappealbank = null;
+        var objappealBank = {}
+        var arrDataBankAppeal = [];
+        var sumAppealBank = null;
+        var lengappealbank = 0;
+
+        try {
+
+            dataappealbank = await this.userbankaccountsService.countAppealakunbank(startdate, enddate);
+            lengappealbank = dataappealbank.length;
+
+        } catch (e) {
+            dataappealbank = null;
+            lengappealbank = 0;
+
+        }
+
+        if (lengappealbank > 0) {
+
+            for (let i = 0; i < lengappealbank; i++) {
+                sumAppealBank += dataappealbank[i].myCount;
+
+            }
+
+        } else {
+            sumAppealBank = 0;
+        }
+        if (lengappealbank > 0) {
+
+
+            for (let i = 0; i < lengappealbank; i++) {
+                let count = dataappealbank[i].myCount;
+                let id = dataappealbank[i]._id;
+                persen = count * 100 / sumAppealBank;
+
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "red"
+                    };
+                    arrDataBankAppeal.push(objbaru);
+                }
+                let objkyc = {}
+                if (id === "DITOLAK") {
+                    objkyc = {
+                        "_id": "DITOLAK",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataBankAppeal.push(objkyc);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "DISETUJUI") {
+                    objtidakditangguhkan = {
+                        "_id": "DISETUJUI",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#71A500D9"
+                    };
+                    arrDataBankAppeal.push(objtidakditangguhkan);
+                }
+
+            }
+        } else {
+            arrDataBankAppeal = [];
+        }
+        var appealAkunBank = null;
+
+        appealAkunBank = {
+            appealAkunBank: [{
+                totalReport: sumAppealBank,
+                data: arrDataBankAppeal
+            }
+            ],
+        };
+
+
         try {
 
             datacontentreport = await this.postsService.countReportStatus(startdate, enddate);
@@ -2738,7 +2822,7 @@ export class ReportuserController {
             ],
         };
 
-        return { response_code: 202, content, ads, userticket, kyc, messages };
+        return { response_code: 202, content, ads, userticket, kyc, appealAkunBank, messages };
 
 
 
@@ -2808,8 +2892,8 @@ export class ReportuserController {
                 } else {
                     messages_data = "Detects Moderation Content in a Hyppe" + post.postType.toString();
                 }
-                if (post.contentModeration){
-                    if (post.moderationReason!=undefined){
+                if (post.contentModeration) {
+                    if (post.moderationReason != undefined) {
                         data = {
                             "_id": messages_data,
                             "myCount": 1
