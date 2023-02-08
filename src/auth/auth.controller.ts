@@ -3385,13 +3385,16 @@ export class AuthController {
       if (files.profilePict != undefined) {
 
         var originalName = files.profilePict[0].originalname;
-        console.log(originalName);
         //var extension = originalName.substring(originalName.lastIndexOf('.'), originalName.length);
-        var extension = re.exec(originalName)[1];
-        console.log(extension);
+        var textSplit = originalName.split('.');
+        var extension = '.jpg';
+        if (textSplit.length == 2) {
+          extension = textSplit[1];
+        } else {
+          extension = textSplit[textSplit.length - 1];
+        }
         var userId = datauserbasicsService._id.toString();
-        var fileName = userId + "." + extension;
-        console.log(fileName);
+        var fileName = userId + extension;
         var mimetype = files.profilePict[0].mimetype;
 
         var result = await this.ossService.uploadFile(files.profilePict[0], userId + "/profilePict/" + fileName);
