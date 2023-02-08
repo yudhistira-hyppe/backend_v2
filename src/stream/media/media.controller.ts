@@ -362,7 +362,7 @@ export class MediaController {
             if (files.cardPict != undefined) {
                 cardPict_filename = files.cardPict[0].originalname;
                 cardPict_etx = cardPict_filename.substring(cardPict_filename.lastIndexOf('.'), cardPict_filename.length);
-                cardPict_filename_new = iduserbasic + cardPict_etx;
+                cardPict_filename_new = iduserbasic + "." + cardPict_etx;
                 cardPict_mimetype = files.cardPict[0].mimetype;
 
                 var result = await this.ossService.uploadFile(files.cardPict[0], iduserbasic + "/kyc/proofpict/" + cardPict_filename_new);
@@ -420,7 +420,7 @@ export class MediaController {
             if (files.selfiepict != undefined) {
                 selfiepict_filename = files.selfiepict[0].originalname;
                 selfiepict_etx = selfiepict_filename.substring(selfiepict_filename.lastIndexOf('.'), selfiepict_filename.length);
-                selfiepict_filename_new = iduserbasic + selfiepict_etx;
+                selfiepict_filename_new = iduserbasic + "." + selfiepict_etx;
                 selfiepict_mimetype = files.selfiepict[0].mimetype;
 
                 var result = await this.ossService.uploadFile(files.selfiepict[0], iduserbasic + "/kyc/selfiepict/" + selfiepict_filename_new);

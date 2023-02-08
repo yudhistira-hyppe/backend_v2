@@ -3385,7 +3385,7 @@ export class AuthController {
         var originalName = files.profilePict[0].originalname;
         var extension = originalName.substring(originalName.lastIndexOf('.'), originalName.length);
         var userId = datauserbasicsService._id.toString();
-        var fileName = userId + extension;
+        var fileName = userId +"."+extension;
         var mimetype = files.profilePict[0].mimetype;
 
         var result = await this.ossService.uploadFile(files.profilePict[0], userId + "/profilePict/" + fileName);
