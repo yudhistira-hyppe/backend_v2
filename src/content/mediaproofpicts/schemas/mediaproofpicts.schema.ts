@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { String } from 'aws-sdk/clients/codeguruprofiler';
 import mongoose, { Document } from 'mongoose';
 
 export type MediaproofpictsDocument = Mediaproofpicts & Document;
@@ -35,6 +36,8 @@ export class Mediaproofpicts {
   fsTargetUri: String
   @Prop()
   mediaMime: String
+  @Prop()
+  proofpictUploadSource: String;
   @Prop() nama: String
   @Prop() tempatLahir: String
   @Prop() tglLahir: String;
@@ -52,6 +55,8 @@ export class Mediaproofpicts {
   @Prop() SelfiefsSourceName: String
   @Prop() SelfiefsTargetUri: String
   @Prop() SelfiemediaMime: String;
+  @Prop()
+  SelfieUploadSource: String;
 
   @Prop() mediaSupportType: String;
   @Prop() mediaSupportBasePath: String;

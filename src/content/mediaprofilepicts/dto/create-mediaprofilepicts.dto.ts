@@ -1,19 +1,20 @@
 export class CreateMediaprofilepictsDto {
   
 
-    readonly _id: String;
-    readonly mediaID: String;
-    readonly active: boolean;
-    readonly createdAt: String;
-    readonly updatedAt: String;
-    readonly postType: String;
-    readonly mediaType: String;
-    readonly mediaBasePath: String;
-    readonly mediaUri: String;
-    readonly originalName: String;
-    readonly fsSourceUri: String;
-    readonly fsSourceName: String;
-    readonly fsTargetUri: String;
-    readonly mediaMime: String;
-    readonly _class:String;
+     _id: String;
+     mediaID: String;
+     active: boolean;
+     createdAt: String;
+     updatedAt: String;
+     postType: String;
+     mediaType: String;
+     mediaBasePath: String;
+     mediaUri: String;
+     originalName: String;
+     fsSourceUri: String;
+     fsSourceName: String;
+     fsTargetUri: String;
+    mediaMime: String;
+    uploadSource: String;
+     _class:String;
   }

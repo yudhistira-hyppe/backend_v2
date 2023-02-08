@@ -20,6 +20,7 @@ import { UserauthsService } from "../../trans/userauths/userauths.service";
 import { CreateMediaprofilepictsDto } from "src/content/mediaprofilepicts/dto/create-mediaprofilepicts.dto";
 import { Mediaprofilepicts } from "src/content/mediaprofilepicts/schemas/mediaprofilepicts.schema";
 import { ContenteventsService } from "../../content/contentevents/contentevents.service";
+import { OssService } from "../oss/oss.service";
 
 //import FormData from "form-data";
 const multer = require('multer');
@@ -65,8 +66,9 @@ export class MediaController {
     constructor(
         private readonly contenteventsService: ContenteventsService,
         private readonly mediaService: MediaService,
-        private readonly errorHandler: ErrorHandler,
+        private readonly errorHandler: ErrorHandler, 
         private readonly awsService: AwsService,
+        private readonly ossService: OssService,
         private readonly utilsService: UtilsService,
         private readonly settingsService: SettingsService,
         private readonly mediaproofpictsService: MediaproofpictsService,
@@ -76,7 +78,7 @@ export class MediaController {
         private readonly seaweedfsService: SeaweedfsService) { }
 
     @UseGuards(JwtAuthGuard)
-    @Post('api/posts/profilepicture')
+    @Post('api/posts/v1/profilepicture')
     @UseInterceptors(FileFieldsInterceptor([{ name: 'profilePict', maxCount: 1 }, { name: 'proofPict', maxCount: 1, }], multerOptions))
     async uploadcomparing(
         @UploadedFiles() files: {
@@ -282,8 +284,471 @@ export class MediaController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('api/posts/verificationid')
-    @UseInterceptors(FileFieldsInterceptor([{ name: 'cardPict', maxCount: 1 }, { name: 'selfiepict', maxCount: 1, }], multerOptions))
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'cardPict', maxCount: 1 }, { name: 'selfiepict', maxCount: 1, }]))
     async uploadcomparingid(
+        @UploadedFiles() files: {
+            cardPict?: Express.Multer.File[],
+            selfiepict?: Express.Multer.File[]
+        },
+        @Body() CreateMediaproofpictsDto_: CreateMediaproofpictsDto,
+        @Headers() headers) {
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed token and email not match',
+            );
+        }
+        if (CreateMediaproofpictsDto_.idcardnumber == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed idcardnumber is required',
+            );
+        } else {
+            if (CreateMediaproofpictsDto_.idcardnumber.length < 16) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed idcardnumber must length 16 digit',
+                );
+            }
+        }
+        if (headers['x-auth-token'] == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed email is required',
+            );
+        }
+        var listAddKyc = [];
+        //Var cardPict
+        let cardPict_filename = '';
+        let cardPict_etx = '';
+        let cardPict_mimetype = '';
+        let cardPict_filename_new = '';
+        let url_cardPict = '';
+
+        //Var selfiepict
+        let selfiepict_filename = '';
+        let selfiepict_etx = '';
+        let selfiepict_mimetype = '';
+        let selfiepict_filename_new = '';
+        let url_selfiepict = '';
+
+        //Var buffer
+        let buffer_cardPict = null;
+        let buffer_selfiepict = null;
+
+        //Var response facedetect
+        let face_detect_cardPict = null;
+        let face_detect_selfiepict = null;
+
+        let id_mediaproofpicts_ = null;
+        let iduserbasic = null;
+        let emailuserbasic = null;
+
+        //Var current date
+        var current_date = await this.utilsService.getDateTimeString();
+
+        //Var generate id
+        var IdMediaproofpictsDto = await this.utilsService.generateId();
+
+        //Get Setting Similarity
+        var Similarity = await (await this.settingsService.findOneByJenis('Similarity')).value;
+
+        //Ceck User Userbasics
+        const datauserbasicsService = await this.userbasicsService.findOne(
+            headers['x-auth-user'],
+        );
+
+        if (await this.utilsService.ceckData(datauserbasicsService)) {
+            emailuserbasic = datauserbasicsService.email;
+            iduserbasic = datauserbasicsService._id.toString();
+
+            //Ceck cardPict
+            if (files.cardPict != undefined) {
+                cardPict_filename = files.cardPict[0].originalname;
+                cardPict_etx = cardPict_filename.substring(cardPict_filename.lastIndexOf('.'), cardPict_filename.length);
+                cardPict_filename_new = iduserbasic + cardPict_etx;
+                cardPict_mimetype = files.cardPict[0].mimetype;
+
+                var result = await this.ossService.uploadFile(files.cardPict[0], iduserbasic + "/kyc/proofpict/" + cardPict_filename_new);
+                if (result != undefined) {
+                    if (result.res != undefined) {
+                        if (result.res.statusCode != undefined) {
+                            if (result.res.statusCode == 200) {
+                                url_cardPict = result.res.requestUrls[0];
+                            } else {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed cardPict failed upload',
+                                );
+                            }
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed cardPict failed upload',
+                            );
+                        }
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed cardPict failed upload',
+                        );
+                    }
+                }else{
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed cardPict failed upload',
+                    );
+                }
+
+                //AWS face detect proofpict
+                try {
+                    //Create Buffer
+                    buffer_cardPict = await this.ossService.readURLBase64(url_cardPict);
+                    var data_cardPict = {
+                        "Attributes": ["ALL"],
+                        "Image": {
+                            "Bytes": buffer_cardPict,
+                        }
+                    };
+
+                    //AWS face detect 
+                    face_detect_cardPict = await this.awsService.detect(data_cardPict);
+                } catch (err) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed face detect proofpict ' + err,
+                    );
+                }
+            } else {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed cardPict is required',
+                );
+            }
+
+            //Ceck selfiepict
+            if (files.selfiepict != undefined) {
+                selfiepict_filename = files.selfiepict[0].originalname;
+                selfiepict_etx = selfiepict_filename.substring(selfiepict_filename.lastIndexOf('.'), selfiepict_filename.length);
+                selfiepict_filename_new = iduserbasic + selfiepict_etx;
+                selfiepict_mimetype = files.selfiepict[0].mimetype;
+
+                var result = await this.ossService.uploadFile(files.selfiepict[0], iduserbasic + "/kyc/selfiepict/" + selfiepict_filename_new);
+                if (result != undefined) {
+                    if (result.res != undefined) {
+                        if (result.res.statusCode != undefined) {
+                            if (result.res.statusCode == 200) {
+                                url_selfiepict = result.res.requestUrls[0];
+                            } else {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed cardPict failed upload',
+                                );
+                            }
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed cardPict failed upload',
+                            );
+                        }
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed cardPict failed upload',
+                        );
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed cardPict failed upload',
+                    );
+                }
+
+                //AWS face detect selfiepict
+                try {
+                    //Create Buffer
+                    buffer_selfiepict = await this.ossService.readURLBase64(url_selfiepict);
+
+                    var data_selfiepict = {
+                        "Attributes": ["ALL"],
+                        "Image": {
+                            "Bytes": buffer_selfiepict,
+                        }
+                    };
+                    //AWS face detect 
+                    face_detect_selfiepict = await this.awsService.detect(data_selfiepict);
+                } catch (err) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed face detect selfiepict ' + err,
+                    );
+                }
+            } else {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed selfiepict is required',
+                );
+            }
+
+            //Ceck Data user proofPict
+            if (datauserbasicsService.proofPict != undefined) {
+                //Update proofPict
+                try {
+                    var proofPict_json = JSON.parse(JSON.stringify(datauserbasicsService.proofPict));
+                    var data_mediaproofpicts = await this.mediaproofpictsService.findOne(proofPict_json.$id);
+                    id_mediaproofpicts_ = data_mediaproofpicts._id;
+                    CreateMediaproofpictsDto_._id = data_mediaproofpicts._id;
+                    CreateMediaproofpictsDto_.mediaID = data_mediaproofpicts.mediaID;
+                    CreateMediaproofpictsDto_.active = true;
+                    CreateMediaproofpictsDto_.valid = false;
+                    CreateMediaproofpictsDto_.createdAt = current_date;
+                    CreateMediaproofpictsDto_.updatedAt = current_date;
+                    CreateMediaproofpictsDto_.mediaType = 'image';
+
+                    CreateMediaproofpictsDto_.postType = 'proofpict';
+                    CreateMediaproofpictsDto_.mediaBasePath = iduserbasic + "/proofpict/" + cardPict_filename_new;
+                    CreateMediaproofpictsDto_.mediaUri = cardPict_filename_new;
+                    CreateMediaproofpictsDto_.originalName = cardPict_filename;
+
+                    CreateMediaproofpictsDto_.fsSourceUri = url_cardPict;
+                    CreateMediaproofpictsDto_.fsSourceName = cardPict_filename_new;
+                    CreateMediaproofpictsDto_.fsTargetUri = url_cardPict;
+
+                    CreateMediaproofpictsDto_.mediaMime = cardPict_mimetype;
+                    CreateMediaproofpictsDto_.proofpictUploadSource = "OSS";
+
+                    CreateMediaproofpictsDto_.mediaSelfieType = 'selfiepict';
+                    CreateMediaproofpictsDto_.mediaSelfieBasePath = iduserbasic + '/selfiepict/' + selfiepict_filename_new;
+                    CreateMediaproofpictsDto_.mediaSelfieUri = selfiepict_filename_new;
+                    CreateMediaproofpictsDto_.SelfieOriginalName = selfiepict_filename;
+
+                    CreateMediaproofpictsDto_.SelfiefsSourceUri = url_selfiepict;
+                    CreateMediaproofpictsDto_.SelfiefsSourceName = selfiepict_filename_new;
+                    CreateMediaproofpictsDto_.SelfiefsTargetUri = url_selfiepict;
+                    
+                    CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype;
+                    CreateMediaproofpictsDto_.SelfieUploadSource = "OSS";
+
+                    CreateMediaproofpictsDto_._class = "io.melody.hyppe.content.domain.MediaProofPict";
+                    CreateMediaproofpictsDto_.userId = {
+                        $ref: "userbasics",
+                        $id: Object(iduserbasic),
+                        $db: "hyppe_trans_db"
+                    }
+                    await this.mediaproofpictsService.updatebyId(data_mediaproofpicts._id.toString(), CreateMediaproofpictsDto_);
+                } catch (err) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed failed update Mediaproofpicts ' + err,
+                    );
+                }
+            } else {
+
+                try {
+                    listAddKyc = datauserbasicsService.listAddKyc;
+                } catch (e) {
+                    listAddKyc = [];
+                }
+                if (listAddKyc === null || listAddKyc === undefined) {
+                    listAddKyc = [];
+                }
+                var objkyc = {
+                    "mediaID": IdMediaproofpictsDto,
+                    "createdAt": current_date
+                }
+                listAddKyc.push(objkyc);
+
+                //Insert proofPict
+                try {
+                    id_mediaproofpicts_ = IdMediaproofpictsDto;
+                    CreateMediaproofpictsDto_._id = IdMediaproofpictsDto;
+                    CreateMediaproofpictsDto_.mediaID = IdMediaproofpictsDto;
+                    CreateMediaproofpictsDto_.active = true;
+                    CreateMediaproofpictsDto_.valid = false;
+                    CreateMediaproofpictsDto_.createdAt = current_date;
+                    CreateMediaproofpictsDto_.updatedAt = current_date;
+                    CreateMediaproofpictsDto_.postType = 'proofpict';
+                    CreateMediaproofpictsDto_.mediaType = 'image';
+
+                    CreateMediaproofpictsDto_.postType = 'proofpict';
+                    CreateMediaproofpictsDto_.mediaBasePath = iduserbasic + "/proofpict/" + cardPict_filename_new;
+                    CreateMediaproofpictsDto_.mediaUri = cardPict_filename_new;
+                    CreateMediaproofpictsDto_.originalName = cardPict_filename;
+
+                    CreateMediaproofpictsDto_.fsSourceUri = url_cardPict;
+                    CreateMediaproofpictsDto_.fsSourceName = cardPict_filename_new;
+                    CreateMediaproofpictsDto_.fsTargetUri = url_cardPict;
+
+                    CreateMediaproofpictsDto_.mediaMime = cardPict_mimetype;
+                    CreateMediaproofpictsDto_.proofpictUploadSource = "OSS";
+                    
+                    CreateMediaproofpictsDto_.mediaSelfieType = 'selfiepict';
+                    CreateMediaproofpictsDto_.mediaSelfieBasePath = iduserbasic + '/selfiepict/' + selfiepict_filename_new;
+                    CreateMediaproofpictsDto_.mediaSelfieUri = selfiepict_filename_new;
+                    CreateMediaproofpictsDto_.SelfieOriginalName = selfiepict_filename;
+
+                    CreateMediaproofpictsDto_.SelfiefsSourceUri = url_selfiepict;
+                    CreateMediaproofpictsDto_.SelfiefsSourceName = selfiepict_filename_new;
+                    CreateMediaproofpictsDto_.SelfiefsTargetUri = url_selfiepict;
+
+                    CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype;
+                    CreateMediaproofpictsDto_.SelfieUploadSource = "OSS";
+                    CreateMediaproofpictsDto_.userId = {
+                        $ref: "userbasics",
+                        $id: Object(datauserbasicsService._id.toString()),
+                        $db: "hyppe_trans_db"
+                    }
+                    await this.mediaproofpictsService.create(CreateMediaproofpictsDto_);
+                    await this.userbasicsService.updatebyEmail(datauserbasicsService.email.toString(), {
+                        idProofName: CreateMediaproofpictsDto_.nama,
+                        idProofNumber: CreateMediaproofpictsDto_.idcardnumber,
+                        idProofStatus: 'COMPLETE',
+                        proofPict: {
+                            $ref: 'mediaproofpicts',
+                            $id: new Object(IdMediaproofpictsDto),
+                            $db: 'hyppe_content_db'
+                        },
+                        listAddKyc: listAddKyc
+                    });
+                } catch (err) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed failed insert Mediaproofpicts ' + err,
+                    );
+                }
+            }
+
+            //Ceck face detect true
+            if (face_detect_selfiepict.FaceDetails.length > 0 && face_detect_cardPict.FaceDetails.length > 0) {
+                try {
+                    var data_comparing = {
+                        "SimilarityThreshold": Similarity,
+                        "SourceImage": {
+                            "Bytes": buffer_cardPict
+                        },
+                        "TargetImage": {
+                            "Bytes": buffer_selfiepict
+                        }
+                    };
+
+                    //Face comparing
+                    face_detect_selfiepict = await this.awsService.comparing(data_comparing);
+                    if (face_detect_selfiepict.FaceMatches.length > 0) {
+                        emailuserbasic = datauserbasicsService.email;
+                        var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                        _CreateMediaproofpictsDto.status = 'FINISH';
+                        _CreateMediaproofpictsDto.valid = true;
+                        await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
+                        iduserbasic = datauserbasicsService._id;
+                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic, true, 'verified');
+                        await this.userauthsService.update(emailuserbasic, 'ROLE_PREMIUM');
+                        //await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+
+                        await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_VERIFIED');
+                        return {
+                            "response_code": 202,
+                            "data": {
+                                "id_mediaproofpicts": id_mediaproofpicts_,
+                                "valid": true
+                            },
+                            "messages": {
+                                "info": [
+                                    "Face match"
+                                ]
+                            }
+                        };
+                    } else {
+                        await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REVIEW');
+                        var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                        _CreateMediaproofpictsDto.status = 'FAILED';
+                        _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict dan Selfie Pict';
+                        iduserbasic = datauserbasicsService._id;
+                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
+                        await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
+                        //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
+                        await this.errorHandler.generateCustomNotAcceptableException(
+                            {
+                                "response_code": 202,
+                                "data": {
+                                    "id_mediaproofpicts": id_mediaproofpicts_,
+                                    "valid": false
+                                },
+                                "messages": {
+                                    "info": [
+                                        "Face not match"
+                                    ]
+                                }
+                            }
+                        );
+                    }
+                } catch (err) {
+                    await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REVIEW');
+                    var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.status = 'FAILED';
+                    _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict';
+                    iduserbasic = datauserbasicsService._id;
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
+                    await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
+                    //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
+                    await this.errorHandler.generateCustomNotAcceptableException(
+                        {
+                            "response_code": 202,
+                            "data": {
+                                "id_mediaproofpicts": id_mediaproofpicts_,
+                                "valid": false
+                            },
+                            "messages": {
+                                "info": [
+                                    "Face not match"
+                                ]
+                            }
+                        }
+                    );
+                }
+                return face_detect_selfiepict;
+            } else {
+                if (face_detect_selfiepict.FaceDetails.length == 0) {
+                    await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REVIEW');
+                    var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.status = 'FAILED';
+                    _CreateMediaproofpictsDto.state = 'Kesalahan Selfie Pict';
+                    iduserbasic = datauserbasicsService._id;
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
+                    await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
+                    //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
+                    await this.errorHandler.generateCustomNotAcceptableException(
+                        {
+                            "response_code": 202,
+                            "data": {
+                                "id_mediaproofpicts": id_mediaproofpicts_,
+                                "valid": false
+                            },
+                            "messages": {
+                                "info": [
+                                    "Unabled to proceed selfiepict not face detect"
+                                ]
+                            }
+                        }
+                    );
+                }
+                if (face_detect_cardPict.FaceDetails.length == 0) {
+                    await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REVIEW');
+                    var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.state = 'KTP Pict';
+                    iduserbasic = datauserbasicsService._id;
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
+                    await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
+                    //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
+                    await this.errorHandler.generateCustomNotAcceptableException(
+                        {
+                            "response_code": 202,
+                            "data": {
+                                "id_mediaproofpicts": id_mediaproofpicts_,
+                                "valid": false
+                            },
+                            "messages": {
+                                "info": [
+                                    "Unabled to proceed cardPict not face detect"
+                                ]
+                            }
+                        }
+                    );
+                }
+            }
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed user not found',
+            );
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Post('api/posts/v2/verificationid')
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'cardPict', maxCount: 1 }, { name: 'selfiepict', maxCount: 1, }], multerOptions))
+    async uploadcomparingidV2(
         @UploadedFiles() files: {
             cardPict?: Express.Multer.File[],
             selfiepict?: Express.Multer.File[]
@@ -517,8 +982,6 @@ export class MediaController {
                     );
                 }
             } else {
-
-
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed selfiepict is required',
                 );

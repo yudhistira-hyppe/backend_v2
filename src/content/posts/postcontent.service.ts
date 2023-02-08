@@ -46,6 +46,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { ContentDTO, CreateNotificationsDto, NotifResponseApps } from '../notifications/dto/create-notifications.dto';
 import { MediamusicService } from '../mediamusic/mediamusic.service';
 
+var RPCClient = require('@alicloud/pop-core').RPCClient;
 //import FormData from "form-data";
 var FormData = require('form-data');
 
@@ -78,6 +79,35 @@ export class PostContentService {
     private errorHandler: ErrorHandler,
     private mediamusicService: MediamusicService,
   ) { }
+
+  initVodClient() {
+    var regionId = 'ap-southeast-5';   // The region where you want to call ApsaraVideo VOD operations.
+    var client = new RPCClient({
+      accessKeyId: 'LTAI5tP2FZeBukPgRq3McSpM',
+      accessKeySecret: 'Q5hRgEciIYI2g265zbWsh2kc7meBjI',
+      endpoint: 'outin-c01c93ffe24211ec9bf900163e013357.oss-' + regionId +'.aliyuncs.com',
+      apiVersion: '2017-03-21'
+    });
+    return client;
+  }
+
+  uploadVideo(){
+    var client = this.initVodClient();
+
+    client.request("CreateUploadVideo", {
+      Title: 'this is a sample',
+      FileName: 'filename.mp4'
+    }, {}).then(function (response) {
+      console.log('VideoId = ' + response.VideoId);
+      console.log('UploadAddress = ' + response.UploadAddress);
+      console.log('UploadAuth = ' + response.UploadAuth);
+      console.log('RequestId = ' + response.RequestId);
+    }).catch(function (response) {
+      console.log('ErrorCode = ' + response.data.Code);
+      console.log('ErrorMessage = ' + response.data.Message);
+      console.log('RequestId = ' + response.data.RequestId);
+    });
+  }
 
   async createNewPost(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
     this.logger.log('createNewPost >>> start: ' + JSON.stringify(body));
@@ -312,7 +342,7 @@ export class PostContentService {
     return post;
   }
 
-  private async createNewPostVideo(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+  private async createNewPostVideoV2(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
     this.logger.log('createNewPostVideo >>> start: ' + JSON.stringify(body));
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
@@ -328,6 +358,206 @@ export class PostContentService {
       var width_ = 0;
       var height_ = 0;
       if (body.width!=undefined){
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+      post.metadata = metadata;
+
+      var med = new Mediavideos();
+      med._id = await this.utilService.generateId();
+      med.mediaID = med._id;
+      med.postID = post.postID;
+      med.active = false;
+      med.createdAt = await this.utilService.getDateTimeString();
+      med.updatedAt = await this.utilService.getDateTimeString();
+      med.mediaMime = file.mimetype;
+      med.mediaType = 'video';
+      med.originalName = file.originalname;
+      med.apsara = true;
+      med._class = 'io.melody.hyppe.content.domain.MediaVideo';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retd = await this.videoService.create(med);
+
+      this.logger.log('createNewPostVideo >>> ' + retd);
+
+      var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retd.mediaID);
+    } else if (postType == 'advertise') {
+
+    } else if (postType == 'story') {
+
+      var mime = file.mimetype;
+      if (mime.startsWith('video')) {
+        var width_ = 0;
+        var height_ = 0;
+        if (body.width != undefined) {
+          width_ = parseInt(body.width.toString());
+        }
+        if (body.height != undefined) {
+          height_ = parseInt(body.height.toString());
+        }
+        let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+        post.metadata = metadata;
+      }
+
+      var mes = new Mediastories();
+      mes._id = await this.utilService.generateId();
+      mes.mediaID = mes._id;
+      mes.postID = post.postID;
+      mes.active = false;
+      mes.createdAt = await this.utilService.getDateTimeString();
+      mes.updatedAt = await this.utilService.getDateTimeString();
+      mes.mediaMime = file.mimetype;
+      mes.mediaType = 'video';
+      mes.originalName = file.originalname;
+      mes.apsara = true;
+      mes._class = 'io.melody.hyppe.content.domain.MediaStory';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var rets = await this.storyService.create(mes);
+
+      this.logger.log('createNewPostVideo >>> ' + rets);
+
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
+      cm.push(stories);
+
+      mediaId = String(rets.mediaID);
+
+    } else if (postType == 'diary') {
+      var width_ = 0;
+      var height_ = 0;
+      if (body.width != undefined) {
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'diary', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+      post.metadata = metadata;
+
+      var mer = new Mediadiaries();
+      mer._id = await this.utilService.generateId();
+      mer.mediaID = mer._id;
+      mer.postID = post.postID;
+      mer.active = false;
+      mer.createdAt = await this.utilService.getDateTimeString();
+      mer.updatedAt = await this.utilService.getDateTimeString();
+      mer.mediaMime = file.mimetype;
+      mer.mediaType = 'video';
+      mer.originalName = file.originalname;
+      mer.apsara = true;
+      mer._class = 'io.melody.hyppe.content.domain.MediaDiary';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retr = await this.diaryService.create(mer);
+
+      this.logger.log('createNewPostVideo >>> ' + retr);
+
+      var diaries = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
+      cm.push(diaries);
+
+      mediaId = String(retr.mediaID);
+    } else if (postType == 'pict') {
+
+      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
+      post.metadata = metadata;
+
+      var medx = new Mediapicts();
+      medx._id = await this.utilService.generateId();
+      medx.mediaID = medx._id;
+      medx.postID = post.postID;
+      medx.active = false;
+      medx.createdAt = await this.utilService.getDateTimeString();
+      medx.updatedAt = await this.utilService.getDateTimeString();
+      medx.mediaMime = file.mimetype;
+      medx.mediaType = 'video';
+      medx.originalName = file.originalname;
+      medx.apsara = true;
+      medx._class = 'io.melody.hyppe.content.domain.MediaPict';
+
+      this.logger.log('createNewPostVideo >>> prepare save music');
+      var retdx = await this.picService.create(medx);
+
+      this.logger.log('createNewPostVideo >>> ' + retdx);
+
+      var vids = { "$ref": "mediapicts", "$id": retdx.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retdx.mediaID);
+    }
+
+    post.contentMedias = cm;
+    let apost = await this.PostsModel.create(post);
+    if (body.musicId != undefined) {
+      await this.mediamusicService.updateUsed(body.musicId);
+    }
+
+    let fn = file.originalname;
+    let ext = fn.split(".");
+    let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + post._id + "." + ext[1];
+    const ws = createWriteStream(nm);
+    ws.write(file.buffer);
+    ws.close();
+
+    ws.on('finish', async () => {
+      //Upload Seaweedfs
+      const seaweedfs_path = '/' + post._id + '/' + postType + '/';
+      this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);
+      try {
+        var FormData_ = new FormData();
+        FormData_.append(postType, fs.createReadStream(nm));
+        const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
+        this.logger.log('uploadSeaweedfs >>> ' + dataupload);
+      } catch (err) {
+        this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
+      }
+      let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
+      //let payload = { 'file': nm, 'postId': apost._id };
+      axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+    });
+
+    this.logger.log('createNewPostVideo >>> check certified. ' + post.certified);
+
+    // if (post.certified) {
+    //   this.generateCertificate(String(post.postID), 'id');
+    // }
+
+
+    var res = new CreatePostResponse();
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+    res.data = pd;
+
+    return res;
+  }
+
+  private async createNewPostVideo(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    this.logger.log('createNewPostVideo >>> start: ' + JSON.stringify(body));
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+
+    let post = await this.buildPost(body, headers);
+
+    let postType = body.postType;
+    var cm = [];
+
+    let mediaId = "";
+    if (postType == 'vid') {
+      var width_ = 0;
+      var height_ = 0;
+      if (body.width != undefined) {
         width_ = parseInt(body.width.toString());
       }
       if (body.height != undefined) {
@@ -2715,6 +2945,74 @@ export class PostContentService {
     }
     tx.ImageInfo = vl;
     return tx;
+  }
+
+  async uploadFile(file: Express.Multer.File){
+    var co = require('co');
+    var OSS = require('ali-oss')
+    var path = require("path");
+
+    var client = new OSS({
+      accessKeyId: 'LTAI5tMNPEam5637RCWvz5Hs',
+      accessKeySecret: 'p0T6anvjf4IEr9oSBXEDJe6pJNxfTB',
+      bucket: 'be-staging',
+      region: 'oss-ap-southeast-5'
+    });
+
+    var originalname = file.originalname;
+    let extension = originalname.split(".");
+    var mimetype = file.mimetype;
+
+    var buffer = file.buffer;
+    const result = await client.put("profilePict/" + "ff" + "." + extension[1], buffer);
+    console.log(result);
+    // var namaFile = this.configService.get("PATH_UPLOAD_BUCKET") + "asdasdasd" + "." + extension[1];
+    // const ws = createWriteStream(namaFile);
+
+    // ws.write(file.buffer);
+    // ws.close();
+
+    // ws.on('finish', async () => {
+    //   co(function* () {
+    //     // use 'chunked encoding'
+    //     var stream = fs.createReadStream(path.resolve(namaFile));
+    //     var result = yield client.putStream("profilePict/" + "asdasdasd" + "." + extension[1], stream);
+    //     console.log(result);
+
+    //     // do not use 'chunked encoding'
+    //     // var stream = fs.createReadStream(namaFile);
+    //     // var size = fs.statSync(namaFile).size;
+    //     // var result = yield client.putStream('123123123123', stream, { contentLength: size });
+    //     // console.log(result);
+    //   }).catch(function (err) {
+    //     console.log(err);
+    //   });
+
+    //   // var progress = function (p) {
+    //   //   return function (done) {
+    //   //     console.log(p);
+    //   //     done();
+    //   //   };
+    //   // };
+
+    //   // co(function* () {
+    //   //   var result = yield client.multipartUpload('123123123123', namaFile, {
+    //   //     progress: function* (p) {
+    //   //       console.log('Progress: ' + p);
+    //   //     },
+    //   //     meta: {
+    //   //       year: 2017,
+    //   //       people: 'test'
+    //   //     }
+    //   //   });
+    //   //   console.log(result);
+    //   //   var head = yield client.head('123123123123');
+    //   //   console.log(head);
+    //   // }).catch(function (err) {
+    //   //   console.log(err);
+    //   // });
+
+    // });
   }
 
   public async getVideoApsaraSingle(ids: String): Promise<ApsaraPlayResponse> {

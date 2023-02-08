@@ -49,6 +49,22 @@ export class UserbasicsService {
     ).clone().exec();
   }
 
+  async updatebyEmailV2(email: string, dto: Userbasic) {
+    this.userbasicModel.updateOne(
+      {
+        email: email,
+      },
+      dto,
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    ).clone().exec();
+  }
+
   async updateLanguage(email: string, language: string) {
     console.log(language);
     this.userbasicModel.updateOne(

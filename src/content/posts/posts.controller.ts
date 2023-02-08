@@ -316,6 +316,12 @@ export class PostsController {
     return this.postContentService.createNewPost(file, body, headers);
   }
 
+  @Post('api/posts/testUpload')
+  @UseInterceptors(FileInterceptor('testPost'))
+  async testPost(@UploadedFile() file: Express.Multer.File) {
+    return this.postContentService.uploadFile(file);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/removecomment')
   @UseInterceptors(FileInterceptor('postContent'))

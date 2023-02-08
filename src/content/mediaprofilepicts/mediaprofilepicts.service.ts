@@ -33,6 +33,22 @@ export class MediaprofilepictsService {
     return this.MediaprofilepictsModel.find({ mediaID: { $in: mediaId } }).exec();
   }
 
+  async updatebyId(id: string, CreateMediaprofilepictsDto_: CreateMediaprofilepictsDto) {
+    this.MediaprofilepictsModel.updateOne(
+      {
+        _id: id,
+      },
+      CreateMediaprofilepictsDto_,
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
   async findOne(id: string): Promise<Mediaprofilepicts> {
     return this.MediaprofilepictsModel.findOne({ _id: id }).exec();
   }

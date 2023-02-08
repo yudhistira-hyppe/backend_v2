@@ -18,7 +18,10 @@ import {
   BadRequestException,
   Logger,
   NotAcceptableException,
+  UploadedFiles,
+  HttpException,
 } from '@nestjs/common';
+import * as fs from 'fs';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
@@ -45,7 +48,7 @@ import { Int32 } from 'mongodb';
 import { ProfileDTO } from '../utils/data/Profile';
 import { GlobalResponse } from '../utils/data/globalResponse';
 import { GlobalMessages } from '../utils/data/globalMessage';
-import { FileInterceptor } from '@nestjs/platform-express/multer';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express/multer';
 import { FormDataRequest } from 'nestjs-form-data';
 import { CreateUserbasicDto, SearchUserbasicDto } from '../trans/userbasics/dto/create-userbasic.dto';
 import { PostsService } from '../content/posts/posts.service';
@@ -55,14 +58,16 @@ import { Long } from 'mongodb';
 import { OtpService } from './otp.service';
 import { SocmedService } from './socmed.service';
 import { GroupService } from '../trans/usermanagement/group/group.service';
+import { OssService } from '../stream/oss/oss.service';
+import { CreateMediaprofilepictsDto } from 'src/content/mediaprofilepicts/dto/create-mediaprofilepicts.dto';
 
 @Controller()
 export class AuthController {
 
   private readonly logger = new Logger(AuthController.name);
-
   constructor(
-    private groupService: GroupService,
+    private groupService: GroupService, 
+    private ossService: OssService,
     private errorHandler: ErrorHandler,
     private authService: AuthService,
     private utilsService: UtilsService,
@@ -952,33 +957,47 @@ export class AuthController {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var mediaprofilepicts = await this.mediaprofilepictsService.findOne(id);
         if (await this.utilsService.ceckData(mediaprofilepicts)) {
-          var mediaprofilepicts_fsSourceUri = '';
-          var mediaMime = "";
-          if (mediaprofilepicts != null) {
-            if (mediaprofilepicts.fsSourceUri != null) {
-              mediaprofilepicts_fsSourceUri = mediaprofilepicts.fsSourceUri.toString();
-            }
-          }
-          if (mediaprofilepicts.mediaMime != undefined) {
-            mediaMime = mediaprofilepicts.mediaMime.toString();
-          } else {
-            mediaMime = "image/jpeg";
-          }
-          if (mediaprofilepicts_fsSourceUri != '') {
-            // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
-            // const response_ = await fetch(url);
-            // const blob = await response_.blob();
-            // const arrayBuffer = await blob.arrayBuffer();
-            // const buffer = Buffer.from(arrayBuffer);
-            var data = await this.authService.profilePict(mediaprofilepicts_fsSourceUri);
-            if (data != null) {
-              response.set("Content-Type", "image/png");
-              response.send(data);
+          if (mediaprofilepicts.uploadSource != undefined){
+            if (mediaprofilepicts.uploadSource == "OSS") {
+              var data = await this.ossService.readURL(mediaprofilepicts.fsTargetUri.toString());
+              if (data != null) {
+                response.set("Content-Type", mediaprofilepicts.mediaMime.toString());
+                response.send(data);
+              } else {
+                response.send(null);
+              }
             } else {
               response.send(null);
             }
-          } else {
-            response.send(null);
+          }else{
+            var mediaprofilepicts_fsSourceUri = '';
+            var mediaMime = "";
+            if (mediaprofilepicts != null) {
+              if (mediaprofilepicts.fsSourceUri != null) {
+                mediaprofilepicts_fsSourceUri = mediaprofilepicts.fsSourceUri.toString();
+              }
+            }
+            if (mediaprofilepicts.mediaMime != undefined) {
+              mediaMime = mediaprofilepicts.mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            if (mediaprofilepicts_fsSourceUri != '') {
+              // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
+              // const response_ = await fetch(url);
+              // const blob = await response_.blob();
+              // const arrayBuffer = await blob.arrayBuffer();
+              // const buffer = Buffer.from(arrayBuffer);
+              var data = await this.authService.profilePict(mediaprofilepicts_fsSourceUri);
+              if (data != null) {
+                response.set("Content-Type", "image/png");
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
           }
         } else {
           response.send(null);
@@ -1000,28 +1019,12 @@ export class AuthController {
     if ((id != undefined) && (token != undefined) && (email != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
-        if (await this.utilsService.ceckData(mediaproofpicts)) {
-          var mediaproofpicts_fsSourceUri = '';
-          var mediaMime = "";
-          if (mediaproofpicts != null) {
-            if (mediaproofpicts.fsSourceUri != null) {
-              mediaproofpicts_fsSourceUri = mediaproofpicts.fsSourceUri.toString();
-            }
-          }
-          if (mediaproofpicts.mediaMime != undefined) {
-            mediaMime = mediaproofpicts.mediaMime.toString();
-          } else {
-            mediaMime = "image/jpeg";
-          }
-          if (mediaproofpicts_fsSourceUri != '') {
-            // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
-            // const response_ = await fetch(url);
-            // const blob = await response_.blob();
-            // const arrayBuffer = await blob.arrayBuffer();
-            // const buffer = Buffer.from(arrayBuffer);
-            var data = await this.authService.profilePict(mediaproofpicts_fsSourceUri);
+        if (mediaproofpicts.proofpictUploadSource != undefined) {
+          if (mediaproofpicts.proofpictUploadSource == "OSS") {
+            console.log(mediaproofpicts.fsTargetUri.toString());
+            var data = await this.ossService.readURL(mediaproofpicts.fsTargetUri.toString());
             if (data != null) {
-              response.set("Content-Type", "image/png");
+              response.set("Content-Type", mediaproofpicts.mediaMime.toString());
               response.send(data);
             } else {
               response.send(null);
@@ -1029,8 +1032,39 @@ export class AuthController {
           } else {
             response.send(null);
           }
-        } else {
-          response.send(null);
+        }else{
+          if (await this.utilsService.ceckData(mediaproofpicts)) {
+            var mediaproofpicts_fsSourceUri = '';
+            var mediaMime = "";
+            if (mediaproofpicts != null) {
+              if (mediaproofpicts.fsSourceUri != null) {
+                mediaproofpicts_fsSourceUri = mediaproofpicts.fsSourceUri.toString();
+              }
+            }
+            if (mediaproofpicts.mediaMime != undefined) {
+              mediaMime = mediaproofpicts.mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            if (mediaproofpicts_fsSourceUri != '') {
+              // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
+              // const response_ = await fetch(url);
+              // const blob = await response_.blob();
+              // const arrayBuffer = await blob.arrayBuffer();
+              // const buffer = Buffer.from(arrayBuffer);
+              var data = await this.authService.profilePict(mediaproofpicts_fsSourceUri);
+              if (data != null) {
+                response.set("Content-Type", "image/png");
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
         }
       } else {
         response.send(null);
@@ -1049,28 +1083,11 @@ export class AuthController {
     if ((id != undefined) && (token != undefined) && (email != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
-        if (await this.utilsService.ceckData(mediaproofpicts)) {
-          var mediaproofpicts_SelfiefsSourceUri = '';
-          var mediaMime = "";
-          if (mediaproofpicts != null) {
-            if (mediaproofpicts.SelfiefsSourceUri != null) {
-              mediaproofpicts_SelfiefsSourceUri = mediaproofpicts.SelfiefsSourceUri.toString();
-            }
-          }
-          if (mediaproofpicts.SelfiemediaMime != undefined) {
-            mediaMime = mediaproofpicts.SelfiemediaMime.toString();
-          } else {
-            mediaMime = "image/jpeg";
-          }
-          if (mediaproofpicts_SelfiefsSourceUri != '') {
-            // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
-            // const response_ = await fetch(url);
-            // const blob = await response_.blob();
-            // const arrayBuffer = await blob.arrayBuffer();
-            // const buffer = Buffer.from(arrayBuffer);
-            var data = await this.authService.profilePict(mediaproofpicts_SelfiefsSourceUri);
+        if (mediaproofpicts.SelfieUploadSource != undefined) {
+          if (mediaproofpicts.SelfieUploadSource == "OSS") {
+            var data = await this.ossService.readURL(mediaproofpicts.SelfiefsTargetUri.toString());
             if (data != null) {
-              response.set("Content-Type", "image/png");
+              response.set("Content-Type", mediaproofpicts.SelfiemediaMime.toString());
               response.send(data);
             } else {
               response.send(null);
@@ -1079,7 +1096,38 @@ export class AuthController {
             response.send(null);
           }
         } else {
-          response.send(null);
+          if (await this.utilsService.ceckData(mediaproofpicts)) {
+            var mediaproofpicts_SelfiefsSourceUri = '';
+            var mediaMime = "";
+            if (mediaproofpicts != null) {
+              if (mediaproofpicts.SelfiefsSourceUri != null) {
+                mediaproofpicts_SelfiefsSourceUri = mediaproofpicts.SelfiefsSourceUri.toString();
+              }
+            }
+            if (mediaproofpicts.SelfiemediaMime != undefined) {
+              mediaMime = mediaproofpicts.SelfiemediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            if (mediaproofpicts_SelfiefsSourceUri != '') {
+              // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
+              // const response_ = await fetch(url);
+              // const blob = await response_.blob();
+              // const arrayBuffer = await blob.arrayBuffer();
+              // const buffer = Buffer.from(arrayBuffer);
+              var data = await this.authService.profilePict(mediaproofpicts_SelfiefsSourceUri);
+              if (data != null) {
+                response.set("Content-Type", "image/png");
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
         }
       } else {
         response.send(null);
@@ -3150,8 +3198,6 @@ export class AuthController {
     };
   }
 
-
-
   @Get('api/user/userdetail/:id')
   @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtAuthGuard)
@@ -3293,5 +3339,165 @@ export class AuthController {
     }
 
     return data;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/profilepicture')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'profilePict', maxCount: 1 }, { name: 'proofPict', maxCount: 1, }]))
+  async uploadProfile(
+    @UploadedFiles() files: {
+      profilePict?: Express.Multer.File[],
+      proofPict?: Express.Multer.File[]
+    },
+    @Body() request,
+    @Headers() headers) {
+
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed token and email not match',
+      );
+    }
+
+    if (headers['x-auth-token'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed header email is required',
+      );
+    }
+
+    if (request.email == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed param mail is required',
+      );
+    }
+
+    //Get User Userbasics
+    const datauserbasicsService = await this.userbasicsService.findOne(
+      headers['x-auth-user'],
+    );
+
+    var current_date = await this.utilsService.getDateTimeString();
+    var id_mediaprofilepicts = await this.utilsService.generateId();
+    var createMediaproofpictsDto = new CreateMediaprofilepictsDto();
+    //Ceck User Userbasics
+    if (await this.utilsService.ceckData(datauserbasicsService)) {
+      if (files.profilePict != undefined) {
+
+        var originalName = files.profilePict[0].originalname;
+        var extension = originalName.substring(originalName.lastIndexOf('.'), originalName.length);
+        var userId = datauserbasicsService._id.toString();
+        var fileName = userId + extension;
+        var mimetype = files.profilePict[0].mimetype;
+
+        var result = await this.ossService.uploadFile(files.profilePict[0], userId + "/profilePict/" + fileName);
+        if (result != undefined) {
+          if (result.res != undefined) {
+            if (result.res.statusCode != undefined) {
+              if (result.res.statusCode == 200) {
+                try{
+                  if (datauserbasicsService.profilePict != undefined) {
+                    var profilePict_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
+                    var data_mediaprofpicts = await this.mediaprofilepictsService.findOne(profilePict_json.$id);
+                    if (await this.utilsService.ceckData(data_mediaprofpicts)) {
+                      id_mediaprofilepicts = data_mediaprofpicts._id.toString();
+
+                      createMediaproofpictsDto.mediaBasePath = userId + "/profilePict/" + fileName;
+                      createMediaproofpictsDto.mediaUri = fileName;
+                      createMediaproofpictsDto.originalName = originalName;
+
+                      createMediaproofpictsDto.fsSourceUri = result.res.requestUrls[0];
+                      createMediaproofpictsDto.fsSourceName = fileName;
+                      createMediaproofpictsDto.fsTargetUri = result.res.requestUrls[0];
+                      createMediaproofpictsDto.uploadSource = "OSS";
+                      await this.mediaprofilepictsService.updatebyId(id_mediaprofilepicts, createMediaproofpictsDto);
+                    } else {
+                      createMediaproofpictsDto._id = fileName;
+                      createMediaproofpictsDto.mediaID = fileName;
+                      createMediaproofpictsDto.active = true;
+                      createMediaproofpictsDto.createdAt = current_date;
+                      createMediaproofpictsDto.updatedAt = current_date;
+                      createMediaproofpictsDto.postType = 'proofpict';
+                      createMediaproofpictsDto.mediaType = 'image';
+
+                      createMediaproofpictsDto.mediaBasePath = userId + "/" + fileName;
+                      createMediaproofpictsDto.mediaUri = fileName;
+                      createMediaproofpictsDto.originalName = originalName;
+
+                      createMediaproofpictsDto.fsSourceUri = result.res.requestUrls[0];
+                      createMediaproofpictsDto.fsSourceName = fileName;
+                      createMediaproofpictsDto.fsTargetUri = result.res.requestUrls[0];
+
+                      createMediaproofpictsDto.mediaMime = mimetype;
+                      createMediaproofpictsDto.uploadSource = "OSS";
+                      await this.mediaprofilepictsService.create(createMediaproofpictsDto);
+                    }
+                  } else {
+                    createMediaproofpictsDto._id = fileName;
+                    createMediaproofpictsDto.mediaID = fileName;
+                    createMediaproofpictsDto.active = true;
+                    createMediaproofpictsDto.createdAt = current_date;
+                    createMediaproofpictsDto.updatedAt = current_date;
+                    createMediaproofpictsDto.postType = 'proofpict';
+                    createMediaproofpictsDto.mediaType = 'image';
+
+                    createMediaproofpictsDto.mediaBasePath = userId + "/" + fileName;
+                    createMediaproofpictsDto.mediaUri = fileName;
+                    createMediaproofpictsDto.originalName = originalName;
+
+                    createMediaproofpictsDto.fsSourceUri = result.res.requestUrls[0];
+                    createMediaproofpictsDto.fsSourceName = fileName;
+                    createMediaproofpictsDto.fsTargetUri = result.res.requestUrls[0];
+
+                    createMediaproofpictsDto.mediaMime = mimetype;
+                    createMediaproofpictsDto.uploadSource = "OSS";
+                    await this.mediaprofilepictsService.create(createMediaproofpictsDto);
+                  }
+
+                  var json_mediaprofilepicts = { "$ref": "mediaprofilepicts", "$id": id_mediaprofilepicts, "$db": "hyppe_content_db" };
+                  datauserbasicsService.profilePict = json_mediaprofilepicts;
+                  await this.userbasicsService.updatebyEmailV2(request.email, datauserbasicsService);
+
+                  return {
+                    "response_code": 202,
+                    "messages": {
+                      "info": [
+                        "Update Profile Successful"
+                      ]
+                    }
+                  };
+                } catch (e) {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed update profile picture ' + e,
+                  );
+                }
+              } else {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed update profile picture ',
+                );
+              }
+            } else {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed update profile picture ',
+              );
+            }
+          } else {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed update profile picture ',
+            );
+          }
+        } else {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed update profile picture ',
+          );
+        }
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed cardPict is required',
+        );
+      }
+    } else {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed user not found',
+      );
+    }
   }
 }

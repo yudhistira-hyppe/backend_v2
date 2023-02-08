@@ -12,8 +12,10 @@ import { SettingsModule } from '../../trans/settings/settings.module';
 import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediaprofilepicts.module';
 import { UserauthsModule } from '../../trans/userauths/userauths.module';
 import { ContenteventsModule } from "../../content/contentevents/contentevents.module";
+import { OssModule } from '../oss/oss.module';
 @Module({
   imports: [
+    OssModule,
     UserauthsModule,
     MediaprofilepictsModule,
     SettingsModule,

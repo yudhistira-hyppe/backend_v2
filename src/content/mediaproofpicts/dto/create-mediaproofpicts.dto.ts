@@ -16,6 +16,7 @@ export class CreateMediaproofpictsDto {
   fsSourceName: String;
   fsTargetUri: String;
   mediaMime: String;
+  proofpictUploadSource: String;
 
 
   idcardnumber: String;
@@ -36,6 +37,7 @@ export class CreateMediaproofpictsDto {
   SelfiefsSourceName: String;
   SelfiefsTargetUri: String;
   SelfiemediaMime: String;
+  SelfieUploadSource: String;
 
   mediaSupportType: String;
   mediaSupportBasePath: String;

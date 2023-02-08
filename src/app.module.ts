@@ -100,8 +100,10 @@ import { DisqusContentEventModule } from './content/contentevents/discus/disqusd
 import { DeepArModule } from './trans/deepar/deepar.module';
 import { AssetsFilterModule } from './assets/filter/assets-filter.module';
 import { AdsLandingModule } from './content/posts/adslanding/adslanding.module';
+import { OssModule } from './stream/oss/oss.module';
 @Module({
   imports: [
+    OssModule,
     AssetsFilterModule,
     DeepArModule,
     DisqusContentEventModule,

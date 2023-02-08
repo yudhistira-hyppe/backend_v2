@@ -34,8 +34,10 @@ import { SocmedService } from './socmed.service';
 import { GroupModule } from '../trans/usermanagement/group/group.module';
 import { UserticketsModule } from '../trans/usertickets/usertickets.module';
 import { UserticketdetailsModule } from '../trans/usertickets/userticketdetails/userticketdetails.module';
+import { OssModule } from '../stream/oss/oss.module';
 @Module({
   imports: [
+    OssModule,
     GroupModule,
     UserticketdetailsModule,
     MediaproofpictsModule,

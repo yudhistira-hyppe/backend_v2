@@ -34,7 +34,9 @@ export class Mediaprofilepicts {
   @Prop()
   mediaMime: String
  @Prop()
- _class:String
+    _class: String
+    @Prop()
+    uploadSource: String;
 }
 
 export const MediaprofilepictsSchema = SchemaFactory.createForClass(Mediaprofilepicts);
