@@ -2885,6 +2885,7 @@ export class PostBoostService {
 
       pd.isApsara = obj.apsara;
       pd.apsaraId = obj.apsaraId;
+      pd.isShared = obj.isShared;
       //pd.isLiked =
       //pd.isViewed
 
