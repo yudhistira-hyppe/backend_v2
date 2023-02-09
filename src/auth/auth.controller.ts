@@ -966,7 +966,7 @@ export class AuthController {
               }
               var data2 = await this.ossService.readFile(mediaprofilepicts.mediaBasePath.toString());
               if (data2 != null) {
-                response.set("Content-Type", mediaMime);
+                response.set("Content-Type", "image/jpeg");
                 response.send(data2);
               } else {
                 response.send(null);
@@ -1033,7 +1033,7 @@ export class AuthController {
             }
             var data2 = await this.ossService.readFile(mediaproofpicts.mediaBasePath.toString());
             if (data2 != null) {
-              response.set("Content-Type", mediaMime);
+              response.set("Content-Type", "image/jpeg");
               response.send(data2);
             } else {
               response.send(null);
@@ -1101,7 +1101,7 @@ export class AuthController {
             }
             var data2 = await this.ossService.readFile(mediaproofpicts.mediaSelfieBasePath.toString());
             if (data2 != null) {
-              response.set("Content-Type", mediaMime);
+              response.set("Content-Type", "image/jpeg");
               response.send(data2);
             } else {
               response.send(null);
