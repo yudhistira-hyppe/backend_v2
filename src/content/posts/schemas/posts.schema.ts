@@ -43,6 +43,8 @@ export class Posts {
   @Prop()
   saleLike: boolean
   @Prop()
+  isShared: boolean
+  @Prop()
   saleView: boolean
   @Prop({ type: Object })
   metadata: {
@@ -93,7 +95,7 @@ export class Posts {
   @Prop()
   contentModerationResponse: string
   @Prop()
-  contentModerationDate: string  
+  contentModerationDate: string
   @Prop()
   reportedUserHandle: any[];
   @Prop({ type: Object })
