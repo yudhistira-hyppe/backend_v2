@@ -238,7 +238,6 @@ export class AccountbalancesController {
   async getIncomeChartBasedDate(@Req() request: Request): Promise<any> {
     var data = null;
     var date = null;
-    var iduser = null;
 
     const messages = {
       "info": ["The process successful"],
@@ -254,16 +253,7 @@ export class AccountbalancesController {
     throw new BadRequestException("Unabled to proceed");
   }
 
-  if (request_json["iduser"] !== undefined) 
-  {
-    iduser = request_json["iduser"];
-  } 
-  else 
-  {
-    throw new BadRequestException("Unabled to proceed");
-  }
-
-  var tempdata = await this.accountbalancesService.getIncomeByDate(iduser, date);
+  var tempdata = await this.accountbalancesService.getIncomeByDate(date);
   var getdata = [];
   try
   {

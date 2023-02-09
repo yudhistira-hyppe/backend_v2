@@ -893,9 +893,9 @@ export class AccountbalancesService {
         return data;
     }
 
-    async getIncomeByDate(id:string, startdate:string){
+    async getIncomeByDate(startdate:string){
         const mongoose = require('mongoose');
-        var iddata = mongoose.Types.ObjectId(id);
+        var iddata = mongoose.Types.ObjectId("62144381602c354635ed786a");
         var before = new Date(startdate).toISOString().split("T")[0];
         var input = new Date();
         input.setDate(input.getDate() + 1);

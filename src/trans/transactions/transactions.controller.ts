@@ -8127,28 +8127,22 @@ export class TransactionsController {
     async getVoucherSellChartBasedDate(@Req() request: Request): Promise<any> {
         var data = null;
         var date = null;
-        var idusersell = null;
 
-        const messages = {
+            const messages = {
             "info": ["The process successful"],
         };
 
         var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["date"] !== undefined) {
+        if (request_json["date"] !== undefined) 
+        {
             date = request_json["date"];
-        }
-        else {
+        } 
+        else 
+        {
             throw new BadRequestException("Unabled to proceed");
         }
 
-        if (request_json["idusersell"] !== undefined) {
-            idusersell = request_json["idusersell"];
-        }
-        else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        var tempdata = await this.transactionsService.getVoucherSellChartByDate(idusersell, date);
+        var tempdata = await this.transactionsService.getVoucherSellChartByDate(date);
         //console.log(tempdata);
         var getdata = [];
         try {
