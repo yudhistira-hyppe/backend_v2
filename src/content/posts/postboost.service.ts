@@ -3063,7 +3063,7 @@ export class PostBoostService {
     return cnt;
   }
 
-  async sendSoketAds(email:string){
+  async sendSoketAds(email: string) {
     var dataAds = await this.adsLandingService.getAdsLanding(email);
     var JsonPayload = {
       event: "ads_landing",
@@ -4208,6 +4208,7 @@ export class PostBoostService {
                 "saleAmount": 1,
                 "saleLike": 1,
                 "saleView": 1,
+                "isShared": 1,
                 "insight": [
                   {
                     "likes": "$likes",
@@ -4743,6 +4744,7 @@ export class PostBoostService {
                 "saleAmount": 1,
                 "saleLike": 1,
                 "saleView": 1,
+                "isShared": 1,
                 "userProfile": 1,
                 "contentMedias": 1,
                 "category": "$cats",
@@ -5278,6 +5280,7 @@ export class PostBoostService {
                 "saleAmount": 1,
                 "saleLike": 1,
                 "saleView": 1,
+                "isShared": 1,
                 "userProfile": 1,
                 "contentMedias": 1,
                 "category": "$cats",
@@ -5701,6 +5704,7 @@ export class PostBoostService {
                 "saleAmount": 1,
                 "saleLike": 1,
                 "saleView": 1,
+                "isShared": 1,
                 "userProfile": 1,
                 "contentMedias": 1,
                 "category": "$cats",
@@ -6301,6 +6305,7 @@ export class PostBoostService {
                 "saleAmount": 1,
                 "saleLike": 1,
                 "saleView": 1,
+                "isShared": 1,
                 "likes": 1,
                 "views": 1,
                 "shares": 1,
@@ -6698,6 +6703,7 @@ export class PostBoostService {
                 "saleAmount": 1,
                 "saleLike": 1,
                 "saleView": 1,
+                "isShared": 1,
                 "boosted":
                 {
                   $cond: {
@@ -7095,6 +7101,7 @@ export class PostBoostService {
                 "saleAmount": 1,
                 "saleLike": 1,
                 "saleView": 1,
+                "isShared": 1,
                 "likes": 1,
                 "views": 1,
                 "boosted":
@@ -7499,6 +7506,7 @@ export class PostBoostService {
                 "saleAmount": 1,
                 "saleLike": 1,
                 "saleView": 1,
+                "isShared": 1,
                 "likes": 1,
                 "views": 1,
                 "shares": 1,
