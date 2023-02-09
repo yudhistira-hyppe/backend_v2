@@ -229,7 +229,6 @@ export class AdsUserCompareController {
         console.log(data_ads);
         var genIdUserAds = new mongoose.Types.ObjectId();
         if (await this.utilsService.ceckData(data_ads)) {
-
             var ceckData = await this.userAdsService.findAdsIDUserID(data_ads[0].userID.toString(), data_ads[0].adsId.toString());
             if (!(await this.utilsService.ceckData(ceckData))) {
                 var CreateUserAdsDto_ = new CreateUserAdsDto();
@@ -271,7 +270,11 @@ export class AdsUserCompareController {
             data_response['adsId'] = data_ads[0].adsId.toString();
             data_response['adsUrlLink'] = data_ads[0].urlLink;
             data_response['adsDescription'] = data_ads[0].description;
-            data_response['useradsId'] = genIdUserAds.toString();
+            if (await this.utilsService.ceckData(ceckData)) {
+                data_response['useradsId'] = ceckData._id.toString();
+            } else {
+                data_response['useradsId'] = genIdUserAds.toString();
+            }
             data_response['idUser'] = data_userbasic_ads._id.toString();
             data_response['fullName'] = data_userbasic_ads.fullName;
             data_response['email'] = data_userbasic_ads.email;
@@ -391,14 +394,14 @@ export class AdsUserCompareController {
                 );
             }
 
-            //const data_userAdsService = await this.userAdsService.findOneByuserIDAds(data_userbasicsService._id.toString(), ads_id.toString());
-            const data_userAdsService = await this.userAdsService.findOnestatusView(userads_id.toString());
-            if (!(await this.utilsService.ceckData(data_userAdsService))) {
-                this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed User ads not found");
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed User ads not found',
-                );
-            }
+            const data_userAdsService = await this.userAdsService.getAdsUser(userads_id.toString());
+            // const data_userAdsService = await this.userAdsService.findOnestatusView(userads_id.toString());
+            // if (!(await this.utilsService.ceckData(data_userAdsService))) {
+            //     this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed User ads not found");
+            //     await this.errorHandler.generateNotAcceptableException(
+            //         'Unabled to proceed User ads not found',
+            //     );
+            // }
 
             var ads_rewards = 0;
 
@@ -485,7 +488,6 @@ export class AdsUserCompareController {
                     },
                 };
             } else {
-                const data_userAdsService = await this.userAdsService.findOne(userads_id);
                 if (await this.utilsService.ceckData(data_userAdsService)) {
                     if (data_adstypesService.AdsSkip == undefined) {
                         this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed data setting Ads Skip not found");
@@ -574,9 +576,10 @@ export class AdsUserCompareController {
                             CreateUserAdsDto_.statusView = true;
                             CreateUserAdsDto_.clickAt = current_date;
                             if (userAds_liveTypeuserads) {
-                                CreateUserAdsDto_.viewed = 1;
+                                var viewedAds = Number(userAds_viewed) + 1;
+                                CreateUserAdsDto_.viewed = viewedAds;
                             } else {
-                                CreateUserAdsDto_.viewed = userAds_viewed + 1;
+                                CreateUserAdsDto_.viewed = 1;
                             }
                             CreateUserAdsDto_.timeViewSecond = watching_time;
                             await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
@@ -652,7 +655,12 @@ export class AdsUserCompareController {
                             var CreateUserAdsDto_ = new CreateUserAdsDto();
                             CreateUserAdsDto_.statusView = true;
                             CreateUserAdsDto_.clickAt = current_date;
-                            CreateUserAdsDto_.viewed = 1;
+                            if (userAds_liveTypeuserads) {
+                                var viewedAds = Number(userAds_viewed) + 1;
+                                CreateUserAdsDto_.viewed = viewedAds;
+                            } else {
+                                CreateUserAdsDto_.viewed = 1;
+                            }
                             CreateUserAdsDto_.timeViewSecond = watching_time;
                             await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
                         } catch (e) {
@@ -846,9 +854,9 @@ export class AdsUserCompareController {
                     CreateUserAdsDto_.statusClick = true;
                     CreateUserAdsDto_.clickAt = current_date;
                     if (userAds_liveTypeuserads) {
-                        CreateUserAdsDto_.viewed = 1;
-                    } else {
                         CreateUserAdsDto_.viewed = userAds_viewed + 1;
+                    } else {
+                        CreateUserAdsDto_.viewed = 1;
                     }
                     CreateUserAdsDto_.timeViewSecond = watching_time;
                     await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);

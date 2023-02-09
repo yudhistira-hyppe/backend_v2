@@ -3,10 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import { createWriteStream, unlink } from 'fs'
 import * as http from "http";
+import { parse } from 'path';
 
 var co = require('co');
 var OSS = require('ali-oss')
 var path = require("path");
+var CircularJSON = require('circular-json')
 
 @Injectable()
 export class OssService {
@@ -47,8 +49,17 @@ export class OssService {
 
   async readFile(pathUpload: string){
     try {
-      const result = await this.getClient().get(pathUpload);
-      return result.content;
+      const result = await this.getClient().getStream(pathUpload);
+      console.log(pathUpload)
+      console.log(result.res.status)
+      console.log(JSON.parse(CircularJSON.stringify(result.stream))._readableState.buffer)
+      // const blob = await result.content.blob();
+      // const arrayBuffer = await blob.arrayBuffer();
+      // const buffer = Buffer.from(arrayBuffer);
+      // var buff = Buffer.from(JSON.stringify(result.content))
+      // console.log(typeof result.content)
+      // console.log(typeof buff)
+      return JSON.parse(CircularJSON.stringify(result.stream))._readableState.buffer;
     } catch (e) {
       console.log(e);
     }
@@ -58,12 +69,14 @@ export class OssService {
     return new Promise(async function (resolve, reject) {
       let err =null;
       await fetch(url).then((response) => {
+        console.log(response);
         if (response.ok) {
           return response;
         } else {
           return err;
         }
       }).then(async (response) => {
+        console.log(response);
         if (response != null) {
           const blob = await response.blob();
           const arrayBuffer = await blob.arrayBuffer();
@@ -73,6 +86,7 @@ export class OssService {
           return resolve(err);
         }
       }).catch((error) => {
+        console.log(error);
         return resolve(err);
       });
     });
