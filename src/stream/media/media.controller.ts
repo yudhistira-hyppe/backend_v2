@@ -403,7 +403,7 @@ export class MediaController {
                 //AWS face detect proofpict
                 try {
                     //Create Buffer
-                    buffer_cardPict = await this.ossService.readURLBase64(url_cardPict);
+                    buffer_cardPict = await this.ossService.readFileBase64(url_cardPict);
                     var data_cardPict = {
                         "Attributes": ["ALL"],
                         "Image": {
@@ -468,7 +468,7 @@ export class MediaController {
                 //AWS face detect selfiepict
                 try {
                     //Create Buffer
-                    buffer_selfiepict = await this.ossService.readURLBase64(url_selfiepict);
+                    buffer_selfiepict = await this.ossService.readFileBase64(url_selfiepict);
 
                     var data_selfiepict = {
                         "Attributes": ["ALL"],
