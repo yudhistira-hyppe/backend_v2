@@ -959,7 +959,9 @@ export class AuthController {
         if (await this.utilsService.ceckData(mediaprofilepicts)) {
           if (mediaprofilepicts.uploadSource != undefined){
             if (mediaprofilepicts.uploadSource == "OSS") {
+              console.log(mediaprofilepicts.fsTargetUri.toString());
               var data = await this.ossService.readURL(mediaprofilepicts.fsTargetUri.toString());
+              console.log(data);
               if (data != null) {
                 response.set("Content-Type", mediaprofilepicts.mediaMime.toString());
                 response.send(data);
@@ -1085,6 +1087,7 @@ export class AuthController {
         var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
         if (mediaproofpicts.SelfieUploadSource != undefined) {
           if (mediaproofpicts.SelfieUploadSource == "OSS") {
+            console.log(mediaproofpicts.SelfiefsTargetUri.toString());
             var data = await this.ossService.readURL(mediaproofpicts.SelfiefsTargetUri.toString());
             if (data != null) {
               response.set("Content-Type", mediaproofpicts.SelfiemediaMime.toString());

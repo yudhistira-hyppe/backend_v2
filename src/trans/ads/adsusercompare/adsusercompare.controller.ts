@@ -229,7 +229,6 @@ export class AdsUserCompareController {
         console.log(data_ads);
         var genIdUserAds = new mongoose.Types.ObjectId();
         if (await this.utilsService.ceckData(data_ads)) {
-
             var ceckData = await this.userAdsService.findAdsIDUserID(data_ads[0].userID.toString(), data_ads[0].adsId.toString());
             if (!(await this.utilsService.ceckData(ceckData))) {
                 var CreateUserAdsDto_ = new CreateUserAdsDto();
@@ -271,7 +270,11 @@ export class AdsUserCompareController {
             data_response['adsId'] = data_ads[0].adsId.toString();
             data_response['adsUrlLink'] = data_ads[0].urlLink;
             data_response['adsDescription'] = data_ads[0].description;
-            data_response['useradsId'] = genIdUserAds.toString();
+            if (await this.utilsService.ceckData(ceckData)) {
+                data_response['useradsId'] = ceckData._id.toString();
+            } else {
+                data_response['useradsId'] = genIdUserAds.toString();
+            }
             data_response['idUser'] = data_userbasic_ads._id.toString();
             data_response['fullName'] = data_userbasic_ads.fullName;
             data_response['email'] = data_userbasic_ads.email;

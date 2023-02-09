@@ -58,12 +58,14 @@ export class OssService {
     return new Promise(async function (resolve, reject) {
       let err =null;
       await fetch(url).then((response) => {
+        console.log(response);
         if (response.ok) {
           return response;
         } else {
           return err;
         }
       }).then(async (response) => {
+        console.log(response);
         if (response != null) {
           const blob = await response.blob();
           const arrayBuffer = await blob.arrayBuffer();
@@ -73,6 +75,7 @@ export class OssService {
           return resolve(err);
         }
       }).catch((error) => {
+        console.log(error);
         return resolve(err);
       });
     });
