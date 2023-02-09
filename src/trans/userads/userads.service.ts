@@ -50,6 +50,10 @@ export class UserAdsService {
         return this.userAdsModel.findOne({ adsID: new ObjectId(adsID), userID: new ObjectId(userID), $or: [{ statusClick: true }, { statusView: true }], timeViewSecond: { $gt: AdsSkip } }).exec();
     }
 
+    async getAdsUser(id: string): Promise<UserAds> {
+        return this.userAdsModel.findOne({ _id: new ObjectId(id) }).exec();
+    }
+
     async findOneByuserIDAds(userID: string, adsId: string): Promise<UserAds> {
         return this.userAdsModel.findOne({ userID: userID, adsID: adsId, statusView: false }).exec();
     }

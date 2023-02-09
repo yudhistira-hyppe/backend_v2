@@ -45,6 +45,7 @@
     "browserify": "^17.0.0",
     "bull": "^4.10.0",
     "cheerio": "^1.0.0-rc.12",
+    "circular-json": "^0.5.9",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "co": "^4.6.0",

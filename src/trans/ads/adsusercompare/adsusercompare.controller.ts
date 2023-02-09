@@ -394,14 +394,14 @@ export class AdsUserCompareController {
                 );
             }
 
-            //const data_userAdsService = await this.userAdsService.findOneByuserIDAds(data_userbasicsService._id.toString(), ads_id.toString());
-            const data_userAdsService = await this.userAdsService.findOnestatusView(userads_id.toString());
-            if (!(await this.utilsService.ceckData(data_userAdsService))) {
-                this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed User ads not found");
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed User ads not found',
-                );
-            }
+            const data_userAdsService = await this.userAdsService.getAdsUser(userads_id.toString());
+            // const data_userAdsService = await this.userAdsService.findOnestatusView(userads_id.toString());
+            // if (!(await this.utilsService.ceckData(data_userAdsService))) {
+            //     this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed User ads not found");
+            //     await this.errorHandler.generateNotAcceptableException(
+            //         'Unabled to proceed User ads not found',
+            //     );
+            // }
 
             var ads_rewards = 0;
 
@@ -488,7 +488,6 @@ export class AdsUserCompareController {
                     },
                 };
             } else {
-                const data_userAdsService = await this.userAdsService.findOne(userads_id);
                 if (await this.utilsService.ceckData(data_userAdsService)) {
                     if (data_adstypesService.AdsSkip == undefined) {
                         this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed data setting Ads Skip not found");
@@ -577,9 +576,10 @@ export class AdsUserCompareController {
                             CreateUserAdsDto_.statusView = true;
                             CreateUserAdsDto_.clickAt = current_date;
                             if (userAds_liveTypeuserads) {
-                                CreateUserAdsDto_.viewed = 1;
+                                var viewedAds = Number(userAds_viewed) + 1;
+                                CreateUserAdsDto_.viewed = viewedAds;
                             } else {
-                                CreateUserAdsDto_.viewed = userAds_viewed + 1;
+                                CreateUserAdsDto_.viewed = 1;
                             }
                             CreateUserAdsDto_.timeViewSecond = watching_time;
                             await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
@@ -655,7 +655,12 @@ export class AdsUserCompareController {
                             var CreateUserAdsDto_ = new CreateUserAdsDto();
                             CreateUserAdsDto_.statusView = true;
                             CreateUserAdsDto_.clickAt = current_date;
-                            CreateUserAdsDto_.viewed = 1;
+                            if (userAds_liveTypeuserads) {
+                                var viewedAds = Number(userAds_viewed) + 1;
+                                CreateUserAdsDto_.viewed = viewedAds;
+                            } else {
+                                CreateUserAdsDto_.viewed = 1;
+                            }
                             CreateUserAdsDto_.timeViewSecond = watching_time;
                             await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
                         } catch (e) {
@@ -849,9 +854,9 @@ export class AdsUserCompareController {
                     CreateUserAdsDto_.statusClick = true;
                     CreateUserAdsDto_.clickAt = current_date;
                     if (userAds_liveTypeuserads) {
-                        CreateUserAdsDto_.viewed = 1;
-                    } else {
                         CreateUserAdsDto_.viewed = userAds_viewed + 1;
+                    } else {
+                        CreateUserAdsDto_.viewed = 1;
                     }
                     CreateUserAdsDto_.timeViewSecond = watching_time;
                     await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);

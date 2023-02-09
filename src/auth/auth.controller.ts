@@ -960,11 +960,11 @@ export class AuthController {
           if (mediaprofilepicts.uploadSource != undefined){
             if (mediaprofilepicts.uploadSource == "OSS") {
               console.log(mediaprofilepicts.fsTargetUri.toString());
-              var data = await this.ossService.readURL(mediaprofilepicts.fsTargetUri.toString());
-              console.log(data);
-              if (data != null) {
+              var data2 = await this.ossService.readFile(mediaprofilepicts.mediaBasePath.toString());
+              //console.log(data2);
+              if (data2 != null) {
                 response.set("Content-Type", mediaprofilepicts.mediaMime.toString());
-                response.send(data);
+                response.send(data2);
               } else {
                 response.send(null);
               }
