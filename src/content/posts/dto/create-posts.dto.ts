@@ -17,6 +17,7 @@ export class CreatePostsDto {
     readonly allowComments: boolean;
     readonly isSafe: boolean;
     readonly isOwned: boolean;
+    isShared: boolean;
     readonly metadata: {
         duration: Number;
         postRoll: Number;
@@ -112,6 +113,7 @@ export class PostData {
     createdAt: string;
     certified: boolean;
     saleLike: boolean;
+    isShared: boolean;
     email: string;
     updatedAt: string;
     saleAmount?: any;

@@ -85,13 +85,13 @@ export class PostContentService {
     var client = new RPCClient({
       accessKeyId: 'LTAI5tP2FZeBukPgRq3McSpM',
       accessKeySecret: 'Q5hRgEciIYI2g265zbWsh2kc7meBjI',
-      endpoint: 'outin-c01c93ffe24211ec9bf900163e013357.oss-' + regionId +'.aliyuncs.com',
+      endpoint: 'outin-c01c93ffe24211ec9bf900163e013357.oss-' + regionId + '.aliyuncs.com',
       apiVersion: '2017-03-21'
     });
     return client;
   }
 
-  uploadVideo(){
+  uploadVideo() {
     var client = this.initVodClient();
 
     client.request("CreateUploadVideo", {
@@ -357,7 +357,7 @@ export class PostContentService {
     if (postType == 'vid') {
       var width_ = 0;
       var height_ = 0;
-      if (body.width!=undefined){
+      if (body.width != undefined) {
         width_ = parseInt(body.width.toString());
       }
       if (body.height != undefined) {
@@ -551,6 +551,13 @@ export class PostContentService {
     let post = await this.buildPost(body, headers);
 
     let postType = body.postType;
+    let isShared = null;
+
+    if (body.isShared === undefined) {
+      isShared = true;
+    } else {
+      isShared = body.isShared;
+    }
     var cm = [];
 
     let mediaId = "";
@@ -693,6 +700,7 @@ export class PostContentService {
     }
 
     post.contentMedias = cm;
+    post.isShared = isShared;
     let apost = await this.PostsModel.create(post);
     if (body.musicId != undefined) {
       await this.mediamusicService.updateUsed(body.musicId);
@@ -750,6 +758,13 @@ export class PostContentService {
 
     let post = await this.buildPost(body, headers);
     let postType = body.postType;
+    let isShared = null;
+
+    if (body.isShared === undefined) {
+      isShared = true;
+    } else {
+      isShared = body.isShared;
+    }
     var cm = [];
     let mediaId = "";
 
@@ -805,6 +820,7 @@ export class PostContentService {
 
     }
     post.contentMedias = cm;
+    post.isShared = isShared;
     let apost = await this.PostsModel.create(post);
 
     let fn = file.originalname;
@@ -2127,12 +2143,18 @@ export class PostContentService {
           pa.metadata = md1;
         }
 
+        if (ps.isShared != undefined) {
+          pa.isShared = ps.isShared;
+        } else {
+          pa.isShared = true;
+        }
 
         pa.postID = String(ps.postID);
         pa.postType = String(ps.postType);
         pa.saleAmount = ps.saleAmount;
         pa.saleLike = ps.saleLike;
         pa.saleView = ps.saleView;
+
 
         if (ps.tagPeople != undefined && ps.tagPeople.length > 0) {
           let atp = ps.tagPeople;
@@ -2883,7 +2905,7 @@ export class PostContentService {
             vl.push(vv);
           }
         }
-      } catch(ex) {
+      } catch (ex) {
 
       }
     }
@@ -2932,14 +2954,14 @@ export class PostContentService {
         let result = await client.request('GetImageInfos', params, requestOption);
         let ty: ApsaraImageResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
         this.logger.log("getImageApsara >>> result: " + ty);
-  
+
         if (ty.ImageInfo.length > 0) {
           for (let x = 0; x < ty.ImageInfo.length; x++) {
             let vv = ty.ImageInfo[x];
             vl.push(vv);
           }
         }
-      } catch(e) {
+      } catch (e) {
 
       }
     }
@@ -2947,7 +2969,7 @@ export class PostContentService {
     return tx;
   }
 
-  async uploadFile(file: Express.Multer.File){
+  async uploadFile(file: Express.Multer.File) {
     var co = require('co');
     var OSS = require('ali-oss')
     var path = require("path");
@@ -3220,7 +3242,7 @@ export class PostContentService {
       }
     }
 
-    
+
 
     let post = await this.buildUpdatePost(body, headers);
     let apost = await this.PostsModel.create(post);
@@ -3264,9 +3286,16 @@ export class PostContentService {
 
     let post = await this.postService.findByPostId(body.postID);
     post.updatedAt = await this.utilService.getDateTimeString();
+    let isShared = null;
 
     if (body.description != undefined) {
       post.description = body.description;
+    }
+
+    if (body.isShared != undefined) {
+      post.isShared = body.isShared;
+    } else {
+      post.isShared = true;
     }
 
     if (body.tags != undefined && (String(body.tags).length > 0)) {
@@ -3836,7 +3865,7 @@ export class PostContentService {
           var getFullname = await this.userService.findOne(dy.mate.toString());
           dy.senderOrReceiverInfo.fullName = getFullname.fullName;
         }
-        
+
         if (dy.postID != null) {
           let pid = String(dy.postID);
           let ps = await this.postService.findByPostId(pid);
