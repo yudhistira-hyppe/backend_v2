@@ -959,11 +959,14 @@ export class AuthController {
         if (await this.utilsService.ceckData(mediaprofilepicts)) {
           if (mediaprofilepicts.uploadSource != undefined){
             if (mediaprofilepicts.uploadSource == "OSS") {
-              console.log(mediaprofilepicts.fsTargetUri.toString());
+              if (mediaprofilepicts.mediaMime != undefined) {
+                mediaMime = mediaprofilepicts.mediaMime.toString();
+              } else {
+                mediaMime = "image/jpeg";
+              }
               var data2 = await this.ossService.readFile(mediaprofilepicts.mediaBasePath.toString());
-              //console.log(data2);
               if (data2 != null) {
-                response.set("Content-Type", mediaprofilepicts.mediaMime.toString());
+                response.set("Content-Type", mediaMime);
                 response.send(data2);
               } else {
                 response.send(null);
@@ -992,7 +995,7 @@ export class AuthController {
               // const buffer = Buffer.from(arrayBuffer);
               var data = await this.authService.profilePict(mediaprofilepicts_fsSourceUri);
               if (data != null) {
-                response.set("Content-Type", "image/png");
+                response.set("Content-Type", mediaMime);
                 response.send(data);
               } else {
                 response.send(null);
@@ -1023,11 +1026,15 @@ export class AuthController {
         var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
         if (mediaproofpicts.proofpictUploadSource != undefined) {
           if (mediaproofpicts.proofpictUploadSource == "OSS") {
-            console.log(mediaproofpicts.fsTargetUri.toString());
-            var data = await this.ossService.readURL(mediaproofpicts.fsTargetUri.toString());
-            if (data != null) {
-              response.set("Content-Type", mediaproofpicts.mediaMime.toString());
-              response.send(data);
+            if (mediaproofpicts.mediaMime != undefined) {
+              mediaMime = mediaproofpicts.mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            var data2 = await this.ossService.readFile(mediaproofpicts.mediaBasePath.toString());
+            if (data2 != null) {
+              response.set("Content-Type", mediaMime);
+              response.send(data2);
             } else {
               response.send(null);
             }
@@ -1056,7 +1063,7 @@ export class AuthController {
               // const buffer = Buffer.from(arrayBuffer);
               var data = await this.authService.profilePict(mediaproofpicts_fsSourceUri);
               if (data != null) {
-                response.set("Content-Type", "image/png");
+                response.set("Content-Type", mediaMime);
                 response.send(data);
               } else {
                 response.send(null);
@@ -1087,11 +1094,15 @@ export class AuthController {
         var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
         if (mediaproofpicts.SelfieUploadSource != undefined) {
           if (mediaproofpicts.SelfieUploadSource == "OSS") {
-            console.log(mediaproofpicts.SelfiefsTargetUri.toString());
-            var data = await this.ossService.readURL(mediaproofpicts.SelfiefsTargetUri.toString());
-            if (data != null) {
-              response.set("Content-Type", mediaproofpicts.SelfiemediaMime.toString());
-              response.send(data);
+            if (mediaproofpicts.mediaMime != undefined) {
+              mediaMime = mediaproofpicts.mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            var data2 = await this.ossService.readFile(mediaproofpicts.mediaSelfieBasePath.toString());
+            if (data2 != null) {
+              response.set("Content-Type", mediaMime);
+              response.send(data2);
             } else {
               response.send(null);
             }
