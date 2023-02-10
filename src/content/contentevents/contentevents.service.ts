@@ -1093,6 +1093,44 @@ export class ContenteventsService {
     );
   }
 
+  async updateFollowing(email: string, eventType: string, receiverParty: string) {
+    this.ContenteventsModel.updateOne(
+      {
+        email: email,
+        eventType: eventType,
+        senderParty: receiverParty,
+        event: "ACCEPT"
+      },
+      { active: true },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateFollower(email: string, eventType: string, receiverParty: string) {
+    this.ContenteventsModel.updateOne(
+      {
+        email: email,
+        eventType: eventType,
+        receiverParty: receiverParty,
+        event: "ACCEPT"
+      },
+      { active: true },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
   async updateUnFollower(email: string, eventType: string, receiverParty: string) {
     this.ContenteventsModel.updateOne(
       {
