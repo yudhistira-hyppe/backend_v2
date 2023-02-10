@@ -16,5 +16,8 @@ export class CreateMediaprofilepictsDto {
      fsTargetUri: String;
     mediaMime: String;
     uploadSource: String;
-     _class:String;
+   _class: String;
+   mediaThumName: String
+   mediaThumBasePath: String
+   mediaThumUri: String
   }

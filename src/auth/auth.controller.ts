@@ -60,6 +60,7 @@ import { SocmedService } from './socmed.service';
 import { GroupService } from '../trans/usermanagement/group/group.service';
 import { OssService } from '../stream/oss/oss.service';
 import { CreateMediaprofilepictsDto } from 'src/content/mediaprofilepicts/dto/create-mediaprofilepicts.dto';
+const sharp = require('sharp');
 
 @Controller()
 export class AuthController {
@@ -964,7 +965,15 @@ export class AuthController {
               } else {
                 mediaMime = "image/jpeg";
               }
-              var data2 = await this.ossService.readFile(mediaprofilepicts.mediaBasePath.toString());
+
+              var path = "";
+              if (mediaprofilepicts.mediaThumBasePath != undefined) {
+                path = mediaprofilepicts.mediaThumBasePath.toString();
+              }else{
+                path = mediaprofilepicts.mediaBasePath.toString();
+              }
+              
+              var data2 = await this.ossService.readFile(path);
               if (data2 != null) {
                 response.set("Content-Type", "image/jpeg");
                 response.send(data2);
@@ -3412,7 +3421,17 @@ export class AuthController {
         var fileName = userId + extension;
         var mimetype = files.profilePict[0].mimetype;
 
+        var thumnail = null;
+        try{
+          thumnail = await sharp(files.profilePict[0].buffer).resize(100, 100).toBuffer();
+          console.log(typeof thumnail);
+        }catch(e){
+          console.log("THUMNAIL","FAILED TO CREATE THUMNAIL");
+        }
+
         var result = await this.ossService.uploadFile(files.profilePict[0], userId + "/profilePict/" + fileName);
+        var result_thum = await this.ossService.uploadFileBuffer(Buffer.from(thumnail), userId + "/profilePict/" + userId + "_thum" + extension);
+        console.log("THUMNAIL_UPLOAD", result_thum);
         if (result != undefined) {
           if (result.res != undefined) {
             if (result.res.statusCode != undefined) {
@@ -3432,6 +3451,10 @@ export class AuthController {
                       createMediaproofpictsDto.fsSourceName = fileName;
                       createMediaproofpictsDto.fsTargetUri = result.res.requestUrls[0];
                       createMediaproofpictsDto.uploadSource = "OSS";
+
+                      createMediaproofpictsDto.mediaThumBasePath = userId + "/profilePict/" + userId + "_thum" + extension;
+                      createMediaproofpictsDto.mediaThumName = userId + "_thum" + extension;
+                      createMediaproofpictsDto.mediaThumUri = result_thum.res.requestUrls[0];
                       await this.mediaprofilepictsService.updatebyId(id_mediaprofilepicts, createMediaproofpictsDto);
                     } else {
                       createMediaproofpictsDto._id = fileName;

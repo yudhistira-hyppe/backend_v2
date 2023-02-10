@@ -47,6 +47,24 @@ export class OssService {
     }
   }
 
+  async uploadFileBuffer(file: Buffer, pathUpload: string) {
+    try {
+      //---- POST FILE OSS ----
+      const result = await this.getClient().put(pathUpload, file);
+      console.log(result);
+      return result;
+    } catch (e) {
+      console.log(e);
+      return {
+        res: {
+          status: 400,
+          statusCode: 400,
+          statusMessage: e,
+        }
+      }
+    }
+  }
+
   async readFile(pathUpload: string){
     try {
       const result = await this.getClient().get(pathUpload);
