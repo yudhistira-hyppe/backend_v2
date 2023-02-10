@@ -66,7 +66,7 @@ export class AuthController {
 
   private readonly logger = new Logger(AuthController.name);
   constructor(
-    private groupService: GroupService, 
+    private groupService: GroupService,
     private ossService: OssService,
     private errorHandler: ErrorHandler,
     private authService: AuthService,
@@ -374,7 +374,7 @@ export class AuthController {
               );
             }
           }
-          
+
 
           //Update Devices Userauths
           try {
@@ -957,7 +957,7 @@ export class AuthController {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var mediaprofilepicts = await this.mediaprofilepictsService.findOne(id);
         if (await this.utilsService.ceckData(mediaprofilepicts)) {
-          if (mediaprofilepicts.uploadSource != undefined){
+          if (mediaprofilepicts.uploadSource != undefined) {
             if (mediaprofilepicts.uploadSource == "OSS") {
               if (mediaprofilepicts.mediaMime != undefined) {
                 mediaMime = mediaprofilepicts.mediaMime.toString();
@@ -974,7 +974,7 @@ export class AuthController {
             } else {
               response.send(null);
             }
-          }else{
+          } else {
             var mediaprofilepicts_fsSourceUri = '';
             var mediaMime = "";
             if (mediaprofilepicts != null) {
@@ -1041,7 +1041,7 @@ export class AuthController {
           } else {
             response.send(null);
           }
-        }else{
+        } else {
           if (await this.utilsService.ceckData(mediaproofpicts)) {
             var mediaproofpicts_fsSourceUri = '';
             var mediaMime = "";
@@ -1161,37 +1161,54 @@ export class AuthController {
     if ((id != undefined) && (token != undefined) && (email != undefined) && (index != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
-        if (await this.utilsService.ceckData(mediaproofpicts)) {
-          var mediaproofpicts_SupportfsSourceUri = '';
-          var mediaMime = "";
-          if (mediaproofpicts != null) {
-            if (mediaproofpicts.SupportfsSourceUri != null) {
-              mediaproofpicts_SupportfsSourceUri = mediaproofpicts.SupportfsSourceUri[index].toString();
+
+        if (mediaproofpicts.SupportUploadSource != undefined) {
+          if (mediaproofpicts.SupportUploadSource == "OSS") {
+            if (mediaproofpicts.mediaMime != undefined) {
+              mediaMime = mediaproofpicts.mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
             }
-          }
-          if (mediaproofpicts.SupportmediaMime != undefined) {
-            mediaMime = mediaproofpicts.SupportmediaMime.toString();
-          } else {
-            mediaMime = "image/jpeg";
-          }
-          if (mediaproofpicts_SupportfsSourceUri != '') {
-            // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
-            // const response_ = await fetch(url);
-            // const blob = await response_.blob();
-            // const arrayBuffer = await blob.arrayBuffer();
-            // const buffer = Buffer.from(arrayBuffer);
-            var data = await this.authService.profilePict(mediaproofpicts_SupportfsSourceUri);
-            if (data != null) {
-              response.set("Content-Type", "image/png");
-              response.send(data);
+            var data2 = await this.ossService.readFile(mediaproofpicts.SupportfsTargetUri[index].toString());
+            if (data2 != null) {
+              response.set("Content-Type", "image/jpeg");
+              response.send(data2);
             } else {
               response.send(null);
             }
           } else {
             response.send(null);
           }
-        } else {
-          response.send(null);
+        }
+        else {
+          if (await this.utilsService.ceckData(mediaproofpicts)) {
+            var mediaproofpicts_SupportfsSourceUri = '';
+            var mediaMime = "";
+            if (mediaproofpicts != null) {
+              if (mediaproofpicts.SupportfsSourceUri != null) {
+                mediaproofpicts_SupportfsSourceUri = mediaproofpicts.SupportfsSourceUri[index].toString();
+              }
+            }
+            if (mediaproofpicts.SupportmediaMime != undefined) {
+              mediaMime = mediaproofpicts.SupportmediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            if (mediaproofpicts_SupportfsSourceUri != '') {
+
+              var data = await this.authService.profilePict(mediaproofpicts_SupportfsSourceUri);
+              if (data != null) {
+                response.set("Content-Type", "image/png");
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
         }
       } else {
         response.send(null);
@@ -3417,7 +3434,7 @@ export class AuthController {
           if (result.res != undefined) {
             if (result.res.statusCode != undefined) {
               if (result.res.statusCode == 200) {
-                try{
+                try {
                   if (datauserbasicsService.profilePict != undefined) {
                     var profilePict_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
                     var data_mediaprofpicts = await this.mediaprofilepictsService.findOne(profilePict_json.$id);
