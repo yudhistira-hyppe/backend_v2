@@ -377,4 +377,554 @@ export class UserauthsService {
 
     return query;
   }
+
+  async getRecentStory()
+  {
+    var query = await this.userauthModel.aggregate([
+      {
+        "$set": {
+            "settimeStart": 
+            {
+                "$dateToString": {
+                    "format": "%Y-%m-%d %H:%M:%S",
+                    "date": {
+                        $add: [new Date(), - 6120000000] // 1 hari 61200000
+                    }
+                }
+            }
+        }
+      },
+      {
+          "$set": {
+              "settimeEnd": 
+              {
+                  "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                          $add: [new Date(), 25200000]
+                      }
+                  }
+              }
+          }
+      }, 
+      {
+          "$lookup": 
+          {
+              from: 'posts',
+              as: 'post_data',
+              let: 
+              {
+                  post_fk: "$email"
+              },
+              pipeline: 
+              [
+                  {
+                      "$match": 
+                      {
+                          $and: [
+                              {
+                                  "$expr": {
+                                      $eq: ['$email', '$$post_fk']
+                                  }
+                              },
+                              {
+                                  "$expr":
+                                  {
+                                      "$eq":["$postType", "story"]
+                                  }
+                              },
+                          ]
+                      },
+                  },
+                  {
+                      "$lookup": 
+                      {
+                          from: "userauths",
+                          as: "userTag",
+                          let: {
+                          localID: '$tagPeople.$id'
+                          },
+                          pipeline: [
+                          {
+                              $match:
+                              {
+              
+              
+                              $expr: {
+                                  $in: ['$_id', {
+                                  $ifNull: ['$$localID', []]
+                                  }]
+                              }
+                              }
+                          },
+                          {
+                              $project: {
+              
+                              "username": 1
+                              }
+                          }
+                          ],
+                      }
+                  }
+              ]
+          }
+      },
+      {
+          "$unwind":
+          {
+              path:"$post_data"
+          }
+      },
+      {
+          "$project":
+          {
+              username:"$username",
+              postID: "$post_data.postID",
+              email: "$post_data.email",
+              postType: "$post_data.postType",
+              description: "$post_data.description",
+              active: "$post_data.active",
+              createdAt: "$post_data.createdAt",
+              updatedAt: "$post_data.updatedAt",
+              expiration: "$post_data.expiration",
+              visibility: "$post_data.visibility",
+              location: "$post_data.location",
+              tags: "$post_data.tags",
+              allowComments: "$post_data.allowComments",
+              isSafe: "$post_data.isSafe",
+              isOwned: "$post_data.isOwned",
+              certified: "$post_data.certified",
+              saleAmount: "$post_data.saleAmount",
+              saleLike: "$post_data.saleLike",
+              saleView: "$post_data.saleView",
+              metadata: "$post_data.metadata",
+              likes: "$post_data.likes",
+              views: "$post_data.views",
+              shares: "$post_data.shares",
+              userProfile: "$post_data.userProfile",
+              contentMedias: "$post_data.contentMedias",
+              category: "$post_data.category",
+              settimeStart:"$settimeStart",
+              settimeEnd:"$settimeEnd",
+              convertCreatedAt:
+              {
+                  "$toDate":"$post_data.createdAt"
+              }
+          }
+      },
+      {
+          "$match":
+          {
+              "$and":
+              [
+                  {
+                      "$expr":
+                      {
+                          "$gte":["$createdAt", "$settimeStart"]
+                      },
+                  },
+                  {
+                      "$expr":
+                      {
+                          "$lte":["$createdAt", "$settimeEnd"]
+                      }
+                  }  
+              ]
+          }
+      },
+      {
+          "$sort":
+          {
+              createdAt:-1
+          }
+      },
+      {
+          "$lookup": {
+              from: "mediastories",
+              as: "media",
+              let: {
+                  localID: '$postID'
+              },
+              pipeline: [
+              {
+                  $match:
+                  {
+                      $expr: {
+                          $eq: ['$postID', '$$localID']
+                      }
+                  }
+              },
+              {
+                  $project: {
+
+                  "apsara": 1,
+                  "apsaraId": 1,
+                  "apsaraThumbId": 1,
+                  "mediaEndpoint": 1,
+                  "mediaUri": 1,
+                  "mediaThumbEndpoint": 1,
+                  "mediaThumbUri": 1,
+                  "mediaType": 1,
+
+                  }
+              }
+              ],
+
+          },
+
+      },
+      {
+          "$lookup": {
+              from: "interests_repo",
+              as: "cats",
+              let: {
+              localID: '$category.$id'
+              },
+              pipeline: [
+              {
+                  $match: {
+
+                  $expr: {
+                      $and: [
+                      {
+                          $in: ['$_id', {
+                          $ifNull: ['$$localID', []]
+                          }]
+                      },
+
+                      ]
+                  }
+                  }
+              },
+              {
+                  $project: {
+                  "interestName": 1,
+                  "langIso": 1,
+                  "icon": 1,
+                  "createdAt": 1,
+                  "updatedAt": 1
+                  }
+              }
+              ],
+
+          }
+      },
+      {
+          "$lookup": {
+              from: "userbasics",
+              as: "userBasic",
+              let: {
+              localID: '$email'
+              },
+              pipeline: [
+              {
+                  $match:
+                  {
+
+
+                  $expr: {
+                      $eq: ['$email', '$$localID']
+                  }
+                  }
+              },
+              {
+                  $project: {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "isCelebrity": 1,
+                  "isIdVerified": 1,
+                  "isPrivate": 1,
+
+                  }
+              }
+              ],
+
+          }
+      },
+      {
+          $unwind: {
+              path: "$userBasic",
+              preserveNullAndEmptyArrays: true
+          }
+      },
+      {
+          "$lookup": {
+              from: "mediaprofilepicts",
+              as: "avatar",
+              let: {
+              localID: '$userBasic.profilePict.$id'
+              },
+              pipeline: [
+              {
+                  $match:
+                  {
+
+
+                  $expr: {
+                      $eq: ['$mediaID', '$$localID']
+                  }
+                  }
+              },
+              {
+                  $project: {
+                  "mediaBasePath": 1,
+                  "mediaUri": 1,
+                  "originalName": 1,
+                  "fsSourceUri": 1,
+                  "fsSourceName": 1,
+                  "fsTargetUri": 1,
+                  "mediaType": 1,
+                  "mediaEndpoint": {
+                      "$concat": ["/profilepict/", "$mediaID"]
+                  }
+                  }
+              }
+              ],
+
+          }
+      },
+      {
+          "$lookup": {
+              from: "mediamusic",
+              as: "music",
+              let: {
+              localID: '$musicId'
+              },
+              pipeline: [
+              {
+                  $match:
+                  {
+                  $expr: {
+                      $eq: ['$_id', '$$localID']
+                  }
+                  }
+              },
+              {
+                  $project: {
+                  "musicTitle": 1,
+                  "artistName": 1,
+                  "albumName": 1,
+                  "apsaraMusic": 1,
+                  "apsaraThumnail": 1,
+                  "genre": "$genre.name",
+                  "theme": "$theme.name",
+                  "mood": "$mood.name",
+
+                  }
+              }
+              ],
+          }
+      },
+      {
+          $unwind: {
+              path: "$media",
+              preserveNullAndEmptyArrays: true
+          }
+      },
+      {
+          $project: {
+              "storyDate": 1,
+              "postID": 1,
+              "musicTitle": "$music.musicTitle",
+              "artistName": "$music.artistName",
+              "albumName": "$music.albumName",
+              "apsaraMusic": "$music.apsaraMusic",
+              "apsaraThumnail": "$music.apsaraThumnail",
+              "genre": "$music.genre.name",
+              "theme": "$music.theme.name",
+              "mood": "$music.mood.name",
+              "testDate": 1,
+              "musicId": 1,
+              "music": 1,
+              "tagPeople": "$userTag",
+              "mediaType": "$media.mediaType",
+              "email": 1,
+              "postType": 1,
+              "description": 1,
+              "active": 1,
+              "createdAt": 1,
+              "updatedAt": 1,
+              "expiration": 1,
+              "visibility": 1,
+              "location": 1,
+              "tags": 1,
+              "allowComments": 1,
+              "isSafe": 1,
+              "isOwned": 1,
+              "certified": 1,
+              "saleAmount": 1,
+              "saleLike": 1,
+              "saleView": 1,
+              "userProfile": 1,
+              "contentMedias": 1,
+              "category": "$cats",
+              "tagDescription": 1,
+              "metadata": 1,
+              "boostDate": 1,
+              "boosted":
+              {
+              $cond: {
+                  if: {
+                  $gt: [{
+                      "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                          $add: [new Date(), 25200000]
+                      }
+                      }
+                  }, "$boosted.boostSession.end"]
+                  },
+                  then: [],
+                  else: '$boosted'
+              }
+              },
+              "end": "$boosted.boostSession.end",
+              "start": "$boosted.boostSession.start",
+              "isBoost": 1,
+              "boostViewer": 1,
+              "boostCount": 1,
+              "contentModeration": 1,
+              "reportedStatus": 1,
+              "reportedUserCount": 1,
+              "contentModerationResponse": 1,
+              "reportedUser": 1,
+              "timeStart": 1,
+              "timeEnd": 1,
+              "apsara": "$media.apsara",
+              "apsaraId": "$media.apsaraId",
+              "apsaraThumbId": "$media.apsaraThumbId",
+              "mediaEndpoint": "$media.mediaEndpoint",
+              "mediaUri": "$media.mediaUri",
+              "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
+              "mediaThumbUri": "$media.mediaThumbUri",
+              "insight": [
+              {
+                  "likes": "$likes",
+                  "views": "$views",
+                  "shares": "$shares",
+                  "comments": "$comments",
+
+              }
+              ],
+              "fullName": "$userBasic.fullName",
+              "username": "$username",
+              "avatar": 1,
+              "statusCB": 1,
+              "privacy": [{
+              "isCelebrity": "$userBasic.isCelebrity"
+              }, {
+              "isIdVerified": "$userBasic.isIdVerified"
+              }, {
+              "isPrivate": "$userBasic.isPrivate"
+              }]
+          }
+      },
+      {
+          "$group":
+          {
+              _id:"$username",
+              mincreatedAt:
+              {
+                  "$first":"$createdAt"
+              },
+              maxcreatedAt:
+              {
+                  "$last":"$createdAt",
+              },
+              maxpostID:
+              {
+                      "$last":"$postID"
+              },
+              story:
+              {
+                  "$push":
+                  {
+                      "storyDate": "$storyDate",
+                      "postID": "$postID",
+                      "musicTitle": "$musicTitle",
+                      "artistName": "$artistName",
+                      "albumName": "$albumName",
+                      "apsaraMusic": "$apsaraMusic",
+                      "apsaraThumnail": "$apsaraThumnail",
+                      "genre": "$genre",
+                      "theme": "$theme",
+                      "mood": "$mood",
+                      "testDate": "$testDate",
+                      "musicId": "$musicId",
+                      "music": "$music",
+                      "tagPeople": "$tagPeople",
+                      "mediaType": "$mediaType",
+                      "email": "$email",
+                      "postType": "$postType",
+                      "description": "$description",
+                      "active": "$active",
+                      "createdAt": "$createdAt",
+                      "updatedAt": "$updatedAt",
+                      "expiration": "$expiration",
+                      "visibility": "$visibility",
+                      "location": "$location",
+                      "tags": "$tags",
+                      "allowComments": "$allowComments",
+                      "isSafe": "$isSafe",
+                      "isOwned": "$isOwned",
+                      "certified": "$certified",
+                      "saleAmount": "$saleAmount",
+                      "saleLike": "$saleLike",
+                      "saleView": "$saleView",
+                      "userProfile": "$userProfile",
+                      "contentMedias": "$contentMedias",
+                      "category": "$category",
+                      "tagDescription": "$tagDescription",
+                      "metadata": "$metadata",
+                      "boostDate": "$boostDate",
+                      "boosted": "$boosted",
+                      "end": "$end",
+                      "start": "$start",
+                      "isBoost": "$isBoost",
+                      "boostViewer": "$boostViewer",
+                      "boostCount": "$boostCount",
+                      "contentModeration": "$contentModeration",
+                      "reportedStatus": "$reportedStatus",
+                      "reportedUserCount": "$reportedUserCount",
+                      "contentModerationResponse": "$contentModerationResponse",
+                      "reportedUser": "$reportedUser",
+                      "timeStart": "$timeStart",
+                      "timeEnd": "$timeEnd",
+                      "apsara": "$apsara",
+                      "apsaraId": "$apsaraId",
+                      "apsaraThumbId": "$apsaraThumbId",
+                      "mediaEndpoint": "$mediaEndpoint",
+                      "mediaUri": "$mediaUri",
+                      "mediaThumbEndpoint": "$mediaThumbEndpoint",
+                      "mediaThumbUri": "$mediaThumbUri",
+                      "insight": "$insight",
+                      "fullName": "$fullName",
+                      "username": "$username",
+                      "avatar": "$avatar",
+                      "statusCB": "$statusCB",
+                      "privacy": "$privacy"
+                  }
+              }
+          }
+      },
+      {
+          "$sort":
+          {
+              maxcreatedAt:1
+          }
+      },
+      {
+          "$project":
+          {
+              username:1,
+              //mincreatedAt:1,
+              //maxpostID:1,
+              //maxcreatedAt:1,
+              story:1
+          }
+      }
+    ]);
+    
+    return query;
+  }
 }

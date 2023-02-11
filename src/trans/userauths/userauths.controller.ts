@@ -110,4 +110,18 @@ export class UserauthsController {
 
       return { response_code: 202, messages, data };
   }
+
+  @Get('landing-page/recentStory')
+  @UseGuards(JwtAuthGuard)
+  async getRecentStory(@Req() request: Request): Promise<any> {
+    var data = null;
+    
+    const messages = {
+        "info": ["The process successful"],
+    };
+
+    data = await this.userauthsService.getRecentStory();
+
+    return { response_code:202, data, messages }; 
+  }
 }
