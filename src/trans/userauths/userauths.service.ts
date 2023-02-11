@@ -382,32 +382,6 @@ export class UserauthsService {
   {
     var query = await this.userauthModel.aggregate([
       {
-        "$set": {
-            "settimeStart": 
-            {
-                "$dateToString": {
-                    "format": "%Y-%m-%d %H:%M:%S",
-                    "date": {
-                        $add: [new Date(), - 6120000000] // 1 hari 61200000
-                    }
-                }
-            }
-        }
-      },
-      {
-          "$set": {
-              "settimeEnd": 
-              {
-                  "$dateToString": {
-                      "format": "%Y-%m-%d %H:%M:%S",
-                      "date": {
-                          $add: [new Date(), 25200000]
-                      }
-                  }
-              }
-          }
-      }, 
-      {
           "$lookup": 
           {
               from: 'posts',
@@ -418,6 +392,32 @@ export class UserauthsService {
               },
               pipeline: 
               [
+                  {
+                      "$set": {
+                          "settimeStart": 
+                          {
+                              "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                      $add: [new Date(), - 61200000] // 1 hari 61200000
+                                  }
+                              }
+                          }
+                      }
+                  },
+                  {
+                      "$set": {
+                          "settimeEnd": 
+                          {
+                              "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                      $add: [new Date(), 25200000]
+                                  }
+                              }
+                          }
+                      }
+                  }, 
                   {
                       "$match": 
                       {
@@ -433,6 +433,18 @@ export class UserauthsService {
                                       "$eq":["$postType", "story"]
                                   }
                               },
+                              {
+                                  "$expr":
+                                  {
+                                      "$gte":["$createdAt", "$settimeStart"]
+                                  },
+                              },
+                              {
+                                  "$expr":
+                                  {
+                                      "$lte":["$createdAt", "$settimeEnd"]
+                                  }
+                              }
                           ]
                       },
                   },
@@ -510,26 +522,6 @@ export class UserauthsService {
               {
                   "$toDate":"$post_data.createdAt"
               }
-          }
-      },
-      {
-          "$match":
-          {
-              "$and":
-              [
-                  {
-                      "$expr":
-                      {
-                          "$gte":["$createdAt", "$settimeStart"]
-                      },
-                  },
-                  {
-                      "$expr":
-                      {
-                          "$lte":["$createdAt", "$settimeEnd"]
-                      }
-                  }  
-              ]
           }
       },
       {
