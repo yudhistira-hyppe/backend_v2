@@ -378,7 +378,7 @@ export class UserauthsService {
     return query;
   }
 
-  async getRecentStory()
+  async getRecentStory(email:string)
   {
     var query = await this.userauthModel.aggregate([
       {
@@ -444,7 +444,46 @@ export class UserauthsService {
                                   {
                                       "$lte":["$createdAt", "$settimeEnd"]
                                   }
-                              }
+                              },
+                              {
+                                  "email": {
+                                    "$not": {
+                                    "$regex": email
+                                  }
+                                }
+                              },
+                              {
+                                "reportedStatus": {
+                                  "$ne": "OWNED"
+                                }
+                              },
+                              {
+                                "visibility": "PUBLIC"
+                              },
+                              {
+                                "active": true
+                              },
+                              {
+                                "$or": [
+                                  {
+                                    "reportedUser": {
+                                      "$elemMatch": {
+                                        "email": email,
+                                        "active": false,
+        
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "reportedUser.email": {
+                                      "$not": {
+                                        "$regex": email,
+                                      }
+                                    }
+                                  },
+        
+                                ]
+                              },
                           ]
                       },
                   },
