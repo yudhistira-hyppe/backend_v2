@@ -7979,14 +7979,16 @@ export class TransactionsController {
         };
 
 
-
+        var dataid = null;
         try {
             dataquery = await this.userbasicsService.transaksiHistoryBisnis(email, startdate, enddate, sell, buy, withdrawal, rewards, boost, page, limit, descending);
+            dataid = dataquery[0]._id
         } catch (e) {
             dataquery = [];
+            dataid = null;
         }
 
-        if (dataquery[0]._id === undefined) {
+        if (dataid === null) {
             data = [];
         } else {
             data = dataquery;
@@ -7999,7 +8001,7 @@ export class TransactionsController {
             total = 0;
         }
 
-        if (dataquery[0]._id === undefined) {
+        if (dataid === null) {
             totalsearch = 0;
         } else {
             try {
@@ -8011,7 +8013,7 @@ export class TransactionsController {
         }
 
 
-        if (dataquery[0]._id === undefined) {
+        if (dataid === null) {
             totalallrow = 0;
         } else {
 
@@ -8128,17 +8130,15 @@ export class TransactionsController {
         var data = null;
         var date = null;
 
-            const messages = {
+        const messages = {
             "info": ["The process successful"],
         };
 
         var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["date"] !== undefined) 
-        {
+        if (request_json["date"] !== undefined) {
             date = request_json["date"];
-        } 
-        else 
-        {
+        }
+        else {
             throw new BadRequestException("Unabled to proceed");
         }
 
