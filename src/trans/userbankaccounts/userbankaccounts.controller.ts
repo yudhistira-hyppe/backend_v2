@@ -275,7 +275,7 @@ export class UserbankaccountsController {
         if (datauserbank !== undefined || datauserbank !== null) {
             email = datauserbank[0].email;
             fullname = datauserbank[0].fullName;
-            iduser = datauserbank[0]._id.toString();
+            iduser = datauserbank[0].iduser.toString();
 
             //Ceck supportFile
             if (files1.supportFile != undefined) {

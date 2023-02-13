@@ -163,7 +163,8 @@ export class UserbankaccountsService {
             {
                 $project: {
                     email: '$field.email',
-                    fullName: '$field.fullName'
+                    fullName: '$field.fullName',
+                    iduser: '$field._id'
                 }
             }
         ]);
