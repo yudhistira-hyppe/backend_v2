@@ -969,10 +969,10 @@ export class AuthController {
               var path = "";
               if (mediaprofilepicts.mediaThumBasePath != undefined) {
                 path = mediaprofilepicts.mediaThumBasePath.toString();
-              }else{
+              } else {
                 path = mediaprofilepicts.mediaBasePath.toString();
               }
-              
+
               var data2 = await this.ossService.readFile(path);
               if (data2 != null) {
                 response.set("Content-Type", "image/jpeg");
@@ -1237,29 +1237,18 @@ export class AuthController {
     if ((id != undefined) && (token != undefined) && (email != undefined) && (index != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var mediaproofpicts = await this.userticketsService.findOneid(id);
-        if (await this.utilsService.ceckData(mediaproofpicts)) {
-          var mediaproofpicts_SupportfsSourceUri = '';
-          var mediaMime = "";
-          if (mediaproofpicts != null) {
-            if (mediaproofpicts.fsSourceUri != null) {
-              mediaproofpicts_SupportfsSourceUri = mediaproofpicts.fsSourceUri[index].toString();
+
+        if (mediaproofpicts.UploadSource != undefined) {
+          if (mediaproofpicts.UploadSource == "OSS") {
+            if (mediaproofpicts.mediaMime != undefined) {
+              mediaMime = mediaproofpicts.mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
             }
-          }
-          if (mediaproofpicts.mediaMime != undefined) {
-            mediaMime = mediaproofpicts.mediaMime.toString();
-          } else {
-            mediaMime = "image/jpeg";
-          }
-          if (mediaproofpicts_SupportfsSourceUri != '') {
-            // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
-            // const response_ = await fetch(url);
-            // const blob = await response_.blob();
-            // const arrayBuffer = await blob.arrayBuffer();
-            // const buffer = Buffer.from(arrayBuffer);
-            var data = await this.authService.profilePict(mediaproofpicts_SupportfsSourceUri);
-            if (data != null) {
-              response.set("Content-Type", "image/png");
-              response.send(data);
+            var data2 = await this.ossService.readFile(mediaproofpicts.mediaUri[index].toString());
+            if (data2 != null) {
+              response.set("Content-Type", "image/jpeg");
+              response.send(data2);
             } else {
               response.send(null);
             }
@@ -1267,7 +1256,38 @@ export class AuthController {
             response.send(null);
           }
         } else {
-          response.send(null);
+          if (await this.utilsService.ceckData(mediaproofpicts)) {
+            var mediaproofpicts_SupportfsSourceUri = '';
+            var mediaMime = "";
+            if (mediaproofpicts != null) {
+              if (mediaproofpicts.fsSourceUri != null) {
+                mediaproofpicts_SupportfsSourceUri = mediaproofpicts.fsSourceUri[index].toString();
+              }
+            }
+            if (mediaproofpicts.mediaMime != undefined) {
+              mediaMime = mediaproofpicts.mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            if (mediaproofpicts_SupportfsSourceUri != '') {
+              // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
+              // const response_ = await fetch(url);
+              // const blob = await response_.blob();
+              // const arrayBuffer = await blob.arrayBuffer();
+              // const buffer = Buffer.from(arrayBuffer);
+              var data = await this.authService.profilePict(mediaproofpicts_SupportfsSourceUri);
+              if (data != null) {
+                response.set("Content-Type", "image/png");
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
         }
       } else {
         response.send(null);
@@ -3439,11 +3459,11 @@ export class AuthController {
         var mimetype = files.profilePict[0].mimetype;
 
         var thumnail = null;
-        try{
+        try {
           thumnail = await sharp(files.profilePict[0].buffer).resize(100, 100).toBuffer();
           console.log(typeof thumnail);
-        }catch(e){
-          console.log("THUMNAIL","FAILED TO CREATE THUMNAIL");
+        } catch (e) {
+          console.log("THUMNAIL", "FAILED TO CREATE THUMNAIL");
         }
 
         var result = await this.ossService.uploadFile(files.profilePict[0], userId + "/profilePict/" + fileName);

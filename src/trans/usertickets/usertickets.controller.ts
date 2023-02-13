@@ -17,6 +17,7 @@ import { diskStorage } from 'multer';
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
 import { CreateLogticketsDto } from '../logtickets/dto/create-logtickets.dto';
+import { OssService } from "../../stream/oss/oss.service";
 //import FormData from "form-data";
 const multer = require('multer');
 var FormData = require('form-data');
@@ -61,83 +62,15 @@ export class UserticketsController {
     private readonly settingsService: SettingsService,
     private readonly userauthsService: UserauthsService,
     private readonly seaweedfsService: SeaweedfsService,
+    private readonly ossService: OssService,
     private readonly logticketsService: LogticketsService) { }
 
 
-  // @UseGuards(JwtAuthGuard)
-  // @Post('api/usertickets/createticket')
-  // async create(@Res() res, @Body() CreateUserticketsDto: CreateUserticketsDto, @Request() req) {
-  //   const mongoose = require('mongoose');
-  //   var ObjectId = require('mongodb').ObjectId;
-  //   const messages = {
-  //     "info": ["The create successful"],
-  //   };
-
-  //   const messagesEror = {
-  //     "info": ["Todo is not found!"],
-  //   };
-  //   var reqdata = req.user;
-  //   var email = reqdata.email;
-
-  //   var datatiket = await this.userticketsService.findAll();
-  //   var leng = datatiket.length + 1;
-
-  //   var curdate = new Date(Date.now());
-  //   var beforedate = curdate.toISOString();
-
-  //   var substrtahun = beforedate.substring(0, 4);
-  //   var numtahun = parseInt(substrtahun);
-
-
-
-  //   var substrbulan = beforedate.substring(7, 5);
-  //   var numbulan = parseInt(substrbulan);
-  //   var substrtanggal = beforedate.substring(10, 8);
-  //   var numtanggal = parseInt(substrtanggal);
-
-  //   var rotahun = this.romawi(numtahun);
-  //   var robulan = this.romawi(numbulan);
-  //   var rotanggal = this.romawi(numtanggal);
-  //   var angka = await this.generateNumber();
-  //   var no = "HYPPE/" + (await rotahun).toString() + "/" + (await robulan).toString() + "/" + (await rotanggal).toString() + "/" + leng;
-
-  //   var ubasic = await this.userbasicsService.findOne(email);
-
-  //   var iduser = ubasic._id;
-  //   var dt = new Date(Date.now());
-  //   dt.setHours(dt.getHours() + 7); // timestamp
-  //   dt = new Date(dt);
-
-  //   var idcategory = mongoose.Types.ObjectId(CreateUserticketsDto.categoryTicket);
-  //   var idsource = mongoose.Types.ObjectId(CreateUserticketsDto.sourceTicket);
-  //   var idlevel = mongoose.Types.ObjectId(CreateUserticketsDto.levelTicket);
-  //   CreateUserticketsDto.IdUser = iduser;
-  //   CreateUserticketsDto.datetime = dt.toISOString();
-  //   CreateUserticketsDto.nomortiket = no;
-  //   CreateUserticketsDto.active = true;
-  //   CreateUserticketsDto.categoryTicket = idcategory;
-  //   CreateUserticketsDto.sourceTicket = idsource;
-  //   CreateUserticketsDto.levelTicket = idlevel;
-
-  //   try {
-  //     let data = await this.userticketsService.create(CreateUserticketsDto);
-  //     res.status(HttpStatus.OK).json({
-  //       response_code: 202,
-  //       "data": data,
-  //       "message": messages
-  //     });
-  //   } catch (e) {
-  //     res.status(HttpStatus.BAD_REQUEST).json({
-
-  //       "message": messagesEror
-  //     });
-  //   }
-  // }
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/usertickets/createticket')
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 4 }], multerOptions))
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 4 }]))
   async upload(
     @UploadedFiles() files: {
       supportFile?: Express.Multer.File[],
@@ -208,6 +141,7 @@ export class UserticketsController {
 
         var substrtahun = beforedate.substring(0, 4);
         var numtahun = parseInt(substrtahun);
+        var url_cardPict = null;
 
 
 
@@ -268,54 +202,51 @@ export class UserticketsController {
           var countfile = files.supportFile.length;
 
           for (var i = 0; i < countfile; i++) {
+
             var FormData_ = new FormData();
             supportFile_data = files.supportFile[i];
+            supportFile_filename = files.supportFile[i].originalname;
+            supportFile_etx = '.jpeg';
+            supportFile_filename_new = IdMediaproofpictsDto + '_000' + (i + 1) + supportFile_etx;
             supportFile_mimetype = files.supportFile[i].mimetype;
-            supportFile_filename = files.supportFile[i].filename;
-            supportFile_etx = supportFile_filename.substring(supportFile_filename.lastIndexOf('.') + 1, supportFile_filename.length);
-            supportFile_name = supportFile_filename.substring(0, supportFile_filename.lastIndexOf('.'));
 
-            //New Name file supportFile
-            supportFile_filename_new = IdMediaproofpictsDto + '_000' + (i + 1) + '.' + supportFile_etx;
-            //Rename Name file supportFile
-            fs.renameSync('./temp/' + supportFile_filename, './temp/' + supportFile_filename_new);
-
-            //Local path
-            supportFile_local_path = './temp/' + mongoose_gen_meida + '/' + supportFile_filename_new;
-            //SeaweedFs path
-            supportFile_seaweedfs_path = '/' + mongoose_gen_meida + '/supportfile/';
-
-            //Create Folder Id
-            if (await this.utilsService.createFolder('./temp/', mongoose_gen_meida)) {
-
-              await fse.move('./temp/' + supportFile_filename_new, './temp/' + mongoose_gen_meida + '/' + supportFile_filename_new);
+            var result = await this.ossService.uploadFile(files.supportFile[i], iduser.toString() + "/ticket/supportfile/" + supportFile_filename_new);
+            console.log(result)
+            if (result != undefined) {
+              if (result.res != undefined) {
+                if (result.res.statusCode != undefined) {
+                  if (result.res.statusCode == 200) {
+                    url_cardPict = result.res.requestUrls[0];
+                  } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Unabled to proceed supportfile failed upload',
+                    );
+                  }
+                } else {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed supportfile failed upload',
+                  );
+                }
+              } else {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed supportfile failed upload',
+                );
+              }
             } else {
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed create folder ' + mongoose_gen_meida,
+                'Unabled to proceed supportfile failed upload',
               );
             }
-
-            //Upload Seaweedfs
-            try {
-              FormData_.append('proofpict', fs.createReadStream(path.resolve(supportFile_local_path)));
-              await this.seaweedfsService.write(supportFile_seaweedfs_path, FormData_);
-            } catch (err) {
-              await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed proofpict failed upload seaweedfs',
-              );
-            }
-
-            var objSuri = '/localrepo/' + mongoose_gen_meida + '/supportfile/' + supportFile_filename_new;
-            var objsname = supportFile_filename_new.replace('_000' + i, '');
-
-            arrayUri.push(supportFile_filename_new);
+            var pathnew = iduser.toString() + '/ticket/supportfile/' + supportFile_filename_new
+            arrayUri.push(pathnew);
             arrayName.push(supportFile_filename);
-            arraySuri.push(objSuri);
-            arraySname.push(objsname);
+            arraySuri.push(url_cardPict);
+            arraySname.push(supportFile_filename);
           }
 
           CreateUserticketsDto.mediaType = 'supportfile';
           CreateUserticketsDto.mediaBasePath = mongoose_gen_meida + '/supportfile/';
+          CreateUserticketsDto.UploadSource = "OSS";
           CreateUserticketsDto.mediaUri = arrayUri;
           CreateUserticketsDto.originalName = arrayName;
           CreateUserticketsDto.fsSourceUri = arraySuri;
@@ -325,16 +256,6 @@ export class UserticketsController {
           await this.userticketsService.updatedata(objadsid, CreateUserticketsDto);
 
           var data = await this.userticketsService.findOne(objadsid);
-
-
-
-          //Delete directory recursively
-
-          fs.rm('./temp/' + mongoose_gen_meida, { recursive: true }, (err) => {
-            if (err) {
-              throw err;
-            }
-          });
 
           return res.status(HttpStatus.OK).json({
             response_code: 202,
