@@ -230,6 +230,7 @@ export class UserbankaccountsController {
         let supportFile_local_path = '';
         let supportFile_seaweedfs_path = '';
         var arrayUri = [];
+        var arrayTargetUri = [];
         var arrayName = [];
         var arraySuri = [];
         var arraySname = [];
@@ -316,8 +317,11 @@ export class UserbankaccountsController {
                             'Unabled to proceed supportfile failed upload',
                         );
                     }
-                    var pathnew = iduser.toString() + '/akunbank/supportfile/' + supportFile_filename_new
+                    var pathnew = iduser.toString() + '/akunbank/supportfile/' + supportFile_filename_new;
+                    var pathnew2 = '/akunbank/supportfile/' + supportFile_filename_new;
+
                     arrayUri.push(pathnew);
+                    arrayTargetUri.push(pathnew2);
                     arrayName.push(supportFile_filename);
                     arraySuri.push(url_cardPict);
                     arraySname.push(supportFile_filename);
@@ -331,7 +335,7 @@ export class UserbankaccountsController {
                 CreateUserbankaccountsDto_.SupportOriginalName = arrayName;
                 CreateUserbankaccountsDto_.SupportfsSourceUri = arraySuri;
                 CreateUserbankaccountsDto_.SupportfsSourceName = arraySname;
-                CreateUserbankaccountsDto_.SupportfsTargetUri = arrayUri;
+                CreateUserbankaccountsDto_.SupportfsTargetUri = arrayTargetUri;
                 CreateUserbankaccountsDto_.SupportmediaMime = supportFile_mimetype;
 
                 data = await this.userbankaccountsService.update(iduserbank, CreateUserbankaccountsDto_);
@@ -678,7 +682,7 @@ export class UserbankaccountsController {
         };
 
         data = await this.userbankaccountsService.getDetailAccountBankById(id);
-        //data = data[0];
+
 
         return { response_code: 202, messages, data };
     }
