@@ -40,7 +40,8 @@ export class Userticketdetails {
     fsTargetUri: any[]
     @Prop()
     mediaMime: String
-
+    @Prop()
+    UploadSource: string
 }
 
 export const UserticketdetailsSchema = SchemaFactory.createForClass(Userticketdetails);
