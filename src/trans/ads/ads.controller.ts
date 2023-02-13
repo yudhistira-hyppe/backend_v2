@@ -886,8 +886,10 @@ export class AdsController {
         var getdatabase = await this.adsService.getAdsanalyticsgraph(startdate, enddate);
 
         var getdata = [];
+        var total = 0;
         try {
             getdata = getdatabase[0].data;
+            total = getdatabase[0].totaldata;
         }
         catch (e) {
             getdata = [];
@@ -920,17 +922,13 @@ export class AdsController {
             array.push(obj);
         }
 
-        data =
-        {
-            data: array,
-            total: (getdata[0].totaldata == parseInt('0') ? parseInt('0') : getdata[0].totaldata)
-        }
+        data = array;
 
         const messages = {
             "info": ["The process successful"],
         };
 
-        return { response_code: 202, data, messages };
+        return { response_code: 202, data:array, total:total, messages };
     }
 
     @Post('console/adscenter/demographchart')
@@ -1042,9 +1040,10 @@ export class AdsController {
         }
 
         var getdata = null;
+        var total = 0;
         try {
             var tempdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, page, limit, sorting);
-            var total = tempdata.length;
+            total = tempdata.length;
             for (var i = 0; i < total; i++) {
                 getdata = await this.adsService.getapsaraDatabaseAdsNew(tempdata, i);
             }
@@ -1053,6 +1052,7 @@ export class AdsController {
             getdata = [];
         }
 
+        
         try {
             var resultdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, undefined, undefined, sorting);
             var totalsearch = resultdata.length;
@@ -1065,14 +1065,14 @@ export class AdsController {
         var totalpage = 0;
         var gettotal = (totalsearch / limit).toFixed(0);
         var sisa = (totalsearch % limit);
-        if (sisa == 0) {
-            totalpage = parseInt(gettotal);
-        }
-        else {
+        if (sisa > 0 && sisa < 5) {
             totalpage = parseInt(gettotal) + 1;
         }
+        else {
+            totalpage = parseInt(gettotal);
+        }
 
-        return { response_code: 202, data: getdata, totalsearch: totalsearch, totalpage: totalpage, limit: limit, page: page, messages };
+        return { response_code: 202, data: getdata, totalsearch: totalsearch, totalpage: totalpage, totaldatainpage:total, limit: limit, page: page, messages };
     }
 }
 
