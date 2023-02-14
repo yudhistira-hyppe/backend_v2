@@ -21,7 +21,7 @@ export class OssService {
     var client = new OSS({
       accessKeyId: this.configService.get("OSS_ACCES_KEY_ID"),
       accessKeySecret: this.configService.get("OSS_ACCES_KEY_SECRET"),
-      bucket: this.configService.get("OSS_BUCKET"),
+      bucket: this.configService.get("OSS_BUCKET_PROFILE"),
       region: this.configService.get("OSS_REGION")
     });
     return client;

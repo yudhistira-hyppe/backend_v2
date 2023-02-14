@@ -46,7 +46,6 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { ContentDTO, CreateNotificationsDto, NotifResponseApps } from '../notifications/dto/create-notifications.dto';
 import { MediamusicService } from '../mediamusic/mediamusic.service';
 
-var RPCClient = require('@alicloud/pop-core').RPCClient;
 //import FormData from "form-data";
 var FormData = require('form-data');
 
@@ -80,33 +79,11 @@ export class PostContentService {
     private mediamusicService: MediamusicService,
   ) { }
 
-  initVodClient() {
-    var regionId = 'ap-southeast-5';   // The region where you want to call ApsaraVideo VOD operations.
-    var client = new RPCClient({
-      accessKeyId: 'LTAI5tP2FZeBukPgRq3McSpM',
-      accessKeySecret: 'Q5hRgEciIYI2g265zbWsh2kc7meBjI',
-      endpoint: 'outin-c01c93ffe24211ec9bf900163e013357.oss-' + regionId + '.aliyuncs.com',
-      apiVersion: '2017-03-21'
-    });
-    return client;
-  }
-
-  uploadVideo() {
-    var client = this.initVodClient();
-
-    client.request("CreateUploadVideo", {
-      Title: 'this is a sample',
-      FileName: 'filename.mp4'
-    }, {}).then(function (response) {
-      console.log('VideoId = ' + response.VideoId);
-      console.log('UploadAddress = ' + response.UploadAddress);
-      console.log('UploadAuth = ' + response.UploadAuth);
-      console.log('RequestId = ' + response.RequestId);
-    }).catch(function (response) {
-      console.log('ErrorCode = ' + response.data.Code);
-      console.log('ErrorMessage = ' + response.data.Message);
-      console.log('RequestId = ' + response.data.RequestId);
-    });
+  async uploadVideo(file: Express.Multer.File) {
+    let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + file.originalname;
+    const form = new FormData();
+    form.append('file', nm);
+    axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V5"), form, { headers: { 'Content-Type': 'multipart/form-data' } });
   }
 
   async createNewPost(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
@@ -907,7 +884,7 @@ export class PostContentService {
       let ids: string[] = [];
       ids.push(body.videoId);
       this.logger.log('updateNewPost >>> checking cmod video');
-      let aimg = await this.getVideoApsaraSingle(ids[0]);
+      let aimg = await this.getVideoApsaraSingle(ids[0],"SD");
       if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
         let aim = aimg.PlayUrl;
         this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
@@ -994,7 +971,7 @@ export class PostContentService {
         let ids: string[] = [];
         ids.push(body.videoId);
         this.logger.log('updateNewPost >>> checking cmod video');
-        let aimg = await this.getVideoApsaraSingle(ids[0]);
+        let aimg = await this.getVideoApsaraSingle(ids[0], "SD");
         if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
           let aim = aimg.PlayUrl;
           this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
@@ -1043,7 +1020,7 @@ export class PostContentService {
       let ids: string[] = [];
       ids.push(body.videoId);
       this.logger.log('updateNewPost >>> checking cmod video');
-      let aimg = await this.getVideoApsaraSingle(ids[0]);
+      let aimg = await this.getVideoApsaraSingle(ids[0], "SD");
       if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
         let aim = aimg.PlayUrl;
         this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
@@ -2969,75 +2946,7 @@ export class PostContentService {
     return tx;
   }
 
-  async uploadFile(file: Express.Multer.File) {
-    var co = require('co');
-    var OSS = require('ali-oss')
-    var path = require("path");
-
-    var client = new OSS({
-      accessKeyId: 'LTAI5tMNPEam5637RCWvz5Hs',
-      accessKeySecret: 'p0T6anvjf4IEr9oSBXEDJe6pJNxfTB',
-      bucket: 'be-staging',
-      region: 'oss-ap-southeast-5'
-    });
-
-    var originalname = file.originalname;
-    let extension = originalname.split(".");
-    var mimetype = file.mimetype;
-
-    var buffer = file.buffer;
-    const result = await client.put("profilePict/" + "ff" + "." + extension[1], buffer);
-    console.log(result);
-    // var namaFile = this.configService.get("PATH_UPLOAD_BUCKET") + "asdasdasd" + "." + extension[1];
-    // const ws = createWriteStream(namaFile);
-
-    // ws.write(file.buffer);
-    // ws.close();
-
-    // ws.on('finish', async () => {
-    //   co(function* () {
-    //     // use 'chunked encoding'
-    //     var stream = fs.createReadStream(path.resolve(namaFile));
-    //     var result = yield client.putStream("profilePict/" + "asdasdasd" + "." + extension[1], stream);
-    //     console.log(result);
-
-    //     // do not use 'chunked encoding'
-    //     // var stream = fs.createReadStream(namaFile);
-    //     // var size = fs.statSync(namaFile).size;
-    //     // var result = yield client.putStream('123123123123', stream, { contentLength: size });
-    //     // console.log(result);
-    //   }).catch(function (err) {
-    //     console.log(err);
-    //   });
-
-    //   // var progress = function (p) {
-    //   //   return function (done) {
-    //   //     console.log(p);
-    //   //     done();
-    //   //   };
-    //   // };
-
-    //   // co(function* () {
-    //   //   var result = yield client.multipartUpload('123123123123', namaFile, {
-    //   //     progress: function* (p) {
-    //   //       console.log('Progress: ' + p);
-    //   //     },
-    //   //     meta: {
-    //   //       year: 2017,
-    //   //       people: 'test'
-    //   //     }
-    //   //   });
-    //   //   console.log(result);
-    //   //   var head = yield client.head('123123123123');
-    //   //   console.log(head);
-    //   // }).catch(function (err) {
-    //   //   console.log(err);
-    //   // });
-
-    // });
-  }
-
-  public async getVideoApsaraSingle(ids: String): Promise<ApsaraPlayResponse> {
+  public async getVideoApsaraSingle(ids: String, definition: String): Promise<ApsaraPlayResponse> {
     this.logger.log('getVideoApsaraSingle >>> start: ' + ids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
@@ -3051,7 +2960,7 @@ export class PostContentService {
     let params = {
       "RegionId": this.configService.get("APSARA_REGION_ID"),
       "VideoId": ids,
-      "Definition": "SD"
+      "Definition": definition
     }
 
     let requestOption = {

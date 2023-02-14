@@ -319,7 +319,7 @@ export class PostsController {
   @Post('api/posts/testUpload')
   @UseInterceptors(FileInterceptor('testPost'))
   async testPost(@UploadedFile() file: Express.Multer.File) {
-    return this.postContentService.uploadFile(file);
+    return this.postContentService.uploadVideo(file);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -552,7 +552,11 @@ export class PostsController {
   @Post('api/posts/getvideo')
   async getVideo(@Body() body, @Headers() headers) {
     this.logger.log("getVideo >>> start: " + JSON.stringify(body));
-    return this.postContentService.getVideoApsaraSingle(String(body.apsaraId));
+    var definition = "SD";
+    if (body.definition != undefined) {
+      definition = String(body.definition);
+    }
+    return this.postContentService.getVideoApsaraSingle(String(body.apsaraId), definition);
   }
 
   @Post('api/userplaylist/generate')
@@ -790,7 +794,7 @@ export class PostsController {
           data_["postType"] = post.postType;
           if (post.postType == 'vid') {
             if (media[0].datacontent[0].apsaraId != undefined) {
-              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId);
+              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId,'SD');
               var metadata = {
                 duration: dataApsara.Duration
               }
@@ -799,7 +803,7 @@ export class PostsController {
             }
           } else if (post.postType == 'diary') {
             if (media[0].datacontent[0].apsaraId != undefined) {
-              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId);
+              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId, 'SD');
               var metadata = {
                 duration: dataApsara.Duration
               }
@@ -808,7 +812,7 @@ export class PostsController {
             }
           } else if (post.postType == 'story') {
             if (media[0].datacontent[0].apsaraId != undefined) {
-              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId);
+              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId, 'SD');
               var metadata = {
                 duration: dataApsara.Duration
               }

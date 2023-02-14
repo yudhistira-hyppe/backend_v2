@@ -403,7 +403,7 @@ export class MediaController {
                 //AWS face detect proofpict
                 try {
                     //Create Buffer
-                    buffer_cardPict = await this.ossService.readFileBase64(url_cardPict);
+                    buffer_cardPict = await this.ossService.readFileBase64(iduserbasic + "/kyc/proofpict/" + cardPict_filename_new);
                     var data_cardPict = {
                         "Attributes": ["ALL"],
                         "Image": {
@@ -468,7 +468,7 @@ export class MediaController {
                 //AWS face detect selfiepict
                 try {
                     //Create Buffer
-                    buffer_selfiepict = await this.ossService.readFileBase64(url_selfiepict);
+                    buffer_selfiepict = await this.ossService.readFileBase64(iduserbasic + "/kyc/selfiepict/" + selfiepict_filename_new);
 
                     var data_selfiepict = {
                         "Attributes": ["ALL"],
@@ -505,7 +505,7 @@ export class MediaController {
                     CreateMediaproofpictsDto_.mediaType = 'image';
 
                     CreateMediaproofpictsDto_.postType = 'proofpict';
-                    CreateMediaproofpictsDto_.mediaBasePath = iduserbasic + "/proofpict/" + cardPict_filename_new;
+                    CreateMediaproofpictsDto_.mediaBasePath = iduserbasic + "/kyc/proofpict/" + cardPict_filename_new;
                     CreateMediaproofpictsDto_.mediaUri = cardPict_filename_new;
                     CreateMediaproofpictsDto_.originalName = cardPict_filename;
 
@@ -517,7 +517,7 @@ export class MediaController {
                     CreateMediaproofpictsDto_.proofpictUploadSource = "OSS";
 
                     CreateMediaproofpictsDto_.mediaSelfieType = 'selfiepict';
-                    CreateMediaproofpictsDto_.mediaSelfieBasePath = iduserbasic + '/selfiepict/' + selfiepict_filename_new;
+                    CreateMediaproofpictsDto_.mediaSelfieBasePath = iduserbasic + '/kyc/selfiepict/' + selfiepict_filename_new;
                     CreateMediaproofpictsDto_.mediaSelfieUri = selfiepict_filename_new;
                     CreateMediaproofpictsDto_.SelfieOriginalName = selfiepict_filename;
 
@@ -569,7 +569,7 @@ export class MediaController {
                     CreateMediaproofpictsDto_.mediaType = 'image';
 
                     CreateMediaproofpictsDto_.postType = 'proofpict';
-                    CreateMediaproofpictsDto_.mediaBasePath = iduserbasic + "/proofpict/" + cardPict_filename_new;
+                    CreateMediaproofpictsDto_.mediaBasePath = iduserbasic + "/kyc/proofpict/" + cardPict_filename_new;
                     CreateMediaproofpictsDto_.mediaUri = cardPict_filename_new;
                     CreateMediaproofpictsDto_.originalName = cardPict_filename;
 
@@ -581,7 +581,7 @@ export class MediaController {
                     CreateMediaproofpictsDto_.proofpictUploadSource = "OSS";
                     
                     CreateMediaproofpictsDto_.mediaSelfieType = 'selfiepict';
-                    CreateMediaproofpictsDto_.mediaSelfieBasePath = iduserbasic + '/selfiepict/' + selfiepict_filename_new;
+                    CreateMediaproofpictsDto_.mediaSelfieBasePath = iduserbasic + '/kyc/selfiepict/' + selfiepict_filename_new;
                     CreateMediaproofpictsDto_.mediaSelfieUri = selfiepict_filename_new;
                     CreateMediaproofpictsDto_.SelfieOriginalName = selfiepict_filename;
 
