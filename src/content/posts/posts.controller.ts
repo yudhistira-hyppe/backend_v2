@@ -317,9 +317,9 @@ export class PostsController {
   }
 
   @Post('api/posts/testUpload')
-  @UseInterceptors(FileInterceptor('testPost'))
-  async testPost(@UploadedFile() file: Express.Multer.File) {
-    return this.postContentService.uploadVideo(file);
+  @UseInterceptors(FileInterceptor('file'))
+  async testPost(@UploadedFile() file: Express.Multer.File, @Body() body) {
+    return this.postContentService.uploadVideo(file, body.postID.toString());
   }
 
   @UseGuards(JwtAuthGuard)

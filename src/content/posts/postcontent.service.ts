@@ -79,11 +79,44 @@ export class PostContentService {
     private mediamusicService: MediamusicService,
   ) { }
 
-  async uploadVideo(file: Express.Multer.File) {
-    let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + file.originalname;
-    const form = new FormData();
-    form.append('file', nm);
-    axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V5"), form, { headers: { 'Content-Type': 'multipart/form-data' } });
+  async uploadVideo(file: Express.Multer.File, postID:string) {
+    let fn = file.originalname;
+    let ext = fn.split(".");
+    let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + postID + "." + ext[1];
+    const ws = createWriteStream(nm);
+    ws.write(file.buffer);
+    ws.close();
+
+    ws.on('finish', async () => {
+      const form = new FormData();
+      form.append('file', fs.createReadStream(nm));
+      form.append('postID', postID);
+      console.log(form);
+      axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V5"), form, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+    });
+
+
+    // const form = new FormData();
+    // var file_send = {
+    //   value: file.buffer, // Upload the first file in the multi-part post
+    //   options: {
+    //     filename: file.originalname
+    //   }
+    // }
+    // console.log(file);
+    // console.log(file_send);
+    // form.append('file', file.buffer, file.originalname);
+    // form.append('postID', postID);
+    // console.log(form);
+    // axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V5"), form, {
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data',
+    //     'maxContentLength': Infinity,
+    //     'maxBodyLength': Infinity, } });
   }
 
   async createNewPost(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
