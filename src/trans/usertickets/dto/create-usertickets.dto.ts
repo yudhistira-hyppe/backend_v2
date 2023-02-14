@@ -24,5 +24,5 @@ export class CreateUserticketsDto {
   mediaMime: string;
   version: number;
   OS: string;
-
+  UploadSource: string
 }

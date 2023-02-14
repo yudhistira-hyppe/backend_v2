@@ -10,11 +10,11 @@ import { MediaproofpictsModule } from '../../content/mediaproofpicts/mediaproofp
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { UtilsModule } from '../../utils/utils.module';
 import { SeaweedfsModule } from '../../stream/seaweedfs/seaweedfs.module';
-
+import { OssModule } from "../../stream/oss/oss.module";
 @Module({
     imports: [
 
-        ConfigModule.forRoot(), UserbasicsModule, BanksModule, MediaproofpictsModule, NestjsFormDataModule, UtilsModule, SeaweedfsModule,
+        ConfigModule.forRoot(), OssModule, UserbasicsModule, BanksModule, MediaproofpictsModule, NestjsFormDataModule, UtilsModule, SeaweedfsModule,
         MongooseModule.forFeature([{ name: Userbankaccounts.name, schema: UserbankaccountsSchema }], 'SERVER_FULL')
     ],
     controllers: [UserbankaccountsController],

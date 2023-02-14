@@ -35,8 +35,10 @@ import { GroupModule } from '../trans/usermanagement/group/group.module';
 import { UserticketsModule } from '../trans/usertickets/usertickets.module';
 import { UserticketdetailsModule } from '../trans/usertickets/userticketdetails/userticketdetails.module';
 import { OssModule } from '../stream/oss/oss.module';
+import { UserbankaccountsModule } from '../trans/userbankaccounts/userbankaccounts.module';
 @Module({
   imports: [
+    UserbankaccountsModule,
     OssModule,
     GroupModule,
     UserticketdetailsModule,

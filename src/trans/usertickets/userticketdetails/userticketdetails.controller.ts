@@ -16,6 +16,7 @@ import { diskStorage } from 'multer';
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
 import { CreateLogticketsDto } from '../../../trans/logtickets/dto/create-logtickets.dto';
+import { OssService } from "../../../stream/oss/oss.service";
 //import FormData from "form-data";
 const multer = require('multer');
 var FormData = require('form-data');
@@ -58,83 +59,15 @@ export class UserticketdetailsController {
         private readonly errorHandler: ErrorHandler,
         private readonly userbasicsService: UserbasicsService,
         private readonly seaweedfsService: SeaweedfsService,
+        private readonly ossService: OssService,
         private readonly userticketsService: UserticketsService,
         private readonly logticketsService: LogticketsService) { }
 
-    // @UseGuards(JwtAuthGuard)
-    // @Post('api/usertickets/reply')
-    // async create(@Res() res, @Body() CreateUserticketdetailsDto: CreateUserticketdetailsDto, @Request() req) {
-    //     const messages = {
-    //         "info": ["The create successful"],
-    //     };
-
-    //     const messagesEror = {
-    //         "info": ["Todo is not found!"],
-    //     };
-
-
-    //     var request_json = JSON.parse(JSON.stringify(req.body));
-    //     var IdUserticket = null;
-    //     var status = null;
-
-    //     var reqdata = req.user;
-    //     var email = reqdata.email;
-
-    //     var ubasic = await this.userbasicsService.findOne(email);
-
-    //     var iduser = ubasic._id;
-    //     var dt = new Date(Date.now());
-    //     dt.setHours(dt.getHours() + 7); // timestamp
-    //     dt = new Date(dt);
-
-    //     const mongoose = require('mongoose');
-    //     var ObjectId = require('mongodb').ObjectId;
-    //     user: mongoose.Types.ObjectId(request_json["IdUserticket"])
-    //     if (request_json["IdUserticket"] === undefined) {
-    //         res.status(HttpStatus.BAD_REQUEST).json({
-
-    //             "message": "ID tiket tidak boleh kosong"
-    //         });
-
-    //     }
-    //     else if (request_json["status"] === undefined) {
-    //         res.status(HttpStatus.BAD_REQUEST).json({
-
-    //             "message": "status tidak boleh kosong"
-    //         });
-
-    //     }
-
-    //     else {
-    //         status = request_json["status"];
-    //         IdUserticket = request_json["IdUserticket"];
-    //         var idusertiket = mongoose.Types.ObjectId(request_json["IdUserticket"]);
-    //         CreateUserticketdetailsDto.IdUser = iduser;
-    //         CreateUserticketdetailsDto.datetime = dt.toISOString();
-    //         CreateUserticketdetailsDto.IdUserticket = idusertiket;
-    //         try {
-    //             let data = await this.userticketdetailsService.create(CreateUserticketdetailsDto);
-    //             await this.userticketsService.update(idusertiket, status);
-    //             res.status(HttpStatus.OK).json({
-    //                 response_code: 202,
-    //                 "data": data,
-    //                 "message": messages
-    //             });
-    //         } catch (e) {
-    //             res.status(HttpStatus.BAD_REQUEST).json({
-
-    //                 "message": messagesEror
-    //             });
-    //         }
-
-    //     }
-
-    // }
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('api/usertickets/reply')
-    @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 3 }], multerOptions))
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 3 }]))
     async upload(
         @UploadedFiles() files: {
             supportFile?: Express.Multer.File[],
@@ -175,6 +108,7 @@ export class UserticketdetailsController {
         var arraySname = [];
         var status = null;
         var type = null;
+        var url_cardPict = null;
         var IdUserticket = null;
         const messages = {
             "info": ["The create successful"],
@@ -275,50 +209,47 @@ export class UserticketdetailsController {
                     var countfile = files.supportFile.length;
 
                     for (var i = 0; i < countfile; i++) {
+
                         var FormData_ = new FormData();
                         supportFile_data = files.supportFile[i];
+                        supportFile_filename = files.supportFile[i].originalname;
+                        supportFile_etx = '.jpeg';
+                        supportFile_filename_new = IdMediaproofpictsDto + '_000' + (i + 1) + supportFile_etx;
                         supportFile_mimetype = files.supportFile[i].mimetype;
-                        supportFile_filename = files.supportFile[i].filename;
-                        supportFile_etx = supportFile_filename.substring(supportFile_filename.lastIndexOf('.') + 1, supportFile_filename.length);
-                        supportFile_name = supportFile_filename.substring(0, supportFile_filename.lastIndexOf('.'));
 
-                        //New Name file supportFile
-                        supportFile_filename_new = IdMediaproofpictsDto + '_000' + (i + 1) + '.' + supportFile_etx;
-                        //Rename Name file supportFile
-                        fs.renameSync('./temp/' + supportFile_filename, './temp/' + supportFile_filename_new);
 
-                        //Local path
-                        supportFile_local_path = './temp/' + mongoose_gen_meida + '/' + supportFile_filename_new;
-                        //SeaweedFs path
-                        supportFile_seaweedfs_path = '/' + mongoose_gen_meida + '/supportfile/';
-
-                        //Create Folder Id
-                        if (await this.utilsService.createFolder('./temp/', mongoose_gen_meida)) {
-
-                            await fse.move('./temp/' + supportFile_filename_new, './temp/' + mongoose_gen_meida + '/' + supportFile_filename_new);
+                        var result = await this.ossService.uploadFile(files.supportFile[i], iduser.toString() + "/ticket/detail/supportfile/" + supportFile_filename_new);
+                        console.log(result)
+                        if (result != undefined) {
+                            if (result.res != undefined) {
+                                if (result.res.statusCode != undefined) {
+                                    if (result.res.statusCode == 200) {
+                                        url_cardPict = result.res.requestUrls[0];
+                                    } else {
+                                        await this.errorHandler.generateNotAcceptableException(
+                                            'Unabled to proceed supportfile failed upload',
+                                        );
+                                    }
+                                } else {
+                                    await this.errorHandler.generateNotAcceptableException(
+                                        'Unabled to proceed supportfile failed upload',
+                                    );
+                                }
+                            } else {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed supportfile failed upload',
+                                );
+                            }
                         } else {
                             await this.errorHandler.generateNotAcceptableException(
-                                'Unabled to proceed create folder ' + mongoose_gen_meida,
+                                'Unabled to proceed supportfile failed upload',
                             );
                         }
-
-                        //Upload Seaweedfs
-                        try {
-                            FormData_.append('proofpict', fs.createReadStream(path.resolve(supportFile_local_path)));
-                            await this.seaweedfsService.write(supportFile_seaweedfs_path, FormData_);
-                        } catch (err) {
-                            await this.errorHandler.generateNotAcceptableException(
-                                'Unabled to proceed proofpict failed upload seaweedfs',
-                            );
-                        }
-
-                        var objSuri = '/localrepo/' + mongoose_gen_meida + '/supportfile/' + supportFile_filename_new;
-                        var objsname = supportFile_filename_new.replace('_000' + i, '');
-
-                        arrayUri.push(supportFile_filename_new);
+                        var pathnew = iduser.toString() + '/ticket/detail/supportfile/' + supportFile_filename_new
+                        arrayUri.push(pathnew);
                         arrayName.push(supportFile_filename);
-                        arraySuri.push(objSuri);
-                        arraySname.push(objsname);
+                        arraySuri.push(url_cardPict);
+                        arraySname.push(supportFile_filename);
                     }
 
                     CreateUserticketdetailsDto.mediaType = 'supportfile';
@@ -329,17 +260,10 @@ export class UserticketdetailsController {
                     CreateUserticketdetailsDto.fsSourceName = arraySname;
                     CreateUserticketdetailsDto.fsTargetUri = arraySuri;
                     CreateUserticketdetailsDto.mediaMime = supportFile_mimetype;
+                    CreateUserticketdetailsDto.UploadSource = "OSS";
                     await this.userticketdetailsService.updatedata(objadsid, CreateUserticketdetailsDto);
 
                     var data = await this.userticketdetailsService.findOne(objadsid);
-
-                    //Delete directory recursively
-
-                    fs.rm('./temp/' + mongoose_gen_meida, { recursive: true }, (err) => {
-                        if (err) {
-                            throw err;
-                        }
-                    });
 
                     res.status(HttpStatus.OK).json({
                         response_code: 202,

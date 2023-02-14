@@ -18,4 +18,5 @@ export class CreateUserbankaccountsDto {
     SupportmediaMime: String;
     createdAt: string;
     updatedAt: string;
+    SupportUploadSource: string
 }

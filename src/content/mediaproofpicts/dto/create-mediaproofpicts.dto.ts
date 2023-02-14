@@ -47,6 +47,7 @@ export class CreateMediaproofpictsDto {
   SupportfsSourceName: any[];
   SupportfsTargetUri: any[];
   SupportmediaMime: String;
+  SupportUploadSource: String;
   email: String;
   kycHandle: any[];
   // mediaFileSuportType: String;

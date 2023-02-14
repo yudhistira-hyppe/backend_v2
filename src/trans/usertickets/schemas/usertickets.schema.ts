@@ -49,6 +49,8 @@ export class Usertickets {
   @Prop()
   mediaMime: String
   @Prop()
+  UploadSource: string
+  @Prop()
   version: number
   @Prop()
   OS: string

@@ -17,6 +17,7 @@ import { diskStorage } from 'multer';
 import { UtilsService } from "../../utils/utils.service";
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 import { start } from "repl";
+import { OssService } from "../../stream/oss/oss.service";
 
 //import FormData from "form-data";
 const multer = require('multer');
@@ -61,6 +62,7 @@ export class UserbankaccountsController {
         private readonly mediaproofpictsService: MediaproofpictsService,
         private readonly errorHandler: ErrorHandler,
         private readonly utilsService: UtilsService,
+        private readonly ossService: OssService,
         private readonly seaweedfsService: SeaweedfsService) { }
 
     @UseGuards(JwtAuthGuard)
@@ -207,7 +209,7 @@ export class UserbankaccountsController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('api/userbankaccounts/appeal')
-    @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 3, }], multerOptions))
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 3, }]))
     async upload(
         @UploadedFiles() files1: {
             supportFile?: Express.Multer.File[]
@@ -228,6 +230,7 @@ export class UserbankaccountsController {
         let supportFile_local_path = '';
         let supportFile_seaweedfs_path = '';
         var arrayUri = [];
+        var arrayTargetUri = [];
         var arrayName = [];
         var arraySuri = [];
         var arraySname = [];
@@ -235,6 +238,8 @@ export class UserbankaccountsController {
         var email = null;
         var iduserbank = null;
         var fullname = null;
+        var url_cardPict = null;
+        var iduser = null;
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
@@ -271,6 +276,8 @@ export class UserbankaccountsController {
         if (datauserbank !== undefined || datauserbank !== null) {
             email = datauserbank[0].email;
             fullname = datauserbank[0].fullName;
+            iduser = datauserbank[0].iduser.toString();
+
             //Ceck supportFile
             if (files1.supportFile != undefined) {
                 var countfile = files1.supportFile.length;
@@ -278,68 +285,60 @@ export class UserbankaccountsController {
                 for (var i = 0; i < countfile; i++) {
                     var FormData_ = new FormData();
                     supportFile_data = files1.supportFile[i];
+                    supportFile_filename = files1.supportFile[i].originalname;
+                    supportFile_etx = '.jpeg';
+                    supportFile_filename_new = iduserbank + '_000' + (i + 1) + supportFile_etx;
                     supportFile_mimetype = files1.supportFile[i].mimetype;
-                    supportFile_filename = files1.supportFile[i].filename;
-                    supportFile_etx = supportFile_filename.substring(supportFile_filename.lastIndexOf('.') + 1, supportFile_filename.length);
-                    supportFile_name = supportFile_filename.substring(0, supportFile_filename.lastIndexOf('.'));
 
-                    //New Name file supportFile
-                    supportFile_filename_new = iduserbank + '_000' + (i + 1) + '.' + supportFile_etx;
-                    //Rename Name file supportFile
-                    fs.renameSync('./temp/' + supportFile_filename, './temp/' + supportFile_filename_new);
-
-                    //Local path
-                    supportFile_local_path = './temp/' + mongoose_gen_meida + '/' + supportFile_filename_new;
-                    //SeaweedFs path
-                    supportFile_seaweedfs_path = '/' + mongoose_gen_meida + '/supportfile/';
-
-                    //Create Folder Id
-                    if (await this.utilsService.createFolder('./temp/', mongoose_gen_meida)) {
-
-                        await fse.move('./temp/' + supportFile_filename_new, './temp/' + mongoose_gen_meida + '/' + supportFile_filename_new);
+                    var result = await this.ossService.uploadFile(files1.supportFile[i], iduser.toString() + "/akunbank/supportfile/" + supportFile_filename_new);
+                    console.log(result)
+                    if (result != undefined) {
+                        if (result.res != undefined) {
+                            if (result.res.statusCode != undefined) {
+                                if (result.res.statusCode == 200) {
+                                    url_cardPict = result.res.requestUrls[0];
+                                } else {
+                                    await this.errorHandler.generateNotAcceptableException(
+                                        'Unabled to proceed supportfile failed upload',
+                                    );
+                                }
+                            } else {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed supportfile failed upload',
+                                );
+                            }
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed supportfile failed upload',
+                            );
+                        }
                     } else {
                         await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed create folder ' + mongoose_gen_meida,
+                            'Unabled to proceed supportfile failed upload',
                         );
                     }
+                    var pathnew = iduser.toString() + '/akunbank/supportfile/' + supportFile_filename_new;
+                    var pathnew2 = '/akunbank/supportfile/' + supportFile_filename_new;
 
-                    //Upload Seaweedfs
-                    try {
-                        FormData_.append('supportfile', fs.createReadStream(path.resolve(supportFile_local_path)));
-                        await this.seaweedfsService.write(supportFile_seaweedfs_path, FormData_);
-                    } catch (err) {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed supportfile failed upload seaweedfs',
-                        );
-                    }
-
-                    var objSuri = '/localrepo/' + mongoose_gen_meida + '/supportfile/' + supportFile_filename_new;
-                    var objsname = supportFile_filename_new.replace('_000' + i, '');
-
-                    arrayUri.push(supportFile_filename_new);
+                    arrayUri.push(pathnew);
+                    arrayTargetUri.push(pathnew2);
                     arrayName.push(supportFile_filename);
-                    arraySuri.push(objSuri);
-                    arraySname.push(objsname);
+                    arraySuri.push(url_cardPict);
+                    arraySname.push(supportFile_filename);
+
                 }
 
                 CreateUserbankaccountsDto_.mediaSupportType = 'supportfile';
                 CreateUserbankaccountsDto_.mediaSupportBasePath = mongoose_gen_meida + '/supportfile/';
                 CreateUserbankaccountsDto_.mediaSupportUri = arrayUri;
+                CreateUserbankaccountsDto_.SupportUploadSource = "OSS";
                 CreateUserbankaccountsDto_.SupportOriginalName = arrayName;
                 CreateUserbankaccountsDto_.SupportfsSourceUri = arraySuri;
                 CreateUserbankaccountsDto_.SupportfsSourceName = arraySname;
-                CreateUserbankaccountsDto_.SupportfsTargetUri = arrayUri;
+                CreateUserbankaccountsDto_.SupportfsTargetUri = arrayTargetUri;
                 CreateUserbankaccountsDto_.SupportmediaMime = supportFile_mimetype;
 
                 data = await this.userbankaccountsService.update(iduserbank, CreateUserbankaccountsDto_);
-
-
-
-                fs.rm('./temp/' + mongoose_gen_meida, { recursive: true }, (err) => {
-                    if (err) {
-                        throw err;
-                    }
-                });
 
                 try {
                     dataacount = await this.sendReportAppealBankFCM(email, "NOTIFY_APPEAL", "REQUEST_APPEAL", "BANK", fullname);
@@ -683,7 +682,7 @@ export class UserbankaccountsController {
         };
 
         data = await this.userbankaccountsService.getDetailAccountBankById(id);
-        //data = data[0];
+
 
         return { response_code: 202, messages, data };
     }

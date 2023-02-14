@@ -4456,6 +4456,47 @@ export class TransactionsService {
 
     }
 
+    async findtransactionvoucherSell(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
+
+        const query = await this.transactionsModel.aggregate([
+
+            {
+                $addFields: {
+                    type: 'Sell',
+                    jenis: "$type",
+
+                },
+            },
+
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "idusersell",
+                    foreignField: "_id",
+                    as: "user_data"
+                }
+            }, {
+                $lookup: {
+                    from: "uservouchers",
+                    localField: "detail.id",
+                    foreignField: "voucherID",
+                    as: "user_voucher"
+                }
+            },
+            {
+                $match: {
+                    _id: id,
+                    type: type,
+                    jenis: jenis,
+                    idusersell: iduser
+                }
+            },
+        ]);
+
+        return query;
+
+    }
+
     async findhistoryBuyVoucher(key: string, status: any[], startdate: string, enddate: string, page: number, limit: number, descending: boolean, startday: number, endday: number, used: boolean, expired: boolean) {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -8748,7 +8789,7 @@ export class TransactionsService {
 
     }
 
-    async getVoucherSellChartByDate(startdate:string){
+    async getVoucherSellChartByDate(startdate: string) {
         const mongoose = require('mongoose');
         var iddata = mongoose.Types.ObjectId("62144381602c354635ed786a");
         var before = new Date(startdate).toISOString().split("T")[0];
@@ -8762,12 +8803,12 @@ export class TransactionsService {
                 {
                     timestamp:
                     {
-                        "$gte":before,
-                        "$lte":today
+                        "$gte": before,
+                        "$lte": today
                     },
                     idusersell: iddata,
-                    status:"Success",
-                    type:"VOUCHER"
+                    status: "Success",
+                    type: "VOUCHER"
                 }
             },
             {
@@ -8776,11 +8817,11 @@ export class TransactionsService {
                     timestamp:
                     {
                         "$substr":
-                        [
-                            "$timestamp", 0, 10
-                        ]
+                            [
+                                "$timestamp", 0, 10
+                            ]
                     },
-                    amount:1
+                    amount: 1
                 }
             },
             {
@@ -8788,7 +8829,7 @@ export class TransactionsService {
                 {
                     _id:
                     {
-                        "$dateFromString": 
+                        "$dateFromString":
                         {
                             "format": "%Y-%m-%d",
                             "dateString": "$timestamp"
@@ -8796,41 +8837,41 @@ export class TransactionsService {
                     },
                     totaldata:
                     {
-                        "$sum":1
+                        "$sum": 1
                     },
                     totalpenjualanperhari:
                     {
-                        "$sum":"$amount"
+                        "$sum": "$amount"
                     }
                 }
             },
             {
                 "$project":
                 {
-                    _id:1,
-                    totaldata:1,
-                    totalpenjualanperhari:1,
+                    _id: 1,
+                    totaldata: 1,
+                    totalpenjualanperhari: 1,
                 }
             },
             {
                 "$unwind":
                 {
-                    path:"$_id"
+                    path: "$_id"
                 }
             },
             {
                 "$sort":
                 {
-                    _id:1 
+                    _id: 1
                 }
             },
             {
                 "$group":
                 {
-                    _id:null,
+                    _id: null,
                     total:
                     {
-                        "$sum":"$totalpenjualanperhari"
+                        "$sum": "$totalpenjualanperhari"
                     },
                     resultdata:
                     {
@@ -8839,20 +8880,20 @@ export class TransactionsService {
                             _id:
                             {
                                 "$substr":
-                                [
-                                {
-                                    "$toString":"$_id"
-                                },0,10
-                                ]
+                                    [
+                                        {
+                                            "$toString": "$_id"
+                                        }, 0, 10
+                                    ]
                             },
-                            totaldata:"$totaldata",
-                            totalpenjualanperhari:"$totalpenjualanperhari"
+                            totaldata: "$totaldata",
+                            totalpenjualanperhari: "$totalpenjualanperhari"
                         }
                     }
                 }
             }
-        ]);   
-        
+        ]);
+
         return query;
     }
 }

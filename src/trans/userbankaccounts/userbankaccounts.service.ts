@@ -163,7 +163,8 @@ export class UserbankaccountsService {
             {
                 $project: {
                     email: '$field.email',
-                    fullName: '$field.fullName'
+                    fullName: '$field.fullName',
+                    iduser: '$field._id'
                 }
             }
         ]);
@@ -748,6 +749,8 @@ export class UserbankaccountsService {
                         "$last": "$userHandle.valueReason"
                     },
                     SupportfsSourceName: 1,
+                    mediaSupportUri: 1,
+                    SupportfsTargetUri: 1
                 }
             },
             {
@@ -975,25 +978,37 @@ export class UserbankaccountsService {
                     namaRek: "$nama",
                     active: "$active",
                     tanggalPengajuan: "$tanggalPengajuan",
-                    // userHandle:"$userHandle",
-                    // fkbasic:"$userbasic_data",
-                    // fkauth:"$userauth_data",
                     fullName:
                     {
-                        "$last": "$userbasic_data.fullName"
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.fullName", 0
+                            ]
                     },
                     gender:
                     {
-                        "$last": "$userbasic_data.gender"
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.gender", 0
+                            ]
                     },
+
                     dob:
                     {
-                        "$last": "$userbasic_data.dob"
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.dob", 0
+                            ]
                     },
+
                     mobileNumber:
                     {
-                        "$last": "$userbasic_data.mobileNumber"
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.mobileNumber", 0
+                            ]
                     },
+
                     statusUser:
                     {
                         "$cond":
@@ -1017,11 +1032,18 @@ export class UserbankaccountsService {
                     },
                     email:
                     {
-                        "$last": "$userauth_data.email"
+                        "$arrayElemAt":
+                            [
+                                "$userauth_data.email", 0
+                            ]
                     },
+
                     username:
                     {
-                        "$last": "$userauth_data.username"
+                        "$arrayElemAt":
+                            [
+                                "$userauth_data.username", 0
+                            ]
                     },
                     statusLast: "$statusLast",
                     reasonId: "$reasonId",
@@ -1046,7 +1068,7 @@ export class UserbankaccountsService {
                                 "$media_data.nama", 0
                             ]
                     },
-                    dokumenPendukung: "$SupportfsSourceName",
+                    dokumenPendukung: "$SupportfsTargetUri",
                     country:
                     {
                         "$arrayElemAt":
@@ -1070,243 +1092,39 @@ export class UserbankaccountsService {
                     }
                 }
             },
-            {
-                "$unwind":
-                {
-                    path: "$dokumenPendukung"
-                }
-            },
-            {
-                "$project":
-                {
-                    _id: 1,
-                    userId: 1,
-                    statusInquiry: 1,
-                    noRek: 1,
-                    bankRek: 1,
-                    namaRek: 1,
-                    active: 1,
-                    createdAt: 1,
-                    tanggalPengajuan: 1,
-                    fullName: 1,
-                    gender: 1,
-                    dob: 1,
-                    mobileNumber: 1,
-                    statusUser: 1,
-                    email: 1,
-                    username: 1,
-                    statusLast: 1,
-                    reasonId: 1,
-                    reasonAdmin: 1,
-                    avatar: 1,
-                    namaKTP: 1,
-                    temp1:
-                    {
-                        "$split":
-                            [
-                                "$dokumenPendukung", "_"
-                            ]
-                    },
-                    country: 1,
-                    area: 1,
-                    city: 1
-                }
-            },
-            {
-                "$project":
-                {
-                    _id: 1,
-                    userId: 1,
-                    statusInquiry: 1,
-                    noRek: 1,
-                    bankRek: 1,
-                    namaRek: 1,
-                    active: 1,
-                    tanggalPengajuan: 1,
-                    fullName: 1,
-                    gender: 1,
-                    dob: 1,
-                    mobileNumber: 1,
-                    statusUser: 1,
-                    email: 1,
-                    username: 1,
-                    createdAt: 1,
-                    statusLast: 1,
-                    reasonId: 1,
-                    reasonAdmin: 1,
-                    avatar: 1,
-                    namaKTP: 1,
-                    temp2:
-                    {
-                        "$split":
-                            [
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$temp1", 1
-                                        ]
-                                }, "."
-                            ]
-                    },
-                    country: 1,
-                    area: 1,
-                    city: 1
-                }
-            },
-            {
-                "$project":
-                {
-                    id: "$_id",
-                    userId: 1,
-                    statusInquiry: 1,
-                    noRek: 1,
-                    bankRek: 1,
-                    namaRek: 1,
-                    active: 1,
-                    tanggalPengajuan: 1,
-                    fullName: 1,
-                    gender: 1,
-                    dob: 1,
-                    mobileNumber: 1,
-                    statusUser: 1,
-                    email: 1,
-                    createdAt: 1,
-                    username: 1,
-                    statusLast: 1,
-                    reasonId: 1,
-                    reasonAdmin: 1,
-                    avatar: 1,
-                    namaKTP: 1,
-                    dokumenPendukung:
-                    {
-                        "$concat":
-                            [
-                                "/supportfile/",
-                                {
-                                    "$toString": "$_id"
-                                },
-                                "/",
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$temp2", 0
-                                        ]
-                                }
-                            ]
-                    },
-                    country: 1,
-                    area: 1,
-                    city: 1
-                }
-            },
-            {
-                "$group":
-                {
-                    _id: "$id",
-                    // iduser:
-                    // {
-                    //     "$first":"$id"
-                    // },
-                    userId:
-                    {
-                        "$first": "$userId"
-                    },
-                    statusInquiry:
-                    {
-                        "$first": "$statusInquiry"
-                    },
-                    noRek:
-                    {
-                        "$first": "$noRek"
-                    },
-                    bankRek:
-                    {
-                        "$first": "$bankRek"
-                    },
-                    namaRek:
-                    {
-                        "$first": "$namaRek"
-                    },
-                    active:
-                    {
-                        "$first": "$active"
-                    },
-                    tanggalPengajuan:
-                    {
-                        "$first": "$tanggalPengajuan"
-                    },
-                    fullName:
-                    {
-                        "$first": "$fullName"
-                    },
-                    gender:
-                    {
-                        "$first": "$gender"
-                    },
-                    dob:
-                    {
-                        "$first": "$dob"
-                    },
-                    mobileNumber:
-                    {
-                        "$first": "$mobileNumber"
-                    },
-                    statusUser:
-                    {
-                        "$first": "$statusUser"
-                    },
-                    email:
-                    {
-                        "$first": "$email"
-                    },
-                    waktuPendaftaran:
-                    {
-                        "$first": "$createdAt"
-                    },
-                    username:
-                    {
-                        "$first": "$username"
-                    },
-                    statusLast:
-                    {
-                        "$first": "$statusLast"
-                    },
-                    reasonId:
-                    {
-                        "$first": "$reasonId"
-                    },
-                    reasonAdmin:
-                    {
-                        "$first": "$reasonAdmin"
-                    },
-                    avatar:
-                    {
-                        "$first": "$avatar"
-                    },
-                    dokumenPendukung:
-                    {
-                        "$push": "$dokumenPendukung"
-                    },
-                    namaKTP:
-                    {
-                        "$first": "$namaKTP"
-                    },
-                    country:
-                    {
-                        "$first": "$country"
-                    },
-                    area:
-                    {
-                        "$first": "$area"
-                    },
-                    city:
-                    {
-                        "$first": "$city"
-                    },
-                }
-            }
-        ]);
 
+            {
+                "$project":
+                {
+                    _id: 1,
+                    userId: 1,
+                    statusInquiry: 1,
+                    noRek: 1,
+                    bankRek: 1,
+                    namaRek: 1,
+                    active: 1,
+                    createdAt: 1,
+                    tanggalPengajuan: 1,
+                    fullName: 1,
+                    gender: 1,
+                    dob: 1,
+                    mobileNumber: 1,
+                    statusUser: 1,
+                    email: 1,
+                    username: 1,
+                    statusLast: 1,
+                    reasonId: 1,
+                    reasonAdmin: 1,
+                    avatar: 1,
+                    namaKTP: 1,
+                    dokumenPendukung: 1,
+                    country: 1,
+                    area: 1,
+                    city: 1
+                }
+            },
+
+        ]);
         return query[0];
     }
 

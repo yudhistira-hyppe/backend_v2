@@ -4929,6 +4929,114 @@ export class TransactionsController {
                 };
 
             }
+            else if (type === "Sell" && jenis === "VOUCHER") {
+                databuy = await this.transactionsService.findtransactionvoucherSell(idtr, type, jenis, iduser);
+                var buyuser = databuy[0].iduserbuyer;
+                var userdata = databuy[0].user_data;
+                var detail = databuy[0].detail;
+                paymentmethod = databuy[0].paymentmethod;
+
+                idbank = databuy[0].bank.toString();
+                amounts = databuy[0].amount;
+
+                noinvoice = databuy[0].noinvoice;
+                try {
+                    datamethode = await this.methodepaymentsService.findOne(paymentmethod);
+                    namamethode = datamethode._doc.methodename;
+
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+                try {
+
+                    datamradmin = await this.settingsService.findOne(idmdradmin);
+                    databankvacharge = await this.settingsService.findOne(idbankvacharge);
+                    valuevacharge = databankvacharge._doc.value;
+                    valuemradmin = datamradmin._doc.value;
+                    nominalmradmin = amounts * valuemradmin / 100;
+
+
+
+
+                } catch (e) {
+                    datamradmin = null;
+                    databankvacharge = null;
+                    valuevacharge = 0;
+                    valuemradmin = 0;
+                    nominalmradmin = 0;
+                }
+
+                try {
+                    databank = await this.banksService.findOne(idbank);
+                    namabank = databank._doc.bankname;
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+
+                try {
+                    var ubasic = await this.userbasicsService.findid(buyuser);
+                    var namapembeli = ubasic.fullName;
+                    var emailpembeli = ubasic.email;
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+                var arraydetail = [];
+
+                var lengdetail = detail.length;
+
+                for (var i = 0; i < lengdetail; i++) {
+                    var idv = detail[i].id.toString();
+                    var qty = detail[i].qty;
+
+                    datavoucher = await this.vouchersService.findOne(idv);
+                    console.log(datavoucher);
+
+                    var objdetail = {
+                        "voucherID": idv,
+                        "noVoucher": datavoucher._doc.noVoucher,
+                        "codeVoucher": datavoucher._doc.codeVoucher,
+                        "isActive": datavoucher._doc.isActive,
+                        "expiredAt": datavoucher._doc.expiredAt,
+                        "qty": qty,
+                        "price": detail[i].price,
+                        "totalPrice": detail[i].totalAmount,
+                        "totalCredit": datavoucher._doc.creditTotal * qty
+
+                    };
+
+                    arraydetail.push(objdetail);
+
+                }
+
+
+                data = {
+
+                    "_id": idtr,
+                    "type": databuy[0].type,
+                    "jenis": databuy[0].jenis,
+                    "time": databuy[0].timestamp,
+                    "description": databuy[0].description,
+                    "noinvoice": noinvoice,
+                    "nova": databuy[0].nova,
+                    "expiredtimeva": databuy[0].expiredtimeva,
+                    "bank": namabank,
+                    "paymentmethode": namamethode,
+                    "amount": amounts,
+                    "totalamount": databuy[0].totalamount,
+                    //"adminFee": nominalmradmin,
+                    "serviceFee": valuevacharge,
+                    "status": databuy[0].status,
+                    "fullName": userdata[0].fullName,
+                    "email": userdata[0].email,
+                    "namapembeli": namapembeli,
+                    "emailpembeli": emailpembeli,
+                    "detailTransaction": arraydetail
+
+                };
+
+            }
             else if (type === "Withdraws") {
 
                 try {
@@ -7979,14 +8087,16 @@ export class TransactionsController {
         };
 
 
-
+        var dataid = null;
         try {
             dataquery = await this.userbasicsService.transaksiHistoryBisnis(email, startdate, enddate, sell, buy, withdrawal, rewards, boost, page, limit, descending);
+            dataid = dataquery[0]._id
         } catch (e) {
             dataquery = [];
+            dataid = null;
         }
 
-        if (dataquery[0]._id === undefined) {
+        if (dataid === null) {
             data = [];
         } else {
             data = dataquery;
@@ -7999,7 +8109,7 @@ export class TransactionsController {
             total = 0;
         }
 
-        if (dataquery[0]._id === undefined) {
+        if (dataid === null) {
             totalsearch = 0;
         } else {
             try {
@@ -8011,7 +8121,7 @@ export class TransactionsController {
         }
 
 
-        if (dataquery[0]._id === undefined) {
+        if (dataid === null) {
             totalallrow = 0;
         } else {
 
@@ -8128,17 +8238,15 @@ export class TransactionsController {
         var data = null;
         var date = null;
 
-            const messages = {
+        const messages = {
             "info": ["The process successful"],
         };
 
         var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["date"] !== undefined) 
-        {
+        if (request_json["date"] !== undefined) {
             date = request_json["date"];
-        } 
-        else 
-        {
+        }
+        else {
             throw new BadRequestException("Unabled to proceed");
         }
 

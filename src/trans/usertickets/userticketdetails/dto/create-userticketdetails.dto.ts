@@ -19,6 +19,6 @@ export class CreateUserticketdetailsDto {
     fsSourceName: any[];
     fsTargetUri: any[];
     mediaMime: string;
-
+    UploadSource: string
 
 }

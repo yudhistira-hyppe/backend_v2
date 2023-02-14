@@ -16152,9 +16152,13 @@ export class AdsService {
                     {
                         "$first":"$place_data.namePlace"
                     },
+                    name:1,
                     status:1,
                     timestamp:1,
+                    creditFree:1,
                     totalUsedCredit:1,
+                    usedCreditFree:1,
+                    usedCredit:1,
                     totalCredit:1,
                     idApsara:1,
                     apsara:{

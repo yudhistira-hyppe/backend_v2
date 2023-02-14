@@ -33,6 +33,8 @@ export class Userbankaccounts {
     @Prop() SupportmediaMime: String;
     @Prop() createdAt: string;
     @Prop() updatedAt: string;
+    @Prop()
+    SupportUploadSource: string
 
 
 
