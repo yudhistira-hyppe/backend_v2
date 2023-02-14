@@ -644,4 +644,158 @@ export class ActivityeventsService {
 
   }
 
+  async sesipengguna() {
+
+    var query = await this.activityeventsModel.aggregate([
+      {
+        $unwind: {
+          path: "$payload",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $project: {
+          event: 1,
+          createdAt: 1,
+          email: "$payload.email"
+        }
+      },
+      {
+        $facet: {
+          "countUser": [
+            {
+              $match: {
+                $or: [
+
+                  {
+                    event: "AWAKE",
+
+                  }
+                ],
+                createdAt: {
+                  $gte: "2022-10-13",
+                  $lte: "2022-10-16"
+                }
+              }
+            },
+            {
+              $group: {
+                _id: {
+                  tgl: { $substrCP: ['$createdAt', 0, 10] },
+                  dt: '$email',
+
+                },
+                count: {
+                  $sum: 1
+                },
+
+              },
+
+            },
+            {
+              $project: {
+                _id: 0,
+                date: '$_id.tgl',
+                count: 1
+
+              }
+            },
+          ],
+          "awake": [
+            {
+              $match: {
+                $or: [
+
+                  {
+                    event: "AWAKE",
+
+                  }
+                ],
+                createdAt: {
+                  $gte: "2022-10-13",
+                  $lte: "2022-10-16"
+                }
+              }
+            },
+            {
+              $group: {
+
+                _id: {
+                  tgl: { $substrCP: ['$createdAt', 0, 10] },
+                  dt: '$createdAt',
+                  event: '$event',
+                  email: '$email'
+                },
+
+              },
+
+            },
+            {
+              $project: {
+                _id: 0,
+                tgl: '$_id.tgl',
+                event: '$_id.event',
+                createdAt: '$_id.dt',
+                email: '$_id.email',
+
+              }
+            },
+            {
+              $sort: {
+                createdAt: 1
+              }
+            }
+          ],
+          "sleep": [
+            {
+              $match: {
+                $or: [
+                  {
+                    event: "SLEEP",
+
+                  },
+
+                ],
+                createdAt: {
+                  $gte: "2022-10-13",
+                  $lte: "2022-10-16"
+                }
+              }
+            },
+            {
+              $group: {
+
+                _id: {
+                  tgl: { $substrCP: ['$createdAt', 0, 10] },
+                  dt: '$createdAt',
+                  event: '$event',
+                  email: '$email'
+                },
+
+              },
+
+            },
+            {
+              $project: {
+                _id: 0,
+                tgl: '$_id.tgl',
+                event: '$_id.event',
+                createdAt: '$_id.dt',
+                email: '$_id.email',
+
+              }
+            },
+
+            {
+              $sort: {
+                createdAt: 1
+              }
+            }
+          ]
+        }
+      },
+    ]);
+    return query;
+  }
+
 }
