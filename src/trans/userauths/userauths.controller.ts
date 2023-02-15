@@ -95,3 +95,4 @@ export class UserauthsController {
       return { response_code: 202, messages, data };
     }
   }
+}

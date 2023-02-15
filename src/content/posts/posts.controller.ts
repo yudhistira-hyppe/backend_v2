@@ -1245,15 +1245,7 @@ export class PostsController {
         var listimage = [];
         var getchildata = getdata[j];
         var response = null;
-        if (getchildata.mediaType == "video") {
-          listvideo.push(getchildata.apsaraId);
-          try {
-            getchildata.media = await this.postContentService.getVideoApsara(listvideo);
-          } catch (e) {
-            getchildata.media = {};
-          }
-        }
-        else {
+        if (getchildata.mediaType == "image" || getchildata.mediaType == "images") {
           listimage.push(getchildata.apsaraId);
           try {
             getchildata.media = await this.postContentService.getImageApsara(listimage);
@@ -1261,6 +1253,7 @@ export class PostsController {
             getchildata.media = {};
           }
         }
+
       }
     }
 
