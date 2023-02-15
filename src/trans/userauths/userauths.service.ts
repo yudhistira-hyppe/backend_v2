@@ -391,32 +391,7 @@ export class UserauthsService {
           },
           pipeline:
             [
-              {
-                "$set": {
-                  "settimeStart":
-                  {
-                    "$dateToString": {
-                      "format": "%Y-%m-%d %H:%M:%S",
-                      "date": {
-                        $add: [new Date(), - 61200000] // 1 hari 61200000
-                      }
-                    }
-                  }
-                }
-              },
-              {
-                "$set": {
-                  "settimeEnd":
-                  {
-                    "$dateToString": {
-                      "format": "%Y-%m-%d %H:%M:%S",
-                      "date": {
-                        $add: [new Date(), 25200000]
-                      }
-                    }
-                  }
-                }
-              },
+
               {
                 "$match":
                 {
@@ -430,25 +405,6 @@ export class UserauthsService {
                       "$expr":
                       {
                         "$eq": ["$postType", "story"]
-                      }
-                    },
-                    {
-                      "$expr":
-                      {
-                        "$gte": ["$createdAt", "$settimeStart"]
-                      },
-                    },
-                    {
-                      "$expr":
-                      {
-                        "$lte": ["$createdAt", "$settimeEnd"]
-                      }
-                    },
-                    {
-                      "email": {
-                        "$not": {
-                          "$regex": email
-                        }
                       }
                     },
                     {
@@ -476,46 +432,62 @@ export class UserauthsService {
                         {
                           "reportedUser.email": {
                             "$not": {
-                              "$regex": email,
+                              "$regex": email
+
                             }
                           }
                         },
 
                       ]
                     },
+
                   ]
                 },
+
               },
               {
-                "$lookup":
-                {
-                  from: "userauths",
-                  as: "userTag",
-                  let: {
-                    localID: '$tagPeople.$id'
-                  },
-                  pipeline: [
-                    {
-                      $match:
-                      {
-
-
-                        $expr: {
-                          $in: ['$_id', {
-                            $ifNull: ['$$localID', []]
-                          }]
-                        }
-                      }
-                    },
-                    {
-                      $project: {
-
-                        "username": 1
+                "$set": {
+                  "settimeStart":
+                  {
+                    "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                        $add: [new Date(), - 61200000] // 1 hari 61200000
                       }
                     }
-                  ],
+                  },
+                  "settimeEnd":
+                  {
+                    "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                        $add: [new Date(), 25200000]
+                      }
+                    }
+                  }
                 }
-              }
+              },
+              {
+                $match: {
+                  $and: [
+                    {
+                      "$expr":
+                      {
+                        "$gte": ["$createdAt", '$settimeStart']
+                      },
+
+                    },
+                    {
+                      "$expr":
+                      {
+                        "$lte": ["$createdAt", '$settimeEnd']
+                      }
+                    },
+
+                  ]
+                }
+              },
+
             ]
         }
       },
@@ -530,6 +502,7 @@ export class UserauthsService {
         {
           username: "$username",
           postID: "$post_data.postID",
+          musicId: "$post_data.musicId",
           email: "$post_data.email",
           postType: "$post_data.postType",
           description: "$post_data.description",
@@ -539,12 +512,9 @@ export class UserauthsService {
           expiration: "$post_data.expiration",
           visibility: "$post_data.visibility",
           location: "$post_data.location",
-          tags: "$post_data.tags",
           allowComments: "$post_data.allowComments",
           isSafe: "$post_data.isSafe",
           isOwned: "$post_data.isOwned",
-          certified: "$post_data.certified",
-          saleAmount: "$post_data.saleAmount",
           saleLike: "$post_data.saleLike",
           saleView: "$post_data.saleView",
           metadata: "$post_data.metadata",
@@ -565,7 +535,7 @@ export class UserauthsService {
       {
         "$sort":
         {
-          createdAt: -1
+          createdAt: - 1
         }
       },
       {
@@ -605,42 +575,6 @@ export class UserauthsService {
       },
       {
         "$lookup": {
-          from: "interests_repo",
-          as: "cats",
-          let: {
-            localID: '$category.$id'
-          },
-          pipeline: [
-            {
-              $match: {
-
-                $expr: {
-                  $and: [
-                    {
-                      $in: ['$_id', {
-                        $ifNull: ['$$localID', []]
-                      }]
-                    },
-
-                  ]
-                }
-              }
-            },
-            {
-              $project: {
-                "interestName": 1,
-                "langIso": 1,
-                "icon": 1,
-                "createdAt": 1,
-                "updatedAt": 1
-              }
-            }
-          ],
-
-        }
-      },
-      {
-        "$lookup": {
           from: "userbasics",
           as: "userBasic",
           let: {
@@ -672,12 +606,6 @@ export class UserauthsService {
         }
       },
       {
-        $unwind: {
-          path: "$userBasic",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
         "$lookup": {
           from: "mediaprofilepicts",
           as: "avatar",
@@ -697,13 +625,7 @@ export class UserauthsService {
             },
             {
               $project: {
-                "mediaBasePath": 1,
-                "mediaUri": 1,
-                "originalName": 1,
-                "fsSourceUri": 1,
-                "fsSourceName": 1,
-                "fsTargetUri": 1,
-                "mediaType": 1,
+
                 "mediaEndpoint": {
                   "$concat": ["/profilepict/", "$mediaID"]
                 }
@@ -743,31 +665,98 @@ export class UserauthsService {
               }
             }
           ],
+
         }
       },
       {
-        $unwind: {
-          path: "$media",
-          preserveNullAndEmptyArrays: true
+        "$lookup": {
+          from: "contentevents",
+          as: "isView",
+          let: {
+
+            storys: '$story.postID',
+
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $or: [
+
+                  {
+                    $and: [
+                      {
+                        $expr: {
+                          $eq: ['$postID', '$$storys']
+                        }
+                      },
+                      {
+                        "email": email,
+                      },
+                      {
+                        "eventType": "VIEW"
+                      }
+                    ]
+                  },
+
+
+                ]
+              }
+            },
+            {
+              $project: {
+                "email": 1,
+                "postID": 1,
+
+              }
+            }
+          ],
+
         }
       },
+
+
+
       {
         $project: {
           "storyDate": 1,
           "postID": 1,
-          "musicTitle": "$music.musicTitle",
-          "artistName": "$music.artistName",
-          "albumName": "$music.albumName",
-          "apsaraMusic": "$music.apsaraMusic",
-          "apsaraThumnail": "$music.apsaraThumnail",
-          "genre": "$music.genre.name",
-          "theme": "$music.theme.name",
-          "mood": "$music.mood.name",
+          "musicTitle": {
+            "$arrayElemAt": ['$music.musicTitle', 0]
+          },
+          "artistName":
+          {
+            "$arrayElemAt": ["$music.artistName", 0]
+          },
+          "albumName":
+          {
+            "$arrayElemAt": ["$music.albumName", 0]
+          },
+          "apsaraMusic":
+          {
+            "$arrayElemAt": ["$music.apsaraMusic", 0]
+          },
+          "apsaraThumnail":
+          {
+            "$arrayElemAt": ["$music.apsaraThumnail", 0]
+          },
+          "genre":
+          {
+            "$arrayElemAt": ["$music.genre.name", 0]
+          },
+          "theme":
+          {
+            "$arrayElemAt": ["$music.theme.name", 0]
+          },
+          "mood":
+          {
+            "$arrayElemAt": ["$music.mood.name", 0]
+          },
           "testDate": 1,
-          "musicId": 1,
-          "music": 1,
-          "tagPeople": "$userTag",
-          "mediaType": "$media.mediaType",
+          "mediaType":
+          {
+            "$arrayElemAt": ["$media.mediaType", 0]
+          },
           "email": 1,
           "postType": 1,
           "description": 1,
@@ -777,42 +766,15 @@ export class UserauthsService {
           "expiration": 1,
           "visibility": 1,
           "location": 1,
-          "tags": 1,
           "allowComments": 1,
           "isSafe": 1,
           "isOwned": 1,
-          "certified": 1,
-          "saleAmount": 1,
           "saleLike": 1,
           "saleView": 1,
           "userProfile": 1,
           "contentMedias": 1,
-          "category": "$cats",
           "tagDescription": 1,
           "metadata": 1,
-          "boostDate": 1,
-          "boosted":
-          {
-            $cond: {
-              if: {
-                $gt: [{
-                  "$dateToString": {
-                    "format": "%Y-%m-%d %H:%M:%S",
-                    "date": {
-                      $add: [new Date(), 25200000]
-                    }
-                  }
-                }, "$boosted.boostSession.end"]
-              },
-              then: [],
-              else: '$boosted'
-            }
-          },
-          "end": "$boosted.boostSession.end",
-          "start": "$boosted.boostSession.start",
-          "isBoost": 1,
-          "boostViewer": 1,
-          "boostCount": 1,
           "contentModeration": 1,
           "reportedStatus": 1,
           "reportedUserCount": 1,
@@ -820,13 +782,15 @@ export class UserauthsService {
           "reportedUser": 1,
           "timeStart": 1,
           "timeEnd": 1,
-          "apsara": "$media.apsara",
-          "apsaraId": "$media.apsaraId",
-          "apsaraThumbId": "$media.apsaraThumbId",
-          "mediaEndpoint": "$media.mediaEndpoint",
-          "mediaUri": "$media.mediaUri",
-          "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
-          "mediaThumbUri": "$media.mediaThumbUri",
+          "apsara": {
+            "$arrayElemAt": ["$media.apsara", 0]
+          },
+          "apsaraId": {
+            "$arrayElemAt": ["$media.apsaraId", 0]
+          },
+          "apsaraThumbId": {
+            "$arrayElemAt": ["$media.apsaraThumbId", 0]
+          },
           "insight": [
             {
               "likes": "$likes",
@@ -836,40 +800,46 @@ export class UserauthsService {
 
             }
           ],
-          "fullName": "$userBasic.fullName",
+          "fullName": {
+            "$arrayElemAt": ["$userBasic.fullName", 0]
+          },
           "username": "$username",
           "avatar": 1,
           "statusCB": 1,
           "privacy": [{
-            "isCelebrity": "$userBasic.isCelebrity"
+            "isCelebrity":
+            {
+              "$arrayElemAt": ["$userBasic.isCelebrity", 0]
+            }
           }, {
-            "isIdVerified": "$userBasic.isIdVerified"
+            "isIdVerified":
+            {
+              "$arrayElemAt": ["$userBasic.isIdVerified", 0]
+            }
           }, {
-            "isPrivate": "$userBasic.isPrivate"
-          }]
+            "isPrivate":
+            {
+              "$arrayElemAt": ["$userBasic.isPrivate", 0]
+            }
+          }],
+          "isView": 1
         }
       },
       {
         "$group":
         {
-          _id: "$username",
-          mincreatedAt:
-          {
-            "$first": "$createdAt"
-          },
+          _id: { email: "$email", username: "$username" },
+
           maxcreatedAt:
           {
             "$last": "$createdAt",
+
           },
-          maxpostID:
-          {
-            "$last": "$postID"
-          },
+
           story:
           {
             "$push":
             {
-              "storyDate": "$storyDate",
               "postID": "$postID",
               "musicTitle": "$musicTitle",
               "artistName": "$artistName",
@@ -879,10 +849,6 @@ export class UserauthsService {
               "genre": "$genre",
               "theme": "$theme",
               "mood": "$mood",
-              "testDate": "$testDate",
-              "musicId": "$musicId",
-              "music": "$music",
-              "tagPeople": "$tagPeople",
               "mediaType": "$mediaType",
               "email": "$email",
               "postType": "$postType",
@@ -893,46 +859,34 @@ export class UserauthsService {
               "expiration": "$expiration",
               "visibility": "$visibility",
               "location": "$location",
-              "tags": "$tags",
               "allowComments": "$allowComments",
               "isSafe": "$isSafe",
               "isOwned": "$isOwned",
-              "certified": "$certified",
-              "saleAmount": "$saleAmount",
-              "saleLike": "$saleLike",
-              "saleView": "$saleView",
-              "userProfile": "$userProfile",
-              "contentMedias": "$contentMedias",
-              "category": "$category",
-              "tagDescription": "$tagDescription",
               "metadata": "$metadata",
-              "boostDate": "$boostDate",
-              "boosted": "$boosted",
-              "end": "$end",
-              "start": "$start",
-              "isBoost": "$isBoost",
-              "boostViewer": "$boostViewer",
-              "boostCount": "$boostCount",
               "contentModeration": "$contentModeration",
               "reportedStatus": "$reportedStatus",
               "reportedUserCount": "$reportedUserCount",
               "contentModerationResponse": "$contentModerationResponse",
               "reportedUser": "$reportedUser",
-              "timeStart": "$timeStart",
-              "timeEnd": "$timeEnd",
               "apsara": "$apsara",
               "apsaraId": "$apsaraId",
               "apsaraThumbId": "$apsaraThumbId",
-              "mediaEndpoint": "$mediaEndpoint",
-              "mediaUri": "$mediaUri",
-              "mediaThumbEndpoint": "$mediaThumbEndpoint",
-              "mediaThumbUri": "$mediaThumbUri",
               "insight": "$insight",
               "fullName": "$fullName",
               "username": "$username",
               "avatar": "$avatar",
               "statusCB": "$statusCB",
-              "privacy": "$privacy"
+              "privacy": "$privacy",
+              "isViewed":
+              {
+                $cond: {
+                  if: {
+                    $eq: ["$isView", []]
+                  },
+                  then: false,
+                  else: true
+                }
+              },
             }
           }
         }
@@ -946,13 +900,12 @@ export class UserauthsService {
       {
         "$project":
         {
-          username: 1,
-          //mincreatedAt:1,
-          //maxpostID:1,
-          //maxcreatedAt:1,
+          _id: 0,
+          email: "$_id.email",
+          username: "$_id.username",
           story: 1
         }
-      }
+      },
     ]);
 
 

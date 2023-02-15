@@ -1257,10 +1257,8 @@ export class PostsController {
       }
     }
 
-    data =
-    {
-      'story': tempdata
-    }
+    data = tempdata;
+
 
     return { response_code: 202, data, messages };
   }
