@@ -316,8 +316,17 @@ export class PostsController {
     return this.postContentService.createNewPost(file, body, headers);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/v2/createpost')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async createPostV2(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("createPost >>> start");
+    console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
+    return this.postContentService.createNewPostV2(file, body, headers);
+  }
+
   @Post('api/posts/testUpload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('postContent'))
   async testPost(@UploadedFile() file: Express.Multer.File, @Body() body) {
     return this.postContentService.uploadVideo(file, body.postID.toString());
   }
