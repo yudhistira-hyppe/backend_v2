@@ -80,43 +80,48 @@ export class PostContentService {
   ) { }
 
   async uploadVideo(file: Express.Multer.File, postID:string) {
-    let fn = file.originalname;
-    let ext = fn.split(".");
-    let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + postID + "." + ext[1];
-    const ws = createWriteStream(nm);
-    ws.write(file.buffer);
-    ws.close();
+    const form = new FormData();
+    form.append('file', file.buffer, { filename: file.originalname });
+    form.append('postID', postID);
+    console.log(form);
+      axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V2"), form, {
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity, 
+        headers: { 'Content-Type': 'multipart/form-data' } });
+  }
 
-    ws.on('finish', async () => {
-      const form = new FormData();
-      form.append('file', fs.createReadStream(nm));
-      form.append('postID', postID);
-      console.log(form);
-      axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V5"), form, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }
-      });
-    });
+  async createNewPostV2(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    this.logger.log('createNewPost >>> start: ' + JSON.stringify(body));
+    var res = new CreatePostResponse();
+    res.response_code = 204;
 
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+    if (profile == undefined) {
+      let msg = new Messages();
+      msg.info = ["Email unknown"];
+      res.messages = msg;
+      return res;
+    }
 
-    // const form = new FormData();
-    // var file_send = {
-    //   value: file.buffer, // Upload the first file in the multi-part post
-    //   options: {
-    //     filename: file.originalname
-    //   }
-    // }
-    // console.log(file);
-    // console.log(file_send);
-    // form.append('file', file.buffer, file.originalname);
-    // form.append('postID', postID);
-    // console.log(form);
-    // axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V5"), form, {
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data',
-    //     'maxContentLength': Infinity,
-    //     'maxBodyLength': Infinity, } });
+    if (body.certified && body.certified == "true") {
+      if (profile.isIdVerified != true) {
+        let msg = new Messages();
+        msg.info = ["The user ID has not been verified"];
+        res.messages = msg;
+        return res;
+      }
+    }
+
+    var mime = file.mimetype;
+    if (mime.startsWith('video')) {
+      this.logger.log('createNewPost >>> is video');
+      return this.createNewPostVideoV2(file, body, headers);
+    } else {
+      this.logger.log('createNewPost >>> is picture');
+      return this.createNewPostPictV2(file, body, headers);
+    }
   }
 
   async createNewPost(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
@@ -352,206 +357,6 @@ export class PostContentService {
     return post;
   }
 
-  private async createNewPostVideoV2(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
-    this.logger.log('createNewPostVideo >>> start: ' + JSON.stringify(body));
-    var token = headers['x-auth-token'];
-    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    var profile = await this.userService.findOne(auth.email);
-
-    let post = await this.buildPost(body, headers);
-
-    let postType = body.postType;
-    var cm = [];
-
-    let mediaId = "";
-    if (postType == 'vid') {
-      var width_ = 0;
-      var height_ = 0;
-      if (body.width != undefined) {
-        width_ = parseInt(body.width.toString());
-      }
-      if (body.height != undefined) {
-        height_ = parseInt(body.height.toString());
-      }
-      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
-      post.metadata = metadata;
-
-      var med = new Mediavideos();
-      med._id = await this.utilService.generateId();
-      med.mediaID = med._id;
-      med.postID = post.postID;
-      med.active = false;
-      med.createdAt = await this.utilService.getDateTimeString();
-      med.updatedAt = await this.utilService.getDateTimeString();
-      med.mediaMime = file.mimetype;
-      med.mediaType = 'video';
-      med.originalName = file.originalname;
-      med.apsara = true;
-      med._class = 'io.melody.hyppe.content.domain.MediaVideo';
-
-      this.logger.log('createNewPostVideo >>> prepare save');
-      var retd = await this.videoService.create(med);
-
-      this.logger.log('createNewPostVideo >>> ' + retd);
-
-      var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
-      cm.push(vids);
-
-      mediaId = String(retd.mediaID);
-    } else if (postType == 'advertise') {
-
-    } else if (postType == 'story') {
-
-      var mime = file.mimetype;
-      if (mime.startsWith('video')) {
-        var width_ = 0;
-        var height_ = 0;
-        if (body.width != undefined) {
-          width_ = parseInt(body.width.toString());
-        }
-        if (body.height != undefined) {
-          height_ = parseInt(body.height.toString());
-        }
-        let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
-        post.metadata = metadata;
-      }
-
-      var mes = new Mediastories();
-      mes._id = await this.utilService.generateId();
-      mes.mediaID = mes._id;
-      mes.postID = post.postID;
-      mes.active = false;
-      mes.createdAt = await this.utilService.getDateTimeString();
-      mes.updatedAt = await this.utilService.getDateTimeString();
-      mes.mediaMime = file.mimetype;
-      mes.mediaType = 'video';
-      mes.originalName = file.originalname;
-      mes.apsara = true;
-      mes._class = 'io.melody.hyppe.content.domain.MediaStory';
-
-      this.logger.log('createNewPostVideo >>> prepare save');
-      var rets = await this.storyService.create(mes);
-
-      this.logger.log('createNewPostVideo >>> ' + rets);
-
-      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
-      cm.push(stories);
-
-      mediaId = String(rets.mediaID);
-
-    } else if (postType == 'diary') {
-      var width_ = 0;
-      var height_ = 0;
-      if (body.width != undefined) {
-        width_ = parseInt(body.width.toString());
-      }
-      if (body.height != undefined) {
-        height_ = parseInt(body.height.toString());
-      }
-      let metadata = { postType: 'diary', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
-      post.metadata = metadata;
-
-      var mer = new Mediadiaries();
-      mer._id = await this.utilService.generateId();
-      mer.mediaID = mer._id;
-      mer.postID = post.postID;
-      mer.active = false;
-      mer.createdAt = await this.utilService.getDateTimeString();
-      mer.updatedAt = await this.utilService.getDateTimeString();
-      mer.mediaMime = file.mimetype;
-      mer.mediaType = 'video';
-      mer.originalName = file.originalname;
-      mer.apsara = true;
-      mer._class = 'io.melody.hyppe.content.domain.MediaDiary';
-
-      this.logger.log('createNewPostVideo >>> prepare save');
-      var retr = await this.diaryService.create(mer);
-
-      this.logger.log('createNewPostVideo >>> ' + retr);
-
-      var diaries = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
-      cm.push(diaries);
-
-      mediaId = String(retr.mediaID);
-    } else if (postType == 'pict') {
-
-      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
-      post.metadata = metadata;
-
-      var medx = new Mediapicts();
-      medx._id = await this.utilService.generateId();
-      medx.mediaID = medx._id;
-      medx.postID = post.postID;
-      medx.active = false;
-      medx.createdAt = await this.utilService.getDateTimeString();
-      medx.updatedAt = await this.utilService.getDateTimeString();
-      medx.mediaMime = file.mimetype;
-      medx.mediaType = 'video';
-      medx.originalName = file.originalname;
-      medx.apsara = true;
-      medx._class = 'io.melody.hyppe.content.domain.MediaPict';
-
-      this.logger.log('createNewPostVideo >>> prepare save music');
-      var retdx = await this.picService.create(medx);
-
-      this.logger.log('createNewPostVideo >>> ' + retdx);
-
-      var vids = { "$ref": "mediapicts", "$id": retdx.mediaID, "$db": "hyppe_content_db" };
-      cm.push(vids);
-
-      mediaId = String(retdx.mediaID);
-    }
-
-    post.contentMedias = cm;
-    let apost = await this.PostsModel.create(post);
-    if (body.musicId != undefined) {
-      await this.mediamusicService.updateUsed(body.musicId);
-    }
-
-    let fn = file.originalname;
-    let ext = fn.split(".");
-    let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + post._id + "." + ext[1];
-    const ws = createWriteStream(nm);
-    ws.write(file.buffer);
-    ws.close();
-
-    ws.on('finish', async () => {
-      //Upload Seaweedfs
-      const seaweedfs_path = '/' + post._id + '/' + postType + '/';
-      this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);
-      try {
-        var FormData_ = new FormData();
-        FormData_.append(postType, fs.createReadStream(nm));
-        const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
-        this.logger.log('uploadSeaweedfs >>> ' + dataupload);
-      } catch (err) {
-        this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
-      }
-      let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
-      //let payload = { 'file': nm, 'postId': apost._id };
-      axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
-    });
-
-    this.logger.log('createNewPostVideo >>> check certified. ' + post.certified);
-
-    // if (post.certified) {
-    //   this.generateCertificate(String(post.postID), 'id');
-    // }
-
-
-    var res = new CreatePostResponse();
-    res.response_code = 202;
-    let msg = new Messages();
-    msg.info = ["The process successful"];
-    res.messages = msg;
-    var pd = new PostData();
-    pd.postID = String(apost.postID);
-    pd.email = String(apost.email);
-    res.data = pd;
-
-    return res;
-  }
-
   private async createNewPostVideo(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
     this.logger.log('createNewPostVideo >>> start: ' + JSON.stringify(body));
     var token = headers['x-auth-token'];
@@ -760,6 +565,224 @@ export class PostContentService {
     return res;
   }
 
+  private async createNewPostVideoV2(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    this.logger.log('createNewPostVideo >>> start: ' + JSON.stringify(body));
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+
+    let post = await this.buildPost(body, headers);
+
+    let postType = body.postType;
+    let isShared = null;
+
+    if (body.isShared === undefined) {
+      isShared = true;
+    } else {
+      isShared = body.isShared;
+    }
+    var cm = [];
+
+    let mediaId = "";
+    if (postType == 'vid') {
+      var width_ = 0;
+      var height_ = 0;
+      if (body.width != undefined) {
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+      post.metadata = metadata;
+
+      var med = new Mediavideos();
+      med._id = await this.utilService.generateId();
+      med.mediaID = med._id;
+      med.postID = post.postID;
+      med.active = false;
+      med.createdAt = await this.utilService.getDateTimeString();
+      med.updatedAt = await this.utilService.getDateTimeString();
+      med.mediaMime = file.mimetype;
+      med.mediaType = 'video';
+      med.originalName = file.originalname;
+      med.apsara = true;
+      med._class = 'io.melody.hyppe.content.domain.MediaVideo';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retd = await this.videoService.create(med);
+
+      this.logger.log('createNewPostVideo >>> ' + retd);
+
+      var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retd.mediaID);
+    } else if (postType == 'advertise') {
+
+    } else if (postType == 'story') {
+
+      var mime = file.mimetype;
+      if (mime.startsWith('video')) {
+        var width_ = 0;
+        var height_ = 0;
+        if (body.width != undefined) {
+          width_ = parseInt(body.width.toString());
+        }
+        if (body.height != undefined) {
+          height_ = parseInt(body.height.toString());
+        }
+        let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+        post.metadata = metadata;
+      }
+
+      var mes = new Mediastories();
+      mes._id = await this.utilService.generateId();
+      mes.mediaID = mes._id;
+      mes.postID = post.postID;
+      mes.active = false;
+      mes.createdAt = await this.utilService.getDateTimeString();
+      mes.updatedAt = await this.utilService.getDateTimeString();
+      mes.mediaMime = file.mimetype;
+      mes.mediaType = 'video';
+      mes.originalName = file.originalname;
+      mes.apsara = true;
+      mes._class = 'io.melody.hyppe.content.domain.MediaStory';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var rets = await this.storyService.create(mes);
+
+      this.logger.log('createNewPostVideo >>> ' + rets);
+
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
+      cm.push(stories);
+
+      mediaId = String(rets.mediaID);
+
+    } else if (postType == 'diary') {
+      var width_ = 0;
+      var height_ = 0;
+      if (body.width != undefined) {
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'diary', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+      post.metadata = metadata;
+
+      var mer = new Mediadiaries();
+      mer._id = await this.utilService.generateId();
+      mer.mediaID = mer._id;
+      mer.postID = post.postID;
+      mer.active = false;
+      mer.createdAt = await this.utilService.getDateTimeString();
+      mer.updatedAt = await this.utilService.getDateTimeString();
+      mer.mediaMime = file.mimetype;
+      mer.mediaType = 'video';
+      mer.originalName = file.originalname;
+      mer.apsara = true;
+      mer._class = 'io.melody.hyppe.content.domain.MediaDiary';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retr = await this.diaryService.create(mer);
+
+      this.logger.log('createNewPostVideo >>> ' + retr);
+
+      var diaries = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
+      cm.push(diaries);
+
+      mediaId = String(retr.mediaID);
+    } else if (postType == 'pict') {
+
+      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
+      post.metadata = metadata;
+
+      var medx = new Mediapicts();
+      medx._id = await this.utilService.generateId();
+      medx.mediaID = medx._id;
+      medx.postID = post.postID;
+      medx.active = false;
+      medx.createdAt = await this.utilService.getDateTimeString();
+      medx.updatedAt = await this.utilService.getDateTimeString();
+      medx.mediaMime = file.mimetype;
+      medx.mediaType = 'video';
+      medx.originalName = file.originalname;
+      medx.apsara = true;
+      medx._class = 'io.melody.hyppe.content.domain.MediaPict';
+
+      this.logger.log('createNewPostVideo >>> prepare save music');
+      var retdx = await this.picService.create(medx);
+
+      this.logger.log('createNewPostVideo >>> ' + retdx);
+
+      var vids = { "$ref": "mediapicts", "$id": retdx.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retdx.mediaID);
+    }
+
+    post.contentMedias = cm;
+    post.isShared = isShared;
+    let apost = await this.PostsModel.create(post);
+    if (body.musicId != undefined) {
+      await this.mediamusicService.updateUsed(body.musicId);
+    }
+
+    const form = new FormData();
+    form.append('file', file.buffer, { filename: file.originalname });
+    form.append('postID', post._id);
+    console.log(form);
+    axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V2"), form, {
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+
+    // let fn = file.originalname;
+    // let ext = fn.split(".");
+    // let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + post._id + "." + ext[1];
+    // const ws = createWriteStream(nm);
+    // ws.write(file.buffer);
+    // ws.close();
+
+    // ws.on('finish', async () => {
+    //   //Upload Seaweedfs
+    //   const seaweedfs_path = '/' + post._id + '/' + postType + '/';
+    //   this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);
+    //   try {
+    //     var FormData_ = new FormData();
+    //     FormData_.append(postType, fs.createReadStream(nm));
+    //     const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
+    //     this.logger.log('uploadSeaweedfs >>> ' + dataupload);
+    //   } catch (err) {
+    //     this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
+    //   }
+    //   let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
+    //   //let payload = { 'file': nm, 'postId': apost._id };
+    //   axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+    // });
+
+    this.logger.log('createNewPostVideo >>> check certified. ' + post.certified);
+
+    // if (post.certified) {
+    //   this.generateCertificate(String(post.postID), 'id');
+    // }
+
+
+    var res = new CreatePostResponse();
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+    res.data = pd;
+
+    return res;
+  }
+
   private async createNewPostPict(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
 
     var token = headers['x-auth-token'];
@@ -857,6 +880,141 @@ export class PostContentService {
       axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
     });
+    /*
+    let playlist = new CreateUserplaylistDto();
+    playlist.userPostId = Object(profile._id);
+    playlist.postType = post.postType;
+    playlist.mediaId = Object(mediaId);
+    this.logger.log('createNewPostPic >>> generate playlist ' + JSON.stringify(playlist));
+    this.postService.generateUserPlaylist(playlist);
+    */
+    this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
+    if (post.certified) {
+      this.generateCertificate(String(post.postID), 'id');
+    } else {
+      this.logger.error('createNewPostPict >>> post is not certified');
+    }
+
+    var res = new CreatePostResponse();
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+    res.data = pd;
+
+    return res;
+  }
+
+  private async createNewPostPictV2(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+
+    let post = await this.buildPost(body, headers);
+    let postType = body.postType;
+    let isShared = null;
+
+    if (body.isShared === undefined) {
+      isShared = true;
+    } else {
+      isShared = body.isShared;
+    }
+    var cm = [];
+    let mediaId = "";
+
+    if (postType == 'pict') {
+      var med = new Mediapicts();
+      med._id = await this.utilService.generateId();
+      med.mediaID = med._id;
+      med.postID = post.postID;
+      med.active = false;
+      med.createdAt = await this.utilService.getDateTimeString();
+      med.updatedAt = await this.utilService.getDateTimeString();
+      med.mediaMime = file.mimetype;
+      med.mediaType = 'image';
+      med.originalName = file.originalname;
+      med.apsara = true;
+      med._class = 'io.melody.hyppe.content.domain.MediaPict';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retm = await this.picService.create(med);
+
+      this.logger.log('createNewPostVideo >>> ' + retm);
+
+      var vids = { "$ref": "mediapicts", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retm.mediaID);
+    } else if (postType == 'story') {
+      let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
+      post.metadata = metadata;
+
+      var mes = new Mediastories();
+      mes._id = await this.utilService.generateId();
+      mes.mediaID = mes._id;
+      mes.postID = post.postID;
+      mes.active = false;
+      mes.createdAt = await this.utilService.getDateTimeString();
+      mes.updatedAt = await this.utilService.getDateTimeString();
+      mes.mediaMime = file.mimetype;
+      mes.mediaType = 'image';
+      mes.originalName = file.originalname;
+      mes.apsara = true;
+      mes._class = 'io.melody.hyppe.content.domain.MediaStory';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var rets = await this.storyService.create(mes);
+
+      this.logger.log('createNewPostVideo >>> ' + rets);
+
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
+      cm.push(stories);
+
+      mediaId = String(rets.mediaID);
+
+    }
+    post.contentMedias = cm;
+    post.isShared = isShared;
+    let apost = await this.PostsModel.create(post);
+
+    const form = new FormData();
+    form.append('file', file.buffer, { filename: file.originalname });
+    form.append('postID', post._id);
+    console.log(form);
+    axios.post(this.configService.get("APSARA_UPLOADER_PICTURE_V2"), form, {
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+
+    // let fn = file.originalname;
+    // let ext = fn.split(".");
+    // let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + post._id + "." + ext[1];
+    // const ws = createWriteStream(nm);
+    // ws.write(file.buffer);
+    // ws.close();
+
+    // ws.on('finish', async () => {
+    //   //Upload Seaweedfs
+    //   const seaweedfs_path = '/' + post._id + '/' + postType + '/';
+    //   this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);
+    //   try {
+    //     var FormData_ = new FormData();
+    //     FormData_.append(postType, fs.createReadStream(nm));
+    //     const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
+    //     this.logger.log('uploadSeaweedfs >>> ' + dataupload);
+    //   } catch (err) {
+    //     this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
+    //   }
+    //   let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
+    //   //let payload = { 'file': nm, 'postId': apost._id };
+    //   axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+
+    // });
     /*
     let playlist = new CreateUserplaylistDto();
     playlist.userPostId = Object(profile._id);
@@ -1747,7 +1905,6 @@ export class PostContentService {
     }
     return pd;
   }
-
 
   async getUserPostByProfile(body: any, headers: any): Promise<PostResponseApps> {
 
@@ -3761,7 +3918,6 @@ export class PostContentService {
     return res;
   }
 
-
   async getNotification(body: any, headers: any): Promise<NotifResponseApps> {
     let dat = await this.notifService.getNotification(body, headers);
     let dx = dat.data;
@@ -3992,7 +4148,6 @@ export class PostContentService {
       let rc = await this.cmodService.cmodResult(String(pd._id), taskId);
     }
   }
-
 
   private formatTime(seconds) {
     const h = Math.floor(seconds / 3600);
