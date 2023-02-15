@@ -54,13 +54,15 @@ export class ActivityeventsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('logactivitas/sesi')
-  async countPostsesi(@Body('year') year: number, @Headers() headers): Promise<Object> {
+  async countPostsesi(@Headers() headers): Promise<Object> {
     var datasesi = null;
     var countUser = [];
     var awake = null;
     var sleep = null;
     var arrdataview = [];
-    var sumfollow = 0;
+    var arrdata = [];
+    var sumMinute = [];
+    var sumUser = [];
     const messages = {
       "info": ["The process successful"],
     };
@@ -77,17 +79,21 @@ export class ActivityeventsController {
     }
 
     if (countUser.length > 0) {
+      var sumUser = [];
+      countUser.reduce(function (res, value) {
+        if (!res[value.date]) {
+          res[value.date] = { date: value.date, count: 0 };
+          sumUser.push(res[value.date])
+        }
+        res[value.date].count += value.count;
+        return res;
+      }, {});
 
-      for (let i = 0; i < countUser.length; i++) {
-        sumfollow += countUser[i].count;
+      console.log(sumUser)
 
-      }
-
-    } else {
-      sumfollow = 0;
     }
 
-    var total = sumfollow;
+
     if (datasesi !== null) {
       awake = datasesi[0].awake;
     } else {
@@ -110,15 +116,13 @@ export class ActivityeventsController {
             if (sleep[j].createdAt != null) {
               let createdSleep = new Date(sleep[j].createdAt);
               var difference = Math.abs(createdSleep.getTime() - createdAwake.getTime());
-              var minutes = Math.round(((difference % 86400000) % 3600000) / 60000);
-
-              console.log(minutes)
+              var count = Math.round(((difference % 86400000) % 3600000) / 60000);
               break;
             }
           }
           arrdataview.push({
             'date': tgl,
-            'minutes': minutes,
+            'count': count,
 
           });
         }
@@ -127,13 +131,49 @@ export class ActivityeventsController {
 
     }
 
-    const sumId = arrdataview.reduce((a, {
-      date,
-      minutes
-    }) => (a[date] = (a[date] || 0) + minutes, a), {});
+    if (arrdataview.length > 0) {
+      var sumMinute = [];
+      arrdataview.reduce(function (res, value) {
+        if (!res[value.date]) {
+          res[value.date] = { date: value.date, count: 0 };
+          sumMinute.push(res[value.date])
+        }
+        res[value.date].count += value.count;
+        return res;
+      }, {});
 
-    console.log(sumId)
-    return { response_code: 202, total, arrdataview, messages };
+      console.log(sumMinute)
+
+    }
+
+    if (sumMinute.length > 0) {
+      for (let i = 0; i < sumMinute.length; i++) {
+        let countminute = sumMinute[i].count;
+        let tgl = sumMinute[i].date;
+        if (sumUser.length > 0) {
+          for (var j = 0; j < sumUser.length; j++) {
+            var countuser = sumUser[j].count;
+            if (sumUser[j].date == tgl) {
+
+
+              var counting = countminute / countuser;
+
+
+              break;
+            }
+          }
+          arrdata.push({
+            'date': tgl,
+            'count': counting,
+
+          });
+        }
+
+      }
+
+    }
+
+    return { response_code: 202, arrdata, messages };
   }
 
   @Post('list')

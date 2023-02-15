@@ -700,6 +700,11 @@ export class ActivityeventsService {
 
               }
             },
+            {
+              $sort: {
+                date: 1
+              }
+            }
           ],
           "awake": [
             {
