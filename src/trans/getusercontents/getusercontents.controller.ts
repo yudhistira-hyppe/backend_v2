@@ -1878,7 +1878,58 @@ export class GetusercontentsController {
         }
 
     }
+    @Post('api/getusercontents/landing-page/recentStory')
+    @UseGuards(JwtAuthGuard)
+    async getRecentStory(@Req() request: Request): Promise<any> {
+        var dataq = null;
+        var email = null;
 
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        dataq = await this.userauthsService.getRecentStory(email);
+
+        var lengdata = dataq.length;
+        var data = [];
+        var dataend = [];
+        if (lengdata > 0) {
+            for (let i = 0; i < lengdata; i++) {
+                let obj = dataq[i].story;
+                let lengstory = obj.length;
+
+                for (let n = 0; n < lengstory; n++) {
+
+                    if (lengstory > 0) {
+
+                        var mediaType = obj[n].mediaType;
+
+                        if (mediaType == "image") {
+                            var dataconten = await this.getusercontentsService.getapsaraDatabase(obj, n);
+                            data.push(dataconten);
+                            break;
+
+                        }
+
+                    }
+
+                }
+
+                dataq[i].story = data[i];
+
+            }
+
+        }
+
+        return { response_code: 202, dataq, messages };
+    }
 }
 
 
