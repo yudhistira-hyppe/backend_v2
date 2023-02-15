@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Headers } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Headers, Req } from '@nestjs/common';
 import { ActivityeventsService } from './activityevents.service';
 import { CreateActivityeventsDto } from './dto/create-activityevents.dto';
 import { Activityevents } from './schemas/activityevents.schema';
@@ -54,7 +54,7 @@ export class ActivityeventsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('logactivitas/sesi')
-  async countPostsesi(@Headers() headers): Promise<Object> {
+  async countPostsesi(@Req() request: Request, @Headers() headers): Promise<Object> {
     var datasesi = null;
     var countUser = [];
     var awake = null;
@@ -63,12 +63,26 @@ export class ActivityeventsController {
     var arrdata = [];
     var sumMinute = [];
     var sumUser = [];
+    var startdate = null;
+    var enddate = null;
     const messages = {
       "info": ["The process successful"],
     };
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
 
+    var date1 = new Date(startdate);
+    var date2 = new Date(enddate);
+
+    //calculate time difference  
+    var time_difference = date2.getTime() - date1.getTime();
+
+    //calculate days difference by dividing total milliseconds in a day  
+    var resultTime = time_difference / (1000 * 60 * 60 * 24);
+    console.log(resultTime);
     try {
-      datasesi = await this.activityeventsService.sesipengguna();
+      datasesi = await this.activityeventsService.sesipengguna(startdate, enddate);
     } catch (e) {
       datasesi = null;
     }
@@ -154,11 +168,7 @@ export class ActivityeventsController {
           for (var j = 0; j < sumUser.length; j++) {
             var countuser = sumUser[j].count;
             if (sumUser[j].date == tgl) {
-
-
-              var counting = countminute / countuser;
-
-
+              var counting = Math.round(countminute / countuser);
               break;
             }
           }
@@ -173,7 +183,31 @@ export class ActivityeventsController {
 
     }
 
-    return { response_code: 202, arrdata, messages };
+    var data = [];
+    if (resultTime > 0) {
+      for (var i = 0; i < resultTime + 1; i++) {
+        var dt = new Date(startdate);
+        dt.setDate(dt.getDate() + i);
+        var splitdt = dt.toISOString();
+        var dts = splitdt.split('T');
+        var stdt = dts[0].toString();
+        var count = 0;
+        for (var j = 0; j < arrdata.length; j++) {
+          if (arrdata[j].date == stdt) {
+            count = arrdata[j].count;
+            break;
+          }
+        }
+        data.push({
+          'date': stdt,
+          'count': count
+        });
+
+      }
+
+    }
+
+    return { response_code: 202, data, messages };
   }
 
   @Post('list')
