@@ -803,7 +803,7 @@ export class PostsController {
           data_["postType"] = post.postType;
           if (post.postType == 'vid') {
             if (media[0].datacontent[0].apsaraId != undefined) {
-              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId,'SD');
+              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId, 'SD');
               var metadata = {
                 duration: dataApsara.Duration
               }
@@ -1227,5 +1227,100 @@ export class PostsController {
     }
 
     return { response_code: 202, messages, data: arrdataview };
+  }
+
+  @Post('api/posts/landing-page/recentStory')
+  @UseGuards(JwtAuthGuard)
+  async getRecentStory(@Req() request: Request): Promise<any> {
+    var data = null;
+    var email = null;
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["email"] !== undefined) {
+      email = request_json["email"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    var tempdata = await this.userauthsService.getRecentStory(email);
+    for (var i = 0; i < tempdata.length; i++) {
+      var getdata = tempdata[i].story;
+      for (var j = 0; j < getdata.length; j++) {
+        var listvideo = [];
+        var listimage = [];
+        var getchildata = getdata[j];
+        var response = null;
+        if (getchildata.mediaType == "image" || getchildata.mediaType == "images") {
+          listimage.push(getchildata.apsaraId);
+          try {
+            getchildata.media = await this.postContentService.getImageApsara(listimage);
+          } catch (e) {
+            getchildata.media = {};
+          }
+        }
+
+      }
+    }
+
+    data = tempdata;
+
+
+    return { response_code: 202, data, messages };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/story/following/')
+  async getAllFollowerStoryBasedEmail(@Req() request: Request): Promise<any> {
+    var data = null;
+    var email = null;
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["email"] !== undefined) {
+      email = request_json["email"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    var tempdata = await this.contenteventsService.getFollowerStoryByEmail(email);
+    for (var i = 0; i < tempdata.length; i++) {
+      var getdata = tempdata[i].story;
+      for (var j = 0; j < getdata.length; j++) {
+        var listvideo = [];
+        var listimage = [];
+        var getchildata = getdata[j];
+        var response = null;
+        if (getchildata.mediaType == "video") {
+          listvideo.push(getchildata.apsaraId);
+          try {
+            getchildata.media = await this.postContentService.getVideoApsara(listvideo);
+          } catch (e) {
+            getchildata.media = {};
+          }
+        }
+        else {
+          listimage.push(getchildata.apsaraId);
+          try {
+            getchildata.media = await this.postContentService.getImageApsara(listimage);
+          } catch (e) {
+            getchildata.media = {};
+          }
+        }
+      }
+    }
+
+    data =
+    {
+      'story': tempdata
+    }
+
+    return { response_code: 202, data, messages };
   }
 }

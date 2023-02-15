@@ -205,6 +205,7 @@ export class GetusercontentsService {
     return obj;
   }
 
+
   async getapsaraDatabaseAds(obj: object, n: number) {
     let idapsara = null;
     let apsara = null;
