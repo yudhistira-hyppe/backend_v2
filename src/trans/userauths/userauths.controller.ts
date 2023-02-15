@@ -110,28 +110,4 @@ export class UserauthsController {
 
       return { response_code: 202, messages, data };
   }
-
-  @Post('landing-page/recentStory')
-  @UseGuards(JwtAuthGuard)
-  async getRecentStory(@Req() request: Request): Promise<any> {
-    var data = null;
-    var email = null;
-    
-    var request_json = JSON.parse(JSON.stringify(request.body));
-    if (request_json["email"] !== undefined) 
-    {
-      email = request_json["email"];
-    } else 
-    {
-      throw new BadRequestException("Unabled to proceed");
-    }
-
-    const messages = {
-        "info": ["The process successful"],
-    };
-
-    data = await this.userauthsService.getRecentStory(email);
-
-    return { response_code:202, data, messages }; 
-  }
 }
