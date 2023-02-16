@@ -120,6 +120,9 @@ export class AuthController {
       LoginRequest_.email,
     );
 
+    //Generate Refresh Token
+    await this.authService.updateRefreshToken(LoginRequest_.email.toString());
+
     //Ceck User Userbasics
     const data_userbasics = await this.userbasicsService.findOne(
       LoginRequest_.email,
