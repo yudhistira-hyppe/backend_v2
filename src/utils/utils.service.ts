@@ -340,7 +340,17 @@ export class UtilsService {
     if (postType != undefined) {
       createNotificationsDto.postType = postType.toString();
     }
-    await this.notificationsService.create(createNotificationsDto);
+
+    if (eventType == "FOLLOWER") {
+      var ceckNotification = await this.notificationsService.findCriteria(receiverParty, eventType, senderParty);
+      if (await this.ceckData(ceckNotification)){
+        await this.notificationsService.updateNotifiaction(receiverParty, eventType, senderParty, currentDate);
+      } else {
+        await this.notificationsService.create(createNotificationsDto);
+      }
+    } else {
+      await this.notificationsService.create(createNotificationsDto);
+    }
   }
 
   async sendFcmCMod(receiverParty: string, eventType: string, event: string, postID?: string, postType?: string) {

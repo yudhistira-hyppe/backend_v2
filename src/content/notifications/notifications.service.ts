@@ -52,6 +52,28 @@ export class NotificationsService {
     return this.NotificationsModel.findOne({ email: email }).exec();
   }
 
+  async findCriteria(email: string, eventType: string, mate: string): Promise<Notifications> {
+    return this.NotificationsModel.findOne({ email: email, eventType: eventType, mate: mate }).exec();
+  }
+
+  async updateNotifiaction(email: string, eventType: string, mate: string, currentDate: string) {
+    this.NotificationsModel.updateOne(
+      {
+        email: email,
+        eventType: eventType,
+        mate: mate,
+      },
+      { createdAt: currentDate },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
   async delete(id: string) {
     const deletedCat = await this.NotificationsModel.findByIdAndRemove({
       _id: id,
