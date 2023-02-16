@@ -610,7 +610,10 @@ export class UserauthsService {
           from: "mediaprofilepicts",
           as: "avatar",
           let: {
-            localID: '$userBasic.profilePict.$id'
+            localID: {
+              "$arrayElemAt": ["$userBasic.profilePict.$id", 0]
+            },
+
           },
           pipeline: [
             {
