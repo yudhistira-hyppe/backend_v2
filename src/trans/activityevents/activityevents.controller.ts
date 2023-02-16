@@ -54,7 +54,7 @@ export class ActivityeventsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('logactivitas/sesi')
-  async countPostsesi(@Req() request: Request, @Headers() headers): Promise<Object> {
+  async countPostsesi(@Req() request, @Headers() headers): Promise<Object> {
     var datasesi = null;
     var countUser = [];
     var awake = null;

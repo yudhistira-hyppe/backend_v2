@@ -308,7 +308,7 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/posts/createpost')
+  @Post('api/posts/v2/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPost(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("createPost >>> start");
@@ -317,7 +317,7 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/posts/v2/createpost')
+  @Post('api/posts/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPostV2(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("createPost >>> start");
