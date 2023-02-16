@@ -1311,4 +1311,84 @@ export class PostsController {
 
     return { response_code: 202, data, messages };
   }
+
+
+  @Post('api/posts/interaksi')
+  @UseGuards(JwtAuthGuard)
+  async getByCharti(@Req() request: Request): Promise<any> {
+    var data = null;
+    var startdate = null;
+    var enddate = null;
+    var datasummary = [];
+    var lengviews = 0;
+    var arrdataview = [];
+    const messages = {
+      "info": ["The process successful"],
+    };
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["startdate"] !== undefined) {
+      startdate = request_json["startdate"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["enddate"] !== undefined) {
+      enddate = request_json["enddate"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    var date1 = new Date(startdate);
+    var date2 = new Date(enddate);
+
+    //calculate time difference  
+    var time_difference = date2.getTime() - date1.getTime();
+
+    //calculate days difference by dividing total milliseconds in a day  
+    var resultTime = time_difference / (1000 * 60 * 60 * 24);
+    console.log(resultTime);
+    try {
+      datasummary = await this.PostsService.analitycview(startdate, enddate);
+      lengviews = datasummary.length;
+    }
+    catch (e) {
+      datasummary = [];
+      lengviews = 0;
+    }
+
+    if (resultTime > 0) {
+      for (var i = 0; i < resultTime + 1; i++) {
+        var dt = new Date(startdate);
+        dt.setDate(dt.getDate() + i);
+        var splitdt = dt.toISOString();
+        var dts = splitdt.split('T');
+        var stdt = dts[0].toString();
+        var views = 0;
+        var likes = 0;
+        var comments = 0;
+
+        for (var j = 0; j < lengviews; j++) {
+          if (datasummary[j].date == stdt) {
+            views = datasummary[j].views;
+            likes = datasummary[j].likes;
+            comments = datasummary[j].comments;
+
+            break;
+          }
+        }
+        arrdataview.push({
+          'date': stdt,
+          'views': views,
+          'likes': likes,
+          'comments': comments,
+
+        });
+
+      }
+
+    }
+
+    return { response_code: 202, messages, data: arrdataview };
+  }
+
 }

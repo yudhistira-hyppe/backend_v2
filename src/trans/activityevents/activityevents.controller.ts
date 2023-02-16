@@ -288,6 +288,8 @@ export class ActivityeventsController {
     return { response_code: 202, data, messages };
   }
 
+
+
   @Post('list')
   //@FormDataRequest()
   @UseGuards(JwtAuthGuard)
