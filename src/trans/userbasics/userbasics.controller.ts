@@ -238,4 +238,75 @@ export class UserbasicsController {
 
     return { response_code: 202, data, messages };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('demografis')
+  async countPostareas(@Req() request): Promise<any> {
+    var data = [];
+
+    var startdate = null;
+    var enddate = null;
+    var wilayah = [];
+    var dataSumwilayah = [];
+    var lengwilayah = 0;
+    var sumwilayah = 0;
+    const messages = {
+      "info": ["The process successful"],
+    };
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
+
+    try {
+      data = await this.userbasicsService.demografis(startdate, enddate);
+      wilayah = data[0].wilayah;
+      lengwilayah = wilayah.length;
+    } catch (e) {
+      data = [];
+      wilayah = [];
+      lengwilayah = 0;
+    }
+
+
+    if (lengwilayah > 0) {
+
+      for (let i = 0; i < lengwilayah; i++) {
+        sumwilayah += wilayah[i].count;
+
+      }
+
+    } else {
+      sumwilayah = 0;
+    }
+
+    if (lengwilayah > 0) {
+
+      for (let i = 0; i < lengwilayah; i++) {
+        let count = wilayah[i].count;
+        let state = null;
+        let stateName = wilayah[i].stateName;
+
+        if (stateName == null) {
+          state = "Other";
+        } else {
+          state = stateName;
+        }
+
+        let persen = count * 100 / sumwilayah;
+        let objcounwilayah = {
+          stateName: state,
+          count: count,
+          persen: persen.toFixed(2)
+        }
+        dataSumwilayah.push(objcounwilayah);
+      }
+
+    } else {
+      dataSumwilayah = [];
+    }
+
+    data[0].wilayah = dataSumwilayah;
+
+    return { response_code: 202, data, messages };
+  }
 }

@@ -5477,4 +5477,171 @@ export class UserbasicsService {
     return query;
 
   }
+
+  async demografis(startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+
+      var dt = dateend.substring(0, 10);
+    } catch (e) {
+      dt = "";
+    }
+    var query = await this.userbasicModel.aggregate([
+
+      {
+        $match: {
+
+          createdAt: {
+            $gte: startdate,
+            $lte: dt
+
+          }
+        }
+      },
+      {
+        $project: {
+          createdAt: 1,
+          email: 1,
+          states: 1,
+          gender: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: ['$gender', 'FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', ' FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Perempuan']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Wanita']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', ' MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Laki-laki']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Pria']
+                  },
+                  then: 'MALE',
+
+                },
+
+              ],
+              default: "OTHER",
+
+            },
+
+          },
+
+        }
+      },
+      {
+        $facet: {
+          "gender": [
+            {
+              $group: {
+
+                _id: '$gender',
+                count: {
+                  $sum: 1
+                },
+
+              },
+
+            },
+            {
+              $project: {
+                _id: 0,
+                gender: '$_id',
+                count: 1,
+
+              }
+            },
+
+          ],
+          "wilayah": [
+            {
+              $lookup: {
+                from: 'areas',
+                localField: 'states.$id',
+                foreignField: '_id',
+                as: 'areas_data',
+
+              },
+
+            },
+
+            {
+              $project: {
+                createdAt: 1,
+                stateName: {
+                  "$arrayElemAt": ['$areas_data.stateName', 0]
+                },
+              }
+            },
+            {
+              $group: {
+
+                _id: '$stateName',
+                count: {
+                  $sum: 1
+                },
+
+              },
+
+            },
+            {
+              $project: {
+                _id: 0,
+                stateName: '$_id',
+                count: 1,
+
+              }
+            },
+
+          ]
+        }
+      }
+    ]);
+    return query;
+  }
 }
