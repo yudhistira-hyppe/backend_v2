@@ -1075,7 +1075,7 @@ export class PostContentService {
       let ids: string[] = [];
       ids.push(body.videoId);
       this.logger.log('updateNewPost >>> checking cmod video');
-      let aimg = await this.getVideoApsaraSingle(ids[0],"SD");
+      let aimg = await this.getVideoApsaraSingleNoDefinition(ids[0]);
       if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
         let aim = aimg.PlayUrl;
         this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
@@ -1162,7 +1162,7 @@ export class PostContentService {
         let ids: string[] = [];
         ids.push(body.videoId);
         this.logger.log('updateNewPost >>> checking cmod video');
-        let aimg = await this.getVideoApsaraSingle(ids[0], "SD");
+        let aimg = await this.getVideoApsaraSingleNoDefinition(ids[0]);
         if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
           let aim = aimg.PlayUrl;
           this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
@@ -1211,7 +1211,7 @@ export class PostContentService {
       let ids: string[] = [];
       ids.push(body.videoId);
       this.logger.log('updateNewPost >>> checking cmod video');
-      let aimg = await this.getVideoApsaraSingle(ids[0], "SD");
+      let aimg = await this.getVideoApsaraSingleNoDefinition(ids[0]);
       if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
         let aim = aimg.PlayUrl;
         this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
@@ -3134,6 +3134,37 @@ export class PostContentService {
     }
     tx.ImageInfo = vl;
     return tx;
+  }
+
+  public async getVideoApsaraSingleNoDefinition(ids: String): Promise<ApsaraPlayResponse> {
+    this.logger.log('getVideoApsaraSingle >>> start: ' + ids);
+    var RPCClient = require('@alicloud/pop-core').RPCClient;
+
+    let client = new RPCClient({
+      accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+      accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+      endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+      apiVersion: '2017-03-21'
+    });
+
+    let params = {
+      "RegionId": this.configService.get("APSARA_REGION_ID"),
+      "VideoId": ids
+    }
+
+    let requestOption = {
+      method: 'POST'
+    };
+
+    let result = await client.request('GetPlayInfo', params, requestOption);
+    let xres = new ApsaraPlayResponse();
+    this.logger.log('getVideoApsaraSingle >>> response: ' + JSON.stringify(result));
+    if (result != null && result.PlayInfoList != null && result.PlayInfoList.PlayInfo && result.PlayInfoList.PlayInfo.length > 0) {
+      xres.PlayUrl = result.PlayInfoList.PlayInfo[0].PlayURL;
+      xres.Duration = result.PlayInfoList.PlayInfo[0].Duration;
+    }
+    console.log("APSARA VIDEO GET", JSON.stringify(xres))
+    return xres;
   }
 
   public async getVideoApsaraSingle(ids: String, definition: String): Promise<ApsaraPlayResponse> {

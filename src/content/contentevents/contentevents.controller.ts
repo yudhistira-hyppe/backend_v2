@@ -199,7 +199,6 @@ export class ContenteventsController {
     var Insight_sender = await this.insightsService.findemail(email_user);
     var Insight_receiver = await this.insightsService.findemail(email_receiverParty);
 
-
     if (eventType == "FOLLOWING") {
       var ceck_data_FOLLOWER = await this.contenteventsService.ceckData(email_receiverParty, "FOLLOWER", "ACCEPT", email_user, "", "");
       var ceck_data_FOLLOWING = await this.contenteventsService.ceckData(email_user, "FOLLOWING", "ACCEPT", "", email_receiverParty, "");
@@ -288,7 +287,7 @@ export class ContenteventsController {
           await this.insightsService.updateFollower(email_receiverParty);
           await this.insightsService.updateFollowing(email_user);
           this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
-          this.sendInteractiveFCM(email_user, "FOLLOWING", "", email_receiverParty);
+          //this.sendInteractiveFCM(email_user, "FOLLOWING", "", email_receiverParty);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +

@@ -803,7 +803,7 @@ export class PostsController {
           data_["postType"] = post.postType;
           if (post.postType == 'vid') {
             if (media[0].datacontent[0].apsaraId != undefined) {
-              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId, 'SD');
+              var dataApsara = await this.postContentService.getVideoApsaraSingleNoDefinition(media[0].datacontent[0].apsaraId);
               var metadata = {
                 duration: dataApsara.Duration
               }
@@ -812,7 +812,7 @@ export class PostsController {
             }
           } else if (post.postType == 'diary') {
             if (media[0].datacontent[0].apsaraId != undefined) {
-              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId, 'SD');
+              var dataApsara = await this.postContentService.getVideoApsaraSingleNoDefinition(media[0].datacontent[0].apsaraId);
               var metadata = {
                 duration: dataApsara.Duration
               }
@@ -821,7 +821,7 @@ export class PostsController {
             }
           } else if (post.postType == 'story') {
             if (media[0].datacontent[0].apsaraId != undefined) {
-              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId, 'SD');
+              var dataApsara = await this.postContentService.getVideoApsaraSingleNoDefinition(media[0].datacontent[0].apsaraId);
               var metadata = {
                 duration: dataApsara.Duration
               }
