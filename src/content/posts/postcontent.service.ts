@@ -733,7 +733,7 @@ export class PostContentService {
     form.append('file', file.buffer, { filename: file.originalname });
     form.append('postID', post._id);
     console.log(form);
-    await axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V2"), form, {
+    axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V2"), form, {
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
       headers: { 'Content-Type': 'multipart/form-data' }
