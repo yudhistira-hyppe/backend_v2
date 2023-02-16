@@ -180,7 +180,7 @@ export class NotificationsService {
     let skip = this.paging(page, row);
     query.skip(skip);
     query.limit(row);
-    query.sort({ 'updatedAt': -1 });
+    query.sort({ 'createdAt': -1 });
     return await query.exec();
   }
 
