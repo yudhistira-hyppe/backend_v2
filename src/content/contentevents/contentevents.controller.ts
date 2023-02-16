@@ -299,6 +299,7 @@ export class ContenteventsController {
         await this.contenteventsService.updateFollower(email_receiverParty, "FOLLOWER", email_user);
         await this.insightsService.updateFollower(email_receiverParty);
         await this.insightsService.updateFollowing(email_user);
+        this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
       }
     } else if (eventType == "VIEW") {
       if (email_user !== email_receiverParty) {
