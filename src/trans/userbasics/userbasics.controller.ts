@@ -182,4 +182,60 @@ export class UserbasicsController {
       response_code: 202, data: data, totalRow: totalRow, skip: skip, limit: limit, messages: {}
     }
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('newuser')
+  async countPostsesiactiv(@Req() request): Promise<Object> {
+    var datasesi = [];
+
+    var startdate = null;
+    var enddate = null;
+    const messages = {
+      "info": ["The process successful"],
+    };
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
+
+    var date1 = new Date(startdate);
+    var date2 = new Date(enddate);
+
+    //calculate time difference  
+    var time_difference = date2.getTime() - date1.getTime();
+
+    //calculate days difference by dividing total milliseconds in a day  
+    var resultTime = time_difference / (1000 * 60 * 60 * 24);
+    console.log(resultTime);
+    try {
+      datasesi = await this.userbasicsService.userNew(startdate, enddate);
+    } catch (e) {
+      datasesi = [];
+    }
+
+    var data = [];
+    if (resultTime > 0) {
+      for (var i = 0; i < resultTime + 1; i++) {
+        var dt = new Date(startdate);
+        dt.setDate(dt.getDate() + i);
+        var splitdt = dt.toISOString();
+        var dts = splitdt.split('T');
+        var stdt = dts[0].toString();
+        var count = 0;
+        for (var j = 0; j < datasesi.length; j++) {
+          if (datasesi[j].date == stdt) {
+            count = datasesi[j].count;
+            break;
+          }
+        }
+        data.push({
+          'date': stdt,
+          'count': count
+        });
+
+      }
+
+    }
+
+    return { response_code: 202, data, messages };
+  }
 }
