@@ -1290,22 +1290,13 @@ export class PostsController {
     };
 
     var tempdata = await this.contenteventsService.getFollowerStoryByEmail(email);
+    //console.log(tempdata);
     for (var i = 0; i < tempdata.length; i++) {
       var getdata = tempdata[i].story;
       for (var j = 0; j < getdata.length; j++) {
-        var listvideo = [];
         var listimage = [];
         var getchildata = getdata[j];
-        var response = null;
-        if (getchildata.mediaType == "video") {
-          listvideo.push(getchildata.apsaraId);
-          try {
-            getchildata.media = await this.postContentService.getVideoApsara(listvideo);
-          } catch (e) {
-            getchildata.media = {};
-          }
-        }
-        else {
+        if (getchildata.mediaType == "image" || getchildata.mediaType == "images") {
           listimage.push(getchildata.apsaraId);
           try {
             getchildata.media = await this.postContentService.getImageApsara(listimage);
@@ -1316,10 +1307,7 @@ export class PostsController {
       }
     }
 
-    data =
-    {
-      'story': tempdata
-    }
+    data = tempdata;
 
     return { response_code: 202, data, messages };
   }

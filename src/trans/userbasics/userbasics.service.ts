@@ -5373,7 +5373,7 @@ export class UserbasicsService {
     return query;
   }
 
-  async getUserAssets(email:string){
+  async getUserAssets(email: string) {
     return await this.userbasicModel.aggregate([
       {
         $match:
@@ -5418,9 +5418,63 @@ export class UserbasicsService {
     ])
   }
 
-  async updateUserAssets(email: string, assets: mongoose.Types.ObjectId[]){
+  async updateUserAssets(email: string, assets: mongoose.Types.ObjectId[]) {
     return this.userbasicModel.updateOne(
       { email: email },
       { $push: { userAssets: { $each: assets } } })
+  }
+
+  async userNew(startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+
+      var dt = dateend.substring(0, 10);
+    } catch (e) {
+      dt = "";
+    }
+    var query = await this.userbasicModel.aggregate([
+      {
+        $match: {
+
+          createdAt: {
+            $gte: startdate,
+            $lte: dt
+
+          }
+        }
+      },
+      {
+        $group: {
+
+          _id: {
+            tgl: {
+              $substrCP: ['$createdAt', 0, 10]
+            },
+
+          },
+          count: {
+            $sum: 1
+          },
+
+        },
+
+      },
+      {
+        $project: {
+          _id: 0,
+          date: '$_id.tgl',
+          count: 1
+        }
+      },
+
+      {
+        $sort: { date: 1 }
+      }
+
+    ]);
+    return query;
+
   }
 }
