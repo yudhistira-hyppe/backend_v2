@@ -644,8 +644,16 @@ export class ActivityeventsService {
 
   }
 
-  async sesipengguna() {
+  async sesipengguna(startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
+      var dateend = currentdate.toISOString();
+
+      var dt = dateend.substring(0, 10);
+    } catch (e) {
+      dt = "";
+    }
     var query = await this.activityeventsModel.aggregate([
       {
         $unwind: {
@@ -673,8 +681,8 @@ export class ActivityeventsService {
                   }
                 ],
                 createdAt: {
-                  $gte: "2022-10-13",
-                  $lte: "2022-10-16"
+                  $gte: startdate,
+                  $lte: dt
                 }
               }
             },
@@ -700,6 +708,11 @@ export class ActivityeventsService {
 
               }
             },
+            {
+              $sort: {
+                date: 1
+              }
+            }
           ],
           "awake": [
             {
@@ -712,8 +725,8 @@ export class ActivityeventsService {
                   }
                 ],
                 createdAt: {
-                  $gte: "2022-10-13",
-                  $lte: "2022-10-16"
+                  $gte: startdate,
+                  $lte: dt
                 }
               }
             },
@@ -757,8 +770,8 @@ export class ActivityeventsService {
 
                 ],
                 createdAt: {
-                  $gte: "2022-10-13",
-                  $lte: "2022-10-16"
+                  $gte: startdate,
+                  $lte: dt
                 }
               }
             },
