@@ -877,7 +877,17 @@ export class UserauthsService {
               "insight": "$insight",
               "fullName": "$fullName",
               "username": "$username",
-              "avatar": "$avatar",
+
+              "avatar":
+              {
+                $cond: {
+                  if: {
+                    $eq: ["$avatar", []]
+                  },
+                  then: null,
+                  else: '$avatar'
+                }
+              },
               "statusCB": "$statusCB",
               "privacy": "$privacy",
               "isViewed":
