@@ -82,4 +82,35 @@ export class InterestsRepoService {
     ]);
     return query;
   }
+
+  async listinterestid() {
+    var query = await this.interestsrepoModel.aggregate([
+
+      {
+        "$match":
+        {
+          langIso: "id"
+        }
+      },
+      {
+        "$lookup":
+        {
+          from: "userbasics",
+          localField: "_id",
+          foreignField: "userInterests.$id",
+          as: "basics_data"
+        }
+      },
+      {
+        "$project":
+        {
+          _id: "$_id",
+          interestName: 1,
+          langIso: 1,
+          basics_data: "$basics_data",
+        }
+      }
+    ]);
+    return query;
+  }
 }

@@ -639,6 +639,12 @@ export class UserauthsService {
         }
       },
       {
+        "$unwind":
+        {
+          path: "$avatar"
+        }
+      },
+      {
         "$lookup": {
           from: "mediamusic",
           as: "music",
@@ -671,54 +677,6 @@ export class UserauthsService {
 
         }
       },
-      {
-        "$lookup": {
-          from: "contentevents",
-          as: "isView",
-          let: {
-
-            storys: '$story.postID',
-
-          },
-          pipeline: [
-            {
-              $match:
-              {
-                $or: [
-
-                  {
-                    $and: [
-                      {
-                        $expr: {
-                          $eq: ['$postID', '$$storys']
-                        }
-                      },
-                      {
-                        "email": email,
-                      },
-                      {
-                        "eventType": "VIEW"
-                      }
-                    ]
-                  },
-
-
-                ]
-              }
-            },
-            {
-              $project: {
-                "email": 1,
-                "postID": 1,
-
-              }
-            }
-          ],
-
-        }
-      },
-
-
 
       {
         $project: {
@@ -825,6 +783,103 @@ export class UserauthsService {
               "$arrayElemAt": ["$userBasic.isPrivate", 0]
             }
           },
+
+        }
+      },
+      {
+        "$lookup": {
+          from: "contentevents",
+          as: "isView",
+          let: {
+
+            storys: '$story.postID',
+
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $or: [
+
+                  {
+                    $and: [
+                      {
+                        $expr: {
+                          $eq: ['$postID', '$$storys']
+                        }
+                      },
+                      {
+                        "email": email,
+                      },
+                      {
+                        "eventType": "VIEW"
+                      }
+                    ]
+                  },
+
+
+                ]
+              }
+            },
+            {
+              $project: {
+                "email": 1,
+                "postID": 1,
+
+              }
+            }
+          ],
+
+        }
+      },
+      {
+        $project: {
+          "storyDate": 1,
+          "postID": 1,
+          "musicTitle": 1,
+          "artistName": 1,
+          "albumName": 1,
+          "apsaraMusic": 1,
+          "apsaraThumnail": 1,
+          "genre": 1,
+          "theme": 1,
+          "mood": 1,
+          "testDate": 1,
+          "mediaType": 1,
+          "email": 1,
+          "postType": 1,
+          "description": 1,
+          "active": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "expiration": 1,
+          "visibility": 1,
+          "location": 1,
+          "allowComments": 1,
+          "isSafe": 1,
+          "isOwned": 1,
+          "saleLike": 1,
+          "saleView": 1,
+          "userProfile": 1,
+          "contentMedias": 1,
+          "tagDescription": 1,
+          "metadata": 1,
+          "contentModeration": 1,
+          "reportedStatus": 1,
+          "reportedUserCount": 1,
+          "contentModerationResponse": 1,
+          "reportedUser": 1,
+          "timeStart": 1,
+          "timeEnd": 1,
+          "apsara": 1,
+          "apsaraId": 1,
+          "apsaraThumbId": 1,
+          "insight": 1,
+          "fullName": 1,
+          "username": 1,
+          "avatar": 1,
+          "statusCB": 1,
+          "privacy": 1,
           "isView": 1
         }
       },
@@ -882,7 +937,7 @@ export class UserauthsService {
               {
                 $cond: {
                   if: {
-                    $eq: ["$avatar", []]
+                    $eq: ["$avatar", {}]
                   },
                   then: null,
                   else: '$avatar'
