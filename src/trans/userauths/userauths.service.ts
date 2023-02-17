@@ -792,7 +792,7 @@ export class UserauthsService {
           as: "isView",
           let: {
 
-            storys: '$story.postID',
+            storys: '$postID',
 
           },
           pipeline: [
