@@ -90,6 +90,40 @@ export class PostContentService {
         headers: { 'Content-Type': 'multipart/form-data' } });
   }
 
+  async createNewPostV3(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    this.logger.log('createNewPost >>> start: ' + JSON.stringify(body));
+    var res = new CreatePostResponse();
+    res.response_code = 204;
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+    if (profile == undefined) {
+      let msg = new Messages();
+      msg.info = ["Email unknown"];
+      res.messages = msg;
+      return res;
+    }
+
+    if (body.certified && body.certified == "true") {
+      if (profile.isIdVerified != true) {
+        let msg = new Messages();
+        msg.info = ["The user ID has not been verified"];
+        res.messages = msg;
+        return res;
+      }
+    }
+
+    var mime = file.mimetype;
+    if (mime.startsWith('video')) {
+      this.logger.log('createNewPost >>> is video');
+      return this.createNewPostVideoV3(file, body, headers);
+    } else {
+      this.logger.log('createNewPost >>> is picture');
+      return this.createNewPostPictV2(file, body, headers);
+    }
+  }
+
   async createNewPostV2(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
     this.logger.log('createNewPost >>> start: ' + JSON.stringify(body));
     var res = new CreatePostResponse();
@@ -739,36 +773,197 @@ export class PostContentService {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
 
-    // let fn = file.originalname;
-    // let ext = fn.split(".");
-    // let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + post._id + "." + ext[1];
-    // const ws = createWriteStream(nm);
-    // ws.write(file.buffer);
-    // ws.close();
+    var res = new CreatePostResponse();
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+    res.data = pd;
 
-    // ws.on('finish', async () => {
-    //   //Upload Seaweedfs
-    //   const seaweedfs_path = '/' + post._id + '/' + postType + '/';
-    //   this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);
-    //   try {
-    //     var FormData_ = new FormData();
-    //     FormData_.append(postType, fs.createReadStream(nm));
-    //     const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
-    //     this.logger.log('uploadSeaweedfs >>> ' + dataupload);
-    //   } catch (err) {
-    //     this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
-    //   }
-    //   let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
-    //   //let payload = { 'file': nm, 'postId': apost._id };
-    //   axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+    return res;
+  }
+
+  private async createNewPostVideoV3(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    this.logger.log('createNewPostVideo >>> start: ' + JSON.stringify(body));
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+
+    let post = await this.buildPost(body, headers);
+
+    let postType = body.postType;
+    let isShared = null;
+
+    if (body.isShared === undefined) {
+      isShared = true;
+    } else {
+      isShared = body.isShared;
+    }
+    var cm = [];
+
+    let mediaId = "";
+    if (postType == 'vid') {
+      var width_ = 0;
+      var height_ = 0;
+      if (body.width != undefined) {
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+      post.metadata = metadata;
+
+      var med = new Mediavideos();
+      med._id = await this.utilService.generateId();
+      med.mediaID = med._id;
+      med.postID = post.postID;
+      med.active = false;
+      med.createdAt = await this.utilService.getDateTimeString();
+      med.updatedAt = await this.utilService.getDateTimeString();
+      med.mediaMime = file.mimetype;
+      med.mediaType = 'video';
+      med.originalName = file.originalname;
+      med.apsara = true;
+      med._class = 'io.melody.hyppe.content.domain.MediaVideo';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retd = await this.videoService.create(med);
+
+      this.logger.log('createNewPostVideo >>> ' + retd);
+
+      var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retd.mediaID);
+    } else if (postType == 'advertise') {
+
+    } else if (postType == 'story') {
+
+      var mime = file.mimetype;
+      if (mime.startsWith('video')) {
+        var width_ = 0;
+        var height_ = 0;
+        if (body.width != undefined) {
+          width_ = parseInt(body.width.toString());
+        }
+        if (body.height != undefined) {
+          height_ = parseInt(body.height.toString());
+        }
+        let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+        post.metadata = metadata;
+      }
+
+      var mes = new Mediastories();
+      mes._id = await this.utilService.generateId();
+      mes.mediaID = mes._id;
+      mes.postID = post.postID;
+      mes.active = false;
+      mes.createdAt = await this.utilService.getDateTimeString();
+      mes.updatedAt = await this.utilService.getDateTimeString();
+      mes.mediaMime = file.mimetype;
+      mes.mediaType = 'video';
+      mes.originalName = file.originalname;
+      mes.apsara = true;
+      mes._class = 'io.melody.hyppe.content.domain.MediaStory';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var rets = await this.storyService.create(mes);
+
+      this.logger.log('createNewPostVideo >>> ' + rets);
+
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
+      cm.push(stories);
+
+      mediaId = String(rets.mediaID);
+
+    } else if (postType == 'diary') {
+      var width_ = 0;
+      var height_ = 0;
+      if (body.width != undefined) {
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'diary', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+      post.metadata = metadata;
+
+      var mer = new Mediadiaries();
+      mer._id = await this.utilService.generateId();
+      mer.mediaID = mer._id;
+      mer.postID = post.postID;
+      mer.active = false;
+      mer.createdAt = await this.utilService.getDateTimeString();
+      mer.updatedAt = await this.utilService.getDateTimeString();
+      mer.mediaMime = file.mimetype;
+      mer.mediaType = 'video';
+      mer.originalName = file.originalname;
+      mer.apsara = true;
+      mer._class = 'io.melody.hyppe.content.domain.MediaDiary';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retr = await this.diaryService.create(mer);
+
+      this.logger.log('createNewPostVideo >>> ' + retr);
+
+      var diaries = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
+      cm.push(diaries);
+
+      mediaId = String(retr.mediaID);
+    } else if (postType == 'pict') {
+
+      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
+      post.metadata = metadata;
+
+      var medx = new Mediapicts();
+      medx._id = await this.utilService.generateId();
+      medx.mediaID = medx._id;
+      medx.postID = post.postID;
+      medx.active = false;
+      medx.createdAt = await this.utilService.getDateTimeString();
+      medx.updatedAt = await this.utilService.getDateTimeString();
+      medx.mediaMime = file.mimetype;
+      medx.mediaType = 'video';
+      medx.originalName = file.originalname;
+      medx.apsara = true;
+      medx._class = 'io.melody.hyppe.content.domain.MediaPict';
+
+      this.logger.log('createNewPostVideo >>> prepare save music');
+      var retdx = await this.picService.create(medx);
+
+      this.logger.log('createNewPostVideo >>> ' + retdx);
+
+      var vids = { "$ref": "mediapicts", "$id": retdx.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retdx.mediaID);
+    }
+
+    post.contentMedias = cm;
+    post.isShared = isShared;
+    let apost = await this.PostsModel.create(post);
+    if (body.musicId != undefined) {
+      await this.mediamusicService.updateUsed(body.musicId);
+    }
+
+    // const form = new FormData();
+    // form.append('file', file.buffer, { filename: file.originalname });
+    // form.append('postID', post._id);
+    // console.log(form);
+    // axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V2"), form, {
+    //   maxContentLength: Infinity,
+    //   maxBodyLength: Infinity,
+    //   headers: { 'Content-Type': 'multipart/form-data' }
     // });
-
-    this.logger.log('createNewPostVideo >>> check certified. ' + post.certified);
-
-    // if (post.certified) {
-    //   this.generateCertificate(String(post.postID), 'id');
-    // }
-
+    var postUpload = await this.uploadJava(file, post._id.toString());
+    if (postUpload.data.status) {
+      postUpload.data.email = auth.email;
+      await this.updateNewPostData(postUpload.data);
+    }
 
     var res = new CreatePostResponse();
     res.response_code = 202;
@@ -781,6 +976,272 @@ export class PostContentService {
     res.data = pd;
 
     return res;
+  }
+
+  async uploadJava(file: any, postId: string): Promise<any> {
+    var Url = this.configService.get("APSARA_UPLOADER_VIDEO_V3");
+    return new Promise(async function (resolve, reject) {
+      const form = new FormData();
+      form.append('file', file.buffer, { filename: file.originalname });
+      form.append('postID', postId);
+      console.log(form);
+
+      await axios.post(Url, form, {
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        headers: { 'Content-Type': 'multipart/form-data' }
+      }).then(response => {
+        console.log("postUpload", response.data);
+        return resolve(response);
+      }).catch(err => {
+        console.error(err);
+        return reject(err);
+      });
+    });
+  }
+
+  async updateNewPostData(body: any) {
+    this.logger.log('updateNewPost >>> start');
+    let post = await this.postService.findid(body.postID);
+    if (post == undefined) {
+      return;
+    }
+    var profile = await this.userService.findOne(String(post.email));
+
+    let cm = post.contentMedias[0];
+    let ns = cm.namespace;
+    this.logger.log('updateNewPost >>> namespace: ' + ns);
+    if (ns == 'mediavideos') {
+      let vid = await this.videoService.findOne(cm.oid);
+      if (vid == undefined) {
+        return;
+      }
+
+      vid.apsaraId = body.videoId;
+      vid.active = true;
+      this.videoService.create(vid);
+
+      let todel = body.originalName + "";
+      unlink(todel, (err) => {
+        if (err) {
+
+        }
+      });
+
+      this.logger.log('updateNewPost >>> checking cmod');
+      let ids: string[] = [];
+      ids.push(body.videoId);
+      this.logger.log('updateNewPost >>> checking cmod video');
+      let aimg = await this.getVideoApsaraSingleNoDefinition(ids[0]);
+      if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
+        let aim = aimg.PlayUrl;
+        this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
+        //TODO 
+        this.cmodService.cmodVideo(body.postID, aim);
+      }
+
+      let meta = post.metadata;
+      let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: meta.width, height: meta.height };
+      post.metadata = metadata;
+      post.active = true;
+      //TODO 
+      await this.postService.create(post);
+    } else if (ns == 'mediapicts') {
+      this.logger.log('updateNewPost >>> checking picture oid: ' + cm.oid);
+      let pic = await this.picService.findOne(cm.oid);
+      if (pic == undefined) {
+        this.logger.error('updateNewPost >>> checking picture oid: ' + cm.oid + " error");
+        return;
+      }
+
+      pic.apsaraId = body.videoId;
+      pic.apsaraThumbId = body.thId;
+      pic.active = true;
+      //TODO 
+      this.picService.create(pic);
+
+      post.active = true;
+      //TODO 
+      await this.postService.create(post);
+
+      let todel = body.filedel + "";
+      unlink(todel, (err) => {
+        if (err) {
+
+        }
+      });
+
+      this.logger.log('updateNewPost >>> checking cmod');
+      let ids: string[] = [];
+      ids.push(body.videoId);
+      this.logger.log('updateNewPost >>> checking cmod image');
+      let aimg = await this.getImageApsara(ids);
+      if (aimg != undefined && aimg.ImageInfo != undefined && aimg.ImageInfo.length > 0) {
+        let aim = aimg.ImageInfo[0];
+        this.logger.log('updateNewPost >>> checking cmod image img: ' + aim.URL);
+        this.cmodService.cmodImage(body.postID, aim.URL);
+      }
+
+    } else if (ns == 'mediastories') {
+      let st = await this.storyService.findOne(cm.oid);
+      if (st == undefined) {
+        return;
+      }
+
+      st.apsaraId = body.videoId;
+      st.active = true;
+      //TODO 
+      this.storyService.create(st);
+
+      post.active = true;
+
+      this.logger.log('updateNewPost >>> mediatype: ' + st.mediaType);
+      if (st.mediaType == 'video') {
+        let meta = post.metadata;
+        let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: meta.width, height: meta.height };
+        post.metadata = metadata;
+      }
+
+      post.active = true;
+      //TODO 
+      await this.postService.create(post);
+
+      let todel = body.originalName + "";
+      unlink(todel, (err) => {
+        if (err) {
+
+        }
+      });
+
+      if (st.mediaType == 'video') {
+        this.logger.log('updateNewPost >>> checking cmod');
+        let ids: string[] = [];
+        ids.push(body.videoId);
+        this.logger.log('updateNewPost >>> checking cmod video');
+        let aimg = await this.getVideoApsaraSingleNoDefinition(ids[0]);
+        if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
+          let aim = aimg.PlayUrl;
+          this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
+          //TODO 
+          this.cmodService.cmodVideo(body.postID, aim);
+        }
+      } else {
+        this.logger.log('updateNewPost >>> checking cmod');
+        let ids: string[] = [];
+        ids.push(body.videoId);
+        this.logger.log('updateNewPost >>> checking cmod image');
+        let aimg = await this.getImageApsara(ids);
+        if (aimg != undefined && aimg.ImageInfo != undefined && aimg.ImageInfo.length > 0) {
+          let aim = aimg.ImageInfo[0];
+          this.logger.log('updateNewPost >>> checking cmod image img: ' + aim.URL);
+          //TODO 
+          this.cmodService.cmodImage(body.postID, aim.URL);
+        }
+      }
+    } else if (ns == 'mediadiaries') {
+      let dy = await this.diaryService.findOne(cm.oid);
+      if (dy == undefined) {
+        return;
+      }
+
+      dy.apsaraId = body.videoId;
+      dy.active = true;
+      //TODO 
+      this.diaryService.create(dy);
+
+      let meta = post.metadata;
+      let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: meta.width, height: meta.height };
+      post.metadata = metadata;
+      post.active = true;
+      //TODO 
+      await this.postService.create(post);
+
+      let todel = body.originalName + "";
+      unlink(todel, (err) => {
+        if (err) {
+
+        }
+      });
+
+      this.logger.log('updateNewPost >>> checking cmod');
+      let ids: string[] = [];
+      ids.push(body.videoId);
+      this.logger.log('updateNewPost >>> checking cmod video');
+      let aimg = await this.getVideoApsaraSingleNoDefinition(ids[0]);
+      if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
+        let aim = aimg.PlayUrl;
+        this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
+        //TODO 
+        this.cmodService.cmodVideo(body.postID, aim);
+      }
+    }
+
+    if (post.certified) {
+      this.generateCertificate(String(post.postID), 'id');
+    }
+
+    let myus = await this.userAuthService.findOneByEmail(post.email);
+
+    let tag = post.tagPeople;
+    if (tag != undefined && tag.length > 0) {
+      tag.forEach(el => {
+        let oid = el.oid;
+        this.userAuthService.findById(oid).then((as) => {
+          let em = String(myus.username);
+          let bodyi = em + ' Menandai kamu di ';
+          let bodye = em + ' Tagged you in ';
+          if (post.postType == 'pict') {
+            bodyi = bodyi + ' HyppePic';
+            bodye = bodye + ' HyppePic';
+          } else if (post.postType == 'vid') {
+            bodyi = bodyi + ' HyppeVideo';
+            bodye = bodye + ' HyppeVideo';
+          } else if (post.postType == 'diary') {
+            bodyi = bodyi + ' HyppeDiary';
+            bodye = bodye + ' HyppeDiary';
+          } else if (post.postType == 'story') {
+            bodyi = bodyi + ' HyppeStory';
+            bodye = bodye + ' HyppeStory';
+          }
+          this.utilService.sendFcmV2(as.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString())
+          //this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned', bodyi, bodye, 'REACTION', 'ACCEPT', String(post.postID), String(post.postType));
+        });
+      });
+    }
+
+    let tagd = post.tagDescription;
+    if (tagd != undefined && tagd.length > 0) {
+      tagd.forEach(el => {
+        let oid = el.oid;
+        this.userAuthService.findById(oid).then((as) => {
+          let em = String(myus.username);
+          let bodyi = em + ' Menandai kamu di ';
+          let bodye = em + ' Tagged you in ';
+          if (post.postType == 'pict') {
+            bodyi = bodyi + ' HyppePic';
+            bodye = bodye + ' HyppePic';
+          } else if (post.postType == 'vid') {
+            bodyi = bodyi + ' HyppeVideo';
+            bodye = bodye + ' HyppeVideo';
+          } else if (post.postType == 'diary') {
+            bodyi = bodyi + ' HyppeDiary';
+            bodye = bodye + ' HyppeDiary';
+          } else if (post.postType == 'story') {
+            bodyi = bodyi + ' HyppeStory';
+            bodye = bodye + ' HyppeStory';
+          }
+          this.utilService.sendFcmV2(as.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString())
+          //this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned', bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
+        });
+      });
+    }
+
+    let playlist = new CreateUserplaylistDto();
+    playlist.userPostId = Object(profile._id);
+    playlist.postType = post.postType;
+    playlist.mediaId = Object(cm.oid);
+    this.logger.log('createNewPostVideo >>> generate playlist ' + JSON.stringify(playlist));
+    //this.postService.generateUserPlaylist(playlist);
   }
 
   private async createNewPostPict(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
