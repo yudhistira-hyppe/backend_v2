@@ -300,5 +300,197 @@ export class AccountbalancesController {
   }
 
   return { response_code: 202, messages, data };
-  } 
+  }
+  
+  @Post('totalincomedata')
+  @UseGuards(JwtAuthGuard)
+  async getTotalPendapatanBasedDate(@Req() request: Request): Promise<any> {
+    var total = null;
+    var startdate = null;
+    var enddate = null;
+    
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["startdate"] !== undefined) {
+        startdate = request_json["startdate"];
+    }
+    else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["enddate"] !== undefined) {
+        enddate = request_json["enddate"];
+    }
+    else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    var tempdata = await this.accountbalancesService.getTotalPendapatan(startdate, enddate);
+    var totalpendapatan = parseInt('0');
+    try {
+        totalpendapatan = parseInt(tempdata[0].total);
+    }
+    catch (e) {
+        totalpendapatan = parseInt('0');
+    }
+
+    total = totalpendapatan;
+
+    return { response_code: 202, messages, total };
+  }
+
+  @Post('totalvoucherincomebychart')
+  @UseGuards(JwtAuthGuard)
+  async gettotalvoucherincomeBasedDate(@Req() request: Request): Promise<any> {
+    var data = null;
+    var startdate = null;
+    var enddate = null;
+    
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["startdate"] !== undefined) {
+        startdate = request_json["startdate"];
+    }
+    else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["enddate"] !== undefined) {
+        enddate = request_json["enddate"];
+    }
+    else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    var tempdata = await this.accountbalancesService.getTotalPendapatanVoucher(startdate, enddate);
+    var getdata = [];
+    try
+    {
+        getdata = tempdata[0].resultdata;
+    }
+    catch(e)
+    {
+        getdata = [];
+    }
+
+    var tempstartdate = new Date(startdate);
+    tempstartdate.setDate(tempstartdate.getDate() - 1);
+    var tempdate = new Date(tempstartdate).toISOString().split("T")[0];
+    var input = new Date(enddate);
+    var end = new Date(input).toISOString().split("T")[0];
+    var array = [];
+    
+    //kalo lama, berarti error disini!!
+    while(tempdate != end)
+    {
+        var temp = new Date(tempdate);
+        temp.setDate(temp.getDate() + 1);
+        tempdate = new Date(temp).toISOString().split("T")[0];
+        //console.log(tempdate);
+    
+        let obj = getdata.find(objs => objs._id === tempdate);
+        //console.log(obj);
+        if(obj == undefined)
+        {
+            obj = 
+            {
+                _id : tempdate,
+                totaldata : 0,
+                totalpendapatanperhari:0
+            }
+        }
+        
+        array.push(obj);
+    }      
+
+    data = 
+    {
+        array,
+        total:(getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
+    }
+
+    return { response_code: 202, messages, data };
+  }
+
+  @Post('totalallincomebychart')
+  @UseGuards(JwtAuthGuard)
+  async gettotalsemuaincomeBasedDate(@Req() request: Request): Promise<any> {
+    var data = null;
+    var startdate = null;
+    var enddate = null;
+    
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["startdate"] !== undefined) {
+        startdate = request_json["startdate"];
+    }
+    else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["enddate"] !== undefined) {
+        enddate = request_json["enddate"];
+    }
+    else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    var tempdata = await this.accountbalancesService.getTotalPendapatanJualBeli(startdate, enddate);
+    var getdata = [];
+    try
+    {
+        getdata = tempdata[0].resultdata;
+    }
+    catch(e)
+    {
+        getdata = [];
+    }
+
+    var tempstartdate = new Date(startdate);
+    tempstartdate.setDate(tempstartdate.getDate() - 1);
+    var tempdate = new Date(tempstartdate).toISOString().split("T")[0];
+    var input = new Date(enddate);
+    var end = new Date(input).toISOString().split("T")[0];
+    var array = [];
+    
+    //kalo lama, berarti error disini!!
+    while(tempdate != end)
+    {
+        var temp = new Date(tempdate);
+        temp.setDate(temp.getDate() + 1);
+        tempdate = new Date(temp).toISOString().split("T")[0];
+        //console.log(tempdate);
+    
+        let obj = getdata.find(objs => objs._id === tempdate);
+        //console.log(obj);
+        if(obj == undefined)
+        {
+            obj = 
+            {
+                _id : tempdate,
+                totaldata : 0,
+                totalpendapatanperhari:0
+            }
+        }
+        
+        array.push(obj);
+    }      
+
+    data = 
+    {
+        array,
+        total:(getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
+    }
+
+    return { response_code: 202, messages, data };
+  }
 }
