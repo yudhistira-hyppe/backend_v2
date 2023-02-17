@@ -51,13 +51,15 @@ export class InterestsRepoService {
     var perPage = pageRow
       , page = Math.max(0, pageNumber);
     var where = {};
-    if (langIso != undefined) {
-      where['langIso'] = langIso;
-    }
+    // if (langIso != undefined) {
+    //   where['langIso'] = langIso;
+    // }
     if (search != undefined) {
       where['interestName'] = { $regex: search, $options: "i" };
+
     }
-    const query = await this.interestsrepoModel.find(where).select({ "createdAt": 1, "icon": 1, "langIso": 1, "interestName": 1, "_id": 0 }).limit(perPage).skip(perPage * page).sort({ interestName: 'asc' });
+    where['langIso'] = "en";
+    const query = await this.interestsrepoModel.find(where).select({ "thumbnail": 1, "interestNameId": 1, "createdAt": 1, "icon": 1, "langIso": 1, "interestName": 1, "_id": 1 }).limit(perPage).skip(perPage * page).sort({ interestName: 'asc' });
     return query;
   }
 

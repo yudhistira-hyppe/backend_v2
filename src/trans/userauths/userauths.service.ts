@@ -809,22 +809,22 @@ export class UserauthsService {
           "username": "$username",
           "avatar": 1,
           "statusCB": 1,
-          "privacy": [{
+          "privacy": {
             "isCelebrity":
             {
               "$arrayElemAt": ["$userBasic.isCelebrity", 0]
-            }
-          }, {
+            },
+
             "isIdVerified":
             {
               "$arrayElemAt": ["$userBasic.isIdVerified", 0]
-            }
-          }, {
+            },
+
             "isPrivate":
             {
               "$arrayElemAt": ["$userBasic.isPrivate", 0]
             }
-          }],
+          },
           "isView": 1
         }
       },
