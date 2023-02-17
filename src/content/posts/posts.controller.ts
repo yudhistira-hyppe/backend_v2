@@ -326,7 +326,7 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/posts/v2/createpost')
+  @Post('api/posts/taslim/bangke/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPostV3(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("createPost >>> start");
