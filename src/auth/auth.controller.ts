@@ -1679,10 +1679,10 @@ export class AuthController {
         if (user_interest != undefined) {
           if (user_interest.length > 0) {
             for (var i = 0; i < user_interest.length; i++) {
-              var id_interest =
-                await this.interestsRepoService.findOneByInterestNameLangIso(
-                  user_interest[i], user_langIso
-                );
+              var id_interest = user_interest[i];
+              // await this.interestsRepoService.findOneByInterestNameLangIso(
+              //   user_interest[i], user_langIso
+              // );
               if (id_interest != undefined) {
                 data_interest_id.push({
                   $ref: 'interests_repo',

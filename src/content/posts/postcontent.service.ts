@@ -79,15 +79,16 @@ export class PostContentService {
     private mediamusicService: MediamusicService,
   ) { }
 
-  async uploadVideo(file: Express.Multer.File, postID:string) {
+  async uploadVideo(file: Express.Multer.File, postID: string) {
     const form = new FormData();
     form.append('file', file.buffer, { filename: file.originalname });
     form.append('postID', postID);
     console.log(form);
-      axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V2"), form, {
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity, 
-        headers: { 'Content-Type': 'multipart/form-data' } });
+    axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V2"), form, {
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
   }
 
   async createNewPostV3(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
@@ -290,20 +291,36 @@ export class PostContentService {
     var usp = { "$ref": "userbasics", "$id": mongoose.Types.ObjectId(profile._id), "$db": "hyppe_trans_db" };
     post.userProfile = usp;
 
+    // if (body.cats != undefined && body.cats.length > 1) {
+    //   var obj = body.cats;
+    //   var cats = obj.split(",");
+    //   var pcats = [];
+    //   for (var i = 0; i < cats.length; i++) {
+    //     var tmp = cats[i];
+    //     var cat = await this.interestService.findByName(tmp);
+    //     if (cat != undefined) {
+    //       var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(cat._id), "$db": "hyppe_infra_db" };
+    //       pcats.push(objintr);
+    //     }
+    //   }
+    //   post.category = pcats;
+    // }
+
     if (body.cats != undefined && body.cats.length > 1) {
       var obj = body.cats;
       var cats = obj.split(",");
       var pcats = [];
       for (var i = 0; i < cats.length; i++) {
         var tmp = cats[i];
-        var cat = await this.interestService.findByName(tmp);
-        if (cat != undefined) {
-          var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(cat._id), "$db": "hyppe_infra_db" };
+        // var cat = await this.interestService.findByName(tmp);
+        if (tmp != undefined) {
+          var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(tmp), "$db": "hyppe_infra_db" };
           pcats.push(objintr);
         }
       }
       post.category = pcats;
     }
+
 
     post.likes = Long.fromInt(0);
     post.views = Long.fromInt(0);
@@ -318,7 +335,7 @@ export class PostContentService {
         var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
         if (await this.utilService.ceckData(tp)) {
-          if (cat != undefined) {
+          if (tp != undefined) {
             var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
             pcats.push(objintr);
           }
@@ -3960,9 +3977,9 @@ export class PostContentService {
       var pcats = [];
       for (var i = 0; i < cats.length; i++) {
         var tmp = cats[i];
-        var cat = await this.interestService.findByName(tmp);
-        if (cat != undefined) {
-          var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(cat._id), "$db": "hyppe_infra_db" };
+        // var cat = await this.interestService.findByName(tmp);
+        if (tmp != undefined) {
+          var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(tmp), "$db": "hyppe_infra_db" };
           pcats.push(objintr);
         }
       }
@@ -3977,7 +3994,7 @@ export class PostContentService {
         var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
         if (await this.utilService.ceckData(tp)) {
-          if (cat != undefined) {
+          if (tp != undefined) {
             var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
             pcats.push(objintr);
           }
@@ -3994,7 +4011,7 @@ export class PostContentService {
         var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
         if (await this.utilService.ceckData(tp)) {
-          if (cat != undefined) {
+          if (tp != undefined) {
             var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
             pcats.push(objintrx);
           }
