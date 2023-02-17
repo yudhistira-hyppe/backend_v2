@@ -794,15 +794,15 @@ export class UserauthsService {
           "apsaraThumbId": {
             "$arrayElemAt": ["$media.apsaraThumbId", 0]
           },
-          "insight": [
-            {
-              "likes": "$likes",
-              "views": "$views",
-              "shares": "$shares",
-              "comments": "$comments",
+          "insight":
+          {
+            "likes": "$likes",
+            "views": "$views",
+            "shares": "$shares",
+            "comments": "$comments",
 
-            }
-          ],
+          }
+          ,
           "fullName": {
             "$arrayElemAt": ["$userBasic.fullName", 0]
           },

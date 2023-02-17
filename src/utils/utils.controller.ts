@@ -63,7 +63,9 @@ export class UtilsController {
                 langIso: item.langIso,
                 cts: item.createdAt,
                 icon: item.icon,
-                interestName: item.interestName
+                interestName: item.interestName,
+                interestNameId: item.interestNameId,
+                thumbnail: item.thumbnail
             };
         });
         var Response = {
@@ -371,7 +373,7 @@ export class UtilsController {
         var langIso_ = langIso;
         var reportType_ = reportType;
         var action_ = action;
-        var pageNumber_ = (pageNumber != undefined) ? pageNumber :0;
+        var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
         var pageRow_ = (pageRow != undefined) ? pageRow : 3;
         var search_ = search;
 
