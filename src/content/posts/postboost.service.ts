@@ -5348,429 +5348,429 @@ export class PostBoostService {
             }
           ],
           //story
-          "story": [
-            {
-              $sort: {
-                "isBoost": - 1,
-                "createdAt": - 1
-              }
-            },
-            {
-              $match:
-              {
-                $or: [
-                  {
-                    $and: [
-                      {
-                        "email": {
-                          $not: {
-                            $regex: profile.email
-                          }
-                        }
-                      },
-                      {
-                        "reportedStatus": {
-                          $ne: "OWNED"
-                        }
-                      },
-                      {
-                        "visibility": "PUBLIC"
-                      },
-                      {
-                        "active": true
-                      },
-                      {
-                        "postType": "story"
-                      },
-                      {
-                        $expr: {
-                          $gte: ["$createdAt", "$storyDate",]
-                        }
-                      },
-                      {
-                        $or: [
-                          {
-                            "reportedUser": {
-                              "$elemMatch": {
-                                "email": profile.email,
-                                "active": false,
+          // "story": [
+          //   {
+          //     $sort: {
+          //       "isBoost": - 1,
+          //       "createdAt": - 1
+          //     }
+          //   },
+          //   {
+          //     $match:
+          //     {
+          //       $or: [
+          //         {
+          //           $and: [
+          //             {
+          //               "email": {
+          //                 $not: {
+          //                   $regex: profile.email
+          //                 }
+          //               }
+          //             },
+          //             {
+          //               "reportedStatus": {
+          //                 $ne: "OWNED"
+          //               }
+          //             },
+          //             {
+          //               "visibility": "PUBLIC"
+          //             },
+          //             {
+          //               "active": true
+          //             },
+          //             {
+          //               "postType": "story"
+          //             },
+          //             {
+          //               $expr: {
+          //                 $gte: ["$createdAt", "$storyDate",]
+          //               }
+          //             },
+          //             {
+          //               $or: [
+          //                 {
+          //                   "reportedUser": {
+          //                     "$elemMatch": {
+          //                       "email": profile.email,
+          //                       "active": false,
 
-                              }
-                            }
-                          },
-                          {
-                            "reportedUser.email": {
-                              $not: {
-                                $regex: profile.email,
-                              }
-                            }
-                          },
+          //                     }
+          //                   }
+          //                 },
+          //                 {
+          //                   "reportedUser.email": {
+          //                     $not: {
+          //                       $regex: profile.email,
+          //                     }
+          //                   }
+          //                 },
 
-                        ]
-                      },
+          //               ]
+          //             },
 
-                    ]
-                  },
+          //           ]
+          //         },
 
-                ]
-              }
-            },
-            {
-              "$lookup": {
-                from: "mediastories",
-                as: "media",
-                let: {
-                  localID: '$postID'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-
-
-                      $expr: {
-                        $eq: ['$postID', '$$localID']
-                      }
-                    }
-                  },
-                  {
-                    $project: {
-
-                      "apsara": 1,
-                      "apsaraId": 1,
-                      "apsaraThumbId": 1,
-                      "mediaEndpoint": 1,
-                      "mediaUri": 1,
-                      "mediaThumbEndpoint": 1,
-                      "mediaThumbUri": 1,
-                      "mediaType": 1,
-
-                    }
-                  }
-                ],
-
-              },
-
-            },
-            {
-              "$lookup": {
-                from: "interests_repo",
-                as: "cats",
-                let: {
-                  localID: '$category.$id'
-                },
-                pipeline: [
-                  {
-                    $match: {
-
-                      $expr: {
-                        $and: [
-                          {
-                            $in: ['$_id', {
-                              $ifNull: ['$$localID', []]
-                            }]
-                          },
-
-                        ]
-                      }
-                    }
-                  },
-                  {
-                    $project: {
-                      "interestName": 1,
-                      "langIso": 1,
-                      "icon": 1,
-                      "createdAt": 1,
-                      "updatedAt": 1
-                    }
-                  }
-                ],
-
-              }
-            },
-            {
-              "$lookup": {
-                from: "userauths",
-                as: "userTag",
-                let: {
-                  localID: '$tagPeople.$id'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
+          //       ]
+          //     }
+          //   },
+          //   {
+          //     "$lookup": {
+          //       from: "mediastories",
+          //       as: "media",
+          //       let: {
+          //         localID: '$postID'
+          //       },
+          //       pipeline: [
+          //         {
+          //           $match:
+          //           {
 
 
-                      $expr: {
-                        $in: ['$_id', {
-                          $ifNull: ['$$localID', []]
-                        }]
-                      }
-                    }
-                  },
-                  {
-                    $project: {
+          //             $expr: {
+          //               $eq: ['$postID', '$$localID']
+          //             }
+          //           }
+          //         },
+          //         {
+          //           $project: {
 
-                      "username": 1
-                    }
-                  }
-                ],
+          //             "apsara": 1,
+          //             "apsaraId": 1,
+          //             "apsaraThumbId": 1,
+          //             "mediaEndpoint": 1,
+          //             "mediaUri": 1,
+          //             "mediaThumbEndpoint": 1,
+          //             "mediaThumbUri": 1,
+          //             "mediaType": 1,
 
-              }
-            },
-            {
-              "$lookup": {
-                from: "userauths",
-                as: "username",
-                let: {
-                  localID: '$email'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
+          //           }
+          //         }
+          //       ],
 
+          //     },
 
-                      $expr: {
-                        $eq: ['$email', '$$localID']
-                      }
-                    }
-                  },
-                  {
-                    $project: {
+          //   },
+          //   {
+          //     "$lookup": {
+          //       from: "interests_repo",
+          //       as: "cats",
+          //       let: {
+          //         localID: '$category.$id'
+          //       },
+          //       pipeline: [
+          //         {
+          //           $match: {
 
-                      "username": 1
-                    }
-                  }
-                ],
+          //             $expr: {
+          //               $and: [
+          //                 {
+          //                   $in: ['$_id', {
+          //                     $ifNull: ['$$localID', []]
+          //                   }]
+          //                 },
 
-              }
-            },
-            {
-              "$lookup": {
-                from: "userbasics",
-                as: "userBasic",
-                let: {
-                  localID: '$email'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
+          //               ]
+          //             }
+          //           }
+          //         },
+          //         {
+          //           $project: {
+          //             "interestName": 1,
+          //             "langIso": 1,
+          //             "icon": 1,
+          //             "createdAt": 1,
+          //             "updatedAt": 1
+          //           }
+          //         }
+          //       ],
 
-
-                      $expr: {
-                        $eq: ['$email', '$$localID']
-                      }
-                    }
-                  },
-                  {
-                    $project: {
-                      "fullName": 1,
-                      "profilePict": 1,
-                      "isCelebrity": 1,
-                      "isIdVerified": 1,
-                      "isPrivate": 1,
-
-                    }
-                  }
-                ],
-
-              }
-            },
-            {
-              $unwind: {
-                path: "$userBasic",
-                preserveNullAndEmptyArrays: true
-              }
-            },
-            {
-              "$lookup": {
-                from: "mediaprofilepicts",
-                as: "avatar",
-                let: {
-                  localID: '$userBasic.profilePict.$id'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
+          //     }
+          //   },
+          //   {
+          //     "$lookup": {
+          //       from: "userauths",
+          //       as: "userTag",
+          //       let: {
+          //         localID: '$tagPeople.$id'
+          //       },
+          //       pipeline: [
+          //         {
+          //           $match:
+          //           {
 
 
-                      $expr: {
-                        $eq: ['$mediaID', '$$localID']
-                      }
-                    }
-                  },
-                  {
-                    $project: {
-                      "mediaBasePath": 1,
-                      "mediaUri": 1,
-                      "originalName": 1,
-                      "fsSourceUri": 1,
-                      "fsSourceName": 1,
-                      "fsTargetUri": 1,
-                      "mediaType": 1,
-                      "mediaEndpoint": {
-                        "$concat": ["/profilepict/", "$mediaID"]
-                      }
-                    }
-                  }
-                ],
+          //             $expr: {
+          //               $in: ['$_id', {
+          //                 $ifNull: ['$$localID', []]
+          //               }]
+          //             }
+          //           }
+          //         },
+          //         {
+          //           $project: {
 
-              }
-            },
-            {
-              "$lookup": {
-                from: "mediamusic",
-                as: "music",
-                let: {
-                  localID: '$musicId'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-                      $expr: {
-                        $eq: ['$_id', '$$localID']
-                      }
-                    }
-                  },
-                  {
-                    $project: {
-                      "musicTitle": 1,
-                      "artistName": 1,
-                      "albumName": 1,
-                      "apsaraMusic": 1,
-                      "apsaraThumnail": 1,
-                      "genre": "$genre.name",
-                      "theme": "$theme.name",
-                      "mood": "$mood.name",
+          //             "username": 1
+          //           }
+          //         }
+          //       ],
 
-                    }
-                  }
-                ],
+          //     }
+          //   },
+          //   {
+          //     "$lookup": {
+          //       from: "userauths",
+          //       as: "username",
+          //       let: {
+          //         localID: '$email'
+          //       },
+          //       pipeline: [
+          //         {
+          //           $match:
+          //           {
 
-              }
-            },
-            {
-              $skip: skip
-            },
-            {
-              $limit: row
-            },
-            {
-              $unwind: {
-                path: "$media",
-                preserveNullAndEmptyArrays: true
-              }
-            },
-            {
-              $unwind: {
-                path: "$username",
-                preserveNullAndEmptyArrays: true
-              }
-            },
-            {
-              $project: {
-                "storyDate": 1,
-                "postID": 1,
-                "musicTitle": "$music.musicTitle",
-                "artistName": "$music.artistName",
-                "albumName": "$music.albumName",
-                "apsaraMusic": "$music.apsaraMusic",
-                "apsaraThumnail": "$music.apsaraThumnail",
-                "genre": "$music.genre.name",
-                "theme": "$music.theme.name",
-                "mood": "$music.mood.name",
-                "testDate": 1,
-                "musicId": 1,
-                "music": 1,
-                "tagPeople": "$userTag",
-                "mediaType": "$media.mediaType",
-                "email": 1,
-                "postType": 1,
-                "description": 1,
-                "active": 1,
-                "createdAt": 1,
-                "updatedAt": 1,
-                "expiration": 1,
-                "visibility": 1,
-                "location": 1,
-                "tags": 1,
-                "allowComments": 1,
-                "isSafe": 1,
-                "isOwned": 1,
-                "certified": 1,
-                "saleAmount": 1,
-                "saleLike": 1,
-                "saleView": 1,
-                "isShared": 1,
-                "userProfile": 1,
-                "contentMedias": 1,
-                "category": "$cats",
-                "tagDescription": 1,
-                "metadata": 1,
-                "boostDate": 1,
-                "boosted":
-                  [{
-                    $cond: {
-                      if: {
-                        $gt: [{
-                          "$dateToString": {
-                            "format": "%Y-%m-%d %H:%M:%S",
-                            "date": {
-                              $add: [new Date(), 25200000]
-                            }
-                          }
-                        }, "$boosted.boostSession.end"]
-                      },
-                      then: "$kampretTaslim",
-                      else: '$boosted'
-                    }
-                  }],
-                "end": "$boosted.boostSession.end",
-                "start": "$boosted.boostSession.start",
-                "isBoost": 1,
-                "boostViewer": 1,
-                "boostCount": 1,
-                "contentModeration": 1,
-                "reportedStatus": 1,
-                "reportedUserCount": 1,
-                "contentModerationResponse": 1,
-                "reportedUser": 1,
-                "timeStart": 1,
-                "timeEnd": 1,
-                "apsara": "$media.apsara",
-                "apsaraId": "$media.apsaraId",
-                "apsaraThumbId": "$media.apsaraThumbId",
-                "mediaEndpoint": "$media.mediaEndpoint",
-                "mediaUri": "$media.mediaUri",
-                "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
-                "mediaThumbUri": "$media.mediaThumbUri",
-                "insight": [
-                  {
-                    "likes": "$likes",
-                    "views": "$views",
-                    "shares": "$shares",
-                    "comments": "$comments",
 
-                  }
-                ],
-                "fullName": "$userBasic.fullName",
-                "username": "$username.username",
-                "avatar": 1,
-                "statusCB": 1,
-                "privacy": [{
-                  "isCelebrity": "$userBasic.isCelebrity"
-                }, {
-                  "isIdVerified": "$userBasic.isIdVerified"
-                }, {
-                  "isPrivate": "$userBasic.isPrivate"
-                }]
-              }
-            }
-          ],
+          //             $expr: {
+          //               $eq: ['$email', '$$localID']
+          //             }
+          //           }
+          //         },
+          //         {
+          //           $project: {
+
+          //             "username": 1
+          //           }
+          //         }
+          //       ],
+
+          //     }
+          //   },
+          //   {
+          //     "$lookup": {
+          //       from: "userbasics",
+          //       as: "userBasic",
+          //       let: {
+          //         localID: '$email'
+          //       },
+          //       pipeline: [
+          //         {
+          //           $match:
+          //           {
+
+
+          //             $expr: {
+          //               $eq: ['$email', '$$localID']
+          //             }
+          //           }
+          //         },
+          //         {
+          //           $project: {
+          //             "fullName": 1,
+          //             "profilePict": 1,
+          //             "isCelebrity": 1,
+          //             "isIdVerified": 1,
+          //             "isPrivate": 1,
+
+          //           }
+          //         }
+          //       ],
+
+          //     }
+          //   },
+          //   {
+          //     $unwind: {
+          //       path: "$userBasic",
+          //       preserveNullAndEmptyArrays: true
+          //     }
+          //   },
+          //   {
+          //     "$lookup": {
+          //       from: "mediaprofilepicts",
+          //       as: "avatar",
+          //       let: {
+          //         localID: '$userBasic.profilePict.$id'
+          //       },
+          //       pipeline: [
+          //         {
+          //           $match:
+          //           {
+
+
+          //             $expr: {
+          //               $eq: ['$mediaID', '$$localID']
+          //             }
+          //           }
+          //         },
+          //         {
+          //           $project: {
+          //             "mediaBasePath": 1,
+          //             "mediaUri": 1,
+          //             "originalName": 1,
+          //             "fsSourceUri": 1,
+          //             "fsSourceName": 1,
+          //             "fsTargetUri": 1,
+          //             "mediaType": 1,
+          //             "mediaEndpoint": {
+          //               "$concat": ["/profilepict/", "$mediaID"]
+          //             }
+          //           }
+          //         }
+          //       ],
+
+          //     }
+          //   },
+          //   {
+          //     "$lookup": {
+          //       from: "mediamusic",
+          //       as: "music",
+          //       let: {
+          //         localID: '$musicId'
+          //       },
+          //       pipeline: [
+          //         {
+          //           $match:
+          //           {
+          //             $expr: {
+          //               $eq: ['$_id', '$$localID']
+          //             }
+          //           }
+          //         },
+          //         {
+          //           $project: {
+          //             "musicTitle": 1,
+          //             "artistName": 1,
+          //             "albumName": 1,
+          //             "apsaraMusic": 1,
+          //             "apsaraThumnail": 1,
+          //             "genre": "$genre.name",
+          //             "theme": "$theme.name",
+          //             "mood": "$mood.name",
+
+          //           }
+          //         }
+          //       ],
+
+          //     }
+          //   },
+          //   {
+          //     $skip: skip
+          //   },
+          //   {
+          //     $limit: row
+          //   },
+          //   {
+          //     $unwind: {
+          //       path: "$media",
+          //       preserveNullAndEmptyArrays: true
+          //     }
+          //   },
+          //   {
+          //     $unwind: {
+          //       path: "$username",
+          //       preserveNullAndEmptyArrays: true
+          //     }
+          //   },
+          //   {
+          //     $project: {
+          //       "storyDate": 1,
+          //       "postID": 1,
+          //       "musicTitle": "$music.musicTitle",
+          //       "artistName": "$music.artistName",
+          //       "albumName": "$music.albumName",
+          //       "apsaraMusic": "$music.apsaraMusic",
+          //       "apsaraThumnail": "$music.apsaraThumnail",
+          //       "genre": "$music.genre.name",
+          //       "theme": "$music.theme.name",
+          //       "mood": "$music.mood.name",
+          //       "testDate": 1,
+          //       "musicId": 1,
+          //       "music": 1,
+          //       "tagPeople": "$userTag",
+          //       "mediaType": "$media.mediaType",
+          //       "email": 1,
+          //       "postType": 1,
+          //       "description": 1,
+          //       "active": 1,
+          //       "createdAt": 1,
+          //       "updatedAt": 1,
+          //       "expiration": 1,
+          //       "visibility": 1,
+          //       "location": 1,
+          //       "tags": 1,
+          //       "allowComments": 1,
+          //       "isSafe": 1,
+          //       "isOwned": 1,
+          //       "certified": 1,
+          //       "saleAmount": 1,
+          //       "saleLike": 1,
+          //       "saleView": 1,
+          //       "isShared": 1,
+          //       "userProfile": 1,
+          //       "contentMedias": 1,
+          //       "category": "$cats",
+          //       "tagDescription": 1,
+          //       "metadata": 1,
+          //       "boostDate": 1,
+          //       "boosted":
+          //         [{
+          //           $cond: {
+          //             if: {
+          //               $gt: [{
+          //                 "$dateToString": {
+          //                   "format": "%Y-%m-%d %H:%M:%S",
+          //                   "date": {
+          //                     $add: [new Date(), 25200000]
+          //                   }
+          //                 }
+          //               }, "$boosted.boostSession.end"]
+          //             },
+          //             then: "$kampretTaslim",
+          //             else: '$boosted'
+          //           }
+          //         }],
+          //       "end": "$boosted.boostSession.end",
+          //       "start": "$boosted.boostSession.start",
+          //       "isBoost": 1,
+          //       "boostViewer": 1,
+          //       "boostCount": 1,
+          //       "contentModeration": 1,
+          //       "reportedStatus": 1,
+          //       "reportedUserCount": 1,
+          //       "contentModerationResponse": 1,
+          //       "reportedUser": 1,
+          //       "timeStart": 1,
+          //       "timeEnd": 1,
+          //       "apsara": "$media.apsara",
+          //       "apsaraId": "$media.apsaraId",
+          //       "apsaraThumbId": "$media.apsaraThumbId",
+          //       "mediaEndpoint": "$media.mediaEndpoint",
+          //       "mediaUri": "$media.mediaUri",
+          //       "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
+          //       "mediaThumbUri": "$media.mediaThumbUri",
+          //       "insight": [
+          //         {
+          //           "likes": "$likes",
+          //           "views": "$views",
+          //           "shares": "$shares",
+          //           "comments": "$comments",
+
+          //         }
+          //       ],
+          //       "fullName": "$userBasic.fullName",
+          //       "username": "$username.username",
+          //       "avatar": 1,
+          //       "statusCB": 1,
+          //       "privacy": [{
+          //         "isCelebrity": "$userBasic.isCelebrity"
+          //       }, {
+          //         "isIdVerified": "$userBasic.isIdVerified"
+          //       }, {
+          //         "isPrivate": "$userBasic.isPrivate"
+          //       }]
+          //     }
+          //   }
+          // ],
 
         }
       },
