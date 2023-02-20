@@ -5645,11 +5645,4 @@ export class UserbasicsService {
     return query;
   }
 
-  async updateInterest(id: string, updatedAt: string) {
-
-
-    let data = await this.userbasicModel.updateMany({ "_id": id },
-      { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
-    return data;
-  }
 }

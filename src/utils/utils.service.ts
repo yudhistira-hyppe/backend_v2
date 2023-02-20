@@ -256,7 +256,7 @@ export class UtilsService {
       } else if (eventType == "KYC") {
         data_send['postID'] = ''
         data_send['postType'] = ''
-      }else {
+      } else {
         data_send['postID'] = postID
         data_send['postType'] = postType
       }
@@ -343,7 +343,7 @@ export class UtilsService {
 
     if (eventType == "FOLLOWER") {
       var ceckNotification = await this.notificationsService.findCriteria(receiverParty, eventType, senderParty);
-      if (await this.ceckData(ceckNotification)){
+      if (await this.ceckData(ceckNotification)) {
         await this.notificationsService.updateNotifiaction(receiverParty, eventType, senderParty, currentDate);
       } else {
         await this.notificationsService.create(createNotificationsDto);
@@ -1292,12 +1292,12 @@ export class UtilsService {
               const interests = await this.interestsRepoService.findOne(
                 interests_json.$id,
               );
-              interests_array[i] = interests.interestName;
+              interests_array[i] = interests._id;
             } else {
               const interests = await this.interestsRepoService.findOne(
                 interests_json.$id,
               );
-              interests_array[i] = interests.interestName;
+              interests_array[i] = interests._id;
             }
           }
         }
