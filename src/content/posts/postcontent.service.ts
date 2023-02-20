@@ -159,7 +159,7 @@ export class PostContentService {
     }
   }
 
-  async createNewPost(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+  async createNewPostV1(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
     this.logger.log('createNewPost >>> start: ' + JSON.stringify(body));
     var res = new CreatePostResponse();
     res.response_code = 204;
@@ -186,10 +186,10 @@ export class PostContentService {
     var mime = file.mimetype;
     if (mime.startsWith('video')) {
       this.logger.log('createNewPost >>> is video');
-      return this.createNewPostVideo(file, body, headers);
+      return this.createNewPostVideoV1(file, body, headers);
     } else {
       this.logger.log('createNewPost >>> is picture');
-      return this.createNewPostPict(file, body, headers);
+      return this.createNewPostPictV1(file, body, headers);
     }
   }
 
@@ -408,7 +408,7 @@ export class PostContentService {
     return post;
   }
 
-  private async createNewPostVideo(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+  private async createNewPostVideoV1(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
     this.logger.log('createNewPostVideo >>> start: ' + JSON.stringify(body));
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
@@ -593,7 +593,7 @@ export class PostContentService {
       }
       let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
       //let payload = { 'file': nm, 'postId': apost._id };
-      axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+      axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V1"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
     });
 
     this.logger.log('createNewPostVideo >>> check certified. ' + post.certified);
@@ -1261,7 +1261,7 @@ export class PostContentService {
     //this.postService.generateUserPlaylist(playlist);
   }
 
-  private async createNewPostPict(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+  private async createNewPostPictV1(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
 
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
@@ -1336,7 +1336,7 @@ export class PostContentService {
 
     let fn = file.originalname;
     let ext = fn.split(".");
-    let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + post._id + "." + ext[1];
+    let nm = this.configService.get("APSARA_UPLOADER_PICTURE_V1") + post._id + "." + ext[1];
     const ws = createWriteStream(nm);
     ws.write(file.buffer);
     ws.close();
@@ -1355,7 +1355,7 @@ export class PostContentService {
       }
       let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
       //let payload = { 'file': nm, 'postId': apost._id };
-      axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+      axios.post(this.configService.get("APSARA_UPLOADER_PICTURE_V2"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
     });
     /*

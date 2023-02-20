@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { CreateInterestsRepoDto } from './dto/create-interests_repo.dto';
 import { Interestsrepo, InterestsrepoDocument } from './schemas/interests_repo.schema';
@@ -79,5 +80,42 @@ export class InterestsRepoService {
       },
     ]);
     return query;
+  }
+
+  async findData(){
+    const query = await this.interestsrepoModel.aggregate([
+      {
+        "$match":
+        {
+          langIso: "id"
+        }
+      },
+      {
+        "$lookup":
+        {
+          from: "userbasics",
+          localField: "_id",
+          foreignField: "userInterests.$id",
+          as: "basics_data"
+        }
+      },
+      {
+        "$project":
+        {
+          _id: "$_id",
+          interestName: 1,
+          langIso: 1,
+          basics_data: "$basics_data",
+        }
+      }
+    ]);
+    return query;
+  }
+
+  async executeData(id_interst1: string, id_interst2: string) {
+    return this.interestsrepoModel
+      .replaceOne({ "userInterests.$id": new ObjectId(id_interst1) },
+        { "userInterests.$id": new ObjectId(id_interst2) })
+      .exec();
   }
 }

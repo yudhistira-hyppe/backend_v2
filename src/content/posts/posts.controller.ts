@@ -308,16 +308,16 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/posts/v2/createpost')
+  @Post('api/posts/v1/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
-  async createPost(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+  async createPostV1(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("createPost >>> start");
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
-    return this.postContentService.createNewPost(file, body, headers);
+    return this.postContentService.createNewPostV1(file, body, headers);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/posts/createpost')
+  @Post('api/posts/v2/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPostV2(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("createPost >>> start");
@@ -326,7 +326,7 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/posts/taslim/bangke/createpost')
+  @Post('api/posts/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPostV3(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("createPost >>> start");
