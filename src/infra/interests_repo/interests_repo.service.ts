@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { CreateInterestsRepoDto } from './dto/create-interests_repo.dto';
 import { Interestsrepo, InterestsrepoDocument } from './schemas/interests_repo.schema';
@@ -83,9 +84,8 @@ export class InterestsRepoService {
     return query;
   }
 
-  async listinterestid() {
-    var query = await this.interestsrepoModel.aggregate([
-
+  async findData(){
+    const query = await this.interestsrepoModel.aggregate([
       {
         "$match":
         {
@@ -112,5 +112,12 @@ export class InterestsRepoService {
       }
     ]);
     return query;
+  }
+
+  async executeData(id_interst1: string, id_interst2: string) {
+    return this.interestsrepoModel
+      .replaceOne({ "userInterests.$id": new ObjectId(id_interst1) },
+        { "userInterests.$id": new ObjectId(id_interst2) })
+      .exec();
   }
 }

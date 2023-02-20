@@ -3647,4 +3647,10 @@ export class AuthController {
       );
     }
   }
+
+  @Post('api/posts/run')
+  async run() {
+    var getList = await this.interestsRepoService.findData();
+    return getList;
+  }
 }
