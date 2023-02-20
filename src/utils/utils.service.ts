@@ -1290,12 +1290,12 @@ export class UtilsService {
             );
             if (interests_json.ref == 'interests_repo') {
               const interests = await this.interestsRepoService.findOne(
-                interests_json.$id,
+                interests_json.$id.toString(),
               );
               interests_array[i] = interests._id;
             } else {
               const interests = await this.interestsRepoService.findOne(
-                interests_json.$id,
+                interests_json.$id.toString(),
               );
               interests_array[i] = interests._id;
             }

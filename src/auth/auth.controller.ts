@@ -43,7 +43,7 @@ import { MediaprofilepictsService } from '../content/mediaprofilepicts/mediaprof
 import { MediaproofpictsService } from '../content/mediaproofpicts/mediaproofpicts.service';
 import { UserticketsService } from '../trans/usertickets/usertickets.service';
 import { UserticketdetailsService } from '../trans/usertickets/userticketdetails/userticketdetails.service';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { Int32 } from 'mongodb';
 import { ProfileDTO } from '../utils/data/Profile';
 import { GlobalResponse } from '../utils/data/globalResponse';
@@ -1686,7 +1686,7 @@ export class AuthController {
               if (id_interest != undefined) {
                 data_interest_id.push({
                   $ref: 'interests_repo',
-                  $id: Object(id_interest._id),
+                  $id: new Types.ObjectId(id_interest),
                   $db: 'hyppe_infra_db',
                 });
               }
