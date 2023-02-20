@@ -1401,4 +1401,42 @@ export class PostsController {
     return { response_code: 202, messages, data: arrdataview };
   }
 
+  @Post('api/posts/createnewcollection')
+  @UseGuards(JwtAuthGuard)
+  async createnewCollection(@Req() request: Request): Promise<any> {
+    var pilihan = null;
+    var messages = null;
+    
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["pilihan"] !== undefined) 
+    {
+      var pilihan = request_json["pilihan"]; 
+      if(pilihan == 'hashtags')
+      {
+        messages = {
+          "info": ["New hashtag list collection successfully created"],
+        };
+    
+        await this.PostsService.createTagsCollection();
+      } 
+      else if(pilihan == 'interests')
+      {
+        messages = {
+          "info": ["New interest list collection successfully created"],
+        };
+    
+        await this.PostsService.createInterestCollection();
+      }
+      else
+      {
+        throw new BadRequestException("Unabled to proceed");
+      }
+    }
+    else 
+    {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    return { response_code:202, pilihan, messages }
+  }
 }
