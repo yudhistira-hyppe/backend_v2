@@ -8050,6 +8050,7 @@ export class TransactionsController {
         var dataall = null;
         var totalallrow = null;
         var total = null;
+        var jenis = null;
         var dataquery = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
@@ -8065,6 +8066,7 @@ export class TransactionsController {
         startdate = request_json["startdate"];
         enddate = request_json["enddate"];
         type = request_json["type"];
+        jenis = request_json["jenis"];
         sell = request_json["sell"];
         buy = request_json["buy"];
         withdrawal = request_json["withdrawal"];
@@ -8089,7 +8091,7 @@ export class TransactionsController {
 
         var dataid = null;
         try {
-            dataquery = await this.userbasicsService.transaksiHistoryBisnis(email, startdate, enddate, sell, buy, withdrawal, rewards, boost, page, limit, descending);
+            dataquery = await this.userbasicsService.transaksiHistoryBisnis(email, startdate, enddate, sell, buy, withdrawal, rewards, boost, page, limit, descending, jenis);
             dataid = dataquery[0]._id
         } catch (e) {
             dataquery = [];
@@ -8113,7 +8115,7 @@ export class TransactionsController {
             totalsearch = 0;
         } else {
             try {
-                datasearch = await this.userbasicsService.transaksiHistoryBisnisCount(email, startdate, enddate, sell, buy, withdrawal, rewards, boost);
+                datasearch = await this.userbasicsService.transaksiHistoryBisnisCount(email, startdate, enddate, sell, buy, withdrawal, rewards, boost, jenis);
                 totalsearch = datasearch[0].totalpost;
             } catch (e) {
                 totalsearch = 0;
@@ -8127,7 +8129,7 @@ export class TransactionsController {
 
             try {
 
-                dataall = await this.userbasicsService.transaksiHistoryBisnisCount(email, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                dataall = await this.userbasicsService.transaksiHistoryBisnisCount(email, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
                 totalallrow = dataall[0].totalpost;
 
             } catch (e) {
