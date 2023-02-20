@@ -3024,7 +3024,7 @@ export class ContenteventsService {
               picts: '$pict.postID',
               vids: '$video.postID',
               diarys: '$diary.postID',
-              storys: '$story.postID',
+              // storys: '$story.postID',
 
             },
             pipeline: [
@@ -3065,24 +3065,24 @@ export class ContenteventsService {
                         }
                       ]
                     },
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$postID', '$$storys']
-                          }
-                        },
-                        {
-                          "email": profile.email
-                        },
-                        {
-                          "eventType": "LIKE"
-                        },
-                        {
-                          "active": true
-                        }
-                      ]
-                    },
+                    // {
+                    //   $and: [
+                    //     {
+                    //       $expr: {
+                    //         $eq: ['$postID', '$$storys']
+                    //       }
+                    //     },
+                    //     {
+                    //       "email": profile.email
+                    //     },
+                    //     {
+                    //       "eventType": "LIKE"
+                    //     },
+                    //     {
+                    //       "active": true
+                    //     }
+                    //   ]
+                    // },
                     {
                       $and: [
                         {
@@ -3116,53 +3116,53 @@ export class ContenteventsService {
 
           }
         },
-        {
-          "$lookup": {
-            from: "contentevents",
-            as: "storyView",
-            let: {
-              picts: '$pict.postID',
-              vids: '$video.postID',
-              diarys: '$diary.postID',
-              storys: '$story.postID',
+        // {
+        //   "$lookup": {
+        //     from: "contentevents",
+        //     as: "storyView",
+        //     let: {
+        //       picts: '$pict.postID',
+        //       vids: '$video.postID',
+        //       diarys: '$diary.postID',
+        //      // storys: '$story.postID',
 
-            },
-            pipeline: [
-              {
-                $match:
-                {
-                  $or: [
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match:
+        //         {
+        //           $or: [
 
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$postID', '$$storys']
-                          }
-                        },
-                        {
-                          "email": profile.email
-                        },
-                        {
-                          "eventType": "VIEW"
-                        }
-                      ]
-                    },
+        //             {
+        //               $and: [
+        //                 {
+        //                   $expr: {
+        //                     $eq: ['$postID', '$$storys']
+        //                   }
+        //                 },
+        //                 {
+        //                   "email": profile.email
+        //                 },
+        //                 {
+        //                   "eventType": "VIEW"
+        //                 }
+        //               ]
+        //             },
 
-                  ]
-                }
-              },
-              {
-                $project: {
-                  "email": 1,
-                  "postID": 1,
+        //           ]
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           "email": 1,
+        //           "postID": 1,
 
-                }
-              }
-            ],
+        //         }
+        //       }
+        //     ],
 
-          }
-        },
+        //   }
+        // },
       ]
 
 

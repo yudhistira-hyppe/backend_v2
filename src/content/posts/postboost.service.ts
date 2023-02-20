@@ -3141,9 +3141,9 @@ export class PostBoostService {
     if (body.postType == 'ALL' || body.postType == 'diary') {
       odia = await this.processDataV2(obj.diary, xvids, xpics, isLike, isView, String(profile.email));
     }
-    if (body.postType == 'ALL' || body.postType == 'story') {
-      osto = await this.processDataV2(obj.story, xvids, xpics, isLike, isView, String(profile.email));
-    }
+    // if (body.postType == 'ALL' || body.postType == 'story') {
+    //   osto = await this.processDataV2(obj.story, xvids, xpics, isLike, isView, String(profile.email));
+    // }
 
 
 
@@ -3179,13 +3179,13 @@ export class PostBoostService {
       }
     }
 
-    if (osto.length > 0) {
-      for (let i = 0; i < osto.length; i++) {
-        let pdss = osto[i];
-        this.generateThumbnail(pdss, vapsara, papsara);
-        resStory.push(pdss);
-      }
-    }
+    // if (osto.length > 0) {
+    //   for (let i = 0; i < osto.length; i++) {
+    //     let pdss = osto[i];
+    //     this.generateThumbnail(pdss, vapsara, papsara);
+    //     resStory.push(pdss);
+    //   }
+    // }
 
     if (odia.length > 0) {
       for (let i = 0; i < odia.length; i++) {
@@ -3434,12 +3434,12 @@ export class PostBoostService {
     pld.diary = resDiary;
     pld.pict = resPic;
 
-    if (resStory.length > 0) {
-      pld.story = resStory;
-    } else {
-      pld.story = null;
-    }
-
+    // if (resStory.length > 0) {
+    //   pld.story = resStory;
+    // } else {
+    //   pld.story = null;
+    // }
+    pld.story = null;
     pld.video = resVideo;
 
     res.data = pld;
@@ -5782,7 +5782,7 @@ export class PostBoostService {
             picts: '$pict.postID',
             vids: '$video.postID',
             diarys: '$diary.postID',
-            storys: '$story.postID',
+            //  storys: '$story.postID',
 
           },
           pipeline: [
@@ -5827,21 +5827,21 @@ export class PostBoostService {
                       }
                     ]
                   },
-                  {
-                    $and: [
-                      {
-                        $expr: {
-                          $in: ['$postID', '$$storys']
-                        }
-                      },
-                      {
-                        "email": profile.email,
-                      },
-                      {
-                        "eventType": "LIKE"
-                      }
-                    ]
-                  },
+                  // {
+                  //   $and: [
+                  //     {
+                  //       $expr: {
+                  //         $in: ['$postID', '$$storys']
+                  //       }
+                  //     },
+                  //     {
+                  //       "email": profile.email,
+                  //     },
+                  //     {
+                  //       "eventType": "LIKE"
+                  //     }
+                  //   ]
+                  // },
                   {
                     $and: [
                       {
@@ -5883,7 +5883,7 @@ export class PostBoostService {
             picts: '$pict.postID',
             vids: '$video.postID',
             diarys: '$diary.postID',
-            storys: '$story.postID',
+            // storys: '$story.postID',
 
           },
           pipeline: [
@@ -5921,21 +5921,21 @@ export class PostBoostService {
                       }
                     ]
                   },
-                  {
-                    $and: [
-                      {
-                        $expr: {
-                          $in: ['$postID', '$$storys']
-                        }
-                      },
-                      {
-                        "email": profile.email,
-                      },
-                      {
-                        "eventType": "VIEW"
-                      }
-                    ]
-                  },
+                  // {
+                  //   $and: [
+                  //     {
+                  //       $expr: {
+                  //         $in: ['$postID', '$$storys']
+                  //       }
+                  //     },
+                  //     {
+                  //       "email": profile.email,
+                  //     },
+                  //     {
+                  //       "eventType": "VIEW"
+                  //     }
+                  //   ]
+                  // },
                   {
                     $and: [
                       {
