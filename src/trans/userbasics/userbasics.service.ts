@@ -2177,7 +2177,7 @@ export class UserbasicsService {
     return query;
   }
 
-  async transaksiHistoryBisnis(email: string, startdate: string, enddate: string, sell: any, buy: any, withdrawal: any, rewards: any, boost: any, page: number, limit: number, descending: boolean) {
+  async transaksiHistoryBisnis(email: string, startdate: string, enddate: string, sell: any, buy: any, withdrawal: any, rewards: any, boost: any, page: number, limit: number, descending: boolean, jenis: string) {
 
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -2196,15 +2196,17 @@ export class UserbasicsService {
     }
     var pipeline = [];
 
-
-
-    pipeline.push(
-      {
+    if (email && email !== undefined) {
+      pipeline.push({
         $match:
         {
           "email": email
         }
-      },
+      },);
+    }
+
+    pipeline.push(
+
       {
         $lookup: {
           from: 'userauths',
@@ -3493,6 +3495,7 @@ export class UserbasicsService {
 
     );
 
+
     if (sell === true && buy === false && withdrawal === false && rewards === false && boost === false) {
       pipeline.push({ $match: { "type": "Sell" } },);
     }
@@ -3549,7 +3552,9 @@ export class UserbasicsService {
       pipeline.push({ $match: { $or: [{ "type": "Sell" }, { "type": "Buy" }, { "type": "Withdraws" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }, { "type": "Buy", "jenis": "BOOST_CONTENT+OWNERSHIP" }] } },);
     }
 
-
+    if (jenis && jenis != undefined) {
+      pipeline.push({ $match: { jenis: jenis } });
+    }
     if (startdate && startdate !== undefined) {
 
       pipeline.push({ $match: { timestamp: { "$gte": startdate } } });
@@ -3577,7 +3582,7 @@ export class UserbasicsService {
     return query;
   }
 
-  async transaksiHistoryBisnisCount(email: string, startdate: string, enddate: string, sell: any, buy: any, withdrawal: any, rewards: any, boost: any) {
+  async transaksiHistoryBisnisCount(email: string, startdate: string, enddate: string, sell: any, buy: any, withdrawal: any, rewards: any, boost: any, jenis: string) {
 
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -3588,14 +3593,17 @@ export class UserbasicsService {
     }
 
     var pipeline = [];
-
-    pipeline.push(
-      {
+    if (email && email !== undefined) {
+      pipeline.push({
         $match:
         {
           "email": email
         }
-      },
+      },);
+    }
+
+    pipeline.push(
+
       {
         $lookup: {
           from: 'userauths',
@@ -4939,7 +4947,9 @@ export class UserbasicsService {
     else if (sell === true && buy === true && withdrawal === true && rewards === true && boost === true) {
       pipeline.push({ $match: { $or: [{ "type": "Sell" }, { "type": "Buy" }, { "type": "Withdraws" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }, { "type": "Buy", "jenis": "BOOST_CONTENT+OWNERSHIP" }] } },);
     }
-
+    if (jenis && jenis != undefined) {
+      pipeline.push({ $match: { jenis: jenis } });
+    }
 
     if (startdate && startdate !== undefined) {
 

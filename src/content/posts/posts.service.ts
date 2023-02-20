@@ -16835,6 +16835,217 @@ export class PostsService {
     ]);
     return query;
   }
+
+  async createInterestCollection()
+  {
+    var query = await this.PostsModel.aggregate([
+      {
+          "$unwind":
+          {
+              path:"$category",
+              preserveNullAndEmptyArrays:true
+          }
+      },
+      {
+          "$match":
+          {
+              "$and":
+              [
+                  {
+                      category:
+                      {
+                          "$ne":""
+                      }
+                  },
+                  {
+                      category:
+                      {
+                          "$ne":null
+                      }
+                  },
+              ]
+          }
+      },
+      {
+          "$project":
+          {
+              _id:1,
+              category:1,
+              categoryId:"$category.$id",
+              postID:1,
+          }
+      },
+      {
+          "$group":
+          {
+              _id:"$category.$id",
+              total:
+              {
+                  "$sum":1
+              },
+              listdata:
+              {
+                  "$push":
+                  {
+                      postID:"$_id"
+                  }
+              }
+          }
+      },
+      {
+          "$sort":
+          {
+              _id:1
+          }
+      },
+      // coba coba
+      {
+          $out: 
+          {
+              db: 'ProdAll',
+              coll: 'interest_count'
+          }
+      },
+    ]);
+
+    return true;
+  }
+
+  async createTagsCollection()
+  {
+    var query = await this.PostsModel.aggregate([
+        {
+            "$unwind":
+            {
+                path:"$tags",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $set: 
+            { 
+                "converttags": 
+                {
+                    "$replaceAll":
+                    {
+                        input:"$tags",
+                        find:"#",
+                        replacement:""
+                    },
+                }, 
+            }
+        },
+        {
+            "$project":
+            {
+                _id:1,
+                tags:
+                {
+                    "$toLower":"$tags"
+                },
+                converttags:
+                {
+                    "$toLower":"$converttags"
+                },
+                postID:1,
+            }
+        },
+        {
+            "$match":
+            {
+                "$and":
+                [
+                    {
+                        converttags:
+                        {
+                            "$ne":""
+                        }
+                    },
+                    {
+                        converttags:
+                        {
+                            "$ne":null
+                        }
+                    },
+                ]
+            }
+        },
+        {
+            "$set": 
+            {
+                finalconvert: 
+                {
+                    "$replaceAll":
+                    {
+                        input:"$converttags",
+                        find:'"',
+                        replacement:""
+                    },
+                },
+            }
+        },
+        {
+            "$project":
+            {
+                _id:1,
+                tags:
+                {
+                    "$toLower":"$tags"
+                },
+                converttags2:"$finalconvert",
+                postID:1,
+            }
+        },
+        {
+            "$project":
+            {
+                _id:1,
+                postID:1,
+                converttags2:1
+            }
+        },
+        {
+            "$sort":
+            {
+                converttags2:1
+            }
+        },
+        {
+            "$group":
+            {
+                _id:"$converttags2",
+                total:
+                {
+                    "$sum":1
+                },
+                listdata:
+                {
+                    "$push":
+                    {
+                        postID:"$postID"
+                    }
+                }
+            }
+        },
+        {
+            "$sort":
+            {
+                _id:1
+            }
+        },
+        // coba coba
+        {
+            $out: 
+            {
+                db: 'ProdAll',
+                coll: 'tag_count'
+            }
+        },
+    ]);
+
+    return true;
+  }
+
 }
 
 

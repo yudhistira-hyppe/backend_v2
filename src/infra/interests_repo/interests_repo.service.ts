@@ -84,7 +84,7 @@ export class InterestsRepoService {
     return query;
   }
 
-  async findData(){
+  async findData() {
     const query = await this.interestsrepoModel.aggregate([
       {
         "$match":

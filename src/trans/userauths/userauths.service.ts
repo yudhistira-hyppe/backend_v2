@@ -419,6 +419,9 @@ export class UserauthsService {
                       "active": true
                     },
                     {
+                      "email": { $ne: email }
+                    },
+                    {
                       "$or": [
                         {
                           "reportedUser": {
@@ -962,7 +965,7 @@ export class UserauthsService {
       {
         "$sort":
         {
-          maxcreatedAt: 1
+          maxcreatedAt: -1
         }
       },
       {
