@@ -113,11 +113,4 @@ export class InterestsRepoService {
     ]);
     return query;
   }
-
-  async executeData(id_interst1: string, id_interst2: string) {
-    return this.interestsrepoModel
-      .replaceOne({ "userInterests.$id": new ObjectId(id_interst1) },
-        { "userInterests.$id": new ObjectId(id_interst2) })
-      .exec();
-  }
 }
