@@ -1002,4 +1002,290 @@ export class AccountbalancesService {
         
         return query;
     }
+
+    async getTotalPendapatan(start: string, end:string)
+    {
+        const mongoose = require('mongoose');
+        var iddata = mongoose.Types.ObjectId("62144381602c354635ed786a");
+        var before = new Date(start).toISOString().split("T")[0];
+        var input = new Date(end);
+        input.setDate(input.getDate() + 1);
+        var today = new Date(input).toISOString().split("T")[0];
+        
+        var query = await this.accountbalancesModel.aggregate([
+            {
+                "$match":
+                {
+                    iduser:
+                    {
+                        "$eq":iddata
+                    },
+                    timestamp:
+                    {
+                        "$gte": before,
+                        "$lte": today,
+                    },
+                    "$or":
+                    [
+                        {
+                            description:
+                            {
+                                "$regex":"sell voucher",
+                                "$options":"i"
+                            },
+                        },
+                        {
+                            description:
+                            {
+                                "$regex":"Admin Charge",
+                                "$options":"i"
+                            },
+                        },
+                        {
+                            description:
+                            {
+                                "$regex":"sell boost",
+                                "$options":"i"
+                            },
+                        },
+                    ]
+                },
+            },
+            {
+                "$group":
+                {
+                    _id:null,
+                    total:
+                    {
+                        "$sum":"$kredit"
+                    }
+                }
+            }
+        ]);
+
+        return query;
+    }
+
+    async getTotalPendapatanVoucher(start:string, end:string)
+    {
+        const mongoose = require('mongoose');
+        var iddata = mongoose.Types.ObjectId("62144381602c354635ed786a");
+        var before = new Date(start).toISOString().split("T")[0];
+        var input = new Date(end);
+        input.setDate(input.getDate() + 1);
+        var today = new Date(input).toISOString().split("T")[0];
+        
+        var query = await this.accountbalancesModel.aggregate([
+            {
+                "$match":
+                {
+                    iduser:
+                    {
+                        "$eq":iddata
+                    },
+                    timestamp:
+                    {
+                        "$gte": before,
+                        "$lte": today,
+                    },
+                    description:
+                    {
+                        "$regex":"sell voucher",
+                        "$options":"i"
+                    },
+                },
+            },
+            {
+                "$project":
+                {
+                    createdAt:
+                    {
+                        "$substr":
+                        [
+                            "$timestamp", 0, 10
+                        ]
+                    },
+                    kredit:1
+                }
+            },
+            {
+                "$group":
+                {
+                    _id:
+                    {
+                        "$dateFromString": 
+                        {
+                            "format": "%Y-%m-%d",
+                            "dateString": "$createdAt"
+                        }
+                    },
+                    totalperhari:
+                    {
+                        "$sum":1
+                    },
+                    totalpendapatanperhari:
+                    {
+                        "$sum":"$kredit"
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    _id:1,
+                    totalperhari:1,
+                    totalpendapatanperhari:1,
+                }
+            },
+            {
+                "$unwind":
+                {
+                    path:"$_id"
+                }
+            },
+            {
+                "$sort":
+                {
+                    _id:1 
+                }
+            },
+            {
+                "$group":
+                {
+                    _id:null,
+                    total:
+                    {
+                        "$sum":"$totalpendapatanperhari"
+                    },
+                    resultdata:
+                    {
+                        "$push":
+                        {
+                            _id:
+                            {
+                                "$substr":
+                                [
+                                {
+                                    "$toString":"$_id"
+                                },0,10
+                                ]
+                            },
+                            totaldata:"$totalperhari",
+                            totalpendapatanperhari:"$totalpendapatanperhari"
+                        }
+                    }
+                }
+            }
+        ]);
+
+        return query;
+    }
+
+    async getTotalPendapatanJualBeli(start:string, end:string)
+    {
+        const mongoose = require('mongoose');
+        var iddata = mongoose.Types.ObjectId("62144381602c354635ed786a");
+        var before = new Date(start).toISOString().split("T")[0];
+        var input = new Date(end);
+        input.setDate(input.getDate() + 1);
+        var today = new Date(input).toISOString().split("T")[0];
+
+        var query = await this.accountbalancesModel.aggregate([
+            {
+                "$match":
+                {
+                    timestamp:
+                    {
+                        "$gte":before,
+                        "$lte":today
+                    },
+                    iduser: iddata,
+                    type:"sell"
+                }
+            },
+            {
+                "$project":
+                {
+                    createdAt:
+                    {
+                        "$substr":
+                        [
+                            "$timestamp", 0, 10
+                        ]
+                    },
+                    kredit:1
+                }
+            },
+            {
+                "$group":
+                {
+                    _id:
+                    {
+                        "$dateFromString": 
+                        {
+                            "format": "%Y-%m-%d",
+                            "dateString": "$createdAt"
+                        }
+                    },
+                    totalperhari:
+                    {
+                        "$sum":1
+                    },
+                    totalpendapatanperhari:
+                    {
+                        "$sum":"$kredit"
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    _id:1,
+                    totalperhari:1,
+                    totalpendapatanperhari:1,
+                }
+            },
+            {
+                "$unwind":
+                {
+                    path:"$_id"
+                }
+            },
+            {
+                "$sort":
+                {
+                    _id:1 
+                }
+            },
+            {
+                "$group":
+                {
+                    _id:null,
+                    total:
+                    {
+                        "$sum":"$totalpendapatanperhari"
+                    },
+                    resultdata:
+                    {
+                        "$push":
+                        {
+                            _id:
+                            {
+                                "$substr":
+                                [
+                                {
+                                    "$toString":"$_id"
+                                },0,10
+                                ]
+                            },
+                            totaldata:"$totalperhari",
+                            totalpendapatanperhari:"$totalpendapatanperhari"
+                        }
+                    }
+                }
+            }
+        ]);
+
+        return query;
+    }
 }

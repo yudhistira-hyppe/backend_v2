@@ -57,15 +57,23 @@ export class UtilsController {
         var search_ = search;
 
         var data = await this.interestsRepoService.findCriteria(langIso_, pageNumber_, pageRow_, search_);
+        var bahasa = null;
+
         var data_ = data.map(item => {
+
+            if (langIso_ == "id") {
+                bahasa = item.interestNameId;
+            } else {
+                bahasa = item.interestName;
+            }
             return {
                 _id: item._id,
                 langIso: item.langIso,
                 cts: item.createdAt,
                 icon: item.icon,
-                interestName: item.interestName,
-                interestNameId: item.interestNameId,
-                thumbnail: item.thumbnail
+                interestName: bahasa,
+                // interestNameId: item.interestNameId,
+                // thumbnail: item.thumbnail
             };
         });
         var Response = {
