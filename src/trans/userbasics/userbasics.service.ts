@@ -2196,15 +2196,17 @@ export class UserbasicsService {
     }
     var pipeline = [];
 
-
-
-    pipeline.push(
-      {
+    if (email && email !== undefined) {
+      pipeline.push({
         $match:
         {
           "email": email
         }
-      },
+      },);
+    }
+
+    pipeline.push(
+
       {
         $lookup: {
           from: 'userauths',
@@ -3591,14 +3593,17 @@ export class UserbasicsService {
     }
 
     var pipeline = [];
-
-    pipeline.push(
-      {
+    if (email && email !== undefined) {
+      pipeline.push({
         $match:
         {
           "email": email
         }
-      },
+      },);
+    }
+
+    pipeline.push(
+
       {
         $lookup: {
           from: 'userauths',
