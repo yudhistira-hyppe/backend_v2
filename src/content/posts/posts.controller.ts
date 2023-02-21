@@ -34,7 +34,8 @@ import { OyPgService } from '../../paymentgateway/oypg/oypg.service';
 import { MethodepaymentsService } from '../../trans/methodepayments/methodepayments.service';
 import { PostBoostService } from './postboost.service';
 import { TransactionsPostService } from '../../trans/transactionpost/transactionspost.service';
-
+import { TagCountService } from '../tag_count/tag_count.service';
+import { TagCountDto } from '../tag_count/dto/create-tag_count.dto';
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -53,6 +54,7 @@ export class PostsController {
     private readonly cmodService: ContentModService,
     private readonly disqusService: DisqusService,
     private transactionsPostService: TransactionsPostService,
+    private readonly tagCountService: TagCountService,
     private readonly methodepaymentsService: MethodepaymentsService) { }
 
   @Post()
@@ -394,11 +396,122 @@ export class PostsController {
         );
       }
     }
+
+    var datapostawal = null;
+    var tags = [];
+    var arrtag = [];
+    try {
+      datapostawal = await this.PostsService.findByPostId(body.postID);
+      tags = datapostawal.tags;
+    } catch (e) {
+      datapostawal = null;
+      tags = [];
+    }
+    var datatag = null;
+    if (tags.length > 0) {
+      var tag = body.tags;
+      if (tag !== undefined) {
+        var splittag = tag.split(',');
+
+      }
+
+      for (let x = 0; x < splittag.length; x++) {
+        var tagkata = tags[x];
+        var tagreq = splittag[x].replace(/"/g, "");
+        arrtag.push(tagreq)
+        // var av = tagreq.replace(/"/g, "");
+
+        if (tagreq !== undefined && tagreq !== tagkata) {
+
+          try {
+            datatag = await this.tagCountService.findOneById(tagkata);
+          } catch (e) {
+            datatag = null;
+          }
+
+
+          var total = 0;
+          if (datatag !== null) {
+            var postidlist = datatag.listdata;
+            total = datatag.total;
+
+            for (var i = 0; i < postidlist.length; i++) {
+              if (postidlist[i].postID === body.postID) {
+                postidlist.splice(i, 1);
+              }
+            }
+            let tagCountDto_ = new TagCountDto();
+            tagCountDto_.total = total - 1;
+            tagCountDto_.listdata = postidlist;
+            await this.tagCountService.update(tagkata, tagCountDto_);
+          }
+        }
+      }
+
+    }
+
+    body.tags = arrtag;
     data = await this.postContentService.updatePost(body, headers);
+
+    var tag2 = body.tags;
+    if (tag2 !== undefined) {
+      var splittag2 = tag2;
+      for (let i = 0; i < splittag2.length; i++) {
+        let id = splittag2[i];
+        var datatag2 = null;
+
+        try {
+          datatag2 = await this.tagCountService.findOneById(id);
+
+        } catch (e) {
+          datatag2 = null;
+
+        }
+
+        if (datatag2 === null) {
+
+          let tagCountDto_ = new TagCountDto();
+          tagCountDto_._id = id;
+          tagCountDto_.total = 1;
+          tagCountDto_.listdata = [{ "postID": body.postID }];
+          await this.tagCountService.create(tagCountDto_);
+        } else {
+
+          var datapost = null;
+          var tagslast = [];
+          try {
+            datapost = await this.PostsService.findByPostId(body.postID);
+            tagslast = datapost.tags;
+          } catch (e) {
+            datapost = null;
+            tagslast = [];
+          }
+          let idnew = tagslast[i];
+          var total2 = 0;
+          var postidlist2 = [];
+          let obj = { "postID": body.postID };
+          total2 = datatag2.total;
+          postidlist2 = datatag2.listdata;
+          if (id !== idnew) {
+            postidlist2.push(obj);
+          }
+
+          let tagCountDto_ = new TagCountDto();
+          tagCountDto_._id = id;
+          if (id !== idnew) {
+            tagCountDto_.total = total2 + 1;
+          }
+
+          tagCountDto_.listdata = postidlist2;
+          await this.tagCountService.update(id, tagCountDto_);
+        }
+
+      }
+    }
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
     if (saleAmount > 0) {
-      await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+      // await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
       //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
     }
 

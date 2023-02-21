@@ -13,7 +13,7 @@ export class CreatePostsDto {
     readonly expiration: Long;
     readonly visibility: String;
     readonly location: String;
-    readonly tags: [];
+    readonly tags: any[];
     readonly allowComments: boolean;
     readonly isSafe: boolean;
     readonly isOwned: boolean;
