@@ -1129,8 +1129,8 @@ export class UtilsService {
 
   async generateReferralImage(data: any): Promise<any> {
     try {
-      var Templates_ = new Templates();
-      Templates_ = await this.getTemplate('REFERRAL', 'REFERRAL');
+      var Templates_ = new TemplatesRepo();
+      Templates_ = await this.getTemplate_repo('REFERRAL', 'REFERRAL');
       var html_body = Templates_.body_detail.trim().toString();
       const $_ = cheerio.load(html_body);
       var dataimage = null;

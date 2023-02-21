@@ -37,6 +37,7 @@ import { CreateGetcontenteventsDto } from '../trans/getusercontents/getcontentev
 import { CreateUserbasicnewDto } from '../trans/newuserbasic/dto/create-userbasicnew.dto';
 import { PostsService } from '../content/posts/posts.service';
 import { Response } from 'express';
+import { TemplatesRepo } from 'src/infra/templates_repo/schemas/templatesrepo.schema';
 
 
 @Injectable()
@@ -4670,8 +4671,8 @@ export class AuthService {
   async sendemailOTP(email: string, OTP: string, type: string, lang?: string) {
     //Send Email
     try {
-      var Templates_ = new Templates();
-      Templates_ = await this.utilsService.getTemplate(type, 'EMAIL');
+      var Templates_ = new TemplatesRepo();
+      Templates_ = await this.utilsService.getTemplate_repo(type, 'EMAIL');
 
       var subject = "";
       var body = "";
@@ -4681,12 +4682,12 @@ export class AuthService {
         dataLang = lang;
       }
 
-      if (dataLang=="en"){
-        subject = Templates_.subject_id.toString();
-        body = Templates_.body_detail_id.replace('9021', OTP);
-      } else {
+      if (dataLang == "en") {
         subject = Templates_.subject.toString();
         body = Templates_.body_detail.replace('9021', OTP);
+      } else {
+        subject = Templates_.subject_id.toString();
+        body = Templates_.body_detail_id.replace('9021', OTP);
       }
 
       //var to = email;
@@ -5683,9 +5684,9 @@ export class AuthService {
   async sendemailVerification(email: string, type: string) {
     //Send Email
     try {
-      var Templates_ = new Templates();
+      var Templates_ = new TemplatesRepo();
       const cheerio = require('cheerio');
-      Templates_ = await this.utilsService.getTemplate(type, 'EMAIL');
+      Templates_ = await this.utilsService.getTemplate_repo(type, 'EMAIL');
       var link = Templates_.action_buttons.toString();
       var html_body = Templates_.body_detail.trim().toString();
       const $_ = cheerio.load(html_body);

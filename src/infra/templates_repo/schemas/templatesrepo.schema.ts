@@ -32,6 +32,8 @@ export class TemplatesRepo {
     category: String
     @Prop()
     body_detail_id: String
+    @Prop()
+    action_buttons: String
 }
 
 export const TemplatesRepoSchema = SchemaFactory.createForClass(TemplatesRepo);
