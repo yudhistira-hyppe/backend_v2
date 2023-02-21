@@ -3558,7 +3558,7 @@ export class AuthController {
                       await this.mediaprofilepictsService.updatebyId(id_mediaprofilepicts, createMediaproofpictsDto);
                     } else {
                       createMediaproofpictsDto._id = id_mediaprofilepicts;
-                      createMediaproofpictsDto.mediaID = fileName;
+                      createMediaproofpictsDto.mediaID = id_mediaprofilepicts;
                       createMediaproofpictsDto.active = true;
                       createMediaproofpictsDto.createdAt = current_date;
                       createMediaproofpictsDto.updatedAt = current_date;
@@ -3677,7 +3677,7 @@ export class AuthController {
           // } else if (_idExixting == "61bad280f1f8fe21437894a4") {
           //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c394');
           // } else if (_idExixting == "61bad280f1f8fe21437894a5") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c395');
+          //   await this.userbasicsService.executeData(_idExixting, '613bc4getda9ec319617aa6c395');
           // } else if (_idExixting == "61bad280f1f8fe21437894a6") {
           //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c396');
           // } else if (_idExixting == "61bad280f1f8fe21437894a7") {
