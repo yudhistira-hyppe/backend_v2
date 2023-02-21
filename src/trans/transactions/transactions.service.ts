@@ -60,7 +60,9 @@ export class TransactionsService {
     async findExpirednew(iduserbuyer: ObjectId): Promise<Transactions[]> {
         return this.transactionsModel.find({ status: "WAITING_PAYMENT", iduserbuyer: iduserbuyer }).exec();
     }
-
+    async findExpirednewAll(): Promise<Transactions[]> {
+        return this.transactionsModel.find({ status: "WAITING_PAYMENT" }).exec();
+    }
     async findExpiredAll(): Promise<Transactions[]> {
         return this.transactionsModel.find({ status: "WAITING_PAYMENT" }).exec();
     }
@@ -8895,5 +8897,223 @@ export class TransactionsService {
         ]);
 
         return query;
+    }
+
+    async jualbeli(startdate: string, enddate: string, status: string, descending: boolean, page: number, limit: number) {
+        var pipeline = [];
+        var order = null;
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+
+
+        } catch (e) {
+            dateend = "";
+        }
+        if (descending === true) {
+            order = -1;
+        } else {
+            order = 1;
+        }
+        if (startdate && startdate !== undefined) {
+            pipeline.push({ $match: { timestamp: { $gte: startdate } } });
+        }
+        if (enddate && enddate !== undefined) {
+            pipeline.push({ $match: { timestamp: { $lte: dateend } } });
+        }
+        if (status && status !== undefined) {
+            pipeline.push({ $match: { status: status } });
+        }
+        pipeline.push({
+            $match: {
+                type: "CONTENT"
+            }
+        },
+            {
+                $lookup: {
+                    from: "posts",
+                    localField: "postid",
+                    foreignField: "_id",
+                    as: "post"
+                }
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "idusersell",
+                    foreignField: "_id",
+                    as: "basic"
+                }
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "iduserbuyer",
+                    foreignField: "_id",
+                    as: "basicbuyer"
+                }
+            },
+            {
+                $project: {
+
+
+                    penjual: {
+                        $arrayElemAt: ['$basic.fullName', 0]
+                    },
+                    pembeli: {
+                        $arrayElemAt: ['$basicbuyer.fullName', 0]
+                    },
+
+                    noinvoice: 1,
+                    jenis: "$type",
+                    timestamp: 1,
+                    description: 1,
+                    status: 1,
+                    nova: 1,
+                    expiredtimeva: 1,
+                    bank: 1,
+                    amount: 1,
+                    totalamount: 1,
+                    emailpenjual: {
+                        $arrayElemAt: ['$basic.email', 0]
+                    },
+                    emailpembeli: {
+                        $arrayElemAt: ['$basicbuyer.email', 0]
+                    },
+                    postID: "$postid",
+                    postType: {
+                        $arrayElemAt: ['$post.postType', 0]
+                    },
+                    descriptionContent: {
+                        $arrayElemAt: ['$post.description', 0]
+                    },
+                    title: {
+                        $arrayElemAt: ['$post.description', 0]
+                    },
+
+                }
+            });
+
+        pipeline.push({
+            $sort: {
+                timestamp: order
+            },
+
+        },);
+        if (page > 0) {
+            pipeline.push({ $skip: (page * limit) });
+        }
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
+        }
+        var query = await this.transactionsModel.aggregate(pipeline);
+        return query;
+
+    }
+
+    async jualbelicount(startdate: string, enddate: string, status: string) {
+        var pipeline = [];
+        var order = null;
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+
+
+        } catch (e) {
+            dateend = "";
+        }
+
+        if (startdate && startdate !== undefined) {
+            pipeline.push({ $match: { timestamp: { $gte: startdate } } });
+        }
+        if (enddate && enddate !== undefined) {
+            pipeline.push({ $match: { timestamp: { $lte: dateend } } });
+        }
+        if (status && status !== undefined) {
+            pipeline.push({ $match: { status: status } });
+        }
+        pipeline.push({
+            $match: {
+                type: "CONTENT"
+            }
+        },
+            {
+                $lookup: {
+                    from: "posts",
+                    localField: "postid",
+                    foreignField: "_id",
+                    as: "post"
+                }
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "idusersell",
+                    foreignField: "_id",
+                    as: "basic"
+                }
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "iduserbuyer",
+                    foreignField: "_id",
+                    as: "basicbuyer"
+                }
+            },
+            {
+                $project: {
+
+
+                    penjual: {
+                        $arrayElemAt: ['$basic.fullName', 0]
+                    },
+                    pembeli: {
+                        $arrayElemAt: ['$basicbuyer.fullName', 0]
+                    },
+
+                    noinvoice: 1,
+                    jenis: "$type",
+                    timestamp: 1,
+                    description: 1,
+                    status: 1,
+                    nova: 1,
+                    expiredtimeva: 1,
+                    bank: 1,
+                    amount: 1,
+                    totalamount: 1,
+                    emailpenjual: {
+                        $arrayElemAt: ['$basic.email', 0]
+                    },
+                    emailpembeli: {
+                        $arrayElemAt: ['$basicbuyer.email', 0]
+                    },
+                    postID: "$postid",
+                    postType: {
+                        $arrayElemAt: ['$post.postType', 0]
+                    },
+                    descriptionContent: {
+                        $arrayElemAt: ['$post.description', 0]
+                    },
+                    title: {
+                        $arrayElemAt: ['$post.description', 0]
+                    },
+
+                }
+            });
+        pipeline.push({
+            $group: {
+                _id: null,
+                totalpost: {
+                    $sum: 1
+                }
+            }
+        });
+
+        var query = await this.transactionsModel.aggregate(pipeline);
+        return query;
+
     }
 }
