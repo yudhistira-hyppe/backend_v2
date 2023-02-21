@@ -3555,6 +3555,7 @@ export class AuthController {
                       createMediaproofpictsDto.mediaThumBasePath = userId + "/profilePict/" + userId + "_thum" + extension;
                       createMediaproofpictsDto.mediaThumName = userId + "_thum" + extension;
                       createMediaproofpictsDto.mediaThumUri = result_thum.res.requestUrls[0];
+                      createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
                       await this.mediaprofilepictsService.updatebyId(id_mediaprofilepicts, createMediaproofpictsDto);
                     } else {
                       createMediaproofpictsDto._id = id_mediaprofilepicts;
@@ -3574,7 +3575,8 @@ export class AuthController {
                       createMediaproofpictsDto.fsTargetUri = result.res.requestUrls[0];
 
                       createMediaproofpictsDto.mediaMime = mimetype;
-                      createMediaproofpictsDto.uploadSource = "OSS";
+                      createMediaproofpictsDto.uploadSource = "OSS"; 
+                      createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
                       await this.mediaprofilepictsService.create(createMediaproofpictsDto);
                     }
                   } else {
