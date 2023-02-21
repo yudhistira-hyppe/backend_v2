@@ -3543,6 +3543,7 @@ export class AuthController {
                     if (await this.utilsService.ceckData(data_mediaprofpicts)) {
                       id_mediaprofilepicts = data_mediaprofpicts._id.toString();
 
+                      createMediaproofpictsDto.mediaID = id_mediaprofilepicts;
                       createMediaproofpictsDto.mediaBasePath = userId + "/profilePict/" + fileName;
                       createMediaproofpictsDto.mediaUri = fileName;
                       createMediaproofpictsDto.originalName = originalName;
