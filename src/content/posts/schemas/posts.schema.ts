@@ -28,8 +28,8 @@ export class Posts {
   visibility: String
   @Prop()
   location: String
-  @Prop([])
-  tags: []
+  @Prop()
+  tags: any[]
   @Prop()
   allowComments: boolean
   @Prop()

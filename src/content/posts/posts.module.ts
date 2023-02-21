@@ -38,6 +38,7 @@ import { PostBoostService } from './postboost.service';
 import { MediamusicModule } from '../mediamusic/mediamusic.module';
 import { TransactionsPostModule } from '../../trans/transactionpost/transactionspost.module';
 import { AdsLandingModule } from './adslanding/adslanding.module';
+import { TagCountModule } from '../tag_count/tag_count.module';
 @Module({
 
     imports: [
@@ -46,6 +47,7 @@ import { AdsLandingModule } from './adslanding/adslanding.module';
         MediamusicModule,
         MethodepaymentsModule,
         OyPgModule,
+        TagCountModule,
         BullModule.registerQueue({
             name: 'post-user-playlist',
         }),
@@ -53,10 +55,10 @@ import { AdsLandingModule } from './adslanding/adslanding.module';
         SeaweedfsModule,
         UserplaylistModule,
         UtilsModule,
-        ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
-        UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
-        MediapictsModule,MediadiariesModule,MediaprofilepictsModule,PostPlayModule,TemplatesRepoModule,DisqusModule
-        ,DisquslogsModule,SettingsModule,NotificationsModule,InsightlogsModule,SocketModule,
+        ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule, InterestsModule,
+        UserauthsModule, MediavideosModule, InsightsModule, ContenteventsModule, MediadiariesModule, MediastoriesModule,
+        MediapictsModule, MediadiariesModule, MediaprofilepictsModule, PostPlayModule, TemplatesRepoModule, DisqusModule
+        , DisquslogsModule, SettingsModule, NotificationsModule, InsightlogsModule, SocketModule,
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_FULL')
     ],
     controllers: [PostsController],

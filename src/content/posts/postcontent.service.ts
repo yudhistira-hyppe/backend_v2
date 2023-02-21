@@ -3908,9 +3908,11 @@ export class PostContentService {
 
     if (body.tags != undefined && (String(body.tags).length > 0)) {
       var obj = body.tags;
-      var tgs = obj.split(",");
-      post.tags = tgs;
+      //var tgs = obj.split(",");
+      post.tags = obj;
     }
+
+
 
     if (body.visibility != undefined) {
       post.visibility = body.visibility;
@@ -4472,7 +4474,7 @@ export class PostContentService {
           var getFullname = await this.userService.findOne(dy.mate.toString());
           if (getFullname.fullName != undefined) {
             dy.senderOrReceiverInfo.fullName = getFullname.fullName;
-          }else{
+          } else {
             dy.senderOrReceiverInfo.fullName = "";
           }
         }
