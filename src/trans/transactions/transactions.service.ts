@@ -8899,7 +8899,7 @@ export class TransactionsService {
         return query;
     }
 
-    async jualbeli(startdate: string, enddate: string, status: string, descending: boolean, page: number, limit: number) {
+    async jualbeli(startdate: string, enddate: string, status: any[], descending: boolean, page: number, limit: number) {
         var pipeline = [];
         var order = null;
         try {
@@ -8923,7 +8923,18 @@ export class TransactionsService {
             pipeline.push({ $match: { timestamp: { $lte: dateend } } });
         }
         if (status && status !== undefined) {
-            pipeline.push({ $match: { status: status } });
+            pipeline.push({
+                $match: {
+                    $or: [
+                        {
+                            status: {
+                                $in: status
+                            }
+                        },
+
+                    ]
+                }
+            },);
         }
         pipeline.push({
             $match: {
@@ -9012,7 +9023,7 @@ export class TransactionsService {
 
     }
 
-    async jualbelicount(startdate: string, enddate: string, status: string) {
+    async jualbelicount(startdate: string, enddate: string, status: any[]) {
         var pipeline = [];
         var order = null;
         try {
@@ -9032,7 +9043,18 @@ export class TransactionsService {
             pipeline.push({ $match: { timestamp: { $lte: dateend } } });
         }
         if (status && status !== undefined) {
-            pipeline.push({ $match: { status: status } });
+            pipeline.push({
+                $match: {
+                    $or: [
+                        {
+                            status: {
+                                $in: status
+                            }
+                        },
+
+                    ]
+                }
+            },);
         }
         pipeline.push({
             $match: {
