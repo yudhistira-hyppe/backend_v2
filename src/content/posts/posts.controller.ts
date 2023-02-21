@@ -334,6 +334,20 @@ export class PostsController {
     return this.postContentService.createNewPostV3(file, body, headers);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/v4/createpost')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async createPostV4(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("createPost >>> start");
+    console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
+    return this.postContentService.createNewPostV4(file, body, headers);
+  }
+
+  @Post('api/posts/apsaraId')
+  async getPlayInfo(@Body() body) {
+    return this.postContentService.getVideoApsaraSingleV4(body.apsaraId, body.definition);
+  }
+
   @Post('api/posts/testUpload')
   @UseInterceptors(FileInterceptor('postContent'))
   async testPost(@UploadedFile() file: Express.Multer.File, @Body() body) {

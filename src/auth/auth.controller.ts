@@ -3581,8 +3581,8 @@ export class AuthController {
                       await this.mediaprofilepictsService.create(createMediaproofpictsDto);
                     }
                   } else {
-                    createMediaproofpictsDto._id = fileName;
-                    createMediaproofpictsDto.mediaID = fileName;
+                    createMediaproofpictsDto._id = id_mediaprofilepicts;
+                    createMediaproofpictsDto.mediaID = id_mediaprofilepicts;
                     createMediaproofpictsDto.active = true;
                     createMediaproofpictsDto.createdAt = current_date;
                     createMediaproofpictsDto.updatedAt = current_date;
