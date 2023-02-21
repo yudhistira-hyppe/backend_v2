@@ -4470,7 +4470,11 @@ export class PostContentService {
           dy.senderOrReceiverInfo.username = getUsername.username;
 
           var getFullname = await this.userService.findOne(dy.mate.toString());
-          dy.senderOrReceiverInfo.fullName = getFullname.fullName;
+          if (getFullname.fullName != undefined) {
+            dy.senderOrReceiverInfo.fullName = getFullname.fullName;
+          }else{
+            dy.senderOrReceiverInfo.fullName = "";
+          }
         }
 
         if (dy.postID != null) {
