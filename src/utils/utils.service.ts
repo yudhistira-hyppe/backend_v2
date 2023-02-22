@@ -301,17 +301,20 @@ export class UtilsService {
     var datadevice = await this.userdevicesService.findActive(receiverParty);
     var device_user = [];
     var getDate = await ((await this.getDateTime()).getTime()).toString();
-    for (var i = 0; i < datadevice.length; i++) {
-      var notification = {
-        notification: {
-          title: title_send,
-          body: body_send,
-          tag: await this.makeid(7)
-        },
-        data: data_send,
+
+    if (typeTemplate !="REACTION"){
+      for (var i = 0; i < datadevice.length; i++) {
+        var notification = {
+          notification: {
+            title: title_send,
+            body: body_send,
+            tag: await this.makeid(7)
+          },
+          data: data_send,
+        }
+        await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
+        device_user.push(datadevice[i].deviceID)
       }
-      await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
-      device_user.push(datadevice[i].deviceID)
     }
 
     //INSERT NOTIFICATION

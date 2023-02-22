@@ -5646,9 +5646,18 @@ export class UserbasicsService {
   }
 
   async executeData(id_interst1: string, id_interst2: string) {
-    return this.userbasicModel
-      .replaceOne({ "userInterests.$id": new mongoose.Types.ObjectId(id_interst1) },
-        { "userInterests.$id": new mongoose.Types.ObjectId(id_interst2) })
-      .exec();
+    return this.userbasicModel.findOneAndReplace(
+      {
+        "userInterests.$id": new mongoose.Types.ObjectId(id_interst1)
+      },
+      {
+        "userInterests.$[element].$id": new mongoose.Types.ObjectId(id_interst2)
+      },
+      {
+        arrayFilters: [{
+          "element.$id": new mongoose.Types.ObjectId(id_interst1)
+        }]
+      }
+    ).exec();
   }
 }
