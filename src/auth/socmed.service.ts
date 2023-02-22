@@ -460,7 +460,7 @@ export class SocmedService {
           }
         }
 
-
+        var vesion = await this.utilsService.getversion();
         return {
           response_code: 202,
           data: {
@@ -490,7 +490,8 @@ export class SocmedService {
             iduser: String(datauserbasicsService._id),
             isComplete: "false",
             status: "INITIAL",
-            refreshToken: datajwtrefreshtoken_data.refresh_token_id
+            refreshToken: datajwtrefreshtoken_data.refresh_token_id,
+            version: vesion
           },
           messages: {
             nextFlow: [
