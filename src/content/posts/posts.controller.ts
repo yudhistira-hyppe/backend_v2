@@ -333,7 +333,77 @@ export class PostsController {
   async createPostV3(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("createPost >>> start");
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
-    return this.postContentService.createNewPostV3(file, body, headers);
+    var arrtag = [];
+    var tag = body.tags;
+    if (tag !== undefined) {
+      var splittag = tag.split(',');
+      for (let x = 0; x < splittag.length; x++) {
+
+        var tagreq = splittag[x].replace(/"/g, "");
+        arrtag.push(tagreq)
+
+      }
+    }
+    body.tags = arrtag;
+
+    var data = await this.postContentService.createNewPostV3(file, body, headers);
+    var postID = data.data.postID;
+    var tag2 = body.tags;
+    if (tag2 !== undefined) {
+      for (let i = 0; i < tag2.length; i++) {
+        let id = tag2[i];
+        var datatag2 = null;
+
+        try {
+          datatag2 = await this.tagCountService.findOneById(id);
+
+        } catch (e) {
+          datatag2 = null;
+
+        }
+
+        if (datatag2 === null) {
+
+          let tagCountDto_ = new TagCountDto();
+          tagCountDto_._id = id;
+          tagCountDto_.total = 1;
+          tagCountDto_.listdata = [{ "postID": postID }];
+          await this.tagCountService.create(tagCountDto_);
+        } else {
+
+
+          var tagslast = [];
+          try {
+
+            tagslast = data.data.tags;
+          } catch (e) {
+
+            tagslast = [];
+          }
+          let idnew = tagslast[i];
+          var total2 = 0;
+          var postidlist2 = [];
+          let obj = { "postID": postID };
+          total2 = datatag2.total;
+          postidlist2 = datatag2.listdata;
+          if (id !== idnew) {
+            postidlist2.push(obj);
+          }
+
+          let tagCountDto_ = new TagCountDto();
+          tagCountDto_._id = id;
+          if (id !== idnew) {
+            tagCountDto_.total = total2 + 1;
+          }
+
+          tagCountDto_.listdata = postidlist2;
+          await this.tagCountService.update(id, tagCountDto_);
+        }
+
+      }
+    }
+
+    return data;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -455,9 +525,9 @@ export class PostsController {
 
     var tag2 = body.tags;
     if (tag2 !== undefined) {
-      var splittag2 = tag2;
-      for (let i = 0; i < splittag2.length; i++) {
-        let id = splittag2[i];
+
+      for (let i = 0; i < tag2.length; i++) {
+        let id = tag2[i];
         var datatag2 = null;
 
         try {
@@ -511,7 +581,7 @@ export class PostsController {
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
     if (saleAmount > 0) {
-      // await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+      await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
       //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
     }
 
