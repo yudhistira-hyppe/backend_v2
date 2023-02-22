@@ -3567,7 +3567,7 @@ export class AuthController {
                       createMediaproofpictsDto.postType = 'profilepict';
                       createMediaproofpictsDto.mediaType = 'image';
 
-                      createMediaproofpictsDto.mediaBasePath = userId + "/" + fileName;
+                      createMediaproofpictsDto.mediaBasePath = userId + "/profilepict/" + fileName;
                       createMediaproofpictsDto.mediaUri = fileName;
                       createMediaproofpictsDto.originalName = originalName;
 
@@ -3575,6 +3575,8 @@ export class AuthController {
                       createMediaproofpictsDto.fsSourceName = fileName;
                       createMediaproofpictsDto.fsTargetUri = result.res.requestUrls[0];
 
+                      createMediaproofpictsDto.mediaThumBasePath = userId + "/profilePict/" + userId + "_thum" + extension;
+                      createMediaproofpictsDto.mediaThumName = userId + "_thum" + extension;
                       createMediaproofpictsDto.mediaMime = mimetype;
                       createMediaproofpictsDto.uploadSource = "OSS"; 
                       createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
@@ -3589,7 +3591,7 @@ export class AuthController {
                     createMediaproofpictsDto.postType = 'profilepict';
                     createMediaproofpictsDto.mediaType = 'image';
 
-                    createMediaproofpictsDto.mediaBasePath = userId + "/" + fileName;
+                    createMediaproofpictsDto.mediaBasePath = userId + "/profilepict/" + fileName;
                     createMediaproofpictsDto.mediaUri = fileName;
                     createMediaproofpictsDto.originalName = originalName;
 
@@ -3597,6 +3599,8 @@ export class AuthController {
                     createMediaproofpictsDto.fsSourceName = fileName;
                     createMediaproofpictsDto.fsTargetUri = result.res.requestUrls[0];
 
+                    createMediaproofpictsDto.mediaThumBasePath = userId + "/profilePict/" + userId + "_thum" + extension;
+                    createMediaproofpictsDto.mediaThumName = userId + "_thum" + extension;
                     createMediaproofpictsDto.mediaMime = mimetype;
                     createMediaproofpictsDto.uploadSource = "OSS";
                     createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
@@ -3652,7 +3656,7 @@ export class AuthController {
     }
   }
 
-  @Post('api/posts/run')
+  @Post('api/user/run')
   async run() {
     var getList = await this.interestsRepoService.findData();
     console.log(getList.length);
@@ -3662,47 +3666,47 @@ export class AuthController {
         console.log(_idExixting);
 
         for (var i = 0; i < getList[0].basics_data.length; i++) {
-          // if (_idExixting == "61bad280f1f8fe214378949c") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c38c');
-          // } else if (_idExixting == "61bad280f1f8fe214378949d") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c38d');
-          // } else if (_idExixting == "61bad280f1f8fe214378949e") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c38e');
-          // } else if (_idExixting == "61bad280f1f8fe214378949f") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c38f');
-          // } else if (_idExixting == "61bad280f1f8fe21437894a0") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c390');
-          // } else if (_idExixting == "61bad280f1f8fe21437894a1") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c391');
-          // } else if (_idExixting == "61bad280f1f8fe21437894a2") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c392');
-          // } else if (_idExixting == "61bad280f1f8fe21437894a3") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c393');
-          // } else if (_idExixting == "61bad280f1f8fe21437894a4") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c394');
-          // } else if (_idExixting == "61bad280f1f8fe21437894a5") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4getda9ec319617aa6c395');
-          // } else if (_idExixting == "61bad280f1f8fe21437894a6") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c396');
-          // } else if (_idExixting == "61bad280f1f8fe21437894a7") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c397');
-          // } else if (_idExixting == "61bad280f1f8fe21437894a8") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c398');
-          // } else if (_idExixting == "61bad281f1f8fe21437894a9") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c399');
-          // } else if (_idExixting == "61bad281f1f8fe21437894aa") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c39a');
-          // } else if (_idExixting == "61bad281f1f8fe21437894ab") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c39b');
-          // } else if (_idExixting == "61bad281f1f8fe21437894ac") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c400');
-          // } else if (_idExixting == "61bad281f1f8fe21437894ad") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c40a');
-          // } else if (_idExixting == "61bad281f1f8fe21437894ae") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c40b');
-          // } else if (_idExixting == "61bad281f1f8fe21437894af") {
-          //   await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c40c');
-          // }
+          if (_idExixting == "61bad280f1f8fe214378949c") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c38c');
+          } else if (_idExixting == "61bad280f1f8fe214378949d") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c38d');
+          } else if (_idExixting == "61bad280f1f8fe214378949e") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c38e');
+          } else if (_idExixting == "61bad280f1f8fe214378949f") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c38f');
+          } else if (_idExixting == "61bad280f1f8fe21437894a0") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c390');
+          } else if (_idExixting == "61bad280f1f8fe21437894a1") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c391');
+          } else if (_idExixting == "61bad280f1f8fe21437894a2") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c392');
+          } else if (_idExixting == "61bad280f1f8fe21437894a3") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c393');
+          } else if (_idExixting == "61bad280f1f8fe21437894a4") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c394');
+          } else if (_idExixting == "61bad280f1f8fe21437894a5") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4getda9ec319617aa6c395');
+          } else if (_idExixting == "61bad280f1f8fe21437894a6") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c396');
+          } else if (_idExixting == "61bad280f1f8fe21437894a7") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c397');
+          } else if (_idExixting == "61bad280f1f8fe21437894a8") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c398');
+          } else if (_idExixting == "61bad281f1f8fe21437894a9") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c399');
+          } else if (_idExixting == "61bad281f1f8fe21437894aa") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c39a');
+          } else if (_idExixting == "61bad281f1f8fe21437894ab") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c39b');
+          } else if (_idExixting == "61bad281f1f8fe21437894ac") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c400');
+          } else if (_idExixting == "61bad281f1f8fe21437894ad") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c40a');
+          } else if (_idExixting == "61bad281f1f8fe21437894ae") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c40b');
+          } else if (_idExixting == "61bad281f1f8fe21437894af") {
+            await this.userbasicsService.executeData(_idExixting, '613bc4da9ec319617aa6c40c');
+          }
         }
       } else {
         console.log(getList[i]);
