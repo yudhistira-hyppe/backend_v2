@@ -3599,6 +3599,7 @@ export class AuthController {
 
                     createMediaproofpictsDto.mediaMime = mimetype;
                     createMediaproofpictsDto.uploadSource = "OSS";
+                    createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
                     await this.mediaprofilepictsService.create(createMediaproofpictsDto);
                   }
 
