@@ -490,8 +490,7 @@ export class SocmedService {
             iduser: String(datauserbasicsService._id),
             isComplete: "false",
             status: "INITIAL",
-            refreshToken: datajwtrefreshtoken_data.refresh_token_id,
-            version: vesion
+            refreshToken: datajwtrefreshtoken_data.refresh_token_id
           },
           messages: {
             nextFlow: [
@@ -500,6 +499,7 @@ export class SocmedService {
             ],
             info: ['Login successful'],
           },
+          version: vesion
         };
       } else {
         await this.errorHandler.generateNotAcceptableException(
