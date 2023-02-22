@@ -617,7 +617,7 @@ export class MediaController {
 
             //Ceck face detect true
             if (face_detect_selfiepict.FaceDetails.length > 0 && face_detect_cardPict.FaceDetails.length > 0) {
-                try {
+                //try {
                     var data_comparing = {
                         "SimilarityThreshold": Similarity,
                         "SourceImage": {
@@ -678,31 +678,31 @@ export class MediaController {
                             }
                         );
                     }
-                } catch (err) {
-                    await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REVIEW');
-                    var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
-                    _CreateMediaproofpictsDto.status = 'FAILED';
-                    _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict';
-                    iduserbasic = datauserbasicsService._id;
-                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
-                    await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
-                    //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
-                    await this.errorHandler.generateCustomNotAcceptableException(
-                        {
-                            "response_code": 202,
-                            "data": {
-                                "id_mediaproofpicts": id_mediaproofpicts_,
-                                "valid": false
-                            },
-                            "messages": {
-                                "info": [
-                                    "Face not match"
-                                ]
-                            }
-                        }
-                    );
-                }
-                return face_detect_selfiepict;
+                // } catch (err) {
+                //     await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REJECT');
+                //     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                //     _CreateMediaproofpictsDto.status = 'FAILED';
+                //     _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict';
+                //     iduserbasic = datauserbasicsService._id;
+                //     await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'unverified');
+                //     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
+                //     //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
+                //     await this.errorHandler.generateCustomNotAcceptableException(
+                //         {
+                //             "response_code": 202,
+                //             "data": {
+                //                 "id_mediaproofpicts": id_mediaproofpicts_,
+                //                 "valid": false
+                //             },
+                //             "messages": {
+                //                 "info": [
+                //                     "Face not match"
+                //                 ]
+                //             }
+                //         }
+                //     );
+                // }
+                // return face_detect_selfiepict;
             } else {
                 if (face_detect_selfiepict.FaceDetails.length == 0) {
                     await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REJECT');
