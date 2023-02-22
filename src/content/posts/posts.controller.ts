@@ -347,61 +347,64 @@ export class PostsController {
     body.tags = arrtag;
 
     var data = await this.postContentService.createNewPostV3(file, body, headers);
-    // var postID = data.data.postID;
-    // var tag2 = body.tags;
-    // if (tag2 !== undefined) {
-    //   for (let i = 0; i < tag2.length; i++) {
-    //     let id = tag2[i];
-    //     var datatag2 = null;
+    var postID = data.data.postID;
 
-    //     try {
-    //       datatag2 = await this.tagCountService.findOneById(id);
+    var tag2 = body.tags;
+    if (tag2 !== undefined) {
+      for (let i = 0; i < tag2.length; i++) {
+        let id = tag2[i];
+        var datatag2 = null;
 
-    //     } catch (e) {
-    //       datatag2 = null;
+        try {
+          datatag2 = await this.tagCountService.findOneById(id);
 
-    //     }
+        } catch (e) {
+          datatag2 = null;
 
-    //     if (datatag2 === null) {
+        }
 
-    //       let tagCountDto_ = new TagCountDto();
-    //       tagCountDto_._id = id;
-    //       tagCountDto_.total = 1;
-    //       tagCountDto_.listdata = [{ "postID": postID }];
-    //       await this.tagCountService.create(tagCountDto_);
-    //     } else {
+        if (datatag2 === null) {
+
+          let tagCountDto_ = new TagCountDto();
+          tagCountDto_._id = id;
+          tagCountDto_.total = 1;
+          tagCountDto_.listdata = [{ "postID": postID }];
+          await this.tagCountService.create(tagCountDto_);
+        } else {
 
 
-    //       var tagslast = [];
-    //       try {
+          var tagslast = [];
+          var datapostawal = null;
 
-    //         tagslast = data.data.tags;
-    //       } catch (e) {
+          try {
+            datapostawal = await this.PostsService.findByPostId(postID);
+            tagslast = datapostawal.tags;
+          } catch (e) {
+            datapostawal = null;
+            tagslast = [];
+          }
+          let idnew = tagslast[i];
+          var total2 = 0;
+          var postidlist2 = [];
+          let obj = { "postID": datapostawal.postID };
+          total2 = datatag2.total;
+          postidlist2 = datatag2.listdata;
+          if (id === idnew) {
+            postidlist2.push(obj);
+          }
 
-    //         tagslast = [];
-    //       }
-    //       let idnew = tagslast[i];
-    //       var total2 = 0;
-    //       var postidlist2 = [];
-    //       let obj = { "postID": postID };
-    //       total2 = datatag2.total;
-    //       postidlist2 = datatag2.listdata;
-    //       if (id !== idnew) {
-    //         postidlist2.push(obj);
-    //       }
+          let tagCountDto_ = new TagCountDto();
+          tagCountDto_._id = id;
+          if (id === idnew) {
+            tagCountDto_.total = total2 + 1;
+          }
 
-    //       let tagCountDto_ = new TagCountDto();
-    //       tagCountDto_._id = id;
-    //       if (id !== idnew) {
-    //         tagCountDto_.total = total2 + 1;
-    //       }
+          tagCountDto_.listdata = postidlist2;
+          await this.tagCountService.update(id, tagCountDto_);
+        }
 
-    //       tagCountDto_.listdata = postidlist2;
-    //       await this.tagCountService.update(id, tagCountDto_);
-    //     }
-
-    //   }
-    // }
+      }
+    }
 
     return data;
   }
