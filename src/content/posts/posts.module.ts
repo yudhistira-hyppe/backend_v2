@@ -39,9 +39,13 @@ import { MediamusicModule } from '../mediamusic/mediamusic.module';
 import { TransactionsPostModule } from '../../trans/transactionpost/transactionspost.module';
 import { AdsLandingModule } from './adslanding/adslanding.module';
 import { TagCountModule } from '../tag_count/tag_count.module';
+import { InterestCountModule } from '../interest_count/interest_count.module';
+import { InterestdayModule } from '../interestday/interestday.module';
 @Module({
 
     imports: [
+        InterestCountModule,
+        InterestdayModule,
         AdsLandingModule,
         TransactionsPostModule,
         MediamusicModule,
