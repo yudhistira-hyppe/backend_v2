@@ -5016,10 +5016,16 @@ export class PostContentService {
           var getUsername = await this.userAuthService.findOne(dy.mate.toString());
           dy.senderOrReceiverInfo.username = getUsername.username;
 
+          console.log("MATE", dy.mate);
           var getFullname = await this.userService.findOne(dy.mate.toString());
-          if (getFullname.fullName != undefined) {
-            dy.senderOrReceiverInfo.fullName = getFullname.fullName;
-          } else {
+          console.log("GET FULLNAME", getFullname);
+          if (getFullname != undefined){
+            if (getFullname.fullName != undefined) {
+              dy.senderOrReceiverInfo.fullName = getFullname.fullName;
+            } else {
+              dy.senderOrReceiverInfo.fullName = "";
+            }
+          }else{
             dy.senderOrReceiverInfo.fullName = "";
           }
         }
