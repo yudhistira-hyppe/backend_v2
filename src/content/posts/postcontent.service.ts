@@ -258,8 +258,8 @@ export class PostContentService {
 
     if (body.tags != undefined) {
       var obj = body.tags;
-      var tgs = obj.split(",");
-      post.tags = tgs;
+      // var tgs = obj.split(",");
+      post.tags = obj;
     }
 
     if (body.visibility != undefined) {
@@ -892,7 +892,8 @@ export class PostContentService {
       mediaId = String(retd.mediaID);
     } else if (postType == 'advertise') {
 
-    } else if (postType == 'story') {
+    }
+    else if (postType == 'story') {
 
       var mime = file.mimetype;
       if (mime.startsWith('video')) {
@@ -1993,6 +1994,7 @@ export class PostContentService {
     this.logger.log('createNewPostPic >>> generate playlist ' + JSON.stringify(playlist));
     this.postService.generateUserPlaylist(playlist);
     */
+
     this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
     if (post.certified) {
       this.generateCertificate(String(post.postID), 'id');
