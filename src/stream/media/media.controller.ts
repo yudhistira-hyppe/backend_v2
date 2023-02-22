@@ -660,7 +660,7 @@ export class MediaController {
                         _CreateMediaproofpictsDto.status = 'FAILED';
                         _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict dan Selfie Pict';
                         iduserbasic = datauserbasicsService._id;
-                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
+                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'unverified');
                         await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                         //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                         await this.errorHandler.generateCustomNotAcceptableException(
@@ -710,7 +710,7 @@ export class MediaController {
                     _CreateMediaproofpictsDto.status = 'FAILED';
                     _CreateMediaproofpictsDto.state = 'Kesalahan Selfie Pict';
                     iduserbasic = datauserbasicsService._id;
-                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'unverified');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
@@ -733,7 +733,7 @@ export class MediaController {
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.state = 'KTP Pict';
                     iduserbasic = datauserbasicsService._id;
-                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'unverified');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
