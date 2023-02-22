@@ -492,6 +492,7 @@ export class SocmedService {
             status: "INITIAL",
             refreshToken: datajwtrefreshtoken_data.refresh_token_id
           },
+          version: vesion,
           messages: {
             nextFlow: [
               "$.event: next should UPDATE_BIO",
@@ -499,7 +500,6 @@ export class SocmedService {
             ],
             info: ['Login successful'],
           },
-          version: vesion
         };
       } else {
         await this.errorHandler.generateNotAcceptableException(
