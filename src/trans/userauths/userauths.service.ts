@@ -419,7 +419,9 @@ export class UserauthsService {
                       "active": true
                     },
                     {
-                      "email": { $ne: email }
+                      "email": {
+                        $ne: email
+                      }
                     },
                     {
                       "$or": [
@@ -436,7 +438,6 @@ export class UserauthsService {
                           "reportedUser.email": {
                             "$not": {
                               "$regex": email
-
                             }
                           }
                         },
@@ -641,12 +642,7 @@ export class UserauthsService {
 
         }
       },
-      {
-        "$unwind":
-        {
-          path: "$avatar"
-        }
-      },
+
       {
         "$lookup": {
           from: "mediamusic",
@@ -680,7 +676,6 @@ export class UserauthsService {
 
         }
       },
-
       {
         $project: {
           "storyDate": 1,
@@ -775,12 +770,10 @@ export class UserauthsService {
             {
               "$arrayElemAt": ["$userBasic.isCelebrity", 0]
             },
-
             "isIdVerified":
             {
               "$arrayElemAt": ["$userBasic.isIdVerified", 0]
             },
-
             "isPrivate":
             {
               "$arrayElemAt": ["$userBasic.isPrivate", 0]
@@ -813,13 +806,13 @@ export class UserauthsService {
                       },
                       {
                         "email": email,
+
                       },
                       {
                         "eventType": "VIEW"
                       }
                     ]
                   },
-
 
                 ]
               }
@@ -889,14 +882,15 @@ export class UserauthsService {
       {
         "$group":
         {
-          _id: { email: "$email", username: "$username" },
-
+          _id: {
+            email: "$email",
+            username: "$username"
+          },
           maxcreatedAt:
           {
             "$last": "$createdAt",
 
           },
-
           story:
           {
             "$push":
@@ -935,15 +929,16 @@ export class UserauthsService {
               "insight": "$insight",
               "fullName": "$fullName",
               "username": "$username",
-
               "avatar":
               {
                 $cond: {
                   if: {
-                    $eq: ["$avatar", {}]
+                    $eq: ["$avatar", []]
                   },
                   then: null,
-                  else: '$avatar'
+                  else: {
+                    "$arrayElemAt": ["$avatar", 0]
+                  }
                 }
               },
               "statusCB": "$statusCB",
@@ -958,6 +953,7 @@ export class UserauthsService {
                   else: true
                 }
               },
+
             }
           }
         }
@@ -965,7 +961,7 @@ export class UserauthsService {
       {
         "$sort":
         {
-          maxcreatedAt: -1
+          maxcreatedAt: - 1
         }
       },
       {

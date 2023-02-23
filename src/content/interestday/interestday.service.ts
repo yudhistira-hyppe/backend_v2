@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InterestdayDto } from './dto/create-interestday.dto';
 import { Interestday, InterestdayDocument } from './schemas/interestday.schema';
 
@@ -25,9 +25,9 @@ export class InterestdayService {
         return this.interestdayModel.find().exec();
     }
 
-    async findOneById(id: string): Promise<Interestday> {
+    async findOneById(id: string, date: string): Promise<Interestday> {
         return this.interestdayModel
-            .findOne({ _id: id })
+            .findOne({ _id: new Types.ObjectId(id), date: date })
             .exec();
     }
 

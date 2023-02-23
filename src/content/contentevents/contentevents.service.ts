@@ -4116,7 +4116,18 @@ export class ContenteventsService {
               genre: "$genre",
               theme: "$theme",
               mood: "$mood",
-              avatar: "$avatar",
+              avatar:
+              {
+                $cond: {
+                  if: {
+                    $eq: ["$avatar", []]
+                  },
+                  then: null,
+                  else: {
+                    "$arrayElemAt": ["$avatar", 0]
+                  }
+                }
+              },
               privacy: "$privacy",
               isViewed: "$isViewed",
               isLike: "$isLike",
