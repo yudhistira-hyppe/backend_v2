@@ -67,7 +67,7 @@ export class ContentModService {
 
     let requestBody = JSON.stringify({  
         bizType:'CoreModeration',
-        scenes:['porn', 'terrorism', 'ad'],
+        scenes:['porn', 'terrorism'],
         callback: this.configService.get("APSARA_IMAGE_CMOD_CALLBACK"),
         seed: uuidv4(),
         tasks:[{
