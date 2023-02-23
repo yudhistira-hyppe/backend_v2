@@ -14,6 +14,8 @@ import { DisquslogsModule } from '../disquslogs/disquslogs.module';
 import { DisqusContentEventModule } from './discus/disqusdisquscontentevent.module';
 import { DisqusContentEventController } from './discus/disquscontentevent.controller';
 import { ReactionsRepoModule } from '../../infra/reactions_repo/reactions_repo.module';
+import { FriendListModule } from '../friend_list/friend_list.module';
+
 @Module({
     imports: [
         ReactionsRepoModule,
@@ -24,6 +26,7 @@ import { ReactionsRepoModule } from '../../infra/reactions_repo/reactions_repo.m
         PostDisqusModule,
         InsightsModule,
         UtilsModule,
+        FriendListModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Contentevents.name, schema: ContenteventsSchema }], 'SERVER_FULL')
     ],

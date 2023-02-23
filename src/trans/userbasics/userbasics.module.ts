@@ -9,16 +9,17 @@ import { CountriesModule } from '../../infra/countries/countries.module';
 import { InterestsRepoModule } from '../../infra/interests_repo/interests_repo.module';
 import { MediaproofpictsModule } from '../../content/mediaproofpicts/mediaproofpicts.module';
 import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediaprofilepicts.module';
+import { FriendListModule } from 'src/content/friend_list/friend_list.module';
 
 @Module({
 
     imports: [
-
         MediaprofilepictsModule,
         MediaproofpictsModule,
         InterestsRepoModule,
         LanguagesModule,
         CountriesModule,
+        FriendListModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Userbasic.name, schema: UserbasicSchema }], 'SERVER_FULL')
     ],
