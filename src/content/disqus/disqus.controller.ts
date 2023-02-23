@@ -973,6 +973,11 @@ export class DisqusController {
         } 
         //retVal.senderInfo = mateInfo;
       }
+    }else{
+      var profile_mate = await this.utilsService.generateProfile(DisqusLog.sender.toString(), 'PROFILE');
+      if ((profile_mate != null)) {
+        retVal.username = profile_mate.username;
+      }
     }
     retVal.receiver = DisqusLog.receiver;
     retVal.active = DisqusLog.active;

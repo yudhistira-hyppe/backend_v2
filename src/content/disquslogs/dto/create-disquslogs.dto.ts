@@ -68,4 +68,5 @@ export class CreateDisquslogsDto {
         $db: String;
       },
     ];
+    username: String;
  }

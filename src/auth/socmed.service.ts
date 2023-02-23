@@ -460,7 +460,7 @@ export class SocmedService {
           }
         }
 
-
+        var vesion = await this.utilsService.getversion();
         return {
           response_code: 202,
           data: {
@@ -492,6 +492,7 @@ export class SocmedService {
             status: "INITIAL",
             refreshToken: datajwtrefreshtoken_data.refresh_token_id
           },
+          version: vesion,
           messages: {
             nextFlow: [
               "$.event: next should UPDATE_BIO",
