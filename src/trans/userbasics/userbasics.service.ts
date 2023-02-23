@@ -5660,4 +5660,205 @@ export class UserbasicsService {
       }
     ).exec();
   }
+
+  async getfriendListdata()
+  {
+    var pipeline = [];
+
+    pipeline.push({
+          "$lookup":
+          {
+              from:"userauths",
+              as:"auth_data",
+              let:
+              {
+                  auth_fk:"$email"
+              },
+              pipeline:
+              [
+                  {
+                      "$match":
+                      {
+                          "$expr":
+                          {
+                              "$eq":
+                              [
+                                  "$email",
+                                  "$$auth_fk"
+                              ]
+                          }
+                      }
+                  },
+                  {
+                      "$project":
+                      {
+                          _id:1,
+                          username:1
+                      }
+                  }
+              ]
+          }
+      },
+      {
+          "$project":
+          {
+              _id:1,
+              email:1,
+              fullName:1,
+              username:
+              {
+                  "$arrayElemAt":
+                  [
+                      "$auth_data.username", 0
+                  ]
+              },
+          }
+      },
+      {
+          "$lookup":
+          {
+              from:"contentevents",
+              as:"contentevents_data",
+              let:
+              {
+                  contentevents_fk:"$email"
+              },
+              pipeline:
+              [
+                  {
+                      "$match" : 
+                      {
+                          "$or" : 
+                          [
+                              {
+                                  "$and" : 
+                                  [
+                                      {
+                                          "$expr":
+                                          {
+                                              "$eq":
+                                              [
+                                                  "$eventType", "FOLLOWING"
+                                              ]
+                                          }
+                                      },
+                                      {
+                                          "$expr":
+                                          {
+                                              "$eq":
+                                              [
+                                                  "$senderParty", "$$contentevents_fk"
+                                              ]
+                                          }
+                                      },
+                                  ]
+                              },
+                              {
+                                  "$and" : 
+                                  [
+                                      {
+                                          "$expr":
+                                          {
+                                              "$eq":
+                                              [
+                                                  "$eventType", "FOLLOWER"
+                                              ]
+                                          }
+                                      },
+                                      {
+                                          "$expr":
+                                          {
+                                              "$eq":
+                                              [
+                                                  "$receiverParty", "$$contentevents_fk"
+                                              ]
+                                          }
+                                      },
+                                  ]
+                              }
+                          ]
+                      }
+                  },
+                  {
+                      "$group":
+                      {
+                          _id:"$email",
+                          total:
+                          {
+                              "$sum":1
+                          }
+                      }
+                  },
+                  {
+                      "$match":
+                      {
+                          total:
+                          {
+                              "$gt":1
+                          }
+                      }
+                  },
+                  {
+                    "$sort":
+                    {
+                      _id:1
+                    }
+                  },
+                  {
+                      "$project":
+                      {
+                          _id:0,
+                          email:"$_id"
+                      }
+                  }
+              ]
+          }
+      },
+      {
+          "$project":
+          {
+              _id:1,
+              email:1,
+              fullName:1,
+              username:1,
+              totalfriend:
+              {
+                  "$ifNull":
+                  [
+                      {
+                          "$size":"$contentevents_data"
+                      },
+                      0
+                  ]
+              },
+              friendlist:
+              {
+                  "$ifNull":
+                  [
+                      "$contentevents_data",
+                      []
+                  ]
+              },
+          }
+    });
+
+    // kalo seandainya mau dipake supaya tahu running time api yang menggunakan query ini
+    // if(loop > 0)
+    // {
+    //   pipeline.push({
+    //       "$skip":limit * loop
+    //   });
+    // }
+
+    // if(limit > 0)
+    // {
+    //   pipeline.push({   
+    //       "$limit":limit
+    //   });
+    // }
+
+    var query = await this.userbasicModel.aggregate(pipeline);
+
+    return query;
+  }
 }
