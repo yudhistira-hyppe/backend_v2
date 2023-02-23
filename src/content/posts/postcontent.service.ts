@@ -3019,7 +3019,7 @@ export class PostContentService {
       let skip = this.paging(page, row);
       query.skip(skip);
       query.limit(row);
-      query.sort({ 'createdAt': 1, 'postType': 1 });
+      query.sort({ 'createdAt': -1, 'postType': 1 });
       let res = await query.exec();
       let ed = await this.utilService.getDateTimeDate();
       let gap = ed.getTime() - st.getTime();
@@ -5019,13 +5019,13 @@ export class PostContentService {
           console.log("MATE", dy.mate);
           var getFullname = await this.userService.findOne(dy.mate.toString());
           console.log("GET FULLNAME", getFullname);
-          if (getFullname != undefined){
+          if (getFullname != undefined) {
             if (getFullname.fullName != undefined) {
               dy.senderOrReceiverInfo.fullName = getFullname.fullName;
             } else {
               dy.senderOrReceiverInfo.fullName = "";
             }
-          }else{
+          } else {
             dy.senderOrReceiverInfo.fullName = "";
           }
         }

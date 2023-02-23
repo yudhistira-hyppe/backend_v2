@@ -422,6 +422,7 @@ export class PostsController {
     //     for (let i = 0; i < splitcats.length; i++) {
     //       let id = splitcats[i];
     //       var datacats= null;
+    //       var datacatsday=null;
 
     //       try {
     //         datacats = await this.interestCountService.findOneById(id);
@@ -432,10 +433,6 @@ export class PostsController {
     //       }
 
     //       if (datacats === null) {
-    //         var curdate = new Date(Date.now());
-    //         var beforedate = curdate.toISOString();
-    //         var CurrentDate = new Date(await (await this.utilsService.getDateTime()).toISOString());
-    //         var date = beforedate.substring(0, 10)+" "+"00:00:00";
 
 
     //         let interestCountDto_ = new InterestCountDto();
@@ -444,17 +441,9 @@ export class PostsController {
     //         interestCountDto_.listdata = [{ "postID": postID }];
     //         await this.interestCountService.create(interestCountDto_);
 
-    //         let interestdayDto_ = new InterestdayDto();
-    //         interestdayDto_._id =  mongoose.Types.ObjectId(id);
-    //         interestdayDto_.date = date;
-    //         interestdayDto_.listinterest = [{
-    //           "_id":mongoose.Types.ObjectId(id),
-    //           "total": 1,
-    //           "createdAt": CurrentDate,
-    //           "updatedAt":CurrentDate
-    //         }];
-    //         await this.interestdayService.create(interestdayDto_);
-    //       } else {
+
+    //       } 
+    //       else {
 
 
     //         var catslast = [];
@@ -485,6 +474,21 @@ export class PostsController {
 
     //         interestCountDto_.listdata = postidlistcats;
     //         await this.interestCountService.update(id, interestCountDto_);
+    //       }
+    //       var curdate = new Date(Date.now());
+    //       var beforedate = curdate.toISOString();
+    //       var CurrentDate = new Date(await (await this.utilsService.getDateTime()).toISOString());
+    //       var date = beforedate.substring(0, 10)+" "+"00:00:00";
+    //       try {
+    //         datacatsday = await this.interestdayService.findOneById(id,date);
+
+    //       } catch (e) {
+    //         datacatsday = null;
+
+    //       }
+
+    //       if(datacatsday ===null){
+
     //       }
 
     //     }
