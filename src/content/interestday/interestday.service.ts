@@ -31,6 +31,59 @@ export class InterestdayService {
             .exec();
     }
 
+    async updatefilter(id: string, idarray: string, value: number) {
+        return this.interestdayModel.findByIdAndUpdate({
+            query: {
+                "_id": new Types.ObjectId(id)
+            },
+            update: {
+                $set: {
+                    "listinterest.$[element].total": value
+                }
+            },
+            arrayFilters: [{
+                "element._id": new Types.ObjectId(idarray)
+            }]
+        });
+    }
+    async finddatabydate(date: string, id: string) {
+        var query = await this.interestdayModel.aggregate([
+
+            {
+                $match: {
+                    date: date
+                }
+            },
+            {
+                $unwind: {
+                    path: "$listinterest",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $match: {
+                    'listinterest._id': new Types.ObjectId(id)
+                }
+            }
+        ]);
+        return query;
+    }
+
+    async finddate(date: string) {
+        var query = await this.interestdayModel.aggregate([
+
+            {
+                $match: {
+                    date: date
+                }
+            },
+
+        ]);
+        return query;
+    }
+
+
+
     async update(
         id: string,
         interestdayDto: Interestday,

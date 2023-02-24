@@ -416,83 +416,134 @@ export class PostsController {
     // //Interest
     // const mongoose = require('mongoose');
     // var ObjectId = require('mongodb').ObjectId;
-    //   var cats = body.cats;
-    //   if (cats !== undefined) {
-    //     var splitcats = cats.split(',');
-    //     for (let i = 0; i < splitcats.length; i++) {
-    //       let id = splitcats[i];
-    //       var datacats= null;
-    //       var datacatsday=null;
+    // var cats = body.cats;
+    // if (cats !== undefined) {
+    //   var splitcats = cats.split(',');
+    //   for (let i = 0; i < splitcats.length; i++) {
+    //     let id = splitcats[i];
+    //     var datacats = null;
+    //     var datacatsday = null;
 
-    //       try {
-    //         datacats = await this.interestCountService.findOneById(id);
+    //     try {
+    //       datacats = await this.interestCountService.findOneById(id);
 
-    //       } catch (e) {
-    //         datacats = null;
-
-    //       }
-
-    //       if (datacats === null) {
-
-
-    //         let interestCountDto_ = new InterestCountDto();
-    //         interestCountDto_._id =  mongoose.Types.ObjectId(id);
-    //         interestCountDto_.total = 1;
-    //         interestCountDto_.listdata = [{ "postID": postID }];
-    //         await this.interestCountService.create(interestCountDto_);
-
-
-    //       } 
-    //       else {
-
-
-    //         var catslast = [];
-    //         var datapostawal = null;
-
-    //         try {
-    //           datapostawal = await this.PostsService.findByPostId(postID);
-    //           catslast = datapostawal.category;
-    //         } catch (e) {
-    //           datapostawal = null;
-    //           catslast = [];
-    //         }
-    //         let idnew = catslast[i].$id;
-    //         var totalcats = 0;
-    //         var postidlistcats = [];
-    //         let obj = { "postID": datapostawal.postID };
-    //         totalcats = datacats.total;
-    //         postidlistcats = datacats.listdata;
-    //         if (id === idnew) {
-    //           postidlistcats.push(obj);
-    //         }
-
-    //         let interestCountDto_ = new InterestCountDto();
-    //         interestCountDto_._id = mongoose.Types.ObjectId(id);
-    //         if (id === idnew) {
-    //           interestCountDto_.total = totalcats + 1;
-    //         }
-
-    //         interestCountDto_.listdata = postidlistcats;
-    //         await this.interestCountService.update(id, interestCountDto_);
-    //       }
-    //       var curdate = new Date(Date.now());
-    //       var beforedate = curdate.toISOString();
-    //       var CurrentDate = new Date(await (await this.utilsService.getDateTime()).toISOString());
-    //       var date = beforedate.substring(0, 10)+" "+"00:00:00";
-    //       try {
-    //         datacatsday = await this.interestdayService.findOneById(id,date);
-
-    //       } catch (e) {
-    //         datacatsday = null;
-
-    //       }
-
-    //       if(datacatsday ===null){
-
-    //       }
+    //     } catch (e) {
+    //       datacats = null;
 
     //     }
+
+    //     if (datacats === null) {
+
+
+    //       let interestCountDto_ = new InterestCountDto();
+    //       interestCountDto_._id = mongoose.Types.ObjectId(id);
+    //       interestCountDto_.total = 1;
+    //       interestCountDto_.listdata = [{ "postID": postID }];
+    //       await this.interestCountService.create(interestCountDto_);
+
+
+    //     }
+    //     else {
+
+
+    //       var catslast = [];
+    //       var datapostawal = null;
+
+    //       try {
+    //         datapostawal = await this.PostsService.findByPostId(postID);
+    //         catslast = datapostawal.category;
+    //       } catch (e) {
+    //         datapostawal = null;
+    //         catslast = [];
+    //       }
+    //       let idnew = catslast[i].oid.toString();
+    //       var totalcats = 0;
+    //       var postidlistcats = [];
+    //       let obj = { "postID": datapostawal.postID };
+    //       totalcats = datacats.total;
+    //       postidlistcats = datacats.listdata;
+    //       if (id === idnew) {
+    //         postidlistcats.push(obj);
+    //       }
+
+    //       let interestCountDto_ = new InterestCountDto();
+    //       interestCountDto_._id = mongoose.Types.ObjectId(id);
+    //       if (id === idnew) {
+    //         interestCountDto_.total = totalcats + 1;
+    //       }
+
+    //       interestCountDto_.listdata = postidlistcats;
+    //       await this.interestCountService.update(id, interestCountDto_);
+    //     }
+
+    //     var dt = new Date(Date.now());
+    //     dt.setHours(dt.getHours() + 7); // timestamp
+    //     dt = new Date(dt);
+    //     var strdate = dt.toISOString();
+    //     var repdate = strdate.replace('T', ' ');
+    //     var splitdate = repdate.split('.');
+    //     var stringdate = splitdate[0];
+    //     var date = stringdate.substring(0, 10) + " " + "00:00:00";
+    //     var cekdata = null;
+
+    //     try {
+    //       cekdata = await this.interestdayService.finddate(date);
+
+    //     } catch (e) {
+    //       cekdata = null;
+
+    //     }
+
+    //     try {
+    //       datacatsday = await this.interestdayService.finddatabydate(date, id);
+
+    //     } catch (e) {
+    //       datacatsday = null;
+
+    //     }
+
+
+
+    //     if (cekdata.length == 0) {
+    //       let interestdayDto_ = new InterestdayDto();
+    //       interestdayDto_.date = date;
+    //       interestdayDto_.listinterest = [{
+    //         "_id": mongoose.Types.ObjectId(id),
+    //         "total": 1,
+    //         "createdAt": stringdate,
+    //         "updatedAt": stringdate
+    //       }];
+    //       await this.interestdayService.create(interestdayDto_);
+    //     } else {
+    //       // let listinterest=cekdata[0].listinterest;
+    //       // let idday=cekdata[0]._id;
+    //       // let lenglist=listinterest.length;
+    //       // for(let i=0;i<lenglist;i++){
+    //       //    let idint=listinterest[i]._id;
+    //       //    let total=listinterest[i].total;
+    //       //    var objin={
+    //       //     "_id":idint,
+    //       //     "total": total+1,
+    //       //     "createdAt": stringdate,
+    //       //     "updatedAt": stringdate
+    //       //   };
+    //       // }
+    //       // let interestdayDto_ = new InterestdayDto();
+    //       // interestdayDto_.date = date;
+    //       // interestdayDto_.listinterest = [];
+
+    //       if (datacatsday.length > 0) {
+    //         var idq = datacatsday[0]._id;
+    //         var idint = datacatsday[0].listinterest._id;
+    //         var totalint = datacatsday[0].listinterest.total;
+    //         await this.interestdayService.updatefilter(idq.toString(), idint.toString(), totalint + 1);
+    //       }
+    //     }
+
+
+
     //   }
+    // }
 
 
     return data;
