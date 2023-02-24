@@ -307,8 +307,7 @@ export class ContenteventsController {
         }
       }
 
-      //sementara di comment dulu
-      //this.checkFriendbasedString(email_user, email_receiverParty, "create");
+      this.checkFriendbasedString(email_user, email_receiverParty, "create");
     } else if (eventType == "VIEW") {
       if (email_user !== email_receiverParty) {
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW Email Not Same >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify({ postID: request.body.postID, email_user: email_user, email_receiverParty: email_receiverParty }));
@@ -539,8 +538,7 @@ export class ContenteventsController {
           await this.insightsService.updateUnFollowing(email_user);
           await this.insightsService.updateUnFollow(email_user);
 
-          //sementara di comment dulu
-          // this.checkFriendbasedString(email_user, email_receiverParty, "delete");
+          this.checkFriendbasedString(email_user, email_receiverParty, "delete");
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
