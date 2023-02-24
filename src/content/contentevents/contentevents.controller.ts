@@ -22,7 +22,7 @@ import { DisqusContentEventService } from './discus/disqusdisquscontentevent.ser
 import { DisqusContentEventController } from './discus/disquscontentevent.controller';
 import { Disquslogs } from '../disquslogs/schemas/disquslogs.schema';
 import { ReactionsRepoService } from '../../infra/reactions_repo/reactions_repo.service'; 
-
+import { FriendListService } from '../friend_list/friend_list.service';
 
 @Controller()
 export class ContenteventsController {
@@ -38,6 +38,7 @@ export class ContenteventsController {
     private readonly disqusContentEventService: DisqusContentEventService,
     private readonly reactionsRepoService: ReactionsRepoService, 
     private readonly disqusContentEventController: DisqusContentEventController,
+    private readonly friendListService: FriendListService,
     private readonly errorHandler: ErrorHandler) { }
 
   @Post('api/contentevents')
@@ -295,14 +296,25 @@ export class ContenteventsController {
           );
         }
       }else{
-        if (!ceck_data_FOLLOWER.active && !ceck_data_FOLLOWING.active) {
-          await this.contenteventsService.updateFollowing(email_user, "FOLLOWING", email_receiverParty);
-          await this.contenteventsService.updateFollower(email_receiverParty, "FOLLOWER", email_user);
-          await this.insightsService.updateFollower(email_receiverParty);
-          await this.insightsService.updateFollowing(email_user);
-          this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
-        } 
+        if (ceck_data_FOLLOWER.active != undefined && !ceck_data_FOLLOWING.active != undefined) {
+          if (!ceck_data_FOLLOWER.active && !ceck_data_FOLLOWING.active) {
+            await this.contenteventsService.updateFollowing(email_user, "FOLLOWING", email_receiverParty);
+            await this.contenteventsService.updateFollower(email_receiverParty, "FOLLOWER", email_user);
+            await this.insightsService.updateFollower(email_receiverParty);
+            await this.insightsService.updateFollowing(email_user);
+            this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
+          } 
+        }
       }
+
+      // var check_user = await this.contenteventsService.checkFriendbasedString(email_user, email_receiverParty);
+      // var check_receiver = await this.contenteventsService.checkFriendbasedString(email_receiverParty, email_user);
+
+      // if(check_user == true && check_receiver == true)
+      // {
+      //   await this.friendListService.addFriendList(email_user, email_receiverParty);
+      //   await this.friendListService.addFriendList(email_receiverParty, email_user);
+      // }
     } else if (eventType == "VIEW") {
       if (email_user !== email_receiverParty) {
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW Email Not Same >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify({ postID: request.body.postID, email_user: email_user, email_receiverParty: email_receiverParty }));
@@ -532,6 +544,8 @@ export class ContenteventsController {
           await this.insightsService.updateUnFollower(email_receiverParty);
           await this.insightsService.updateUnFollowing(email_user);
           await this.insightsService.updateUnFollow(email_user);
+          // await this.friendListService.deleteFriendList(email_user, email_receiverParty);
+          // await this.friendListService.deleteFriendList(email_receiverParty, email_user);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +

@@ -1,14 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Req, Request, Query, Headers, HttpCode } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Req, Request, Query, Headers, HttpCode, BadRequestException } from '@nestjs/common';
 import { UserbasicsService } from './userbasics.service';
 import { CreateUserbasicDto } from './dto/create-userbasic.dto';
 import { Userbasic } from './schemas/userbasic.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Res, HttpStatus, Response } from '@nestjs/common';
 import { isEmpty } from 'rxjs';
+import { FriendListDto } from 'src/content/friend_list/dto/create-friend_list.dto';
+import { FriendListService } from 'src/content/friend_list/friend_list.service';
 
 @Controller('api/userbasics')
 export class UserbasicsController {
-  constructor(private readonly userbasicsService: UserbasicsService) { }
+  constructor(private readonly userbasicsService: UserbasicsService,
+    private readonly friendlistService: FriendListService) { }
 
   @Post()
   async create(@Body() CreateUserbasicDto: CreateUserbasicDto) {
@@ -307,5 +310,32 @@ export class UserbasicsController {
     data[0].wilayah = dataSumwilayah;
 
     return { response_code: 202, data, messages };
+  }
+
+  @Post('insertfriendcollection')
+  @UseGuards(JwtAuthGuard)
+  async createNewFriendCollection(@Req() request: Request): Promise<any> 
+  {
+    var data = null;
+    
+    data = await this.userbasicsService.getfriendListdata();
+    for(var i = 0; i < data.length; i++)
+    {
+	    console.log('data ke-' + i);
+      try
+      {
+        await this.friendlistService.create(data[i]);
+      }
+      catch(e)
+      {
+        await this.friendlistService.update(data[i]._id, data[i]);
+      }
+    }
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    return { response_code:202, messages }
   }
 }
