@@ -8625,10 +8625,30 @@ export class AdsService {
                 }
             },
             {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "userIDAssesment",
+                    foreignField: "_id",
+                    as: "adminbasics_data"
+                }
+            },
+            {
                 $project: {
                     userID: 1,
-                    fullName: '$user.fullName',
-                    email: '$user.email',
+                    fullName: 
+                    {
+                        "$arrayElemAt":
+                        [
+                           '$userbasics_data.fullName', 0 
+                        ]
+                    },
+                    email: 
+                    {
+                        "$arrayElemAt":
+                        [
+                            '$userbasics_data.email', 0
+                        ]
+                    },
                     timestamp: 1,
                     expiredAt: 1,
                     liveAt: 1,
@@ -8657,7 +8677,15 @@ export class AdsService {
                     idApsara: 1,
                     duration: 1,
                     tayang: 1,
-                    type: 1
+                    type: 1,
+                    adminAssessment:
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$adminbasics_data.fullName", 0
+                        ]
+                    },
+                    targetgender:"$gender"
                 }
             },
             {
@@ -8796,7 +8824,8 @@ export class AdsService {
                     totalClick: {
                         $arrayElemAt: ['$click.totalClick', 0]
                     },
-
+                    adminAssessment:1,
+                    targetgender:1
                 }
             },
             {
@@ -9103,7 +9132,9 @@ export class AdsService {
                     view: 1,
                     click: 1,
                     sumview: 1,
-                    sumclick: 1
+                    sumclick: 1,
+                    adminAssessment:1,
+                    targetgender:1
                 }
             },
             {
@@ -9233,7 +9264,9 @@ export class AdsService {
                         $arrayElemAt: ['$reward.totalbiaya', 0]
                     },
                     sumview: 1,
-                    sumclick: 1
+                    sumclick: 1,
+                    adminAssessment:1,
+                    targetgender:1
                 }
             },
             {
@@ -9292,7 +9325,9 @@ export class AdsService {
 
                     },
                     sumview: 1,
-                    sumclick: 1
+                    sumclick: 1,
+                    adminAssessment:1,
+                    targetgender:1
                 }
             },
             {
@@ -10305,7 +10340,9 @@ export class AdsService {
                             }
                         },
 
-                    }
+                    },
+                    adminAssessment:1,
+                    targetgender:1
                 },
 
             },
@@ -13496,7 +13533,9 @@ export class AdsService {
                             }
                         },
 
-                    }
+                    },
+                    adminAssessment:1,
+                    targetgender:1
                 },
 
             },
