@@ -49,6 +49,7 @@ export class CreateAdsDto {
     contentModerationResponse: string
     reportedUserHandle: any[];
     age: string;
+    updatedAt: string;
 }
 
 export class MediaimageadsDto {
