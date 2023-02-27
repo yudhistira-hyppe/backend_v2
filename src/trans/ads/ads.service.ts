@@ -2201,7 +2201,7 @@ export class AdsService {
                         "$dateToString": {
                             "format": "%Y-%m-%d %H:%M:%S",
                             "date": {
-                                $add: [new Date("2023-02-24-"), 25200000]
+                                $add: [new Date(), 25200000]
                             }
                         }
                     }
