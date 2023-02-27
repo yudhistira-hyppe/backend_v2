@@ -928,7 +928,7 @@ export class AdsController {
             "info": ["The process successful"],
         };
 
-        return { response_code: 202, data:array, total:total, messages };
+        return { response_code: 202, data: array, total: total, messages };
     }
 
     @Post('console/adscenter/demographchart')
@@ -1052,7 +1052,7 @@ export class AdsController {
             getdata = [];
         }
 
-        
+
         try {
             var resultdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, undefined, undefined, sorting);
             var totalsearch = resultdata.length;
@@ -1072,7 +1072,7 @@ export class AdsController {
             totalpage = parseInt(gettotal);
         }
 
-        return { response_code: 202, data: getdata, totalsearch: totalsearch, totalpage: totalpage, totaldatainpage:total, limit: limit, page: page, messages };
+        return { response_code: 202, data: getdata, totalsearch: totalsearch, totalpage: totalpage, totaldatainpage: total, limit: limit, page: page, messages };
     }
 }
 

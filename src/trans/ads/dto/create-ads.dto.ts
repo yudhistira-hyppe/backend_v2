@@ -50,6 +50,7 @@ export class CreateAdsDto {
     reportedUserHandle: any[];
     age: string;
     updatedAt: string;
+    skipTime: number;
 }
 
 export class MediaimageadsDto {
