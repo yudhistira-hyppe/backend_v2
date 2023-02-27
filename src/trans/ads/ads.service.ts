@@ -2186,6 +2186,15 @@ export class AdsService {
                 }
             },
             {
+                $set:
+                {
+                    tayView:
+                    {
+                        $ifNull: ['$totalView', 0]
+                    }
+                }
+            },
+            {
                 $set: {
                     "testDate":
                     {
@@ -2344,6 +2353,9 @@ export class AdsService {
                                         }
                                     },
                                     {
+                                        "statusView": true
+                                    },
+                                    {
                                         $or: [
                                             {
                                                 "liveTypeuserads": false
@@ -2443,7 +2455,7 @@ export class AdsService {
                         },
                         {
                             $expr: {
-                                $lt: ["$totalView", "$tay"]
+                                $lt: ["$tayView", "$tay"]
                             }
                         },
                         {

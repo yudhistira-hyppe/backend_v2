@@ -112,6 +112,9 @@ export class AuthController {
       false,
     );
 
+    //Generate Refresh Token
+    await this.authService.updateRefreshToken(LoginRequest_.email.toString());
+
     //Ceck User Userdevices
     const data_userdevices = await this.userdevicesService.findOneEmail(LoginRequest_.email, LoginRequest_.deviceId);
 
