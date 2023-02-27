@@ -109,6 +109,8 @@ export class Ads {
     reportedUserHandle: any[];
     @Prop()
     age: string;
+    @Prop()
+    updatedAt: string;
 }
 
 export const AdsSchema = SchemaFactory.createForClass(Ads);

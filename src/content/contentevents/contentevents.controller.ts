@@ -305,14 +305,7 @@ export class ContenteventsController {
         } 
       }
 
-      // var check_user = await this.contenteventsService.checkFriendbasedString(email_user, email_receiverParty);
-      // var check_receiver = await this.contenteventsService.checkFriendbasedString(email_receiverParty, email_user);
-
-      // if(check_user == true && check_receiver == true)
-      // {
-      //   await this.friendListService.addFriendList(email_user, email_receiverParty);
-      //   await this.friendListService.addFriendList(email_receiverParty, email_user);
-      // }
+      this.checkFriendbasedString(email_user, email_receiverParty, "create");
     } else if (eventType == "VIEW") {
       if (email_user !== email_receiverParty) {
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW Email Not Same >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify({ postID: request.body.postID, email_user: email_user, email_receiverParty: email_receiverParty }));
@@ -545,8 +538,8 @@ export class ContenteventsController {
           await this.insightsService.updateUnFollower(email_receiverParty);
           await this.insightsService.updateUnFollowing(email_user);
           await this.insightsService.updateUnFollow(email_user);
-          // await this.friendListService.deleteFriendList(email_user, email_receiverParty);
-          // await this.friendListService.deleteFriendList(email_receiverParty, email_user);
+
+          this.checkFriendbasedString(email_user, email_receiverParty, "delete");
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
@@ -918,6 +911,30 @@ export class ContenteventsController {
     }
   }
 
+  async checkFriendbasedString(email1: string, email2: string, jenisoperasi:string)
+  {
+    var data1 = await this.contenteventsService.checkFriendListdata(email1, email2);
+    var data2 = await this.contenteventsService.checkFriendListdata(email1, email2);
 
+    var checkexist1 = await this.utilsService.ceckData(data1);
+    var checkexist2 = await this.utilsService.ceckData(data2);
+
+    // console.log(checkexist1);
+    // console.log(checkexist2);
+
+    if(checkexist1 == true && checkexist2 == true)
+    {
+      if(jenisoperasi == 'create')
+      {
+        await this.friendListService.addFriendList(email1, email2);
+        await this.friendListService.addFriendList(email2, email1);
+      }
+      else
+      {
+        await this.friendListService.deleteFriendList(email1, email2);
+        await this.friendListService.deleteFriendList(email2, email1);
+      }
+    }
+  }
 
 }

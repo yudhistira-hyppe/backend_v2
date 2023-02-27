@@ -72,6 +72,10 @@ export class AdsUserCompareController {
                 }
             }
         }
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
         // try {
         var _CreateAdsDto_ = new CreateAdsDto();
         _CreateAdsDto_.userIDAssesment = dataUserBasic._id;
@@ -80,6 +84,7 @@ export class AdsUserCompareController {
         _CreateAdsDto_._id = dataAds._id;
         _CreateAdsDto_.userID = dataAds.userID;
         _CreateAdsDto_.liveAt = dataAds.liveAt;
+        _CreateAdsDto_.updatedAt = dt.toISOString();
         await this.adsService.update(dataAds._id, _CreateAdsDto_);
         //this.adsUserCompareService.createUserAds(_CreateAdsDto_);
         return {

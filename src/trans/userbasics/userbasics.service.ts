@@ -1036,7 +1036,7 @@ export class UserbasicsService {
                       "bank": 1,
                       "amount": 1,
                       "totalamount": 1,
-                      "status": "Success",
+                      "status": 1,
                       "postid": 1,
                       "iduserbuyer": 1,
                       "idusersell": 1,
@@ -1044,6 +1044,44 @@ export class UserbasicsService {
 
                     }
                   },
+                  {
+                    $project: {
+                      "jenis": "Withdraws",
+                      "type": "Withdraws",
+                      "timestamp": 1,
+                      "description": 1,
+                      "noinvoice": 1,
+                      "nova": 1,
+                      "expiredtimeva": 1,
+                      "bank": 1,
+                      "amount": 1,
+                      "totalamount": 1,
+                      "status":
+                      {
+                        $cond: {
+                          if: {
+                            $or: [
+                              {
+                                $eq: ["$status", "Request is In progress"]
+                              },
+                              {
+                                $eq: ["$status", "Success"]
+                              },
+                            ],
+
+                          },
+                          then: "Success",
+                          else: "Failed"
+                        }
+                      },
+                      "postid": 1,
+                      "iduserbuyer": 1,
+                      "idusersell": 1,
+                      "debetKredit": "-",
+
+                    }
+                  },
+
 
                 ],
 
@@ -5661,186 +5699,185 @@ export class UserbasicsService {
     ).exec();
   }
 
-  async getfriendListdata()
-  {
+  async getfriendListdata() {
     var pipeline = [];
 
     pipeline.push({
-          "$lookup":
-          {
-              from:"userauths",
-              as:"auth_data",
-              let:
+      "$lookup":
+      {
+        from: "userauths",
+        as: "auth_data",
+        let:
+        {
+          auth_fk: "$email"
+        },
+        pipeline:
+          [
+            {
+              "$match":
               {
-                  auth_fk:"$email"
-              },
-              pipeline:
+                "$expr":
+                {
+                  "$eq":
+                    [
+                      "$email",
+                      "$$auth_fk"
+                    ]
+                }
+              }
+            },
+            {
+              "$project":
+              {
+                _id: 1,
+                username: 1
+              }
+            }
+          ]
+      }
+    },
+      {
+        "$project":
+        {
+          _id: 1,
+          email: 1,
+          fullName: 1,
+          username:
+          {
+            "$arrayElemAt":
               [
-                  {
-                      "$match":
-                      {
-                          "$expr":
-                          {
-                              "$eq":
-                              [
-                                  "$email",
-                                  "$$auth_fk"
-                              ]
-                          }
-                      }
-                  },
-                  {
-                      "$project":
-                      {
-                          _id:1,
-                          username:1
-                      }
-                  }
+                "$auth_data.username", 0
               ]
-          }
+          },
+        }
       },
       {
-          "$project":
+        "$lookup":
+        {
+          from: "contentevents",
+          as: "contentevents_data",
+          let:
           {
-              _id:1,
-              email:1,
-              fullName:1,
-              username:
+            contentevents_fk: "$email"
+          },
+          pipeline:
+            [
               {
-                  "$arrayElemAt":
-                  [
-                      "$auth_data.username", 0
-                  ]
-              },
-          }
-      },
-      {
-          "$lookup":
-          {
-              from:"contentevents",
-              as:"contentevents_data",
-              let:
-              {
-                  contentevents_fk:"$email"
-              },
-              pipeline:
-              [
-                  {
-                      "$match" : 
+                "$match":
+                {
+                  "$or":
+                    [
                       {
-                          "$or" : 
+                        "$and":
                           [
+                            {
+                              "$expr":
                               {
-                                  "$and" : 
+                                "$eq":
                                   [
-                                      {
-                                          "$expr":
-                                          {
-                                              "$eq":
-                                              [
-                                                  "$eventType", "FOLLOWING"
-                                              ]
-                                          }
-                                      },
-                                      {
-                                          "$expr":
-                                          {
-                                              "$eq":
-                                              [
-                                                  "$senderParty", "$$contentevents_fk"
-                                              ]
-                                          }
-                                      },
-                                  ]
-                              },
-                              {
-                                  "$and" : 
-                                  [
-                                      {
-                                          "$expr":
-                                          {
-                                              "$eq":
-                                              [
-                                                  "$eventType", "FOLLOWER"
-                                              ]
-                                          }
-                                      },
-                                      {
-                                          "$expr":
-                                          {
-                                              "$eq":
-                                              [
-                                                  "$receiverParty", "$$contentevents_fk"
-                                              ]
-                                          }
-                                      },
+                                    "$eventType", "FOLLOWING"
                                   ]
                               }
+                            },
+                            {
+                              "$expr":
+                              {
+                                "$eq":
+                                  [
+                                    "$senderParty", "$$contentevents_fk"
+                                  ]
+                              }
+                            },
+                          ]
+                      },
+                      {
+                        "$and":
+                          [
+                            {
+                              "$expr":
+                              {
+                                "$eq":
+                                  [
+                                    "$eventType", "FOLLOWER"
+                                  ]
+                              }
+                            },
+                            {
+                              "$expr":
+                              {
+                                "$eq":
+                                  [
+                                    "$receiverParty", "$$contentevents_fk"
+                                  ]
+                              }
+                            },
                           ]
                       }
-                  },
+                    ]
+                }
+              },
+              {
+                "$group":
+                {
+                  _id: "$email",
+                  total:
                   {
-                      "$group":
-                      {
-                          _id:"$email",
-                          total:
-                          {
-                              "$sum":1
-                          }
-                      }
-                  },
-                  {
-                      "$match":
-                      {
-                          total:
-                          {
-                              "$gt":1
-                          }
-                      }
-                  },
-                  {
-                    "$sort":
-                    {
-                      _id:1
-                    }
-                  },
-                  {
-                      "$project":
-                      {
-                          _id:0,
-                          email:"$_id"
-                      }
+                    "$sum": 1
                   }
-              ]
-          }
+                }
+              },
+              {
+                "$match":
+                {
+                  total:
+                  {
+                    "$gt": 1
+                  }
+                }
+              },
+              {
+                "$sort":
+                {
+                  _id: 1
+                }
+              },
+              {
+                "$project":
+                {
+                  _id: 0,
+                  email: "$_id"
+                }
+              }
+            ]
+        }
       },
       {
-          "$project":
+        "$project":
+        {
+          _id: 1,
+          email: 1,
+          fullName: 1,
+          username: 1,
+          totalfriend:
           {
-              _id:1,
-              email:1,
-              fullName:1,
-              username:1,
-              totalfriend:
-              {
-                  "$ifNull":
-                  [
-                      {
-                          "$size":"$contentevents_data"
-                      },
-                      0
-                  ]
-              },
-              friendlist:
-              {
-                  "$ifNull":
-                  [
-                      "$contentevents_data",
-                      []
-                  ]
-              },
-          }
-    });
+            "$ifNull":
+              [
+                {
+                  "$size": "$contentevents_data"
+                },
+                0
+              ]
+          },
+          friendlist:
+          {
+            "$ifNull":
+              [
+                "$contentevents_data",
+                []
+              ]
+          },
+        }
+      });
 
     // kalo seandainya mau dipake supaya tahu running time api yang menggunakan query ini
     // if(loop > 0)

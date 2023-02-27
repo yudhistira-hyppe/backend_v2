@@ -5,8 +5,8 @@ export type InterestdayDocument = Interestday & Document;
 
 @Schema({ collection: 'interestday' })
 export class Interestday {
-    @Prop({ type: mongoose.Schema.Types.ObjectId })
-    _id: { oid: String }
+    // @Prop({ type: mongoose.Schema.Types.ObjectId })
+    _id: Object;
 
     @Prop()
     date: string;

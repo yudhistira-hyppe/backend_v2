@@ -484,7 +484,24 @@ export class WithdrawsService {
                     amount: "$amount",
                     totalamount: "$totalamount",
                     description: "$description",
-                    status: "$status",
+                    status:
+                    {
+                        $cond: {
+                            if: {
+                                $or: [
+                                    {
+                                        $eq: ["$status", "Request is In progress"]
+                                    },
+                                    {
+                                        $eq: ["$status", "Success"]
+                                    },
+                                ],
+
+                            },
+                            then: "Success",
+                            else: "Failed"
+                        }
+                    },
                     idAccountBank: "$idAccountBank",
                 }
             },

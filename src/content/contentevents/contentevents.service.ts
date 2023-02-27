@@ -4157,7 +4157,7 @@ export class ContenteventsService {
     return query;
   }
 
-  async checkFriendbasedString(email1: string, email2: string)
+  async checkFriendListdata(email1: string, email2: string)
   {
     var query = await this.ContenteventsModel.find({
         "$or" : 
@@ -4204,13 +4204,6 @@ export class ContenteventsService {
       }
     );
 
-    if(query.length < 2)
-    {
-      return false;
-    }
-    else
-    {
-      return true;
-    }
+    return query
   }
 }
