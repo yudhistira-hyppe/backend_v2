@@ -2353,6 +2353,9 @@ export class AdsService {
                                         }
                                     },
                                     {
+                                        "statusView": true
+                                    },
+                                    {
                                         $or: [
                                             {
                                                 "liveTypeuserads": false
