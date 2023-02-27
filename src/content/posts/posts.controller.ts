@@ -340,8 +340,9 @@ export class PostsController {
     this.logger.log("createPost >>> start");
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
     var arrtag = [];
-    var tag = body.tags;
-    if (tag !== undefined) {
+
+    if (body.tags !== undefined) {
+      var tag = body.tags;
       var splittag = tag.split(',');
       for (let x = 0; x < splittag.length; x++) {
 
@@ -349,8 +350,8 @@ export class PostsController {
         arrtag.push(tagreq)
 
       }
+      body.tags = arrtag;
     }
-    body.tags = arrtag;
 
     var data = await this.postContentService.createNewPostV3(file, body, headers);
 
@@ -419,8 +420,9 @@ export class PostsController {
     }
 
     var arrtag = [];
-    var tag = body.tags;
-    if (tag !== undefined) {
+
+    if (body.tags !== undefined) {
+      var tag = body.tags;
       var splittag = tag.split(',');
       for (let x = 0; x < splittag.length; x++) {
 
@@ -428,8 +430,9 @@ export class PostsController {
         arrtag.push(tagreq)
 
       }
+      body.tags = arrtag;
     }
-    body.tags = arrtag;
+
 
     data = await this.postContentService.updatePost(body, headers);
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
