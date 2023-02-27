@@ -111,6 +111,8 @@ export class Ads {
     age: string;
     @Prop()
     updatedAt: string;
+    @Prop()
+    skipTime: number;
 }
 
 export const AdsSchema = SchemaFactory.createForClass(Ads);
