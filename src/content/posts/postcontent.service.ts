@@ -331,9 +331,9 @@ export class PostContentService {
       var pcats = [];
       for (var i = 0; i < cats.length; i++) {
         var tmp = cats[i];
-        var cat = await this.interestService.findByName(tmp);
-        if (cat != undefined) {
-          var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(cat._id), "$db": "hyppe_infra_db" };
+        // var cat = await this.interestService.findByName(tmp);
+        if (tmp != undefined) {
+          var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(tmp), "$db": "hyppe_infra_db" };
           pcats.push(objintr);
         }
       }
@@ -4521,8 +4521,8 @@ export class PostContentService {
 
     if (body.cats != undefined && body.cats.length > 1) {
       var obj = body.cats;
-      // var cats = obj.split(",");
-      var cats = obj;
+      var cats = obj.split(",");
+
       var pcats = [];
       for (var i = 0; i < cats.length; i++) {
         var tmp = cats[i];
@@ -4534,6 +4534,8 @@ export class PostContentService {
       }
       post.category = pcats;
     }
+
+
 
     if (body.tagPeople != undefined && body.tagPeople.length > 1) {
       var obj = body.tagPeople;
