@@ -296,15 +296,13 @@ export class ContenteventsController {
           );
         }
       }else{
-        if (ceck_data_FOLLOWER.active != undefined && !ceck_data_FOLLOWING.active != undefined) {
-          if (!ceck_data_FOLLOWER.active && !ceck_data_FOLLOWING.active) {
-            await this.contenteventsService.updateFollowing(email_user, "FOLLOWING", email_receiverParty);
-            await this.contenteventsService.updateFollower(email_receiverParty, "FOLLOWER", email_user);
-            await this.insightsService.updateFollower(email_receiverParty);
-            await this.insightsService.updateFollowing(email_user);
-            this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
-          } 
-        }
+        if (!ceck_data_FOLLOWER.active && !ceck_data_FOLLOWING.active) {
+          await this.contenteventsService.updateFollowing(email_user, "FOLLOWING", email_receiverParty);
+          await this.contenteventsService.updateFollower(email_receiverParty, "FOLLOWER", email_user);
+          await this.insightsService.updateFollower(email_receiverParty);
+          await this.insightsService.updateFollowing(email_user);
+          this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
+        } 
       }
 
       // var check_user = await this.contenteventsService.checkFriendbasedString(email_user, email_receiverParty);
@@ -508,29 +506,32 @@ export class ContenteventsController {
           );
         }
       }else{
-        if (ceck_data_DONE.active && ceck_data_DONE.active) {
-          try {
-            await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, false);
-            await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, false);
-            await this.insightsService.updateUnlike(email_receiverParty);
-            await this.postsService.updateUnLike(email_receiverParty, request.body.postID);
-          } catch (error) {
-            await this.errorHandler.generateNotAcceptableException(
-              'Unabled to proceed, ' +
-              error,
-            );
-          }
-        } else {
-          try {
-            await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, true);
-            await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, true);
-            await this.insightsService.updateLike(email_receiverParty);
-            await this.postsService.updateLike(email_receiverParty, request.body.postID);
-          } catch (error) {
-            await this.errorHandler.generateNotAcceptableException(
-              'Unabled to proceed, ' +
-              error,
-            );
+
+        if (ceck_data_DONE.active != undefined && !ceck_data_ACCEPT.active != undefined) {
+          if (ceck_data_DONE.active && ceck_data_ACCEPT.active) {
+            try {
+              await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, false);
+              await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, false);
+              await this.insightsService.updateUnlike(email_receiverParty);
+              await this.postsService.updateUnLike(email_receiverParty, request.body.postID);
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, ' +
+                error,
+              );
+            }
+          } else {
+            try {
+              await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, true);
+              await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, true);
+              await this.insightsService.updateLike(email_receiverParty);
+              await this.postsService.updateLike(email_receiverParty, request.body.postID);
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, ' +
+                error,
+              );
+            }
           }
         }
       }

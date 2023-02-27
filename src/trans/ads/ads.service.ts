@@ -2186,13 +2186,22 @@ export class AdsService {
                 }
             },
             {
+                $set:
+                {
+                    tayView:
+                    {
+                        $ifNull: ['$totalView', 0]
+                    }
+                }
+            },
+            {
                 $set: {
                     "testDate":
                     {
                         "$dateToString": {
                             "format": "%Y-%m-%d %H:%M:%S",
                             "date": {
-                                $add: [new Date(), 25200000]
+                                $add: [new Date("2023-02-24-"), 25200000]
                             }
                         }
                     }
@@ -2443,7 +2452,7 @@ export class AdsService {
                         },
                         {
                             $expr: {
-                                $lt: ["$totalView", "$tay"]
+                                $lt: ["$tayView", "$tay"]
                             }
                         },
                         {

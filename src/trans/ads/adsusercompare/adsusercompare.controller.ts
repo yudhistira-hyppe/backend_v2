@@ -525,7 +525,8 @@ export class AdsUserCompareController {
                     var credit_free = data_adsService.creditFree;
                     var used_credit = data_adsService.usedCredit;
                     var used_credit_free = data_adsService.usedCreditFree;
-                    var adsStatus = true;
+                    var adsStatus = true; 
+                    var adsStatustext = "";
 
                     if ((ads_totalView + 1) <= ads_tayang) {
                         const sisa_credit = credit - (used_credit + credit_view);
@@ -568,6 +569,7 @@ export class AdsUserCompareController {
 
                         if (ads_totalView == ads_tayang) {
                             adsStatus = false;
+                            adsStatustext = 'FINISH';
                         }
 
                         //Update userads
@@ -599,6 +601,9 @@ export class AdsUserCompareController {
                                 CreateAdsDto_.usedCreditFree = used_credit_free;
                                 CreateAdsDto_.totalView = ads_totalView + 1;
                                 CreateAdsDto_.isActive = adsStatus;
+                                if (adsStatustext != "") {
+                                    CreateAdsDto_.status = adsStatustext;
+                                }
                                 await this.adsService.update(data_adsService._id.toString(), CreateAdsDto_);
                             } catch (e) {
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed " + e);
@@ -806,6 +811,7 @@ export class AdsUserCompareController {
             var used_credit = data_adsService.usedCredit;
             var used_credit_free = data_adsService.usedCreditFree;
             var adsStatus = true;
+            var adsStatustext = "";
 
             if ((ads_totalView + 1) <= ads_tayang) {
                 const sisa_credit = credit - (used_credit + credit_view);
@@ -845,6 +851,7 @@ export class AdsUserCompareController {
 
                 if (ads_totalView == ads_tayang) {
                     adsStatus = false;
+                    adsStatustext = 'FINISH';
                 }
 
                 //Update userads
@@ -873,6 +880,10 @@ export class AdsUserCompareController {
                     CreateAdsDto_.usedCredit = used_credit;
                     CreateAdsDto_.usedCreditFree = used_credit_free;
                     CreateAdsDto_.totalView = ads_totalView + 1;
+                    CreateAdsDto_.isActive = adsStatus;
+                    if (adsStatustext != "") {
+                        CreateAdsDto_.status = adsStatustext;
+                    }
                     await this.adsService.update(data_adsService._id.toString(), CreateAdsDto_);
                 } catch (e) {
                     await this.errorHandler.generateNotAcceptableException(
