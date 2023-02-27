@@ -988,7 +988,7 @@ export class PostsController {
     return await this.PostsService.generateNewUserPlaylist("633d0c26c9dca3610d7209f9");
   }
 
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Post('api/posts/getinteractives')
   @HttpCode(HttpStatus.ACCEPTED)
   @FormDataRequest()
