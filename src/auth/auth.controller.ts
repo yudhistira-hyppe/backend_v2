@@ -965,8 +965,10 @@ export class AuthController {
     if ((id != undefined) && (token != undefined) && (email != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var mediaprofilepicts = await this.mediaprofilepictsService.findOne(id);
+        console.log(mediaprofilepicts);
         if (await this.utilsService.ceckData(mediaprofilepicts)) {
           if (mediaprofilepicts.uploadSource != undefined) {
+            console.log("OSS");
             if (mediaprofilepicts.uploadSource == "OSS") {
               if (mediaprofilepicts.mediaMime != undefined) {
                 mediaMime = mediaprofilepicts.mediaMime.toString();
@@ -980,8 +982,10 @@ export class AuthController {
               } else {
                 path = mediaprofilepicts.mediaBasePath.toString();
               }
+              console.log(path);
 
               var data2 = await this.ossService.readFile(path);
+              console.log(data2);
               if (data2 != null) {
                 response.set("Content-Type", "image/jpeg");
                 response.send(data2);
@@ -992,6 +996,7 @@ export class AuthController {
               response.send(null);
             }
           } else {
+            console.log("NON OSS");
             var mediaprofilepicts_fsSourceUri = '';
             var mediaMime = "";
             if (mediaprofilepicts != null) {
