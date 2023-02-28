@@ -325,21 +325,6 @@ export class PostContentService {
     var usp = { "$ref": "userbasics", "$id": mongoose.Types.ObjectId(profile._id), "$db": "hyppe_trans_db" };
     post.userProfile = usp;
 
-    // if (body.cats != undefined && body.cats.length > 1) {
-    //   var obj = body.cats;
-    //   var cats = obj.split(",");
-    //   var pcats = [];
-    //   for (var i = 0; i < cats.length; i++) {
-    //     var tmp = cats[i];
-    //     var cat = await this.interestService.findByName(tmp);
-    //     if (cat != undefined) {
-    //       var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(cat._id), "$db": "hyppe_infra_db" };
-    //       pcats.push(objintr);
-    //     }
-    //   }
-    //   post.category = pcats;
-    // }
-
     if (body.cats != undefined && body.cats.length > 1) {
       var obj = body.cats;
       var cats = obj.split(",");
@@ -354,6 +339,21 @@ export class PostContentService {
       }
       post.category = pcats;
     }
+    // if (body.cats != undefined && body.cats.length > 1) {
+    //   var obj = body.cats;
+    //   var cats = obj;
+    //   var pcats = [];
+    //   for (var i = 0; i < cats.length; i++) {
+    //     var tmp = cats[i];
+    //     // var cat = await this.interestService.findByName(tmp);
+    //     if (tmp != undefined) {
+    //       var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(tmp), "$db": "hyppe_infra_db" };
+    //       pcats.push(objintr);
+    //     }
+    //   }
+    //   post.category = pcats;
+    // }
+
 
 
     post.likes = Long.fromInt(0);
@@ -4521,6 +4521,7 @@ export class PostContentService {
     if (body.cats != undefined && body.cats.length > 1) {
       var obj = body.cats;
       var cats = obj.split(",");
+
       var pcats = [];
       for (var i = 0; i < cats.length; i++) {
         var tmp = cats[i];
@@ -4532,6 +4533,8 @@ export class PostContentService {
       }
       post.category = pcats;
     }
+
+
 
     if (body.tagPeople != undefined && body.tagPeople.length > 1) {
       var obj = body.tagPeople;

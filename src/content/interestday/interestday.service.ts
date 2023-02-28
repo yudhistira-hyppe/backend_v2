@@ -31,20 +31,28 @@ export class InterestdayService {
             .exec();
     }
 
-    async updatefilter(id: string, idarray: string, value: number) {
-        return this.interestdayModel.findByIdAndUpdate({
-            query: {
-                "_id": new Types.ObjectId(id)
-            },
-            update: {
+    async updatefilter(id: string, idarray: string, value: number, updatedAt: string) {
+        return this.interestdayModel.findByIdAndUpdate(
+
+            { _id: new Types.ObjectId(id) },
+            {
                 $set: {
-                    "listinterest.$[element].total": value
+                    "listinterest.$[element].total": value,
+                    "listinterest.$[element].updatedAt": updatedAt
                 }
             },
-            arrayFilters: [{
-                "element._id": new Types.ObjectId(idarray)
-            }]
-        });
+            {
+                arrayFilters: [{
+                    "element._id": new Types.ObjectId(idarray)
+                }]
+
+            });
+    }
+
+    async updateInterestday(id: string, listinterest: any[]) {
+        let data = await this.interestdayModel.updateOne({ "_id": new Types.ObjectId(id) },
+            { $set: { "listinterest": listinterest } });
+        return data;
     }
     async finddatabydate(date: string, id: string) {
         var query = await this.interestdayModel.aggregate([

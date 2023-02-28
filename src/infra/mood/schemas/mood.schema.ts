@@ -9,6 +9,8 @@ export class Mood {
     @Prop()
     name: String;
     @Prop()
+    name_id: String;
+    @Prop()
     langIso: String;
     @Prop()
     icon: String;

@@ -340,8 +340,9 @@ export class PostsController {
     this.logger.log("createPost >>> start");
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
     var arrtag = [];
-    var tag = body.tags;
-    if (tag !== undefined) {
+
+    if (body.tags !== undefined) {
+      var tag = body.tags;
       var splittag = tag.split(',');
       for (let x = 0; x < splittag.length; x++) {
 
@@ -349,202 +350,10 @@ export class PostsController {
         arrtag.push(tagreq)
 
       }
+      body.tags = arrtag;
     }
-    body.tags = arrtag;
 
     var data = await this.postContentService.createNewPostV3(file, body, headers);
-    var postID = data.data.postID;
-
-    //Tags
-    var tag2 = body.tags;
-    if (tag2 !== undefined) {
-      for (let i = 0; i < tag2.length; i++) {
-        let id = tag2[i];
-        var datatag2 = null;
-
-        try {
-          datatag2 = await this.tagCountService.findOneById(id);
-
-        } catch (e) {
-          datatag2 = null;
-
-        }
-
-        if (datatag2 === null) {
-
-          let tagCountDto_ = new TagCountDto();
-          tagCountDto_._id = id;
-          tagCountDto_.total = 1;
-          tagCountDto_.listdata = [{ "postID": postID }];
-          await this.tagCountService.create(tagCountDto_);
-        } else {
-
-
-          var tagslast = [];
-          var datapostawal = null;
-
-          try {
-            datapostawal = await this.PostsService.findByPostId(postID);
-            tagslast = datapostawal.tags;
-          } catch (e) {
-            datapostawal = null;
-            tagslast = [];
-          }
-          let idnew = tagslast[i];
-          var total2 = 0;
-          var postidlist2 = [];
-          let obj = { "postID": datapostawal.postID };
-          total2 = datatag2.total;
-          postidlist2 = datatag2.listdata;
-          if (id === idnew) {
-            postidlist2.push(obj);
-          }
-
-          let tagCountDto_ = new TagCountDto();
-          tagCountDto_._id = id;
-          if (id === idnew) {
-            tagCountDto_.total = total2 + 1;
-          }
-
-          tagCountDto_.listdata = postidlist2;
-          await this.tagCountService.update(id, tagCountDto_);
-        }
-
-      }
-    }
-
-    // //Interest
-    // const mongoose = require('mongoose');
-    // var ObjectId = require('mongodb').ObjectId;
-    // var cats = body.cats;
-    // if (cats !== undefined) {
-    //   var splitcats = cats.split(',');
-    //   for (let i = 0; i < splitcats.length; i++) {
-    //     let id = splitcats[i];
-    //     var datacats = null;
-    //     var datacatsday = null;
-
-    //     try {
-    //       datacats = await this.interestCountService.findOneById(id);
-
-    //     } catch (e) {
-    //       datacats = null;
-
-    //     }
-
-    //     if (datacats === null) {
-
-
-    //       let interestCountDto_ = new InterestCountDto();
-    //       interestCountDto_._id = mongoose.Types.ObjectId(id);
-    //       interestCountDto_.total = 1;
-    //       interestCountDto_.listdata = [{ "postID": postID }];
-    //       await this.interestCountService.create(interestCountDto_);
-
-
-    //     }
-    //     else {
-
-
-    //       var catslast = [];
-    //       var datapostawal = null;
-
-    //       try {
-    //         datapostawal = await this.PostsService.findByPostId(postID);
-    //         catslast = datapostawal.category;
-    //       } catch (e) {
-    //         datapostawal = null;
-    //         catslast = [];
-    //       }
-    //       let idnew = catslast[i].oid.toString();
-    //       var totalcats = 0;
-    //       var postidlistcats = [];
-    //       let obj = { "postID": datapostawal.postID };
-    //       totalcats = datacats.total;
-    //       postidlistcats = datacats.listdata;
-    //       if (id === idnew) {
-    //         postidlistcats.push(obj);
-    //       }
-
-    //       let interestCountDto_ = new InterestCountDto();
-    //       interestCountDto_._id = mongoose.Types.ObjectId(id);
-    //       if (id === idnew) {
-    //         interestCountDto_.total = totalcats + 1;
-    //       }
-
-    //       interestCountDto_.listdata = postidlistcats;
-    //       await this.interestCountService.update(id, interestCountDto_);
-    //     }
-
-    //     var dt = new Date(Date.now());
-    //     dt.setHours(dt.getHours() + 7); // timestamp
-    //     dt = new Date(dt);
-    //     var strdate = dt.toISOString();
-    //     var repdate = strdate.replace('T', ' ');
-    //     var splitdate = repdate.split('.');
-    //     var stringdate = splitdate[0];
-    //     var date = stringdate.substring(0, 10) + " " + "00:00:00";
-    //     var cekdata = null;
-
-    //     try {
-    //       cekdata = await this.interestdayService.finddate(date);
-
-    //     } catch (e) {
-    //       cekdata = null;
-
-    //     }
-
-    //     try {
-    //       datacatsday = await this.interestdayService.finddatabydate(date, id);
-
-    //     } catch (e) {
-    //       datacatsday = null;
-
-    //     }
-
-
-
-    //     if (cekdata.length == 0) {
-    //       let interestdayDto_ = new InterestdayDto();
-    //       interestdayDto_.date = date;
-    //       interestdayDto_.listinterest = [{
-    //         "_id": mongoose.Types.ObjectId(id),
-    //         "total": 1,
-    //         "createdAt": stringdate,
-    //         "updatedAt": stringdate
-    //       }];
-    //       await this.interestdayService.create(interestdayDto_);
-    //     } else {
-    //       // let listinterest=cekdata[0].listinterest;
-    //       // let idday=cekdata[0]._id;
-    //       // let lenglist=listinterest.length;
-    //       // for(let i=0;i<lenglist;i++){
-    //       //    let idint=listinterest[i]._id;
-    //       //    let total=listinterest[i].total;
-    //       //    var objin={
-    //       //     "_id":idint,
-    //       //     "total": total+1,
-    //       //     "createdAt": stringdate,
-    //       //     "updatedAt": stringdate
-    //       //   };
-    //       // }
-    //       // let interestdayDto_ = new InterestdayDto();
-    //       // interestdayDto_.date = date;
-    //       // interestdayDto_.listinterest = [];
-
-    //       if (datacatsday.length > 0) {
-    //         var idq = datacatsday[0]._id;
-    //         var idint = datacatsday[0].listinterest._id;
-    //         var totalint = datacatsday[0].listinterest.total;
-    //         await this.interestdayService.updatefilter(idq.toString(), idint.toString(), totalint + 1);
-    //       }
-    //     }
-
-
-
-    //   }
-    // }
-
 
     return data;
   }
@@ -610,15 +419,70 @@ export class PostsController {
       }
     }
 
+    var arrtag = [];
+
+    if (body.tags !== undefined) {
+      var tag = body.tags;
+      var splittag = tag.split(',');
+      for (let x = 0; x < splittag.length; x++) {
+
+        var tagreq = splittag[x].replace(/"/g, "");
+        arrtag.push(tagreq)
+
+      }
+      body.tags = arrtag;
+    }
+
+
+    data = await this.postContentService.updatePost(body, headers);
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+    if (saleAmount > 0) {
+      await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+      //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+    }
+
+    return data;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/updatepostnew')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async updatePostnew(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("updatePost >>> start");
+    var email = headers['x-auth-user'];
+    var saleAmount = body.saleAmount;
+    var data = null;
+    var lang = await this.utilsService.getUserlanguages(email);
+
+
+    var posts = await this.PostsService.findid(body.postID.toString());
+    var dataTransaction = await this.transactionsPostService.findpostid(body.postID.toString());
+    if (await this.utilsService.ceckData(dataTransaction)) {
+      if (lang == "id") {
+        await this.errorHandler.generateNotAcceptableException(
+          "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
+        );
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          " Unable to edit the post because it is in the process of payment.",
+        );
+      }
+    }
+
     var datapostawal = null;
     var tags = [];
     var arrtag = [];
+
+    var cats = [];
     try {
       datapostawal = await this.PostsService.findByPostId(body.postID);
       tags = datapostawal.tags;
+      cats = datapostawal.category;
     } catch (e) {
       datapostawal = null;
       tags = [];
+      cats = [];
     }
     var datatag = null;
     if (tags.length > 0) {
@@ -662,16 +526,71 @@ export class PostsController {
           }
         }
         body.tags = arrtag;
-        data = await this.postContentService.updatePost(body, headers);
+        //data = await this.postContentService.updatePost(body, headers);
       } else {
-        data = await this.postContentService.updatePost(body, headers);
+        //data = await this.postContentService.updatePost(body, headers);
       }
-
 
     }
 
+    //interest
+    var datacats = null;
+    var arrcat = [];
+    if (cats.length > 0) {
+      if (body.cats !== undefined) {
+        var cat = body.cats;
+        if (cat !== undefined) {
+          var splittcat = cat.split(',');
 
+        }
 
+        for (let x = 0; x < splittcat.length; x++) {
+
+          var tagcat = null;
+          try {
+            tagcat = cats[x].oid.toString();
+          } catch (e) {
+            tagcat = "";
+          }
+          var catreq = splittcat[x];
+          // arrcat.push(catreq)
+          // var av = tagreq.replace(/"/g, "");
+
+          if (catreq !== undefined && catreq !== tagcat) {
+
+            try {
+              datacats = await this.interestCountService.findOneById(tagcat);
+            } catch (e) {
+              datacats = null;
+            }
+            var total = 0;
+            if (datacats !== null) {
+              let postidlist = datacats.listdata;
+              total = datacats.total;
+
+              for (var i = 0; i < postidlist.length; i++) {
+                if (postidlist[i].postID === body.postID) {
+                  postidlist.splice(i, 1);
+                }
+              }
+              let catCountDto_ = new InterestCountDto();
+              catCountDto_.total = total - 1;
+              catCountDto_.listdata = postidlist;
+              await this.interestCountService.update(tagkata, catCountDto_);
+            }
+          }
+        }
+        //  body.cats = arrcat;
+        //data = await this.postContentService.updatePost(body, headers);
+      } else {
+        //data = await this.postContentService.updatePost(body, headers);
+      }
+
+    }
+
+    data = await this.postContentService.updatePost(body, headers);
+
+    //tags
     if (body.tags !== undefined) {
       var tag2 = body.tags;
       for (let i = 0; i < tag2.length; i++) {
@@ -726,16 +645,337 @@ export class PostsController {
 
       }
     }
+
+    //Interest
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+
+
+    if (body.cats !== undefined) {
+      let cats = body.cats;
+      var splitcats = cats.split(',');
+      for (let i = 0; i < splitcats.length; i++) {
+        let id = splitcats[i];
+        var datacats = null;
+        var datacatsday = null;
+
+        try {
+          datacats = await this.interestCountService.findOneById(id);
+
+        } catch (e) {
+          datacats = null;
+
+        }
+
+        if (datacats === null) {
+
+
+          let interestCountDto_ = new InterestCountDto();
+          interestCountDto_._id = mongoose.Types.ObjectId(id);
+          interestCountDto_.total = 1;
+          interestCountDto_.listdata = [{ "postID": body.postID }];
+          await this.interestCountService.create(interestCountDto_);
+
+
+        }
+        else {
+
+
+          var catslast = [];
+          var datapostawal = null;
+
+          try {
+            datapostawal = await this.PostsService.findByPostId(body.postID);
+            catslast = datapostawal.category;
+          } catch (e) {
+            datapostawal = null;
+            catslast = [];
+          }
+          let idnew = catslast[i].oid.toString();
+          var totalcats = 0;
+          var postidlistcats = [];
+          let obj = { "postID": datapostawal.postID };
+          totalcats = datacats.total;
+          postidlistcats = datacats.listdata;
+          if (id !== idnew) {
+            postidlistcats.push(obj);
+          }
+
+          let interestCountDto_ = new InterestCountDto();
+          interestCountDto_._id = mongoose.Types.ObjectId(id);
+          if (id !== idnew) {
+            interestCountDto_.total = totalcats + 1;
+          }
+          interestCountDto_.listdata = postidlistcats;
+          await this.interestCountService.update(id, interestCountDto_);
+        }
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var strdate = dt.toISOString();
+        var repdate = strdate.replace('T', ' ');
+        var splitdate = repdate.split('.');
+        var stringdate = splitdate[0];
+        var date = stringdate.substring(0, 10) + " " + "00:00:00";
+        var cekdata = null;
+
+        try {
+          cekdata = await this.interestdayService.finddate(date);
+
+        } catch (e) {
+          cekdata = null;
+
+        }
+
+        try {
+          datacatsday = await this.interestdayService.finddatabydate(date, id);
+
+        } catch (e) {
+          datacatsday = null;
+
+        }
+
+        if (cekdata.length == 0) {
+          let interestdayDto_ = new InterestdayDto();
+          interestdayDto_.date = date;
+          interestdayDto_.listinterest = [{
+            "_id": mongoose.Types.ObjectId(id),
+            "total": 1,
+            "createdAt": stringdate,
+            "updatedAt": stringdate
+          }];
+          await this.interestdayService.create(interestdayDto_);
+        } else {
+
+
+          if (datacatsday.length > 0) {
+            var idq = datacatsday[0]._id;
+            var idint = datacatsday[0].listinterest._id;
+            var totalint = datacatsday[0].listinterest.total;
+            await this.interestdayService.updatefilter(idq.toString(), idint.toString(), totalint + 1, stringdate);
+          } else {
+
+            //await this.interestdayService.updateInterestday();
+          }
+        }
+
+
+
+      }
+    }
+
+
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
     if (saleAmount > 0) {
-      await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+      // await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
       //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
     }
 
     return data;
   }
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/createpostnew')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async createPostV3new(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("createPost >>> start");
+    console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
+    var arrtag = [];
 
+    if (body.tags !== undefined) {
+      var tag = body.tags;
+      var splittag = tag.split(',');
+      for (let x = 0; x < splittag.length; x++) {
+
+        var tagreq = splittag[x].replace(/"/g, "");
+        arrtag.push(tagreq)
+
+      }
+      body.tags = arrtag;
+    }
+
+
+    var data = await this.postContentService.createNewPostV3(file, body, headers);
+    var postID = data.data.postID;
+
+    //Tags
+
+    if (body.tags !== undefined) {
+      var tag2 = body.tags;
+      for (let i = 0; i < tag2.length; i++) {
+        let id = tag2[i];
+        var datatag2 = null;
+
+        try {
+          datatag2 = await this.tagCountService.findOneById(id);
+
+        } catch (e) {
+          datatag2 = null;
+
+        }
+
+        if (datatag2 === null) {
+
+          let tagCountDto_ = new TagCountDto();
+          tagCountDto_._id = id;
+          tagCountDto_.total = 1;
+          tagCountDto_.listdata = [{ "postID": postID }];
+          await this.tagCountService.create(tagCountDto_);
+        } else {
+          var tagslast = [];
+          var datapostawal = null;
+
+          try {
+            datapostawal = await this.PostsService.findByPostId(postID);
+            tagslast = datapostawal.tags;
+          } catch (e) {
+            datapostawal = null;
+            tagslast = [];
+          }
+          let idnew = tagslast[i];
+          var total2 = 0;
+          var postidlist2 = [];
+          let obj = { "postID": datapostawal.postID };
+          total2 = datatag2.total;
+          postidlist2 = datatag2.listdata;
+          if (id === idnew) {
+            postidlist2.push(obj);
+          }
+
+          let tagCountDto_ = new TagCountDto();
+          tagCountDto_._id = id;
+          if (id === idnew) {
+            tagCountDto_.total = total2 + 1;
+          }
+
+          tagCountDto_.listdata = postidlist2;
+          await this.tagCountService.update(id, tagCountDto_);
+        }
+
+      }
+    }
+
+    //Interest
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+
+
+    if (body.cats !== undefined) {
+      var cats = body.cats;
+      var splitcats = cats.split(',');
+      for (let i = 0; i < splitcats.length; i++) {
+        let id = splitcats[i];
+        var datacats = null;
+        var datacatsday = null;
+
+        try {
+          datacats = await this.interestCountService.findOneById(id);
+
+        } catch (e) {
+          datacats = null;
+
+        }
+
+        if (datacats === null) {
+
+
+          let interestCountDto_ = new InterestCountDto();
+          interestCountDto_._id = mongoose.Types.ObjectId(id);
+          interestCountDto_.total = 1;
+          interestCountDto_.listdata = [{ "postID": postID }];
+          await this.interestCountService.create(interestCountDto_);
+
+
+        }
+        else {
+
+
+          var catslast = [];
+          var datapostawal = null;
+
+          try {
+            datapostawal = await this.PostsService.findByPostId(postID);
+            catslast = datapostawal.category;
+          } catch (e) {
+            datapostawal = null;
+            catslast = [];
+          }
+          let idnew = catslast[i].oid.toString();
+          var totalcats = 0;
+          var postidlistcats = [];
+          let obj = { "postID": datapostawal.postID };
+          totalcats = datacats.total;
+          postidlistcats = datacats.listdata;
+          if (id === idnew) {
+            postidlistcats.push(obj);
+          }
+
+          let interestCountDto_ = new InterestCountDto();
+          interestCountDto_._id = mongoose.Types.ObjectId(id);
+          if (id === idnew) {
+            interestCountDto_.total = totalcats + 1;
+          }
+
+          interestCountDto_.listdata = postidlistcats;
+          await this.interestCountService.update(id, interestCountDto_);
+        }
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var strdate = dt.toISOString();
+        var repdate = strdate.replace('T', ' ');
+        var splitdate = repdate.split('.');
+        var stringdate = splitdate[0];
+        var date = stringdate.substring(0, 10) + " " + "00:00:00";
+        var cekdata = null;
+
+        try {
+          cekdata = await this.interestdayService.finddate(date);
+
+        } catch (e) {
+          cekdata = null;
+
+        }
+
+        try {
+          datacatsday = await this.interestdayService.finddatabydate(date, id);
+
+        } catch (e) {
+          datacatsday = null;
+
+        }
+
+        if (cekdata.length == 0) {
+          let interestdayDto_ = new InterestdayDto();
+          interestdayDto_.date = date;
+          interestdayDto_.listinterest = [{
+            "_id": mongoose.Types.ObjectId(id),
+            "total": 1,
+            "createdAt": stringdate,
+            "updatedAt": stringdate
+          }];
+          await this.interestdayService.create(interestdayDto_);
+        } else {
+
+
+          if (datacatsday.length > 0) {
+            var idq = datacatsday[0]._id;
+            var idint = datacatsday[0].listinterest._id;
+            var totalint = datacatsday[0].listinterest.total;
+            await this.interestdayService.updatefilter(idq.toString(), idint.toString(), totalint + 1, stringdate);
+          }
+        }
+
+
+
+      }
+    }
+
+
+    return data;
+  }
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts')
   @UseInterceptors(FileInterceptor('postContent'))
@@ -955,7 +1195,7 @@ export class PostsController {
     return await this.PostsService.generateNewUserPlaylist("633d0c26c9dca3610d7209f9");
   }
 
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Post('api/posts/getinteractives')
   @HttpCode(HttpStatus.ACCEPTED)
   @FormDataRequest()

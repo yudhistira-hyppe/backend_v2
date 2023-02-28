@@ -109,6 +109,10 @@ export class Ads {
     reportedUserHandle: any[];
     @Prop()
     age: string;
+    @Prop()
+    updatedAt: string;
+    @Prop()
+    skipTime: number;
 }
 
 export const AdsSchema = SchemaFactory.createForClass(Ads);
