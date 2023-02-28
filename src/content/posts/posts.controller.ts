@@ -339,23 +339,357 @@ export class PostsController {
   async createPostV3(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("createPost >>> start");
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
-    // var arrtag = [];
-    // var tag = body.tags;
-    // if (tag !== undefined) {
-    //   var splittag = tag.split(',');
-    //   for (let x = 0; x < splittag.length; x++) {
+    var arrtag = [];
 
-    //     var tagreq = splittag[x].replace(/"/g, "");
-    //     arrtag.push(tagreq)
+    if (body.tags !== undefined) {
+      var tag = body.tags;
+      var splittag = tag.split(',');
+      for (let x = 0; x < splittag.length; x++) {
+
+        var tagreq = splittag[x].replace(/"/g, "");
+        arrtag.push(tagreq)
+
+      }
+      body.tags = arrtag;
+    }
+
+    var data = await this.postContentService.createNewPostV3(file, body, headers);
+
+    return data;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/v4/createpost')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async createPostV4(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("createPost >>> start");
+    console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
+    return this.postContentService.createNewPostV4(file, body, headers);
+  }
+
+  @Post('api/posts/apsaraId')
+  async getPlayInfo(@Body() body) {
+    return this.postContentService.getVideoApsaraSingleV4(body.apsaraId, body.definition);
+  }
+
+  @Post('api/posts/testUpload')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async testPost(@UploadedFile() file: Express.Multer.File, @Body() body) {
+    return this.postContentService.uploadVideo(file, body.postID.toString());
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/removecomment')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async removeComment(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("removeComment >>> start");
+    return this.postCommentService.removeComment(body, headers);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/postviewer')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async postViewer(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("postViewer >>> start");
+    return this.postCommentService.postViewer(body, headers);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/updatepost')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("updatePost >>> start");
+    var email = headers['x-auth-user'];
+    var saleAmount = body.saleAmount;
+    var data = null;
+    var lang = await this.utilsService.getUserlanguages(email);
+
+
+    var posts = await this.PostsService.findid(body.postID.toString());
+    var dataTransaction = await this.transactionsPostService.findpostid(body.postID.toString());
+    if (await this.utilsService.ceckData(dataTransaction)) {
+      if (lang == "id") {
+        await this.errorHandler.generateNotAcceptableException(
+          "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
+        );
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          " Unable to edit the post because it is in the process of payment.",
+        );
+      }
+    }
+
+    var arrtag = [];
+
+    if (body.tags !== undefined) {
+      var tag = body.tags;
+      var splittag = tag.split(',');
+      for (let x = 0; x < splittag.length; x++) {
+
+        var tagreq = splittag[x].replace(/"/g, "");
+        arrtag.push(tagreq)
+
+      }
+      body.tags = arrtag;
+    }
+
+
+    data = await this.postContentService.updatePost(body, headers);
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+    if (saleAmount > 0) {
+      await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+      //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+    }
+
+    return data;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/updatepostnew')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async updatePostnew(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("updatePost >>> start");
+    var email = headers['x-auth-user'];
+    var saleAmount = body.saleAmount;
+    var data = null;
+    var lang = await this.utilsService.getUserlanguages(email);
+
+
+    var posts = await this.PostsService.findid(body.postID.toString());
+    var dataTransaction = await this.transactionsPostService.findpostid(body.postID.toString());
+    if (await this.utilsService.ceckData(dataTransaction)) {
+      if (lang == "id") {
+        await this.errorHandler.generateNotAcceptableException(
+          "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
+        );
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          " Unable to edit the post because it is in the process of payment.",
+        );
+      }
+    }
+
+    var arrtag = [];
+    var tag = body.tags;
+    if (tag !== undefined) {
+      var splittag = tag.split(',');
+      for (let x = 0; x < splittag.length; x++) {
+
+        var tagreq = splittag[x].replace(/"/g, "");
+        arrtag.push(tagreq)
+
+      }
+    }
+    body.tags = arrtag;
+
+
+    // var datapostawal = null;
+    // var tags = [];
+    // var arrtag = [];
+
+    // var cats = [];
+    // try {
+    //   datapostawal = await this.PostsService.findByPostId(body.postID);
+    //   tags = datapostawal.tags;
+    //   cats = datapostawal.category;
+    // } catch (e) {
+    //   datapostawal = null;
+    //   tags = [];
+    //   cats = [];
+    // }
+    // var datatag = null;
+    // if (tags.length > 0) {
+    //   if (body.tags !== undefined) {
+    //     var tag = body.tags;
+    //     if (tag !== undefined) {
+    //       var splittag = tag.split(',');
+
+    //     }
+
+    //     for (let x = 0; x < splittag.length; x++) {
+    //       var tagkata = tags[x];
+    //       var tagreq = splittag[x].replace(/"/g, "");
+    //       arrtag.push(tagreq)
+    //       // var av = tagreq.replace(/"/g, "");
+
+    //       if (tagreq !== undefined && tagreq !== tagkata) {
+
+    //         try {
+    //           datatag = await this.tagCountService.findOneById(tagkata);
+    //         } catch (e) {
+    //           datatag = null;
+    //         }
+
+
+    //         var total = 0;
+    //         if (datatag !== null) {
+    //           var postidlist = datatag.listdata;
+    //           total = datatag.total;
+
+    //           for (var i = 0; i < postidlist.length; i++) {
+    //             if (postidlist[i].postID === body.postID) {
+    //               postidlist.splice(i, 1);
+    //             }
+    //           }
+    //           let tagCountDto_ = new TagCountDto();
+    //           tagCountDto_.total = total - 1;
+    //           tagCountDto_.listdata = postidlist;
+    //           await this.tagCountService.update(tagkata, tagCountDto_);
+    //         }
+    //       }
+    //     }
+    //     body.tags = arrtag;
+    //     //data = await this.postContentService.updatePost(body, headers);
+    //   } else {
+    //     //data = await this.postContentService.updatePost(body, headers);
+    //   }
+
+    // }
+
+    // //interest
+    // var datacats = null;
+    // var arrcat = [];
+    // if (cats.length > 0) {
+    //   if (body.cats !== undefined) {
+    //     var cat = body.cats;
+    //     if (cat !== undefined) {
+    //       var splittcat = cat.split(',');
+
+    //     }
+
+    //     for (let x = 0; x < splittcat.length; x++) {
+
+    //       var tagcat = null;
+    //       try {
+    //         tagcat = cats[x].oid.toString();
+    //       } catch (e) {
+    //         tagcat = "";
+    //       }
+    //       var catreq = splittcat[x].replace(/"/g, "");
+    //       arrcat.push(catreq)
+    //       // var av = tagreq.replace(/"/g, "");
+
+    //       if (catreq !== undefined && catreq !== tagcat) {
+
+    //         try {
+    //           datacats = await this.interestCountService.findOneById(tagcat);
+    //         } catch (e) {
+    //           datacats = null;
+    //         }
+    //         var total = 0;
+    //         if (datacats !== null) {
+    //           let postidlist = datacats.listdata;
+    //           total = datacats.total;
+
+    //           for (var i = 0; i < postidlist.length; i++) {
+    //             if (postidlist[i].postID === body.postID) {
+    //               postidlist.splice(i, 1);
+    //             }
+    //           }
+    //           let catCountDto_ = new InterestCountDto();
+    //           catCountDto_.total = total - 1;
+    //           catCountDto_.listdata = postidlist;
+    //           await this.interestCountService.update(tagkata, catCountDto_);
+    //         }
+    //       }
+    //     }
+    //     body.cats = arrcat;
+    //     //data = await this.postContentService.updatePost(body, headers);
+    //   } else {
+    //     //data = await this.postContentService.updatePost(body, headers);
+    //   }
+
+    // }
+
+    data = await this.postContentService.updatePost(body, headers);
+
+    // if (body.tags !== undefined) {
+    //   var tag2 = body.tags;
+    //   for (let i = 0; i < tag2.length; i++) {
+    //     let id = tag2[i];
+    //     var datatag2 = null;
+
+    //     try {
+    //       datatag2 = await this.tagCountService.findOneById(id);
+
+    //     } catch (e) {
+    //       datatag2 = null;
+
+    //     }
+
+    //     if (datatag2 === null) {
+
+    //       let tagCountDto_ = new TagCountDto();
+    //       tagCountDto_._id = id;
+    //       tagCountDto_.total = 1;
+    //       tagCountDto_.listdata = [{ "postID": body.postID }];
+    //       await this.tagCountService.create(tagCountDto_);
+    //     } else {
+
+    //       var datapost = null;
+    //       var tagslast = [];
+    //       try {
+    //         datapost = await this.PostsService.findByPostId(body.postID);
+    //         tagslast = datapost.tags;
+    //       } catch (e) {
+    //         datapost = null;
+    //         tagslast = [];
+    //       }
+    //       let idnew = tagslast[i];
+    //       var total2 = 0;
+    //       var postidlist2 = [];
+    //       let obj = { "postID": body.postID };
+    //       total2 = datatag2.total;
+    //       postidlist2 = datatag2.listdata;
+    //       if (id !== idnew) {
+    //         postidlist2.push(obj);
+    //       }
+
+    //       let tagCountDto_ = new TagCountDto();
+    //       tagCountDto_._id = id;
+    //       if (id !== idnew) {
+    //         tagCountDto_.total = total2 + 1;
+    //       }
+
+    //       tagCountDto_.listdata = postidlist2;
+    //       await this.tagCountService.update(id, tagCountDto_);
+    //     }
 
     //   }
     // }
-    // body.tags = arrtag;
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+    if (saleAmount > 0) {
+      await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+      //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+    }
+
+    return data;
+  }
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/createpostnew')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async createPostV3new(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("createPost >>> start");
+    console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
+    var arrtag = [];
+    var tag = body.tags;
+    if (tag !== undefined) {
+      var splittag = tag.split(',');
+      for (let x = 0; x < splittag.length; x++) {
+
+        var tagreq = splittag[x].replace(/"/g, "");
+        arrtag.push(tagreq)
+
+      }
+    }
+    body.tags = arrtag;
 
     var data = await this.postContentService.createNewPostV3(file, body, headers);
     //  var postID = data.data.postID;
 
-    //Tags
+    // //Tags
     // var tag2 = body.tags;
     // if (tag2 !== undefined) {
     //   for (let i = 0; i < tag2.length; i++) {
@@ -529,246 +863,6 @@ export class PostsController {
 
     return data;
   }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('api/posts/v4/createpost')
-  @UseInterceptors(FileInterceptor('postContent'))
-  async createPostV4(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
-    this.logger.log("createPost >>> start");
-    console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
-    return this.postContentService.createNewPostV4(file, body, headers);
-  }
-
-  @Post('api/posts/apsaraId')
-  async getPlayInfo(@Body() body) {
-    return this.postContentService.getVideoApsaraSingleV4(body.apsaraId, body.definition);
-  }
-
-  @Post('api/posts/testUpload')
-  @UseInterceptors(FileInterceptor('postContent'))
-  async testPost(@UploadedFile() file: Express.Multer.File, @Body() body) {
-    return this.postContentService.uploadVideo(file, body.postID.toString());
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('api/posts/removecomment')
-  @UseInterceptors(FileInterceptor('postContent'))
-  async removeComment(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
-    this.logger.log("removeComment >>> start");
-    return this.postCommentService.removeComment(body, headers);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('api/posts/postviewer')
-  @UseInterceptors(FileInterceptor('postContent'))
-  async postViewer(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
-    this.logger.log("postViewer >>> start");
-    return this.postCommentService.postViewer(body, headers);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('api/posts/updatepost')
-  @UseInterceptors(FileInterceptor('postContent'))
-  async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
-    this.logger.log("updatePost >>> start");
-    var email = headers['x-auth-user'];
-    var saleAmount = body.saleAmount;
-    var data = null;
-    var lang = await this.utilsService.getUserlanguages(email);
-
-
-    var posts = await this.PostsService.findid(body.postID.toString());
-    var dataTransaction = await this.transactionsPostService.findpostid(body.postID.toString());
-    if (await this.utilsService.ceckData(dataTransaction)) {
-      if (lang == "id") {
-        await this.errorHandler.generateNotAcceptableException(
-          "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
-        );
-      } else {
-        await this.errorHandler.generateNotAcceptableException(
-          " Unable to edit the post because it is in the process of payment.",
-        );
-      }
-    }
-
-    // var datapostawal = null;
-    // var tags = [];
-    // var arrtag = [];
-
-    // var cats=[];
-    // try {
-    //   datapostawal = await this.PostsService.findByPostId(body.postID);
-    //   tags = datapostawal.tags;
-    //   cats=datapostawal.cats;
-    // } catch (e) {
-    //   datapostawal = null;
-    //   tags = [];
-    //   cats=[];
-    // }
-    // var datatag = null;
-    // if (tags.length > 0) {
-    //   if (body.tags !== undefined) {
-    //     var tag = body.tags;
-    //     if (tag !== undefined) {
-    //       var splittag = tag.split(',');
-
-    //     }
-
-    //     for (let x = 0; x < splittag.length; x++) {
-    //       var tagkata = tags[x];
-    //       var tagreq = splittag[x].replace(/"/g, "");
-    //       arrtag.push(tagreq)
-    //       // var av = tagreq.replace(/"/g, "");
-
-    //       if (tagreq !== undefined && tagreq !== tagkata) {
-
-    //         try {
-    //           datatag = await this.tagCountService.findOneById(tagkata);
-    //         } catch (e) {
-    //           datatag = null;
-    //         }
-
-
-    //         var total = 0;
-    //         if (datatag !== null) {
-    //           var postidlist = datatag.listdata;
-    //           total = datatag.total;
-
-    //           for (var i = 0; i < postidlist.length; i++) {
-    //             if (postidlist[i].postID === body.postID) {
-    //               postidlist.splice(i, 1);
-    //             }
-    //           }
-    //           let tagCountDto_ = new TagCountDto();
-    //           tagCountDto_.total = total - 1;
-    //           tagCountDto_.listdata = postidlist;
-    //           await this.tagCountService.update(tagkata, tagCountDto_);
-    //         }
-    //       }
-    //     }
-    //     body.tags = arrtag;
-    //     //data = await this.postContentService.updatePost(body, headers);
-    //   } else {
-    //     //data = await this.postContentService.updatePost(body, headers);
-    //   }
-
-    // }
-
-    // //interest
-    // var datacats = null;
-    // var arrcat=[];
-    // if (cats.length > 0) {
-    //   if (body.cats !== undefined) {
-    //     var cat = body.cats;
-    //     if (cat !== undefined) {
-    //       var splittcat = cat.split(',');
-
-    //     }
-
-    //     for (let x = 0; x < splittcat.length; x++) {
-    //       var tagcat = cats[x];
-    //       var catreq = splittcat[x].replace(/"/g, "");
-    //       arrcat.push(catreq)
-    //       // var av = tagreq.replace(/"/g, "");
-
-    //       if (catreq !== undefined && catreq !== tagcat) {
-
-    //         try {
-    //           datacats = await this.interestCountService.findOneById(tagcat);
-    //         } catch (e) {
-    //           datacats = null;
-    //         }
-    //         var total = 0;
-    //         if (datacats !== null) {
-    //           let postidlist = datacats.listdata;
-    //           total = datacats.total;
-
-    //           for (var i = 0; i < postidlist.length; i++) {
-    //             if (postidlist[i].postID === body.postID) {
-    //               postidlist.splice(i, 1);
-    //             }
-    //           }
-    //           let tagCountDto_ = new TagCountDto();
-    //           tagCountDto_.total = total - 1;
-    //           tagCountDto_.listdata = postidlist;
-    //           await this.tagCountService.update(tagkata, tagCountDto_);
-    //         }
-    //       }
-    //     }
-    //     body.tags = arrtag;
-    //     //data = await this.postContentService.updatePost(body, headers);
-    //   } else {
-    //     //data = await this.postContentService.updatePost(body, headers);
-    //   }
-
-    // }
-
-    data = await this.postContentService.updatePost(body, headers);
-
-    // if (body.tags !== undefined ) {
-    //   var tag2 = body.tags;
-    //   for (let i = 0; i < tag2.length; i++) {
-    //     let id = tag2[i];
-    //     var datatag2 = null;
-
-    //     try {
-    //       datatag2 = await this.tagCountService.findOneById(id);
-
-    //     } catch (e) {
-    //       datatag2 = null;
-
-    //     }
-
-    //     if (datatag2 === null) {
-
-    //       let tagCountDto_ = new TagCountDto();
-    //       tagCountDto_._id = id;
-    //       tagCountDto_.total = 1;
-    //       tagCountDto_.listdata = [{ "postID": body.postID }];
-    //       await this.tagCountService.create(tagCountDto_);
-    //     } else {
-
-    //       var datapost = null;
-    //       var tagslast = [];
-    //       try {
-    //         datapost = await this.PostsService.findByPostId(body.postID);
-    //         tagslast = datapost.tags;
-    //       } catch (e) {
-    //         datapost = null;
-    //         tagslast = [];
-    //       }
-    //       let idnew = tagslast[i];
-    //       var total2 = 0;
-    //       var postidlist2 = [];
-    //       let obj = { "postID": body.postID };
-    //       total2 = datatag2.total;
-    //       postidlist2 = datatag2.listdata;
-    //       if (id !== idnew) {
-    //         postidlist2.push(obj);
-    //       }
-
-    //       let tagCountDto_ = new TagCountDto();
-    //       tagCountDto_._id = id;
-    //       if (id !== idnew) {
-    //         tagCountDto_.total = total2 + 1;
-    //       }
-
-    //       tagCountDto_.listdata = postidlist2;
-    //       await this.tagCountService.update(id, tagCountDto_);
-    //     }
-
-    //   }
-    // }
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
-    if (saleAmount > 0) {
-      await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
-      //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
-    }
-
-    return data;
-  }
-
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts')
   @UseInterceptors(FileInterceptor('postContent'))
