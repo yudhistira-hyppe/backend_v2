@@ -9,6 +9,8 @@ export class Theme {
     @Prop()
     name: String;
     @Prop()
+    name_id: String;
+    @Prop()
     langIso: String;
     @Prop()
     icon: String;
