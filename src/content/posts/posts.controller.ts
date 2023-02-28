@@ -334,29 +334,29 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/posts/createpost')
-  @UseInterceptors(FileInterceptor('postContent'))
-  async createPostV3(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
-    this.logger.log("createPost >>> start");
-    console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
-    var arrtag = [];
+  // @Post('api/posts/createpost')
+  // @UseInterceptors(FileInterceptor('postContent'))
+  // async createPostV3(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+  //   this.logger.log("createPost >>> start");
+  //   console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
+  //   var arrtag = [];
 
-    if (body.tags !== undefined) {
-      var tag = body.tags;
-      var splittag = tag.split(',');
-      for (let x = 0; x < splittag.length; x++) {
+  //   if (body.tags !== undefined) {
+  //     var tag = body.tags;
+  //     var splittag = tag.split(',');
+  //     for (let x = 0; x < splittag.length; x++) {
 
-        var tagreq = splittag[x].replace(/"/g, "");
-        arrtag.push(tagreq)
+  //       var tagreq = splittag[x].replace(/"/g, "");
+  //       arrtag.push(tagreq)
 
-      }
-      body.tags = arrtag;
-    }
+  //     }
+  //     body.tags = arrtag;
+  //   }
 
-    var data = await this.postContentService.createNewPostV3(file, body, headers);
+  //   var data = await this.postContentService.createNewPostV3(file, body, headers);
 
-    return data;
-  }
+  //   return data;
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/v4/createpost')
@@ -394,59 +394,59 @@ export class PostsController {
     return this.postCommentService.postViewer(body, headers);
   }
 
+  // @UseGuards(JwtAuthGuard)
+  // @Post('api/posts/updatepost')
+  // @UseInterceptors(FileInterceptor('postContent'))
+  // async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+  //   this.logger.log("updatePost >>> start");
+  //   var email = headers['x-auth-user'];
+  //   var saleAmount = body.saleAmount;
+  //   var data = null;
+  //   var lang = await this.utilsService.getUserlanguages(email);
+
+
+  //   var posts = await this.PostsService.findid(body.postID.toString());
+  //   var dataTransaction = await this.transactionsPostService.findpostid(body.postID.toString());
+  //   if (await this.utilsService.ceckData(dataTransaction)) {
+  //     if (lang == "id") {
+  //       await this.errorHandler.generateNotAcceptableException(
+  //         "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
+  //       );
+  //     } else {
+  //       await this.errorHandler.generateNotAcceptableException(
+  //         " Unable to edit the post because it is in the process of payment.",
+  //       );
+  //     }
+  //   }
+
+  //   var arrtag = [];
+
+  //   if (body.tags !== undefined) {
+  //     var tag = body.tags;
+  //     var splittag = tag.split(',');
+  //     for (let x = 0; x < splittag.length; x++) {
+
+  //       var tagreq = splittag[x].replace(/"/g, "");
+  //       arrtag.push(tagreq)
+
+  //     }
+  //     body.tags = arrtag;
+  //   }
+
+
+  //   data = await this.postContentService.updatePost(body, headers);
+  //   console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+  //   console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+  //   if (saleAmount > 0) {
+  //     await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+  //     //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+  //   }
+
+  //   return data;
+  // }
+
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/updatepost')
-  @UseInterceptors(FileInterceptor('postContent'))
-  async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
-    this.logger.log("updatePost >>> start");
-    var email = headers['x-auth-user'];
-    var saleAmount = body.saleAmount;
-    var data = null;
-    var lang = await this.utilsService.getUserlanguages(email);
-
-
-    var posts = await this.PostsService.findid(body.postID.toString());
-    var dataTransaction = await this.transactionsPostService.findpostid(body.postID.toString());
-    if (await this.utilsService.ceckData(dataTransaction)) {
-      if (lang == "id") {
-        await this.errorHandler.generateNotAcceptableException(
-          "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
-        );
-      } else {
-        await this.errorHandler.generateNotAcceptableException(
-          " Unable to edit the post because it is in the process of payment.",
-        );
-      }
-    }
-
-    var arrtag = [];
-
-    if (body.tags !== undefined) {
-      var tag = body.tags;
-      var splittag = tag.split(',');
-      for (let x = 0; x < splittag.length; x++) {
-
-        var tagreq = splittag[x].replace(/"/g, "");
-        arrtag.push(tagreq)
-
-      }
-      body.tags = arrtag;
-    }
-
-
-    data = await this.postContentService.updatePost(body, headers);
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
-    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
-    if (saleAmount > 0) {
-      await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
-      //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
-    }
-
-    return data;
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('api/posts/updatepostnew')
   @UseInterceptors(FileInterceptor('postContent'))
   async updatePostnew(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("updatePost >>> start");
@@ -650,7 +650,6 @@ export class PostsController {
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
 
-
     if (body.cats !== undefined) {
       let cats = body.cats;
       var splitcats = cats.split(',');
@@ -755,12 +754,18 @@ export class PostsController {
             var totalint = datacatsday[0].listinterest.total;
             await this.interestdayService.updatefilter(idq.toString(), idint.toString(), totalint + 1, stringdate);
           } else {
-
-            //await this.interestdayService.updateInterestday();
+            var idInt = cekdata[0]._id.toString();
+            var list = cekdata[0].listinterest;
+            var objin = {
+              "_id": mongoose.Types.ObjectId(id),
+              "total": 1,
+              "createdAt": stringdate,
+              "updatedAt": stringdate
+            };
+            list.push(objin);
+            await this.interestdayService.updateInterestday(idInt, list);
           }
         }
-
-
 
       }
     }
@@ -769,14 +774,14 @@ export class PostsController {
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
     if (saleAmount > 0) {
-      // await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+      await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
       //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
     }
 
     return data;
   }
   @UseGuards(JwtAuthGuard)
-  @Post('api/posts/createpostnew')
+  @Post('api/posts/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPostV3new(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("createPost >>> start");
