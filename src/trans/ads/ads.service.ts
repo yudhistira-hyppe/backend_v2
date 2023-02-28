@@ -8637,10 +8637,30 @@ export class AdsService {
                 }
             },
             {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "userIDAssesment",
+                    foreignField: "_id",
+                    as: "adminbasics_data"
+                }
+            },
+            {
                 $project: {
                     userID: 1,
-                    fullName: '$user.fullName',
-                    email: '$user.email',
+                    fullName: 
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$userbasics_data.fullName", 0
+                        ]
+                    },
+                    email: 
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$userbasics_data.email", 0
+                        ]
+                    },
                     timestamp: 1,
                     expiredAt: 1,
                     liveAt: 1,
@@ -8669,7 +8689,243 @@ export class AdsService {
                     idApsara: 1,
                     duration: 1,
                     tayang: 1,
-                    type: 1
+                    type: 1,
+                    adminfullName: 
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$adminbasics_data.fullName", 0
+                        ]
+                    },
+                    listgender:
+                    [
+                        {
+                            $switch:
+                            {
+                                branches:
+                                [
+                                    {
+                                        case:
+                                        {
+                                            $eq:
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$gender", 0
+                                                    ]
+                                                },
+                                                "P"
+                                            ]
+                                        },
+                                        then:"Perempuan"
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq:
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$gender", 0
+                                                    ]
+                                                },
+                                                "L"
+                                            ]
+                                        },
+                                        then:"Laki-laki"
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq:
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$gender", 0
+                                                    ]
+                                                },
+                                                "O"
+                                            ]
+                                        },
+                                        then:"Lainnya"
+                                    },
+                                ],
+                                default:null
+                            }
+                        },
+                        {
+                            $switch:
+                            {
+                                branches:
+                                [
+                                    {
+                                        case:
+                                        {
+                                            $eq:
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$gender", 1
+                                                    ]
+                                                },
+                                                "P"
+                                            ]
+                                        },
+                                        then:"Perempuan"
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq:
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$gender", 1
+                                                    ]
+                                                },
+                                                "L"
+                                            ]
+                                        },
+                                        then:"Laki-laki"
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq:
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$gender", 1
+                                                    ]
+                                                },
+                                                "O"
+                                            ]
+                                        },
+                                        then:"Lainnya"
+                                    },
+                                ],
+                                default:null
+                            }
+                        },
+                        {
+                            $switch:
+                            {
+                                branches:
+                                [
+                                    {
+                                        case:
+                                        {
+                                            $eq:
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$gender", 2
+                                                    ]
+                                                },
+                                                "P"
+                                            ]
+                                        },
+                                        then:"Perempuan"
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq:
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$gender", 2
+                                                    ]
+                                                },
+                                                "L"
+                                            ]
+                                        },
+                                        then:"Laki-laki"
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq:
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$gender", 2
+                                                    ]
+                                                },
+                                                "O"
+                                            ]
+                                        },
+                                        then:"Lainnya"
+                                    },
+                                ],
+                                default:null
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                $set:
+                {
+                    "removenull":
+                    {
+                        $filter : 
+                        {
+                            input: "$listgender",
+                            as: "list",
+                            cond: 
+                            {
+                                "$ne": 
+                                [
+                                    "$$list",
+                                    null
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    userID: 1,
+                    fullName: 1,
+                    email: 1,
+                    timestamp: 1,
+                    expiredAt: 1,
+                    liveAt: 1,
+                    name: 1,
+                    description: 1,
+                    objectifitas: 1,
+                    status: 1,
+                    totalClick: 1,
+                    totalUsedCredit: 1,
+                    totalView: 1,
+                    urlLink: 1,
+                    isActive: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    timeStart: 1,
+                    timeEnd: 1,
+                    namePlace: 1,
+                    nameType: 1,
+                    idApsara: 1,
+                    duration: 1,
+                    tayang: 1,
+                    type: 1,
+                    adminfullName: 1,
+                    listgender: "$removenull"
                 }
             },
             {
@@ -8808,7 +9064,8 @@ export class AdsService {
                     totalClick: {
                         $arrayElemAt: ['$click.totalClick', 0]
                     },
-
+                    adminfullName: 1,
+                    listgender: 1,
                 }
             },
             {
@@ -9115,7 +9372,9 @@ export class AdsService {
                     view: 1,
                     click: 1,
                     sumview: 1,
-                    sumclick: 1
+                    sumclick: 1,
+                    adminfullName: 1,
+                    listgender: 1
                 }
             },
             {
@@ -9245,7 +9504,9 @@ export class AdsService {
                         $arrayElemAt: ['$reward.totalbiaya', 0]
                     },
                     sumview: 1,
-                    sumclick: 1
+                    sumclick: 1,
+                    adminfullName: 1,
+                    listgender: 1,
                 }
             },
             {
@@ -9304,7 +9565,9 @@ export class AdsService {
 
                     },
                     sumview: 1,
-                    sumclick: 1
+                    sumclick: 1,
+                    adminfullName: 1,
+                    listgender: 1,
                 }
             },
             {
@@ -10317,7 +10580,9 @@ export class AdsService {
                             }
                         },
 
-                    }
+                    },
+                    adminfullName: 1,
+                    listgender: 1,
                 },
 
             },
@@ -13508,11 +13773,14 @@ export class AdsService {
                             }
                         },
 
-                    }
+                    },
+                    adminfullName: 1,
+                    listgender: 1,
                 },
 
             },
         ]);
+
         var arrayData = [];
         let data = await this.getapsaraDatabaseAds(query, startdate, enddate);
         arrayData.push(data[0])

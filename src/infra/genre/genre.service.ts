@@ -47,10 +47,21 @@ export class GenreService {
 
     async findCriteria(pageNumber: number, pageRow: number, search: string): Promise<Genre[]> {
         var perPage = pageRow, page = Math.max(0, pageNumber);
-        var where = {};
+        var where = {
+            $and: []
+        };
+        var where_and = {};
+        var where_name = {};
+        var where_name_id = {};
         if (search != undefined) {
-            where['name'] = { $regex: search, $options: "i" };
+            where['$or'] = [];
+            where_name['name'] = { $regex: search, $options: "i" };
+            where_name_id['name_id'] = { $regex: search, $options: "i" };
+            where['$or'].push(where_name);
+            where['$or'].push(where_name_id);
         }
+        where_and['langIso'] = 'en'
+        where.$and.push(where_and);
         const query = await this.genreModel.find(where).limit(perPage).skip(perPage * page).sort({ name: 'desc' });
         return query;
     }

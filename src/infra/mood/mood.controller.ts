@@ -135,7 +135,18 @@ export class MoodController {
                 'Unabled to proceed param id is required',
             );
         }
+        var profile = await this.utilsService.generateProfile(headers['x-auth-user'], "FULL");
+        if (!(await this.utilsService.ceckData(profile))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed user not found',
+            );
+        }
+        const langIso = (profile.langIso != undefined) ? profile.langIso : "id";
         var data = await this.moodService.findOne(id);
+        if (langIso == 'id') {
+            data.name = data.name_id;
+            data.langIso = 'id';
+        }
         var Response = {
             data: data,
             response_code: 202,
@@ -177,6 +188,14 @@ export class MoodController {
         const langIso = (profile.langIso != undefined) ? profile.langIso : "id";
         const data_all = await this.moodService.filAll();
         const data = await this.moodService.findCriteria(pageNumber_, pageRow_, search_, langIso.toString());
+
+        await Promise.all(data.map(async (item, index) => {
+            if (langIso == 'id') {
+                data[index].name = item.name_id; 
+                data[index].langIso = 'id';
+            } 
+        }));
+        
         var Response = {
             response_code: 202,
             total: data_all.length.toString(),
