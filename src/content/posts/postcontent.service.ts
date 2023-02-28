@@ -339,11 +339,9 @@ export class PostContentService {
       }
       post.category = pcats;
     }
-
     // if (body.cats != undefined && body.cats.length > 1) {
     //   var obj = body.cats;
     //   var cats = obj;
-
     //   var pcats = [];
     //   for (var i = 0; i < cats.length; i++) {
     //     var tmp = cats[i];
@@ -355,6 +353,7 @@ export class PostContentService {
     //   }
     //   post.category = pcats;
     // }
+
 
 
     post.likes = Long.fromInt(0);

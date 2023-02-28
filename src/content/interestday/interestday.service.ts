@@ -48,6 +48,12 @@ export class InterestdayService {
 
             });
     }
+
+    async updateInterestday(id: string, listinterest: any[]) {
+        let data = await this.interestdayModel.updateOne({ "_id": new Types.ObjectId(id) },
+            { $set: { "listinterest": listinterest } });
+        return data;
+    }
     async finddatabydate(date: string, id: string) {
         var query = await this.interestdayModel.aggregate([
 
