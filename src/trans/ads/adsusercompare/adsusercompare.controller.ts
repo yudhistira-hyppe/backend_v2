@@ -298,7 +298,7 @@ export class AdsUserCompareController {
                 data_response['adsPlace'] = dataPlace.namePlace;
             }
             data_response['adsType'] = (await this.adstypesService.findOne(data_ads[0].typeAdsID.toString())).nameType;
-            data_response['adsSkip'] = (await this.adstypesService.findOne(data_ads[0].typeAdsID.toString())).AdsSkip;
+            data_response['adsSkip'] = (data_ads[0].skipTime != undefined) ? data_ads[0].skipTime : (await this.adstypesService.findOne(data_ads[0].typeAdsID.toString())).AdsSkip;
             data_response['mediaType'] = data_ads[0].type;
             data_response['videoId'] = data_ads[0].idApsara;
             data_response['duration'] = data_ads[0].duration;

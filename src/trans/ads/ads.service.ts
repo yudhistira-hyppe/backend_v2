@@ -2519,6 +2519,7 @@ export class AdsService {
                         tayang: "$tayang",
                         ageStart: "$startAge",
                         ageEnd: "$endAge",
+                        skipTime: "$skipTime",
                         placingID: "$placingID",
                         liveTypeAds: "$liveTypeAds",
                         adsUserId: "$userID",
@@ -2701,6 +2702,7 @@ export class AdsService {
                     liveTypeAds: "$ads.liveTypeAds",
                     nameType: "$types.nameType",
                     timestamps: "$ads.timestamps",
+                    skipTime: "$ads.skipTime",
                     typeAdsID: "$ads.typeAdsID",
                     adsUserId: "$ads.adsUserId",
                     placingID: "$ads.placingID",
@@ -2779,7 +2781,6 @@ export class AdsService {
                             else: 0,
                         }
                     },
-
                 }
             },
             {
@@ -2791,6 +2792,7 @@ export class AdsService {
                     adsId: 1,
                     userID: 1,
                     liveAt: 1,
+                    skipTime: 1,
                     liveTypeuserads: 1,
                     nameType: 1,
                     createdAt: 1,
