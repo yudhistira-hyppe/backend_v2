@@ -6004,9 +6004,9 @@ export class PostBoostService {
 
                     ]
                   },
-                  {
-                    "visibility": "PUBLIC"
-                  },
+                  // {
+                  //   "visibility": "PUBLIC"
+                  // },
                   {
                     "active": true
                   },
