@@ -1074,6 +1074,21 @@ export class AdsController {
 
         return { response_code: 202, data: getdata, totalsearch: totalsearch, totalpage: totalpage, totaldatainpage: total, limit: limit, page: page, messages };
     }
+
+    @Get('console/adscenter/historydetail/:id')
+    @UseGuards(JwtAuthGuard)
+    async getHistoryIklan(@Param('id') id: string) {
+        var data = null;
+
+        data = await this.adsService.getDetailHistoryIklan(id);
+        data = data[0].result;
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        return { response_code: 202, messages, data }
+    }
 }
 
 
