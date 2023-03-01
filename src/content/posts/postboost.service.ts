@@ -6399,9 +6399,9 @@ export class PostBoostService {
 
                     ]
                   },
-                  {
-                    "visibility": "PUBLIC"
-                  },
+                  // {
+                  //   "visibility": "PUBLIC"
+                  // },
                   {
                     "active": true
                   },
@@ -6797,9 +6797,9 @@ export class PostBoostService {
 
                     ]
                   },
-                  {
-                    "visibility": "PUBLIC"
-                  },
+                  // {
+                  //   "visibility": "PUBLIC"
+                  // },
                   {
                     "active": true
                   },
@@ -7195,9 +7195,9 @@ export class PostBoostService {
 
                     ]
                   },
-                  {
-                    "visibility": "PUBLIC"
-                  },
+                  // {
+                  //   "visibility": "PUBLIC"
+                  // },
                   {
                     "active": true
                   },
