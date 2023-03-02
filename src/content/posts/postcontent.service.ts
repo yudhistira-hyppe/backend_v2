@@ -3091,6 +3091,7 @@ export class PostContentService {
     } else {
       query.where('postType').ne('advertise');
     }
+    query.where('visibility', 'PUBLIC');
 
     let row = 20;
     let page = 0;
