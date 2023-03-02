@@ -34,4 +34,8 @@ export class SettingsService {
             new: true
         }).exec();
     }
+    async findOneByJenisremark(jenis: string,remark:string): Promise<Settings> {
+        return this.settingsModel.findOne({ jenis: jenis,remark:remark }).exec();
+    }
+    
 }

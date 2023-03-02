@@ -333,7 +333,7 @@ export class PostsController {
     return this.postContentService.createNewPostV2(file, body, headers);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   // @Post('api/posts/createpost')
   // @UseInterceptors(FileInterceptor('postContent'))
   // async createPostV3(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
@@ -526,9 +526,9 @@ export class PostsController {
           }
         }
         body.tags = arrtag;
-        //data = await this.postContentService.updatePost(body, headers);
+       
       } else {
-        //data = await this.postContentService.updatePost(body, headers);
+   
       }
 
     }
@@ -553,9 +553,7 @@ export class PostsController {
             tagcat = "";
           }
           var catreq = splittcat[x];
-          // arrcat.push(catreq)
-          // var av = tagreq.replace(/"/g, "");
-
+    
           if (catreq !== undefined && catreq !== tagcat) {
 
             try {
@@ -580,10 +578,9 @@ export class PostsController {
             }
           }
         }
-        //  body.cats = arrcat;
-        //data = await this.postContentService.updatePost(body, headers);
+       
       } else {
-        //data = await this.postContentService.updatePost(body, headers);
+    
       }
 
     }
