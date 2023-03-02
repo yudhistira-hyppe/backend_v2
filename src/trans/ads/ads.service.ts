@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, Types } from 'mongoose';
 import { CreateAdsDto } from './dto/create-ads.dto';
+import { ObjectId } from 'mongodb';
 import { Ads, AdsDocument } from './schemas/ads.schema';
 import { UtilsService } from '../../utils/utils.service';
 import { PostsService } from '../../content/posts/posts.service';
@@ -6744,6 +6745,22 @@ export class AdsService {
         if (!data) {
             throw new Error('Todo is not found!');
         }
+        return data;
+    }
+
+    async updateStatusToBeREPORT(id: ObjectId) {
+        const data = await this.adsModel.updateOne(
+          {
+            _id:id
+          }, 
+          {
+            "$set":
+            {
+                status:"REPORTED",
+                isActive:false
+            }
+          });
+    
         return data;
     }
 
@@ -16451,6 +16468,14 @@ export class AdsService {
                         }
                     },
                     type:1,
+                    tempreportedUserCount:
+                    {
+                        "$ifNull":
+                        [
+                            "$reportedUserCount",
+                            0
+                        ]
+                    }
                 }
             },);
         
