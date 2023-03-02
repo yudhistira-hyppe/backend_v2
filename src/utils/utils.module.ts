@@ -33,9 +33,10 @@ import { NotificationsModule } from "../content/notifications/notifications.modu
 import { TemplatesRepoModule } from '../infra/templates_repo/templates_repo.module';
 import { BanksModule } from '../trans/banks/banks.module';
 import { DeepArModule } from '../trans/deepar/deepar.module';
-
+import { UserscoresModule } from '../trans/userscores/userscores.module';
 @Module({
   imports: [
+    UserscoresModule,
     DeepArModule,
     BanksModule,
     TemplatesRepoModule,

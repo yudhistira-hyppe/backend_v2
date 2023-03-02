@@ -1062,6 +1062,182 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
+    @Post('api/getusercontents/searchdatanew')
+    @UseGuards(JwtAuthGuard)
+    async contentsearchnew(@Req() request: Request): Promise<any> {
+
+
+        var keys = null;
+        var skip = 0;
+        var limit = 0;
+
+        var email = null;
+        var data = null;
+        var datasearch = null;
+        var dataLike = null;
+        var listpict = null;
+        var listvid = null;
+        var listdiary = null;
+        var listuser = null;
+        var listtag = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        email = request_json["email"];
+        keys = request_json["keys"];
+        listpict = request_json["listpict"];
+        listvid = request_json["listvid"];
+        listdiary = request_json["listdiary"];
+        listuser = request_json["listuser"];
+        listtag = request_json["listtag"];
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+
+        var user = [];
+        var arrpict = [];
+        var arrvid = [];
+        var arrdiary = [];
+        var picts = [];
+
+        var vid = [];
+        var diary = [];
+        var tags = [];
+        var lengpict = null;
+        var lengdiary = null;
+        var lengvid = null;
+        var lenguser = null;
+        var datatag = null;
+
+        try {
+            datasearch = await this.postsService.finddatasearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary, listuser, listtag);
+            user = datasearch[0].user;
+            tags = datasearch[0].tags;
+
+        } catch (e) {
+            datasearch = null;
+            user = [];
+            tags = [];
+        }
+
+        try {
+            user = datasearch[0].user;
+            lenguser = user.length;
+
+        } catch (e) {
+            user = [];
+            lenguser = 0;
+
+        }
+
+        try {
+            arrpict = datasearch[0].pict;
+            lengpict = arrpict.length;
+
+        } catch (e) {
+            arrpict = [];
+            lengpict = 0;
+
+        }
+        try {
+            arrvid = datasearch[0].vid;
+            lengvid = arrvid.length;
+
+        } catch (e) {
+            arrvid = [];
+            lengvid = 0;
+
+        }
+
+        try {
+            arrdiary = datasearch[0].diary;
+            lengdiary = arrdiary.length;
+
+        } catch (e) {
+            arrdiary = [];
+            lengdiary = 0;
+
+        }
+
+        if (lenguser > 0 && user[0].email !== undefined) {
+            user = datasearch[0].user;
+        } else {
+            user = [];
+        }
+
+        if (lengpict > 0) {
+
+            if (arrpict[0]._id !== undefined) {
+
+                for (let i = 0; i < lengpict; i++) {
+                    let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
+                    picts.push(datapicture[i])
+
+                }
+
+            } else {
+                picts = [];
+            }
+
+
+        } else {
+            picts = [];
+        }
+
+        if (lengvid > 0) {
+
+            if (arrvid[0]._id !== undefined) {
+                for (let i = 0; i < lengvid; i++) {
+                    let datavid = await this.getusercontentsService.getapsara(arrvid, i);
+                    vid.push(datavid[i])
+
+                }
+            } else {
+                vid = [];
+            }
+
+        } else {
+            vid = [];
+        }
+
+        if (lengdiary > 0) {
+
+            if (arrdiary[0]._id !== undefined) {
+                for (let i = 0; i < lengdiary; i++) {
+                    let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
+                    diary.push(datadiary[i])
+
+                }
+            }
+            else {
+                diary = [];
+            }
+        } else {
+            diary = [];
+        }
+
+        data = [{
+
+            user, picts, vid, diary, tags
+        }];
+
+
+        return { response_code: 202, data, messages };
+    }
+
     @Post('api/getusercontents/searchdatabyuser')
     @UseGuards(JwtAuthGuard)
     async contentfilterbyuser(@Req() request: Request): Promise<any> {

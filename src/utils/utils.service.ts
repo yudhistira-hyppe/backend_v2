@@ -32,6 +32,9 @@ import { TemplatesRepo } from '../infra/templates_repo/schemas/templatesrepo.sch
 import { BanksService } from '../trans/banks/banks.service';
 import { Banks } from '../trans/banks/schemas/banks.schema';
 import { DeepArService } from '../trans/deepar/deepar.service';
+import { UserscoresService } from '../trans/userscores/userscores.service';
+import { UserscoresDto } from 'src/trans/userscores/dto/create-userscores.dto';
+import mongoose, { Types } from 'mongoose';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -68,7 +71,8 @@ export class UtilsService {
     private banksService: BanksService,
     private userdevicesService: UserdevicesService,
     private notificationsService: NotificationsService,
-    private deepArService: DeepArService
+    private deepArService: DeepArService,
+    private userscoresService: UserscoresService
   ) { }
 
   async sendEmail(
@@ -302,7 +306,7 @@ export class UtilsService {
     var device_user = [];
     var getDate = await ((await this.getDateTime()).getTime()).toString();
 
-    if (typeTemplate !="REACTION"){
+    if (typeTemplate != "REACTION") {
       for (var i = 0; i < datadevice.length; i++) {
         var notification = {
           notification: {
@@ -1547,4 +1551,60 @@ export class UtilsService {
     }
     return result;
   }
+
+  async counscore(type: string, namedb: string, nametabel: string, idevent: string, event: string,iduser:string) {
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var stringdate = splitdate[0];
+    var date = stringdate.substring(0, 10) + " " + "00:00:00";
+
+    if (type == "AE") {
+      var dataseting=null;
+      var value=null;
+
+      try{
+       dataseting=await this.settingsService.findOneByJenisremark(event,type);
+       value=dataseting.value;
+      }catch(e){
+        dataseting=null;
+        value=0;
+      }
+
+      var cekdata = null;
+
+      try {
+        cekdata = await this.userscoresService.finddate(date,iduser);
+
+      } catch (e) {
+        cekdata = null;
+
+      }
+
+      if (cekdata.length == 0) {
+        var UserscoresDto_ = new UserscoresDto();
+        UserscoresDto_.totalscore = value;
+        UserscoresDto_.date = date;
+        UserscoresDto_.listscore = [
+          {
+            "idevent": { "$ref": nametabel, "$id": new Types.ObjectId(idevent), "$db": namedb },
+            "createdAt": date,
+            "type": type,
+            "score": value
+          }
+        ];
+        await this.userscoresService.create(UserscoresDto_);
+      }else{
+        
+      }
+
+
+    
+    }
+
+  }
 }
+
