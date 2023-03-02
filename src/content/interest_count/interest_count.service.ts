@@ -48,4 +48,89 @@ export class InterestCountService {
         return data;
     }
 
+    async searchDefaultPage(page: number, limits: number)
+    {
+        var pipeline = [];
+        var pipelinetag = [];
+
+        pipelinetag.push({
+            $project: {
+                tag: "$_id",
+                total: 1,
+                
+            }
+        },
+        {
+            $sort: {
+                total: - 1
+            }
+        });
+
+        if(limits > 0)
+        {
+            pipeline.push({
+                "$limit":limits
+            });
+
+            pipelinetag.push({
+                "$limit" : limits
+            });
+        }
+
+        if(page > 0)
+        {
+            pipelinetag.push({
+                "$skip" : limits * page
+            });
+        }
+
+        pipeline.push(
+            {
+                $sort: {
+                    total: - 1
+                }
+            },
+            {
+                $lookup: 
+                {
+                    from: "interests_repo",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "interest"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$interest"
+                }
+            },
+            {
+                $lookup: {
+                    from: "tag_count",
+                    pipeline: pipelinetag,
+                    as: "tag"
+                },
+            },
+            {
+                $project: {
+                    interest: {
+                        interests: "$interest.interestName",
+                        interestName: "$interest.interestName",
+                        langIso: "$interest.langIso",
+                        icon: "$interest.icon",
+                        createdAt: "$interest.createdAt",
+                        updatedAt: "$interest.updatedAt",
+                        interestNameId: "$interest.interestNameId",
+                        thumbnail: "$interest.thumbnail",
+                    },
+                    tag: "$tag"
+                }
+            });
+
+
+        // console.log(JSON.stringify(pipeline));
+        var query = await this.interestCountModel.aggregate(pipeline);
+
+        return query;
+    }
 }
