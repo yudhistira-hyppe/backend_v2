@@ -23,8 +23,8 @@ import { ObjectId } from 'mongodb';
 @Controller('api/ads')
 export class AdsUserCompareController {
     private readonly logger = new Logger(AdsUserCompareController.name);
+    private locks: Map<string, MutexInterface>;
     constructor(
-        //private locks: Map<string, MutexInterface>,
         private adsUserCompareService: AdsUserCompareService,
         private userAdsService: UserAdsService,
         private adsService: AdsService,
@@ -334,7 +334,7 @@ export class AdsUserCompareController {
     @Post('/viewads/')
     @HttpCode(HttpStatus.ACCEPTED)
     async viewads(@Headers() headers, @Body() body): Promise<any> {
-        // this.locks = new Map();
+        //this.locks = new Map();
         this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START headers : " + JSON.stringify(headers));
         this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START body : " + JSON.stringify(body));
         if (await this.utilsService.validasiTokenEmail(headers)) {
@@ -375,9 +375,9 @@ export class AdsUserCompareController {
             userads_id = body.useradsId;
             var rewards = false;
 
-            // if (!this.locks.has(user_email)) {
-            //     this.locks.set(user_email, new Mutex());
-            // }
+            if (!this.locks.has(user_email)) {
+                this.locks.set(user_email, new Mutex());
+            }
 
             // this.locks
             //     .get(user_email)
@@ -671,11 +671,11 @@ export class AdsUserCompareController {
                             }
                         }
                 //     } catch (error) {
+                //         console.log(error);
                 //     } finally {
                 //         release();
                 //     }
-                // },
-            //);
+                // });
         } else {
             this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed token and email not match");
             await this.errorHandler.generateNotAcceptableException(

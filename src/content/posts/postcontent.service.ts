@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Int32, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar, PostLandingResponseApps, PostLandingData, PostBuildData, VideoList, ImageInfo } from './dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar, PostLandingResponseApps, PostLandingData, PostBuildData, VideoList, ImageInfo, GetVideoPlayAuthResponse } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -4169,6 +4169,41 @@ export class PostContentService {
     }
     console.log("APSARA VIDEO GET", JSON.stringify(xres))
     return xres;
+  }
+
+  public async getVideoPlayAuth(ids: String): Promise<ApsaraPlayResponse> {
+    this.logger.log('getVideoApsaraSingle >>> start: ' + ids);
+    var RPCClient = require('@alicloud/pop-core').RPCClient;
+
+    let client = new RPCClient({
+      accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+      accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+      endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+      apiVersion: '2017-03-21'
+    });
+
+    let params = {
+      "RegionId": this.configService.get("APSARA_REGION_ID"),
+      "VideoId": ids, 
+      "AuthInfoTimeout": 3000,
+      "ApiVersion": '1.0.0',
+    }
+
+    let requestOption = {
+      method: 'POST'
+    };
+
+    try{
+      let result = await client.request('GetVideoPlayAuth', params, requestOption);
+      let xres = new GetVideoPlayAuthResponse();
+      this.logger.log('getVideoApsaraSingle >>> response: ' + JSON.stringify(result));
+      console.log("APSARA VIDEO GET", JSON.stringify(result))
+      return result;
+    } catch (e) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, ' + e,
+      );
+    }
   }
 
   public async getVideoApsaraSingleV4(ids: String, definition: String) {
