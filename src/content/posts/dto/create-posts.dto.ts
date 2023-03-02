@@ -255,3 +255,15 @@ export class PostBuildData {
     user: string[];
     interest: string[];
 }
+
+export class GetVideoPlayAuthResponse {
+    PlayAuth: string;
+    RequestId: string;
+    VideoMeta: {
+        Status: string;
+        Duration: string;
+        Title: string,
+        VideoId: string,
+        CoverURL: string,
+    };
+}

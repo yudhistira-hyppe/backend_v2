@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { HttpService } from '@nestjs/axios';
-import * as http from "http";
+import * as https from "https";
+import * as http from "http"; 
 import * as url from "url";
 //import path from "path";
 import * as fs from 'fs';
@@ -58,15 +59,16 @@ export class SeaweedfsService {
 
     async find(path: string): Promise<any> {
         return new Promise(function (resolve, reject) {
-            var options = {
-                'method': 'GET',
-                'hostname': process.env.SEAWEEDFS_HOST,
-                'port': process.env.SEAWEEDFS_PORT,
-                'path': '/localrepo' + path,
-                'headers': {
-                }
-            };
-            var req = http.request(options, function (res) {
+            // var options = {
+            //     'method': 'GET',
+            //     'hostname': process.env.SEAWEEDFS_HOST,
+            //     'port': process.env.SEAWEEDFS_PORT,
+            //     'path': '/localrepo' + path,
+            //     'headers': {
+            //     }
+            // };
+            var req = https.get('https://' + process.env.SEAWEEDFS_HOST + '/localrepo' + path, function (res) {
+            //var req = http.request(options, function (res) {
                 let body = [];
                 let err;
 
@@ -97,17 +99,18 @@ export class SeaweedfsService {
         var data_find = await this.find(path);
         if (data_find.length > 0) {
             return new Promise(function (resolve, reject) {
-                var options = {
-                    'method': 'GET',
-                    'hostname': process.env.SEAWEEDFS_HOST,
-                    'port': process.env.SEAWEEDFS_PORT,
-                    'path': '/localrepo' + path,
-                    'headers': {
-                    },
-                    'maxRedirects': 20
-                };
+                // var options = {
+                //     'method': 'GET',
+                //     'hostname': process.env.SEAWEEDFS_HOST,
+                //     'port': process.env.SEAWEEDFS_PORT,
+                //     'path': '/localrepo' + path,
+                //     'headers': {
+                //     },
+                //     'maxRedirects': 20
+                // };
 
-                var req = http.request(options, function (res) {
+                var req = https.get('https://' + process.env.SEAWEEDFS_HOST + '/localrepo' + path, function (res) {
+                //var req = http.request(options, function (res) {
                         let body = [];
 
                     res.on("data", function (chunk) {
