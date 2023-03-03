@@ -1075,7 +1075,6 @@ export class AdsController {
     //     return { response_code: 202, data: getdata, totalsearch: totalsearch, totalpage: totalpage, totaldatainpage: total, limit: limit, page: page, messages };
     // }
 
-
     @Post('console/adscenter/listads')
     @UseGuards(JwtAuthGuard)
     async getlistads2(@Req() request: Request): Promise<any> {
@@ -1134,9 +1133,12 @@ export class AdsController {
             }
             const mongoose = require('mongoose');
 
-            for (var i = 0; i < total; i++) {
-                if (getdata[i].tempreportedUserCount > 200) {
-                    if (getdata[i].status != 'REPORTED') {
+            for(var i = 0; i < total; i++)
+            {
+                if(getdata[i].tempreportedUserCount > 200)
+                {
+                    if(getdata[i].status != 'REPORTED')
+                    {
                         getdata[i].status = 'REPORTED';
                         var iddata = mongoose.Types.ObjectId(getdata[i]._id);
                         this.adsService.updateStatusToBeREPORT(iddata);
@@ -1169,6 +1171,21 @@ export class AdsController {
         }
 
         return { response_code: 202, data: getdata, totalsearch: totalsearch, totalpage: totalpage, totaldatainpage: total, limit: limit, page: page, messages };
+    }
+
+    @Get('console/adscenter/historydetail/:id')
+    @UseGuards(JwtAuthGuard)
+    async getHistoryIklan(@Param('id') id: string) {
+        var data = null;
+
+        data = await this.adsService.getDetailHistoryIklan(id);
+        data = data[0].result;
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        return { response_code: 202, messages, data }
     }
 }
 
