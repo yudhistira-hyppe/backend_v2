@@ -1156,8 +1156,7 @@ export class AdsController {
             totalpage = parseInt(gettotal);
         }
 
-        const mongoose = require('mongoose');
-
+        this.updatelistdataads(getdata, total);
         for(var i = 0; i < total; i++)
         {
             if(getdata[i].tempreportedUserCount > 200)
@@ -1165,8 +1164,6 @@ export class AdsController {
                 if(getdata[i].status != 'REPORTED')
                 {
                     getdata[i].status = 'REPORTED';
-                    var iddata = mongoose.Types.ObjectId(getdata[i]._id);
-                    this.adsService.updateStatusToBeREPORT(iddata);
                 }
             }
         }
@@ -1187,6 +1184,23 @@ export class AdsController {
         };
 
         return { response_code: 202, messages, data }
+    }
+
+    async updatelistdataads(data:any[], totaldata:number)
+    {
+        const mongoose = require('mongoose');
+
+        for(var i = 0; i < totaldata; i++)
+        {
+            if(data[i].tempreportedUserCount > 200)
+            {
+                if(data[i].status != 'REPORTED')
+                {
+                    var iddata = mongoose.Types.ObjectId(data[i]._id);
+                    await this.adsService.updateStatusToBeREPORT(iddata);
+                }
+            }
+        }
     }
 }
 
