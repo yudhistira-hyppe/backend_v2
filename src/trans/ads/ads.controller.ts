@@ -1157,16 +1157,16 @@ export class AdsController {
         }
 
         this.updatelistdataads(getdata, total);
-        for(var i = 0; i < total; i++)
-        {
-            if(getdata[i].tempreportedUserCount > 200)
-            {
-                if(getdata[i].status != 'REPORTED')
-                {
-                    getdata[i].status = 'REPORTED';
-                }
-            }
-        }
+        // for(var i = 0; i < total; i++)
+        // {
+        //     if(getdata[i].tempreportedUserCount > 200)
+        //     {
+        //         if(getdata[i].status != 'REPORTED')
+        //         {
+        //             getdata[i].status = 'REPORTED';
+        //         }
+        //     }
+        // }
 
         return { response_code: 202, data: getdata, totalsearch: totalsearch, totalpage: totalpage, totaldatainpage: total, limit: limit, page: page, messages };
     }
