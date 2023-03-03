@@ -2,12 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, ObjectId, Types } from 'mongoose';
 import { CreateAdsDto } from './dto/create-ads.dto';
-//import { ObjectId } from 'mongodb';
 import { Ads, AdsDocument } from './schemas/ads.schema';
 import { UtilsService } from '../../utils/utils.service';
 import { PostsService } from '../../content/posts/posts.service';
 import { PostContentService } from '../../content/posts/postcontent.service';
-//import { ObjectID } from 'bson';
+import { ObjectID } from 'bson';
 @Injectable()
 export class AdsService {
     private readonly logger = new Logger(AdsService.name);
@@ -7818,38 +7817,38 @@ export class AdsService {
         return query;
     }
 
-    async updateDitangguhkan(id: ObjectId, reason: string, updatedAt: string, reasonId: ObjectId) {
+    async updateDitangguhkan(id: ObjectID, reason: string, updatedAt: string, reasonId: ObjectID) {
         let data = await this.adsModel.updateMany({ "_id": id },
             { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reasonAdmin": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
         return data;
     }
 
-    async updateDitangguhkanEmpty(id: ObjectId, updatedAt: string, reportedUserHandle: any[]) {
+    async updateDitangguhkanEmpty(id: ObjectID, updatedAt: string, reportedUserHandle: any[]) {
         let data = await this.adsModel.updateMany({ "_id": id },
             { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle": reportedUserHandle } });
         return data;
     }
-    async updateFlaging(id: ObjectId, updatedAt: string) {
+    async updateFlaging(id: ObjectID, updatedAt: string) {
         let data = await this.adsModel.updateMany({ "_id": id },
             { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle.$[].status": "FLAGING", "reportedUserHandle.$[].updatedAt": updatedAt } });
         return data;
     }
-    async updateFlagingEmpty(id: ObjectId, updatedAt: string, reportedUserHandle: any[]) {
+    async updateFlagingEmpty(id: ObjectID, updatedAt: string, reportedUserHandle: any[]) {
         let data = await this.adsModel.updateMany({ "_id": id },
             { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle": reportedUserHandle } });
         return data;
     }
-    async updateTidakditangguhkan(id: ObjectId, updatedAt: string) {
+    async updateTidakditangguhkan(id: ObjectID, updatedAt: string) {
         let data = await this.adsModel.updateMany({ "_id": id },
             { $set: { "reportedStatus": "ALL", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle.$[].status": "TIDAK DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
         return data;
     }
-    async updateTidakditangguhkanEmpty(id: ObjectId, updatedAt: string, reportedUserHandle: any[]) {
+    async updateTidakditangguhkanEmpty(id: ObjectID, updatedAt: string, reportedUserHandle: any[]) {
         let data = await this.adsModel.updateMany({ "_id": id },
             { $set: { "reportedStatus": "ALL", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle": reportedUserHandle } });
         return data;
     }
-    async nonactive(id: ObjectId, updatedAt: string) {
+    async nonactive(id: ObjectID, updatedAt: string) {
         let data = await this.adsModel.updateMany({ "_id": id },
             {
                 $set: {
@@ -7861,21 +7860,21 @@ export class AdsService {
         return data;
     }
 
-    async updateActive(id: ObjectId, updatedAt: string, remark: string) {
+    async updateActive(id: ObjectID, updatedAt: string, remark: string) {
         let data = await this.adsModel.updateMany({ "_id": id },
 
             { $set: { "isActive": false, "updatedAt": updatedAt, "reportedUserHandle.$[].remark": remark, "reportedUserHandle.$[].status": "DELETE", "reportedUserHandle.$[].updatedAt": updatedAt } });
         return data;
     }
 
-    async updateActiveEmpty(id: ObjectId, updatedAt: string, reportedUserHandle: any[]) {
+    async updateActiveEmpty(id: ObjectID, updatedAt: string, reportedUserHandle: any[]) {
         let data = await this.adsModel.updateMany({ "_id": id },
 
             { $set: { "isActive": false, "updatedAt": updatedAt, "reportedUserHandle": reportedUserHandle } });
         return data;
     }
 
-    async updateStatusOwned(id: ObjectId, updatedAt: string) {
+    async updateStatusOwned(id: ObjectID, updatedAt: string) {
         let data = await this.adsModel.updateMany({ "_id": id },
             { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
         return data;
@@ -8303,7 +8302,7 @@ export class AdsService {
         return query;
     }
 
-    async countViewClick(iduser: ObjectId, startdate: string, enddate: string) {
+    async countViewClick(iduser: ObjectID, startdate: string, enddate: string) {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -8582,7 +8581,7 @@ export class AdsService {
 
     }
 
-    async detailAds(id: ObjectId, startdate: string, enddate: string) {
+    async detailAds(id: ObjectID, startdate: string, enddate: string) {
         var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
         var dateend = currentdate.toISOString();
@@ -15778,7 +15777,7 @@ export class AdsService {
         return query;
     }
 
-    async countadsuser(iduser: ObjectId) {
+    async countadsuser(iduser: ObjectID) {
         var query = await this.adsModel.aggregate(
 
             [
