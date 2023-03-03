@@ -60,7 +60,6 @@ export class GenreService {
             where['$or'].push(where_name);
             where['$or'].push(where_name_id);
         }
-        where_and['langIso'] = 'en'
         where.$and.push(where_and);
         const query = await this.genreModel.find(where).limit(perPage).skip(perPage * page).sort({ name: 'desc' });
         return query;

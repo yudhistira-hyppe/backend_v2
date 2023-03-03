@@ -1594,6 +1594,47 @@ export class PostsController {
     }
   }
 
+  @Get('stream/v2?')
+  @HttpCode(HttpStatus.OK)
+  async stream_v2(@Query('postid') postid: string, @Res() response) {
+    //if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
+    //if (await this.utilsService.validasiTokenEmailParam(headers['x-auth-token'], headers['x-auth-user'])) {
+        var dataMedia = await this.PostsService.findOnepostID(postid);
+        if (await this.utilsService.ceckData(dataMedia)) {
+          var mediaUri = ""; 
+          var mediaBasePath = "";
+          if (dataMedia != null) {
+            if (dataMedia[0].datacontent[0].mediaUri != undefined) {
+              mediaUri = dataMedia[0].datacontent[0].mediaUri;
+            }
+            if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
+              mediaBasePath = dataMedia[0].datacontent[0].mediaBasePath;
+            } 
+            if (mediaUri != "") {
+              var data = await this.PostsService.stream(mediaBasePath+mediaUri);
+              if (data != null) {
+                response.set("Content-Type", "application/octet-stream");
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        } else {
+          response.send(null);
+        }
+      // } else {
+      //   response.send(null);
+      // }
+    // } else {
+    //   response.send(null);
+    // }
+  }
+
   @Get('stream/:id')
   @HttpCode(HttpStatus.OK)
   async stream(@Param('id') mediaFile: string, @Headers() headers, @Res() response) {
