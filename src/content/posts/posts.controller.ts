@@ -1600,22 +1600,27 @@ export class PostsController {
     //if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
     //if (await this.utilsService.validasiTokenEmailParam(headers['x-auth-token'], headers['x-auth-user'])) {
         var dataMedia = await this.PostsService.findOnepostID(postid);
-        console.log(dataMedia);
         if (await this.utilsService.ceckData(dataMedia)) {
-          var mediaUri = ""; 
-          var mediaBasePath = "";
+          var mediaID = ""; 
+          var mediaBasePath = ""; 
+          var mediaMime = ""; 
           if (dataMedia != null) {
-            if (dataMedia[0].datacontent[0].mediaUri != undefined) {
-              mediaUri = dataMedia[0].datacontent[0].mediaUri;
+            if (dataMedia[0].datacontent[0].mediaID != undefined) {
+              mediaID = dataMedia[0].datacontent[0].mediaID;
             }
             if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
               mediaBasePath = dataMedia[0].datacontent[0].mediaBasePath;
+            }
+            if (dataMedia[0].datacontent[0].mediaMime != undefined) {
+              mediaMime = dataMedia[0].datacontent[0].mediaMime;
             } 
-            if (mediaUri != "") {
-              var data = await this.PostsService.stream(mediaBasePath + mediaUri);
+            if (mediaID != "") {
+              var data = await this.PostsService.streamV2(mediaBasePath + mediaID+'.mp4');
               console.log(data);
+              console.log(mediaMime);
               if (data != null) {
-                response.set("Content-Type", "application/octet-stream");
+                //response.set("Content-Type", "application/octet-stream");
+                response.set("Content-Type", 'video/mp4');
                 response.send(data);
               } else {
                 response.send(null);

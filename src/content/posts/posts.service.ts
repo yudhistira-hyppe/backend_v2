@@ -16232,6 +16232,13 @@ export class PostsService {
   }
 
   async stream(mediaFile: string): Promise<any> {
+    console.log(mediaFile);
+    var data = await this.seaweedfsService.read("/" + mediaFile);
+    return data;
+  }
+
+  async streamV2(mediaFile: string): Promise<any> {
+    console.log(mediaFile);
     var data = await this.seaweedfsService.read("/" + mediaFile);
     return data;
   }

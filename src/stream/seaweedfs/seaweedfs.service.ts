@@ -58,6 +58,7 @@ export class SeaweedfsService {
     }
 
     async find(path: string): Promise<any> {
+        console.log('https://' + process.env.SEAWEEDFS_HOST + '/localrepo' + path);
         return new Promise(function (resolve, reject) {
             // var options = {
             //     'method': 'GET',
@@ -112,6 +113,79 @@ export class SeaweedfsService {
                 var req = https.get('https://' + process.env.SEAWEEDFS_HOST + '/localrepo' + path, function (res) {
                 //var req = http.request(options, function (res) {
                         let body = [];
+
+                    res.on("data", function (chunk) {
+                        body.push(chunk);
+                    });
+
+                    res.on("end", function (chunk) {
+                        return resolve(Buffer.concat(body));
+                    });
+
+                    res.on("error", function (error) {
+                        return reject(error);
+                    });
+                });
+                req.end();
+            });
+        } else {
+            return null;
+        }
+    }
+
+    async findV2(path: string): Promise<any> {
+        return new Promise(function (resolve, reject) {
+            var options = {
+                'method': 'GET',
+                'hostname': process.env.SEAWEEDFS_HOST,
+                'port': process.env.SEAWEEDFS_PORT,
+                'path': '/localrepo' + path,
+                'headers': {
+                }
+            };
+            var req = http.request(options, function (res) {
+                let body = [];
+                let err;
+
+                res.setEncoding('utf8');
+                res.on("data", function (chunk) {
+                    body.push(chunk);
+                });
+
+                res.on("end", function (chunk) {
+                    var json = JSON.parse(JSON.stringify(body));
+                    if (json.error) {
+                        err.volumeId = json.volumeId;
+                        return reject(err);
+                    } else {
+                        return resolve(json);
+                    }
+                });
+
+                res.on("error", function (error) {
+                    return reject(err);
+                });
+            });
+            req.end();
+        });
+    }
+
+    async readV2(path: string): Promise<any> {
+        var data_find = await this.find(path);
+        if (data_find.length > 0) {
+            return new Promise(function (resolve, reject) {
+                var options = {
+                    'method': 'GET',
+                    'hostname': process.env.SEAWEEDFS_HOST,
+                    'port': process.env.SEAWEEDFS_PORT,
+                    'path': '/localrepo' + path,
+                    'headers': {
+                    },
+                    'maxRedirects': 20
+                };
+
+                var req = http.request(options, function (res) {
+                    let body = [];
 
                     res.on("data", function (chunk) {
                         body.push(chunk);
