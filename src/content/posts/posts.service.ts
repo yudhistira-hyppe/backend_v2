@@ -17075,20 +17075,25 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "username": {
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $meta: "textScore"
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
-
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$username"
+                          }
+                        }
+                      }
                     ],
                     as: "userAuth"
                   },
@@ -17434,6 +17439,7 @@ export class PostsService {
                     "profilePict": "$userBasic.profilePict",
                     "profilePicts": "$userBasic.profilePicts",
                     "username": "$userAuth.username",
+                    "length": "$userAuth.length",
                     "score": "$userAuth.score",
                     "totScore": {
                       $sum: [{
@@ -17463,7 +17469,8 @@ export class PostsService {
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     friend: - 1,
                     follower: - 1,
                     following: - 1,
@@ -17798,20 +17805,25 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "username": {
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $meta: "textScore"
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
-
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$username"
+                          }
+                        }
+                      }
                     ],
                     as: "userAuth"
                   },
@@ -18157,6 +18169,7 @@ export class PostsService {
                     "profilePict": "$userBasic.profilePict",
                     "profilePicts": "$userBasic.profilePicts",
                     "username": "$userAuth.username",
+                    "length": "$userAuth.length",
                     "score": "$userAuth.score",
                     "totScore": {
                       $sum: [{
@@ -18186,7 +18199,8 @@ export class PostsService {
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     friend: - 1,
                     follower: - 1,
                     following: - 1,
@@ -18517,20 +18531,25 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "username": {
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $meta: "textScore"
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
-
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$username"
+                          }
+                        }
+                      }
                     ],
                     as: "userAuth"
                   },
@@ -18876,6 +18895,7 @@ export class PostsService {
                     "profilePict": "$userBasic.profilePict",
                     "profilePicts": "$userBasic.profilePicts",
                     "username": "$userAuth.username",
+                    "length": "$userAuth.length",
                     "score": "$userAuth.score",
                     "totScore": {
                       $sum: [{
@@ -18905,7 +18925,8 @@ export class PostsService {
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     friend: - 1,
                     follower: - 1,
                     following: - 1,
@@ -19233,20 +19254,25 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "username": {
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $meta: "textScore"
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
-
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$username"
+                          }
+                        }
+                      }
                     ],
                     as: "userAuth"
                   },
@@ -19592,6 +19618,7 @@ export class PostsService {
                     "profilePict": "$userBasic.profilePict",
                     "profilePicts": "$userBasic.profilePicts",
                     "username": "$userAuth.username",
+                    "length": "$userAuth.length",
                     "score": "$userAuth.score",
                     "totScore": {
                       $sum: [{
@@ -19621,7 +19648,8 @@ export class PostsService {
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     friend: - 1,
                     follower: - 1,
                     following: - 1,
@@ -20252,20 +20280,25 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "username": {
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $meta: "textScore"
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
-
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$username"
+                          }
+                        }
+                      }
                     ],
                     as: "userAuth"
                   },
@@ -20611,6 +20644,7 @@ export class PostsService {
                     "profilePict": "$userBasic.profilePict",
                     "profilePicts": "$userBasic.profilePicts",
                     "username": "$userAuth.username",
+                    "length": "$userAuth.length",
                     "score": "$userAuth.score",
                     "totScore": {
                       $sum: [{
@@ -20640,7 +20674,8 @@ export class PostsService {
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     friend: - 1,
                     follower: - 1,
                     following: - 1,
@@ -21268,20 +21303,25 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "username": {
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $meta: "textScore"
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
-
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$username"
+                          }
+                        }
+                      }
                     ],
                     as: "userAuth"
                   },
@@ -21627,6 +21667,7 @@ export class PostsService {
                     "profilePict": "$userBasic.profilePict",
                     "profilePicts": "$userBasic.profilePicts",
                     "username": "$userAuth.username",
+                    "length": "$userAuth.length",
                     "score": "$userAuth.score",
                     "totScore": {
                       $sum: [{
@@ -21656,7 +21697,8 @@ export class PostsService {
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     friend: - 1,
                     follower: - 1,
                     following: - 1,
@@ -22280,20 +22322,25 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "username": {
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $meta: "textScore"
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
-
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$username"
+                          }
+                        }
+                      }
                     ],
                     as: "userAuth"
                   },
@@ -22639,6 +22686,7 @@ export class PostsService {
                     "profilePict": "$userBasic.profilePict",
                     "profilePicts": "$userBasic.profilePicts",
                     "username": "$userAuth.username",
+                    "length": "$userAuth.length",
                     "score": "$userAuth.score",
                     "totScore": {
                       $sum: [{
@@ -22668,7 +22716,8 @@ export class PostsService {
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     friend: - 1,
                     follower: - 1,
                     following: - 1,
@@ -23592,20 +23641,25 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "username": {
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $meta: "textScore"
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
-
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$username"
+                          }
+                        }
+                      }
                     ],
                     as: "userAuth"
                   },
@@ -23951,6 +24005,7 @@ export class PostsService {
                     "profilePict": "$userBasic.profilePict",
                     "profilePicts": "$userBasic.profilePicts",
                     "username": "$userAuth.username",
+                    "length": "$userAuth.length",
                     "score": "$userAuth.score",
                     "totScore": {
                       $sum: [{
@@ -23980,7 +24035,8 @@ export class PostsService {
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     friend: - 1,
                     follower: - 1,
                     following: - 1,
@@ -24934,20 +24990,31 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "_id": {
+                            $regex: key
                           }
-                        },
-
+                        }
+                      },
+                      {
+                        $set: {
+                          score: {
+                            $indexOfCP: ["$_id", key]
+                          }
+                        }
+                      },
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$_id"
+                          }
+                        }
                       },
                       {
                         $project: {
                           _id: "$_id",
                           total: 1,
-                          score: {
-                            $meta: "textScore"
-                          }
+                          score: 1,
+                          length: 1
                         }
                       },
 
@@ -24966,13 +25033,15 @@ export class PostsService {
                   $project: {
                     tag: "$tag._id",
                     total: "$tag.total",
-                    score: "$tag.score"
+                    score: "$tag.score",
+                    length: "$tag.length"
                   },
 
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     total: - 1
                   }
                 },
@@ -25005,20 +25074,25 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "username": {
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $meta: "textScore"
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
-
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$username"
+                          }
+                        }
+                      }
                     ],
                     as: "userAuth"
                   },
@@ -25364,6 +25438,7 @@ export class PostsService {
                     "profilePict": "$userBasic.profilePict",
                     "profilePicts": "$userBasic.profilePicts",
                     "username": "$userAuth.username",
+                    "length": "$userAuth.length",
                     "score": "$userAuth.score",
                     "totScore": {
                       $sum: [{
@@ -25393,7 +25468,8 @@ export class PostsService {
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     friend: - 1,
                     follower: - 1,
                     following: - 1,
@@ -25417,20 +25493,31 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "_id": {
+                            $regex: key
                           }
-                        },
-
+                        }
+                      },
+                      {
+                        $set: {
+                          score: {
+                            $indexOfCP: ["$_id", key]
+                          }
+                        }
+                      },
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$_id"
+                          }
+                        }
                       },
                       {
                         $project: {
                           _id: "$_id",
                           total: 1,
-                          score: {
-                            $meta: "textScore"
-                          }
+                          score: 1,
+                          length: 1
                         }
                       },
 
@@ -25449,13 +25536,15 @@ export class PostsService {
                   $project: {
                     tag: "$tag._id",
                     total: "$tag.total",
-                    score: "$tag.score"
+                    score: "$tag.score",
+                    length: "$tag.length"
                   },
 
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     total: - 1
                   }
                 },
@@ -25778,20 +25867,31 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "_id": {
+                            $regex: key
                           }
-                        },
-
+                        }
+                      },
+                      {
+                        $set: {
+                          score: {
+                            $indexOfCP: ["$_id", key]
+                          }
+                        }
+                      },
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$_id"
+                          }
+                        }
                       },
                       {
                         $project: {
                           _id: "$_id",
                           total: 1,
-                          score: {
-                            $meta: "textScore"
-                          }
+                          score: 1,
+                          length: 1
                         }
                       },
 
@@ -25810,13 +25910,15 @@ export class PostsService {
                   $project: {
                     tag: "$tag._id",
                     total: "$tag.total",
-                    score: "$tag.score"
+                    score: "$tag.score",
+                    length: "$tag.length"
                   },
 
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     total: - 1
                   }
                 },
@@ -26142,20 +26244,31 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "_id": {
+                            $regex: key
                           }
-                        },
-
+                        }
+                      },
+                      {
+                        $set: {
+                          score: {
+                            $indexOfCP: ["$_id", key]
+                          }
+                        }
+                      },
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$_id"
+                          }
+                        }
                       },
                       {
                         $project: {
                           _id: "$_id",
                           total: 1,
-                          score: {
-                            $meta: "textScore"
-                          }
+                          score: 1,
+                          length: 1
                         }
                       },
 
@@ -26174,13 +26287,15 @@ export class PostsService {
                   $project: {
                     tag: "$tag._id",
                     total: "$tag.total",
-                    score: "$tag.score"
+                    score: "$tag.score",
+                    length: "$tag.length"
                   },
 
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     total: - 1
                   }
                 },
@@ -26511,20 +26626,31 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "_id": {
+                            $regex: key
                           }
-                        },
-
+                        }
+                      },
+                      {
+                        $set: {
+                          score: {
+                            $indexOfCP: ["$_id", key]
+                          }
+                        }
+                      },
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$_id"
+                          }
+                        }
                       },
                       {
                         $project: {
                           _id: "$_id",
                           total: 1,
-                          score: {
-                            $meta: "textScore"
-                          }
+                          score: 1,
+                          length: 1
                         }
                       },
 
@@ -26543,13 +26669,15 @@ export class PostsService {
                   $project: {
                     tag: "$tag._id",
                     total: "$tag.total",
-                    score: "$tag.score"
+                    score: "$tag.score",
+                    length: "$tag.length"
                   },
 
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     total: - 1
                   }
                 },
@@ -27174,20 +27302,31 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "_id": {
+                            $regex: key
                           }
-                        },
-
+                        }
+                      },
+                      {
+                        $set: {
+                          score: {
+                            $indexOfCP: ["$_id", key]
+                          }
+                        }
+                      },
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$_id"
+                          }
+                        }
                       },
                       {
                         $project: {
                           _id: "$_id",
                           total: 1,
-                          score: {
-                            $meta: "textScore"
-                          }
+                          score: 1,
+                          length: 1
                         }
                       },
 
@@ -27206,13 +27345,15 @@ export class PostsService {
                   $project: {
                     tag: "$tag._id",
                     total: "$tag.total",
-                    score: "$tag.score"
+                    score: "$tag.score",
+                    length: "$tag.length"
                   },
 
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     total: - 1
                   }
                 },
@@ -27837,20 +27978,31 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "_id": {
+                            $regex: key
                           }
-                        },
-
+                        }
+                      },
+                      {
+                        $set: {
+                          score: {
+                            $indexOfCP: ["$_id", key]
+                          }
+                        }
+                      },
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$_id"
+                          }
+                        }
                       },
                       {
                         $project: {
                           _id: "$_id",
                           total: 1,
-                          score: {
-                            $meta: "textScore"
-                          }
+                          score: 1,
+                          length: 1
                         }
                       },
 
@@ -27869,13 +28021,15 @@ export class PostsService {
                   $project: {
                     tag: "$tag._id",
                     total: "$tag.total",
-                    score: "$tag.score"
+                    score: "$tag.score",
+                    length: "$tag.length"
                   },
 
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     total: - 1
                   }
                 },
@@ -28497,20 +28651,31 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "_id": {
+                            $regex: key
                           }
-                        },
-
+                        }
+                      },
+                      {
+                        $set: {
+                          score: {
+                            $indexOfCP: ["$_id", key]
+                          }
+                        }
+                      },
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$_id"
+                          }
+                        }
                       },
                       {
                         $project: {
                           _id: "$_id",
                           total: 1,
-                          score: {
-                            $meta: "textScore"
-                          }
+                          score: 1,
+                          length: 1
                         }
                       },
 
@@ -28529,13 +28694,15 @@ export class PostsService {
                   $project: {
                     tag: "$tag._id",
                     total: "$tag.total",
-                    score: "$tag.score"
+                    score: "$tag.score",
+                    length: "$tag.length"
                   },
 
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     total: - 1
                   }
                 },
@@ -28567,20 +28734,25 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "username": {
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $meta: "textScore"
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
-
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$username"
+                          }
+                        }
+                      }
                     ],
                     as: "userAuth"
                   },
@@ -28926,6 +29098,7 @@ export class PostsService {
                     "profilePict": "$userBasic.profilePict",
                     "profilePicts": "$userBasic.profilePicts",
                     "username": "$userAuth.username",
+                    "length": "$userAuth.length",
                     "score": "$userAuth.score",
                     "totScore": {
                       $sum: [{
@@ -28955,7 +29128,8 @@ export class PostsService {
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     friend: - 1,
                     follower: - 1,
                     following: - 1,
@@ -29279,20 +29453,31 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "_id": {
+                            $regex: key
                           }
-                        },
-
+                        }
+                      },
+                      {
+                        $set: {
+                          score: {
+                            $indexOfCP: ["$_id", key]
+                          }
+                        }
+                      },
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$_id"
+                          }
+                        }
                       },
                       {
                         $project: {
                           _id: "$_id",
                           total: 1,
-                          score: {
-                            $meta: "textScore"
-                          }
+                          score: 1,
+                          length: 1
                         }
                       },
 
@@ -29311,13 +29496,15 @@ export class PostsService {
                   $project: {
                     tag: "$tag._id",
                     total: "$tag.total",
-                    score: "$tag.score"
+                    score: "$tag.score",
+                    length: "$tag.length"
                   },
 
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     total: - 1
                   }
                 },
@@ -29350,20 +29537,25 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "username": {
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $meta: "textScore"
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
-
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$username"
+                          }
+                        }
+                      }
                     ],
                     as: "userAuth"
                   },
@@ -29709,6 +29901,7 @@ export class PostsService {
                     "profilePict": "$userBasic.profilePict",
                     "profilePicts": "$userBasic.profilePicts",
                     "username": "$userAuth.username",
+                    "length": "$userAuth.length",
                     "score": "$userAuth.score",
                     "totScore": {
                       $sum: [{
@@ -29738,7 +29931,8 @@ export class PostsService {
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     friend: - 1,
                     follower: - 1,
                     following: - 1,
@@ -30356,20 +30550,31 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "_id": {
+                            $regex: key
                           }
-                        },
-
+                        }
+                      },
+                      {
+                        $set: {
+                          score: {
+                            $indexOfCP: ["$_id", key]
+                          }
+                        }
+                      },
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$_id"
+                          }
+                        }
                       },
                       {
                         $project: {
                           _id: "$_id",
                           total: 1,
-                          score: {
-                            $meta: "textScore"
-                          }
+                          score: 1,
+                          length: 1
                         }
                       },
 
@@ -30388,13 +30593,15 @@ export class PostsService {
                   $project: {
                     tag: "$tag._id",
                     total: "$tag.total",
-                    score: "$tag.score"
+                    score: "$tag.score",
+                    length: "$tag.length"
                   },
 
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     total: - 1
                   }
                 },
@@ -30426,20 +30633,25 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "username": {
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $meta: "textScore"
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
-
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$username"
+                          }
+                        }
+                      }
                     ],
                     as: "userAuth"
                   },
@@ -30785,6 +30997,7 @@ export class PostsService {
                     "profilePict": "$userBasic.profilePict",
                     "profilePicts": "$userBasic.profilePicts",
                     "username": "$userAuth.username",
+                    "length": "$userAuth.length",
                     "score": "$userAuth.score",
                     "totScore": {
                       $sum: [{
@@ -30814,7 +31027,8 @@ export class PostsService {
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     friend: - 1,
                     follower: - 1,
                     following: - 1,
@@ -31426,20 +31640,31 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "_id": {
+                            $regex: key
                           }
-                        },
-
+                        }
+                      },
+                      {
+                        $set: {
+                          score: {
+                            $indexOfCP: ["$_id", key]
+                          }
+                        }
+                      },
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$_id"
+                          }
+                        }
                       },
                       {
                         $project: {
                           _id: "$_id",
                           total: 1,
-                          score: {
-                            $meta: "textScore"
-                          }
+                          score: 1,
+                          length: 1
                         }
                       },
 
@@ -31458,13 +31683,15 @@ export class PostsService {
                   $project: {
                     tag: "$tag._id",
                     total: "$tag.total",
-                    score: "$tag.score"
+                    score: "$tag.score",
+                    length: "$tag.length"
                   },
 
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     total: - 1
                   }
                 },
@@ -32382,20 +32609,31 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "_id": {
+                            $regex: key
                           }
-                        },
-
+                        }
+                      },
+                      {
+                        $set: {
+                          score: {
+                            $indexOfCP: ["$_id", key]
+                          }
+                        }
+                      },
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$_id"
+                          }
+                        }
                       },
                       {
                         $project: {
                           _id: "$_id",
                           total: 1,
-                          score: {
-                            $meta: "textScore"
-                          }
+                          score: 1,
+                          length: 1
                         }
                       },
 
@@ -32414,13 +32652,15 @@ export class PostsService {
                   $project: {
                     tag: "$tag._id",
                     total: "$tag.total",
-                    score: "$tag.score"
+                    score: "$tag.score",
+                    length: "$tag.length"
                   },
 
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     total: - 1
                   }
                 },
@@ -32452,20 +32692,25 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "username": {
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $meta: "textScore"
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
-
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$username"
+                          }
+                        }
+                      }
                     ],
                     as: "userAuth"
                   },
@@ -32811,6 +33056,7 @@ export class PostsService {
                     "profilePict": "$userBasic.profilePict",
                     "profilePicts": "$userBasic.profilePicts",
                     "username": "$userAuth.username",
+                    "length": "$userAuth.length",
                     "score": "$userAuth.score",
                     "totScore": {
                       $sum: [{
@@ -32840,7 +33086,8 @@ export class PostsService {
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     friend: - 1,
                     follower: - 1,
                     following: - 1,
@@ -33750,20 +33997,31 @@ export class PostsService {
                       {
                         $match:
                         {
-                          $text: {
-                            $search: key,
-
+                          "_id": {
+                            $regex: key
                           }
-                        },
-
+                        }
+                      },
+                      {
+                        $set: {
+                          score: {
+                            $indexOfCP: ["$_id", key]
+                          }
+                        }
+                      },
+                      {
+                        $set: {
+                          length: {
+                            $strLenCP: "$_id"
+                          }
+                        }
                       },
                       {
                         $project: {
                           _id: "$_id",
                           total: 1,
-                          score: {
-                            $meta: "textScore"
-                          }
+                          score: 1,
+                          length: 1
                         }
                       },
 
@@ -33782,13 +34040,15 @@ export class PostsService {
                   $project: {
                     tag: "$tag._id",
                     total: "$tag.total",
-                    score: "$tag.score"
+                    score: "$tag.score",
+                    length: "$tag.length"
                   },
 
                 },
                 {
                   $sort: {
-                    score: - 1,
+                    score: 1,
+                    length: 1,
                     total: - 1
                   }
                 },
