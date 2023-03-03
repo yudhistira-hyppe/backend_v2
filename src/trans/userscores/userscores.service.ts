@@ -31,51 +31,21 @@ export class UserscoresService {
             .exec();
     }
 
-    // async updatefilter(id: string, idarray: string, value: number, updatedAt: string) {
-    //     return this.userscoresModel.findByIdAndUpdate(
 
-    //         { _id: new Types.ObjectId(id) },
-    //         {
-    //             $set: {
-    //                 "listinterest.$[element].total": value,
-    //                 "listinterest.$[element].updatedAt": updatedAt
-    //             }
-    //         },
-    //         {
-    //             arrayFilters: [{
-    //                 "element._id": new Types.ObjectId(idarray)
-    //             }]
 
-    //         });
-    // }
+    async finddatabydate(date: string, id: string) {
+        var query = await this.userscoresModel.aggregate([
 
-    // async updateInterestday(id: string, listinterest: any[]) {
-    //     let data = await this.interestdayModel.updateOne({ "_id": new Types.ObjectId(id) },
-    //         { $set: { "listinterest": listinterest } });
-    //     return data;
-    // }
-    // async finddatabydate(date: string, id: string) {
-    //     var query = await this.userscoresModel.aggregate([
+            {
+                $match: {
+                    date: date,
+                    iduser: new Types.ObjectId(id)
+                }
+            },
 
-    //         {
-    //             $match: {
-    //                 date: date
-    //             }
-    //         },
-    //         {
-    //             $unwind: {
-    //                 path: "$listinterest",
-    //                 preserveNullAndEmptyArrays: true
-    //             }
-    //         },
-    //         {
-    //             $match: {
-    //                 'listinterest._id': new Types.ObjectId(id)
-    //             }
-    //         }
-    //     ]);
-    //     return query;
-    // }
+        ]);
+        return query;
+    }
 
     async finddate(date: string, iduser: string) {
         var query = await this.userscoresModel.aggregate([
@@ -95,7 +65,7 @@ export class UserscoresService {
 
     async update(
         id: string,
-        userscoresDto: Userscores,
+        userscoresDto: UserscoresDto,
     ): Promise<Userscores> {
         let data = await this.userscoresModel.findByIdAndUpdate(
             id,

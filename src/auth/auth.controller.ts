@@ -294,6 +294,9 @@ export class AuthController {
 
             //Insert ActivityEvent Parent
             await this.activityeventsService.create(Activityevents_parent);
+            //  var idevent=event._id.toString();
+
+            // await this.utilsService.counscore("AE","prodAll","activityevents",idevent,"LOGIN",data_userbasics._id.oid.toString());
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, Failed create activity events parent. Error:' +
@@ -3586,7 +3589,7 @@ export class AuthController {
                       createMediaproofpictsDto.mediaThumBasePath = userId + "/profilePict/" + userId + "_thum" + extension;
                       createMediaproofpictsDto.mediaThumName = userId + "_thum" + extension;
                       createMediaproofpictsDto.mediaMime = mimetype;
-                      createMediaproofpictsDto.uploadSource = "OSS"; 
+                      createMediaproofpictsDto.uploadSource = "OSS";
                       createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
                       await this.mediaprofilepictsService.create(createMediaproofpictsDto);
                     }
@@ -3668,8 +3671,8 @@ export class AuthController {
   async run() {
     var getList = await this.interestsRepoService.findData();
     console.log(getList.length);
-    for (var i = 0; i < getList.length;i++){
-      if (getList[i]._id!=undefined){
+    for (var i = 0; i < getList.length; i++) {
+      if (getList[i]._id != undefined) {
         var _idExixting = getList[i]._id.toString();
         console.log(_idExixting);
 

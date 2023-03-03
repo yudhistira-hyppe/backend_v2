@@ -2771,7 +2771,7 @@ export class UserticketsService {
 
     var pipeline = [];
 
-    if (startdate && startdate === undefined) {
+    if (startdate && startdate !== undefined) {
       pipeline.push({ $match: { datetime: { "$gte": startdate } } });
 
     }

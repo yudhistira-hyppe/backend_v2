@@ -1561,7 +1561,7 @@ export class UtilsService {
     var splitdate = repdate.split('.');
     var stringdate = splitdate[0];
     var date = stringdate.substring(0, 10) + " " + "00:00:00";
-
+    var datacatsday = null;
     if (type == "AE") {
       var dataseting = null;
       var value = null;
@@ -1586,6 +1586,7 @@ export class UtilsService {
 
       if (cekdata.length == 0) {
         var UserscoresDto_ = new UserscoresDto();
+        UserscoresDto_.iduser = new Types.ObjectId(iduser);
         UserscoresDto_.totalscore = value;
         UserscoresDto_.date = date;
         UserscoresDto_.listscore = [
@@ -1599,6 +1600,35 @@ export class UtilsService {
         await this.userscoresService.create(UserscoresDto_);
       } else {
 
+        try {
+          datacatsday = await this.userscoresService.finddatabydate(date, iduser);
+
+        } catch (e) {
+          datacatsday = null;
+
+        }
+
+        if (datacatsday !== null || datacatsday.length > 0) {
+
+
+          var idq = datacatsday[0]._id;
+          var totalint = datacatsday[0].totalscore + 1;
+          var listscore = datacatsday[0].listscore;
+          var obj = {
+            "idevent": { "$ref": nametabel, "$id": new Types.ObjectId(idevent), "$db": namedb },
+            "createdAt": date,
+            "type": type,
+            "score": value
+          };
+          listscore.push(obj);
+
+          let UserscoresDto_ = new UserscoresDto();
+          UserscoresDto_.totalscore = totalint;
+          UserscoresDto_.listscore = listscore;
+
+          await this.userscoresService.update(idq.toString(), UserscoresDto_);
+
+        }
 
       }
 
