@@ -1594,7 +1594,7 @@ export class PostsController {
     }
   }
 
-  @Get('stream/v2?')
+  @Get('stream/v3?')
   @HttpCode(HttpStatus.OK)
   async stream_v2(@Query('postid') postid: string, @Res() response) {
     //if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
@@ -1640,6 +1640,51 @@ export class PostsController {
     // } else {
     //   response.send(null);
     // }
+  }
+
+  @Get('stream/v2?')
+  @HttpCode(HttpStatus.OK)
+  async stream_v3(@Query('postid') postid: string) {
+    var dataMedia = await this.PostsService.findOnepostID(postid);
+    if (await this.utilsService.ceckData(dataMedia)) {
+      var mediaID = "";
+      var mediaBasePath = "";
+      var mediaMime = "";
+      if (dataMedia != null) {
+        if (dataMedia[0].datacontent[0].mediaID != undefined) {
+          mediaID = dataMedia[0].datacontent[0].mediaID;
+        }
+        if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
+          mediaBasePath = dataMedia[0].datacontent[0].mediaBasePath;
+        }
+        if (dataMedia[0].datacontent[0].mediaMime != undefined) {
+          mediaMime = dataMedia[0].datacontent[0].mediaMime;
+        }
+        if (mediaID != "") {
+          return {
+            response_code: 202,
+            data: {
+              link: 'https://' + process.env.SEAWEEDFS_HOST + '/localrepo/' + mediaBasePath + mediaID + '.mp4'
+            },
+            messages: {
+              info: ['Successful'],
+            },
+          };
+        } else {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed'
+          );
+        }
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed'
+        );
+      }
+    } else {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed'
+      );
+    }
   }
 
   @Get('stream/:id')
