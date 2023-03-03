@@ -1600,6 +1600,7 @@ export class PostsController {
     //if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
     //if (await this.utilsService.validasiTokenEmailParam(headers['x-auth-token'], headers['x-auth-user'])) {
         var dataMedia = await this.PostsService.findOnepostID(postid);
+        console.log(dataMedia);
         if (await this.utilsService.ceckData(dataMedia)) {
           var mediaUri = ""; 
           var mediaBasePath = "";
@@ -1611,7 +1612,8 @@ export class PostsController {
               mediaBasePath = dataMedia[0].datacontent[0].mediaBasePath;
             } 
             if (mediaUri != "") {
-              var data = await this.PostsService.stream(mediaBasePath+mediaUri);
+              var data = await this.PostsService.stream(mediaBasePath + mediaUri);
+              console.log(data);
               if (data != null) {
                 response.set("Content-Type", "application/octet-stream");
                 response.send(data);
