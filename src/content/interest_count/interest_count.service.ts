@@ -52,12 +52,12 @@ export class InterestCountService {
     {
         var pipeline = [];
         var pipelinetag = [];
+        var pipelineinterest = [];
 
         pipelinetag.push({
             $project: {
                 tag: "$_id",
-                total: 1,
-                
+                total: 1,       
             }
         },
         {
@@ -66,17 +66,6 @@ export class InterestCountService {
             }
         });
 
-        if(limits > 0)
-        {
-            pipeline.push({
-                "$limit":limits
-            });
-
-            pipelinetag.push({
-                "$limit" : limits
-            });
-        }
-
         if(page > 0)
         {
             pipelinetag.push({
@@ -84,7 +73,25 @@ export class InterestCountService {
             });
         }
 
-        pipeline.push(
+        if(limits > 0)
+        {
+            pipelinetag.push({
+                "$limit" : limits
+            });
+
+            pipelineinterest.push({
+                "$limit" : limits
+            });
+        }
+
+        pipelinetag.push({
+                $project: {
+                    total: "$total",
+                    nama: "$_id",
+                }
+            });
+
+        pipelineinterest.push(
             {
                 $sort: {
                     total: - 1
@@ -105,27 +112,68 @@ export class InterestCountService {
                 }
             },
             {
-                $lookup: {
-                    from: "tag_count",
-                    pipeline: pipelinetag,
-                    as: "tag"
-                },
+                $project: {
+                    interests: "$interestName",
+                    interestName: "$interest.interestName",
+                    langIso: "$interest.langIso",
+                    icon: "$interest.icon",
+                    createdAt: "$interest.createdAt",
+                    updatedAt: "$interest.updatedAt",
+                    interestNameId: "$interest.interestNameId",
+                    thumbnail: "$interest.thumbnail",
+                    total:"$total"
+                }
+            }
+        );
+
+        pipeline.push(
+            {
+                "$limit":1
             },
             {
-                $project: {
-                    interest: {
-                        interests: "$interest.interestName",
-                        interestName: "$interest.interestName",
-                        langIso: "$interest.langIso",
-                        icon: "$interest.icon",
-                        createdAt: "$interest.createdAt",
-                        updatedAt: "$interest.updatedAt",
-                        interestNameId: "$interest.interestNameId",
-                        thumbnail: "$interest.thumbnail",
-                    },
-                    tag: "$tag"
+                $facet: 
+                {
+                    tag: 
+                    [
+                        {
+                            $lookup: {
+                                from: "tag_count",
+                                pipeline: pipelinetag,
+                                as: "tag"
+                            },
+                        },
+                    ],
+                    interest: [
+                        {
+                            $lookup: {
+                                from: "interest_count",
+                                pipeline: pipelineinterest,
+                                as: "interest"
+                            }
+                        }
+                    ]
                 }
-            });
+            },
+            {
+                $unwind:
+                {
+                    path:"$tag"
+                }
+            },
+            {
+                $unwind:
+                {
+                    path:"$interest"
+                }
+            },
+            {
+                $project:
+                {
+                    tag:"$tag.tag",
+                    interest:"$interest.interest"
+                }		
+            }    
+        );
 
 
         // console.log(JSON.stringify(pipeline));
