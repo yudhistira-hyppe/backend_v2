@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model, Types } from 'mongoose';
+import mongoose, { Model, ObjectId, Types } from 'mongoose';
 import { CreateAdsDto } from './dto/create-ads.dto';
 import { Ads, AdsDocument } from './schemas/ads.schema';
 import { UtilsService } from '../../utils/utils.service';
@@ -24,6 +24,22 @@ export class AdsService {
         if (!data) {
             throw new Error('Todo is not found!');
         }
+        return data;
+    }
+
+    async updateStatusToBeREPORT(id: ObjectId) {
+        const data = await this.adsModel.updateOne(
+            {
+                _id: id
+            },
+            {
+                "$set":
+                {
+                    status: "REPORTED",
+                    isActive: false
+                }
+            });
+
         return data;
     }
     async getapsaraDatabaseAds(obj: object, startdate: string, enddate: string) {
@@ -8647,19 +8663,19 @@ export class AdsService {
             {
                 $project: {
                     userID: 1,
-                    fullName: 
+                    fullName:
                     {
                         "$arrayElemAt":
-                        [
-                            "$userbasics_data.fullName", 0
-                        ]
+                            [
+                                "$userbasics_data.fullName", 0
+                            ]
                     },
-                    email: 
+                    email:
                     {
                         "$arrayElemAt":
-                        [
-                            "$userbasics_data.email", 0
-                        ]
+                            [
+                                "$userbasics_data.email", 0
+                            ]
                     },
                     timestamp: 1,
                     expiredAt: 1,
@@ -8690,187 +8706,187 @@ export class AdsService {
                     duration: 1,
                     tayang: 1,
                     type: 1,
-                    adminfullName: 
+                    adminfullName:
                     {
                         "$arrayElemAt":
-                        [
-                            "$adminbasics_data.fullName", 0
-                        ]
+                            [
+                                "$adminbasics_data.fullName", 0
+                            ]
                     },
                     listgender:
-                    [
-                        {
-                            $switch:
+                        [
                             {
-                                branches:
-                                [
-                                    {
-                                        case:
-                                        {
-                                            $eq:
-                                            [
+                                $switch:
+                                {
+                                    branches:
+                                        [
+                                            {
+                                                case:
                                                 {
-                                                    "$arrayElemAt":
-                                                    [
-                                                        "$gender", 0
-                                                    ]
+                                                    $eq:
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                    [
+                                                                        "$gender", 0
+                                                                    ]
+                                                            },
+                                                            "P"
+                                                        ]
                                                 },
-                                                "P"
-                                            ]
-                                        },
-                                        then:"Perempuan"
-                                    },
-                                    {
-                                        case:
-                                        {
-                                            $eq:
-                                            [
+                                                then: "Perempuan"
+                                            },
+                                            {
+                                                case:
                                                 {
-                                                    "$arrayElemAt":
-                                                    [
-                                                        "$gender", 0
-                                                    ]
+                                                    $eq:
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                    [
+                                                                        "$gender", 0
+                                                                    ]
+                                                            },
+                                                            "L"
+                                                        ]
                                                 },
-                                                "L"
-                                            ]
-                                        },
-                                        then:"Laki-laki"
-                                    },
-                                    {
-                                        case:
-                                        {
-                                            $eq:
-                                            [
+                                                then: "Laki-laki"
+                                            },
+                                            {
+                                                case:
                                                 {
-                                                    "$arrayElemAt":
-                                                    [
-                                                        "$gender", 0
-                                                    ]
+                                                    $eq:
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                    [
+                                                                        "$gender", 0
+                                                                    ]
+                                                            },
+                                                            "O"
+                                                        ]
                                                 },
-                                                "O"
-                                            ]
-                                        },
-                                        then:"Lainnya"
-                                    },
-                                ],
-                                default:null
-                            }
-                        },
-                        {
-                            $switch:
+                                                then: "Lainnya"
+                                            },
+                                        ],
+                                    default: null
+                                }
+                            },
                             {
-                                branches:
-                                [
-                                    {
-                                        case:
-                                        {
-                                            $eq:
-                                            [
+                                $switch:
+                                {
+                                    branches:
+                                        [
+                                            {
+                                                case:
                                                 {
-                                                    "$arrayElemAt":
-                                                    [
-                                                        "$gender", 1
-                                                    ]
+                                                    $eq:
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                    [
+                                                                        "$gender", 1
+                                                                    ]
+                                                            },
+                                                            "P"
+                                                        ]
                                                 },
-                                                "P"
-                                            ]
-                                        },
-                                        then:"Perempuan"
-                                    },
-                                    {
-                                        case:
-                                        {
-                                            $eq:
-                                            [
+                                                then: "Perempuan"
+                                            },
+                                            {
+                                                case:
                                                 {
-                                                    "$arrayElemAt":
-                                                    [
-                                                        "$gender", 1
-                                                    ]
+                                                    $eq:
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                    [
+                                                                        "$gender", 1
+                                                                    ]
+                                                            },
+                                                            "L"
+                                                        ]
                                                 },
-                                                "L"
-                                            ]
-                                        },
-                                        then:"Laki-laki"
-                                    },
-                                    {
-                                        case:
-                                        {
-                                            $eq:
-                                            [
+                                                then: "Laki-laki"
+                                            },
+                                            {
+                                                case:
                                                 {
-                                                    "$arrayElemAt":
-                                                    [
-                                                        "$gender", 1
-                                                    ]
+                                                    $eq:
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                    [
+                                                                        "$gender", 1
+                                                                    ]
+                                                            },
+                                                            "O"
+                                                        ]
                                                 },
-                                                "O"
-                                            ]
-                                        },
-                                        then:"Lainnya"
-                                    },
-                                ],
-                                default:null
-                            }
-                        },
-                        {
-                            $switch:
+                                                then: "Lainnya"
+                                            },
+                                        ],
+                                    default: null
+                                }
+                            },
                             {
-                                branches:
-                                [
-                                    {
-                                        case:
-                                        {
-                                            $eq:
-                                            [
+                                $switch:
+                                {
+                                    branches:
+                                        [
+                                            {
+                                                case:
                                                 {
-                                                    "$arrayElemAt":
-                                                    [
-                                                        "$gender", 2
-                                                    ]
+                                                    $eq:
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                    [
+                                                                        "$gender", 2
+                                                                    ]
+                                                            },
+                                                            "P"
+                                                        ]
                                                 },
-                                                "P"
-                                            ]
-                                        },
-                                        then:"Perempuan"
-                                    },
-                                    {
-                                        case:
-                                        {
-                                            $eq:
-                                            [
+                                                then: "Perempuan"
+                                            },
+                                            {
+                                                case:
                                                 {
-                                                    "$arrayElemAt":
-                                                    [
-                                                        "$gender", 2
-                                                    ]
+                                                    $eq:
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                    [
+                                                                        "$gender", 2
+                                                                    ]
+                                                            },
+                                                            "L"
+                                                        ]
                                                 },
-                                                "L"
-                                            ]
-                                        },
-                                        then:"Laki-laki"
-                                    },
-                                    {
-                                        case:
-                                        {
-                                            $eq:
-                                            [
+                                                then: "Laki-laki"
+                                            },
+                                            {
+                                                case:
                                                 {
-                                                    "$arrayElemAt":
-                                                    [
-                                                        "$gender", 2
-                                                    ]
+                                                    $eq:
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                    [
+                                                                        "$gender", 2
+                                                                    ]
+                                                            },
+                                                            "O"
+                                                        ]
                                                 },
-                                                "O"
-                                            ]
-                                        },
-                                        then:"Lainnya"
-                                    },
-                                ],
-                                default:null
-                            }
-                        },
-                    ]
+                                                then: "Lainnya"
+                                            },
+                                        ],
+                                    default: null
+                                }
+                            },
+                        ]
                 }
             },
             {
@@ -8878,17 +8894,17 @@ export class AdsService {
                 {
                     "removenull":
                     {
-                        $filter : 
+                        $filter:
                         {
                             input: "$listgender",
                             as: "list",
-                            cond: 
+                            cond:
                             {
-                                "$ne": 
-                                [
-                                    "$$list",
-                                    null
-                                ]
+                                "$ne":
+                                    [
+                                        "$$list",
+                                        null
+                                    ]
                             }
                         }
                     }
@@ -16347,20 +16363,19 @@ export class AdsService {
         return query;
     }
 
-    async consolegetlistads(startdate:string, enddate:string, statuslist:any[], mincredit:number, maxcredit:number, page:number, limit:number, sorting:boolean)
-    {
+    async consolegetlistads(startdate: string, enddate: string, statuslist: any[], mincredit: number, maxcredit: number, page: number, limit: number, sorting: boolean) {
         var pipeline = [];
 
         pipeline.push({
-                "$lookup": 
+            "$lookup":
+            {
+                "from": "adstypes",
+                "as": "type_data",
+                "let":
                 {
-                    "from": "adstypes",
-                    "as": "type_data",
-                    "let": 
-                    {
-                        "type_fk": "$typeAdsID"
-                    },
-                    "pipeline": 
+                    "type_fk": "$typeAdsID"
+                },
+                "pipeline":
                     [
                         {
                             "$match":
@@ -16368,97 +16383,96 @@ export class AdsService {
                                 "$expr":
                                 {
                                     "$eq":
-                                    [
-                                        "$_id",
-                                        "$$type_fk"
-                                    ]
+                                        [
+                                            "$_id",
+                                            "$$type_fk"
+                                        ]
                                 }
                             },
                         },
                         {
                             "$project":
                             {
-                                nameType:1
+                                nameType: 1
                             }
                         }
                     ]
-                }
-            },
+            }
+        },
             {
-                "$lookup": 
+                "$lookup":
                 {
                     "from": "adsplaces",
                     "as": "place_data",
-                    "let": 
+                    "let":
                     {
                         "place_fk": "$placingID"
                     },
-                    "pipeline": 
-                    [
-                        {
-                            "$match":
+                    "pipeline":
+                        [
                             {
-                                "$expr":
+                                "$match":
                                 {
-                                    "$eq":
-                                    [
-                                        "$_id",
-                                        "$$place_fk"
-                                    ]
-                                }
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                            [
+                                                "$_id",
+                                                "$$place_fk"
+                                            ]
+                                    }
+                                },
                             },
-                        },
-                        {
-                            "$project":
                             {
-                                namePlace:1
+                                "$project":
+                                {
+                                    namePlace: 1
+                                }
                             }
-                        }
-                    ]
+                        ]
                 }
             },
             {
                 "$project":
                 {
-                    _id:1,
-                    userID:1,
-                    typesID:1,
+                    _id: 1,
+                    userID: 1,
+                    typesID: 1,
                     type_data:
                     {
-                        "$first":"$type_data.nameType"
+                        "$first": "$type_data.nameType"
                     },
-                    placingID:1,
+                    placingID: 1,
                     place_data:
                     {
-                        "$first":"$place_data.namePlace"
+                        "$first": "$place_data.namePlace"
                     },
-                    name:1,
-                    status:1,
-                    timestamp:1,
-                    creditFree:1,
-                    totalUsedCredit:1,
-                    usedCreditFree:1,
-                    usedCredit:1,
-                    totalCredit:1,
-                    idApsara:1,
-                    apsara:{
+                    name: 1,
+                    status: 1,
+                    timestamp: 1,
+                    creditFree: 1,
+                    totalUsedCredit: 1,
+                    usedCreditFree: 1,
+                    usedCredit: 1,
+                    totalCredit: 1,
+                    idApsara: 1,
+                    apsara: {
                         "$cond":
                         {
                             if:
                             {
-                                "$eq":["$idApsara", null]
+                                "$eq": ["$idApsara", null]
                             },
-                            then:false,
-                            else:true
+                            then: false,
+                            else: true
                         }
                     },
-                    type:1,
+                    type: 1,
                 }
             },);
-        
+
         //filter by date range
-        if(startdate != undefined && enddate != undefined)
-        {
+        if (startdate != undefined && enddate != undefined) {
             var before = new Date(startdate).toISOString().split("T")[0];
             var input = new Date(enddate);
             input.setDate(input.getDate() + 1);
@@ -16469,73 +16483,67 @@ export class AdsService {
                 {
                     timestamp:
                     {
-                        "$gte":before,
-                        "$lte":today
+                        "$gte": before,
+                        "$lte": today
                     },
                 }
             },);
         }
 
         //filter by status
-        if(statuslist != undefined)
-        {
+        if (statuslist != undefined) {
             pipeline.push({
-                    "$match":
+                "$match":
+                {
+                    status:
                     {
-                        status:
-                        {
-                            "$in":statuslist
-                        }
+                        "$in": statuslist
                     }
-                });
+                }
+            });
         }
 
         //filter by totalUsedCredit range 
-        if(mincredit != undefined && maxcredit != undefined)
-        {
+        if (mincredit != undefined && maxcredit != undefined) {
             pipeline.push({
                 "$match":
                 {
                     totalUsedCredit:
                     {
-                        "$gte":mincredit,
-                        "$lte":maxcredit
+                        "$gte": mincredit,
+                        "$lte": maxcredit
                     },
                 }
             },);
         }
 
 
-        if(sorting == true)
-        {
+        if (sorting == true) {
             pipeline.push({
                 "$sort":
                 {
-                    timestamp:-1
+                    timestamp: -1
                 }
             })
         }
-        else
-        {
+        else {
             pipeline.push({
                 "$sort":
                 {
-                    timestamp:1
+                    timestamp: 1
                 }
             })
         }
 
-        if(page > 0)
-        {
+        if (page > 0) {
             pipeline.push({
-                "$skip":(limit * page)
+                "$skip": (limit * page)
             });
         }
 
-        if(limit > 0)
-        {
+        if (limit > 0) {
             pipeline.push({
-                "$limit":limit
+                "$limit": limit
             });
         }
 
