@@ -1552,7 +1552,7 @@ export class UtilsService {
     return result;
   }
 
-  async counscore(type: string, namedb: string, nametabel: string, idevent: string, event: string,iduser:string) {
+  async counscore(type: string, namedb: string, nametabel: string, idevent: string, event: string, iduser: string) {
     var dt = new Date(Date.now());
     dt.setHours(dt.getHours() + 7); // timestamp
     dt = new Date(dt);
@@ -1563,21 +1563,21 @@ export class UtilsService {
     var date = stringdate.substring(0, 10) + " " + "00:00:00";
 
     if (type == "AE") {
-      var dataseting=null;
-      var value=null;
+      var dataseting = null;
+      var value = null;
 
-      try{
-       dataseting=await this.settingsService.findOneByJenisremark(event,type);
-       value=dataseting.value;
-      }catch(e){
-        dataseting=null;
-        value=0;
+      try {
+        dataseting = await this.settingsService.findOneByJenisremark(event, type);
+        value = dataseting.value;
+      } catch (e) {
+        dataseting = null;
+        value = 0;
       }
 
       var cekdata = null;
 
       try {
-        cekdata = await this.userscoresService.finddate(date,iduser);
+        cekdata = await this.userscoresService.finddate(date, iduser);
 
       } catch (e) {
         cekdata = null;
@@ -1597,12 +1597,13 @@ export class UtilsService {
           }
         ];
         await this.userscoresService.create(UserscoresDto_);
-      }else{
-        
+      } else {
+
+
       }
 
 
-    
+
     }
 
   }

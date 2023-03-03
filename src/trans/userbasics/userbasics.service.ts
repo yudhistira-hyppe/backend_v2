@@ -5699,43 +5699,46 @@ export class UserbasicsService {
     ).exec();
   }
 
-  async getfriendListdata() {
+  async getfriendListdata(page: number, limit: number) {
     var pipeline = [];
 
-    pipeline.push({
-      "$lookup":
+    pipeline.push(
+      { $skip: page * limit },
+      { $limit: limit },
       {
-        from: "userauths",
-        as: "auth_data",
-        let:
+        "$lookup":
         {
-          auth_fk: "$email"
-        },
-        pipeline:
-          [
-            {
-              "$match":
+          from: "userauths",
+          as: "auth_data",
+          let:
+          {
+            auth_fk: "$email"
+          },
+          pipeline:
+            [
               {
-                "$expr":
+                "$match":
                 {
-                  "$eq":
-                    [
-                      "$email",
-                      "$$auth_fk"
-                    ]
+                  "$expr":
+                  {
+                    "$eq":
+                      [
+                        "$email",
+                        "$$auth_fk"
+                      ]
+                  }
+                }
+              },
+              {
+                "$project":
+                {
+                  _id: 1,
+                  username: 1
                 }
               }
-            },
-            {
-              "$project":
-              {
-                _id: 1,
-                username: 1
-              }
-            }
-          ]
-      }
-    },
+            ]
+        }
+      },
       {
         "$project":
         {
@@ -5896,6 +5899,19 @@ export class UserbasicsService {
 
     var query = await this.userbasicModel.aggregate(pipeline);
 
+    return query;
+  }
+  async getcount() {
+    var query = await this.userbasicModel.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalpost: {
+            $sum: 1
+          }
+        }
+      }
+    ]);
     return query;
   }
 }
