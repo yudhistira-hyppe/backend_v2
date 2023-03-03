@@ -1161,7 +1161,7 @@ export class AdsController {
         {
             if(getdata[i].tempreportedUserCount > 200)
             {
-                if(getdata[i].tempstatus != 'REPORTED')
+                if(getdata[i].status != 'REPORTED')
                 {
                     getdata[i].status = 'REPORTED';
                 }
@@ -1194,7 +1194,7 @@ export class AdsController {
         {
             if(data[i].tempreportedUserCount > 200)
             {
-                if(data[i].tempstatus != 'REPORTED')
+                if(data[i].status != 'REPORTED')
                 {
                     var iddata = mongoose.Types.ObjectId(data[i]._id);
                     await this.adsService.updateStatusToBeREPORT(iddata);
