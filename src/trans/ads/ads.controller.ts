@@ -1131,20 +1131,6 @@ export class AdsController {
             for (var i = 0; i < total; i++) {
                 getdata = await this.adsService.getapsaraDatabaseAdsNew(tempdata, i);
             }
-            const mongoose = require('mongoose');
-
-            for(var i = 0; i < total; i++)
-            {
-                if(getdata[i].tempreportedUserCount > 200)
-                {
-                    if(getdata[i].status != 'REPORTED')
-                    {
-                        getdata[i].status = 'REPORTED';
-                        var iddata = mongoose.Types.ObjectId(getdata[i]._id);
-                        this.adsService.updateStatusToBeREPORT(iddata);
-                    }
-                }
-            }
         }
         catch (e) {
             getdata = [];
@@ -1168,6 +1154,21 @@ export class AdsController {
         }
         else {
             totalpage = parseInt(gettotal);
+        }
+
+        const mongoose = require('mongoose');
+
+        for(var i = 0; i < total; i++)
+        {
+            if(getdata[i].tempreportedUserCount > 200)
+            {
+                if(getdata[i].status != 'REPORTED')
+                {
+                    getdata[i].status = 'REPORTED';
+                    var iddata = mongoose.Types.ObjectId(getdata[i]._id);
+                    this.adsService.updateStatusToBeREPORT(iddata);
+                }
+            }
         }
 
         return { response_code: 202, data: getdata, totalsearch: totalsearch, totalpage: totalpage, totaldatainpage: total, limit: limit, page: page, messages };
