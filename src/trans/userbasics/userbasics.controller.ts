@@ -314,28 +314,70 @@ export class UserbasicsController {
 
   @Post('insertfriendcollection')
   @UseGuards(JwtAuthGuard)
-  async createNewFriendCollection(@Req() request: Request): Promise<any> 
-  {
-    var data = null;
-    
-    data = await this.userbasicsService.getfriendListdata();
-    for(var i = 0; i < data.length; i++)
-    {
-	    console.log('data ke-' + i);
-      try
-      {
-        await this.friendlistService.create(data[i]);
-      }
-      catch(e)
-      {
-        await this.friendlistService.update(data[i]._id, data[i]);
-      }
+  async createNewFriendCollection(@Req() request: Request): Promise<any> {
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var page = null;
+    var limit = null;
+    if (request_json["page"] !== undefined) {
+      page = request_json["page"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
     }
+
+    if (request_json["limit"] !== undefined) {
+      limit = request_json["limit"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+    this.test(page, limit);
 
     const messages = {
       "info": ["The process successful"],
     };
 
-    return { response_code:202, messages }
+    return { response_code: 202, messages }
+  }
+
+
+  async test(page: number, limit: number) {
+
+    var datacount = null;
+    var totalall = 0;
+    try {
+      datacount = await this.userbasicsService.getcount();
+      totalall = datacount[0].totalpost / limit;
+    } catch (e) {
+      datacount = null;
+      totalall = 0;
+    }
+    var totalpage = 0;
+    var tpage2 = (totalall).toFixed(0);
+    var tpage = (totalall % limit);
+    if (tpage > 0 && tpage < 5) {
+      totalpage = parseInt(tpage2) + 1;
+
+    } else {
+      totalpage = parseInt(tpage2);
+    }
+
+    console.log(totalpage);
+
+    for (let x = 0; x < totalpage; x++) {
+      var data = await this.userbasicsService.getfriendListdata(x, limit);
+      for (var i = 0; i < data.length; i++) {
+        console.log('data ke-' + i);
+        try {
+          console.log(i);
+          await this.friendlistService.create(data[i]);
+        }
+        catch (e) {
+          await this.friendlistService.update(data[i]._id, data[i]);
+        }
+      }
+    }
+
+
+
+
   }
 }
