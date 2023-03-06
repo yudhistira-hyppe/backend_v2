@@ -1613,7 +1613,7 @@ export class UtilsService {
 
 
         var idq = datacatsday[0]._id;
-        var totalint = datacatsday[0].totalscore + 1;
+        var totalint = datacatsday[0].totalscore + value;
         var listscore = datacatsday[0].listscore;
         var obj = {
           "idevent": { "$ref": nametabel, "$id": idevent, "$db": namedb },
