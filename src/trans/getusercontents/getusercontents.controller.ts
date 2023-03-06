@@ -1133,7 +1133,7 @@ export class GetusercontentsController {
             tags = [];
         }
 
-        if (tags == undefined || tags.length == 0 || tags[0].fullName == undefined) {
+        if (tags == undefined || tags.length == 0 || tags[0].tag == undefined) {
             tags = [];
         }
 
