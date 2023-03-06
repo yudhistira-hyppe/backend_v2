@@ -205,7 +205,12 @@ export class AuthController {
               data_userbasics._id;
 
             //Insert ActivityEvent child
-            await this.activityeventsService.create(Activityevents_child);
+
+            const event = await this.activityeventsService.create(Activityevents_child);
+            let idevent = event._id;
+            let eventType = event.event.toString();
+
+            await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, Failed create Activity events Child. Error:' + error,
@@ -293,7 +298,11 @@ export class AuthController {
             Activityevents_parent.userbasic = data_userbasics._id;
 
             //Insert ActivityEvent Parent
-            await this.activityeventsService.create(Activityevents_parent);
+            const event = await this.activityeventsService.create(Activityevents_parent);
+            let idevent = event._id;
+            let eventType = event.event.toString();
+
+            await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, Failed create activity events parent. Error:' +
@@ -330,7 +339,13 @@ export class AuthController {
             Activityevents_child.userbasic = data_userbasics._id;
 
             //Insert ActivityEvent Parent
-            await this.activityeventsService.create(Activityevents_child);
+
+
+            const event = await this.activityeventsService.create(Activityevents_child);
+            let idevent = event._id;
+            let eventType = event.event.toString();
+
+            await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, Failed create Activity events Child. Error:' + error,
@@ -637,9 +652,15 @@ export class AuthController {
           data_CreateActivityeventsDto_child.userbasic = user_userbasics._id;
 
           //Insert ActivityEvent Child
-          await this.activityeventsService.create(
+
+
+          const event = await this.activityeventsService.create(
             data_CreateActivityeventsDto_child,
           );
+          let idevent = event._id;
+          let eventType = event.event.toString();
+
+          await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, user_userbasics._id);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity Event Child. Error:' + error,
@@ -836,9 +857,15 @@ export class AuthController {
           data_CreateActivityeventsDto_child.userbasic = user_userbasics._id;
 
           //Insert ActivityEvent Child
-          await this.activityeventsService.create(
+
+
+          const event = await this.activityeventsService.create(
             data_CreateActivityeventsDto_child,
           );
+          let idevent = event._id;
+          let eventType = event.event.toString();
+
+          await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, user_userbasics._id);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity Event Child. Error:' + error,
@@ -3586,7 +3613,7 @@ export class AuthController {
                       createMediaproofpictsDto.mediaThumBasePath = userId + "/profilePict/" + userId + "_thum" + extension;
                       createMediaproofpictsDto.mediaThumName = userId + "_thum" + extension;
                       createMediaproofpictsDto.mediaMime = mimetype;
-                      createMediaproofpictsDto.uploadSource = "OSS"; 
+                      createMediaproofpictsDto.uploadSource = "OSS";
                       createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
                       await this.mediaprofilepictsService.create(createMediaproofpictsDto);
                     }
@@ -3668,8 +3695,8 @@ export class AuthController {
   async run() {
     var getList = await this.interestsRepoService.findData();
     console.log(getList.length);
-    for (var i = 0; i < getList.length;i++){
-      if (getList[i]._id!=undefined){
+    for (var i = 0; i < getList.length; i++) {
+      if (getList[i]._id != undefined) {
         var _idExixting = getList[i]._id.toString();
         console.log(_idExixting);
 

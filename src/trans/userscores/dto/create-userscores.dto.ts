@@ -1,7 +1,7 @@
 export class UserscoresDto {
     _id: { oid: String; }
     date: string;
-    iduser: { oid: String }
+    iduser: Object;
     totalscore: number;
     listscore: any[]
 }

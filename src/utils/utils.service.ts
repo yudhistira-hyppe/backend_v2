@@ -1552,7 +1552,7 @@ export class UtilsService {
     return result;
   }
 
-  async counscore(type: string, namedb: string, nametabel: string, idevent: string, event: string, iduser: string) {
+  async counscore(type: string, namedb: string, nametabel: string, idevent: Object, event: string, iduser: Object) {
     var dt = new Date(Date.now());
     dt.setHours(dt.getHours() + 7); // timestamp
     dt = new Date(dt);
@@ -1561,50 +1561,80 @@ export class UtilsService {
     var splitdate = repdate.split('.');
     var stringdate = splitdate[0];
     var date = stringdate.substring(0, 10) + " " + "00:00:00";
+    var datacatsday = null;
 
-    if (type == "AE") {
-      var dataseting = null;
-      var value = null;
+    var dataseting = null;
+    var value = null;
 
-      try {
-        dataseting = await this.settingsService.findOneByJenisremark(event, type);
-        value = dataseting.value;
-      } catch (e) {
-        dataseting = null;
-        value = 0;
-      }
+    try {
+      dataseting = await this.settingsService.findOneByJenisremark(event, type);
+      value = dataseting.value;
+    } catch (e) {
+      dataseting = null;
+      value = 0;
+    }
 
-      var cekdata = null;
+    var cekdata = null;
 
-      try {
-        cekdata = await this.userscoresService.finddate(date, iduser);
+    try {
+      cekdata = await this.userscoresService.finddate(date, iduser.toString());
 
-      } catch (e) {
-        cekdata = null;
-
-      }
-
-      if (cekdata.length == 0) {
-        var UserscoresDto_ = new UserscoresDto();
-        UserscoresDto_.totalscore = value;
-        UserscoresDto_.date = date;
-        UserscoresDto_.listscore = [
-          {
-            "idevent": { "$ref": nametabel, "$id": new Types.ObjectId(idevent), "$db": namedb },
-            "createdAt": date,
-            "type": type,
-            "score": value
-          }
-        ];
-        await this.userscoresService.create(UserscoresDto_);
-      } else {
-
-
-      }
-
-
+    } catch (e) {
+      cekdata = null;
 
     }
+
+    if (cekdata.length == 0) {
+      var UserscoresDto_ = new UserscoresDto();
+      UserscoresDto_.iduser = iduser;
+      UserscoresDto_.totalscore = value;
+      UserscoresDto_.date = date;
+      UserscoresDto_.listscore = [
+        {
+          "idevent": { "$ref": nametabel, "$id": idevent, "$db": namedb },
+          "createdAt": stringdate,
+          "event": event,
+          "type": type,
+          "score": value
+        }
+      ];
+      await this.userscoresService.create(UserscoresDto_);
+    } else {
+
+      try {
+        datacatsday = await this.userscoresService.finddatabydate(date, iduser.toString());
+
+      } catch (e) {
+        datacatsday = null;
+
+      }
+
+      if (datacatsday !== null || datacatsday.length > 0) {
+
+
+        var idq = datacatsday[0]._id;
+        var totalint = datacatsday[0].totalscore + value;
+        var listscore = datacatsday[0].listscore;
+        var obj = {
+          "idevent": { "$ref": nametabel, "$id": idevent, "$db": namedb },
+          "createdAt": stringdate,
+          "event": event,
+          "type": type,
+          "score": value
+        };
+        listscore.push(obj);
+
+        let UserscoresDto_ = new UserscoresDto();
+        UserscoresDto_.totalscore = totalint;
+        UserscoresDto_.listscore = listscore;
+
+        await this.userscoresService.update(idq.toString(), UserscoresDto_);
+
+      }
+
+    }
+
+
 
   }
 }

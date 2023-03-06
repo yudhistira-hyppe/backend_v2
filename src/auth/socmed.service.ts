@@ -240,9 +240,13 @@ export class SocmedService {
               datauserbasicsService._id;
 
             //Insert ActivityEvent child
-            await this.activityeventsService.create(
-              data_CreateActivityeventsDto_child,
-            );
+            
+            
+          await this.activityeventsService.create(
+            data_CreateActivityeventsDto_child,
+          );
+
+         
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Create Activity events Child. Error:' + error,
@@ -313,9 +317,13 @@ export class SocmedService {
               datauserbasicsService._id;
 
             //Insert ActivityEvent Parent
+          
+
             await this.activityeventsService.create(
               data_CreateActivityeventsDto_parent,
             );
+  
+           
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Create Activity events Parent. Error:' +
@@ -356,9 +364,13 @@ export class SocmedService {
               datauserbasicsService._id;
 
             //Insert ActivityEvent Parent
+        
+
             await this.activityeventsService.create(
               data_CreateActivityeventsDto_child,
             );
+  
+          
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Create Activity events Child. Error:' + error,
@@ -754,6 +766,8 @@ export class SocmedService {
           await this.activityeventsService.create(
             data_CreateActivityeventsDto_parent,
           );
+
+
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity events Parent. Error: ' +
@@ -894,6 +908,8 @@ export class SocmedService {
           await this.activityeventsService.create(
             data_CreateActivityeventsDto_child,
           );
+
+
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity events Child. Error: ' +

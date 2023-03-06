@@ -16,6 +16,8 @@ import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediap
 import { PostContentService } from '../../content/posts/postcontent.service';
 import { DisquslogsService } from '../../content/disquslogs/disquslogs.service';
 import { ContenteventsService } from '../../content/contentevents/contentevents.service';
+import { TagCountService } from '../../content/tag_count/tag_count.service';
+import { InterestCountService } from '../../content/interest_count/interest_count.service';
 @Controller()
 export class GetusercontentsController {
     constructor(private readonly getusercontentsService: GetusercontentsService,
@@ -30,6 +32,8 @@ export class GetusercontentsController {
         private readonly mediaprofilepictsService: MediaprofilepictsService,
         private readonly contenteventsService: ContenteventsService,
         private readonly disquslogsService: DisquslogsService,
+        private readonly tagCountService: TagCountService,
+        private readonly interestCountService: InterestCountService,
     ) { }
 
     @Post('api/getusercontents/all')
@@ -1133,6 +1137,11 @@ export class GetusercontentsController {
             tags = [];
         }
 
+        if (tags == undefined || tags.length == 0 || tags[0].tag == undefined) {
+            tags = [];
+        }
+
+
         try {
             user = datasearch[0].user;
             lenguser = user.length;
@@ -2055,6 +2064,342 @@ export class GetusercontentsController {
 
     }
 
+    @Post('api/getusercontents/searchdatanew/detailtag')
+    @UseGuards(JwtAuthGuard)
+    async detailtagsearchnew(@Req() request: Request): Promise<any> {
+
+
+        var keys = null;
+        var skip = 0;
+        var limit = 0;
+
+        var email = null;
+        var data = null;
+        var datasearch = null;
+        var dataLike = null;
+        var listpict = null;
+        var listvid = null;
+        var listdiary = null;
+        // var listuser = null;
+        // var listtag = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        email = request_json["email"];
+        keys = request_json["keys"];
+        listpict = request_json["listpict"];
+        listvid = request_json["listvid"];
+        listdiary = request_json["listdiary"];
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+
+        var user = [];
+        var arrpict = [];
+        var arrvid = [];
+        var arrdiary = [];
+        var picts = [];
+
+        var vid = [];
+        var diary = [];
+        var tags = [];
+        var lengpict = null;
+        var lengdiary = null;
+        var lengvid = null;
+        var lenguser = null;
+        var datatag = null;
+
+        try {
+            datasearch = await this.tagCountService.detailsearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary);
+            tags = datasearch[0].tag;
+
+        } catch (e) {
+            datasearch = null;
+            tags = [];
+        }
+
+        if (tags == undefined || tags.length == 0 || tags[0].tag == undefined) {
+            tags = [];
+        }
+
+
+        try {
+            arrpict = datasearch[0].pict;
+            lengpict = arrpict.length;
+
+        } catch (e) {
+            arrpict = [];
+            lengpict = 0;
+
+        }
+        try {
+            arrvid = datasearch[0].vid;
+            lengvid = arrvid.length;
+
+        } catch (e) {
+            arrvid = [];
+            lengvid = 0;
+
+        }
+
+        try {
+            arrdiary = datasearch[0].diary;
+            lengdiary = arrdiary.length;
+
+        } catch (e) {
+            arrdiary = [];
+            lengdiary = 0;
+
+        }
+
+        if (lenguser > 0 && user[0].email !== undefined) {
+            user = datasearch[0].user;
+        } else {
+            user = [];
+        }
+
+        if (lengpict > 0) {
+
+            if (arrpict[0]._id !== undefined) {
+
+                for (let i = 0; i < lengpict; i++) {
+                    let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
+                    picts.push(datapicture[i])
+
+                }
+
+            } else {
+                picts = [];
+            }
+
+
+        } else {
+            picts = [];
+        }
+
+        if (lengvid > 0) {
+
+            if (arrvid[0]._id !== undefined) {
+                for (let i = 0; i < lengvid; i++) {
+                    let datavid = await this.getusercontentsService.getapsara(arrvid, i);
+                    vid.push(datavid[i])
+
+                }
+            } else {
+                vid = [];
+            }
+
+        } else {
+            vid = [];
+        }
+
+        if (lengdiary > 0) {
+
+            if (arrdiary[0]._id !== undefined) {
+                for (let i = 0; i < lengdiary; i++) {
+                    let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
+                    diary.push(datadiary[i])
+
+                }
+            }
+            else {
+                diary = [];
+            }
+        } else {
+            diary = [];
+        }
+
+        data = [{
+
+            picts, vid, diary, tags
+        }];
+
+
+        return { response_code: 202, data, messages };
+    }
+
+
+    @Post('api/getusercontents/searchdatanew/detailinterest')
+    @UseGuards(JwtAuthGuard)
+    async detailinterestsearchnew(@Req() request: Request): Promise<any> {
+
+
+        var keys = null;
+        var skip = 0;
+        var limit = 0;
+
+        var email = null;
+        var data = null;
+        var datasearch = null;
+        var dataLike = null;
+        var listpict = null;
+        var listvid = null;
+        var listdiary = null;
+        // var listuser = null;
+        // var listtag = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        email = request_json["email"];
+        keys = request_json["keys"];
+        listpict = request_json["listpict"];
+        listvid = request_json["listvid"];
+        listdiary = request_json["listdiary"];
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+
+        var user = [];
+        var arrpict = [];
+        var arrvid = [];
+        var arrdiary = [];
+        var picts = [];
+
+        var vid = [];
+        var diary = [];
+        var interests = [];
+        var lengpict = null;
+        var lengdiary = null;
+        var lengvid = null;
+        var lenguser = null;
+        var datatag = null;
+
+        try {
+            datasearch = await this.interestCountService.detailinterestcontenNew(keys, email, skip, limit, listpict, listvid, listdiary);
+            interests = datasearch[0].interest;
+
+        } catch (e) {
+            datasearch = null;
+            interests = [];
+        }
+
+        if (interests == undefined || interests.length == 0 || interests[0].interestNameId == undefined) {
+            interests = [];
+        }
+
+
+        try {
+            arrpict = datasearch[0].pict;
+            lengpict = arrpict.length;
+
+        } catch (e) {
+            arrpict = [];
+            lengpict = 0;
+
+        }
+        try {
+            arrvid = datasearch[0].vid;
+            lengvid = arrvid.length;
+
+        } catch (e) {
+            arrvid = [];
+            lengvid = 0;
+
+        }
+
+        try {
+            arrdiary = datasearch[0].diary;
+            lengdiary = arrdiary.length;
+
+        } catch (e) {
+            arrdiary = [];
+            lengdiary = 0;
+
+        }
+
+        if (lenguser > 0 && user[0].email !== undefined) {
+            user = datasearch[0].user;
+        } else {
+            user = [];
+        }
+
+        if (lengpict > 0) {
+
+            if (arrpict[0]._id !== undefined) {
+
+                for (let i = 0; i < lengpict; i++) {
+                    let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
+                    picts.push(datapicture[i])
+
+                }
+
+            } else {
+                picts = [];
+            }
+
+
+        } else {
+            picts = [];
+        }
+
+        if (lengvid > 0) {
+
+            if (arrvid[0]._id !== undefined) {
+                for (let i = 0; i < lengvid; i++) {
+                    let datavid = await this.getusercontentsService.getapsara(arrvid, i);
+                    vid.push(datavid[i])
+
+                }
+            } else {
+                vid = [];
+            }
+
+        } else {
+            vid = [];
+        }
+
+        if (lengdiary > 0) {
+
+            if (arrdiary[0]._id !== undefined) {
+                for (let i = 0; i < lengdiary; i++) {
+                    let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
+                    diary.push(datadiary[i])
+
+                }
+            }
+            else {
+                diary = [];
+            }
+        } else {
+            diary = [];
+        }
+
+        data = [{
+
+            picts, vid, diary, interests
+        }];
+
+
+        return { response_code: 202, data, messages };
+    }
 }
 
 

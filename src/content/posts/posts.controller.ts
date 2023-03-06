@@ -526,9 +526,9 @@ export class PostsController {
           }
         }
         body.tags = arrtag;
-       
+
       } else {
-   
+
       }
 
     }
@@ -553,7 +553,7 @@ export class PostsController {
             tagcat = "";
           }
           var catreq = splittcat[x];
-    
+
           if (catreq !== undefined && catreq !== tagcat) {
 
             try {
@@ -578,9 +578,9 @@ export class PostsController {
             }
           }
         }
-       
+
       } else {
-    
+
       }
 
     }
@@ -880,7 +880,6 @@ export class PostsController {
         }
 
         if (datacats === null) {
-
 
           let interestCountDto_ = new InterestCountDto();
           interestCountDto_._id = mongoose.Types.ObjectId(id);
@@ -1594,97 +1593,47 @@ export class PostsController {
     }
   }
 
-  @Get('stream/v3?')
+  @Get('stream/v2?')
   @HttpCode(HttpStatus.OK)
   async stream_v2(@Query('postid') postid: string, @Res() response) {
     //if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
     //if (await this.utilsService.validasiTokenEmailParam(headers['x-auth-token'], headers['x-auth-user'])) {
-        var dataMedia = await this.PostsService.findOnepostID(postid);
-        if (await this.utilsService.ceckData(dataMedia)) {
-          var mediaID = ""; 
-          var mediaBasePath = ""; 
-          var mediaMime = ""; 
-          if (dataMedia != null) {
-            if (dataMedia[0].datacontent[0].mediaID != undefined) {
-              mediaID = dataMedia[0].datacontent[0].mediaID;
-            }
-            if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
-              mediaBasePath = dataMedia[0].datacontent[0].mediaBasePath;
-            }
-            if (dataMedia[0].datacontent[0].mediaMime != undefined) {
-              mediaMime = dataMedia[0].datacontent[0].mediaMime;
-            } 
-            if (mediaID != "") {
-              var data = await this.PostsService.streamV2(mediaBasePath + mediaID+'.mp4');
-              console.log(data);
-              console.log(mediaMime);
-              if (data != null) {
-                //response.set("Content-Type", "application/octet-stream");
-                response.set("Content-Type", 'video/mp4');
-                response.send(data);
-              } else {
-                response.send(null);
-              }
-            } else {
-              response.send(null);
-            }
+    var dataMedia = await this.PostsService.findOnepostID(postid);
+    console.log(dataMedia);
+    if (await this.utilsService.ceckData(dataMedia)) {
+      var mediaUri = "";
+      var mediaBasePath = "";
+      if (dataMedia != null) {
+        if (dataMedia[0].datacontent[0].mediaUri != undefined) {
+          mediaUri = dataMedia[0].datacontent[0].mediaUri;
+        }
+        if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
+          mediaBasePath = dataMedia[0].datacontent[0].mediaBasePath;
+        }
+        if (mediaUri != "") {
+          var data = await this.PostsService.stream(mediaBasePath + mediaUri);
+          console.log(data);
+          if (data != null) {
+            response.set("Content-Type", "application/octet-stream");
+            response.send(data);
           } else {
             response.send(null);
           }
         } else {
           response.send(null);
         }
-      // } else {
-      //   response.send(null);
-      // }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
     // } else {
     //   response.send(null);
     // }
-  }
-
-  @Get('stream/v2?')
-  @HttpCode(HttpStatus.OK)
-  async stream_v3(@Query('postid') postid: string) {
-    var dataMedia = await this.PostsService.findOnepostID(postid);
-    if (await this.utilsService.ceckData(dataMedia)) {
-      var mediaID = "";
-      var mediaBasePath = "";
-      var mediaMime = "";
-      if (dataMedia != null) {
-        if (dataMedia[0].datacontent[0].mediaID != undefined) {
-          mediaID = dataMedia[0].datacontent[0].mediaID;
-        }
-        if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
-          mediaBasePath = dataMedia[0].datacontent[0].mediaBasePath;
-        }
-        if (dataMedia[0].datacontent[0].mediaMime != undefined) {
-          mediaMime = dataMedia[0].datacontent[0].mediaMime;
-        }
-        if (mediaID != "") {
-          return {
-            response_code: 202,
-            data: {
-              link: 'https://' + process.env.SEAWEEDFS_HOST + '/localrepo/' + mediaBasePath + mediaID + '.mp4'
-            },
-            messages: {
-              info: ['Successful'],
-            },
-          };
-        } else {
-          await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed'
-          );
-        }
-      } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed'
-        );
-      }
-    } else {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed'
-      );
-    }
+    // } else {
+    //   response.send(null);
+    // }
   }
 
   @Get('stream/:id')
