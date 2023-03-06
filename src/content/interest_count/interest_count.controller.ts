@@ -37,6 +37,7 @@ export class InterestCountController {
         var getdata = null;
         try{
             getdata = await this.interestCountService.searchDefaultPage(page, limit);
+            getdata = getdata[0];
         }
         catch (e){
             getdata = [];
