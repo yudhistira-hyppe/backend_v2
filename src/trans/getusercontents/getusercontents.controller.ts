@@ -1133,6 +1133,11 @@ export class GetusercontentsController {
             tags = [];
         }
 
+        if (tags == undefined || tags.length == 0) {
+            tags = [];
+        }
+
+
         try {
             user = datasearch[0].user;
             lenguser = user.length;

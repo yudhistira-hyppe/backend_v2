@@ -7,7 +7,7 @@ export type ActivityeventsDocument = Activityevents & Document;
 
 @Schema()
 export class Activityevents {
-  @Prop({ type: Object })
+  // @Prop({ type: Object })
   _id: mongoose.Types.ObjectId;
   @Prop()
   activityEventID: String;
