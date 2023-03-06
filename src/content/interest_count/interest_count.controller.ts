@@ -35,15 +35,14 @@ export class InterestCountController {
         }
 
         var getdata = null;
-        var totalsearch = 0;
         try{
             getdata = await this.interestCountService.searchDefaultPage(page, limit);
-            totalsearch = getdata.length;
+            getdata = getdata[0];
         }
         catch (e){
             getdata = [];
         }
 
-        return { response_code:202, data : getdata, totalsearch : totalsearch, limit : limit, page : page, messages  }
+        return { response_code:202, data : getdata, limit : limit, page : page, messages  }
     }
 }

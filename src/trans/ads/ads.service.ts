@@ -6748,18 +6748,21 @@ export class AdsService {
         return data;
     }
 
-    async updateStatusToBeREPORT(id: ObjectId) {
-        const data = await this.adsModel.updateOne(
-          {
-            _id:id
-          }, 
-          {
-            "$set":
+    async updateStatusToBeREPORT(iddata: any[]) {
+        const data = await this.adsModel.updateMany(
             {
-                status:"REPORTED",
-                isActive:false
-            }
-          });
+                _id:
+                {
+                    "$in":iddata
+                }
+            }, 
+            {
+                "$set":
+                {
+                    status:"REPORTED",
+                    isActive:false
+                }
+            });
     
         return data;
     }
@@ -16474,7 +16477,8 @@ export class AdsService {
                             "$reportedUserCount",
                             0
                         ]
-                    }
+                    },
+                    tempstatus:"$status"
                 }
             },);
 
@@ -17105,6 +17109,50 @@ export class AdsService {
                             "$pemohon",
                             "$admin",
                             "$lastpenonton"
+                        ]
+                    }
+                }
+            }
+        ]);
+
+        return query;
+    }
+
+    async getalldatabyforREPORTstatus()
+    {
+        var query = await this.adsModel.aggregate([
+            {
+                "$match":
+                {
+                    "$and":
+                    [
+                        {
+                            "$expr":
+                            {
+                                "$ne":
+                                [
+                                    "$status",
+                                    "REPORTED"
+                                ]
+                            }
+                        },
+                        {
+                            "$expr":
+                            {
+                                "$ne":
+                                [
+                                    "$status",
+                                    "DRAFT"
+                                ]
+                            }
+                        },
+                    ],
+                    "$expr":
+                    {
+                        "$gt":
+                        [
+                            "$reportedUserCount",
+                            200
                         ]
                     }
                 }
