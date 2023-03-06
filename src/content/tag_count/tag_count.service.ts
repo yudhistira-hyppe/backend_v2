@@ -47,4 +47,8 @@ export class TagCountService {
         return data;
     }
 
+    async detailtag() {
+        var pipeline = [];
+    }
+
 }
