@@ -735,16 +735,70 @@ export class UserAdsService {
                 }
             },
             {
-                "$project":
+                "$facet":
                 {
-                    _id:1,
-                    userID:1
+                    "dataclick":
+                    [
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$statusClick", true
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:1,
+                                userID:1
+                            }
+                        }
+                    ],
+                    "dataview":
+                    [
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$statusView", true
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:1,
+                                userID:1
+                            }
+                        }
+                    ],
                 }
             },
             {
-                "$group":
+                "$project":
                 {
-                    _id:"$userID"
+                    "data":
+                    {
+                        "$concatArrays":
+                        [
+                            "$dataclick", "$dataview"
+                        ]
+                    }
+                }
+            },
+            {
+                "$unwind":
+                {
+                    path:"$data"
                 }
             },
             {
@@ -753,7 +807,7 @@ export class UserAdsService {
                     "from": "userbasics",
                     "as": "recorduser",
                     "let": {
-                        "userbasic_fk": "$_id"
+                        "userbasic_fk": "$data.userID"
                     },
                     "pipeline": 
                     [
@@ -850,7 +904,20 @@ export class UserAdsService {
                 "$project":
                 {
                     _id:1,
-                    recorduser:1,
+                    gender:
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$recorduser.gender", 0
+                        ]
+                    },
+                    lokasi:
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$recorduser.lokasi", 0
+                        ]
+                    }
                 }
             },
             {
@@ -861,13 +928,7 @@ export class UserAdsService {
                         {
                             "$group":
                             {
-                                _id:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$recorduser.gender", 0
-                                    ]
-                                },
+                                _id:"$gender",
                                 total:
                                 {
                                     "$sum":1
@@ -880,13 +941,7 @@ export class UserAdsService {
                         {
                             "$group":
                             {
-                                _id:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$recorduser.lokasi", 0
-                                    ]
-                                },
+                                _id:"$lokasi",
                                 total:
                                 {
                                     "$sum":1
