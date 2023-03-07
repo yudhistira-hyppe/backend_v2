@@ -1065,4 +1065,374 @@ export class UserAdsService {
         var query = await this.userAdsModel.aggregate(pipeline);
         return query;
     }
+
+    //pindahin function dari ads ke userads
+    async getAdsbygender(startdate: string, enddate: string) {
+        var before = new Date(startdate).toISOString().split("T")[0];
+        var input = new Date(enddate);
+        input.setDate(input.getDate() + 1);
+        var today = new Date(input).toISOString().split("T")[0];
+
+        var query = await this.userAdsModel.aggregate([
+            {
+                "$match":
+                {
+                    createdAt:
+                    {
+                        "$gte":before,
+                        "$lte":today
+                    },
+                    "$or":
+                    [
+                        {
+                            "$expr":
+                            {
+                                "$eq":
+                                [
+                                    "$statusClick", true
+                                ]
+                            }
+                        },
+                        {
+                            "$expr":
+                            {
+                                "$eq":
+                                [
+                                    "$statusView", true
+                                ]
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                "$facet":
+                {
+                    "dataclick":
+                    [
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$statusClick", true
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:1,
+                                userID:1
+                            }
+                        }
+                    ],
+                    "dataview":
+                    [
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$statusView", true
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:1,
+                                userID:1
+                            }
+                        }
+                    ],
+                }
+            },
+            {
+                "$project":
+                {
+                    "data":
+                    {
+                        "$concatArrays":
+                        [
+                            "$dataclick", "$dataview"
+                        ]
+                    }
+                }
+            },
+            {
+                "$unwind":
+                {
+                    path:"$data"
+                }
+            },
+            {
+                "$lookup":
+                {
+                    "from": "userbasics",
+                    "as": "recorduser",
+                    "let": {
+                        "userbasic_fk": "$data.userID"
+                    },
+                    "pipeline": 
+                    [
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$_id",
+                                        "$$userbasic_fk"
+                                    ]
+                                },
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:1,
+                                email:1,
+                                gender: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+                                                
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+                                                
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+                                                
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+                                                
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+                                                
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+                                                
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+                                                
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+                                                
+                                            },
+                                            
+                                        ],
+                                        default: "OTHER",    
+                                    },
+                                              
+                                },
+                                lokasi:"$states"
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                "$project":
+                {
+                    _id:1,
+                    gender:
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$recorduser.gender", 0
+                        ]
+                    },
+                    lokasi:
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$recorduser.lokasi", 0
+                        ]
+                    }
+                }
+            },
+            {
+                "$facet":
+                {
+                    "gender":
+                    [
+                        {
+                            "$group":
+                            {
+                                _id:"$gender",
+                                total:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        },
+                    ],
+                    "area":
+                    [
+                        {
+                            "$group":
+                            {
+                                _id:"$lokasi",
+                                total:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id: null,
+                                totaldata:
+                                {
+                                    "$sum": "$total"
+                                },
+                                data:
+                                {
+                                    "$push":
+                                    {
+                                        _id: "$_id",
+                                        total: "$total"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$data"
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id: "$data._id",
+                                total:"$data.total",
+                                persentase:
+                                {
+                                    "$multiply":
+                                        [
+                                            {
+                                                "$divide":
+                                                    [
+                                                        "$data.total", "$totaldata"
+                                                    ]
+                                            }, 100
+                                        ]
+                                }
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id: "$_id",
+                                persentase:
+                                {
+                                    "$first": "$persentase"
+                                },
+                                total:
+                                {
+                                    "$first": "$total"
+                                },
+                            }
+                        },
+                        {
+                            "$lookup":
+                            {
+                                "from": "areas",
+                                "as": "areas_data",
+                                "let": 
+                                {
+                                    "areas_fk": "$_id.$id"
+                                },
+                                "pipeline": 
+                                [
+                                    {
+                                        "$match":
+                                        {
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$_id", "$$areas_fk" 
+                                                ]
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:
+                                {
+                                    "$ifNull":
+                                    [
+                                        {
+                                            "$arrayElemAt":
+                                            [
+                                                "$areas_data.stateName", 0
+                                            ]
+                                        },
+                                        "Lainnya"
+                                    ]
+                                },
+                                persentase:1,
+                                // total:1
+                            }
+                        },
+                        {
+                            "$sort":
+                            {
+                                _id: 1
+                            }
+                        }
+                    ]
+                }
+            }
+        ]);
+
+        return query;
+    }
 }
