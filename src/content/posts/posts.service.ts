@@ -25271,7 +25271,7 @@ export class PostsService {
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$_id", key]
+                            $indexOfCP: ["$_id", "de"]
                           }
                         }
                       },
@@ -25283,8 +25283,13 @@ export class PostsService {
                         }
                       },
                       {
+                        $set: {
+                          dodol: "kancut"
+                        }
+                      },
+                      {
                         $project: {
-                          _id: "$_id",
+                          name: "$_id",
                           total: 1,
                           score: 1,
                           length: 1,
@@ -25308,7 +25313,7 @@ export class PostsService {
                 },
                 {
                   $project: {
-                    tag: "$tag._id",
+                    tag: "$tag.name",
                     total: "$tag.total",
                     score: "$tag.score",
                     length: "$tag.length",
@@ -25337,16 +25342,15 @@ export class PostsService {
         },
         {
           $project: {
+            dodol: "$tags.dodol",
             tags:
             {
               $cond: {
                 if: {
-                  $eq: [{
-                    $arrayElemAt: ["$tags.dodol", 0]
-                  }, "kosong"]
+                  $gt: [{ $size: "$tags.dodol" }, 0]
                 },
-                then: "$saassaas",
-                else: "$tags"
+                then: "$tags",
+                else: "$tagsssdsd"
               }
             },
 
@@ -25810,7 +25814,7 @@ export class PostsService {
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$_id", key]
+                            $indexOfCP: ["$_id", "de"]
                           }
                         }
                       },
@@ -25822,8 +25826,13 @@ export class PostsService {
                         }
                       },
                       {
+                        $set: {
+                          dodol: "kancut"
+                        }
+                      },
+                      {
                         $project: {
-                          _id: "$_id",
+                          name: "$_id",
                           total: 1,
                           score: 1,
                           length: 1,
@@ -25847,7 +25856,7 @@ export class PostsService {
                 },
                 {
                   $project: {
-                    tag: "$tag._id",
+                    tag: "$tag.name",
                     total: "$tag.total",
                     score: "$tag.score",
                     length: "$tag.length",
@@ -25888,19 +25897,17 @@ export class PostsService {
                 else: "$user"
               }
             },
+            dodol: "$tags.dodol",
             tags:
             {
               $cond: {
                 if: {
-                  $eq: [{
-                    $arrayElemAt: ["$tags.dodol", 0]
-                  }, "kosong"]
+                  $gt: [{ $size: "$tags.dodol" }, 0]
                 },
-                then: "$saassaas",
-                else: "$tags"
+                then: "$tags",
+                else: "$tagsssdsd"
               }
             },
-
           }
         });
     }
@@ -26219,7 +26226,7 @@ export class PostsService {
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$_id", key]
+                            $indexOfCP: ["$_id", "de"]
                           }
                         }
                       },
@@ -26231,8 +26238,13 @@ export class PostsService {
                         }
                       },
                       {
+                        $set: {
+                          dodol: "kancut"
+                        }
+                      },
+                      {
                         $project: {
-                          _id: "$_id",
+                          name: "$_id",
                           total: 1,
                           score: 1,
                           length: 1,
@@ -26256,7 +26268,7 @@ export class PostsService {
                 },
                 {
                   $project: {
-                    tag: "$tag._id",
+                    tag: "$tag.name",
                     total: "$tag.total",
                     score: "$tag.score",
                     length: "$tag.length",
@@ -26287,16 +26299,15 @@ export class PostsService {
           $project: {
 
             diary: "$diary",
+            dodol: "$tags.dodol",
             tags:
             {
               $cond: {
                 if: {
-                  $eq: [{
-                    $arrayElemAt: ["$tags.dodol", 0]
-                  }, "kosong"]
+                  $gt: [{ $size: "$tags.dodol" }, 0]
                 },
-                then: "$saassaas",
-                else: "$tags"
+                then: "$tags",
+                else: "$tagsssdsd"
               }
             },
 
@@ -26621,7 +26632,7 @@ export class PostsService {
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$_id", key]
+                            $indexOfCP: ["$_id", "de"]
                           }
                         }
                       },
@@ -26633,8 +26644,13 @@ export class PostsService {
                         }
                       },
                       {
+                        $set: {
+                          dodol: "kancut"
+                        }
+                      },
+                      {
                         $project: {
-                          _id: "$_id",
+                          name: "$_id",
                           total: 1,
                           score: 1,
                           length: 1,
@@ -26658,7 +26674,7 @@ export class PostsService {
                 },
                 {
                   $project: {
-                    tag: "$tag._id",
+                    tag: "$tag.name",
                     total: "$tag.total",
                     score: "$tag.score",
                     length: "$tag.length",
@@ -26689,16 +26705,15 @@ export class PostsService {
           $project: {
 
             vid: "$vid",
+            dodol: "$tags.dodol",
             tags:
             {
               $cond: {
                 if: {
-                  $eq: [{
-                    $arrayElemAt: ["$tags.dodol", 0]
-                  }, "kosong"]
+                  $gt: [{ $size: "$tags.dodol" }, 0]
                 },
-                then: "$saassaas",
-                else: "$tags"
+                then: "$tags",
+                else: "$tagsssdsd"
               }
             },
 
@@ -27028,7 +27043,7 @@ export class PostsService {
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$_id", key]
+                            $indexOfCP: ["$_id", "de"]
                           }
                         }
                       },
@@ -27040,8 +27055,13 @@ export class PostsService {
                         }
                       },
                       {
+                        $set: {
+                          dodol: "kancut"
+                        }
+                      },
+                      {
                         $project: {
-                          _id: "$_id",
+                          name: "$_id",
                           total: 1,
                           score: 1,
                           length: 1,
@@ -27065,7 +27085,7 @@ export class PostsService {
                 },
                 {
                   $project: {
-                    tag: "$tag._id",
+                    tag: "$tag.name",
                     total: "$tag.total",
                     score: "$tag.score",
                     length: "$tag.length",
@@ -27096,16 +27116,15 @@ export class PostsService {
           $project: {
 
             pict: "$pict",
+            dodol: "$tags.dodol",
             tags:
             {
               $cond: {
                 if: {
-                  $eq: [{
-                    $arrayElemAt: ["$tags.dodol", 0]
-                  }, "kosong"]
+                  $gt: [{ $size: "$tags.dodol" }, 0]
                 },
-                then: "$saassaas",
-                else: "$tags"
+                then: "$tags",
+                else: "$tagsssdsd"
               }
             },
 
@@ -27729,7 +27748,7 @@ export class PostsService {
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$_id", key]
+                            $indexOfCP: ["$_id", "de"]
                           }
                         }
                       },
@@ -27741,8 +27760,13 @@ export class PostsService {
                         }
                       },
                       {
+                        $set: {
+                          dodol: "kancut"
+                        }
+                      },
+                      {
                         $project: {
-                          _id: "$_id",
+                          name: "$_id",
                           total: 1,
                           score: 1,
                           length: 1,
@@ -27766,7 +27790,7 @@ export class PostsService {
                 },
                 {
                   $project: {
-                    tag: "$tag._id",
+                    tag: "$tag.name",
                     total: "$tag.total",
                     score: "$tag.score",
                     length: "$tag.length",
@@ -27798,16 +27822,15 @@ export class PostsService {
 
             pict: "$pict",
             vid: "$vid",
+            dodol: "$tags.dodol",
             tags:
             {
               $cond: {
                 if: {
-                  $eq: [{
-                    $arrayElemAt: ["$tags.dodol", 0]
-                  }, "kosong"]
+                  $gt: [{ $size: "$tags.dodol" }, 0]
                 },
-                then: "$saassaas",
-                else: "$tags"
+                then: "$tags",
+                else: "$tagsssdsd"
               }
             },
 
@@ -28723,7 +28746,7 @@ export class PostsService {
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$_id", key]
+                            $indexOfCP: ["$_id", "de"]
                           }
                         }
                       },
@@ -28735,8 +28758,13 @@ export class PostsService {
                         }
                       },
                       {
+                        $set: {
+                          dodol: "kancut"
+                        }
+                      },
+                      {
                         $project: {
-                          _id: "$_id",
+                          name: "$_id",
                           total: 1,
                           score: 1,
                           length: 1,
@@ -28760,7 +28788,7 @@ export class PostsService {
                 },
                 {
                   $project: {
-                    tag: "$tag._id",
+                    tag: "$tag.name",
                     total: "$tag.total",
                     score: "$tag.score",
                     length: "$tag.length",
@@ -28792,16 +28820,15 @@ export class PostsService {
             pict: "$pict",
             vid: "$vid",
             diary: "$diary",
+            dodol: "$tags.dodol",
             tags:
             {
               $cond: {
                 if: {
-                  $eq: [{
-                    $arrayElemAt: ["$tags.dodol", 0]
-                  }, "kosong"]
+                  $gt: [{ $size: "$tags.dodol" }, 0]
                 },
-                then: "$saassaas",
-                else: "$tags"
+                then: "$tags",
+                else: "$tagsssdsd"
               }
             },
 
@@ -29422,7 +29449,7 @@ export class PostsService {
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$_id", key]
+                            $indexOfCP: ["$_id", "de"]
                           }
                         }
                       },
@@ -29434,8 +29461,13 @@ export class PostsService {
                         }
                       },
                       {
+                        $set: {
+                          dodol: "kancut"
+                        }
+                      },
+                      {
                         $project: {
-                          _id: "$_id",
+                          name: "$_id",
                           total: 1,
                           score: 1,
                           length: 1,
@@ -29459,7 +29491,7 @@ export class PostsService {
                 },
                 {
                   $project: {
-                    tag: "$tag._id",
+                    tag: "$tag.name",
                     total: "$tag.total",
                     score: "$tag.score",
                     length: "$tag.length",
@@ -29491,16 +29523,15 @@ export class PostsService {
 
             pict: "$pict",
             diary: "$diary",
+            dodol: "$tags.dodol",
             tags:
             {
               $cond: {
                 if: {
-                  $eq: [{
-                    $arrayElemAt: ["$tags.dodol", 0]
-                  }, "kosong"]
+                  $gt: [{ $size: "$tags.dodol" }, 0]
                 },
-                then: "$saassaas",
-                else: "$tags"
+                then: "$tags",
+                else: "$tagsssdsd"
               }
             },
 
@@ -30263,7 +30294,7 @@ export class PostsService {
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$_id", key]
+                            $indexOfCP: ["$_id", "de"]
                           }
                         }
                       },
@@ -30275,8 +30306,13 @@ export class PostsService {
                         }
                       },
                       {
+                        $set: {
+                          dodol: "kancut"
+                        }
+                      },
+                      {
                         $project: {
-                          _id: "$_id",
+                          name: "$_id",
                           total: 1,
                           score: 1,
                           length: 1,
@@ -30300,7 +30336,7 @@ export class PostsService {
                 },
                 {
                   $project: {
-                    tag: "$tag._id",
+                    tag: "$tag.name",
                     total: "$tag.total",
                     score: "$tag.score",
                     length: "$tag.length",
@@ -30342,19 +30378,17 @@ export class PostsService {
               }
             },
             pict: "$pict",
+            dodol: "$tags.dodol",
             tags:
             {
               $cond: {
                 if: {
-                  $eq: [{
-                    $arrayElemAt: ["$tags.dodol", 0]
-                  }, "kosong"]
+                  $gt: [{ $size: "$tags.dodol" }, 0]
                 },
-                then: "$saassaas",
-                else: "$tags"
+                then: "$tags",
+                else: "$tagsssdsd"
               }
             },
-
           }
         });
     }
@@ -31409,7 +31443,7 @@ export class PostsService {
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$_id", key]
+                            $indexOfCP: ["$_id", "de"]
                           }
                         }
                       },
@@ -31421,8 +31455,13 @@ export class PostsService {
                         }
                       },
                       {
+                        $set: {
+                          dodol: "kancut"
+                        }
+                      },
+                      {
                         $project: {
-                          _id: "$_id",
+                          name: "$_id",
                           total: 1,
                           score: 1,
                           length: 1,
@@ -31446,7 +31485,7 @@ export class PostsService {
                 },
                 {
                   $project: {
-                    tag: "$tag._id",
+                    tag: "$tag.name",
                     total: "$tag.total",
                     score: "$tag.score",
                     length: "$tag.length",
@@ -31489,16 +31528,15 @@ export class PostsService {
             },
             pict: "$pict",
             vid: "$vid",
+            dodol: "$tags.dodol",
             tags:
             {
               $cond: {
                 if: {
-                  $eq: [{
-                    $arrayElemAt: ["$tags.dodol", 0]
-                  }, "kosong"]
+                  $gt: [{ $size: "$tags.dodol" }, 0]
                 },
-                then: "$saassaas",
-                else: "$tags"
+                then: "$tags",
+                else: "$tagsssdsd"
               }
             },
 
@@ -32549,7 +32587,7 @@ export class PostsService {
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$_id", key]
+                            $indexOfCP: ["$_id", "de"]
                           }
                         }
                       },
@@ -32561,8 +32599,13 @@ export class PostsService {
                         }
                       },
                       {
+                        $set: {
+                          dodol: "kancut"
+                        }
+                      },
+                      {
                         $project: {
-                          _id: "$_id",
+                          name: "$_id",
                           total: 1,
                           score: 1,
                           length: 1,
@@ -32586,7 +32629,7 @@ export class PostsService {
                 },
                 {
                   $project: {
-                    tag: "$tag._id",
+                    tag: "$tag.name",
                     total: "$tag.total",
                     score: "$tag.score",
                     length: "$tag.length",
@@ -32629,16 +32672,15 @@ export class PostsService {
             },
             vid: "$vid",
             diary: "$diary",
+            dodol: "$tags.dodol",
             tags:
             {
               $cond: {
                 if: {
-                  $eq: [{
-                    $arrayElemAt: ["$tags.dodol", 0]
-                  }, "kosong"]
+                  $gt: [{ $size: "$tags.dodol" }, 0]
                 },
-                then: "$saassaas",
-                else: "$tags"
+                then: "$tags",
+                else: "$tagsssdsd"
               }
             },
 
@@ -33555,7 +33597,7 @@ export class PostsService {
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$_id", key]
+                            $indexOfCP: ["$_id", "de"]
                           }
                         }
                       },
@@ -33567,8 +33609,13 @@ export class PostsService {
                         }
                       },
                       {
+                        $set: {
+                          dodol: "kancut"
+                        }
+                      },
+                      {
                         $project: {
-                          _id: "$_id",
+                          name: "$_id",
                           total: 1,
                           score: 1,
                           length: 1,
@@ -33592,7 +33639,7 @@ export class PostsService {
                 },
                 {
                   $project: {
-                    tag: "$tag._id",
+                    tag: "$tag.name",
                     total: "$tag.total",
                     score: "$tag.score",
                     length: "$tag.length",
@@ -33625,16 +33672,15 @@ export class PostsService {
             pict: "$pict",
             vid: "$vid",
             diary: "$diary",
+            dodol: "$tags.dodol",
             tags:
             {
               $cond: {
                 if: {
-                  $eq: [{
-                    $arrayElemAt: ["$tags.dodol", 0]
-                  }, "kosong"]
+                  $gt: [{ $size: "$tags.dodol" }, 0]
                 },
-                then: "$saassaas",
-                else: "$tags"
+                then: "$tags",
+                else: "$tagsssdsd"
               }
             },
 
@@ -34983,7 +35029,7 @@ export class PostsService {
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$_id", key]
+                            $indexOfCP: ["$_id", "de"]
                           }
                         }
                       },
@@ -34995,8 +35041,13 @@ export class PostsService {
                         }
                       },
                       {
+                        $set: {
+                          dodol: "kancut"
+                        }
+                      },
+                      {
                         $project: {
-                          _id: "$_id",
+                          name: "$_id",
                           total: 1,
                           score: 1,
                           length: 1,
@@ -35020,7 +35071,7 @@ export class PostsService {
                 },
                 {
                   $project: {
-                    tag: "$tag._id",
+                    tag: "$tag.name",
                     total: "$tag.total",
                     score: "$tag.score",
                     length: "$tag.length",
@@ -35064,16 +35115,15 @@ export class PostsService {
             pict: "$pict",
             vid: "$vid",
             diary: "$diary",
+            dodol: "$tags.dodol",
             tags:
             {
               $cond: {
                 if: {
-                  $eq: [{
-                    $arrayElemAt: ["$tags.dodol", 0]
-                  }, "kosong"]
+                  $gt: [{ $size: "$tags.dodol" }, 0]
                 },
-                then: "$saassaas",
-                else: "$tags"
+                then: "$tags",
+                else: "$tagsssdsd"
               }
             },
 
