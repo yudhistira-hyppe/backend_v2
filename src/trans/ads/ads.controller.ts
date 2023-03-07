@@ -878,10 +878,10 @@ export class AdsController {
             startdate = request_json["startdate"];
             enddate = request_json["enddate"];
         }
-        // else 
-        // {
-        //     throw new BadRequestException("Unabled to proceed");
-        // }
+        else 
+        {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
         var getdatabase = await this.adsService.getAdsanalyticsgraph(startdate, enddate);
 

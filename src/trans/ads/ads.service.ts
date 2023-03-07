@@ -15804,190 +15804,360 @@ export class AdsService {
         return query;
     }
 
+    // async getAdsanalyticsgraph(startdate: string, enddate: string) {
+    //     var pipeline = [];
+
+    //     if (startdate !== undefined && enddate !== undefined) {
+    //         var before = new Date(startdate).toISOString().split("T")[0];
+    //         var input = new Date(enddate);
+    //         input.setDate(input.getDate() + 1);
+    //         var today = new Date(input).toISOString().split("T")[0];
+
+    //         pipeline.push({
+    //             "$match":
+    //             {
+    //                 timestamp:
+    //                 {
+    //                     "$gte": before,
+    //                     "$lte": today
+    //                 },
+    //                 status: "APPROVE"
+    //             }
+    //         },);
+    //     }
+    //     else {
+    //         pipeline.push({
+    //             "$match":
+    //             {
+    //                 status: "APPROVE"
+    //             }
+    //         },);
+    //     }
+
+    //     pipeline.push({
+    //         "$project":
+    //         {
+    //             _id: 1,
+    //             createdAt:
+    //             {
+    //                 "$substr":
+    //                     [
+    //                         "$timestamp", 0, 10
+    //                     ]
+    //             },
+    //         }
+    //     },
+    //         {
+    //             "$lookup":
+    //             {
+    //                 "from": "userads",
+    //                 "as": "recordtayang",
+    //                 "let": {
+    //                     "userads_fk": "$_id"
+    //                 },
+    //                 "pipeline":
+    //                     [
+    //                         {
+    //                             "$match":
+    //                             {
+    //                                 "$expr":
+    //                                 {
+    //                                     "$eq":
+    //                                         [
+    //                                             "$adsID",
+    //                                             "$$userads_fk"
+    //                                         ]
+    //                                 },
+    //                                 "$or":
+    //                                     [
+    //                                         {
+    //                                             "$expr":
+    //                                             {
+    //                                                 "$eq":
+    //                                                     [
+    //                                                         "$statusClick", true
+    //                                                     ]
+    //                                             }
+    //                                         },
+    //                                         {
+    //                                             "$expr":
+    //                                             {
+    //                                                 "$eq":
+    //                                                     [
+    //                                                         "$statusView", true
+    //                                                     ]
+    //                                             }
+    //                                         }
+    //                                     ]
+    //                             }
+    //                         },
+    //                         {
+    //                             "$group":
+    //                             {
+    //                                 _id: "$adsID",
+    //                                 datatotalview:
+    //                                 {
+    //                                     "$sum":
+    //                                     {
+    //                                         "$cond":
+    //                                         {
+    //                                             if:
+    //                                             {
+    //                                                 "$eq": ["$statusView", true]
+    //                                             },
+    //                                             then: 1,
+    //                                             else: 0
+    //                                         }
+    //                                     }
+    //                                 },
+    //                                 datatotalclick:
+    //                                 {
+    //                                     "$sum":
+    //                                     {
+    //                                         "$cond":
+    //                                         {
+    //                                             if:
+    //                                             {
+    //                                                 "$eq": ["$statusClick", true]
+    //                                             },
+    //                                             then: 1,
+    //                                             else: 0
+    //                                         }
+    //                                     }
+    //                                 },
+    //                             }
+    //                         }
+    //                     ]
+    //             }
+    //         },
+    //         {
+    //             "$project":
+    //             {
+    //                 _id: 1,
+    //                 createdAt: 1,
+    //                 recordtayang:
+    //                 {
+    //                     "$first": "$recordtayang"
+    //                 }
+    //             }
+    //         },
+    //         {
+    //             "$group":
+    //             {
+    //                 _id: "$createdAt",
+    //                 totaldata:
+    //                 {
+    //                     "$sum": 1
+    //                 },
+    //                 totalview:
+    //                 {
+    //                     "$sum": "$recordtayang.datatotalview"
+    //                 },
+    //                 totalclick:
+    //                 {
+    //                     "$sum": "$recordtayang.datatotalclick"
+    //                 },
+    //             }
+    //         },
+    //         {
+    //             "$sort":
+    //             {
+    //                 _id: 1
+    //             }
+    //         },
+    //         {
+    //             "$group":
+    //             {
+    //                 _id: null,
+    //                 totaldata:
+    //                 {
+    //                     "$sum": "$totaldata"
+    //                 },
+    //                 data:
+    //                 {
+    //                     "$push":
+    //                     {
+    //                         createdAt: "$_id",
+    //                         totalview: "$totalview",
+    //                         totalclick: "$totalclick",
+    //                         //totaldataharian:"$totaldata"
+    //                     }
+    //                 }
+    //             }
+    //         });
+
+    //     var query = await this.adsModel.aggregate(pipeline);
+
+    //     return query;
+    // }
+
     async getAdsanalyticsgraph(startdate: string, enddate: string) {
         var pipeline = [];
 
-        if (startdate !== undefined && enddate !== undefined) {
-            var before = new Date(startdate).toISOString().split("T")[0];
-            var input = new Date(enddate);
-            input.setDate(input.getDate() + 1);
-            var today = new Date(input).toISOString().split("T")[0];
+        var before = new Date(startdate).toISOString().split("T")[0];
+        var input = new Date(enddate);
+        input.setDate(input.getDate() + 1);
+        var today = new Date(input).toISOString().split("T")[0];
 
-            pipeline.push({
-                "$match":
-                {
-                    timestamp:
-                    {
-                        "$gte": before,
-                        "$lte": today
-                    },
-                    status: "APPROVE"
-                }
-            },);
-        }
-        else {
-            pipeline.push({
-                "$match":
-                {
-                    status: "APPROVE"
-                }
-            },);
-        }
-
-        pipeline.push({
-            "$project":
+        var query = await this.adsModel.aggregate([
             {
-                _id: 1,
-                createdAt:
+                "$facet":
                 {
-                    "$substr":
-                        [
-                            "$timestamp", 0, 10
-                        ]
-                },
-            }
-        },
-            {
-                "$lookup":
-                {
-                    "from": "userads",
-                    "as": "recordtayang",
-                    "let": {
-                        "userads_fk": "$_id"
-                    },
-                    "pipeline":
-                        [
+                    "penontonbyharian":
+                    [
+                        {
+                            "$limit":1
+                        },
+                        {
+                            "$lookup":
                             {
-                                "$match":
-                                {
-                                    "$expr":
+                                from:"userads",
+                                as:"userads",
+                                pipeline:
+                                [
                                     {
-                                        "$eq":
-                                            [
-                                                "$adsID",
-                                                "$$userads_fk"
-                                            ]
-                                    },
-                                    "$or":
-                                        [
+                                        "$match":
+                                        {
+                                            createdAt:
                                             {
-                                                "$expr":
+                                                "$gte":before,
+                                                "$lte":today
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            createdAt:
+                                            {
+                                                "$substr":
+                                                [
+                                                    "$createdAt", 0, 10
+                                                ]
+                                            },
+                                            statusView:1,
+                                            statusClick:1
+                                        }
+                                    },
+                                    {
+                                        "$group":
+                                        {
+                                            _id:"$createdAt",
+                                            totalview:
+                                            {
+                                                "$sum": 
                                                 {
-                                                    "$eq":
-                                                        [
-                                                            "$statusClick", true
-                                                        ]
+                                                    "$cond": 
+                                                    {
+                                                        if:
+                                                        {
+                                                            "$eq":["$statusView", true]
+                                                        },
+                                                        then: 1, 
+                                                        else: 0
+                                                    } 
                                                 }
                                             },
+                                            totalclick:
                                             {
-                                                "$expr":
+                                                "$sum": 
                                                 {
-                                                    "$eq":
-                                                        [
-                                                            "$statusView", true
-                                                        ]
+                                                    "$cond": 
+                                                    {
+                                                        if:
+                                                        {
+                                                            "$eq":["$statusClick", true]
+                                                        },
+                                                        then: 1, 
+                                                        else: 0
+                                                    } 
                                                 }
-                                            }
-                                        ]
-                                }
-                            },
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$sort":
+                                        {
+                                            _id:1
+                                        }
+                                    },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:0,
+                                            createdAt:"$_id",
+                                            totalclick:1,
+                                            totalview:1,
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "$project":
                             {
-                                "$group":
+                                _id:0,
+                                userads:1
+                            }
+                        }
+                    ],
+                    "totalads":
+                    [
+                        {
+                            "$match":
+                            {
+                                timestamp:
                                 {
-                                    _id: "$adsID",
-                                    datatotalview:
-                                    {
-                                        "$sum":
-                                        {
-                                            "$cond":
-                                            {
-                                                if:
-                                                {
-                                                    "$eq": ["$statusView", true]
-                                                },
-                                                then: 1,
-                                                else: 0
-                                            }
-                                        }
-                                    },
-                                    datatotalclick:
-                                    {
-                                        "$sum":
-                                        {
-                                            "$cond":
-                                            {
-                                                if:
-                                                {
-                                                    "$eq": ["$statusClick", true]
-                                                },
-                                                then: 1,
-                                                else: 0
-                                            }
-                                        }
-                                    },
+                                    "$gte":before,
+                                    "$lte":today
+                                },
+                                isActive:true,
+                                status:
+                                {
+                                    "$in":["APPROVE", "FINISH"]
+                                },
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                total:
+                                {
+                                    "$sum":1
                                 }
                             }
-                        ]
+                        },
+                    ]
                 }
             },
             {
                 "$project":
                 {
-                    _id: 1,
-                    createdAt: 1,
-                    recordtayang:
-                    {
-                        "$first": "$recordtayang"
-                    }
-                }
-            },
-            {
-                "$group":
-                {
-                    _id: "$createdAt",
-                    totaldata:
-                    {
-                        "$sum": 1
-                    },
-                    totalview:
-                    {
-                        "$sum": "$recordtayang.datatotalview"
-                    },
-                    totalclick:
-                    {
-                        "$sum": "$recordtayang.datatotalclick"
-                    },
-                }
-            },
-            {
-                "$sort":
-                {
-                    _id: 1
-                }
-            },
-            {
-                "$group":
-                {
-                    _id: null,
-                    totaldata:
-                    {
-                        "$sum": "$totaldata"
-                    },
                     data:
                     {
-                        "$push":
-                        {
-                            createdAt: "$_id",
-                            totalview: "$totalview",
-                            totalclick: "$totalclick",
-                            //totaldataharian:"$totaldata"
-                        }
+                        "$arrayElemAt":
+                        [
+                            "$penontonbyharian.userads", 0
+                        ]
+                    },
+                    totaldata:
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$totalads.total", 0
+                                ]
+                            },
+                            0
+                        ]
                     }
                 }
-            });
-
-        var query = await this.adsModel.aggregate(pipeline);
-
+            }
+        ]);
         return query;
     }
 
