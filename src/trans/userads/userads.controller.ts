@@ -441,4 +441,65 @@ export class UserAdsController {
 
 
     }
+
+    @Post('api/userads/console/adscenter/demographchart')
+    @UseGuards(JwtAuthGuard)
+    async getdemographchart(@Req() request: Request): Promise<any> {
+        var data = null;
+        var startdate = null;
+        var enddate = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["startdate"] !== undefined && request_json["enddate"] !== undefined) {
+            startdate = request_json["startdate"];
+            enddate = request_json["enddate"];
+        }
+        else 
+        {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        var getdatabase = await this.userAdsService.getAdsbygender(startdate, enddate);
+        // console.log(JSON.stringify(getdatabase));
+
+        var getdata = [];
+        try {
+            getdata = getdatabase[0].gender;
+        }
+        catch (e) {
+            getdata = [];
+        }
+
+        var arraygender = [];
+        var checkgender = ["OTHER", "MALE", "FEMALE"];
+        for (var i = 0; i < checkgender.length; i++) {
+            let obj = getdata.find(objs => objs._id === checkgender[i]);
+            //console.log(obj);
+            if (obj == undefined) {
+                obj =
+                {
+                    _id: checkgender[i],
+                    total: 0
+                }
+            }
+            arraygender.push(obj);
+        }
+
+        var tempdata = getdatabase[0].area;
+        tempdata.forEach(e => {
+            e.persentase = e.persentase.toFixed(2);
+        });
+
+        data =
+        {
+            gender: arraygender,
+            daerah: tempdata,
+        }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        return { response_code: 202, data, messages };
+    }
 }
