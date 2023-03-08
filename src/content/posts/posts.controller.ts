@@ -574,7 +574,7 @@ export class PostsController {
               let catCountDto_ = new InterestCountDto();
               catCountDto_.total = total - 1;
               catCountDto_.listdata = postidlist;
-              await this.interestCountService.update(tagkata, catCountDto_);
+              await this.interestCountService.update(tagcat, catCountDto_);
             }
           }
         }
@@ -807,6 +807,7 @@ export class PostsController {
       var tag2 = body.tags;
       for (let i = 0; i < tag2.length; i++) {
         let id = tag2[i];
+
         var datatag2 = null;
 
         try {
@@ -826,6 +827,19 @@ export class PostsController {
           await this.tagCountService.create(tagCountDto_);
         }
         else {
+
+          var datatag3 = null;
+          var lengdata3 = null;
+
+          try {
+            datatag3 = await this.tagCountService.finddatabypostid(id, postID);
+            lengdata3 = datatag3.length;
+
+          } catch (e) {
+            datatag3 = null;
+            lengdata3 = 0;
+          }
+
           var tagslast = [];
           var datapostawal = null;
 
@@ -836,73 +850,38 @@ export class PostsController {
             datapostawal = null;
             tagslast = [];
           }
-          let idnew = tagslast[i];
-          var total2 = 0;
-          var postidlist2 = [];
-          let obj = { "postID": datapostawal.postID };
-          total2 = datatag2.total;
-          postidlist2 = datatag2.listdata;
-          if (id === idnew) {
-            postidlist2.push(obj);
+
+          if (tagslast.length > 0) {
+            let idnew = tagslast[i];
+            var total2 = 0;
+            var postidlist2 = [];
+            let obj = { "postID": datapostawal.postID };
+            total2 = datatag2.total;
+            postidlist2 = datatag2.listdata;
+            if (id === idnew) {
+              if (lengdata3 == 0) {
+                postidlist2.push(obj);
+              }
+            } else {
+
+            }
+
+            let tagCountDto_ = new TagCountDto();
+            tagCountDto_._id = id;
+            if (id === idnew) {
+              if (lengdata3 == 0) {
+                tagCountDto_.total = total2 + 1;
+              }
+
+            }
+
+            tagCountDto_.listdata = postidlist2;
+            await this.tagCountService.update(id, tagCountDto_);
           }
 
-          let tagCountDto_ = new TagCountDto();
-          tagCountDto_._id = id;
-          if (id === idnew) {
-            tagCountDto_.total = total2 + 1;
-          }
-
-          tagCountDto_.listdata = postidlist2;
-          await this.tagCountService.update(id, tagCountDto_);
         }
 
       }
-      // var datatag3 = null;
-      // var lengdata3 = null;
-
-      // try {
-      //   datatag3 = await this.tagCountService.finddatabypostid(postID);
-      //   lengdata3 = datatag3.length;
-
-      // } catch (e) {
-      //   datatag3 = null;
-      //   lengdata3 = 0;
-      // }
-
-      // if (lengdata3 > 0) {
-      //   var datataglast = null;
-      //   let id = datatag3[0]._id;
-      //   let postid = datatag3[0].listdata.postID;
-      //   var postidlist3 = null;
-      //   var total3 = null;
-      //   try {
-      //     datataglast = await this.tagCountService.findOneById(id);
-      //     postidlist3 = datataglast.listdata;
-      //     total3 = datataglast.total;
-
-      //   } catch (e) {
-      //     datataglast = null;
-      //     postidlist3 = [];
-      //     total3 = 0;
-      //   }
-
-      //   for (let i = 0; i < postidlist3.length; i++) {
-
-      //     for (let x = 0; x < lengdata3 - 1; x++) {
-      //       if (postidlist3[i].postID === postid) {
-      //         postidlist3.splice(x, 1);
-      //       }
-
-      //       let tagCountDto_ = new TagCountDto();
-      //       tagCountDto_.total = total3 - 1;
-      //       tagCountDto_.listdata = postidlist3;
-      //       await this.tagCountService.update(id, tagCountDto_);
-      //     }
-
-      //   }
-
-      // }
-
 
     }
 
