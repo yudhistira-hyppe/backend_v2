@@ -492,12 +492,10 @@ export class PostsController {
           var splittag = tag.split(',');
 
         }
-
         for (let x = 0; x < splittag.length; x++) {
           var tagkata = tags[x];
           var tagreq = splittag[x].replace(/"/g, "");
           arrtag.push(tagreq)
-          // var av = tagreq.replace(/"/g, "");
 
           if (tagreq !== undefined && tagreq !== tagkata) {
 
@@ -506,7 +504,6 @@ export class PostsController {
             } catch (e) {
               datatag = null;
             }
-
 
             var total = 0;
             if (datatag !== null) {
@@ -528,7 +525,7 @@ export class PostsController {
         body.tags = arrtag;
 
       } else {
-
+        body.tags = [];
       }
 
     }
@@ -539,8 +536,11 @@ export class PostsController {
     if (cats.length > 0) {
       if (body.cats !== undefined) {
         var cat = body.cats;
+        var splittcat = null;
         if (cat !== undefined) {
-          var splittcat = cat.split(',');
+          splittcat = cat.split(',');
+
+        } else {
 
         }
 
@@ -824,7 +824,8 @@ export class PostsController {
           tagCountDto_.total = 1;
           tagCountDto_.listdata = [{ "postID": postID }];
           await this.tagCountService.create(tagCountDto_);
-        } else {
+        }
+        else {
           var tagslast = [];
           var datapostawal = null;
 
@@ -856,6 +857,53 @@ export class PostsController {
         }
 
       }
+      // var datatag3 = null;
+      // var lengdata3 = null;
+
+      // try {
+      //   datatag3 = await this.tagCountService.finddatabypostid(postID);
+      //   lengdata3 = datatag3.length;
+
+      // } catch (e) {
+      //   datatag3 = null;
+      //   lengdata3 = 0;
+      // }
+
+      // if (lengdata3 > 0) {
+      //   var datataglast = null;
+      //   let id = datatag3[0]._id;
+      //   let postid = datatag3[0].listdata.postID;
+      //   var postidlist3 = null;
+      //   var total3 = null;
+      //   try {
+      //     datataglast = await this.tagCountService.findOneById(id);
+      //     postidlist3 = datataglast.listdata;
+      //     total3 = datataglast.total;
+
+      //   } catch (e) {
+      //     datataglast = null;
+      //     postidlist3 = [];
+      //     total3 = 0;
+      //   }
+
+      //   for (let i = 0; i < postidlist3.length; i++) {
+
+      //     for (let x = 0; x < lengdata3 - 1; x++) {
+      //       if (postidlist3[i].postID === postid) {
+      //         postidlist3.splice(x, 1);
+      //       }
+
+      //       let tagCountDto_ = new TagCountDto();
+      //       tagCountDto_.total = total3 - 1;
+      //       tagCountDto_.listdata = postidlist3;
+      //       await this.tagCountService.update(id, tagCountDto_);
+      //     }
+
+      //   }
+
+      // }
+
+
     }
 
     //Interest

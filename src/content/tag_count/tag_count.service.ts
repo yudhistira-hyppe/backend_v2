@@ -47,6 +47,23 @@ export class TagCountService {
         return data;
     }
 
+    async finddatabypostid(postid: string) {
+        var query = await this.tagcountModel.aggregate([
+            {
+                $unwind: {
+                    path: "$listdata",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $match: {
+                    'listdata.postID': postid
+                }
+            }
+        ]);
+        return query;
+    }
+
     async detailsearchcontenNew(key: string, email: string, skip: number, limit: number, pict: any, vid: any, diary: any) {
 
 
