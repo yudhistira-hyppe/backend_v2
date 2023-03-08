@@ -1494,6 +1494,10 @@ export class UtilsService {
     return dateSplit[2] + "/" + dateSplit[1] + "/" + dateSplit[0];
   }
 
+  async getUserBasic(email: string) {
+    return await this.userbasicsService.findOne(email);
+  }
+
   async getDayName(lang: string, dateString: string) {
     var day_list = [];
     if (lang == "en") {

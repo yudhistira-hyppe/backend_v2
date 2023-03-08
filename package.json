@@ -63,6 +63,7 @@
     "haversine-distance": "^1.2.1",
     "html-pdf-node": "^1.0.8",
     "imap": "^0.8.19",
+    "jimp": "^0.22.7",
     "mailparser": "^3.5.0",
     "mongodb": "^4.7.0",
     "mongoose": "^6.4.3",
