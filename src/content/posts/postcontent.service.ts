@@ -2090,17 +2090,17 @@ export class PostContentService {
     post.isShared = isShared;
     let apost = await this.PostsModel.create(post);
     var file_commpress = await Jimp_.read(file.buffer)
-        .then((image) => {
-          return new Promise(function (resolve, reject) {
-              image
-              .quality(10)
-              .getBuffer(file.mimetype, (error, buffer) => error ? reject(error) : resolve(buffer));
-          });
-        })
-        .catch((err) => {
-          this.logger.error('Failed Compress : ' + err);
+      .then((image) => {
+        return new Promise(function (resolve, reject) {
+          image
+            .quality(10)
+            .getBuffer(file.mimetype, (error, buffer) => error ? reject(error) : resolve(buffer));
         });
-    console.log("file_commpress",file_commpress);
+      })
+      .catch((err) => {
+        this.logger.error('Failed Compress : ' + err);
+      });
+    console.log("file_commpress", file_commpress);
 
     const form = new FormData();
     form.append('file', file_commpress, { filename: file.originalname });

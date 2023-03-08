@@ -5,9 +5,8 @@ export type InterestCountDocument = InterestCount & Document;
 
 @Schema({ collection: 'interest_count' })
 export class InterestCount {
-    @Prop({ type: mongoose.Schema.Types.ObjectId })
-    _id: { oid: String }
 
+    _id: mongoose.Schema.Types.ObjectId
     @Prop()
     total: number;
 

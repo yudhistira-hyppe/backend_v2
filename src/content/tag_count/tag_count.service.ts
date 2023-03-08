@@ -47,8 +47,13 @@ export class TagCountService {
         return data;
     }
 
-    async finddatabypostid(postid: string) {
+    async finddatabypostid(id: string, postid: string) {
         var query = await this.tagcountModel.aggregate([
+            {
+                $match: {
+                    '_id': id
+                }
+            },
             {
                 $unwind: {
                     path: "$listdata",
