@@ -333,30 +333,30 @@ export class PostsController {
     return this.postContentService.createNewPostV2(file, body, headers);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('api/posts/createpost')
-  @UseInterceptors(FileInterceptor('postContent'))
-  async createPostV3(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
-    this.logger.log("createPost >>> start");
-    console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
-    var arrtag = [];
+  // @UseGuards(JwtAuthGuard)
+  // @Post('api/posts/createpost')
+  // @UseInterceptors(FileInterceptor('postContent'))
+  // async createPostV3(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+  //   this.logger.log("createPost >>> start");
+  //   console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
+  //   var arrtag = [];
 
-    if (body.tags !== undefined) {
-      var tag = body.tags;
-      var splittag = tag.split(',');
-      for (let x = 0; x < splittag.length; x++) {
+  //   if (body.tags !== undefined) {
+  //     var tag = body.tags;
+  //     var splittag = tag.split(',');
+  //     for (let x = 0; x < splittag.length; x++) {
 
-        var tagreq = splittag[x].replace(/"/g, "");
-        arrtag.push(tagreq)
+  //       var tagreq = splittag[x].replace(/"/g, "");
+  //       arrtag.push(tagreq)
 
-      }
-      body.tags = arrtag;
-    }
+  //     }
+  //     body.tags = arrtag;
+  //   }
 
-    var data = await this.postContentService.createNewPostV3(file, body, headers);
+  //   var data = await this.postContentService.createNewPostV3(file, body, headers);
 
-    return data;
-  }
+  //   return data;
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/v4/createpost')

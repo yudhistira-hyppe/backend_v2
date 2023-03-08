@@ -4335,7 +4335,7 @@ export class PostContentService {
 
     let params = {
       "RegionId": this.configService.get("APSARA_REGION_ID"),
-      "VideoId": ids, 
+      "VideoId": ids,
       "AuthInfoTimeout": 3000,
       "ApiVersion": '1.0.0',
     }
@@ -4344,7 +4344,7 @@ export class PostContentService {
       method: 'POST'
     };
 
-    try{
+    try {
       let result = await client.request('GetVideoPlayAuth', params, requestOption);
       let xres = new GetVideoPlayAuthResponse();
       this.logger.log('getVideoApsaraSingle >>> response: ' + JSON.stringify(result));
