@@ -46,6 +46,8 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { ContentDTO, CreateNotificationsDto, NotifResponseApps } from '../notifications/dto/create-notifications.dto';
 import { MediamusicService } from '../mediamusic/mediamusic.service';
 
+const Jimp_ = require('jimp');
+
 //import FormData from "form-data";
 var FormData = require('form-data');
 
@@ -1954,6 +1956,154 @@ export class PostContentService {
 
     const form = new FormData();
     form.append('file', file.buffer, { filename: file.originalname });
+    form.append('postID', post._id);
+    console.log(form);
+    axios.post(this.configService.get("APSARA_UPLOADER_PICTURE_V2"), form, {
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+
+    // let fn = file.originalname;
+    // let ext = fn.split(".");
+    // let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + post._id + "." + ext[1];
+    // const ws = createWriteStream(nm);
+    // ws.write(file.buffer);
+    // ws.close();
+
+    // ws.on('finish', async () => {
+    //   //Upload Seaweedfs
+    //   const seaweedfs_path = '/' + post._id + '/' + postType + '/';
+    //   this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);
+    //   try {
+    //     var FormData_ = new FormData();
+    //     FormData_.append(postType, fs.createReadStream(nm));
+    //     const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
+    //     this.logger.log('uploadSeaweedfs >>> ' + dataupload);
+    //   } catch (err) {
+    //     this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
+    //   }
+    //   let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
+    //   //let payload = { 'file': nm, 'postId': apost._id };
+    //   axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+
+    // });
+    /*
+    let playlist = new CreateUserplaylistDto();
+    playlist.userPostId = Object(profile._id);
+    playlist.postType = post.postType;
+    playlist.mediaId = Object(mediaId);
+    this.logger.log('createNewPostPic >>> generate playlist ' + JSON.stringify(playlist));
+    this.postService.generateUserPlaylist(playlist);
+    */
+
+    this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
+    if (post.certified) {
+      this.generateCertificate(String(post.postID), 'id');
+    } else {
+      this.logger.error('createNewPostPict >>> post is not certified');
+    }
+
+    var res = new CreatePostResponse();
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+    res.data = pd;
+
+    return res;
+  }
+
+  private async createNewPostPictV3(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+
+    let post = await this.buildPost(body, headers);
+    let postType = body.postType;
+    let isShared = null;
+
+    if (body.isShared === undefined) {
+      isShared = true;
+    } else {
+      isShared = body.isShared;
+    }
+    var cm = [];
+    let mediaId = "";
+
+    if (postType == 'pict') {
+      var med = new Mediapicts();
+      med._id = await this.utilService.generateId();
+      med.mediaID = med._id;
+      med.postID = post.postID;
+      med.active = false;
+      med.createdAt = await this.utilService.getDateTimeString();
+      med.updatedAt = await this.utilService.getDateTimeString();
+      med.mediaMime = file.mimetype;
+      med.mediaType = 'image';
+      med.originalName = file.originalname;
+      med.apsara = true;
+      med._class = 'io.melody.hyppe.content.domain.MediaPict';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retm = await this.picService.create(med);
+
+      this.logger.log('createNewPostVideo >>> ' + retm);
+
+      var vids = { "$ref": "mediapicts", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retm.mediaID);
+    } else if (postType == 'story') {
+      let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
+      post.metadata = metadata;
+
+      var mes = new Mediastories();
+      mes._id = await this.utilService.generateId();
+      mes.mediaID = mes._id;
+      mes.postID = post.postID;
+      mes.active = false;
+      mes.createdAt = await this.utilService.getDateTimeString();
+      mes.updatedAt = await this.utilService.getDateTimeString();
+      mes.mediaMime = file.mimetype;
+      mes.mediaType = 'image';
+      mes.originalName = file.originalname;
+      mes.apsara = true;
+      mes._class = 'io.melody.hyppe.content.domain.MediaStory';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var rets = await this.storyService.create(mes);
+
+      this.logger.log('createNewPostVideo >>> ' + rets);
+
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
+      cm.push(stories);
+
+      mediaId = String(rets.mediaID);
+
+    }
+    post.contentMedias = cm;
+    post.isShared = isShared;
+    let apost = await this.PostsModel.create(post);
+    var file_commpress = await Jimp_.read(file.buffer)
+        .then((image) => {
+          return new Promise(function (resolve, reject) {
+              image
+              .quality(10)
+              .getBuffer(file.mimetype, (error, buffer) => error ? reject(error) : resolve(buffer));
+          });
+        })
+        .catch((err) => {
+          this.logger.error('Failed Compress : ' + err);
+        });
+    console.log("file_commpress",file_commpress);
+
+    const form = new FormData();
+    form.append('file', file_commpress, { filename: file.originalname });
     form.append('postID', post._id);
     console.log(form);
     axios.post(this.configService.get("APSARA_UPLOADER_PICTURE_V2"), form, {
