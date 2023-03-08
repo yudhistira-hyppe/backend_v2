@@ -696,7 +696,7 @@ export class UserAdsService {
         return query;
     }
 
-    async listpenonton(idads: string, startdate: string, enddate: string, startage: number, endage: number, gender: any[]) {
+    async listpenonton(idads: string, startdate: string, enddate: string, startage: number, endage: number, listgender: any[], listarea: any[], listpriority: any[], searchname:string, limit:number, page:number) {
         var pipeline = [];
         pipeline.push(
             {
@@ -1061,6 +1061,83 @@ export class UserAdsService {
 
             },
         );
+
+        if (startdate != undefined && enddate != undefined) {
+            var before = new Date(startdate).toISOString().split("T")[0];
+            var input = new Date(enddate);
+            input.setDate(input.getDate() + 1);
+            var today = new Date(input).toISOString().split("T")[0];
+            pipeline.push({
+                "$match": {
+                    createdAt: {
+                        "$gte": before,
+                        "$lte": today
+                    }
+                }
+            });
+        }
+        if (listpriority != undefined) {
+            pipeline.push({
+                "$match": {
+                    priority: {
+                        "$in": listpriority
+                    }
+                }
+            });
+        }
+        if (listgender != undefined) {
+            pipeline.push({
+                "$match": {
+                    gender: {
+                        "$in": listgender
+                    }
+                }
+            });
+        }
+        if (startage != undefined && endage != undefined) {
+            pipeline.push({
+                "$match": {
+                    age: {
+                        "$gte": startage,
+                        "$lte": endage
+                    }
+                }
+            });
+        }
+        if (listarea != undefined) {
+            const mongoose = require('mongoose');
+            var temparea = [];
+            listarea.forEach((e) => {
+                temparea.push(mongoose.Types.ObjectId(e));
+            });
+            pipeline.push({
+                "$match": {
+                    areasId: {
+                        "$in": temparea
+                    }
+                }
+            });
+        }
+        if (searchname != undefined) {
+            pipeline.push({
+                "$match": {
+                    fullName: {
+                        "$regex": searchname,
+                        "$options": "i"
+                    }
+                }
+            });
+        }
+        if (page > 0) {
+            pipeline.push({
+                "$skip": page * limit
+            });
+        }
+        if (limit > 0) {
+            pipeline.push({
+                "$limit": limit
+            });
+        }
 
         var query = await this.userAdsModel.aggregate(pipeline);
         return query;
