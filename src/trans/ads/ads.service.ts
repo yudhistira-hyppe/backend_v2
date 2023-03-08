@@ -16628,6 +16628,7 @@ export class AdsService {
                     usedCredit: 1,
                     totalCredit: 1,
                     idApsara: 1,
+                    isActive:1,
                     apsara: {
                         "$cond":
                         {
