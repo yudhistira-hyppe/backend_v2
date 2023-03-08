@@ -855,9 +855,9 @@ export class DisqusController {
       if (disqus.mate != "") {
         var mateInfo = {};
         // var mateProfile = await this.utilsService.generateProfile(disqus.mate.toString(), "FULL");
-        var username_mate = await this.userauthsService.findOne(disqus.email.toString());
-        var fullName_mate = await this.utilsService.getUserBasic(disqus.email.toString());
-        var avatar_mate = await this.utilsService.getAvatarUser(disqus.email.toString());
+        var username_mate = await this.userauthsService.findOne(disqus.mate.toString());
+        var fullName_mate = await this.utilsService.getUserBasic(disqus.mate.toString());
+        var avatar_mate = await this.utilsService.getAvatarUser(disqus.mate.toString());
         if (username_mate != null && fullName_mate != null) {
           mateInfo['username'] = username_mate.username;
           mateInfo['fullName'] = fullName_mate.fullName;
@@ -884,9 +884,9 @@ export class DisqusController {
     line["sequenceNumber"] = disqusLog.sequenceNumber;
     line["sender"] = disqusLog.sender;
     //var mateProfile = await this.utilsService.generateProfile(disqusLog.sender.toString(), "FULL");
-    var username_mate2 = await this.userauthsService.findOne(disqus.email.toString());
-    var fullName_mate2 = await this.utilsService.getUserBasic(disqus.email.toString());
-    var avatar_mate2 = await this.utilsService.getAvatarUser(disqus.email.toString());
+    var username_mate2 = await this.userauthsService.findOne(disqusLog.sender.toString());
+    var fullName_mate2 = await this.utilsService.getUserBasic(disqusLog.sender.toString());
+    var avatar_mate2 = await this.utilsService.getAvatarUser(disqusLog.sender.toString());
     var mateInfo = {};
     if (username_mate2 != null && fullName_mate2 != null) {
       mateInfo["username"] = username_mate2.username;
