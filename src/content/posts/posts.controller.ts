@@ -1639,6 +1639,7 @@ export class PostsController {
   @Get('stream/:id')
   @HttpCode(HttpStatus.OK)
   async stream(@Param('id') mediaFile: string, @Headers() headers, @Res() response) {
+    console.log(mediaFile);
     if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(headers['x-auth-token'], headers['x-auth-user'])) {
         var dataMedia = await this.PostsService.findOnepostID(headers['post-id']);
