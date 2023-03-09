@@ -542,7 +542,9 @@ export class DisqusController {
 
         var disqusLog = new CreateDisquslogsDto();
         if (inDto.parentID != undefined) {
+          console.log("undefined parentID");
           if (inDto.parentID != "") {
+            console.log("'' parentID");
             var disqusLog_new = new CreateDisquslogsDto();
             disqusLog_new._id = await this.utilsService.generateId(); 
             disqusLog_new.disqusID = disqus.disqusID;
@@ -560,7 +562,7 @@ export class DisqusController {
             if (await this.utilsService.ceckData(inDto.postContent)){
               disqusLog_new.postID = inDto.postContent.postID;
               console.log("findOnepostID start");
-              var media = await this.postDisqusService.findOnepostID(inDto.postContent.postID.toString());
+              var media = await this.postDisqusService.findOnepostID2(inDto.postContent.postID.toString());
               console.log("findOnepostID end");
               var media_ = {}
               if (await this.utilsService.ceckData(media)) {
@@ -622,6 +624,7 @@ export class DisqusController {
             }
             disqusLog = disqusLog_new;
           } else {
+            console.log("not '' parentID");
             var disqusLog_new = new CreateDisquslogsDto();
             disqusLog_new._id = await this.utilsService.generateId(); 
             disqusLog_new.disqusID = disqus.disqusID;
@@ -638,7 +641,7 @@ export class DisqusController {
 
             if (await this.utilsService.ceckData(inDto.postContent)) {
               disqusLog_new.postID = inDto.postContent.postID;
-              var media = await this.postDisqusService.findOnepostID(inDto.postContent.postID.toString());
+              var media = await this.postDisqusService.findOnepostID2(inDto.postContent.postID.toString());
               var media_ = {}
               if (await this.utilsService.ceckData(media)) {
                 if (inDto.postContent.createdAt != undefined) {
@@ -700,6 +703,7 @@ export class DisqusController {
             disqusLog = disqusLog_new;
           }
         } else {
+          console.log("not undefined parentID");
           var disqusLog_new = new CreateDisquslogsDto();
           disqusLog_new._id = await this.utilsService.generateId();
           disqusLog_new.disqusID = disqus.disqusID;
@@ -720,7 +724,6 @@ export class DisqusController {
             disqusLog_new.postID = inDto.postContent.postID;
             var media = await this.postDisqusService.findOnepostID2(inDto.postContent.postID.toString());
             var media_ = {}
-            console.log("not undefined parentID");
             if (await this.utilsService.ceckData(media)) {
               if (inDto.postContent.createdAt != undefined) {
                 media_["createdAt"] = inDto.postContent.createdAt;
