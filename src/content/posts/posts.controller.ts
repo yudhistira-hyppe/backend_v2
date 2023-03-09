@@ -315,7 +315,6 @@ export class PostsController {
     return response;
   }
 
-
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/v1/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
@@ -678,8 +677,6 @@ export class PostsController {
           }];
           await this.interestdayService.create(interestdayDto_);
         } else {
-
-
           if (datacatsday.length > 0) {
             var idq = datacatsday[0]._id;
             var idint = datacatsday[0].listinterest._id;
@@ -701,17 +698,15 @@ export class PostsController {
 
       }
     }
-
-
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
     if (saleAmount > 0) {
       await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
       //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
     }
-
     return data;
   }
+
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
@@ -939,6 +934,7 @@ export class PostsController {
 
     return data;
   }
+
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts')
   @UseInterceptors(FileInterceptor('postContent'))
