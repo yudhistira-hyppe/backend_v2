@@ -488,10 +488,8 @@ export class PostsController {
     if (tags.length > 0) {
       if (body.tags !== undefined) {
         var tag = body.tags;
-        if (tag !== undefined) {
-          var splittag = tag.split(',');
 
-        }
+        var splittag = tag.split(',');
         for (let x = 0; x < splittag.length; x++) {
           var tagkata = tags[x];
           var tagreq = splittag[x].replace(/"/g, "");
@@ -523,9 +521,9 @@ export class PostsController {
           }
         }
         body.tags = arrtag;
-
       } else {
         body.tags = [];
+
       }
 
     }
@@ -588,7 +586,7 @@ export class PostsController {
     data = await this.postContentService.updatePost(body, headers);
 
     //tags
-    if (body.tags !== undefined) {
+    if (body.tags !== undefined && body.tags.length > 0) {
       var tag2 = body.tags;
       for (let i = 0; i < tag2.length; i++) {
         let id = tag2[i];
@@ -611,6 +609,17 @@ export class PostsController {
           await this.tagCountService.create(tagCountDto_);
         } else {
 
+          // var datatag3 = null;
+          // var lengdata3 = null;
+
+          // try {
+          //   datatag3 = await this.tagCountService.finddatabypostid(id, body.postID);
+          //   lengdata3 = datatag3.length;
+
+          // } catch (e) {
+          //   datatag3 = null;
+          //   lengdata3 = 0;
+          // }
           var datapost = null;
           var tagslast = [];
           try {
@@ -641,6 +650,8 @@ export class PostsController {
         }
 
       }
+    } else {
+
     }
 
     //Interest
@@ -785,7 +796,7 @@ export class PostsController {
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
     var arrtag = [];
 
-    if (body.tags !== undefined) {
+    if (body.tags !== undefined && body.tags !== "") {
       var tag = body.tags;
       var splittag = tag.split(',');
       for (let x = 0; x < splittag.length; x++) {
@@ -803,7 +814,7 @@ export class PostsController {
 
     //Tags
 
-    if (body.tags !== undefined) {
+    if (body.tags !== undefined && body.tags !== "") {
       var tag2 = body.tags;
       for (let i = 0; i < tag2.length; i++) {
         let id = tag2[i];
@@ -890,7 +901,7 @@ export class PostsController {
     var ObjectId = require('mongodb').ObjectId;
 
 
-    if (body.cats !== undefined) {
+    if (body.cats !== undefined && body.cats !== "") {
       var cats = body.cats;
       var splitcats = cats.split(',');
       for (let i = 0; i < splitcats.length; i++) {
