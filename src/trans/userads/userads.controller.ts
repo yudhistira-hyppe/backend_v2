@@ -502,4 +502,88 @@ export class UserAdsController {
 
         return { response_code: 202, data, messages };
     }
+
+    @Post('api/userads/console/adscenter/listpenonton')
+    @UseGuards(JwtAuthGuard)
+    async listriwayatpenonton(@Req() request: Request): Promise<any> {
+        var data = null;
+        var area = null;
+        var startdate = null;
+        var enddate = null;
+        var minage = null;
+        var maxage = null;
+        var filterpriority = null;
+        var findname = null;
+        var gender = null;
+        var iddata = null;
+        var page = null;
+        var limit = null;
+        const messages = {
+            "info": ["The process successful"],
+        };
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["id"] !== undefined) {
+            iddata = request_json["id"];
+        }
+        else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["startdate"] !== undefined && request_json["enddate"] !== undefined) {
+            startdate = request_json["startdate"];
+            enddate = request_json["enddate"];
+        }
+        if (request_json["minage"] !== undefined && request_json["maxage"] !== undefined) {
+            minage = Number(request_json["minage"]);
+            maxage = Number(request_json["maxage"]);
+        }
+        if (request_json["area"] !== undefined) {
+            area = request_json["area"];
+        }
+        if (request_json["filterpriority"] !== undefined) {
+            filterpriority = request_json["filterpriority"];
+        }
+        if (request_json["gender"] !== undefined) {
+            gender = request_json["gender"];
+        }
+        if (request_json["findname"] !== undefined) {
+            findname = request_json["findname"];
+        }
+        if (request_json["page"] !== undefined) {
+            page = Number(request_json["page"]);
+        }
+        if (request_json["limit"] !== undefined) {
+            limit = Number(request_json["limit"]);
+        }
+        
+        var getdata = null;
+        var lengthdata = null;
+        try {
+            getdata = await this.userAdsService.listpenonton(iddata, startdate, enddate, minage, maxage, gender, area, filterpriority, findname, limit, page);
+            lengthdata = getdata.length;
+        }
+        catch (e) {
+            getdata = [];
+            lengthdata = 0;
+        }
+        var temptotalsearch = null;
+        var lengthsearch = 0;
+        try {
+            temptotalsearch = await this.userAdsService.listpenonton(iddata, startdate, enddate, minage, maxage, gender, area, filterpriority, findname, undefined, undefined);
+            lengthsearch = temptotalsearch.length;
+        }
+        catch (e) {
+            temptotalsearch = [];
+            lengthsearch = 0;
+        }
+        var totalpage = 0;
+        var gettotal = (lengthsearch / limit).toFixed(0);
+        var sisa = (lengthsearch % limit);
+        if (sisa > 0 && sisa < 5) {
+            totalpage = parseInt(gettotal) + 1;
+        }
+        else {
+            totalpage = parseInt(gettotal);
+        }
+        return { response_code: 202, data: getdata, totalsearch: lengthsearch, totalpage: totalpage, totaldatainpage: lengthdata, limit: limit, page: page, messages };
+    }
 }

@@ -47,6 +47,28 @@ export class TagCountService {
         return data;
     }
 
+    async finddatabypostid(id: string, postid: string) {
+        var query = await this.tagcountModel.aggregate([
+            {
+                $match: {
+                    '_id': id
+                }
+            },
+            {
+                $unwind: {
+                    path: "$listdata",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $match: {
+                    'listdata.postID': postid
+                }
+            }
+        ]);
+        return query;
+    }
+
     async detailsearchcontenNew(key: string, email: string, skip: number, limit: number, pict: any, vid: any, diary: any) {
 
 
@@ -259,7 +281,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.postID",
+                                        "email": "$pict.email",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -436,7 +458,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.postID",
+                                        "email": "$pict.email",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -612,7 +634,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.postID",
+                                        "email": "$pict.email",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -788,7 +810,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.postID",
+                                        "email": "$pict.email",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -944,7 +966,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.postID",
+                                        "email": "$pict.email",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -1120,7 +1142,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.postID",
+                                        "email": "$pict.email",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -1276,7 +1298,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.postID",
+                                        "email": "$pict.email",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -1432,7 +1454,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.postID",
+                                        "email": "$pict.email",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -1609,7 +1631,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.postID",
+                                        "email": "$pict.email",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -1765,7 +1787,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.postID",
+                                        "email": "$pict.email",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -1941,7 +1963,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.postID",
+                                        "email": "$pict.email",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -2097,7 +2119,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.postID",
+                                        "email": "$pict.email",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
