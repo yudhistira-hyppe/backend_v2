@@ -17653,39 +17653,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -17767,23 +17767,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -18411,39 +18411,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
@@ -18525,23 +18525,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -19164,39 +19164,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
@@ -19278,23 +19278,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -19924,39 +19924,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -20038,23 +20038,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -20219,39 +20219,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
@@ -20333,23 +20333,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -20981,39 +20981,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -21095,23 +21095,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -21274,39 +21274,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
@@ -21388,23 +21388,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -22031,39 +22031,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
@@ -22145,23 +22145,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -22323,39 +22323,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
@@ -22437,23 +22437,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -23084,39 +23084,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -23198,23 +23198,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -23379,39 +23379,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
@@ -23493,23 +23493,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -23671,39 +23671,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
@@ -23785,23 +23785,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -23821,7 +23821,6 @@ export class PostsService {
                 },
 
               ],
-
           },
 
         },
@@ -24457,39 +24456,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
@@ -24571,23 +24570,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -24773,39 +24772,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -24887,23 +24886,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -25083,39 +25082,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
@@ -25197,23 +25196,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -26055,39 +26054,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
@@ -26169,23 +26168,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -26461,39 +26460,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
@@ -26575,23 +26574,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -26871,39 +26870,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -26985,23 +26984,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -27281,39 +27280,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -27395,23 +27394,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -27576,39 +27575,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
@@ -27690,23 +27689,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -27987,39 +27986,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -28101,23 +28100,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -28282,39 +28281,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
@@ -28396,23 +28395,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -28574,39 +28573,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
@@ -28688,23 +28687,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -28985,39 +28984,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -29099,23 +29098,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -29277,39 +29276,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
@@ -29391,23 +29390,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -30121,39 +30120,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -30235,23 +30234,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -30976,39 +30975,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -31090,23 +31089,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -31271,39 +31270,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
@@ -31385,23 +31384,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -32123,39 +32122,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
@@ -32237,23 +32236,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -32415,39 +32414,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
@@ -32529,23 +32528,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -32838,39 +32837,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -32952,23 +32951,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -33133,39 +33132,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
@@ -33247,23 +33246,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -33425,39 +33424,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
@@ -33539,23 +33538,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -34270,39 +34269,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -34384,23 +34383,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -34565,39 +34564,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
@@ -34679,23 +34678,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -34857,39 +34856,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
@@ -34971,23 +34970,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -35281,39 +35280,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
@@ -35395,23 +35394,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -35576,39 +35575,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
@@ -35690,23 +35689,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
@@ -35868,39 +35867,39 @@ export class PostsService {
                   },
 
                 },
-                {
-                  "$lookup": {
-                    from: "contentevents",
-                    as: "likes",
-                    let: {
-                      localID: '$pict.postID'
-                    },
-                    pipeline: [
-                      {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $eq: ['$postID', '$$localID']
-                              }
-                            },
-                            {
-                              "email": email
+                // {
+                //   "$lookup": {
+                //     from: "contentevents",
+                //     as: "likes",
+                //     let: {
+                //       localID: '$pict.postID'
+                //     },
+                //     pipeline: [
+                //       {
+                //         $match:
+                //         {
+                //           $and: [
+                //             {
+                //               $expr: {
+                //                 $eq: ['$postID', '$$localID']
+                //               }
+                //             },
+                //             {
+                //               "email": email
 
-                            },
-                            {
-                              "eventType": "LIKE"
-                            }
-                          ]
-                        }
-                      },
+                //             },
+                //             {
+                //               "eventType": "LIKE"
+                //             }
+                //           ]
+                //         }
+                //       },
 
-                    ],
+                //     ],
 
-                  },
+                //   },
 
-                },
+                // },
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
@@ -35982,23 +35981,23 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "isLiked":
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [{
-                            $arrayElemAt: ["$likes.eventType", {
-                              "$indexOfArray": [
-                                "$likes.postID",
-                                "$pict.postID"
-                              ]
-                            }]
-                          }, "LIKE"]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
+                    // "isLiked":
+                    // {
+                    //   $cond: {
+                    //     if: {
+                    //       $eq: [{
+                    //         $arrayElemAt: ["$likes.eventType", {
+                    //           "$indexOfArray": [
+                    //             "$likes.postID",
+                    //             "$pict.postID"
+                    //           ]
+                    //         }]
+                    //       }, "LIKE"]
+                    //     },
+                    //     then: true,
+                    //     else: "$taslimKONAG"
+                    //   }
+                    // },
 
                   }
                 },
