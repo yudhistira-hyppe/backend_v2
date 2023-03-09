@@ -500,8 +500,8 @@ export class PostsController {
           }
         }
 
-
-
+      } else {
+        body.cats = [];
       }
 
     }
@@ -532,17 +532,17 @@ export class PostsController {
           await this.tagCountService.create(tagCountDto_);
         } else {
 
-          // var datatag3 = null;
-          // var lengdata3 = null;
+          var datatag3 = null;
+          var lengdata3 = null;
 
-          // try {
-          //   datatag3 = await this.tagCountService.finddatabypostid(id, body.postID);
-          //   lengdata3 = datatag3.length;
+          try {
+            datatag3 = await this.tagCountService.finddatabypostid(id, body.postID);
+            lengdata3 = datatag3.length;
 
-          // } catch (e) {
-          //   datatag3 = null;
-          //   lengdata3 = 0;
-          // }
+          } catch (e) {
+            datatag3 = null;
+            lengdata3 = 0;
+          }
           var datapost = null;
           var tagslast = [];
           try {
@@ -558,14 +558,19 @@ export class PostsController {
           let obj = { "postID": body.postID };
           total2 = datatag2.total;
           postidlist2 = datatag2.listdata;
-          if (id !== idnew) {
-            postidlist2.push(obj);
+          if (id === idnew) {
+            if (lengdata3 == 0) {
+              postidlist2.push(obj);
+            }
           }
 
           let tagCountDto_ = new TagCountDto();
           tagCountDto_._id = id;
-          if (id !== idnew) {
-            tagCountDto_.total = total2 + 1;
+          if (id === idnew) {
+
+            if (lengdata3 == 0) {
+              tagCountDto_.total = total2 + 1;
+            }
           }
 
           tagCountDto_.listdata = postidlist2;
@@ -930,8 +935,6 @@ export class PostsController {
 
       }
     }
-
-
     return data;
   }
 
