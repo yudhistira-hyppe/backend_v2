@@ -333,6 +333,7 @@ export class TagCountService {
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
+                                        createdAt: -1
 
                                     }
                                 },
@@ -510,6 +511,7 @@ export class TagCountService {
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
+                                        createdAt: -1
 
                                     }
                                 },
@@ -686,7 +688,7 @@ export class TagCountService {
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
-
+                                        createdAt: -1
                                     }
                                 },
                                 {
@@ -862,7 +864,7 @@ export class TagCountService {
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
-
+                                        createdAt: -1
                                     }
                                 },
                                 {
@@ -1018,7 +1020,7 @@ export class TagCountService {
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
-
+                                        createdAt: -1
                                     }
                                 },
                                 {
@@ -1194,7 +1196,7 @@ export class TagCountService {
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
-
+                                        createdAt: -1
                                     }
                                 },
                                 {
@@ -1350,7 +1352,7 @@ export class TagCountService {
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
-
+                                        createdAt: -1
                                     }
                                 },
                                 {
@@ -1506,7 +1508,7 @@ export class TagCountService {
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
-
+                                        createdAt: -1
                                     }
                                 },
                                 {
@@ -1683,7 +1685,7 @@ export class TagCountService {
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
-
+                                        createdAt: -1
                                     }
                                 },
                                 {
@@ -1839,7 +1841,7 @@ export class TagCountService {
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
-
+                                        createdAt: -1
                                     }
                                 },
                                 {
@@ -2015,7 +2017,7 @@ export class TagCountService {
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
-
+                                        createdAt: -1
                                     }
                                 },
                                 {
@@ -2171,7 +2173,7 @@ export class TagCountService {
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
-
+                                        createdAt: -1
                                     }
                                 },
                                 {
