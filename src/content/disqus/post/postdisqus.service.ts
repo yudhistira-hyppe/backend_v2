@@ -57,6 +57,37 @@ export class PostDisqusService {
     return query;
   }
 
+  async findOnepostID2(postID: string): Promise<Object> {
+    var datacontent = null;
+    var CreatePostsDto_ = await this.PostsModel.findOne({ postID: postID }).exec();
+    if (CreatePostsDto_.postType == 'vid') {
+      datacontent = 'mediavideos';
+    } else if (CreatePostsDto_.postType == 'pict') {
+      datacontent = 'mediapicts';
+    } else if (CreatePostsDto_.postType == 'diary') {
+      datacontent = 'mediadiaries';
+    } else if (CreatePostsDto_.postType == 'story') {
+      datacontent = 'mediastories';
+    }
+
+    const query = await this.PostsModel.aggregate([
+      {
+        $match: {
+          postID: postID
+        }
+      },
+      {
+        $lookup: {
+          from: datacontent,
+          localField: "postID",
+          foreignField: "postID",
+          as: "datacontent"
+        }
+      },
+    ]);
+    return query;
+  }
+
   async findContentPost(postID: string): Promise<Posts> {
     return await this.PostsModel.findOne({ postID: postID }).exec();
   }

@@ -100,6 +100,35 @@ export class UtilsService {
     return sendEmail_;
   }
 
+  async getImageMode(width: number, height: number){
+    var mode = "LANDSCAPE";
+    if (width > height) {
+      mode = "LANDSCAPE";
+    } else if (height > width) {
+      mode = "POTRET";
+    } else {
+      mode = "LANDSCAPE";
+    }
+    return mode;
+  }
+
+  public getRatio(width: number, height: number) {
+    var ratio = width/height;
+    return ratio;
+  }
+
+  async getHeight(width: number, height: number, new_width: number) {
+		var ratio = await this.getRatio(width, height);
+    var new_height = Number(new_width / ratio);
+    return new_height;
+  }
+
+  async getWidth(width: number, height: number, new_height: number) {
+		var ratio = this.getRatio(width, height);
+    var new_width = Number(new_height * ratio);
+    return new_width;
+  }
+
   async sendEmailWithAttachment(to: string, from: string, subject: string, html: string, att: any,): Promise<boolean> {
     var sendEmail_ = false;
     await this.mailerService.sendMail({ to: to, from: from, subject: subject, html: html, attachments: [att] })

@@ -486,6 +486,7 @@ export class DisqusController {
   }
 
   private async buildComments(inDto: ContentDto, buildInteractive: boolean) {
+    console.log("buildComments start");
     var retVal = new DisqusResDto();
     var current_date = await this.utilsService.getDateTimeString();
     var Posts_ = new Posts();
@@ -495,6 +496,7 @@ export class DisqusController {
         var disqus = new CreateDisqusDto();
         var disqus_ = new CreateDisqusDto();
         disqus_ = await this.disqusService.findDisqusByPost_(Posts_.postID.toString(), "COMMENT");
+        console.log("findDisqusByPost_ start");
         if (!(await this.utilsService.ceckData(disqus_))) {
           var data_id = await this.utilsService.generateId();
           disqus._id = data_id;
@@ -557,7 +559,9 @@ export class DisqusController {
             disqusLog_new._class = "io.melody.hyppe.content.domain.DisqusLog";
             if (await this.utilsService.ceckData(inDto.postContent)){
               disqusLog_new.postID = inDto.postContent.postID;
+              console.log("findOnepostID start");
               var media = await this.postDisqusService.findOnepostID(inDto.postContent.postID.toString());
+              console.log("findOnepostID end");
               var media_ = {}
               if (await this.utilsService.ceckData(media)) {
                 if (inDto.postContent.createdAt != undefined) {
@@ -714,8 +718,9 @@ export class DisqusController {
 
           if (await this.utilsService.ceckData(inDto.postContent)) {
             disqusLog_new.postID = inDto.postContent.postID;
-            var media = await this.postDisqusService.findOnepostID(inDto.postContent.postID.toString());
+            var media = await this.postDisqusService.findOnepostID2(inDto.postContent.postID.toString());
             var media_ = {}
+            console.log("not undefined parentID");
             if (await this.utilsService.ceckData(media)) {
               if (inDto.postContent.createdAt != undefined) {
                 media_["createdAt"] = inDto.postContent.createdAt;
@@ -825,7 +830,9 @@ export class DisqusController {
 
         await this.disqusLogService.create(disqusLog);
         await this.disqusService.create(disqus);
+        console.log("buildComments end");
         retVal = await this.aggrDetailDisqusLog(disqus, disqusLog);
+        console.log("aggrDetailDisqusLog end");
       }
     }
     return retVal;
