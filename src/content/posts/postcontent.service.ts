@@ -2193,7 +2193,7 @@ export class PostContentService {
       console.log("outputBuffer", await sharp(outputBuffer).metadata());
       file_resize = await sharp(outputBuffer).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
     } else {
-      file_resize = await sharp(buffers_file).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
+      file_resize = await sharp(buffers_file, { failOnError: false }).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
     }
 
     var new_image_information = await sharp(file_resize).metadata();
