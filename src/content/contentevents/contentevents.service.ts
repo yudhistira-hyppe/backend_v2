@@ -4159,51 +4159,29 @@ export class ContenteventsService {
 
   async checkFriendListdata(email1: string, email2: string)
   {
-    var query = await this.ContenteventsModel.find({
-        "$or" : 
-        [
-            {
-                "$and" : 
-                [
-                    {
-                        "eventType" : "FOLLOWING"
-                    },
-                    {
-                        "email" : email1
-                    },
-                    {
-                        "senderParty" : email2
-                    },
-                    {
-                        "active" : true
-                    },
-                ]
-            },
-            {
-                "$and" : 
-                [
-                    {
-                        "eventType" : "FOLLOWER"
-                    },
-                    {
-                        "email":email1
-                    },
-                    {
-                        "receiverParty" : email2
-                    },
-                    {
-                        "active" : true
-                    },
-                ]
-            }
-        ]
-      },
-      {
-      _id:0,
-      email:1
-      }
-    );
+    var query = await this.ContenteventsModel.aggregate([
+        {
+          "$match":
+          {
+            "$and" : 
+            [
+              {
+                  "eventType" : "FOLLOWER"
+              },
+              {
+                  "email":email1
+              },
+              {
+                  "receiverParty" : email2
+              },
+              {
+                  "active" : true
+              },
+            ]
+          }
+        }
+    ]);
 
-    return query
+    return query;
   }
 }

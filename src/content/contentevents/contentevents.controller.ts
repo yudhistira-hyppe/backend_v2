@@ -913,16 +913,13 @@ export class ContenteventsController {
 
   async checkFriendbasedString(email1: string, email2: string, jenisoperasi:string)
   {
-    var data1 = await this.contenteventsService.checkFriendListdata(email1, email2);
-    var data2 = await this.contenteventsService.checkFriendListdata(email1, email2);
+    var data = await this.contenteventsService.checkFriendListdata(email1, email2);
+    var checkexist = await this.utilsService.ceckData(data);
 
-    var checkexist1 = await this.utilsService.ceckData(data1);
-    var checkexist2 = await this.utilsService.ceckData(data2);
+    // console.log(data);
+    // console.log(checkexist);
 
-    // console.log(checkexist1);
-    // console.log(checkexist2);
-
-    if(checkexist1 == true && checkexist2 == true)
+    if(checkexist == true)
     {
       if(jenisoperasi == 'create')
       {
