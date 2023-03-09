@@ -486,7 +486,7 @@ export class PostsController {
     }
     var datatag = null;
     if (tags.length > 0) {
-      if (body.tags !== undefined) {
+      if (body.tags !== undefined && body.tags !== "") {
         var tag = body.tags;
 
         var splittag = tag.split(',');
@@ -526,58 +526,57 @@ export class PostsController {
 
       }
 
+    } else {
+      body.tags = [];
+
     }
 
     //interest
     var datacats = null;
     var arrcat = [];
     if (cats.length > 0) {
-      if (body.cats !== undefined) {
+      if (body.cats !== undefined && body.cats !== "") {
         var cat = body.cats;
         var splittcat = null;
-        if (cat !== undefined) {
+        if (cat !== undefined && cat !== "") {
           splittcat = cat.split(',');
+          for (let x = 0; x < splittcat.length; x++) {
 
-        } else {
-
-        }
-
-        for (let x = 0; x < splittcat.length; x++) {
-
-          var tagcat = null;
-          try {
-            tagcat = cats[x].oid.toString();
-          } catch (e) {
-            tagcat = "";
-          }
-          var catreq = splittcat[x];
-
-          if (catreq !== undefined && catreq !== tagcat) {
-
+            var tagcat = null;
             try {
-              datacats = await this.interestCountService.findOneById(tagcat);
+              tagcat = cats[x].oid.toString();
             } catch (e) {
-              datacats = null;
+              tagcat = "";
             }
-            var total = 0;
-            if (datacats !== null) {
-              let postidlist = datacats.listdata;
-              total = datacats.total;
+            var catreq = splittcat[x];
 
-              for (var i = 0; i < postidlist.length; i++) {
-                if (postidlist[i].postID === body.postID) {
-                  postidlist.splice(i, 1);
-                }
+            if (catreq !== undefined && catreq !== tagcat) {
+
+              try {
+                datacats = await this.interestCountService.findOneById(tagcat);
+              } catch (e) {
+                datacats = null;
               }
-              let catCountDto_ = new InterestCountDto();
-              catCountDto_.total = total - 1;
-              catCountDto_.listdata = postidlist;
-              await this.interestCountService.update(tagcat, catCountDto_);
+              var total = 0;
+              if (datacats !== null) {
+                let postidlist = datacats.listdata;
+                total = datacats.total;
+
+                for (var i = 0; i < postidlist.length; i++) {
+                  if (postidlist[i].postID === body.postID) {
+                    postidlist.splice(i, 1);
+                  }
+                }
+                let catCountDto_ = new InterestCountDto();
+                catCountDto_.total = total - 1;
+                catCountDto_.listdata = postidlist;
+                await this.interestCountService.update(tagcat, catCountDto_);
+              }
             }
           }
         }
 
-      } else {
+
 
       }
 

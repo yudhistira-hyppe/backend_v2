@@ -17556,23 +17556,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -17689,7 +17689,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -18313,23 +18313,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -18447,7 +18447,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -19066,23 +19066,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -19200,7 +19200,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -19827,23 +19827,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -19960,7 +19960,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -20121,23 +20121,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -20255,7 +20255,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -20884,23 +20884,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -21017,7 +21017,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -21176,23 +21176,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -21310,7 +21310,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -21424,7 +21424,6 @@ export class PostsService {
                 },
 
               ],
-
           },
 
         },
@@ -21934,23 +21933,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -22068,7 +22067,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -22182,7 +22181,6 @@ export class PostsService {
                 },
 
               ],
-
             "diary":
               [
                 {
@@ -22227,23 +22225,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -22361,7 +22359,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -22989,23 +22987,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -23122,7 +23120,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -23283,23 +23281,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -23417,7 +23415,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -23575,23 +23573,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -23709,7 +23707,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -23823,7 +23821,6 @@ export class PostsService {
                 },
 
               ],
-
 
           },
 
@@ -24362,23 +24359,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -24496,7 +24493,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -24610,7 +24607,6 @@ export class PostsService {
                 },
 
               ],
-
           },
 
         },
@@ -24680,23 +24676,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -24813,7 +24809,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -24989,23 +24985,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -25123,7 +25119,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -25961,23 +25957,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -26095,7 +26091,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -26367,23 +26363,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -26501,7 +26497,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -26778,23 +26774,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -26911,7 +26907,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -27025,7 +27021,6 @@ export class PostsService {
                 },
 
               ],
-
             "tags":
               [
                 {
@@ -27189,23 +27184,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -27322,7 +27317,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -27483,23 +27478,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -27617,7 +27612,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -27895,23 +27890,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -28028,7 +28023,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -28189,23 +28184,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -28323,7 +28318,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -28481,23 +28476,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -28615,7 +28610,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -28893,23 +28888,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -29026,7 +29021,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -29184,23 +29179,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -29318,7 +29313,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -30029,23 +30024,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -30162,7 +30157,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -30884,23 +30879,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -31017,7 +31012,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -31178,23 +31173,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -31312,7 +31307,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -32030,23 +32025,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -32164,7 +32159,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -32322,23 +32317,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -32456,7 +32451,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -32746,23 +32741,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -32879,7 +32874,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -33040,23 +33035,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -33174,7 +33169,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -33332,23 +33327,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -33466,7 +33461,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -34178,23 +34173,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -34311,7 +34306,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -34472,23 +34467,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -34606,7 +34601,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -34764,23 +34759,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -34898,7 +34893,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -35189,23 +35184,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -35322,7 +35317,7 @@ export class PostsService {
                 {
                   $project: {
                     "scorePict": "$pict.scorePict",
-                    "boosted": "$pict.boosted",
+                    //  "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -35483,23 +35478,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -35617,7 +35612,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreVid": "$pict.scoreVid",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -35775,23 +35770,23 @@ export class PostsService {
                       },
                       {
                         $project: {
-                          "boosted":
-                          {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
-                            }
-                          },
+                          // "boosted":
+                          // {
+                          //   $cond: {
+                          //     if: {
+                          //       $gt: [{
+                          //         "$dateToString": {
+                          //           "format": "%Y-%m-%d %H:%M:%S",
+                          //           "date": {
+                          //             $add: [new Date(), 25200000]
+                          //           }
+                          //         }
+                          //       }, "$boosted.boostSession.timeEnd"]
+                          //     },
+                          //     then: [],
+                          //     else: '$boosted'
+                          //   }
+                          // },
                           "reportedStatus": 1,
                           "insight": {
                             "shares": "$shares",
@@ -35909,7 +35904,7 @@ export class PostsService {
                 {
                   $project: {
                     "scoreDiary": "$pict.scoreDiary",
-                    "boosted": "$pict.boosted",
+                    // "boosted": "$pict.boosted",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
                     "mediaThumbEndpoint":
@@ -36023,7 +36018,6 @@ export class PostsService {
                 },
 
               ],
-
           },
 
         },
