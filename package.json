@@ -61,6 +61,7 @@
     "fs-extra": "^10.1.0",
     "handlebars": "^4.7.7",
     "haversine-distance": "^1.2.1",
+    "heic-convert": "^1.2.4",
     "html-pdf-node": "^1.0.8",
     "imap": "^0.8.19",
     "jimp": "^0.22.7",

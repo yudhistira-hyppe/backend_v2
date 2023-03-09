@@ -45,8 +45,9 @@ import { threadId } from 'worker_threads';
 import { NotificationsService } from '../notifications/notifications.service';
 import { ContentDTO, CreateNotificationsDto, NotifResponseApps } from '../notifications/dto/create-notifications.dto';
 import { MediamusicService } from '../mediamusic/mediamusic.service';
-
+const sharp = require('sharp');
 const Jimp_ = require('jimp');
+const convert = require('heic-convert');
 
 //import FormData from "form-data";
 var FormData = require('form-data');
@@ -157,7 +158,7 @@ export class PostContentService {
       return this.createNewPostVideoV3(file, body, headers);
     } else {
       this.logger.log('createNewPost >>> is picture');
-      return this.createNewPostPictV2(file, body, headers);
+      return this.createNewPostPictV3(file, body, headers);
     }
   }
 
@@ -229,7 +230,7 @@ export class PostContentService {
     }
   }
 
-  private async buildPost(body: any, headers: any): Promise<Posts> {
+  private async buildPost(body: any, headers: any, postId: any): Promise<Posts> {
     this.logger.log('buildPost >>> start');
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
@@ -240,7 +241,7 @@ export class PostContentService {
     this.logger.log('buildPost >>> profile: ' + profile.email);
 
     let post = new Posts();
-    post._id = await this.utilService.generateId();
+    post._id = postId;
     post.postID = post._id;
     post.postType = body.postType;
     post.active = true;
@@ -450,7 +451,8 @@ export class PostContentService {
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
 
-    let post = await this.buildPost(body, headers);
+    var postID = await this.utilService.generateId();
+    let post = await this.buildPost(body, headers, postID);
 
     let postType = body.postType;
     let isShared = null;
@@ -658,7 +660,8 @@ export class PostContentService {
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
 
-    let post = await this.buildPost(body, headers);
+    var postID = await this.utilService.generateId();
+    let post = await this.buildPost(body, headers, postID);
 
     let postType = body.postType;
     let isShared = null;
@@ -845,7 +848,8 @@ export class PostContentService {
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
 
-    let post = await this.buildPost(body, headers);
+    var postID = await this.utilService.generateId();
+    let post = await this.buildPost(body, headers, postID);
 
     let postType = body.postType;
     let isShared = null;
@@ -1304,7 +1308,8 @@ export class PostContentService {
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
 
-    let post = await this.buildPost(body, headers);
+    var postID = await this.utilService.generateId();
+    let post = await this.buildPost(body, headers, postID);
 
     let postType = body.postType;
     let isShared = null;
@@ -1761,8 +1766,8 @@ export class PostContentService {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
-
-    let post = await this.buildPost(body, headers);
+    var postID = await this.utilService.generateId();
+    let post = await this.buildPost(body, headers, postID);
     let postType = body.postType;
     let isShared = null;
 
@@ -1886,8 +1891,8 @@ export class PostContentService {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
-
-    let post = await this.buildPost(body, headers);
+    var postID = await this.utilService.generateId();
+    let post = await this.buildPost(body, headers, postID);
     let postType = body.postType;
     let isShared = null;
 
@@ -2018,12 +2023,21 @@ export class PostContentService {
   }
 
   private async createNewPostPictV3(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
-
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
 
-    let post = await this.buildPost(body, headers);
+    var postID = await this.utilService.generateId();
+    var file_commpress = await this.resizeImage(file);
+    var uploadJava = await this.uploadJava(postID, file.originalname, file_commpress);
+    console.log(uploadJava.data);
+    if (uploadJava.data.toString() != "Done") {
+      await this.errorHandler.generateNotAcceptableException(
+        'Failed Upload Content',
+      );
+    }
+
+    let post = await this.buildPost(body, headers, postID);
     let postType = body.postType;
     let isShared = null;
 
@@ -2089,61 +2103,6 @@ export class PostContentService {
     post.contentMedias = cm;
     post.isShared = isShared;
     let apost = await this.PostsModel.create(post);
-    var file_commpress = await Jimp_.read(file.buffer)
-      .then((image) => {
-        return new Promise(function (resolve, reject) {
-          image
-            .quality(10)
-            .getBuffer(file.mimetype, (error, buffer) => error ? reject(error) : resolve(buffer));
-        });
-      })
-      .catch((err) => {
-        this.logger.error('Failed Compress : ' + err);
-      });
-    console.log("file_commpress", file_commpress);
-
-    const form = new FormData();
-    form.append('file', file_commpress, { filename: file.originalname });
-    form.append('postID', post._id);
-    console.log(form);
-    axios.post(this.configService.get("APSARA_UPLOADER_PICTURE_V2"), form, {
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
-
-    // let fn = file.originalname;
-    // let ext = fn.split(".");
-    // let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + post._id + "." + ext[1];
-    // const ws = createWriteStream(nm);
-    // ws.write(file.buffer);
-    // ws.close();
-
-    // ws.on('finish', async () => {
-    //   //Upload Seaweedfs
-    //   const seaweedfs_path = '/' + post._id + '/' + postType + '/';
-    //   this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);
-    //   try {
-    //     var FormData_ = new FormData();
-    //     FormData_.append(postType, fs.createReadStream(nm));
-    //     const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
-    //     this.logger.log('uploadSeaweedfs >>> ' + dataupload);
-    //   } catch (err) {
-    //     this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
-    //   }
-    //   let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
-    //   //let payload = { 'file': nm, 'postId': apost._id };
-    //   axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
-
-    // });
-    /*
-    let playlist = new CreateUserplaylistDto();
-    playlist.userPostId = Object(profile._id);
-    playlist.postType = post.postType;
-    playlist.mediaId = Object(mediaId);
-    this.logger.log('createNewPostPic >>> generate playlist ' + JSON.stringify(playlist));
-    this.postService.generateUserPlaylist(playlist);
-    */
 
     this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
     if (post.certified) {
@@ -2163,6 +2122,131 @@ export class PostContentService {
     res.data = pd;
 
     return res;
+  }
+
+  async uploadJava(postId: string, filename: string, buffer: Buffer) {
+    const form = new FormData();
+    form.append('file', buffer, { filename: filename });
+    form.append('postID', postId);
+    console.log(form);
+    const gettest = await axios.post(this.configService.get("APSARA_UPLOADER_PICTURE_V3"), form, {
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return gettest;
+  }
+
+  async resizeImage(file: Express.Multer.File) {
+    var buffers_file = file.buffer;
+    var SIZE_IMAGE_UPLOAD = this.configService.get("SIZE_IMAGE_UPLOAD");
+    var SIZE_IMAGE_RESIZE = this.configService.get("SIZE_IMAGE_RESIZE");
+    console.log("CONFIG SIZE_IMAGE_UPLOAD : " + SIZE_IMAGE_UPLOAD);
+    console.log("CONFIG SIZE_IMAGE_RESIZE : " + SIZE_IMAGE_RESIZE);
+
+    var image_information = await sharp(buffers_file).metadata();
+    console.log("IMAGE INFORMATION", image_information);
+
+    var image_height = image_information.height;
+    var image_width = image_information.width;
+    var image_size = image_information.size;
+    var image_format = image_information.format;
+    var image_orientation = image_information.orientation;
+
+    let fileSizeKB = image_size / 1024;
+    let fileSizeMB = fileSizeKB / 1024;
+    console.log("SIZE KB", fileSizeKB + "kb");
+    console.log("SIZE MB", fileSizeMB + "mb");
+    var image_mode = await this.utilService.getImageMode(image_width, image_height);
+    console.log("IMAGE MODE", image_mode);
+
+    var New_height = 0;
+    var New_width = 0;
+
+    if (image_mode == "LANDSCAPE") {
+      if (image_width > SIZE_IMAGE_RESIZE) {
+        New_height = await this.utilService.getHeight(image_width, image_height, SIZE_IMAGE_RESIZE);
+        New_width = SIZE_IMAGE_RESIZE;
+      } else {
+        New_height = image_height;
+        New_width = image_width;
+      }
+    } else if (image_mode == "POTRET") {
+      if (image_height > SIZE_IMAGE_RESIZE) {
+        New_width = await this.utilService.getWidth(image_width, image_height, SIZE_IMAGE_RESIZE);
+        New_height = SIZE_IMAGE_RESIZE;
+      } else {
+        New_height = image_height;
+        New_width = image_width;
+      }
+    }
+    console.log("NEW WIDTH : " + Math.round(New_width));
+    console.log("NEW HEIGHT : " + Math.round(New_height));
+
+    var file_resize = null;
+    if (image_format == "heif") {
+      const outputBuffer = await convert({
+        buffer: buffers_file,
+        format: 'JPEG',
+        quality: 1
+      });
+      console.log("outputBuffer", await sharp(outputBuffer).metadata());
+      file_resize = await sharp(outputBuffer).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
+    } else {
+      file_resize = await sharp(buffers_file).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
+    }
+
+    var new_image_information = await sharp(file_resize).metadata();
+    console.log("NEW IMAGE INFORMATION", new_image_information);
+
+    var new_image_height = new_image_information.height;
+    var new_image_width = new_image_information.width;
+    var new_image_size = new_image_information.size;
+    var new_image_format = new_image_information.format;
+
+    let new_fileSizeKB = new_image_size / 1024;
+    let new_fileSizeMB = new_fileSizeKB / 1024;
+    console.log("NEW SIZE KB", new_fileSizeKB + "kb");
+    console.log("NEW SIZE MB", new_fileSizeMB + "mb");
+
+    var file_commpress = file_resize;
+    if (new_fileSizeKB > SIZE_IMAGE_UPLOAD) {
+      // file_commpress = await Jimp_.read(file_resize).then((image) => {
+      //   return new Promise(function (resolve, reject) {
+      //       image.quality(20).getBuffer(file.mimetype, (error, buffer) => error ? reject(error) : resolve(buffer));
+      //     });
+      //   }).catch((err) => {
+      //     this.logger.error('Failed Compress : ' + err);
+      //   });
+      file_commpress = await this.compressImage(file_resize, file.mimetype)
+    } else {
+      file_commpress = file_resize;
+    }
+
+    fs.writeFile("./tmp/some1.jpeg", buffers_file, function (err) {
+      if (err) {
+        return console.log(err);
+      }
+      console.log("The file was saved!");
+    });
+    fs.writeFile("./tmp/some2.jpeg", file_commpress, function (err) {
+      if (err) {
+        return console.log(err);
+      }
+      console.log("The file was saved!");
+    });
+    return file_commpress;
+  }
+
+  async compressImage(buffer: Buffer, mimetype: string) {
+    var file_commpress = await Jimp_.read(buffer).then((image) => {
+      return new Promise(function (resolve, reject) {
+        image.quality(20).getBuffer(mimetype, (error, buffer) => error ? reject(error) : resolve(buffer));
+      });
+    }).catch((err) => {
+      this.logger.error('Failed Compress : ' + err);
+    });
+    return file_commpress;
   }
 
   async updateNewPost(body: any, headers: any) {
