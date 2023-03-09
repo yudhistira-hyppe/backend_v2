@@ -2866,7 +2866,7 @@
   "resolved" "https://registry.npmjs.org/ajv-keywords/-/ajv-keywords-3.5.2.tgz"
   "version" "3.5.2"
 
-"ajv@^6.10.0":
+"ajv@^6.10.0", "ajv@^6.12.4", "ajv@^6.12.5", "ajv@^6.9.1":
   "integrity" "sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g=="
   "resolved" "https://registry.npmjs.org/ajv/-/ajv-6.12.6.tgz"
   "version" "6.12.6"
@@ -2876,27 +2876,17 @@
     "json-schema-traverse" "^0.4.1"
     "uri-js" "^4.2.2"
 
-"ajv@^6.12.4":
-  "integrity" "sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g=="
-  "resolved" "https://registry.npmjs.org/ajv/-/ajv-6.12.6.tgz"
-  "version" "6.12.6"
+"ajv@^8.0.0":
+  "integrity" "sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA=="
+  "resolved" "https://registry.npmjs.org/ajv/-/ajv-8.12.0.tgz"
+  "version" "8.12.0"
   dependencies:
     "fast-deep-equal" "^3.1.1"
-    "fast-json-stable-stringify" "^2.0.0"
-    "json-schema-traverse" "^0.4.1"
+    "json-schema-traverse" "^1.0.0"
+    "require-from-string" "^2.0.2"
     "uri-js" "^4.2.2"
 
-"ajv@^6.12.5":
-  "integrity" "sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g=="
-  "resolved" "https://registry.npmjs.org/ajv/-/ajv-6.12.6.tgz"
-  "version" "6.12.6"
-  dependencies:
-    "fast-deep-equal" "^3.1.1"
-    "fast-json-stable-stringify" "^2.0.0"
-    "json-schema-traverse" "^0.4.1"
-    "uri-js" "^4.2.2"
-
-"ajv@^6.9.1", "ajv@^8.0.0", "ajv@8.9.0":
+"ajv@8.9.0":
   "integrity" "sha512-qOKJyNj/h+OWx7s5DePL6Zu1KeM9jPZhwBqs+7DzP6bGOvqzVCSf0xueYmVuaC/oQ/VtS2zLMLHdQFbkka+XDQ=="
   "resolved" "https://registry.npmjs.org/ajv/-/ajv-8.9.0.tgz"
   "version" "8.9.0"
@@ -6073,6 +6063,22 @@
   "resolved" "https://registry.npmjs.org/he/-/he-1.2.0.tgz"
   "version" "1.2.0"
 
+"heic-convert@^1.2.4":
+  "integrity" "sha512-klJHyv+BqbgKiCQvCqI9IKIvweCcohDuDl0Jphearj8+16+v8eff2piVevHqq4dW9TK0r1onTR6PKHP1I4hdbA=="
+  "resolved" "https://registry.npmjs.org/heic-convert/-/heic-convert-1.2.4.tgz"
+  "version" "1.2.4"
+  dependencies:
+    "heic-decode" "^1.1.2"
+    "jpeg-js" "^0.4.1"
+    "pngjs" "^3.4.0"
+
+"heic-decode@^1.1.2":
+  "integrity" "sha512-UF8teegxvzQPdSTcx5frIUhitNDliz/9Pui0JFdIqVRE00spVE33DcCYtZqaLNyd4y5RP/QQWZFIc1YWVKKm2A=="
+  "resolved" "https://registry.npmjs.org/heic-decode/-/heic-decode-1.1.2.tgz"
+  "version" "1.1.2"
+  dependencies:
+    "libheif-js" "^1.10.0"
+
 "hexoid@1.0.0":
   "integrity" "sha512-QFLV0taWQOZtvIRIAdBChesmogZrtuXvVWsFHZTk2SU+anspqZ2vMnoLg7IE1+Uk16N19APic1BuF8bC8c2m5g=="
   "resolved" "https://registry.npmjs.org/hexoid/-/hexoid-1.0.0.tgz"
@@ -7208,7 +7214,7 @@
   dependencies:
     "@panva/asn1.js" "^1.0.0"
 
-"jpeg-js@^0.4.4":
+"jpeg-js@^0.4.1", "jpeg-js@^0.4.4":
   "integrity" "sha512-WZzeDOEtTOBK4Mdsar0IqEU5sMr3vSV2RqkAIzUEV2BHnUfKGyswWFPFwK5EeDo93K3FohSHbLAjj0s1Wzd+dg=="
   "resolved" "https://registry.npmjs.org/jpeg-js/-/jpeg-js-0.4.4.tgz"
   "version" "0.4.4"
@@ -7517,6 +7523,11 @@
   "integrity" "sha512-l+nePcPbIG1fNlqMzrh68MLkX/gTxk/+vdvAb388Ssi7UuUN31MI44w4Yf33mM3Cm4xDfw48mdf3rkdHszLNew=="
   "resolved" "https://registry.npmjs.org/libbase64/-/libbase64-1.2.1.tgz"
   "version" "1.2.1"
+
+"libheif-js@^1.10.0":
+  "integrity" "sha512-1nIVY1IFYLglxHPuLMqMBpjx4wigEEUVnSj2d3pRzeOjzKetwXlVejHJJgomZwEARu0PZ3HeGOW7ID/hZr13cg=="
+  "resolved" "https://registry.npmjs.org/libheif-js/-/libheif-js-1.15.1.tgz"
+  "version" "1.15.1"
 
 "libmime@5.1.0":
   "integrity" "sha512-xOqorG21Va+3CjpFOfFTU7SWohHH2uIX9ZY4Byz6J+lvpfvc486tOAT/G9GfbrKtJ9O7NCX9o0aC2lxqbnZ9EA=="
@@ -9284,6 +9295,11 @@
   "version" "8.0.0"
 
 "pngjs@^3.0.0":
+  "integrity" "sha512-NCrCHhWmnQklfH4MtJMRjZ2a8c80qXeMlQMv2uVp9ISJMTt562SbGd6n2oq0PaPgKm7Z6pL9E2UlLIhC+SHL3w=="
+  "resolved" "https://registry.npmjs.org/pngjs/-/pngjs-3.4.0.tgz"
+  "version" "3.4.0"
+
+"pngjs@^3.4.0":
   "integrity" "sha512-NCrCHhWmnQklfH4MtJMRjZ2a8c80qXeMlQMv2uVp9ISJMTt562SbGd6n2oq0PaPgKm7Z6pL9E2UlLIhC+SHL3w=="
   "resolved" "https://registry.npmjs.org/pngjs/-/pngjs-3.4.0.tgz"
   "version" "3.4.0"

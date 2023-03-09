@@ -315,30 +315,6 @@ export class PostsController {
     return response;
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('api/posts/createpost')
-  @UseInterceptors(FileInterceptor('postContent'))
-  async createPostV3(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
-    this.logger.log("createPost >>> start");
-    console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
-    var arrtag = [];
-
-    if (body.tags !== undefined) {
-      var tag = body.tags;
-      var splittag = tag.split(',');
-      for (let x = 0; x < splittag.length; x++) {
-
-        var tagreq = splittag[x].replace(/"/g, "");
-        arrtag.push(tagreq)
-
-      }
-      body.tags = arrtag;
-    }
-
-    var data = await this.postContentService.createNewPostV3(file, body, headers);
-
-    return data;
-  }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/v1/createpost')
@@ -393,57 +369,6 @@ export class PostsController {
     this.logger.log("postViewer >>> start");
     return this.postCommentService.postViewer(body, headers);
   }
-
-  // @UseGuards(JwtAuthGuard)
-  // @Post('api/posts/updatepost')
-  // @UseInterceptors(FileInterceptor('postContent'))
-  // async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
-  //   this.logger.log("updatePost >>> start");
-  //   var email = headers['x-auth-user'];
-  //   var saleAmount = body.saleAmount;
-  //   var data = null;
-  //   var lang = await this.utilsService.getUserlanguages(email);
-
-
-  //   var posts = await this.PostsService.findid(body.postID.toString());
-  //   var dataTransaction = await this.transactionsPostService.findpostid(body.postID.toString());
-  //   if (await this.utilsService.ceckData(dataTransaction)) {
-  //     if (lang == "id") {
-  //       await this.errorHandler.generateNotAcceptableException(
-  //         "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
-  //       );
-  //     } else {
-  //       await this.errorHandler.generateNotAcceptableException(
-  //         " Unable to edit the post because it is in the process of payment.",
-  //       );
-  //     }
-  //   }
-
-  //   var arrtag = [];
-
-  //   if (body.tags !== undefined) {
-  //     var tag = body.tags;
-  //     var splittag = tag.split(',');
-  //     for (let x = 0; x < splittag.length; x++) {
-
-  //       var tagreq = splittag[x].replace(/"/g, "");
-  //       arrtag.push(tagreq)
-
-  //     }
-  //     body.tags = arrtag;
-  //   }
-
-
-  //   data = await this.postContentService.updatePost(body, headers);
-  //   console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
-  //   console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
-  //   if (saleAmount > 0) {
-  //     await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
-  //     //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
-  //   }
-
-  //   return data;
-  // }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/updatepost')
