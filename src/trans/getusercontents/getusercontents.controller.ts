@@ -1066,186 +1066,186 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
-    @Post('api/getusercontents/searchdatanew')
-    @UseGuards(JwtAuthGuard)
-    async contentsearchnew(@Req() request: Request): Promise<any> {
+    // @Post('api/getusercontents/searchdatanew')
+    // @UseGuards(JwtAuthGuard)
+    // async contentsearchnew(@Req() request: Request): Promise<any> {
 
 
-        var keys = null;
-        var skip = 0;
-        var limit = 0;
+    //     var keys = null;
+    //     var skip = 0;
+    //     var limit = 0;
 
-        var email = null;
-        var data = null;
-        var datasearch = null;
-        var dataLike = null;
-        var listpict = null;
-        var listvid = null;
-        var listdiary = null;
-        var listuser = null;
-        var listtag = null;
+    //     var email = null;
+    //     var data = null;
+    //     var datasearch = null;
+    //     var dataLike = null;
+    //     var listpict = null;
+    //     var listvid = null;
+    //     var listdiary = null;
+    //     var listuser = null;
+    //     var listtag = null;
 
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["skip"] !== undefined) {
-            skip = request_json["skip"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    //     if (request_json["skip"] !== undefined) {
+    //         skip = request_json["skip"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
 
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
+    //     if (request_json["limit"] !== undefined) {
+    //         limit = request_json["limit"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
 
-        email = request_json["email"];
-        keys = request_json["keys"];
-        listpict = request_json["listpict"];
-        listvid = request_json["listvid"];
-        listdiary = request_json["listdiary"];
-        listuser = request_json["listuser"];
-        listtag = request_json["listtag"];
+    //     email = request_json["email"];
+    //     keys = request_json["keys"];
+    //     listpict = request_json["listpict"];
+    //     listvid = request_json["listvid"];
+    //     listdiary = request_json["listdiary"];
+    //     listuser = request_json["listuser"];
+    //     listtag = request_json["listtag"];
 
-        const messages = {
-            "info": ["The process successful"],
-        };
-
-
-        var user = [];
-        var arrpict = [];
-        var arrvid = [];
-        var arrdiary = [];
-        var picts = [];
-
-        var vid = [];
-        var diary = [];
-        var tags = [];
-        var lengpict = null;
-        var lengdiary = null;
-        var lengvid = null;
-        var lenguser = null;
-        var datatag = null;
-
-        try {
-            datasearch = await this.postsService.finddatasearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary, listuser, listtag);
-            user = datasearch[0].user;
-            tags = datasearch[0].tags;
-
-        } catch (e) {
-            datasearch = null;
-            user = [];
-            tags = [];
-        }
-
-        if (tags == undefined || tags.length == 0 || tags[0].tag == undefined) {
-            tags = [];
-        }
+    //     const messages = {
+    //         "info": ["The process successful"],
+    //     };
 
 
-        try {
-            user = datasearch[0].user;
-            lenguser = user.length;
+    //     var user = [];
+    //     var arrpict = [];
+    //     var arrvid = [];
+    //     var arrdiary = [];
+    //     var picts = [];
 
-        } catch (e) {
-            user = [];
-            lenguser = 0;
+    //     var vid = [];
+    //     var diary = [];
+    //     var tags = [];
+    //     var lengpict = null;
+    //     var lengdiary = null;
+    //     var lengvid = null;
+    //     var lenguser = null;
+    //     var datatag = null;
 
-        }
+    //     try {
+    //         datasearch = await this.postsService.finddatasearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary, listuser, listtag);
+    //         user = datasearch[0].user;
+    //         tags = datasearch[0].tags;
 
-        try {
-            arrpict = datasearch[0].pict;
-            lengpict = arrpict.length;
+    //     } catch (e) {
+    //         datasearch = null;
+    //         user = [];
+    //         tags = [];
+    //     }
 
-        } catch (e) {
-            arrpict = [];
-            lengpict = 0;
-
-        }
-        try {
-            arrvid = datasearch[0].vid;
-            lengvid = arrvid.length;
-
-        } catch (e) {
-            arrvid = [];
-            lengvid = 0;
-
-        }
-
-        try {
-            arrdiary = datasearch[0].diary;
-            lengdiary = arrdiary.length;
-
-        } catch (e) {
-            arrdiary = [];
-            lengdiary = 0;
-
-        }
-
-        if (lenguser > 0 && user[0].email !== undefined) {
-            user = datasearch[0].user;
-        } else {
-            user = [];
-        }
-
-        if (lengpict > 0) {
-
-            if (arrpict[0]._id !== undefined) {
-
-                for (let i = 0; i < lengpict; i++) {
-                    let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
-                    picts.push(datapicture[i])
-
-                }
-
-            } else {
-                picts = [];
-            }
+    //     if (tags == undefined || tags.length == 0 || tags[0].tag == undefined) {
+    //         tags = [];
+    //     }
 
 
-        } else {
-            picts = [];
-        }
+    //     try {
+    //         user = datasearch[0].user;
+    //         lenguser = user.length;
 
-        if (lengvid > 0) {
+    //     } catch (e) {
+    //         user = [];
+    //         lenguser = 0;
 
-            if (arrvid[0]._id !== undefined) {
-                for (let i = 0; i < lengvid; i++) {
-                    let datavid = await this.getusercontentsService.getapsara(arrvid, i);
-                    vid.push(datavid[i])
+    //     }
 
-                }
-            } else {
-                vid = [];
-            }
+    //     try {
+    //         arrpict = datasearch[0].pict;
+    //         lengpict = arrpict.length;
 
-        } else {
-            vid = [];
-        }
+    //     } catch (e) {
+    //         arrpict = [];
+    //         lengpict = 0;
 
-        if (lengdiary > 0) {
+    //     }
+    //     try {
+    //         arrvid = datasearch[0].vid;
+    //         lengvid = arrvid.length;
 
-            if (arrdiary[0]._id !== undefined) {
-                for (let i = 0; i < lengdiary; i++) {
-                    let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
-                    diary.push(datadiary[i])
+    //     } catch (e) {
+    //         arrvid = [];
+    //         lengvid = 0;
 
-                }
-            }
-            else {
-                diary = [];
-            }
-        } else {
-            diary = [];
-        }
+    //     }
 
-        data = [{
+    //     try {
+    //         arrdiary = datasearch[0].diary;
+    //         lengdiary = arrdiary.length;
 
-            user, picts, vid, diary, tags
-        }];
+    //     } catch (e) {
+    //         arrdiary = [];
+    //         lengdiary = 0;
+
+    //     }
+
+    //     if (lenguser > 0 && user[0].email !== undefined) {
+    //         user = datasearch[0].user;
+    //     } else {
+    //         user = [];
+    //     }
+
+    //     if (lengpict > 0) {
+
+    //         if (arrpict[0]._id !== undefined) {
+
+    //             for (let i = 0; i < lengpict; i++) {
+    //                 let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
+    //                 picts.push(datapicture[i])
+
+    //             }
+
+    //         } else {
+    //             picts = [];
+    //         }
 
 
-        return { response_code: 202, data, messages };
-    }
+    //     } else {
+    //         picts = [];
+    //     }
+
+    //     if (lengvid > 0) {
+
+    //         if (arrvid[0]._id !== undefined) {
+    //             for (let i = 0; i < lengvid; i++) {
+    //                 let datavid = await this.getusercontentsService.getapsara(arrvid, i);
+    //                 vid.push(datavid[i])
+
+    //             }
+    //         } else {
+    //             vid = [];
+    //         }
+
+    //     } else {
+    //         vid = [];
+    //     }
+
+    //     if (lengdiary > 0) {
+
+    //         if (arrdiary[0]._id !== undefined) {
+    //             for (let i = 0; i < lengdiary; i++) {
+    //                 let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
+    //                 diary.push(datadiary[i])
+
+    //             }
+    //         }
+    //         else {
+    //             diary = [];
+    //         }
+    //     } else {
+    //         diary = [];
+    //     }
+
+    //     data = [{
+
+    //         user, picts, vid, diary, tags
+    //     }];
+
+
+    //     return { response_code: 202, data, messages };
+    // }
 
     @Post('api/getusercontents/searchdatabyuser')
     @UseGuards(JwtAuthGuard)
@@ -2488,7 +2488,7 @@ export class GetusercontentsController {
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
 
-    @Post('api/getusercontents/searchdatanew2')
+    @Post('api/getusercontents/searchdatanew')
     @UseGuards(JwtAuthGuard)
     async contentsearchnew2(@Req() request: Request): Promise<any> {
 
@@ -2616,10 +2616,8 @@ export class GetusercontentsController {
             if (arrpict[0]._id !== undefined) {
 
                 for (let i = 0; i < lengpict; i++) {
-                    // let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
-                    // picts.push(datapicture[i])
-                    if(arrpict[i].isApsara == true)
-                    {
+
+                    if (arrpict[i].isApsara == true) {
                         tempdatapict.push(arrpict[i].apsaraId);
                     }
                 }
@@ -2630,22 +2628,21 @@ export class GetusercontentsController {
                 for (var i = 0; i < lengpict; i++) {
                     var checkpictketemu = false;
                     for (var j = 0; j < gettempresultpictapsara.length; j++) {
-                      if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
-                        checkpictketemu = true;
-                        arrpict[i].media =
-                        {
-                          "ImageInfo": [gettempresultpictapsara[j]]
+                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+                            checkpictketemu = true;
+                            arrpict[i].media =
+                            {
+                                "ImageInfo": [gettempresultpictapsara[j]]
+                            }
                         }
-                      }
                     }
 
-                    if(checkpictketemu == false)
-                    {
+                    if (checkpictketemu == false) {
                         arrpict[i].apsaraId = "";
                         arrpict[i].apsara = false;
                         arrpict[i].media =
                         {
-                          "ImageInfo": []
+                            "ImageInfo": []
                         };
                     }
                     picts.push(arrpict[i]);
@@ -2666,8 +2663,7 @@ export class GetusercontentsController {
             if (arrvid[0]._id !== undefined) {
 
                 for (let i = 0; i < lengvid; i++) {
-                    if(arrvid[i].isApsara == true)
-                    {
+                    if (arrvid[i].isApsara == true) {
                         tempdatavid.push(arrvid[i].apsaraId);
                     }
                 }
@@ -2678,22 +2674,21 @@ export class GetusercontentsController {
                 for (var i = 0; i < lengvid; i++) {
                     var checkvidketemu = false;
                     for (var j = 0; j < gettempresultvidapsara.length; j++) {
-                      if (gettempresultvidapsara[j].VideoId == arrvid[i].apsaraId) {
-                        checkvidketemu = true;
-                        arrvid[i].media =
-                        {
-                          "VideoList": [gettempresultvidapsara[j]]
+                        if (gettempresultvidapsara[j].VideoId == arrvid[i].apsaraId) {
+                            checkvidketemu = true;
+                            arrvid[i].media =
+                            {
+                                "VideoList": [gettempresultvidapsara[j]]
+                            }
                         }
-                      }
                     }
 
-                    if(checkvidketemu == false)
-                    {
+                    if (checkvidketemu == false) {
                         arrvid[i].apsaraId = "";
                         arrvid[i].apsara = false;
                         arrvid[i].media =
                         {
-                          "VideoList": []
+                            "VideoList": []
                         };
                     }
                     vid.push(arrvid[i]);
@@ -2714,8 +2709,7 @@ export class GetusercontentsController {
             if (arrdiary[0]._id !== undefined) {
 
                 for (let i = 0; i < lengdiary; i++) {
-                    if(arrdiary[i].isApsara == true)
-                    {
+                    if (arrdiary[i].isApsara == true) {
                         tempdatadiary.push(arrdiary[i].apsaraId);
                     }
                 }
@@ -2726,22 +2720,21 @@ export class GetusercontentsController {
                 for (var i = 0; i < lengdiary; i++) {
                     var checkdiaryketemu = false;
                     for (var j = 0; j < gettempresultdiaryapsara.length; j++) {
-                      if (gettempresultdiaryapsara[j].VideoId == arrdiary[i].apsaraId) {
-                        checkdiaryketemu = true;
-                        arrdiary[i].media =
-                        {
-                          "VideoList": [gettempresultdiaryapsara[j]]
+                        if (gettempresultdiaryapsara[j].VideoId == arrdiary[i].apsaraId) {
+                            checkdiaryketemu = true;
+                            arrdiary[i].media =
+                            {
+                                "VideoList": [gettempresultdiaryapsara[j]]
+                            }
                         }
-                      }
                     }
 
-                    if(checkdiaryketemu == false)
-                    {
+                    if (checkdiaryketemu == false) {
                         arrdiary[i].apsaraId = "";
                         arrdiary[i].apsara = false;
                         arrdiary[i].media =
                         {
-                          "VideoList": []
+                            "VideoList": []
                         };
                     }
                     diary.push(arrdiary[i]);
