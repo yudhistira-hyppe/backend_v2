@@ -2064,342 +2064,342 @@ export class GetusercontentsController {
 
     }
 
-    @Post('api/getusercontents/searchdatanew/detailtag')
-    @UseGuards(JwtAuthGuard)
-    async detailtagsearchnew(@Req() request: Request): Promise<any> {
-
-
-        var keys = null;
-        var skip = 0;
-        var limit = 0;
-
-        var email = null;
-        var data = null;
-        var datasearch = null;
-        var dataLike = null;
-        var listpict = null;
-        var listvid = null;
-        var listdiary = null;
-        // var listuser = null;
-        // var listtag = null;
-
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["skip"] !== undefined) {
-            skip = request_json["skip"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
+    // @Post('api/getusercontents/searchdatanew/detailtag')
+    // @UseGuards(JwtAuthGuard)
+    // async detailtagsearchnew(@Req() request: Request): Promise<any> {
+
+
+    //     var keys = null;
+    //     var skip = 0;
+    //     var limit = 0;
+
+    //     var email = null;
+    //     var data = null;
+    //     var datasearch = null;
+    //     var dataLike = null;
+    //     var listpict = null;
+    //     var listvid = null;
+    //     var listdiary = null;
+    //     // var listuser = null;
+    //     // var listtag = null;
+
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    //     if (request_json["skip"] !== undefined) {
+    //         skip = request_json["skip"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+
+    //     if (request_json["limit"] !== undefined) {
+    //         limit = request_json["limit"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
 
-        email = request_json["email"];
-        keys = request_json["keys"];
-        listpict = request_json["listpict"];
-        listvid = request_json["listvid"];
-        listdiary = request_json["listdiary"];
-
-
-        const messages = {
-            "info": ["The process successful"],
-        };
-
+    //     email = request_json["email"];
+    //     keys = request_json["keys"];
+    //     listpict = request_json["listpict"];
+    //     listvid = request_json["listvid"];
+    //     listdiary = request_json["listdiary"];
+
+
+    //     const messages = {
+    //         "info": ["The process successful"],
+    //     };
+
 
-        var user = [];
-        var arrpict = [];
-        var arrvid = [];
-        var arrdiary = [];
-        var picts = [];
-
-        var vid = [];
-        var diary = [];
-        var tags = [];
-        var lengpict = null;
-        var lengdiary = null;
-        var lengvid = null;
-        var lenguser = null;
-        var datatag = null;
-
-        try {
-            datasearch = await this.tagCountService.detailsearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary);
-            tags = datasearch[0].tag;
-
-        } catch (e) {
-            datasearch = null;
-            tags = [];
-        }
+    //     var user = [];
+    //     var arrpict = [];
+    //     var arrvid = [];
+    //     var arrdiary = [];
+    //     var picts = [];
+
+    //     var vid = [];
+    //     var diary = [];
+    //     var tags = [];
+    //     var lengpict = null;
+    //     var lengdiary = null;
+    //     var lengvid = null;
+    //     var lenguser = null;
+    //     var datatag = null;
+
+    //     try {
+    //         datasearch = await this.tagCountService.detailsearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary);
+    //         tags = datasearch[0].tag;
+
+    //     } catch (e) {
+    //         datasearch = null;
+    //         tags = [];
+    //     }
 
-        if (tags == undefined || tags.length == 0 || tags[0].tag == undefined) {
-            tags = [];
-        }
+    //     if (tags == undefined || tags.length == 0 || tags[0].tag == undefined) {
+    //         tags = [];
+    //     }
 
 
-        try {
-            arrpict = datasearch[0].pict;
-            lengpict = arrpict.length;
+    //     try {
+    //         arrpict = datasearch[0].pict;
+    //         lengpict = arrpict.length;
 
-        } catch (e) {
-            arrpict = [];
-            lengpict = 0;
+    //     } catch (e) {
+    //         arrpict = [];
+    //         lengpict = 0;
 
-        }
-        try {
-            arrvid = datasearch[0].vid;
-            lengvid = arrvid.length;
+    //     }
+    //     try {
+    //         arrvid = datasearch[0].vid;
+    //         lengvid = arrvid.length;
 
-        } catch (e) {
-            arrvid = [];
-            lengvid = 0;
+    //     } catch (e) {
+    //         arrvid = [];
+    //         lengvid = 0;
 
-        }
+    //     }
 
-        try {
-            arrdiary = datasearch[0].diary;
-            lengdiary = arrdiary.length;
+    //     try {
+    //         arrdiary = datasearch[0].diary;
+    //         lengdiary = arrdiary.length;
 
-        } catch (e) {
-            arrdiary = [];
-            lengdiary = 0;
-
-        }
+    //     } catch (e) {
+    //         arrdiary = [];
+    //         lengdiary = 0;
+
+    //     }
 
-        if (lenguser > 0 && user[0].email !== undefined) {
-            user = datasearch[0].user;
-        } else {
-            user = [];
-        }
+    //     if (lenguser > 0 && user[0].email !== undefined) {
+    //         user = datasearch[0].user;
+    //     } else {
+    //         user = [];
+    //     }
 
-        if (lengpict > 0) {
+    //     if (lengpict > 0) {
 
-            if (arrpict[0]._id !== undefined) {
+    //         if (arrpict[0]._id !== undefined) {
 
-                for (let i = 0; i < lengpict; i++) {
-                    let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
-                    picts.push(datapicture[i])
+    //             for (let i = 0; i < lengpict; i++) {
+    //                 let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
+    //                 picts.push(datapicture[i])
 
-                }
+    //             }
 
-            } else {
-                picts = [];
-            }
+    //         } else {
+    //             picts = [];
+    //         }
 
 
-        } else {
-            picts = [];
-        }
+    //     } else {
+    //         picts = [];
+    //     }
 
-        if (lengvid > 0) {
+    //     if (lengvid > 0) {
 
-            if (arrvid[0]._id !== undefined) {
-                for (let i = 0; i < lengvid; i++) {
-                    let datavid = await this.getusercontentsService.getapsara(arrvid, i);
-                    vid.push(datavid[i])
+    //         if (arrvid[0]._id !== undefined) {
+    //             for (let i = 0; i < lengvid; i++) {
+    //                 let datavid = await this.getusercontentsService.getapsara(arrvid, i);
+    //                 vid.push(datavid[i])
 
-                }
-            } else {
-                vid = [];
-            }
+    //             }
+    //         } else {
+    //             vid = [];
+    //         }
 
-        } else {
-            vid = [];
-        }
+    //     } else {
+    //         vid = [];
+    //     }
 
-        if (lengdiary > 0) {
+    //     if (lengdiary > 0) {
 
-            if (arrdiary[0]._id !== undefined) {
-                for (let i = 0; i < lengdiary; i++) {
-                    let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
-                    diary.push(datadiary[i])
+    //         if (arrdiary[0]._id !== undefined) {
+    //             for (let i = 0; i < lengdiary; i++) {
+    //                 let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
+    //                 diary.push(datadiary[i])
 
-                }
-            }
-            else {
-                diary = [];
-            }
-        } else {
-            diary = [];
-        }
+    //             }
+    //         }
+    //         else {
+    //             diary = [];
+    //         }
+    //     } else {
+    //         diary = [];
+    //     }
 
-        data = [{
+    //     data = [{
 
-            picts, vid, diary, tags
-        }];
+    //         picts, vid, diary, tags
+    //     }];
 
 
-        return { response_code: 202, data, messages };
-    }
+    //     return { response_code: 202, data, messages };
+    // }
 
 
-    @Post('api/getusercontents/searchdatanew/detailinterest')
-    @UseGuards(JwtAuthGuard)
-    async detailinterestsearchnew(@Req() request: Request): Promise<any> {
+    // @Post('api/getusercontents/searchdatanew/detailinterest')
+    // @UseGuards(JwtAuthGuard)
+    // async detailinterestsearchnew(@Req() request: Request): Promise<any> {
 
 
-        var keys = null;
-        var skip = 0;
-        var limit = 0;
+    //     var keys = null;
+    //     var skip = 0;
+    //     var limit = 0;
 
-        var email = null;
-        var data = null;
-        var datasearch = null;
-        var dataLike = null;
-        var listpict = null;
-        var listvid = null;
-        var listdiary = null;
-        // var listuser = null;
-        // var listtag = null;
+    //     var email = null;
+    //     var data = null;
+    //     var datasearch = null;
+    //     var dataLike = null;
+    //     var listpict = null;
+    //     var listvid = null;
+    //     var listdiary = null;
+    //     // var listuser = null;
+    //     // var listtag = null;
 
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["skip"] !== undefined) {
-            skip = request_json["skip"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    //     if (request_json["skip"] !== undefined) {
+    //         skip = request_json["skip"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
 
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
+    //     if (request_json["limit"] !== undefined) {
+    //         limit = request_json["limit"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
 
-        email = request_json["email"];
-        keys = request_json["keys"];
-        listpict = request_json["listpict"];
-        listvid = request_json["listvid"];
-        listdiary = request_json["listdiary"];
+    //     email = request_json["email"];
+    //     keys = request_json["keys"];
+    //     listpict = request_json["listpict"];
+    //     listvid = request_json["listvid"];
+    //     listdiary = request_json["listdiary"];
 
 
-        const messages = {
-            "info": ["The process successful"],
-        };
+    //     const messages = {
+    //         "info": ["The process successful"],
+    //     };
 
 
-        var user = [];
-        var arrpict = [];
-        var arrvid = [];
-        var arrdiary = [];
-        var picts = [];
+    //     var user = [];
+    //     var arrpict = [];
+    //     var arrvid = [];
+    //     var arrdiary = [];
+    //     var picts = [];
 
-        var vid = [];
-        var diary = [];
-        var interests = [];
-        var lengpict = null;
-        var lengdiary = null;
-        var lengvid = null;
-        var lenguser = null;
-        var datatag = null;
+    //     var vid = [];
+    //     var diary = [];
+    //     var interests = [];
+    //     var lengpict = null;
+    //     var lengdiary = null;
+    //     var lengvid = null;
+    //     var lenguser = null;
+    //     var datatag = null;
 
-        try {
-            datasearch = await this.interestCountService.detailinterestcontenNew(keys, email, skip, limit, listpict, listvid, listdiary);
-            interests = datasearch[0].interest;
+    //     try {
+    //         datasearch = await this.interestCountService.detailinterestcontenNew(keys, email, skip, limit, listpict, listvid, listdiary);
+    //         interests = datasearch[0].interest;
 
-        } catch (e) {
-            datasearch = null;
-            interests = [];
-        }
+    //     } catch (e) {
+    //         datasearch = null;
+    //         interests = [];
+    //     }
 
-        if (interests == undefined || interests.length == 0 || interests[0].interestNameId == undefined) {
-            interests = [];
-        }
+    //     if (interests == undefined || interests.length == 0 || interests[0].interestNameId == undefined) {
+    //         interests = [];
+    //     }
 
 
-        try {
-            arrpict = datasearch[0].pict;
-            lengpict = arrpict.length;
+    //     try {
+    //         arrpict = datasearch[0].pict;
+    //         lengpict = arrpict.length;
 
-        } catch (e) {
-            arrpict = [];
-            lengpict = 0;
+    //     } catch (e) {
+    //         arrpict = [];
+    //         lengpict = 0;
 
-        }
-        try {
-            arrvid = datasearch[0].vid;
-            lengvid = arrvid.length;
+    //     }
+    //     try {
+    //         arrvid = datasearch[0].vid;
+    //         lengvid = arrvid.length;
 
-        } catch (e) {
-            arrvid = [];
-            lengvid = 0;
+    //     } catch (e) {
+    //         arrvid = [];
+    //         lengvid = 0;
 
-        }
+    //     }
 
-        try {
-            arrdiary = datasearch[0].diary;
-            lengdiary = arrdiary.length;
+    //     try {
+    //         arrdiary = datasearch[0].diary;
+    //         lengdiary = arrdiary.length;
 
-        } catch (e) {
-            arrdiary = [];
-            lengdiary = 0;
+    //     } catch (e) {
+    //         arrdiary = [];
+    //         lengdiary = 0;
 
-        }
+    //     }
 
-        if (lenguser > 0 && user[0].email !== undefined) {
-            user = datasearch[0].user;
-        } else {
-            user = [];
-        }
+    //     if (lenguser > 0 && user[0].email !== undefined) {
+    //         user = datasearch[0].user;
+    //     } else {
+    //         user = [];
+    //     }
 
-        if (lengpict > 0) {
+    //     if (lengpict > 0) {
 
-            if (arrpict[0]._id !== undefined) {
+    //         if (arrpict[0]._id !== undefined) {
 
-                for (let i = 0; i < lengpict; i++) {
-                    let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
-                    picts.push(datapicture[i])
+    //             for (let i = 0; i < lengpict; i++) {
+    //                 let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
+    //                 picts.push(datapicture[i])
 
-                }
+    //             }
 
-            } else {
-                picts = [];
-            }
+    //         } else {
+    //             picts = [];
+    //         }
 
 
-        } else {
-            picts = [];
-        }
+    //     } else {
+    //         picts = [];
+    //     }
 
-        if (lengvid > 0) {
+    //     if (lengvid > 0) {
 
-            if (arrvid[0]._id !== undefined) {
-                for (let i = 0; i < lengvid; i++) {
-                    let datavid = await this.getusercontentsService.getapsara(arrvid, i);
-                    vid.push(datavid[i])
+    //         if (arrvid[0]._id !== undefined) {
+    //             for (let i = 0; i < lengvid; i++) {
+    //                 let datavid = await this.getusercontentsService.getapsara(arrvid, i);
+    //                 vid.push(datavid[i])
 
-                }
-            } else {
-                vid = [];
-            }
+    //             }
+    //         } else {
+    //             vid = [];
+    //         }
 
-        } else {
-            vid = [];
-        }
+    //     } else {
+    //         vid = [];
+    //     }
 
-        if (lengdiary > 0) {
+    //     if (lengdiary > 0) {
 
-            if (arrdiary[0]._id !== undefined) {
-                for (let i = 0; i < lengdiary; i++) {
-                    let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
-                    diary.push(datadiary[i])
+    //         if (arrdiary[0]._id !== undefined) {
+    //             for (let i = 0; i < lengdiary; i++) {
+    //                 let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
+    //                 diary.push(datadiary[i])
 
-                }
-            }
-            else {
-                diary = [];
-            }
-        } else {
-            diary = [];
-        }
+    //             }
+    //         }
+    //         else {
+    //             diary = [];
+    //         }
+    //     } else {
+    //         diary = [];
+    //     }
 
-        data = [{
+    //     data = [{
 
-            picts, vid, diary, interests
-        }];
+    //         picts, vid, diary, interests
+    //     }];
 
 
-        return { response_code: 202, data, messages };
-    }
+    //     return { response_code: 202, data, messages };
+    // }
 
     @UseGuards(JwtAuthGuard)
     @Post('api/getusercontents/database')
@@ -2757,8 +2757,8 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
-    
-    @Post('api/getusercontents/searchdatanew/detailinterest2')
+
+    @Post('api/getusercontents/searchdatanew/detailinterest')
     @UseGuards(JwtAuthGuard)
     async detailinterestsearchnew2(@Req() request: Request): Promise<any> {
 
@@ -2873,8 +2873,7 @@ export class GetusercontentsController {
             if (arrpict[0]._id !== undefined) {
 
                 for (let i = 0; i < lengpict; i++) {
-                    if(arrpict[i].isApsara == true)
-                    {
+                    if (arrpict[i].isApsara == true) {
                         tempdatapict.push(arrpict[i].apsaraId);
                     }
                 }
@@ -2885,22 +2884,21 @@ export class GetusercontentsController {
                 for (var i = 0; i < lengpict; i++) {
                     var checkpictketemu = false;
                     for (var j = 0; j < gettempresultpictapsara.length; j++) {
-                      if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
-                        checkpictketemu = true;
-                        arrpict[i].media =
-                        {
-                          "ImageInfo": [gettempresultpictapsara[j]]
+                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+                            checkpictketemu = true;
+                            arrpict[i].media =
+                            {
+                                "ImageInfo": [gettempresultpictapsara[j]]
+                            }
                         }
-                      }
                     }
 
-                    if(checkpictketemu == false)
-                    {
+                    if (checkpictketemu == false) {
                         arrpict[i].apsaraId = "";
                         arrpict[i].apsara = false;
                         arrpict[i].media =
                         {
-                          "ImageInfo": []
+                            "ImageInfo": []
                         };
                     }
                     picts.push(arrpict[i]);
@@ -2921,8 +2919,7 @@ export class GetusercontentsController {
             if (arrvid[0]._id !== undefined) {
 
                 for (let i = 0; i < lengvid; i++) {
-                    if(arrvid[i].isApsara == true)
-                    {
+                    if (arrvid[i].isApsara == true) {
                         tempdatavid.push(arrvid[i].apsaraId);
                     }
                 }
@@ -2933,22 +2930,21 @@ export class GetusercontentsController {
                 for (var i = 0; i < lengvid; i++) {
                     var checkvidketemu = false;
                     for (var j = 0; j < gettempresultvidapsara.length; j++) {
-                      if (gettempresultvidapsara[j].VideoId == arrvid[i].apsaraId) {
-                        checkvidketemu = true;
-                        arrvid[i].media =
-                        {
-                          "VideoList": [gettempresultvidapsara[j]]
+                        if (gettempresultvidapsara[j].VideoId == arrvid[i].apsaraId) {
+                            checkvidketemu = true;
+                            arrvid[i].media =
+                            {
+                                "VideoList": [gettempresultvidapsara[j]]
+                            }
                         }
-                      }
                     }
 
-                    if(checkvidketemu == false)
-                    {
+                    if (checkvidketemu == false) {
                         arrvid[i].apsaraId = "";
                         arrvid[i].apsara = false;
                         arrvid[i].media =
                         {
-                          "VideoList": []
+                            "VideoList": []
                         };
                     }
                     vid.push(arrvid[i]);
@@ -2969,8 +2965,7 @@ export class GetusercontentsController {
             if (arrdiary[0]._id !== undefined) {
 
                 for (let i = 0; i < lengdiary; i++) {
-                    if(arrdiary[i].isApsara == true)
-                    {
+                    if (arrdiary[i].isApsara == true) {
                         tempdatadiary.push(arrdiary[i].apsaraId);
                     }
                 }
@@ -2981,22 +2976,21 @@ export class GetusercontentsController {
                 for (var i = 0; i < lengdiary; i++) {
                     var checkdiaryketemu = false;
                     for (var j = 0; j < gettempresultdiaryapsara.length; j++) {
-                      if (gettempresultdiaryapsara[j].VideoId == arrdiary[i].apsaraId) {
-                        checkdiaryketemu = true;
-                        arrdiary[i].media =
-                        {
-                          "VideoList": [gettempresultdiaryapsara[j]]
+                        if (gettempresultdiaryapsara[j].VideoId == arrdiary[i].apsaraId) {
+                            checkdiaryketemu = true;
+                            arrdiary[i].media =
+                            {
+                                "VideoList": [gettempresultdiaryapsara[j]]
+                            }
                         }
-                      }
                     }
 
-                    if(checkdiaryketemu == false)
-                    {
+                    if (checkdiaryketemu == false) {
                         arrdiary[i].apsaraId = "";
                         arrdiary[i].apsara = false;
                         arrdiary[i].media =
                         {
-                          "VideoList": []
+                            "VideoList": []
                         };
                     }
                     diary.push(arrdiary[i]);
@@ -3019,7 +3013,7 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
-    @Post('api/getusercontents/searchdatanew/detailtag2')
+    @Post('api/getusercontents/searchdatanew/detailtag')
     @UseGuards(JwtAuthGuard)
     async detailtagsearchnew2(@Req() request: Request): Promise<any> {
 
@@ -3136,8 +3130,7 @@ export class GetusercontentsController {
                 for (let i = 0; i < lengpict; i++) {
                     // let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
                     // picts.push(datapicture[i])
-                    if(arrpict[i].isApsara == true)
-                    {
+                    if (arrpict[i].isApsara == true) {
                         tempdatapict.push(arrpict[i].apsaraId);
                     }
                 }
@@ -3148,22 +3141,21 @@ export class GetusercontentsController {
                 for (var i = 0; i < lengpict; i++) {
                     var checkpictketemu = false;
                     for (var j = 0; j < gettempresultpictapsara.length; j++) {
-                      if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
-                        checkpictketemu = true;
-                        arrpict[i].media =
-                        {
-                          "ImageInfo": [gettempresultpictapsara[j]]
+                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+                            checkpictketemu = true;
+                            arrpict[i].media =
+                            {
+                                "ImageInfo": [gettempresultpictapsara[j]]
+                            }
                         }
-                      }
                     }
 
-                    if(checkpictketemu == false)
-                    {
+                    if (checkpictketemu == false) {
                         arrpict[i].apsaraId = "";
                         arrpict[i].apsara = false;
                         arrpict[i].media =
                         {
-                          "ImageInfo": []
+                            "ImageInfo": []
                         };
                     }
                     picts.push(arrpict[i]);
@@ -3184,8 +3176,7 @@ export class GetusercontentsController {
             if (arrvid[0]._id !== undefined) {
 
                 for (let i = 0; i < lengvid; i++) {
-                    if(arrvid[i].isApsara == true)
-                    {
+                    if (arrvid[i].isApsara == true) {
                         tempdatavid.push(arrvid[i].apsaraId);
                     }
                 }
@@ -3196,22 +3187,21 @@ export class GetusercontentsController {
                 for (var i = 0; i < lengvid; i++) {
                     var checkvidketemu = false;
                     for (var j = 0; j < gettempresultvidapsara.length; j++) {
-                      if (gettempresultvidapsara[j].VideoId == arrvid[i].apsaraId) {
-                        checkvidketemu = true;
-                        arrvid[i].media =
-                        {
-                          "VideoList": [gettempresultvidapsara[j]]
+                        if (gettempresultvidapsara[j].VideoId == arrvid[i].apsaraId) {
+                            checkvidketemu = true;
+                            arrvid[i].media =
+                            {
+                                "VideoList": [gettempresultvidapsara[j]]
+                            }
                         }
-                      }
                     }
 
-                    if(checkvidketemu == false)
-                    {
+                    if (checkvidketemu == false) {
                         arrvid[i].apsaraId = "";
                         arrvid[i].apsara = false;
                         arrvid[i].media =
                         {
-                          "VideoList": []
+                            "VideoList": []
                         };
                     }
                     vid.push(arrvid[i]);
@@ -3232,8 +3222,7 @@ export class GetusercontentsController {
             if (arrdiary[0]._id !== undefined) {
 
                 for (let i = 0; i < lengdiary; i++) {
-                    if(arrdiary[i].isApsara == true)
-                    {
+                    if (arrdiary[i].isApsara == true) {
                         tempdatadiary.push(arrdiary[i].apsaraId);
                     }
                 }
@@ -3244,22 +3233,21 @@ export class GetusercontentsController {
                 for (var i = 0; i < lengdiary; i++) {
                     var checkdiaryketemu = false;
                     for (var j = 0; j < gettempresultdiaryapsara.length; j++) {
-                      if (gettempresultdiaryapsara[j].VideoId == arrdiary[i].apsaraId) {
-                        checkdiaryketemu = true;
-                        arrdiary[i].media =
-                        {
-                          "VideoList": [gettempresultdiaryapsara[j]]
+                        if (gettempresultdiaryapsara[j].VideoId == arrdiary[i].apsaraId) {
+                            checkdiaryketemu = true;
+                            arrdiary[i].media =
+                            {
+                                "VideoList": [gettempresultdiaryapsara[j]]
+                            }
                         }
-                      }
                     }
 
-                    if(checkdiaryketemu == false)
-                    {
+                    if (checkdiaryketemu == false) {
                         arrdiary[i].apsaraId = "";
                         arrdiary[i].apsara = false;
                         arrdiary[i].media =
                         {
-                          "VideoList": []
+                            "VideoList": []
                         };
                     }
                     diary.push(arrdiary[i]);
