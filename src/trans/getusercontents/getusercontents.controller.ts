@@ -1357,139 +1357,139 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Post('api/getusercontents/database')
-    async finddata(@Req() request: Request): Promise<any> {
-        const messages = {
-            "info": ["The process successful"],
-        };
+    // @UseGuards(JwtAuthGuard)
+    // @Post('api/getusercontents/database')
+    // async finddata(@Req() request: Request): Promise<any> {
+    //     const messages = {
+    //         "info": ["The process successful"],
+    //     };
 
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        var page = null;
-        var startdate = null;
-        var enddate = null;
-        var limit = null;
-        var totalpage = 0;
-        var totalallrow = 0;
-        var totalsearch = 0;
-        var total = 0;
-        var username = null;
-        var kepemilikan = [];
-        var statusjual = [];
-        var data = [];
-        var description = null;
-        var postType = [];
-        var kategori = [];
-        var startmount = null;
-        var endmount = null;
-        var descending = null;
-        var iduser = null;
-        var buy = null;
-        var reported = null;
-        var popular = null;
-        const mongoose = require('mongoose');
-        var ObjectId = require('mongodb').ObjectId;
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-        if (request_json["page"] !== undefined) {
-            page = request_json["page"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    //     var page = null;
+    //     var startdate = null;
+    //     var enddate = null;
+    //     var limit = null;
+    //     var totalpage = 0;
+    //     var totalallrow = 0;
+    //     var totalsearch = 0;
+    //     var total = 0;
+    //     var username = null;
+    //     var kepemilikan = [];
+    //     var statusjual = [];
+    //     var data = [];
+    //     var description = null;
+    //     var postType = [];
+    //     var kategori = [];
+    //     var startmount = null;
+    //     var endmount = null;
+    //     var descending = null;
+    //     var iduser = null;
+    //     var buy = null;
+    //     var reported = null;
+    //     var popular = null;
+    //     const mongoose = require('mongoose');
+    //     var ObjectId = require('mongodb').ObjectId;
+    //     if (request_json["limit"] !== undefined) {
+    //         limit = request_json["limit"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+    //     if (request_json["page"] !== undefined) {
+    //         page = request_json["page"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
 
-        startdate = request_json["startdate"];
-        enddate = request_json["enddate"];
-        username = request_json["username"];
-        description = request_json["description"];
-        kepemilikan = request_json["kepemilikan"];
-        statusjual = request_json["statusjual"];
-        postType = request_json["postType"];
-        kategori = request_json["kategori"];
-        startmount = request_json["startmount"];
-        endmount = request_json["endmount"];
-        descending = request_json["descending"];
-        iduser = request_json["iduser"];
-        buy = request_json["buy"];
-        reported = request_json["reported"];
-        popular = request_json["popular"];
-        var userid = mongoose.Types.ObjectId(iduser);
-        var query = null;
-        var datasearch = null;
-        var dataall = null;
+    //     startdate = request_json["startdate"];
+    //     enddate = request_json["enddate"];
+    //     username = request_json["username"];
+    //     description = request_json["description"];
+    //     kepemilikan = request_json["kepemilikan"];
+    //     statusjual = request_json["statusjual"];
+    //     postType = request_json["postType"];
+    //     kategori = request_json["kategori"];
+    //     startmount = request_json["startmount"];
+    //     endmount = request_json["endmount"];
+    //     descending = request_json["descending"];
+    //     iduser = request_json["iduser"];
+    //     buy = request_json["buy"];
+    //     reported = request_json["reported"];
+    //     popular = request_json["popular"];
+    //     var userid = mongoose.Types.ObjectId(iduser);
+    //     var query = null;
+    //     var datasearch = null;
+    //     var dataall = null;
 
-        if (iduser !== undefined) {
-            try {
-                query = await this.getusercontentsService.databasenew(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
-                data = query;
-            } catch (e) {
-                query = null;
-                data = [];
-            }
-        } else {
-            try {
-                query = await this.getusercontentsService.databasenew(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
-                data = query;
-            } catch (e) {
-                query = null;
-                data = [];
-            }
-        }
+    //     if (iduser !== undefined) {
+    //         try {
+    //             query = await this.getusercontentsService.databasenew(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+    //             data = query;
+    //         } catch (e) {
+    //             query = null;
+    //             data = [];
+    //         }
+    //     } else {
+    //         try {
+    //             query = await this.getusercontentsService.databasenew(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+    //             data = query;
+    //         } catch (e) {
+    //             query = null;
+    //             data = [];
+    //         }
+    //     }
 
 
 
-        // try {
-        //     total = query.length;
-        // } catch (e) {
-        //     total = 0;
-        // }
+    //     // try {
+    //     //     total = query.length;
+    //     // } catch (e) {
+    //     //     total = 0;
+    //     // }
 
-        // if (total < 10) {
-        //     totalsearch = total;
-        // } else {
+    //     // if (total < 10) {
+    //     //     totalsearch = total;
+    //     // } else {
 
-        //     if (iduser !== undefined) {
-        //         try {
-        //             datasearch = await this.getusercontentsService.databasenewcount(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
-        //             totalsearch = datasearch[0].totalpost;
-        //         } catch (e) {
-        //             totalsearch = 0;
-        //         }
-        //     } else {
-        //         try {
-        //             datasearch = await this.getusercontentsService.databasenewcount(undefined, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
-        //             totalsearch = datasearch[0].totalpost;
-        //         } catch (e) {
-        //             totalsearch = 0;
-        //         }
-        //     }
-        // }
+    //     //     if (iduser !== undefined) {
+    //     //         try {
+    //     //             datasearch = await this.getusercontentsService.databasenewcount(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+    //     //             totalsearch = datasearch[0].totalpost;
+    //     //         } catch (e) {
+    //     //             totalsearch = 0;
+    //     //         }
+    //     //     } else {
+    //     //         try {
+    //     //             datasearch = await this.getusercontentsService.databasenewcount(undefined, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+    //     //             totalsearch = datasearch[0].totalpost;
+    //     //         } catch (e) {
+    //     //             totalsearch = 0;
+    //     //         }
+    //     //     }
+    //     // }
 
-        // try {
+    //     // try {
 
-        //     dataall = await this.getusercontentsService.findcountall();
-        //     totalallrow = dataall[0].totalpost;
+    //     //     dataall = await this.getusercontentsService.findcountall();
+    //     //     totalallrow = dataall[0].totalpost;
 
-        // } catch (e) {
-        //     totalallrow = 0;
-        // }
+    //     // } catch (e) {
+    //     //     totalallrow = 0;
+    //     // }
 
-        // var tpage = null;
-        // var tpage2 = null;
+    //     // var tpage = null;
+    //     // var tpage2 = null;
 
-        // tpage2 = (totalsearch / limit).toFixed(0);
-        // tpage = (totalsearch % limit);
-        // if (tpage > 0 && tpage < 5) {
-        //     totalpage = parseInt(tpage2) + 1;
+    //     // tpage2 = (totalsearch / limit).toFixed(0);
+    //     // tpage = (totalsearch % limit);
+    //     // if (tpage > 0 && tpage < 5) {
+    //     //     totalpage = parseInt(tpage2) + 1;
 
-        // } else {
-        //     totalpage = parseInt(tpage2);
-        // }
+    //     // } else {
+    //     //     totalpage = parseInt(tpage2);
+    //     // }
 
-        return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
-    }
+    //     return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
+    // }
 
     @Post('api/getusercontents/database/details')
     @UseGuards(JwtAuthGuard)
@@ -2399,6 +2399,140 @@ export class GetusercontentsController {
 
 
         return { response_code: 202, data, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('api/getusercontents/database')
+    async finddata2(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var page = null;
+        var startdate = null;
+        var enddate = null;
+        var limit = null;
+        var totalpage = 0;
+        var totalallrow = 0;
+        var totalsearch = 0;
+        var total = 0;
+        var username = null;
+        var kepemilikan = [];
+        var statusjual = [];
+        var data = [];
+        var description = null;
+        var postType = [];
+        var kategori = [];
+        var startmount = null;
+        var endmount = null;
+        var descending = null;
+        var iduser = null;
+        var buy = null;
+        var reported = null;
+        var popular = null;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        username = request_json["username"];
+        description = request_json["description"];
+        kepemilikan = request_json["kepemilikan"];
+        statusjual = request_json["statusjual"];
+        postType = request_json["postType"];
+        kategori = request_json["kategori"];
+        startmount = request_json["startmount"];
+        endmount = request_json["endmount"];
+        descending = request_json["descending"];
+        iduser = request_json["iduser"];
+        buy = request_json["buy"];
+        reported = request_json["reported"];
+        popular = request_json["popular"];
+        var userid = mongoose.Types.ObjectId(iduser);
+        var query = null;
+        var datasearch = null;
+        var dataall = null;
+
+        if (iduser !== undefined) {
+            try {
+                query = await this.getusercontentsService.databasenew2(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+                data = query;
+            } catch (e) {
+                query = null;
+                data = [];
+            }
+        } else {
+            try {
+                query = await this.getusercontentsService.databasenew2(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+                data = query;
+            } catch (e) {
+                query = null;
+                data = [];
+            }
+        }
+
+
+
+        // try {
+        //     total = query.length;
+        // } catch (e) {
+        //     total = 0;
+        // }
+
+        // if (total < 10) {
+        //     totalsearch = total;
+        // } else {
+
+        //     if (iduser !== undefined) {
+        //         try {
+        //             datasearch = await this.getusercontentsService.databasenewcount(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+        //             totalsearch = datasearch[0].totalpost;
+        //         } catch (e) {
+        //             totalsearch = 0;
+        //         }
+        //     } else {
+        //         try {
+        //             datasearch = await this.getusercontentsService.databasenewcount(undefined, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+        //             totalsearch = datasearch[0].totalpost;
+        //         } catch (e) {
+        //             totalsearch = 0;
+        //         }
+        //     }
+        // }
+
+        // try {
+
+        //     dataall = await this.getusercontentsService.findcountall();
+        //     totalallrow = dataall[0].totalpost;
+
+        // } catch (e) {
+        //     totalallrow = 0;
+        // }
+
+        // var tpage = null;
+        // var tpage2 = null;
+
+        // tpage2 = (totalsearch / limit).toFixed(0);
+        // tpage = (totalsearch % limit);
+        // if (tpage > 0 && tpage < 5) {
+        //     totalpage = parseInt(tpage2) + 1;
+
+        // } else {
+        //     totalpage = parseInt(tpage2);
+        // }
+
+        return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
 }
 
