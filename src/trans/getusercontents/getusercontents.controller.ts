@@ -2484,53 +2484,6 @@ export class GetusercontentsController {
 
 
 
-        // try {
-        //     total = query.length;
-        // } catch (e) {
-        //     total = 0;
-        // }
-
-        // if (total < 10) {
-        //     totalsearch = total;
-        // } else {
-
-        //     if (iduser !== undefined) {
-        //         try {
-        //             datasearch = await this.getusercontentsService.databasenewcount(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
-        //             totalsearch = datasearch[0].totalpost;
-        //         } catch (e) {
-        //             totalsearch = 0;
-        //         }
-        //     } else {
-        //         try {
-        //             datasearch = await this.getusercontentsService.databasenewcount(undefined, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
-        //             totalsearch = datasearch[0].totalpost;
-        //         } catch (e) {
-        //             totalsearch = 0;
-        //         }
-        //     }
-        // }
-
-        // try {
-
-        //     dataall = await this.getusercontentsService.findcountall();
-        //     totalallrow = dataall[0].totalpost;
-
-        // } catch (e) {
-        //     totalallrow = 0;
-        // }
-
-        // var tpage = null;
-        // var tpage2 = null;
-
-        // tpage2 = (totalsearch / limit).toFixed(0);
-        // tpage = (totalsearch % limit);
-        // if (tpage > 0 && tpage < 5) {
-        //     totalpage = parseInt(tpage2) + 1;
-
-        // } else {
-        //     totalpage = parseInt(tpage2);
-        // }
 
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }

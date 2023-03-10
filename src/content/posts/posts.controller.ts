@@ -1033,8 +1033,6 @@ export class PostsController {
           }
         }
 
-
-
       }
     }
     return data;

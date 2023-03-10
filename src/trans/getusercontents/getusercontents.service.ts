@@ -25462,28 +25462,17 @@ export class GetusercontentsService {
 
     let query = await this.getusercontentsModel.aggregate(pipeline);
 
-
     var data = [];
 
-    for (var i = 0; i < query.length; i++) {
-      let dataconten = await this.getapsaraDatabase(query, i);
-
-      data.push(dataconten[i]);
-    }
-
-    //console.log(data);
     var listdata = [];
     var tempresult = null;
     var tempdata = null;
-    for(var i = 0; i < query.length; i++)
-    {
+    for (var i = 0; i < query.length; i++) {
       tempdata = query[i];
-      if(tempdata.apsara == true)
-      {
+      if (tempdata.apsara == true) {
         listdata.push(tempdata.apsaraId);
       }
-      else
-      {
+      else {
         listdata.push(undefined);
       }
     }
@@ -25492,16 +25481,13 @@ export class GetusercontentsService {
     var apsaraimagedata = await this.postContentService.getImageApsara(listdata);
     // console.log(resultdata.ImageInfo[0]);
     tempresult = apsaraimagedata.ImageInfo;
-    for(var i = 0; i < query.length; i++)
-    {
+    for (var i = 0; i < query.length; i++) {
       tempdata = query[i];
-      for(var j = 0; j < tempresult.length; j++)
-      {
-        if(tempresult[j].ImageId == tempdata.apsaraId)
-        {
-          tempdata.media = 
+      for (var j = 0; j < tempresult.length; j++) {
+        if (tempresult[j].ImageId == tempdata.apsaraId) {
+          tempdata.media =
           {
-            "ImageInfo" : [tempresult[j]]
+            "ImageInfo": [tempresult[j]]
           }
         }
       }
@@ -25512,16 +25498,13 @@ export class GetusercontentsService {
     // console.log(apsaravideodata);
     // console.log(resultdata.ImageInfo[0]);
     tempresult = apsaravideodata.VideoList;
-    for(var i = 0; i < query.length; i++)
-    {
+    for (var i = 0; i < query.length; i++) {
       tempdata = query[i];
-      for(var j = 0; j < tempresult.length; j++)
-      {
-        if(tempresult[j].VideoId == tempdata.apsaraId)
-        {
-          tempdata.media = 
+      for (var j = 0; j < tempresult.length; j++) {
+        if (tempresult[j].VideoId == tempdata.apsaraId) {
+          tempdata.media =
           {
-            "VideoList" : [tempresult[j]]
+            "VideoList": [tempresult[j]]
           }
         }
       }
