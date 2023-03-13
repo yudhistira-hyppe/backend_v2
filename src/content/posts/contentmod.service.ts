@@ -354,6 +354,7 @@ export class ContentModService {
       if ((re.suggestion != 'pass') || (re.suggestion != 'review')) {
         pass = false;
         reason = re.scene;
+        console.log(re);
       }
     }
     pd.moderationReason = reason;
