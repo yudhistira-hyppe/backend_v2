@@ -2757,7 +2757,7 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
-
+    //test
     @Post('api/getusercontents/searchdatanew/detailinterest')
     @UseGuards(JwtAuthGuard)
     async detailinterestsearchnew2(@Req() request: Request): Promise<any> {
