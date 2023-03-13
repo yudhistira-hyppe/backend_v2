@@ -15,6 +15,7 @@ import { DisqusContentEventModule } from './discus/disqusdisquscontentevent.modu
 import { DisqusContentEventController } from './discus/disquscontentevent.controller';
 import { ReactionsRepoModule } from '../../infra/reactions_repo/reactions_repo.module';
 import { FriendListModule } from '../friend_list/friend_list.module';
+import { UserbasicsModule } from 'src/trans/userbasics/userbasics.module';
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { FriendListModule } from '../friend_list/friend_list.module';
         PostDisqusModule,
         InsightsModule,
         UtilsModule,
+        UserbasicsModule,
         FriendListModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Contentevents.name, schema: ContenteventsSchema }], 'SERVER_FULL')
