@@ -348,7 +348,6 @@ export class ContentModService {
     // }else{
     //   reason = dataResult;
     // }
-    pd.moderationReason = reason;
     let pass = true;
     for (let i = 0; i < res.length; i++) {
       let re = res[i];
@@ -357,6 +356,7 @@ export class ContentModService {
         reason = re.scene;
       }
     }
+    pd.moderationReason = reason;
 
     this.logger.log('cmodResponse >>> pass: ' + pass);
     if (pass == false) {
