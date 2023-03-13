@@ -7,4 +7,5 @@ export class CreateSettingsDto {
     readonly remark: string;
     readonly Max: number;
     readonly Min: number;
+    readonly sortObject: {}
 }

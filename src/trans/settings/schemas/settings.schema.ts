@@ -19,6 +19,10 @@ export class Settings {
     @Prop()
     Min: number
 
+    @Prop({ type: Object })
+    sortObject: {}
+
+
 
 
 }

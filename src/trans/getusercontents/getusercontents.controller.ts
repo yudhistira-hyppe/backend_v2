@@ -3269,4 +3269,136 @@ export class GetusercontentsController {
 
         return { response_code: 202, data, messages };
     }
+
+    @Post('api/getusercontents/landingpage')
+    @UseGuards(JwtAuthGuard)
+    async contentlandingpage(@Req() request: Request): Promise<any> {
+
+
+
+        var skip = 0;
+        var limit = 0;
+        var type = null;
+        var email = null;
+        var data = null;
+        var datasearch = null;
+
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["type"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var picts = [];
+        var lengpict = null;
+
+
+        try {
+            data = await this.postsService.landingpage(email, type, skip, limit);
+            lengpict = data.length;
+
+        } catch (e) {
+            data = null;
+            lengpict = 0;
+
+        }
+
+        var tempdatapict = [];
+        // console.log(lengpict);
+        if (lengpict > 0) {
+            var resultpictapsara = null;
+            for (let i = 0; i < lengpict; i++) {
+
+                if (data[i].apsara == true) {
+                    tempdatapict.push(data[i].apsaraId);
+                }
+            }
+
+            // console.log(tempdatapict);
+            if (type == "pict") {
+                resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                let gettempresultpictapsara = resultpictapsara.ImageInfo;
+                for (let i = 0; i < lengpict; i++) {
+                    var checkpictketemu = false;
+                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+                        if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                            checkpictketemu = true;
+                            data[i].media =
+                            {
+                                "ImageInfo": [gettempresultpictapsara[j]]
+                            }
+                        }
+                    }
+
+                    if (checkpictketemu == false) {
+                        data[i].apsaraId = "";
+                        data[i].apsara = false;
+                        data[i].media =
+                        {
+                            "ImageInfo": []
+                        };
+                    }
+                    picts.push(data[i]);
+                }
+
+            } else {
+                resultpictapsara = await this.postContentService.getVideoApsara(tempdatapict);
+                let gettempresultpictapsara = resultpictapsara.VideoList;
+                for (let i = 0; i < lengpict; i++) {
+                    var checkpictketemu = false;
+                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+                        if (gettempresultpictapsara[j].VideoId == data[i].apsaraId) {
+                            checkpictketemu = true;
+                            data[i].media =
+                            {
+                                "VideoList": [gettempresultpictapsara[j]]
+                            }
+                        }
+                    }
+
+                    if (checkpictketemu == false) {
+                        data[i].apsaraId = "";
+                        data[i].apsara = false;
+                        data[i].media =
+                        {
+                            "VideoList": []
+                        };
+                    }
+                    picts.push(data[i]);
+                }
+            }
+
+
+
+
+        } else {
+            data = [];
+        }
+
+
+        return { response_code: 202, data: picts, messages };
+    }
+
 }
