@@ -351,10 +351,9 @@ export class ContentModService {
     let pass = true;
     for (let i = 0; i < res.length; i++) {
       let re = res[i];
-      if ((re.suggestion != 'pass') || (re.suggestion != 'review')) {
+      if ((re.suggestion == 'block')) {
         pass = false;
         reason = re.scene;
-        console.log(re);
       }
     }
     pd.moderationReason = reason;
