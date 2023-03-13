@@ -25461,8 +25461,7 @@ export class GetusercontentsService {
     }
 
     let query = await this.getusercontentsModel.aggregate(pipeline);
-
-    var data = [];
+    // console.log(query);
 
     var listdata = [];
     var tempresult = null;
@@ -25482,16 +25481,21 @@ export class GetusercontentsService {
     // console.log(resultdata.ImageInfo[0]);
     tempresult = apsaraimagedata.ImageInfo;
     for (var i = 0; i < query.length; i++) {
-      tempdata = query[i];
       for (var j = 0; j < tempresult.length; j++) {
-        if (tempresult[j].ImageId == tempdata.apsaraId) {
-          tempdata.media =
+        if (tempresult[j].ImageId == query[i].apsaraId) {
+          query[i].media =
           {
             "ImageInfo": [tempresult[j]]
           }
         }
+        else if(query[i].apsara == false && (query[i].mediaType == "image" || query[i].mediaType == "images"))
+        {
+          query[i].media =
+          {
+            "ImageInfo": []
+          }
+        }
       }
-      data.push(tempdata);
     }
 
     var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
@@ -25499,19 +25503,24 @@ export class GetusercontentsService {
     // console.log(resultdata.ImageInfo[0]);
     tempresult = apsaravideodata.VideoList;
     for (var i = 0; i < query.length; i++) {
-      tempdata = query[i];
       for (var j = 0; j < tempresult.length; j++) {
-        if (tempresult[j].VideoId == tempdata.apsaraId) {
-          tempdata.media =
+        if (tempresult[j].VideoId == query[i].apsaraId) {
+          query[i].media =
           {
             "VideoList": [tempresult[j]]
           }
         }
+        else if(query[i].apsara == false && query[i].mediaType == "video")
+        {
+          query[i].media =
+          {
+            "VideoList": []
+          }
+        }
       }
-      data.push(tempdata);
     }
 
-    return data;
+    return query;
   }
 }
 
