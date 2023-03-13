@@ -17399,7 +17399,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "FOLLOWER",
+                            then: "FOLLOWING",
                             else:
                             {
                               $cond: {
@@ -17408,7 +17408,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "FOLLOWING",
+                                then: "FOLLOWER",
                                 else: "NOT CONNECTED"
                               }
                             },
@@ -17435,7 +17435,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "PENGIKUT",
+                            then: "MENGIKUTI",
                             else:
                             {
                               $cond: {
@@ -17444,7 +17444,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "MENGIKUTI",
+                                then: "PENGIKUT",
                                 else: "BELUM TERHUBUNG"
                               }
                             },
@@ -18160,7 +18160,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "FOLLOWER",
+                            then: "FOLLOWING",
                             else:
                             {
                               $cond: {
@@ -18169,7 +18169,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "FOLLOWING",
+                                then: "FOLLOWER",
                                 else: "NOT CONNECTED"
                               }
                             },
@@ -18196,7 +18196,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "PENGIKUT",
+                            then: "MENGIKUTI",
                             else:
                             {
                               $cond: {
@@ -18205,7 +18205,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "MENGIKUTI",
+                                then: "PENGIKUT",
                                 else: "BELUM TERHUBUNG"
                               }
                             },
@@ -18917,7 +18917,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "FOLLOWER",
+                            then: "FOLLOWING",
                             else:
                             {
                               $cond: {
@@ -18926,7 +18926,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "FOLLOWING",
+                                then: "FOLLOWER",
                                 else: "NOT CONNECTED"
                               }
                             },
@@ -18953,7 +18953,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "PENGIKUT",
+                            then: "MENGIKUTI",
                             else:
                             {
                               $cond: {
@@ -18962,7 +18962,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "MENGIKUTI",
+                                then: "PENGIKUT",
                                 else: "BELUM TERHUBUNG"
                               }
                             },
@@ -19670,7 +19670,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "FOLLOWER",
+                            then: "FOLLOWING",
                             else:
                             {
                               $cond: {
@@ -19679,7 +19679,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "FOLLOWING",
+                                then: "FOLLOWER",
                                 else: "NOT CONNECTED"
                               }
                             },
@@ -19706,7 +19706,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "PENGIKUT",
+                            then: "MENGIKUTI",
                             else:
                             {
                               $cond: {
@@ -19715,7 +19715,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "MENGIKUTI",
+                                then: "PENGIKUT",
                                 else: "BELUM TERHUBUNG"
                               }
                             },
@@ -20727,7 +20727,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "FOLLOWER",
+                            then: "FOLLOWING",
                             else:
                             {
                               $cond: {
@@ -20736,7 +20736,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "FOLLOWING",
+                                then: "FOLLOWER",
                                 else: "NOT CONNECTED"
                               }
                             },
@@ -20763,7 +20763,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "PENGIKUT",
+                            then: "MENGIKUTI",
                             else:
                             {
                               $cond: {
@@ -20772,7 +20772,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "MENGIKUTI",
+                                then: "PENGIKUT",
                                 else: "BELUM TERHUBUNG"
                               }
                             },
@@ -21781,7 +21781,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "FOLLOWER",
+                            then: "FOLLOWING",
                             else:
                             {
                               $cond: {
@@ -21790,7 +21790,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "FOLLOWING",
+                                then: "FOLLOWER",
                                 else: "NOT CONNECTED"
                               }
                             },
@@ -21817,7 +21817,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "PENGIKUT",
+                            then: "MENGIKUTI",
                             else:
                             {
                               $cond: {
@@ -21826,7 +21826,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "MENGIKUTI",
+                                then: "PENGIKUT",
                                 else: "BELUM TERHUBUNG"
                               }
                             },
@@ -22830,7 +22830,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "FOLLOWER",
+                            then: "FOLLOWING",
                             else:
                             {
                               $cond: {
@@ -22839,7 +22839,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "FOLLOWING",
+                                then: "FOLLOWER",
                                 else: "NOT CONNECTED"
                               }
                             },
@@ -22866,7 +22866,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "PENGIKUT",
+                            then: "MENGIKUTI",
                             else:
                             {
                               $cond: {
@@ -22875,7 +22875,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "MENGIKUTI",
+                                then: "PENGIKUT",
                                 else: "BELUM TERHUBUNG"
                               }
                             },
@@ -24179,7 +24179,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "FOLLOWER",
+                            then: "FOLLOWING",
                             else:
                             {
                               $cond: {
@@ -24188,7 +24188,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "FOLLOWING",
+                                then: "FOLLOWER",
                                 else: "NOT CONNECTED"
                               }
                             },
@@ -24215,7 +24215,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "PENGIKUT",
+                            then: "MENGIKUTI",
                             else:
                             {
                               $cond: {
@@ -24224,7 +24224,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "MENGIKUTI",
+                                then: "PENGIKUT",
                                 else: "BELUM TERHUBUNG"
                               }
                             },
@@ -25687,7 +25687,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "FOLLOWER",
+                            then: "FOLLOWING",
                             else:
                             {
                               $cond: {
@@ -25696,7 +25696,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "FOLLOWING",
+                                then: "FOLLOWER",
                                 else: "NOT CONNECTED"
                               }
                             },
@@ -25723,7 +25723,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "PENGIKUT",
+                            then: "MENGIKUTI",
                             else:
                             {
                               $cond: {
@@ -25732,7 +25732,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "MENGIKUTI",
+                                then: "PENGIKUT",
                                 else: "BELUM TERHUBUNG"
                               }
                             },
@@ -29866,7 +29866,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "FOLLOWER",
+                            then: "FOLLOWING",
                             else:
                             {
                               $cond: {
@@ -29875,7 +29875,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "FOLLOWING",
+                                then: "FOLLOWER",
                                 else: "NOT CONNECTED"
                               }
                             },
@@ -29902,7 +29902,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "PENGIKUT",
+                            then: "MENGIKUTI",
                             else:
                             {
                               $cond: {
@@ -29911,7 +29911,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "MENGIKUTI",
+                                then: "PENGIKUT",
                                 else: "BELUM TERHUBUNG"
                               }
                             },
@@ -30721,7 +30721,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "FOLLOWER",
+                            then: "FOLLOWING",
                             else:
                             {
                               $cond: {
@@ -30730,7 +30730,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "FOLLOWING",
+                                then: "FOLLOWER",
                                 else: "NOT CONNECTED"
                               }
                             },
@@ -30757,7 +30757,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "PENGIKUT",
+                            then: "MENGIKUTI",
                             else:
                             {
                               $cond: {
@@ -30766,7 +30766,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "MENGIKUTI",
+                                then: "PENGIKUT",
                                 else: "BELUM TERHUBUNG"
                               }
                             },
@@ -31871,7 +31871,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "FOLLOWER",
+                            then: "FOLLOWING",
                             else:
                             {
                               $cond: {
@@ -31880,7 +31880,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "FOLLOWING",
+                                then: "FOLLOWER",
                                 else: "NOT CONNECTED"
                               }
                             },
@@ -31907,7 +31907,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "PENGIKUT",
+                            then: "MENGIKUTI",
                             else:
                             {
                               $cond: {
@@ -31916,7 +31916,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "MENGIKUTI",
+                                then: "PENGIKUT",
                                 else: "BELUM TERHUBUNG"
                               }
                             },
@@ -34015,7 +34015,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "FOLLOWER",
+                            then: "FOLLOWING",
                             else:
                             {
                               $cond: {
@@ -34024,7 +34024,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "FOLLOWING",
+                                then: "FOLLOWER",
                                 else: "NOT CONNECTED"
                               }
                             },
@@ -34051,7 +34051,7 @@ export class PostsService {
                                 $arrayElemAt: ["$follower.follower", 0]
                               }, 0]
                             },
-                            then: "PENGIKUT",
+                            then: "MENGIKUTI",
                             else:
                             {
                               $cond: {
@@ -34060,7 +34060,7 @@ export class PostsService {
                                     $arrayElemAt: ["$following.following", 0]
                                   }, 0]
                                 },
-                                then: "MENGIKUTI",
+                                then: "PENGIKUT",
                                 else: "BELUM TERHUBUNG"
                               }
                             },

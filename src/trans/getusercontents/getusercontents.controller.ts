@@ -1066,186 +1066,186 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
-    @Post('api/getusercontents/searchdatanew')
-    @UseGuards(JwtAuthGuard)
-    async contentsearchnew(@Req() request: Request): Promise<any> {
+    // @Post('api/getusercontents/searchdatanew')
+    // @UseGuards(JwtAuthGuard)
+    // async contentsearchnew(@Req() request: Request): Promise<any> {
 
 
-        var keys = null;
-        var skip = 0;
-        var limit = 0;
+    //     var keys = null;
+    //     var skip = 0;
+    //     var limit = 0;
 
-        var email = null;
-        var data = null;
-        var datasearch = null;
-        var dataLike = null;
-        var listpict = null;
-        var listvid = null;
-        var listdiary = null;
-        var listuser = null;
-        var listtag = null;
+    //     var email = null;
+    //     var data = null;
+    //     var datasearch = null;
+    //     var dataLike = null;
+    //     var listpict = null;
+    //     var listvid = null;
+    //     var listdiary = null;
+    //     var listuser = null;
+    //     var listtag = null;
 
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["skip"] !== undefined) {
-            skip = request_json["skip"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    //     if (request_json["skip"] !== undefined) {
+    //         skip = request_json["skip"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
 
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
+    //     if (request_json["limit"] !== undefined) {
+    //         limit = request_json["limit"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
 
-        email = request_json["email"];
-        keys = request_json["keys"];
-        listpict = request_json["listpict"];
-        listvid = request_json["listvid"];
-        listdiary = request_json["listdiary"];
-        listuser = request_json["listuser"];
-        listtag = request_json["listtag"];
+    //     email = request_json["email"];
+    //     keys = request_json["keys"];
+    //     listpict = request_json["listpict"];
+    //     listvid = request_json["listvid"];
+    //     listdiary = request_json["listdiary"];
+    //     listuser = request_json["listuser"];
+    //     listtag = request_json["listtag"];
 
-        const messages = {
-            "info": ["The process successful"],
-        };
-
-
-        var user = [];
-        var arrpict = [];
-        var arrvid = [];
-        var arrdiary = [];
-        var picts = [];
-
-        var vid = [];
-        var diary = [];
-        var tags = [];
-        var lengpict = null;
-        var lengdiary = null;
-        var lengvid = null;
-        var lenguser = null;
-        var datatag = null;
-
-        try {
-            datasearch = await this.postsService.finddatasearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary, listuser, listtag);
-            user = datasearch[0].user;
-            tags = datasearch[0].tags;
-
-        } catch (e) {
-            datasearch = null;
-            user = [];
-            tags = [];
-        }
-
-        if (tags == undefined || tags.length == 0 || tags[0].tag == undefined) {
-            tags = [];
-        }
+    //     const messages = {
+    //         "info": ["The process successful"],
+    //     };
 
 
-        try {
-            user = datasearch[0].user;
-            lenguser = user.length;
+    //     var user = [];
+    //     var arrpict = [];
+    //     var arrvid = [];
+    //     var arrdiary = [];
+    //     var picts = [];
 
-        } catch (e) {
-            user = [];
-            lenguser = 0;
+    //     var vid = [];
+    //     var diary = [];
+    //     var tags = [];
+    //     var lengpict = null;
+    //     var lengdiary = null;
+    //     var lengvid = null;
+    //     var lenguser = null;
+    //     var datatag = null;
 
-        }
+    //     try {
+    //         datasearch = await this.postsService.finddatasearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary, listuser, listtag);
+    //         user = datasearch[0].user;
+    //         tags = datasearch[0].tags;
 
-        try {
-            arrpict = datasearch[0].pict;
-            lengpict = arrpict.length;
+    //     } catch (e) {
+    //         datasearch = null;
+    //         user = [];
+    //         tags = [];
+    //     }
 
-        } catch (e) {
-            arrpict = [];
-            lengpict = 0;
-
-        }
-        try {
-            arrvid = datasearch[0].vid;
-            lengvid = arrvid.length;
-
-        } catch (e) {
-            arrvid = [];
-            lengvid = 0;
-
-        }
-
-        try {
-            arrdiary = datasearch[0].diary;
-            lengdiary = arrdiary.length;
-
-        } catch (e) {
-            arrdiary = [];
-            lengdiary = 0;
-
-        }
-
-        if (lenguser > 0 && user[0].email !== undefined) {
-            user = datasearch[0].user;
-        } else {
-            user = [];
-        }
-
-        if (lengpict > 0) {
-
-            if (arrpict[0]._id !== undefined) {
-
-                for (let i = 0; i < lengpict; i++) {
-                    let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
-                    picts.push(datapicture[i])
-
-                }
-
-            } else {
-                picts = [];
-            }
+    //     if (tags == undefined || tags.length == 0 || tags[0].tag == undefined) {
+    //         tags = [];
+    //     }
 
 
-        } else {
-            picts = [];
-        }
+    //     try {
+    //         user = datasearch[0].user;
+    //         lenguser = user.length;
 
-        if (lengvid > 0) {
+    //     } catch (e) {
+    //         user = [];
+    //         lenguser = 0;
 
-            if (arrvid[0]._id !== undefined) {
-                for (let i = 0; i < lengvid; i++) {
-                    let datavid = await this.getusercontentsService.getapsara(arrvid, i);
-                    vid.push(datavid[i])
+    //     }
 
-                }
-            } else {
-                vid = [];
-            }
+    //     try {
+    //         arrpict = datasearch[0].pict;
+    //         lengpict = arrpict.length;
 
-        } else {
-            vid = [];
-        }
+    //     } catch (e) {
+    //         arrpict = [];
+    //         lengpict = 0;
 
-        if (lengdiary > 0) {
+    //     }
+    //     try {
+    //         arrvid = datasearch[0].vid;
+    //         lengvid = arrvid.length;
 
-            if (arrdiary[0]._id !== undefined) {
-                for (let i = 0; i < lengdiary; i++) {
-                    let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
-                    diary.push(datadiary[i])
+    //     } catch (e) {
+    //         arrvid = [];
+    //         lengvid = 0;
 
-                }
-            }
-            else {
-                diary = [];
-            }
-        } else {
-            diary = [];
-        }
+    //     }
 
-        data = [{
+    //     try {
+    //         arrdiary = datasearch[0].diary;
+    //         lengdiary = arrdiary.length;
 
-            user, picts, vid, diary, tags
-        }];
+    //     } catch (e) {
+    //         arrdiary = [];
+    //         lengdiary = 0;
+
+    //     }
+
+    //     if (lenguser > 0 && user[0].email !== undefined) {
+    //         user = datasearch[0].user;
+    //     } else {
+    //         user = [];
+    //     }
+
+    //     if (lengpict > 0) {
+
+    //         if (arrpict[0]._id !== undefined) {
+
+    //             for (let i = 0; i < lengpict; i++) {
+    //                 let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
+    //                 picts.push(datapicture[i])
+
+    //             }
+
+    //         } else {
+    //             picts = [];
+    //         }
 
 
-        return { response_code: 202, data, messages };
-    }
+    //     } else {
+    //         picts = [];
+    //     }
+
+    //     if (lengvid > 0) {
+
+    //         if (arrvid[0]._id !== undefined) {
+    //             for (let i = 0; i < lengvid; i++) {
+    //                 let datavid = await this.getusercontentsService.getapsara(arrvid, i);
+    //                 vid.push(datavid[i])
+
+    //             }
+    //         } else {
+    //             vid = [];
+    //         }
+
+    //     } else {
+    //         vid = [];
+    //     }
+
+    //     if (lengdiary > 0) {
+
+    //         if (arrdiary[0]._id !== undefined) {
+    //             for (let i = 0; i < lengdiary; i++) {
+    //                 let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
+    //                 diary.push(datadiary[i])
+
+    //             }
+    //         }
+    //         else {
+    //             diary = [];
+    //         }
+    //     } else {
+    //         diary = [];
+    //     }
+
+    //     data = [{
+
+    //         user, picts, vid, diary, tags
+    //     }];
+
+
+    //     return { response_code: 202, data, messages };
+    // }
 
     @Post('api/getusercontents/searchdatabyuser')
     @UseGuards(JwtAuthGuard)
@@ -1357,139 +1357,139 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Post('api/getusercontents/database')
-    async finddata(@Req() request: Request): Promise<any> {
-        const messages = {
-            "info": ["The process successful"],
-        };
+    // @UseGuards(JwtAuthGuard)
+    // @Post('api/getusercontents/database')
+    // async finddata(@Req() request: Request): Promise<any> {
+    //     const messages = {
+    //         "info": ["The process successful"],
+    //     };
 
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        var page = null;
-        var startdate = null;
-        var enddate = null;
-        var limit = null;
-        var totalpage = 0;
-        var totalallrow = 0;
-        var totalsearch = 0;
-        var total = 0;
-        var username = null;
-        var kepemilikan = [];
-        var statusjual = [];
-        var data = [];
-        var description = null;
-        var postType = [];
-        var kategori = [];
-        var startmount = null;
-        var endmount = null;
-        var descending = null;
-        var iduser = null;
-        var buy = null;
-        var reported = null;
-        var popular = null;
-        const mongoose = require('mongoose');
-        var ObjectId = require('mongodb').ObjectId;
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-        if (request_json["page"] !== undefined) {
-            page = request_json["page"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    //     var page = null;
+    //     var startdate = null;
+    //     var enddate = null;
+    //     var limit = null;
+    //     var totalpage = 0;
+    //     var totalallrow = 0;
+    //     var totalsearch = 0;
+    //     var total = 0;
+    //     var username = null;
+    //     var kepemilikan = [];
+    //     var statusjual = [];
+    //     var data = [];
+    //     var description = null;
+    //     var postType = [];
+    //     var kategori = [];
+    //     var startmount = null;
+    //     var endmount = null;
+    //     var descending = null;
+    //     var iduser = null;
+    //     var buy = null;
+    //     var reported = null;
+    //     var popular = null;
+    //     const mongoose = require('mongoose');
+    //     var ObjectId = require('mongodb').ObjectId;
+    //     if (request_json["limit"] !== undefined) {
+    //         limit = request_json["limit"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+    //     if (request_json["page"] !== undefined) {
+    //         page = request_json["page"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
 
-        startdate = request_json["startdate"];
-        enddate = request_json["enddate"];
-        username = request_json["username"];
-        description = request_json["description"];
-        kepemilikan = request_json["kepemilikan"];
-        statusjual = request_json["statusjual"];
-        postType = request_json["postType"];
-        kategori = request_json["kategori"];
-        startmount = request_json["startmount"];
-        endmount = request_json["endmount"];
-        descending = request_json["descending"];
-        iduser = request_json["iduser"];
-        buy = request_json["buy"];
-        reported = request_json["reported"];
-        popular = request_json["popular"];
-        var userid = mongoose.Types.ObjectId(iduser);
-        var query = null;
-        var datasearch = null;
-        var dataall = null;
+    //     startdate = request_json["startdate"];
+    //     enddate = request_json["enddate"];
+    //     username = request_json["username"];
+    //     description = request_json["description"];
+    //     kepemilikan = request_json["kepemilikan"];
+    //     statusjual = request_json["statusjual"];
+    //     postType = request_json["postType"];
+    //     kategori = request_json["kategori"];
+    //     startmount = request_json["startmount"];
+    //     endmount = request_json["endmount"];
+    //     descending = request_json["descending"];
+    //     iduser = request_json["iduser"];
+    //     buy = request_json["buy"];
+    //     reported = request_json["reported"];
+    //     popular = request_json["popular"];
+    //     var userid = mongoose.Types.ObjectId(iduser);
+    //     var query = null;
+    //     var datasearch = null;
+    //     var dataall = null;
 
-        if (iduser !== undefined) {
-            try {
-                query = await this.getusercontentsService.databasenew(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
-                data = query;
-            } catch (e) {
-                query = null;
-                data = [];
-            }
-        } else {
-            try {
-                query = await this.getusercontentsService.databasenew(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
-                data = query;
-            } catch (e) {
-                query = null;
-                data = [];
-            }
-        }
+    //     if (iduser !== undefined) {
+    //         try {
+    //             query = await this.getusercontentsService.databasenew(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+    //             data = query;
+    //         } catch (e) {
+    //             query = null;
+    //             data = [];
+    //         }
+    //     } else {
+    //         try {
+    //             query = await this.getusercontentsService.databasenew(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+    //             data = query;
+    //         } catch (e) {
+    //             query = null;
+    //             data = [];
+    //         }
+    //     }
 
 
 
-        // try {
-        //     total = query.length;
-        // } catch (e) {
-        //     total = 0;
-        // }
+    //     // try {
+    //     //     total = query.length;
+    //     // } catch (e) {
+    //     //     total = 0;
+    //     // }
 
-        // if (total < 10) {
-        //     totalsearch = total;
-        // } else {
+    //     // if (total < 10) {
+    //     //     totalsearch = total;
+    //     // } else {
 
-        //     if (iduser !== undefined) {
-        //         try {
-        //             datasearch = await this.getusercontentsService.databasenewcount(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
-        //             totalsearch = datasearch[0].totalpost;
-        //         } catch (e) {
-        //             totalsearch = 0;
-        //         }
-        //     } else {
-        //         try {
-        //             datasearch = await this.getusercontentsService.databasenewcount(undefined, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
-        //             totalsearch = datasearch[0].totalpost;
-        //         } catch (e) {
-        //             totalsearch = 0;
-        //         }
-        //     }
-        // }
+    //     //     if (iduser !== undefined) {
+    //     //         try {
+    //     //             datasearch = await this.getusercontentsService.databasenewcount(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+    //     //             totalsearch = datasearch[0].totalpost;
+    //     //         } catch (e) {
+    //     //             totalsearch = 0;
+    //     //         }
+    //     //     } else {
+    //     //         try {
+    //     //             datasearch = await this.getusercontentsService.databasenewcount(undefined, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+    //     //             totalsearch = datasearch[0].totalpost;
+    //     //         } catch (e) {
+    //     //             totalsearch = 0;
+    //     //         }
+    //     //     }
+    //     // }
 
-        // try {
+    //     // try {
 
-        //     dataall = await this.getusercontentsService.findcountall();
-        //     totalallrow = dataall[0].totalpost;
+    //     //     dataall = await this.getusercontentsService.findcountall();
+    //     //     totalallrow = dataall[0].totalpost;
 
-        // } catch (e) {
-        //     totalallrow = 0;
-        // }
+    //     // } catch (e) {
+    //     //     totalallrow = 0;
+    //     // }
 
-        // var tpage = null;
-        // var tpage2 = null;
+    //     // var tpage = null;
+    //     // var tpage2 = null;
 
-        // tpage2 = (totalsearch / limit).toFixed(0);
-        // tpage = (totalsearch % limit);
-        // if (tpage > 0 && tpage < 5) {
-        //     totalpage = parseInt(tpage2) + 1;
+    //     // tpage2 = (totalsearch / limit).toFixed(0);
+    //     // tpage = (totalsearch % limit);
+    //     // if (tpage > 0 && tpage < 5) {
+    //     //     totalpage = parseInt(tpage2) + 1;
 
-        // } else {
-        //     totalpage = parseInt(tpage2);
-        // }
+    //     // } else {
+    //     //     totalpage = parseInt(tpage2);
+    //     // }
 
-        return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
-    }
+    //     return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
+    // }
 
     @Post('api/getusercontents/database/details')
     @UseGuards(JwtAuthGuard)
@@ -2064,9 +2064,433 @@ export class GetusercontentsController {
 
     }
 
-    @Post('api/getusercontents/searchdatanew/detailtag')
+    // @Post('api/getusercontents/searchdatanew/detailtag')
+    // @UseGuards(JwtAuthGuard)
+    // async detailtagsearchnew(@Req() request: Request): Promise<any> {
+
+
+    //     var keys = null;
+    //     var skip = 0;
+    //     var limit = 0;
+
+    //     var email = null;
+    //     var data = null;
+    //     var datasearch = null;
+    //     var dataLike = null;
+    //     var listpict = null;
+    //     var listvid = null;
+    //     var listdiary = null;
+    //     // var listuser = null;
+    //     // var listtag = null;
+
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    //     if (request_json["skip"] !== undefined) {
+    //         skip = request_json["skip"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+
+    //     if (request_json["limit"] !== undefined) {
+    //         limit = request_json["limit"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+
+    //     email = request_json["email"];
+    //     keys = request_json["keys"];
+    //     listpict = request_json["listpict"];
+    //     listvid = request_json["listvid"];
+    //     listdiary = request_json["listdiary"];
+
+
+    //     const messages = {
+    //         "info": ["The process successful"],
+    //     };
+
+
+    //     var user = [];
+    //     var arrpict = [];
+    //     var arrvid = [];
+    //     var arrdiary = [];
+    //     var picts = [];
+
+    //     var vid = [];
+    //     var diary = [];
+    //     var tags = [];
+    //     var lengpict = null;
+    //     var lengdiary = null;
+    //     var lengvid = null;
+    //     var lenguser = null;
+    //     var datatag = null;
+
+    //     try {
+    //         datasearch = await this.tagCountService.detailsearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary);
+    //         tags = datasearch[0].tag;
+
+    //     } catch (e) {
+    //         datasearch = null;
+    //         tags = [];
+    //     }
+
+    //     if (tags == undefined || tags.length == 0 || tags[0].tag == undefined) {
+    //         tags = [];
+    //     }
+
+
+    //     try {
+    //         arrpict = datasearch[0].pict;
+    //         lengpict = arrpict.length;
+
+    //     } catch (e) {
+    //         arrpict = [];
+    //         lengpict = 0;
+
+    //     }
+    //     try {
+    //         arrvid = datasearch[0].vid;
+    //         lengvid = arrvid.length;
+
+    //     } catch (e) {
+    //         arrvid = [];
+    //         lengvid = 0;
+
+    //     }
+
+    //     try {
+    //         arrdiary = datasearch[0].diary;
+    //         lengdiary = arrdiary.length;
+
+    //     } catch (e) {
+    //         arrdiary = [];
+    //         lengdiary = 0;
+
+    //     }
+
+    //     if (lenguser > 0 && user[0].email !== undefined) {
+    //         user = datasearch[0].user;
+    //     } else {
+    //         user = [];
+    //     }
+
+    //     if (lengpict > 0) {
+
+    //         if (arrpict[0]._id !== undefined) {
+
+    //             for (let i = 0; i < lengpict; i++) {
+    //                 let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
+    //                 picts.push(datapicture[i])
+
+    //             }
+
+    //         } else {
+    //             picts = [];
+    //         }
+
+
+    //     } else {
+    //         picts = [];
+    //     }
+
+    //     if (lengvid > 0) {
+
+    //         if (arrvid[0]._id !== undefined) {
+    //             for (let i = 0; i < lengvid; i++) {
+    //                 let datavid = await this.getusercontentsService.getapsara(arrvid, i);
+    //                 vid.push(datavid[i])
+
+    //             }
+    //         } else {
+    //             vid = [];
+    //         }
+
+    //     } else {
+    //         vid = [];
+    //     }
+
+    //     if (lengdiary > 0) {
+
+    //         if (arrdiary[0]._id !== undefined) {
+    //             for (let i = 0; i < lengdiary; i++) {
+    //                 let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
+    //                 diary.push(datadiary[i])
+
+    //             }
+    //         }
+    //         else {
+    //             diary = [];
+    //         }
+    //     } else {
+    //         diary = [];
+    //     }
+
+    //     data = [{
+
+    //         picts, vid, diary, tags
+    //     }];
+
+
+    //     return { response_code: 202, data, messages };
+    // }
+
+
+    // @Post('api/getusercontents/searchdatanew/detailinterest')
+    // @UseGuards(JwtAuthGuard)
+    // async detailinterestsearchnew(@Req() request: Request): Promise<any> {
+
+
+    //     var keys = null;
+    //     var skip = 0;
+    //     var limit = 0;
+
+    //     var email = null;
+    //     var data = null;
+    //     var datasearch = null;
+    //     var dataLike = null;
+    //     var listpict = null;
+    //     var listvid = null;
+    //     var listdiary = null;
+    //     // var listuser = null;
+    //     // var listtag = null;
+
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    //     if (request_json["skip"] !== undefined) {
+    //         skip = request_json["skip"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+
+    //     if (request_json["limit"] !== undefined) {
+    //         limit = request_json["limit"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+
+    //     email = request_json["email"];
+    //     keys = request_json["keys"];
+    //     listpict = request_json["listpict"];
+    //     listvid = request_json["listvid"];
+    //     listdiary = request_json["listdiary"];
+
+
+    //     const messages = {
+    //         "info": ["The process successful"],
+    //     };
+
+
+    //     var user = [];
+    //     var arrpict = [];
+    //     var arrvid = [];
+    //     var arrdiary = [];
+    //     var picts = [];
+
+    //     var vid = [];
+    //     var diary = [];
+    //     var interests = [];
+    //     var lengpict = null;
+    //     var lengdiary = null;
+    //     var lengvid = null;
+    //     var lenguser = null;
+    //     var datatag = null;
+
+    //     try {
+    //         datasearch = await this.interestCountService.detailinterestcontenNew(keys, email, skip, limit, listpict, listvid, listdiary);
+    //         interests = datasearch[0].interest;
+
+    //     } catch (e) {
+    //         datasearch = null;
+    //         interests = [];
+    //     }
+
+    //     if (interests == undefined || interests.length == 0 || interests[0].interestNameId == undefined) {
+    //         interests = [];
+    //     }
+
+
+    //     try {
+    //         arrpict = datasearch[0].pict;
+    //         lengpict = arrpict.length;
+
+    //     } catch (e) {
+    //         arrpict = [];
+    //         lengpict = 0;
+
+    //     }
+    //     try {
+    //         arrvid = datasearch[0].vid;
+    //         lengvid = arrvid.length;
+
+    //     } catch (e) {
+    //         arrvid = [];
+    //         lengvid = 0;
+
+    //     }
+
+    //     try {
+    //         arrdiary = datasearch[0].diary;
+    //         lengdiary = arrdiary.length;
+
+    //     } catch (e) {
+    //         arrdiary = [];
+    //         lengdiary = 0;
+
+    //     }
+
+    //     if (lenguser > 0 && user[0].email !== undefined) {
+    //         user = datasearch[0].user;
+    //     } else {
+    //         user = [];
+    //     }
+
+    //     if (lengpict > 0) {
+
+    //         if (arrpict[0]._id !== undefined) {
+
+    //             for (let i = 0; i < lengpict; i++) {
+    //                 let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
+    //                 picts.push(datapicture[i])
+
+    //             }
+
+    //         } else {
+    //             picts = [];
+    //         }
+
+
+    //     } else {
+    //         picts = [];
+    //     }
+
+    //     if (lengvid > 0) {
+
+    //         if (arrvid[0]._id !== undefined) {
+    //             for (let i = 0; i < lengvid; i++) {
+    //                 let datavid = await this.getusercontentsService.getapsara(arrvid, i);
+    //                 vid.push(datavid[i])
+
+    //             }
+    //         } else {
+    //             vid = [];
+    //         }
+
+    //     } else {
+    //         vid = [];
+    //     }
+
+    //     if (lengdiary > 0) {
+
+    //         if (arrdiary[0]._id !== undefined) {
+    //             for (let i = 0; i < lengdiary; i++) {
+    //                 let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
+    //                 diary.push(datadiary[i])
+
+    //             }
+    //         }
+    //         else {
+    //             diary = [];
+    //         }
+    //     } else {
+    //         diary = [];
+    //     }
+
+    //     data = [{
+
+    //         picts, vid, diary, interests
+    //     }];
+
+
+    //     return { response_code: 202, data, messages };
+    // }
+
     @UseGuards(JwtAuthGuard)
-    async detailtagsearchnew(@Req() request: Request): Promise<any> {
+    @Post('api/getusercontents/database')
+    async finddata2(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var page = null;
+        var startdate = null;
+        var enddate = null;
+        var limit = null;
+        var totalpage = 0;
+        var totalallrow = 0;
+        var totalsearch = 0;
+        var total = 0;
+        var username = null;
+        var kepemilikan = [];
+        var statusjual = [];
+        var data = [];
+        var description = null;
+        var postType = [];
+        var kategori = [];
+        var startmount = null;
+        var endmount = null;
+        var descending = null;
+        var iduser = null;
+        var buy = null;
+        var reported = null;
+        var popular = null;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        username = request_json["username"];
+        description = request_json["description"];
+        kepemilikan = request_json["kepemilikan"];
+        statusjual = request_json["statusjual"];
+        postType = request_json["postType"];
+        kategori = request_json["kategori"];
+        startmount = request_json["startmount"];
+        endmount = request_json["endmount"];
+        descending = request_json["descending"];
+        iduser = request_json["iduser"];
+        buy = request_json["buy"];
+        reported = request_json["reported"];
+        popular = request_json["popular"];
+        var userid = mongoose.Types.ObjectId(iduser);
+        var query = null;
+        var datasearch = null;
+        var dataall = null;
+
+        if (iduser !== undefined) {
+            try {
+                query = await this.getusercontentsService.databasenew2(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+                data = query;
+            } catch (e) {
+                query = null;
+                data = [];
+            }
+        } else {
+            try {
+                query = await this.getusercontentsService.databasenew2(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+                data = query;
+            } catch (e) {
+                query = null;
+                data = [];
+            }
+        }
+
+
+
+
+        return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
+    }
+
+    @Post('api/getusercontents/searchdatanew')
+    @UseGuards(JwtAuthGuard)
+    async contentsearchnew2(@Req() request: Request): Promise<any> {
 
 
         var keys = null;
@@ -2080,8 +2504,8 @@ export class GetusercontentsController {
         var listpict = null;
         var listvid = null;
         var listdiary = null;
-        // var listuser = null;
-        // var listtag = null;
+        var listuser = null;
+        var listtag = null;
 
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["skip"] !== undefined) {
@@ -2101,7 +2525,8 @@ export class GetusercontentsController {
         listpict = request_json["listpict"];
         listvid = request_json["listvid"];
         listdiary = request_json["listdiary"];
-
+        listuser = request_json["listuser"];
+        listtag = request_json["listtag"];
 
         const messages = {
             "info": ["The process successful"],
@@ -2124,11 +2549,13 @@ export class GetusercontentsController {
         var datatag = null;
 
         try {
-            datasearch = await this.tagCountService.detailsearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary);
-            tags = datasearch[0].tag;
+            datasearch = await this.postsService.finddatasearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary, listuser, listtag);
+            user = datasearch[0].user;
+            tags = datasearch[0].tags;
 
         } catch (e) {
             datasearch = null;
+            user = [];
             tags = [];
         }
 
@@ -2136,6 +2563,16 @@ export class GetusercontentsController {
             tags = [];
         }
 
+
+        try {
+            user = datasearch[0].user;
+            lenguser = user.length;
+
+        } catch (e) {
+            user = [];
+            lenguser = 0;
+
+        }
 
         try {
             arrpict = datasearch[0].pict;
@@ -2172,16 +2609,44 @@ export class GetusercontentsController {
             user = [];
         }
 
+        var tempdatapict = [];
+        // console.log(lengpict);
         if (lengpict > 0) {
 
             if (arrpict[0]._id !== undefined) {
 
                 for (let i = 0; i < lengpict; i++) {
-                    let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
-                    picts.push(datapicture[i])
 
+                    if (arrpict[i].isApsara == true) {
+                        tempdatapict.push(arrpict[i].apsaraId);
+                    }
                 }
 
+                // console.log(tempdatapict);
+                var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                var gettempresultpictapsara = resultpictapsara.ImageInfo;
+                for (var i = 0; i < lengpict; i++) {
+                    var checkpictketemu = false;
+                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+                            checkpictketemu = true;
+                            arrpict[i].media =
+                            {
+                                "ImageInfo": [gettempresultpictapsara[j]]
+                            }
+                        }
+                    }
+
+                    if (checkpictketemu == false) {
+                        arrpict[i].apsaraId = "";
+                        arrpict[i].apsara = false;
+                        arrpict[i].media =
+                        {
+                            "ImageInfo": []
+                        };
+                    }
+                    picts.push(arrpict[i]);
+                }
             } else {
                 picts = [];
             }
@@ -2191,41 +2656,101 @@ export class GetusercontentsController {
             picts = [];
         }
 
+        var tempdatavid = [];
+        // console.log(lengvid);
         if (lengvid > 0) {
 
             if (arrvid[0]._id !== undefined) {
-                for (let i = 0; i < lengvid; i++) {
-                    let datavid = await this.getusercontentsService.getapsara(arrvid, i);
-                    vid.push(datavid[i])
 
+                for (let i = 0; i < lengvid; i++) {
+                    if (arrvid[i].isApsara == true) {
+                        tempdatavid.push(arrvid[i].apsaraId);
+                    }
+                }
+
+                // console.log(tempdatavid);
+                var resultvidapsara = await this.postContentService.getVideoApsara(tempdatavid);
+                var gettempresultvidapsara = resultvidapsara.VideoList;
+                for (var i = 0; i < lengvid; i++) {
+                    var checkvidketemu = false;
+                    for (var j = 0; j < gettempresultvidapsara.length; j++) {
+                        if (gettempresultvidapsara[j].VideoId == arrvid[i].apsaraId) {
+                            checkvidketemu = true;
+                            arrvid[i].media =
+                            {
+                                "VideoList": [gettempresultvidapsara[j]]
+                            }
+                        }
+                    }
+
+                    if (checkvidketemu == false) {
+                        arrvid[i].apsaraId = "";
+                        arrvid[i].apsara = false;
+                        arrvid[i].media =
+                        {
+                            "VideoList": []
+                        };
+                    }
+                    vid.push(arrvid[i]);
                 }
             } else {
                 vid = [];
             }
 
+
         } else {
             vid = [];
         }
 
+        var tempdatadiary = [];
+        // console.log(lengdiary);
         if (lengdiary > 0) {
 
             if (arrdiary[0]._id !== undefined) {
-                for (let i = 0; i < lengdiary; i++) {
-                    let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
-                    diary.push(datadiary[i])
 
+                for (let i = 0; i < lengdiary; i++) {
+                    if (arrdiary[i].isApsara == true) {
+                        tempdatadiary.push(arrdiary[i].apsaraId);
+                    }
                 }
-            }
-            else {
+
+                // console.log(tempdatavid);
+                var resultdiaryapsara = await this.postContentService.getVideoApsara(tempdatadiary);
+                var gettempresultdiaryapsara = resultdiaryapsara.VideoList;
+                for (var i = 0; i < lengdiary; i++) {
+                    var checkdiaryketemu = false;
+                    for (var j = 0; j < gettempresultdiaryapsara.length; j++) {
+                        if (gettempresultdiaryapsara[j].VideoId == arrdiary[i].apsaraId) {
+                            checkdiaryketemu = true;
+                            arrdiary[i].media =
+                            {
+                                "VideoList": [gettempresultdiaryapsara[j]]
+                            }
+                        }
+                    }
+
+                    if (checkdiaryketemu == false) {
+                        arrdiary[i].apsaraId = "";
+                        arrdiary[i].apsara = false;
+                        arrdiary[i].media =
+                        {
+                            "VideoList": []
+                        };
+                    }
+                    diary.push(arrdiary[i]);
+                }
+            } else {
                 diary = [];
             }
+
+
         } else {
             diary = [];
         }
 
         data = [{
 
-            picts, vid, diary, tags
+            user, picts, vid, diary, tags
         }];
 
 
@@ -2235,7 +2760,7 @@ export class GetusercontentsController {
 
     @Post('api/getusercontents/searchdatanew/detailinterest')
     @UseGuards(JwtAuthGuard)
-    async detailinterestsearchnew(@Req() request: Request): Promise<any> {
+    async detailinterestsearchnew2(@Req() request: Request): Promise<any> {
 
 
         var keys = null;
@@ -2341,16 +2866,43 @@ export class GetusercontentsController {
             user = [];
         }
 
+        var tempdatapict = [];
+        // console.log(lengpict);
         if (lengpict > 0) {
 
             if (arrpict[0]._id !== undefined) {
 
                 for (let i = 0; i < lengpict; i++) {
-                    let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
-                    picts.push(datapicture[i])
-
+                    if (arrpict[i].isApsara == true) {
+                        tempdatapict.push(arrpict[i].apsaraId);
+                    }
                 }
 
+                // console.log(tempdatapict);
+                var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                var gettempresultpictapsara = resultpictapsara.ImageInfo;
+                for (var i = 0; i < lengpict; i++) {
+                    var checkpictketemu = false;
+                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+                            checkpictketemu = true;
+                            arrpict[i].media =
+                            {
+                                "ImageInfo": [gettempresultpictapsara[j]]
+                            }
+                        }
+                    }
+
+                    if (checkpictketemu == false) {
+                        arrpict[i].apsaraId = "";
+                        arrpict[i].apsara = false;
+                        arrpict[i].media =
+                        {
+                            "ImageInfo": []
+                        };
+                    }
+                    picts.push(arrpict[i]);
+                }
             } else {
                 picts = [];
             }
@@ -2360,34 +2912,94 @@ export class GetusercontentsController {
             picts = [];
         }
 
+        var tempdatavid = [];
+        // console.log(lengvid);
         if (lengvid > 0) {
 
             if (arrvid[0]._id !== undefined) {
-                for (let i = 0; i < lengvid; i++) {
-                    let datavid = await this.getusercontentsService.getapsara(arrvid, i);
-                    vid.push(datavid[i])
 
+                for (let i = 0; i < lengvid; i++) {
+                    if (arrvid[i].isApsara == true) {
+                        tempdatavid.push(arrvid[i].apsaraId);
+                    }
+                }
+
+                // console.log(tempdatavid);
+                var resultvidapsara = await this.postContentService.getVideoApsara(tempdatavid);
+                var gettempresultvidapsara = resultvidapsara.VideoList;
+                for (var i = 0; i < lengvid; i++) {
+                    var checkvidketemu = false;
+                    for (var j = 0; j < gettempresultvidapsara.length; j++) {
+                        if (gettempresultvidapsara[j].VideoId == arrvid[i].apsaraId) {
+                            checkvidketemu = true;
+                            arrvid[i].media =
+                            {
+                                "VideoList": [gettempresultvidapsara[j]]
+                            }
+                        }
+                    }
+
+                    if (checkvidketemu == false) {
+                        arrvid[i].apsaraId = "";
+                        arrvid[i].apsara = false;
+                        arrvid[i].media =
+                        {
+                            "VideoList": []
+                        };
+                    }
+                    vid.push(arrvid[i]);
                 }
             } else {
                 vid = [];
             }
 
+
         } else {
             vid = [];
         }
 
+        var tempdatadiary = [];
+        // console.log(lengdiary);
         if (lengdiary > 0) {
 
             if (arrdiary[0]._id !== undefined) {
-                for (let i = 0; i < lengdiary; i++) {
-                    let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
-                    diary.push(datadiary[i])
 
+                for (let i = 0; i < lengdiary; i++) {
+                    if (arrdiary[i].isApsara == true) {
+                        tempdatadiary.push(arrdiary[i].apsaraId);
+                    }
                 }
-            }
-            else {
+
+                // console.log(tempdatavid);
+                var resultdiaryapsara = await this.postContentService.getVideoApsara(tempdatadiary);
+                var gettempresultdiaryapsara = resultdiaryapsara.VideoList;
+                for (var i = 0; i < lengdiary; i++) {
+                    var checkdiaryketemu = false;
+                    for (var j = 0; j < gettempresultdiaryapsara.length; j++) {
+                        if (gettempresultdiaryapsara[j].VideoId == arrdiary[i].apsaraId) {
+                            checkdiaryketemu = true;
+                            arrdiary[i].media =
+                            {
+                                "VideoList": [gettempresultdiaryapsara[j]]
+                            }
+                        }
+                    }
+
+                    if (checkdiaryketemu == false) {
+                        arrdiary[i].apsaraId = "";
+                        arrdiary[i].apsara = false;
+                        arrdiary[i].media =
+                        {
+                            "VideoList": []
+                        };
+                    }
+                    diary.push(arrdiary[i]);
+                }
+            } else {
                 diary = [];
             }
+
+
         } else {
             diary = [];
         }
@@ -2400,7 +3012,261 @@ export class GetusercontentsController {
 
         return { response_code: 202, data, messages };
     }
+
+    @Post('api/getusercontents/searchdatanew/detailtag')
+    @UseGuards(JwtAuthGuard)
+    async detailtagsearchnew2(@Req() request: Request): Promise<any> {
+
+
+        var keys = null;
+        var skip = 0;
+        var limit = 0;
+
+        var email = null;
+        var data = null;
+        var datasearch = null;
+        var dataLike = null;
+        var listpict = null;
+        var listvid = null;
+        var listdiary = null;
+        // var listuser = null;
+        // var listtag = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        email = request_json["email"];
+        keys = request_json["keys"];
+        listpict = request_json["listpict"];
+        listvid = request_json["listvid"];
+        listdiary = request_json["listdiary"];
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+
+        var user = [];
+        var arrpict = [];
+        var arrvid = [];
+        var arrdiary = [];
+        var picts = [];
+
+        var vid = [];
+        var diary = [];
+        var tags = [];
+        var lengpict = null;
+        var lengdiary = null;
+        var lengvid = null;
+        var lenguser = null;
+        var datatag = null;
+
+        try {
+            datasearch = await this.tagCountService.detailsearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary);
+            tags = datasearch[0].tag;
+
+        } catch (e) {
+            datasearch = null;
+            tags = [];
+        }
+
+        if (tags == undefined || tags.length == 0 || tags[0].tag == undefined) {
+            tags = [];
+        }
+
+
+        try {
+            arrpict = datasearch[0].pict;
+            lengpict = arrpict.length;
+
+        } catch (e) {
+            arrpict = [];
+            lengpict = 0;
+
+        }
+        try {
+            arrvid = datasearch[0].vid;
+            lengvid = arrvid.length;
+
+        } catch (e) {
+            arrvid = [];
+            lengvid = 0;
+
+        }
+
+        try {
+            arrdiary = datasearch[0].diary;
+            lengdiary = arrdiary.length;
+
+        } catch (e) {
+            arrdiary = [];
+            lengdiary = 0;
+
+        }
+
+        if (lenguser > 0 && user[0].email !== undefined) {
+            user = datasearch[0].user;
+        } else {
+            user = [];
+        }
+
+        var tempdatapict = [];
+        // console.log(lengpict);
+        if (lengpict > 0) {
+
+            if (arrpict[0]._id !== undefined) {
+
+                for (let i = 0; i < lengpict; i++) {
+                    // let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
+                    // picts.push(datapicture[i])
+                    if (arrpict[i].isApsara == true) {
+                        tempdatapict.push(arrpict[i].apsaraId);
+                    }
+                }
+
+                // console.log(tempdatapict);
+                var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                var gettempresultpictapsara = resultpictapsara.ImageInfo;
+                for (var i = 0; i < lengpict; i++) {
+                    var checkpictketemu = false;
+                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+                            checkpictketemu = true;
+                            arrpict[i].media =
+                            {
+                                "ImageInfo": [gettempresultpictapsara[j]]
+                            }
+                        }
+                    }
+
+                    if (checkpictketemu == false) {
+                        arrpict[i].apsaraId = "";
+                        arrpict[i].apsara = false;
+                        arrpict[i].media =
+                        {
+                            "ImageInfo": []
+                        };
+                    }
+                    picts.push(arrpict[i]);
+                }
+            } else {
+                picts = [];
+            }
+
+
+        } else {
+            picts = [];
+        }
+
+        var tempdatavid = [];
+        // console.log(lengvid);
+        if (lengvid > 0) {
+
+            if (arrvid[0]._id !== undefined) {
+
+                for (let i = 0; i < lengvid; i++) {
+                    if (arrvid[i].isApsara == true) {
+                        tempdatavid.push(arrvid[i].apsaraId);
+                    }
+                }
+
+                // console.log(tempdatavid);
+                var resultvidapsara = await this.postContentService.getVideoApsara(tempdatavid);
+                var gettempresultvidapsara = resultvidapsara.VideoList;
+                for (var i = 0; i < lengvid; i++) {
+                    var checkvidketemu = false;
+                    for (var j = 0; j < gettempresultvidapsara.length; j++) {
+                        if (gettempresultvidapsara[j].VideoId == arrvid[i].apsaraId) {
+                            checkvidketemu = true;
+                            arrvid[i].media =
+                            {
+                                "VideoList": [gettempresultvidapsara[j]]
+                            }
+                        }
+                    }
+
+                    if (checkvidketemu == false) {
+                        arrvid[i].apsaraId = "";
+                        arrvid[i].apsara = false;
+                        arrvid[i].media =
+                        {
+                            "VideoList": []
+                        };
+                    }
+                    vid.push(arrvid[i]);
+                }
+            } else {
+                vid = [];
+            }
+
+
+        } else {
+            vid = [];
+        }
+
+        var tempdatadiary = [];
+        // console.log(lengdiary);
+        if (lengdiary > 0) {
+
+            if (arrdiary[0]._id !== undefined) {
+
+                for (let i = 0; i < lengdiary; i++) {
+                    if (arrdiary[i].isApsara == true) {
+                        tempdatadiary.push(arrdiary[i].apsaraId);
+                    }
+                }
+
+                // console.log(tempdatavid);
+                var resultdiaryapsara = await this.postContentService.getVideoApsara(tempdatadiary);
+                var gettempresultdiaryapsara = resultdiaryapsara.VideoList;
+                for (var i = 0; i < lengdiary; i++) {
+                    var checkdiaryketemu = false;
+                    for (var j = 0; j < gettempresultdiaryapsara.length; j++) {
+                        if (gettempresultdiaryapsara[j].VideoId == arrdiary[i].apsaraId) {
+                            checkdiaryketemu = true;
+                            arrdiary[i].media =
+                            {
+                                "VideoList": [gettempresultdiaryapsara[j]]
+                            }
+                        }
+                    }
+
+                    if (checkdiaryketemu == false) {
+                        arrdiary[i].apsaraId = "";
+                        arrdiary[i].apsara = false;
+                        arrdiary[i].media =
+                        {
+                            "VideoList": []
+                        };
+                    }
+                    diary.push(arrdiary[i]);
+                }
+            } else {
+                diary = [];
+            }
+
+
+        } else {
+            diary = [];
+        }
+
+        data = [{
+
+            picts, vid, diary, tags
+        }];
+
+
+        return { response_code: 202, data, messages };
+    }
 }
-
-
-
