@@ -1579,7 +1579,6 @@ export class ContenteventsController {
   }
 
   async sendInteractiveFCM(email: string, type: string, postID: string, receiverParty: string, customText?: any) {
-    
     // var Templates_ = new TemplatesRepo();
     // Templates_ = await this.utilsService.getTemplate_repo(type, 'NOTIFICATION');
 
