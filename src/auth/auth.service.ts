@@ -625,6 +625,18 @@ export class AuthService {
             info: ['Unabled to proceed, Password parameter required '],
           },
         });
+      }else{
+        if (req.body.password == req.body.email) {
+          if (lang == "en") {
+            await this.errorHandler.generateNotAcceptableException(
+              'Sorry! Password cannot be the same as email.',
+            );
+          } else {
+            await this.errorHandler.generateNotAcceptableException(
+              'Maaf! Kata sandi tidak boleh sama dengan email.',
+            );
+          }
+        }
       }
       if (req.body.password == '') {
         throw new NotAcceptableException({
@@ -633,6 +645,18 @@ export class AuthService {
             info: ['Unabled to proceed, Password parameter required '],
           },
         });
+      } else {
+        if (req.body.password == req.body.email) {
+          if (lang == "en") {
+            await this.errorHandler.generateNotAcceptableException(
+              'Sorry! Password cannot be the same as email.',
+            );
+          } else {
+            await this.errorHandler.generateNotAcceptableException(
+              'Maaf! Kata sandi tidak boleh sama dengan email.',
+            );
+          }
+        }
       }
       if (req.body.deviceId == undefined) {
         throw new NotAcceptableException({
