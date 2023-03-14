@@ -715,7 +715,7 @@ export class UserAdsService {
             {
                 $project: {
                     "adsID": 1,
-                    "createdAt": 1,
+                    "createdAt": '$updateAt',
                     "description": 1,
                     "priority": 1,
                     "priorityNumber": 1,
@@ -1577,7 +1577,7 @@ export class UserAdsService {
             {
                 $project: {
                     "adsID": 1,
-                    "createdAt": 1,
+                    "createdAt": '$updateAt',
                     "description": 1,
                     "priority": 1,
                     "priorityNumber": 1,
