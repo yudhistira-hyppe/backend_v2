@@ -454,8 +454,7 @@ export class UserAdsController {
             startdate = request_json["startdate"];
             enddate = request_json["enddate"];
         }
-        else 
-        {
+        else {
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -518,6 +517,7 @@ export class UserAdsController {
         var iddata = null;
         var page = null;
         var limit = null;
+        var status = null;
         const messages = {
             "info": ["The process successful"],
         };
@@ -554,11 +554,13 @@ export class UserAdsController {
         if (request_json["limit"] !== undefined) {
             limit = Number(request_json["limit"]);
         }
-        
+        if (request_json["status"] !== undefined) {
+            status = request_json["status"];
+        }
         var getdata = null;
         var lengthdata = null;
         try {
-            getdata = await this.userAdsService.listpenonton(iddata, startdate, enddate, minage, maxage, gender, area, filterpriority, findname, limit, page);
+            getdata = await this.userAdsService.listpenonton(iddata, startdate, enddate, minage, maxage, gender, area, filterpriority, findname, limit, page, status);
             lengthdata = getdata.length;
         }
         catch (e) {
@@ -568,7 +570,7 @@ export class UserAdsController {
         var temptotalsearch = null;
         var lengthsearch = 0;
         try {
-            temptotalsearch = await this.userAdsService.listpenonton(iddata, startdate, enddate, minage, maxage, gender, area, filterpriority, findname, undefined, undefined);
+            temptotalsearch = await this.userAdsService.listpenonton(iddata, startdate, enddate, minage, maxage, gender, area, filterpriority, findname, undefined, undefined, status);
             lengthsearch = temptotalsearch.length;
         }
         catch (e) {
