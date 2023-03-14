@@ -890,6 +890,13 @@ export class ContenteventsController {
     var Insight_sender = await this.insightsService.findemail(email_user);
     var Insight_receiver = await this.insightsService.findemail(email_receiverParty);
     let userbasic1 = await this.userbasicsService.findOne(email_user);
+    
+    if(userbasic1 == null || userbasic1 == undefined)
+    {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, auth-user data not found',
+      );
+    }
 
     if (eventType == "FOLLOWING") {
       var ceck_data_FOLLOWER = await this.contenteventsService.ceckData(email_receiverParty, "FOLLOWER", "ACCEPT", email_user, "", "");
