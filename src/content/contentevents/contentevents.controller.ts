@@ -486,8 +486,7 @@ export class ContenteventsController {
           }
         }
       }
-    }
-    else if (eventType == "UNLIKE") {
+    }else if (eventType == "UNLIKE") {
       var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "LIKE", "DONE", email_receiverParty, "", request.body.postID);
       var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "LIKE", "ACCEPT", "", email_user, request.body.postID);
       if ((await this.utilsService.ceckData(ceck_data_DONE)) && (await this.utilsService.ceckData(ceck_data_ACCEPT))) {
@@ -503,7 +502,6 @@ export class ContenteventsController {
           );
         }
       } else {
-
         if (ceck_data_DONE.active != undefined && !ceck_data_ACCEPT.active != undefined) {
           if (ceck_data_DONE.active && ceck_data_ACCEPT.active) {
             try {
@@ -1204,8 +1202,7 @@ export class ContenteventsController {
           }
         }
       }
-    }
-    else if (eventType == "UNLIKE") {
+    }else if (eventType == "UNLIKE") {
       var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "LIKE", "DONE", email_receiverParty, "", request.body.postID);
       var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "LIKE", "ACCEPT", "", email_user, request.body.postID);
       if ((await this.utilsService.ceckData(ceck_data_DONE)) && (await this.utilsService.ceckData(ceck_data_ACCEPT))) {

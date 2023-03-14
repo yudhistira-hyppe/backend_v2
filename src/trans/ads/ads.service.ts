@@ -2187,15 +2187,6 @@ export class AdsService {
                 }
             },
             {
-                $set:
-                {
-                    tayView:
-                    {
-                        $ifNull: ['$totalView', 0]
-                    }
-                }
-            },
-            {
                 $set: {
                     "testDate":
                     {
@@ -2367,9 +2358,6 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "statusView": true
-                                    },
-                                    {
                                         $or: [
                                             {
                                                 "liveTypeuserads": false
@@ -2414,9 +2402,6 @@ export class AdsService {
                                             $in: ['$userID', '$$localID']
                                         }
                                     },
-                                    //{
-                                    //    "statusView": false
-                                    //},
                                     {
                                         "isActive": true
                                     },
@@ -2425,9 +2410,7 @@ export class AdsService {
                                             {
                                                 "liveTypeuserads": true
                                             },
-                                            //{
-                                            //		"liveTypeAds": null
-                                            //},
+
                                         ]
                                     }
                                 ]
@@ -2549,52 +2532,13 @@ export class AdsService {
                             {
                                 "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                             },
+
                         ]
                     },
+
                     ]
                 }
             },
-            // {
-            //     $match:
-            //     {
-            //         $and: [
-            //             {
-            //                 "status": "APPROVE"
-            //             },
-            //             {
-            //                 $expr: {
-            //                     $lt: ["$tayView", "$tay"]
-            //                 }
-            //             },
-            //             {
-            //                 $expr: {
-            //                     $lt: ["$tayang", "$testDate"]
-            //                 }
-            //             },
-            //             {
-            //                 "_id": {
-            //                     $not: {
-            //                         $in: ["$adsUser.adsID"]
-            //                     }
-            //                 }
-            //             },
-            //             {
-            //                 isValid: false
-            //             },
-            //             {
-            //                 "isActive": true,
-
-            //             },
-            //             {
-            //                 "reportedUser":
-            //                 {
-            //                     $ne: "$email"
-            //                 }
-            //             },
-
-            //         ]
-            //     }
-            // },
             {
                 $project: {
                     isValid: 1,
@@ -2750,10 +2694,12 @@ export class AdsService {
                                         },
                                         then: "$all"
                                     },
+
                                 ],
                                 default: "kancut"
                             }
                         },
+
                     }]
                 }
             },
@@ -2780,6 +2726,7 @@ export class AdsService {
                             }
                         }
                     ],
+
                 }
             },
             {
@@ -3333,7 +3280,33 @@ export class AdsService {
             {
                 $match:
                 {
-                    "nameType": nameType,
+                    $or: [
+                        {
+                            $and: [
+                                {
+                                    "nameType": "In App Ads",
+                                },
+                                {
+                                    liveTypeAds: true
+                                }
+                            ]
+                        },
+                        {
+                            $and: [
+                                {
+                                    "nameType": "In App Ads",
+                                },
+                                {
+                                    liveTypeAds: false
+                                },
+                                {
+                                    $expr: {
+                                        $lt: ["$viewed", 1]
+                                    }
+                                },
+                            ]
+                        },
+                    ]
                 }
             },
             {
