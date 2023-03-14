@@ -1155,7 +1155,7 @@ export class UserAdsService {
                     _id: "$userAds._id",
                     createdAt: "$userAds.createdAt",
                     description: "$userAds.description",
-                    priority: "$userAds.createdAt",
+                    priority: "$userAds.priority",
                     statusClick: "$userAds.statusClick",
                     statusView: "$userAds.statusView",
                     viewed: "$userAds.viewed",
