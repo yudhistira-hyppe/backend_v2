@@ -2103,7 +2103,7 @@ export class PostsController {
   }
 
   @Post('api/posts/createnewcollection')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async createnewCollection(@Req() request: Request): Promise<any> {
     var pilihan = null;
     var messages = null;
