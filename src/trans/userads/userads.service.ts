@@ -696,7 +696,7 @@ export class UserAdsService {
         return query;
     }
 
-    async listpenonton(idads: string, startdate: string, enddate: string, startage: number, endage: number, listgender: any[], listarea: any[], listpriority: any[], searchname: string, limit: number, page: number, status: string) {
+    async listpenonton(idads: string, startdate: string, enddate: string, startage: number, endage: number, listgender: any[], listarea: any[], listpriority: any[], searchname: string, limit: number, page: number, status: any[]) {
         var pipeline = [];
         pipeline.push(
             {
@@ -1185,7 +1185,9 @@ export class UserAdsService {
         if (status && status != undefined) {
             pipeline.push({
                 "$match": {
-                    status: status
+                    status: {
+                        "$in": status
+                    }
                 }
             });
         }
