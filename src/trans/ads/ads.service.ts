@@ -2210,6 +2210,19 @@ export class AdsService {
             },
             {
                 $set: {
+                    "sekarang":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d",
+                            "date": {
+                                $add: [new Date(), 25200000]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $set: {
                     "tayang": {
                         $concat: [
                             "$liveAt",
@@ -2450,44 +2463,138 @@ export class AdsService {
             {
                 $match:
                 {
-                    $and: [
-                        {
-                            "status": "APPROVE"
-                        },
-                        {
-                            $expr: {
-                                $lt: ["$tayView", "$tay"]
-                            }
-                        },
-                        {
-                            $expr: {
-                                $lt: ["$tayang", "$testDate"]
-                            }
-                        },
-                        {
-                            "_id": {
-                                $not: {
-                                    $in: ["$adsUser.adsID"]
-                                }
-                            }
-                        },
-                        {
-                            isValid: false
-                        },
-                        {
-                            "isActive": true,
-
-                        },
-                        {
-                            "reportedUser":
+                    $or: [{
+                        $and: [
                             {
-                                $ne: "$email"
-                            }
-                        },
+                                "status": "APPROVE"
+                            },
+                            {
+                                $expr: {
+                                    $lt: ["$totalView", "$tay"]
+                                }
+                            },
+                            {
+                                $expr: {
+                                    $lt: ["$tayang", "$testDate"]
+                                }
+                            },
+                            {
+                                "_id": {
+                                    $not: {
+                                        $in: ["$adsUser.adsID"]
+                                    }
+                                }
+                            },
+                            {
+                                isValid: false
+                            },
+                            {
+                                "isActive": true,
 
+                            },
+                            {
+                                "reportedUser":
+                                {
+                                    $ne: "$email"
+                                }
+                            },
+                            {
+                                "userID":
+                                {
+                                    $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        $and: [
+                            {
+                                $expr: {
+                                    $eq: ["$liveAt", "$sekarang"]
+                                }
+                            },
+                            {
+                                "status": "APPROVE"
+                            },
+                            {
+                                $expr: {
+                                    $lt: ["$totalView", "$tay"]
+                                }
+                            },
+                            {
+                                $expr: {
+                                    $lt: ["$tayang", "$testDate"]
+                                }
+                            },
+                            {
+                                "_id": {
+                                    $not: {
+                                        $in: ["$adsUser.adsID"]
+                                    }
+                                }
+                            },
+                            {
+                                isValid: false
+                            },
+                            {
+                                "isActive": true,
+
+                            },
+                            {
+                                "reportedUser":
+                                {
+                                    $ne: "$email"
+                                }
+                            },
+                            {
+                                "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                            },
+                        ]
+                    },
                     ]
                 }
             },
+            // {
+            //     $match:
+            //     {
+            //         $and: [
+            //             {
+            //                 "status": "APPROVE"
+            //             },
+            //             {
+            //                 $expr: {
+            //                     $lt: ["$tayView", "$tay"]
+            //                 }
+            //             },
+            //             {
+            //                 $expr: {
+            //                     $lt: ["$tayang", "$testDate"]
+            //                 }
+            //             },
+            //             {
+            //                 "_id": {
+            //                     $not: {
+            //                         $in: ["$adsUser.adsID"]
+            //                     }
+            //                 }
+            //             },
+            //             {
+            //                 isValid: false
+            //             },
+            //             {
+            //                 "isActive": true,
+
+            //             },
+            //             {
+            //                 "reportedUser":
+            //                 {
+            //                     $ne: "$email"
+            //                 }
+            //             },
+
+            //         ]
+            //     }
+            // },
             {
                 $project: {
                     isValid: 1,
