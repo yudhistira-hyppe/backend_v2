@@ -585,4 +585,70 @@ export class UserAdsController {
         }
         return { response_code: 202, data: getdata, totalsearch: lengthsearch, totalpage: totalpage, totaldatainpage: lengthdata, limit: limit, page: page, messages };
     }
+
+    @Post('api/userads/console/adscenter/listpenonton/detail')
+    @UseGuards(JwtAuthGuard)
+    async listriwayatpenontondetail(@Req() request: Request): Promise<any> {
+        var data = null;
+
+        var iddata = null;
+        var page = null;
+        var limit = null;
+        var click = null;
+        var view = null;
+        const messages = {
+            "info": ["The process successful"],
+        };
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["id"] !== undefined) {
+            iddata = request_json["id"];
+        }
+        else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["page"] !== undefined) {
+            page = Number(request_json["page"]);
+        }
+        if (request_json["limit"] !== undefined) {
+            limit = Number(request_json["limit"]);
+        }
+
+        if (request_json["click"] !== undefined) {
+            click = request_json["click"];
+        }
+        if (request_json["view"] !== undefined) {
+            view = request_json["view"];
+        }
+        var getdata = null;
+        var lengthdata = null;
+        try {
+            getdata = await this.userAdsService.listpenontondetail(iddata, click, view, limit, page);
+            lengthdata = getdata.length;
+        }
+        catch (e) {
+            getdata = [];
+            lengthdata = 0;
+        }
+        var temptotalsearch = null;
+        var lengthsearch = 0;
+        try {
+            temptotalsearch = await this.userAdsService.listpenontondetail(iddata, click, view, undefined, undefined);
+            lengthsearch = temptotalsearch.length;
+        }
+        catch (e) {
+            temptotalsearch = [];
+            lengthsearch = 0;
+        }
+        var totalpage = 0;
+        var gettotal = (lengthsearch / limit).toFixed(0);
+        var sisa = (lengthsearch % limit);
+        if (sisa > 0 && sisa < 5) {
+            totalpage = parseInt(gettotal) + 1;
+        }
+        else {
+            totalpage = parseInt(gettotal);
+        }
+        return { response_code: 202, data: getdata, totalsearch: lengthsearch, totalpage: totalpage, totaldatainpage: lengthdata, limit: limit, page: page, messages };
+    }
 }
