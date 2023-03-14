@@ -3333,7 +3333,33 @@ export class AdsService {
             {
                 $match:
                 {
-                    "nameType": nameType,
+                    $or: [
+                        {
+                            $and: [
+                                {
+                                    "nameType": "In App Ads",
+                                },
+                                {
+                                    liveTypeAds: false
+                                }
+                            ]
+                        },
+                        {
+                            $and: [
+                                {
+                                    "nameType": "In App Ads",
+                                },
+                                {
+                                    liveTypeAds: true
+                                },
+                                {
+                                    $expr: {
+                                        $lt: ["$viewed", 1]
+                                    }
+                                },
+                            ]
+                        },
+                    ]
                 }
             },
             {
