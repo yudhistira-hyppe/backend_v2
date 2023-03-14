@@ -6860,17 +6860,17 @@ export class AdsService {
             {
                 _id:
                 {
-                    "$in":iddata
+                    "$in": iddata
                 }
-            }, 
+            },
             {
                 "$set":
                 {
-                    status:"REPORTED",
-                    isActive:false
+                    status: "REPORTED",
+                    isActive: false
                 }
             });
-    
+
         return data;
     }
 
@@ -9536,8 +9536,8 @@ export class AdsService {
 
                                 "type": "rewards",
                                 "timestamp": {
-                                    $gte: "2023-01-12",
-                                    $lte: "2023-01-13",
+                                    $gte: startdate,
+                                    $lte: dateend,
 
                                 }
                             }
@@ -16111,132 +16111,132 @@ export class AdsService {
                 "$facet":
                 {
                     "penontonbyharian":
-                    [
-                        {
-                            "$limit":1
-                        },
-                        {
-                            "$lookup":
+                        [
                             {
-                                from:"userads",
-                                as:"userads",
-                                pipeline:
-                                [
-                                    {
-                                        "$match":
-                                        {
-                                            createdAt:
+                                "$limit": 1
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    from: "userads",
+                                    as: "userads",
+                                    pipeline:
+                                        [
                                             {
-                                                "$gte":before,
-                                                "$lte":today
-                                            },
-                                        }
-                                    },
-                                    {
-                                        "$project":
-                                        {
-                                            _id:1,
-                                            createdAt:
-                                            {
-                                                "$substr":
-                                                [
-                                                    "$createdAt", 0, 10
-                                                ]
-                                            },
-                                            statusView:1,
-                                            statusClick:1
-                                        }
-                                    },
-                                    {
-                                        "$group":
-                                        {
-                                            _id:"$createdAt",
-                                            totalview:
-                                            {
-                                                "$sum": 
+                                                "$match":
                                                 {
-                                                    "$cond": 
+                                                    createdAt:
                                                     {
-                                                        if:
-                                                        {
-                                                            "$eq":["$statusView", true]
-                                                        },
-                                                        then: 1, 
-                                                        else: 0
-                                                    } 
+                                                        "$gte": before,
+                                                        "$lte": today
+                                                    },
                                                 }
                                             },
-                                            totalclick:
                                             {
-                                                "$sum": 
+                                                "$project":
                                                 {
-                                                    "$cond": 
+                                                    _id: 1,
+                                                    createdAt:
                                                     {
-                                                        if:
-                                                        {
-                                                            "$eq":["$statusClick", true]
-                                                        },
-                                                        then: 1, 
-                                                        else: 0
-                                                    } 
+                                                        "$substr":
+                                                            [
+                                                                "$createdAt", 0, 10
+                                                            ]
+                                                    },
+                                                    statusView: 1,
+                                                    statusClick: 1
                                                 }
                                             },
-                                        }
-                                    },
-                                    {
-                                        "$sort":
-                                        {
-                                            _id:1
-                                        }
-                                    },
-                                    {
-                                        "$project":
-                                        {
-                                            _id:0,
-                                            createdAt:"$_id",
-                                            totalclick:1,
-                                            totalview:1,
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "$project":
+                                            {
+                                                "$group":
+                                                {
+                                                    _id: "$createdAt",
+                                                    totalview:
+                                                    {
+                                                        "$sum":
+                                                        {
+                                                            "$cond":
+                                                            {
+                                                                if:
+                                                                {
+                                                                    "$eq": ["$statusView", true]
+                                                                },
+                                                                then: 1,
+                                                                else: 0
+                                                            }
+                                                        }
+                                                    },
+                                                    totalclick:
+                                                    {
+                                                        "$sum":
+                                                        {
+                                                            "$cond":
+                                                            {
+                                                                if:
+                                                                {
+                                                                    "$eq": ["$statusClick", true]
+                                                                },
+                                                                then: 1,
+                                                                else: 0
+                                                            }
+                                                        }
+                                                    },
+                                                }
+                                            },
+                                            {
+                                                "$sort":
+                                                {
+                                                    _id: 1
+                                                }
+                                            },
+                                            {
+                                                "$project":
+                                                {
+                                                    _id: 0,
+                                                    createdAt: "$_id",
+                                                    totalclick: 1,
+                                                    totalview: 1,
+                                                }
+                                            }
+                                        ]
+                                }
+                            },
                             {
-                                _id:0,
-                                userads:1
-                            }
-                        }
-                    ],
-                    "totalads":
-                    [
-                        {
-                            "$match":
-                            {
-                                timestamp:
+                                "$project":
                                 {
-                                    "$gte":before,
-                                    "$lte":today
-                                },
-                                isActive:true,
-                                status:
-                                {
-                                    "$in":["APPROVE", "FINISH"]
-                                },
-                            }
-                        },
-                        {
-                            "$group":
-                            {
-                                _id:null,
-                                total:
-                                {
-                                    "$sum":1
+                                    _id: 0,
+                                    userads: 1
                                 }
                             }
-                        },
-                    ]
+                        ],
+                    "totalads":
+                        [
+                            {
+                                "$match":
+                                {
+                                    timestamp:
+                                    {
+                                        "$gte": before,
+                                        "$lte": today
+                                    },
+                                    isActive: true,
+                                    status:
+                                    {
+                                        "$in": ["APPROVE", "FINISH"]
+                                    },
+                                }
+                            },
+                            {
+                                "$group":
+                                {
+                                    _id: null,
+                                    total:
+                                    {
+                                        "$sum": 1
+                                    }
+                                }
+                            },
+                        ]
                 }
             },
             {
@@ -16245,22 +16245,22 @@ export class AdsService {
                     data:
                     {
                         "$arrayElemAt":
-                        [
-                            "$penontonbyharian.userads", 0
-                        ]
+                            [
+                                "$penontonbyharian.userads", 0
+                            ]
                     },
                     totaldata:
                     {
                         "$ifNull":
-                        [
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$totalads.total", 0
-                                ]
-                            },
-                            0
-                        ]
+                            [
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$totalads.total", 0
+                                        ]
+                                },
+                                0
+                            ]
                     }
                 }
             }
@@ -16309,333 +16309,333 @@ export class AdsService {
         pipeline.push({
             "$project":
             {
-                _id:1,
+                _id: 1,
                 createdAt:
                 {
                     "$substr":
-                    [
-                        "$timestamp", 0, 10
-                    ]
+                        [
+                            "$timestamp", 0, 10
+                        ]
                 },
-                demografisID:1
+                demografisID: 1
             }
         },
-        {
-            "$lookup":
             {
-                "from": "userads",
-                "as": "recordtayang",
-                "let": {
-                    "userads_fk": "$_id"
-                },
-                "pipeline": 
-                [
-                    {
-                        "$match":
-                        {
-                            "$expr":
+                "$lookup":
+                {
+                    "from": "userads",
+                    "as": "recordtayang",
+                    "let": {
+                        "userads_fk": "$_id"
+                    },
+                    "pipeline":
+                        [
                             {
-                                "$eq":
-                                [
-                                    "$adsID",
-                                    "$$userads_fk"
-                                ]
-                            },
-                            "$or":
-                            [
+                                "$match":
                                 {
                                     "$expr":
                                     {
                                         "$eq":
-                                        [
-                                            "$statusClick", true
-                                        ]
-                                    }
-                                },
-                                {
-                                    "$expr":
-                                    {
-                                        "$eq":
-                                        [
-                                            "$statusView", true
-                                        ]
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            _id:1,
-                            userID:1,
-                            statusClick:1,
-                            statusView:1,
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            '$unwind':
-            {
-                path:"$recordtayang"
-            }
-        },
-        {
-            "$lookup":
-            {
-                "from": "userbasics",
-                "as": "recorduser",
-                "let": {
-                    "userbasic_fk": "$recordtayang.userID"
-                },
-                "pipeline": 
-                [
-                    {
-                        "$match":
-                        {
-                            "$expr":
-                            {
-                                "$eq":
-                                [
-                                    "$_id",
-                                    "$$userbasic_fk"
-                                ]
-                            },
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            _id:1,
-                            email:1,
-                            gender: {
-                                $switch: {
-                                    branches: [
-                                        {
-                                            case: {
-                                                $eq: ['$gender', 'FEMALE']
-                                            },
-                                            then: 'FEMALE',
-                                            
-                                        },
-                                        {
-                                            case: {
-                                                $eq: ['$gender', ' FEMALE']
-                                            },
-                                            then: 'FEMALE',
-                                            
-                                        },
-                                        {
-                                            case: {
-                                                $eq: ['$gender', 'Perempuan']
-                                            },
-                                            then: 'FEMALE',
-                                            
-                                        },
-                                        {
-                                            case: {
-                                                $eq: ['$gender', 'Wanita']
-                                            },
-                                            then: 'FEMALE',
-                                            
-                                        },
-                                        {
-                                            case: {
-                                                $eq: ['$gender', 'MALE']
-                                            },
-                                            then: 'MALE',
-                                            
-                                        },
-                                        {
-                                            case: {
-                                                $eq: ['$gender', ' MALE']
-                                            },
-                                            then: 'MALE',
-                                            
-                                        },
-                                        {
-                                            case: {
-                                                $eq: ['$gender', 'Laki-laki']
-                                            },
-                                            then: 'MALE',
-                                            
-                                        },
-                                        {
-                                            case: {
-                                                $eq: ['$gender', 'Pria']
-                                            },
-                                            then: 'MALE',
-                                            
-                                        },
-                                        
-                                    ],
-                                    default: "OTHER",    
-                                },
-                                          
-                            },
-                            lokasi:"$states"
-                        }
-                    },
-                ]
-            }
-        },
-        {
-            "$project":
-            {
-                _id:1,
-                createdAt:1,
-                demografisID:1,
-                recorduser:1,
-            }
-        },
-        {
-            "$facet":
-            {
-                "gender":
-                [
-                    {
-                        "$group":
-                        {
-                            _id:
-                            {
-                                "$first":"$recorduser.gender"
-                            },
-                            total:
-                            {
-                                "$sum":1
-                            }
-                        }
-                    }
-                ],
-                "area":
-                [
-                    {
-                        "$group":
-                        {
-                            _id:
-                            {
-                                "$first":"$recorduser.lokasi"
-                            },
-                            total:
-                            {
-                                "$sum":1
-                            }
-                        }
-                    },
-                    {
-                        "$group":
-                        {
-                            _id: null,
-                            totaldata:
-                            {
-                                "$sum": "$total"
-                            },
-                            data:
-                            {
-                                "$push":
-                                {
-                                    _id: "$_id",
-                                    total: "$total"
-                                }
-                            }
-                        }
-                    },
-                    {
-                        "$unwind":
-                        {
-                            path:"$data"
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            _id: "$data._id",
-                            total:"$data.total",
-                            persentase:
-                            {
-                                "$multiply":
-                                    [
-                                        {
-                                            "$divide":
-                                                [
-                                                    "$data.total", "$totaldata"
-                                                ]
-                                        }, 100
-                                    ]
-                            }
-                        }
-                    },
-                    {
-                        "$group":
-                        {
-                            _id: "$_id",
-                            persentase:
-                            {
-                                "$first": "$persentase"
-                            },
-                            total:
-                            {
-                                "$first": "$total"
-                            },
-                        }
-                    },
-                    {
-                        "$lookup":
-                        {
-                            "from": "areas",
-                            "as": "areas_data",
-                            "let": 
-                            {
-                                "areas_fk": "$_id.$id"
-                            },
-                            "pipeline": 
-                            [
-                                {
-                                    "$match":
-                                    {
-                                        "$expr":
-                                        {
-                                            "$eq":
                                             [
-                                                "$_id", "$$areas_fk" 
+                                                "$adsID",
+                                                "$$userads_fk"
                                             ]
+                                    },
+                                    "$or":
+                                        [
+                                            {
+                                                "$expr":
+                                                {
+                                                    "$eq":
+                                                        [
+                                                            "$statusClick", true
+                                                        ]
+                                                }
+                                            },
+                                            {
+                                                "$expr":
+                                                {
+                                                    "$eq":
+                                                        [
+                                                            "$statusView", true
+                                                        ]
+                                                }
+                                            }
+                                        ]
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    _id: 1,
+                                    userID: 1,
+                                    statusClick: 1,
+                                    statusView: 1,
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                '$unwind':
+                {
+                    path: "$recordtayang"
+                }
+            },
+            {
+                "$lookup":
+                {
+                    "from": "userbasics",
+                    "as": "recorduser",
+                    "let": {
+                        "userbasic_fk": "$recordtayang.userID"
+                    },
+                    "pipeline":
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                            [
+                                                "$_id",
+                                                "$$userbasic_fk"
+                                            ]
+                                    },
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    _id: 1,
+                                    email: 1,
+                                    gender: {
+                                        $switch: {
+                                            branches: [
+                                                {
+                                                    case: {
+                                                        $eq: ['$gender', 'FEMALE']
+                                                    },
+                                                    then: 'FEMALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ['$gender', ' FEMALE']
+                                                    },
+                                                    then: 'FEMALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ['$gender', 'Perempuan']
+                                                    },
+                                                    then: 'FEMALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ['$gender', 'Wanita']
+                                                    },
+                                                    then: 'FEMALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ['$gender', 'MALE']
+                                                    },
+                                                    then: 'MALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ['$gender', ' MALE']
+                                                    },
+                                                    then: 'MALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ['$gender', 'Laki-laki']
+                                                    },
+                                                    then: 'MALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ['$gender', 'Pria']
+                                                    },
+                                                    then: 'MALE',
+
+                                                },
+
+                                            ],
+                                            default: "OTHER",
+                                        },
+
+                                    },
+                                    lokasi: "$states"
+                                }
+                            },
+                        ]
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: 1,
+                    createdAt: 1,
+                    demografisID: 1,
+                    recorduser: 1,
+                }
+            },
+            {
+                "$facet":
+                {
+                    "gender":
+                        [
+                            {
+                                "$group":
+                                {
+                                    _id:
+                                    {
+                                        "$first": "$recorduser.gender"
+                                    },
+                                    total:
+                                    {
+                                        "$sum": 1
+                                    }
+                                }
+                            }
+                        ],
+                    "area":
+                        [
+                            {
+                                "$group":
+                                {
+                                    _id:
+                                    {
+                                        "$first": "$recorduser.lokasi"
+                                    },
+                                    total:
+                                    {
+                                        "$sum": 1
+                                    }
+                                }
+                            },
+                            {
+                                "$group":
+                                {
+                                    _id: null,
+                                    totaldata:
+                                    {
+                                        "$sum": "$total"
+                                    },
+                                    data:
+                                    {
+                                        "$push":
+                                        {
+                                            _id: "$_id",
+                                            total: "$total"
                                         }
                                     }
                                 }
-                            ]
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            _id:
-                            {
-                                "$ifNull":
-                                [
-                                    {
-                                        "$arrayElemAt":
-                                        [
-                                            "$areas_data.stateName", 0
-                                        ]
-                                    },
-                                    "Lainnya"
-                                ]
                             },
-                            persentase:1,
-                            // total:1
-                        }
-                    },
-                    {
-                        "$sort":
-                        {
-                            _id: 1
-                        }
-                    }
-                ]
-            }
-        });
+                            {
+                                "$unwind":
+                                {
+                                    path: "$data"
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    _id: "$data._id",
+                                    total: "$data.total",
+                                    persentase:
+                                    {
+                                        "$multiply":
+                                            [
+                                                {
+                                                    "$divide":
+                                                        [
+                                                            "$data.total", "$totaldata"
+                                                        ]
+                                                }, 100
+                                            ]
+                                    }
+                                }
+                            },
+                            {
+                                "$group":
+                                {
+                                    _id: "$_id",
+                                    persentase:
+                                    {
+                                        "$first": "$persentase"
+                                    },
+                                    total:
+                                    {
+                                        "$first": "$total"
+                                    },
+                                }
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    "from": "areas",
+                                    "as": "areas_data",
+                                    "let":
+                                    {
+                                        "areas_fk": "$_id.$id"
+                                    },
+                                    "pipeline":
+                                        [
+                                            {
+                                                "$match":
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                            [
+                                                                "$_id", "$$areas_fk"
+                                                            ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    _id:
+                                    {
+                                        "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                        [
+                                                            "$areas_data.stateName", 0
+                                                        ]
+                                                },
+                                                "Lainnya"
+                                            ]
+                                    },
+                                    persentase: 1,
+                                    // total:1
+                                }
+                            },
+                            {
+                                "$sort":
+                                {
+                                    _id: 1
+                                }
+                            }
+                        ]
+                }
+            });
 
         var query = await this.adsModel.aggregate(pipeline);
 
@@ -16645,39 +16645,40 @@ export class AdsService {
     async consolegetlistads(startdate: string, enddate: string, statuslist: any[], mincredit: number, maxcredit: number, page: number, limit: number, sorting: boolean) {
         var pipeline = [];
 
-        pipeline.push({
-            "$lookup":
+        pipeline.push(
             {
-                "from": "adstypes",
-                "as": "type_data",
-                "let":
+                "$lookup":
                 {
-                    "type_fk": "$typeAdsID"
-                },
-                "pipeline":
-                    [
-                        {
-                            "$match":
+                    "from": "adstypes",
+                    "as": "type_data",
+                    "let":
+                    {
+                        "type_fk": "$typeAdsID"
+                    },
+                    "pipeline":
+                        [
                             {
-                                "$expr":
+                                "$match":
                                 {
-                                    "$eq":
-                                        [
-                                            "$_id",
-                                            "$$type_fk"
-                                        ]
-                                }
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                            [
+                                                "$_id",
+                                                "$$type_fk"
+                                            ]
+                                    }
+                                },
                             },
-                        },
-                        {
-                            "$project":
                             {
-                                nameType: 1
+                                "$project":
+                                {
+                                    nameType: 1
+                                }
                             }
-                        }
-                    ]
-            }
-        },
+                        ]
+                }
+            },
             {
                 "$lookup":
                 {
@@ -16735,7 +16736,7 @@ export class AdsService {
                     usedCredit: 1,
                     totalCredit: 1,
                     idApsara: 1,
-                    isActive:1,
+                    isActive: 1,
                     apsara: {
                         "$cond":
                         {
@@ -16747,16 +16748,16 @@ export class AdsService {
                             else: true
                         }
                     },
-                    type:1,
+                    type: 1,
                     tempreportedUserCount:
                     {
                         "$ifNull":
-                        [
-                            "$reportedUserCount",
-                            0
-                        ]
+                            [
+                                "$reportedUserCount",
+                                0
+                            ]
                     },
-                    tempstatus:"$status"
+                    tempstatus: "$status"
                 }
             },);
 
@@ -16843,14 +16844,13 @@ export class AdsService {
         return query;
     }
 
-    async getDetailHistoryIklan(id:string)
-    {
+    async getDetailHistoryIklan(id: string) {
         const mongoose = require('mongoose');
         var iddata = mongoose.Types.ObjectId(id);
 
         var query = await this.adsModel.aggregate([
             {
-                "$match": 
+                "$match":
                 {
                     "_id": iddata
                 }
@@ -16859,522 +16859,522 @@ export class AdsService {
                 "$facet":
                 {
                     "pemohon":
-                    [
-                        {
-                            "$lookup":
+                        [
                             {
-                                from: "userbasics",
-                                as: "basics_data",
-                                let: 
+                                "$lookup":
                                 {
-                                    "basics_fk": "$userID"
-                                },
-                                pipeline: 
-                                [
+                                    from: "userbasics",
+                                    as: "basics_data",
+                                    let:
                                     {
-                                        "$match":
-                                        {
-                                            "$expr":
-                                            {
-                                                "$eq":
-                                                [
-                                                    "$_id", "$$basics_fk"
-                                                ]
-                                            }
-                                        }
+                                        "basics_fk": "$userID"
                                     },
-                                    {
-                                        "$lookup":
-                                        {
-                                            from: "mediaprofilepicts",
-                                            as: "profile_data",
-                                            let: 
+                                    pipeline:
+                                        [
                                             {
-                                                "profile_fk": "$profilePict.$id"
-                                            },
-                                            pipeline: 
-                                            [
+                                                "$match":
                                                 {
-                                                    "$match":
+                                                    "$expr":
                                                     {
-                                                        "$expr":
-                                                        {
-                                                            "$eq":
+                                                        "$eq":
                                                             [
-                                                                "$_id", "$$profile_fk"
+                                                                "$_id", "$$basics_fk"
                                                             ]
-                                                        }
                                                     }
-                                                },
+                                                }
+                                            },
+                                            {
+                                                "$lookup":
                                                 {
-                                                    "$project":
+                                                    from: "mediaprofilepicts",
+                                                    as: "profile_data",
+                                                    let:
                                                     {
-                                                        mediaID:1,
-                                                        mediaBasePath:1,
-                                                        mediaUri:
-                                                        {
-                                                            "$split":
-                                                            [
-                                                                "$mediaUri", "_"
-                                                            ]
-                                                        },
-                                                        mediaType:1,
-                                                        fsTargetUri:1,
-                                                    }
-                                                },
+                                                        "profile_fk": "$profilePict.$id"
+                                                    },
+                                                    pipeline:
+                                                        [
+                                                            {
+                                                                "$match":
+                                                                {
+                                                                    "$expr":
+                                                                    {
+                                                                        "$eq":
+                                                                            [
+                                                                                "$_id", "$$profile_fk"
+                                                                            ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "$project":
+                                                                {
+                                                                    mediaID: 1,
+                                                                    mediaBasePath: 1,
+                                                                    mediaUri:
+                                                                    {
+                                                                        "$split":
+                                                                            [
+                                                                                "$mediaUri", "_"
+                                                                            ]
+                                                                    },
+                                                                    mediaType: 1,
+                                                                    fsTargetUri: 1,
+                                                                }
+                                                            },
+                                                            {
+                                                                "$project":
+                                                                {
+                                                                    mediaID: 1,
+                                                                    mediaBasePath: 1,
+                                                                    mediaUri:
+                                                                    {
+                                                                        "$arrayElemAt":
+                                                                            [
+                                                                                "$mediaUri", 0
+                                                                            ]
+                                                                    },
+                                                                    mediaType: 1,
+                                                                    fsTargetUri: 1,
+                                                                }
+                                                            },
+                                                        ]
+                                                }
+                                            },
+                                            {
+                                                "$project":
                                                 {
-                                                    "$project":
-                                                    {
-                                                        mediaID:1,
-                                                        mediaBasePath:1,
-                                                        mediaUri:
-                                                        {
-                                                            "$arrayElemAt":
-                                                            [
-                                                                "$mediaUri", 0
-                                                            ]
-                                                        },
-                                                        mediaType:1,
-                                                        fsTargetUri:1,
-                                                    }
-                                                },
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        "$project":
-                                        {
-                                            _id:1,
-                                            fullName:1,
-                                            mediaBasePath:
-                                            {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$profile_data.mediaBasePath", 0
-                                                ]
-                                            },
-                                            mediaUri: 
-                                            {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$profile_data.mediaUri", 0
-                                                ]
-                                            },
-                                            mediaType:
-                                            {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$profile_data.mediaType", 0
-                                                ]
-                                            },
-                                            mediaEndpoint:
-                                            {
-                                                "$concat":
-                                                [
-                                                    "/profilepict/",
+                                                    _id: 1,
+                                                    fullName: 1,
+                                                    mediaBasePath:
                                                     {
                                                         "$arrayElemAt":
-                                                        [
-                                                            "$profile_data.mediaUri", 0
-                                                        ]
-                                                    }
-                                                ]
-                                            },
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "$project":
-                            {
-                                titlerow:"pemohon",
-                                tempcreatedAt:"$timestamp",
-                                users:"$userID",
-                                //status:"$status",
-                                profile:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$basics_data", 0
-                                    ]
-                                }
-                            }
-                        },
-                    ],
-                    "admin":
-                    [
-                        {
-                            "$match":
-                            {
-                                "$or":
-                                [
-                                    {
-                                        status:"APPROVE"
-                                    },
-                                    {
-                                        status:"FINISH"
-                                    },
-                                ]
-                            }
-                        },
-                        {
-                            "$lookup":
-                            {
-                                from: "userbasics",
-                                as: "basics_data",
-                                let: 
-                                {
-                                    "basics_fk": "$userIDAssesment"
-                                },
-                                pipeline: 
-                                [
-                                    {
-                                        "$match":
-                                        {
-                                            "$expr":
-                                            {
-                                                "$eq":
-                                                [
-                                                    "$_id", "$$basics_fk"
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "$lookup":
-                                        {
-                                            from: "mediaprofilepicts",
-                                            as: "profile_data",
-                                            let: 
-                                            {
-                                                "profile_fk": "$profilePict.$id"
-                                            },
-                                            pipeline: 
-                                            [
-                                                {
-                                                    "$match":
-                                                    {
-                                                        "$expr":
-                                                        {
-                                                            "$eq":
                                                             [
-                                                                "$_id", "$$profile_fk"
+                                                                "$profile_data.mediaBasePath", 0
                                                             ]
-                                                        }
-                                                    }
-                                                },
-                                                {
-                                                    "$project":
-                                                    {
-                                                        mediaID:1,
-                                                        mediaBasePath:1,
-                                                        mediaUri:
-                                                        {
-                                                            "$split":
-                                                            [
-                                                                "$mediaUri", "_"
-                                                            ]
-                                                        },
-                                                        mediaType:1,
-                                                        fsTargetUri:1,
-                                                    }
-                                                },
-                                                {
-                                                    "$project":
-                                                    {
-                                                        mediaID:1,
-                                                        mediaBasePath:1,
-                                                        mediaUri:
-                                                        {
-                                                            "$arrayElemAt":
-                                                            [
-                                                                "$mediaUri", 0
-                                                            ]
-                                                        },
-                                                        mediaType:1,
-                                                        fsTargetUri:1,
-                                                    }
-                                                },
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        "$project":
-                                        {
-                                            _id:1,
-                                            fullName:1,
-                                            mediaBasePath:
-                                            {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$profile_data.mediaBasePath", 0
-                                                ]
-                                            },
-                                            mediaUri: 
-                                            {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$profile_data.mediaUri", 0
-                                                ]
-                                            },
-                                            mediaType:
-                                            {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$profile_data.mediaType", 0
-                                                ]
-                                            },
-                                            mediaEndpoint:
-                                            {
-                                                "$concat":
-                                                [
-                                                    "/profilepict/",
+                                                    },
+                                                    mediaUri:
                                                     {
                                                         "$arrayElemAt":
-                                                        [
-                                                            "$profile_data.mediaUri", 0
-                                                        ]
-                                                    }
-                                                ]
-                                            },
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "$project":
-                            {
-                                titlerow:"adminapprove",
-                                tempcreatedAt:"$timestamp",
-                                users:"$userIDAssesment",
-                                status:"$status",
-                                profile:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$basics_data", 0
-                                    ]
-                                }
-                            }
-                        },
-                    ],
-                    "lastpenonton":
-                    [
-                        {
-                            "$match":
-                            {
-                                status:"FINISH"
-                            }
-                        },
-                        {
-                            "$lookup":
-                            {
-                                from: "userads",
-                                as: "userads_data",
-                                let: 
-                                {
-                                    "userads_fk": "$_id"
-                                },
-                                pipeline: 
-                                [
-                                    {
-                                        "$match":
-                                        {
-                                            "$expr":
-                                            {
-                                                "$eq":
-                                                [
-                                                    "$adsID", "$$userads_fk"
-                                                ]
+                                                            [
+                                                                "$profile_data.mediaUri", 0
+                                                            ]
+                                                    },
+                                                    mediaType:
+                                                    {
+                                                        "$arrayElemAt":
+                                                            [
+                                                                "$profile_data.mediaType", 0
+                                                            ]
+                                                    },
+                                                    mediaEndpoint:
+                                                    {
+                                                        "$concat":
+                                                            [
+                                                                "/profilepict/",
+                                                                {
+                                                                    "$arrayElemAt":
+                                                                        [
+                                                                            "$profile_data.mediaUri", 0
+                                                                        ]
+                                                                }
+                                                            ]
+                                                    },
+                                                }
                                             }
-                                        }
-                                    },
-                                    {
-                                        "$sort":
-                                        {
-                                            createdAt:-1
-                                        }
-                                    },
-                                    // {
-                                    //     "$limit":1
-                                    // },
-                                    {
-                                        "$project":
-                                        {
-                                            _id:1,
-                                            adsID:1,
-                                            userID:1,
-                                            createdAt:1,
-                                        }
-                                    },
-                                ]
-                            }
-                        },
-                        {
-                            "$project":
-                            {
-                                _id:1,
-                                userID:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$userads_data.userID", 0
-                                    ]
-                                },
-                                lastwatch:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$userads_data.createdAt", 0
-                                    ]
-                                },
-                                status:1,
+                                        ]
+                                }
                             },
-                        },
-                        {
-                            "$lookup":
                             {
-                                from: "userbasics",
-                                as: "basics_data",
-                                let: 
+                                "$project":
                                 {
-                                    "basics_fk": "$userID"
-                                },
-                                pipeline: 
-                                [
+                                    titlerow: "pemohon",
+                                    tempcreatedAt: "$timestamp",
+                                    users: "$userID",
+                                    //status:"$status",
+                                    profile:
                                     {
-                                        "$match":
-                                        {
-                                            "$expr":
-                                            {
-                                                "$eq":
-                                                [
-                                                    "$_id", "$$basics_fk"
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "$lookup":
-                                        {
-                                            from: "mediaprofilepicts",
-                                            as: "profile_data",
-                                            let: 
-                                            {
-                                                "profile_fk": "$profilePict.$id"
-                                            },
-                                            pipeline: 
+                                        "$arrayElemAt":
                                             [
-                                                {
-                                                    "$match":
-                                                    {
-                                                        "$expr":
-                                                        {
-                                                            "$eq":
-                                                            [
-                                                                "$_id", "$$profile_fk"
-                                                            ]
-                                                        }
-                                                    }
-                                                },
-                                                {
-                                                    "$project":
-                                                    {
-                                                        mediaID:1,
-                                                        mediaBasePath:1,
-                                                        mediaUri:
-                                                        {
-                                                            "$split":
-                                                            [
-                                                                "$mediaUri", "_"
-                                                            ]
-                                                        },
-                                                        mediaType:1,
-                                                        fsTargetUri:1,
-                                                    }
-                                                },
-                                                {
-                                                    "$project":
-                                                    {
-                                                        mediaID:1,
-                                                        mediaBasePath:1,
-                                                        mediaUri:
-                                                        {
-                                                            "$arrayElemAt":
-                                                            [
-                                                                "$mediaUri", 0
-                                                            ]
-                                                        },
-                                                        mediaType:1,
-                                                        fsTargetUri:1,
-                                                    }
-                                                },
+                                                "$basics_data", 0
                                             ]
-                                        }
-                                    },
+                                    }
+                                }
+                            },
+                        ],
+                    "admin":
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$or":
+                                        [
+                                            {
+                                                status: "APPROVE"
+                                            },
+                                            {
+                                                status: "FINISH"
+                                            },
+                                        ]
+                                }
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    from: "userbasics",
+                                    as: "basics_data",
+                                    let:
                                     {
-                                        "$project":
-                                        {
-                                            _id:1,
-                                            fullName:1,
-                                            mediaBasePath:
+                                        "basics_fk": "$userIDAssesment"
+                                    },
+                                    pipeline:
+                                        [
                                             {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$profile_data.mediaBasePath", 0
-                                                ]
+                                                "$match":
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                            [
+                                                                "$_id", "$$basics_fk"
+                                                            ]
+                                                    }
+                                                }
                                             },
-                                            mediaUri: 
                                             {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$profile_data.mediaUri", 0
-                                                ]
+                                                "$lookup":
+                                                {
+                                                    from: "mediaprofilepicts",
+                                                    as: "profile_data",
+                                                    let:
+                                                    {
+                                                        "profile_fk": "$profilePict.$id"
+                                                    },
+                                                    pipeline:
+                                                        [
+                                                            {
+                                                                "$match":
+                                                                {
+                                                                    "$expr":
+                                                                    {
+                                                                        "$eq":
+                                                                            [
+                                                                                "$_id", "$$profile_fk"
+                                                                            ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "$project":
+                                                                {
+                                                                    mediaID: 1,
+                                                                    mediaBasePath: 1,
+                                                                    mediaUri:
+                                                                    {
+                                                                        "$split":
+                                                                            [
+                                                                                "$mediaUri", "_"
+                                                                            ]
+                                                                    },
+                                                                    mediaType: 1,
+                                                                    fsTargetUri: 1,
+                                                                }
+                                                            },
+                                                            {
+                                                                "$project":
+                                                                {
+                                                                    mediaID: 1,
+                                                                    mediaBasePath: 1,
+                                                                    mediaUri:
+                                                                    {
+                                                                        "$arrayElemAt":
+                                                                            [
+                                                                                "$mediaUri", 0
+                                                                            ]
+                                                                    },
+                                                                    mediaType: 1,
+                                                                    fsTargetUri: 1,
+                                                                }
+                                                            },
+                                                        ]
+                                                }
                                             },
-                                            mediaType:
                                             {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$profile_data.mediaType", 0
-                                                ]
-                                            },
-                                            mediaEndpoint:
-                                            {
-                                                "$concat":
-                                                [
-                                                    "/profilepict/",
+                                                "$project":
+                                                {
+                                                    _id: 1,
+                                                    fullName: 1,
+                                                    mediaBasePath:
                                                     {
                                                         "$arrayElemAt":
-                                                        [
-                                                            "$profile_data.mediaUri", 0
-                                                        ]
-                                                    }
-                                                ]
-                                            },
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "$project":
-                            {
-                                titlerow:"lastpenonton",
-                                tempcreatedAt:"$createdAt",
-                                users:"$userID",
-                                //status:"$status",
-                                profile:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$basics_data", 0
-                                    ]
+                                                            [
+                                                                "$profile_data.mediaBasePath", 0
+                                                            ]
+                                                    },
+                                                    mediaUri:
+                                                    {
+                                                        "$arrayElemAt":
+                                                            [
+                                                                "$profile_data.mediaUri", 0
+                                                            ]
+                                                    },
+                                                    mediaType:
+                                                    {
+                                                        "$arrayElemAt":
+                                                            [
+                                                                "$profile_data.mediaType", 0
+                                                            ]
+                                                    },
+                                                    mediaEndpoint:
+                                                    {
+                                                        "$concat":
+                                                            [
+                                                                "/profilepict/",
+                                                                {
+                                                                    "$arrayElemAt":
+                                                                        [
+                                                                            "$profile_data.mediaUri", 0
+                                                                        ]
+                                                                }
+                                                            ]
+                                                    },
+                                                }
+                                            }
+                                        ]
                                 }
-                            }
-                        },
-                    ]
+                            },
+                            {
+                                "$project":
+                                {
+                                    titlerow: "adminapprove",
+                                    tempcreatedAt: "$timestamp",
+                                    users: "$userIDAssesment",
+                                    status: "$status",
+                                    profile:
+                                    {
+                                        "$arrayElemAt":
+                                            [
+                                                "$basics_data", 0
+                                            ]
+                                    }
+                                }
+                            },
+                        ],
+                    "lastpenonton":
+                        [
+                            {
+                                "$match":
+                                {
+                                    status: "FINISH"
+                                }
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    from: "userads",
+                                    as: "userads_data",
+                                    let:
+                                    {
+                                        "userads_fk": "$_id"
+                                    },
+                                    pipeline:
+                                        [
+                                            {
+                                                "$match":
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                            [
+                                                                "$adsID", "$$userads_fk"
+                                                            ]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "$sort":
+                                                {
+                                                    createdAt: -1
+                                                }
+                                            },
+                                            // {
+                                            //     "$limit":1
+                                            // },
+                                            {
+                                                "$project":
+                                                {
+                                                    _id: 1,
+                                                    adsID: 1,
+                                                    userID: 1,
+                                                    createdAt: 1,
+                                                }
+                                            },
+                                        ]
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    _id: 1,
+                                    userID:
+                                    {
+                                        "$arrayElemAt":
+                                            [
+                                                "$userads_data.userID", 0
+                                            ]
+                                    },
+                                    lastwatch:
+                                    {
+                                        "$arrayElemAt":
+                                            [
+                                                "$userads_data.createdAt", 0
+                                            ]
+                                    },
+                                    status: 1,
+                                },
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    from: "userbasics",
+                                    as: "basics_data",
+                                    let:
+                                    {
+                                        "basics_fk": "$userID"
+                                    },
+                                    pipeline:
+                                        [
+                                            {
+                                                "$match":
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                            [
+                                                                "$_id", "$$basics_fk"
+                                                            ]
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "$lookup":
+                                                {
+                                                    from: "mediaprofilepicts",
+                                                    as: "profile_data",
+                                                    let:
+                                                    {
+                                                        "profile_fk": "$profilePict.$id"
+                                                    },
+                                                    pipeline:
+                                                        [
+                                                            {
+                                                                "$match":
+                                                                {
+                                                                    "$expr":
+                                                                    {
+                                                                        "$eq":
+                                                                            [
+                                                                                "$_id", "$$profile_fk"
+                                                                            ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "$project":
+                                                                {
+                                                                    mediaID: 1,
+                                                                    mediaBasePath: 1,
+                                                                    mediaUri:
+                                                                    {
+                                                                        "$split":
+                                                                            [
+                                                                                "$mediaUri", "_"
+                                                                            ]
+                                                                    },
+                                                                    mediaType: 1,
+                                                                    fsTargetUri: 1,
+                                                                }
+                                                            },
+                                                            {
+                                                                "$project":
+                                                                {
+                                                                    mediaID: 1,
+                                                                    mediaBasePath: 1,
+                                                                    mediaUri:
+                                                                    {
+                                                                        "$arrayElemAt":
+                                                                            [
+                                                                                "$mediaUri", 0
+                                                                            ]
+                                                                    },
+                                                                    mediaType: 1,
+                                                                    fsTargetUri: 1,
+                                                                }
+                                                            },
+                                                        ]
+                                                }
+                                            },
+                                            {
+                                                "$project":
+                                                {
+                                                    _id: 1,
+                                                    fullName: 1,
+                                                    mediaBasePath:
+                                                    {
+                                                        "$arrayElemAt":
+                                                            [
+                                                                "$profile_data.mediaBasePath", 0
+                                                            ]
+                                                    },
+                                                    mediaUri:
+                                                    {
+                                                        "$arrayElemAt":
+                                                            [
+                                                                "$profile_data.mediaUri", 0
+                                                            ]
+                                                    },
+                                                    mediaType:
+                                                    {
+                                                        "$arrayElemAt":
+                                                            [
+                                                                "$profile_data.mediaType", 0
+                                                            ]
+                                                    },
+                                                    mediaEndpoint:
+                                                    {
+                                                        "$concat":
+                                                            [
+                                                                "/profilepict/",
+                                                                {
+                                                                    "$arrayElemAt":
+                                                                        [
+                                                                            "$profile_data.mediaUri", 0
+                                                                        ]
+                                                                }
+                                                            ]
+                                                    },
+                                                }
+                                            }
+                                        ]
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    titlerow: "lastpenonton",
+                                    tempcreatedAt: "$createdAt",
+                                    users: "$userID",
+                                    //status:"$status",
+                                    profile:
+                                    {
+                                        "$arrayElemAt":
+                                            [
+                                                "$basics_data", 0
+                                            ]
+                                    }
+                                }
+                            },
+                        ]
                 }
             },
             {
@@ -17383,11 +17383,11 @@ export class AdsService {
                     result:
                     {
                         "$concatArrays":
-                        [
-                            "$pemohon",
-                            "$admin",
-                            "$lastpenonton"
-                        ]
+                            [
+                                "$pemohon",
+                                "$admin",
+                                "$lastpenonton"
+                            ]
                     }
                 }
             }
@@ -17396,42 +17396,41 @@ export class AdsService {
         return query;
     }
 
-    async getalldatabyforREPORTstatus()
-    {
+    async getalldatabyforREPORTstatus() {
         var query = await this.adsModel.aggregate([
             {
                 "$match":
                 {
                     "$and":
-                    [
-                        {
-                            "$expr":
+                        [
                             {
-                                "$ne":
-                                [
-                                    "$status",
-                                    "REPORTED"
-                                ]
-                            }
-                        },
-                        {
-                            "$expr":
+                                "$expr":
+                                {
+                                    "$ne":
+                                        [
+                                            "$status",
+                                            "REPORTED"
+                                        ]
+                                }
+                            },
                             {
-                                "$ne":
-                                [
-                                    "$status",
-                                    "DRAFT"
-                                ]
-                            }
-                        },
-                    ],
+                                "$expr":
+                                {
+                                    "$ne":
+                                        [
+                                            "$status",
+                                            "DRAFT"
+                                        ]
+                                }
+                            },
+                        ],
                     "$expr":
                     {
                         "$gt":
-                        [
-                            "$reportedUserCount",
-                            200
-                        ]
+                            [
+                                "$reportedUserCount",
+                                200
+                            ]
                     }
                 }
             }

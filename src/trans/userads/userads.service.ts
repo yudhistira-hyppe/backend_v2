@@ -696,12 +696,45 @@ export class UserAdsService {
         return query;
     }
 
-    async listpenonton(idads: string, startdate: string, enddate: string, startage: number, endage: number, listgender: any[], listarea: any[], listpriority: any[], searchname: string, limit: number, page: number, status: any[]) {
+    async listpenonton(idads: string, startdate: string, enddate: string, startage: number, endage: number, listgender: any[], listarea: any[], listpriority: any[], searchname: string, limit: number, page: number) {
         var pipeline = [];
         pipeline.push(
             {
                 $match: {
                     "adsID": new Types.ObjectId(idads)
+
+                }
+            },
+            {
+                "$unwind":
+                {
+                    path: "$updateAt",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    "adsID": 1,
+                    "createdAt": 1,
+                    "description": 1,
+                    "priority": 1,
+                    "priorityNumber": 1,
+                    "statusClick": 1,
+                    "statusView": 1,
+                    "userID": 1,
+                    "liveAt": 1,
+                    "viewed": 1,
+                    "liveTypeuserads": 1,
+                    "adstypesId": 1,
+                    "isActive": 1,
+                    "updateAt": 1,
+                    "clickAt": 1,
+                    "timeViewSecond": 1
+                }
+            },
+            {
+                $match: {
+                    "viewed": { "$ne": 0 }
 
                 }
             },
@@ -796,6 +829,7 @@ export class UserAdsService {
 
                         }
                     },
+                    adsID: 1,
                     age: 1,
                     clickAt: 1,
                     createdAt: 1,
@@ -848,6 +882,7 @@ export class UserAdsService {
                     viewAt: 1,
                     viewed: 1,
                     name: 1,
+                    adsID: 1,
                     age: 1,
                     areas: 1,
                     areasId: 1,
@@ -955,6 +990,7 @@ export class UserAdsService {
                     name: 1,
                     typeads: 1,
                     valueType: 1,
+                    adsID: 1,
                     age: 1,
                     areas: 1,
                     areasId: 1,
@@ -1004,6 +1040,7 @@ export class UserAdsService {
                     viewAt: 1,
                     viewed: 1,
                     name: 1,
+                    adsID: 1,
                     age: 1,
                     gender: 1,
                     typeads: 1,
@@ -1046,6 +1083,7 @@ export class UserAdsService {
                     gender: 1,
                     typeads: 1,
                     valueType: 1,
+                    adsID: 1,
                     age: 1,
                     areas: 1,
                     areasId: 1,
@@ -1067,130 +1105,8 @@ export class UserAdsService {
                 },
 
             },
-            {
-                $facet: {
-                    view: [
-                        {
-                            $match: {
-                                "statusView": true
-                            }
-                        },
-                        {
-                            $project: {
-                                fullName: 1,
-                                clickAt: 1,
-                                createdAt: 1,
-                                description: 1,
-                                priority: 1,
-                                statusClick: 1,
-                                statusView: 1,
-                                status: "view",
-                                updatedAt: 1,
-                                viewAt: 1,
-                                viewed: 1,
-                                name: 1,
-                                gender: 1,
-                                typeads: 1,
-                                valueType: 1,
-                                age: 1,
-                                areas: 1,
-                                areasId: 1,
-                                avatar: 1,
-
-                            }
-                        },
-
-                    ],
-                    click: [
-                        {
-                            $match: {
-                                "statusClick": true
-                            }
-                        },
-                        {
-                            $project: {
-                                fullName: 1,
-                                clickAt: 1,
-                                createdAt: 1,
-                                description: 1,
-                                priority: 1,
-                                statusClick: 1,
-                                statusView: 1,
-                                status: "click",
-                                updatedAt: 1,
-                                viewAt: 1,
-                                viewed: 1,
-                                name: 1,
-                                gender: 1,
-                                typeads: 1,
-                                valueType: 1,
-                                age: 1,
-                                areas: 1,
-                                areasId: 1,
-                                avatar: 1,
-
-                            }
-                        },
-
-                    ],
-
-                }
-            },
-            {
-                $project: {
-                    userAds: {
-                        $concatArrays: ["$click", "$view"]
-                    }
-                }
-            },
-            {
-                "$unwind":
-                {
-                    path: "$userAds",
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
-                $project: {
-                    _id: "$userAds._id",
-                    createdAt: "$userAds.createdAt",
-                    description: "$userAds.description",
-                    priority: "$userAds.priority",
-                    statusClick: "$userAds.statusClick",
-                    statusView: "$userAds.statusView",
-                    viewed: "$userAds.viewed",
-                    clickAt: "$userAds.clickAt",
-                    age: "$userAds.age",
-                    areas: "$userAds.areas",
-                    areasId: "$userAds.areasId",
-                    name: "$userAds.name",
-                    fullName: "$userAds.fullName",
-                    gender: "$userAds.gender",
-                    typeads: "$userAds.typeads",
-                    valueType: "$userAds.valueType",
-                    avatar: "$userAds.avatar",
-                    status: "$userAds.status",
-
-                }
-            },
-
-            {
-                $sort: {
-                    createdAt: - 1
-                },
-
-            },
         );
 
-        if (status && status != undefined) {
-            pipeline.push({
-                "$match": {
-                    status: {
-                        "$in": status
-                    }
-                }
-            });
-        }
         if (startdate != undefined && enddate != undefined) {
             var before = new Date(startdate).toISOString().split("T")[0];
             var input = new Date(enddate);
