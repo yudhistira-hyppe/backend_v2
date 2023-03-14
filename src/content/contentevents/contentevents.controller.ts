@@ -889,6 +889,7 @@ export class ContenteventsController {
 
     var Insight_sender = await this.insightsService.findemail(email_user);
     var Insight_receiver = await this.insightsService.findemail(email_receiverParty);
+    let userbasic1 = await this.userbasicsService.findOne(email_user);
 
     if (eventType == "FOLLOWING") {
       var ceck_data_FOLLOWER = await this.contenteventsService.ceckData(email_receiverParty, "FOLLOWER", "ACCEPT", email_user, "", "");
@@ -934,8 +935,7 @@ export class ContenteventsController {
           CreateInsightlogsDto_sender.mate = email_receiverParty
           CreateInsightlogsDto_sender.eventInsight = "FOLLOWING"
           CreateInsightlogsDto_sender._class = "io.melody.hyppe.content.domain.InsightLog"
-          const resultdata = await this.insightlogsService.create(CreateInsightlogsDto_sender);
-
+          await this.insightlogsService.create(CreateInsightlogsDto_sender);
 
           var LogInsught_sensder = Insight_sender.insightLogs;
           LogInsught_sensder.push({
@@ -977,15 +977,8 @@ export class ContenteventsController {
           const resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
           let idevent1 = resultdata1._id;
           let event1 = resultdata1.eventType.toString();
-          let userbasic1 = await this.userbasicsService.findOne(email_user);
           await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
-
-          const resultdata2 = await this.contenteventsService.create(CreateContenteventsDto2);
-          let idevent2 = resultdata2._id;
-          let event2 = resultdata2.eventType.toString();
-          let userbasic2 = await this.userbasicsService.findOne(email_receiverParty);
-          await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent2, event2, userbasic2._id);
-
+          await this.contenteventsService.create(CreateContenteventsDto2);
           await this.insightsService.updateFollower(email_receiverParty);
           await this.insightsService.updateFollowing(email_user);
           this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
@@ -1002,6 +995,11 @@ export class ContenteventsController {
           await this.contenteventsService.updateFollower(email_receiverParty, "FOLLOWER", email_user);
           await this.insightsService.updateFollower(email_receiverParty);
           await this.insightsService.updateFollowing(email_user);
+
+          let idevent1 = ceck_data_FOLLOWING._id;
+          let event1 = ceck_data_FOLLOWING.eventType.toString();
+          await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
+
           this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
         }
       }
@@ -1075,15 +1073,8 @@ export class ContenteventsController {
             const resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
             let idevent1 = resultdata1._id;
             let event1 = resultdata1.eventType.toString();
-            let userbasic1 = await this.userbasicsService.findOne(email_user);
             await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
-
-            const resultdata2 = await this.contenteventsService.create(CreateContenteventsDto2);
-            let idevent2 = resultdata2._id;
-            let event2 = resultdata2.eventType.toString();
-            let userbasic2 = await this.userbasicsService.findOne(email_receiverParty);
-            await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent2, event2, userbasic2._id);
-
+            await this.contenteventsService.create(CreateContenteventsDto2);
             await this.postsService.updateView(email_receiverParty, request.body.postID);
             await this.insightsService.updateViews(email_receiverParty);
           } catch (error) {
@@ -1159,15 +1150,8 @@ export class ContenteventsController {
           const resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
           let idevent1 = resultdata1._id;
           let event1 = resultdata1.eventType.toString();
-          let userbasic1 = await this.userbasicsService.findOne(email_user);
           await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
-
-          const resultdata2 = await this.contenteventsService.create(CreateContenteventsDto2);
-          let idevent2 = resultdata2._id;
-          let event2 = resultdata2.eventType.toString();
-          let userbasic2 = await this.userbasicsService.findOne(email_receiverParty);
-          await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent2, event2, userbasic2._id);
-
+          await this.contenteventsService.create(CreateContenteventsDto2);
           await this.insightsService.updateLike(email_receiverParty);
           await this.postsService.updateLike(email_receiverParty, request.body.postID);
           this.sendInteractiveFCM(email_receiverParty, "LIKE", request.body.postID, email_user);
@@ -1184,6 +1168,10 @@ export class ContenteventsController {
             await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, false);
             await this.insightsService.updateUnlike(email_receiverParty);
             await this.postsService.updateUnLike(email_receiverParty, request.body.postID);
+
+            let idevent1 = ceck_data_DONE._id;
+            let event1 = ceck_data_DONE.eventType.toString();
+            await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, ' +
@@ -1196,6 +1184,10 @@ export class ContenteventsController {
             await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, true);
             await this.insightsService.updateLike(email_receiverParty);
             await this.postsService.updateLike(email_receiverParty, request.body.postID);
+
+            let idevent1 = ceck_data_DONE._id;
+            let event1 = ceck_data_DONE.eventType.toString();
+            await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, ' +
@@ -1204,7 +1196,8 @@ export class ContenteventsController {
           }
         }
       }
-    } else if (eventType == "UNLIKE") {
+    }
+    else if (eventType == "UNLIKE") {
       var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "LIKE", "DONE", email_receiverParty, "", request.body.postID);
       var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "LIKE", "ACCEPT", "", email_user, request.body.postID);
       if ((await this.utilsService.ceckData(ceck_data_DONE)) && (await this.utilsService.ceckData(ceck_data_ACCEPT))) {
@@ -1213,6 +1206,9 @@ export class ContenteventsController {
           await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, false);
           await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, false);
           await this.postsService.updateUnLike(email_receiverParty, request.body.postID);
+
+          let idevent1 = ceck_data_DONE._id;
+          await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
@@ -1228,6 +1224,9 @@ export class ContenteventsController {
               await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, false);
               await this.insightsService.updateUnlike(email_receiverParty);
               await this.postsService.updateUnLike(email_receiverParty, request.body.postID);
+
+              let idevent1 = ceck_data_DONE._id;
+              await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, ' +
@@ -1240,6 +1239,9 @@ export class ContenteventsController {
               await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, true);
               await this.insightsService.updateLike(email_receiverParty);
               await this.postsService.updateLike(email_receiverParty, request.body.postID);
+
+              let idevent1 = ceck_data_DONE._id;
+              await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "LIKE", userbasic1._id);
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, ' +
@@ -1259,6 +1261,9 @@ export class ContenteventsController {
           await this.insightsService.updateUnFollower(email_receiverParty);
           await this.insightsService.updateUnFollowing(email_user);
           await this.insightsService.updateUnFollow(email_user);
+
+          let idevent1 = ceck_data_FOLLOWING._id;
+          await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNFOLLOW", userbasic1._id);
 
           this.checkFriendbasedString(email_user, email_receiverParty, "delete");
         } catch (error) {
@@ -1556,7 +1561,10 @@ export class ContenteventsController {
 
       console.log("retVal", retVal);
       try {
-        await this.contenteventsService.create(CreateContenteventsDto1);
+        const resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
+        let idevent1 = resultdata1._id;
+        let event1 = resultdata1.eventType.toString();
+        await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
         await this.contenteventsService.create(CreateContenteventsDto2);
         await this.postsService.updateReaction(email_receiverParty, request.body.postID);
         await this.insightsService.updateReactions(email_user);
