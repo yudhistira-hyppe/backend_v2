@@ -3287,7 +3287,7 @@ export class AdsService {
                                     "nameType": "In App Ads",
                                 },
                                 {
-                                    liveTypeAds: false
+                                    liveTypeAds: true
                                 }
                             ]
                         },
@@ -3297,7 +3297,7 @@ export class AdsService {
                                     "nameType": "In App Ads",
                                 },
                                 {
-                                    liveTypeAds: true
+                                    liveTypeAds: false
                                 },
                                 {
                                     $expr: {
