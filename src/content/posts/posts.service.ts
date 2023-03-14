@@ -16951,6 +16951,7 @@ export class PostsService {
 
   async createTagsCollection() {
     var query = await this.PostsModel.aggregate([
+
       {
         "$unwind":
         {
@@ -16988,6 +16989,41 @@ export class PostsService {
         }
       },
       {
+        $set:
+        {
+          "converttags2":
+          {
+            "$split": ["$converttags", " "]
+
+          },
+        }
+      },
+      {
+        "$project":
+        {
+          _id: 1,
+          tags: 1,
+          converttags: "$converttags2",
+          postID: 1,
+        }
+      },
+      {
+        "$unwind":
+        {
+          path: "$converttags",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        "$project":
+        {
+          _id: 0,
+          converttags: 1,
+          postID: 1
+
+        }
+      },
+      {
         "$match":
         {
           "$and":
@@ -17007,50 +17043,17 @@ export class PostsService {
             ]
         }
       },
-      {
-        "$set":
-        {
-          finalconvert:
-          {
-            "$replaceAll":
-            {
-              input: "$converttags",
-              find: '"',
-              replacement: ""
-            },
-          },
-        }
-      },
-      {
-        "$project":
-        {
-          _id: 1,
-          tags:
-          {
-            "$toLower": "$tags"
-          },
-          converttags2: "$finalconvert",
-          postID: 1,
-        }
-      },
-      {
-        "$project":
-        {
-          _id: 1,
-          postID: 1,
-          converttags2: 1
-        }
-      },
+
       {
         "$sort":
         {
-          converttags2: 1
+          converttags: 1
         }
       },
       {
         "$group":
         {
-          _id: "$converttags2",
+          _id: "$converttags",
           total:
           {
             "$sum": 1
@@ -17070,11 +17073,10 @@ export class PostsService {
           _id: 1
         }
       },
-      // coba coba
       {
         $out:
         {
-          db: 'ProdAll',
+          db: 'prodAll',
           coll: 'tag_count'
         }
       },
@@ -36324,6 +36326,7 @@ export class PostsService {
             from: "disquslogs",
             let: {
               localID: '$postID',
+
             },
             as: "comment",
             pipeline: [
@@ -36337,7 +36340,9 @@ export class PostsService {
                       }
                     },
                     {
-                      "active": { $ne: false }
+                      "active": {
+                        $ne: false
+                      }
                     },
 
                   ]
@@ -36365,6 +36370,7 @@ export class PostsService {
                       }
                     }
                   ],
+
                 }
               },
               {
@@ -36374,14 +36380,16 @@ export class PostsService {
               },
               {
                 $sort: {
-                  createdAt: -1
+                  createdAt: - 1
                 }
               },
               {
                 $limit: 2
               },
+
             ]
           },
+
         },
         {
           "$lookup": {
@@ -36593,6 +36601,7 @@ export class PostsService {
                       {
                         $eq: ["$email", "$$localID"]
                       },
+
                     ]
                   }
                 }
@@ -36806,14 +36815,81 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-
         {
           $unwind: {
             path: "$userInterest"
           }
         },
         {
+          "$lookup": {
+            from: "contentevents",
+            as: "isLike",
+            let: {
+              picts: '$postID',
+
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $or: [
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$picts']
+                          }
+                        },
+                        {
+                          "email": email,
+
+                        },
+                        {
+                          "eventType": "LIKE"
+                        },
+                        {
+                          "active": true
+                        },
+
+                      ]
+                    },
+
+                  ]
+                }
+              },
+              {
+                $set: {
+                  kancut: {
+                    $ifNull: ["email", "kosong"]
+                  }
+                }
+              },
+              {
+                $project: {
+                  "email": 1,
+                  "postID": 1,
+                  isLiked:
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$kancut", "kosong"]
+                      },
+                      then: false,
+                      else: true
+                    }
+                  },
+
+                }
+              }
+            ],
+
+          }
+        },
+        {
           $project: {
+            isLike: {
+              $arrayElemAt: ["$isLike.isLiked", 0]
+            },
             comment: 1,
             interest: {
               $filter: {
@@ -36942,8 +37018,11 @@ export class PostsService {
         },
         {
           $project: {
+            isLike: 1,
             comment: 1,
-            intScore: { $size: "$interest" },
+            intScore: {
+              $size: "$interest"
+            },
             "friend": 1,
             "follower": 1,
             "musicTitle": 1,
@@ -37014,6 +37093,7 @@ export class PostsService {
             "avatar": 1,
             "statusCB": 1,
             "privacy": 1,
+
           },
 
         },
@@ -37275,6 +37355,7 @@ export class PostsService {
             from: "disquslogs",
             let: {
               localID: '$postID',
+
             },
             as: "comment",
             pipeline: [
@@ -37288,7 +37369,9 @@ export class PostsService {
                       }
                     },
                     {
-                      "active": { $ne: false }
+                      "active": {
+                        $ne: false
+                      }
                     },
 
                   ]
@@ -37316,6 +37399,7 @@ export class PostsService {
                       }
                     }
                   ],
+
                 }
               },
               {
@@ -37325,14 +37409,16 @@ export class PostsService {
               },
               {
                 $sort: {
-                  createdAt: -1
+                  createdAt: - 1
                 }
               },
               {
                 $limit: 2
               },
+
             ]
           },
+
         },
         {
           "$lookup": {
@@ -37478,7 +37564,7 @@ export class PostsService {
                   "mediaUri": 1,
                   "postID": 1,
                   "mediaEndpoint": {
-                    "$concat": ["/pict/", "$mediaUri"]
+                    "$concat": ["/vid/", "$mediaUri"]
                   },
                   "mediaThumbEndpoint": {
                     "$concat": ["/thumb/", "$postID"]
@@ -37544,6 +37630,7 @@ export class PostsService {
                       {
                         $eq: ["$email", "$$localID"]
                       },
+
                     ]
                   }
                 }
@@ -37757,14 +37844,81 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-
         {
           $unwind: {
             path: "$userInterest"
           }
         },
         {
+          "$lookup": {
+            from: "contentevents",
+            as: "isLike",
+            let: {
+              picts: '$postID',
+
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $or: [
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$picts']
+                          }
+                        },
+                        {
+                          "email": email,
+
+                        },
+                        {
+                          "eventType": "LIKE"
+                        },
+                        {
+                          "active": true
+                        },
+
+                      ]
+                    },
+
+                  ]
+                }
+              },
+              {
+                $set: {
+                  kancut: {
+                    $ifNull: ["email", "kosong"]
+                  }
+                }
+              },
+              {
+                $project: {
+                  "email": 1,
+                  "postID": 1,
+                  isLiked:
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$kancut", "kosong"]
+                      },
+                      then: false,
+                      else: true
+                    }
+                  },
+
+                }
+              }
+            ],
+
+          }
+        },
+        {
           $project: {
+            isLike: {
+              $arrayElemAt: ["$isLike.isLiked", 0]
+            },
             comment: 1,
             interest: {
               $filter: {
@@ -37893,8 +38047,11 @@ export class PostsService {
         },
         {
           $project: {
+            isLike: 1,
             comment: 1,
-            intScore: { $size: "$interest" },
+            intScore: {
+              $size: "$interest"
+            },
             "friend": 1,
             "follower": 1,
             "musicTitle": 1,
@@ -37965,6 +38122,7 @@ export class PostsService {
             "avatar": 1,
             "statusCB": 1,
             "privacy": 1,
+
           },
 
         },
@@ -38226,6 +38384,7 @@ export class PostsService {
             from: "disquslogs",
             let: {
               localID: '$postID',
+
             },
             as: "comment",
             pipeline: [
@@ -38239,7 +38398,9 @@ export class PostsService {
                       }
                     },
                     {
-                      "active": { $ne: false }
+                      "active": {
+                        $ne: false
+                      }
                     },
 
                   ]
@@ -38267,6 +38428,7 @@ export class PostsService {
                       }
                     }
                   ],
+
                 }
               },
               {
@@ -38276,14 +38438,16 @@ export class PostsService {
               },
               {
                 $sort: {
-                  createdAt: -1
+                  createdAt: - 1
                 }
               },
               {
                 $limit: 2
               },
+
             ]
           },
+
         },
         {
           "$lookup": {
@@ -38429,7 +38593,7 @@ export class PostsService {
                   "mediaUri": 1,
                   "postID": 1,
                   "mediaEndpoint": {
-                    "$concat": ["/pict/", "$mediaUri"]
+                    "$concat": ["/diary/", "$mediaUri"]
                   },
                   "mediaThumbEndpoint": {
                     "$concat": ["/thumb/", "$postID"]
@@ -38495,6 +38659,7 @@ export class PostsService {
                       {
                         $eq: ["$email", "$$localID"]
                       },
+
                     ]
                   }
                 }
@@ -38708,14 +38873,81 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-
         {
           $unwind: {
             path: "$userInterest"
           }
         },
         {
+          "$lookup": {
+            from: "contentevents",
+            as: "isLike",
+            let: {
+              picts: '$postID',
+
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $or: [
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$picts']
+                          }
+                        },
+                        {
+                          "email": email,
+
+                        },
+                        {
+                          "eventType": "LIKE"
+                        },
+                        {
+                          "active": true
+                        },
+
+                      ]
+                    },
+
+                  ]
+                }
+              },
+              {
+                $set: {
+                  kancut: {
+                    $ifNull: ["email", "kosong"]
+                  }
+                }
+              },
+              {
+                $project: {
+                  "email": 1,
+                  "postID": 1,
+                  isLiked:
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$kancut", "kosong"]
+                      },
+                      then: false,
+                      else: true
+                    }
+                  },
+
+                }
+              }
+            ],
+
+          }
+        },
+        {
           $project: {
+            isLike: {
+              $arrayElemAt: ["$isLike.isLiked", 0]
+            },
             comment: 1,
             interest: {
               $filter: {
@@ -38844,8 +39076,11 @@ export class PostsService {
         },
         {
           $project: {
+            isLike: 1,
             comment: 1,
-            intScore: { $size: "$interest" },
+            intScore: {
+              $size: "$interest"
+            },
             "friend": 1,
             "follower": 1,
             "musicTitle": 1,
@@ -38916,10 +39151,10 @@ export class PostsService {
             "avatar": 1,
             "statusCB": 1,
             "privacy": 1,
+
           },
 
         },
-
       );
 
       pipeline.push(
