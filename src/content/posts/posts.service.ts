@@ -36088,9 +36088,6 @@ export class PostsService {
     var dataseting = null;
     var sortObject = null;
 
-
-
-
     if (type == "pict") {
       try {
         dataseting = await this.settingsService.findOneByJenis("PictLandingPage");
@@ -36769,7 +36766,8 @@ export class PostsService {
                   "isCelebrity": 1,
                   "isIdVerified": 1,
                   "isPrivate": 1,
-
+                  "isFollowPrivate": 1,
+                  "isPostPrivate": 1,
                 }
               }
             ],
@@ -37086,13 +37084,13 @@ export class PostsService {
             "username": "$username.username",
             "avatar": 1,
             "statusCB": 1,
-            "privacy": [{
-              "isCelebrity": "$userBasic.isCelebrity"
-            }, {
-              "isIdVerified": "$userBasic.isIdVerified"
-            }, {
-              "isPrivate": "$userBasic.isPrivate"
-            }]
+            "privacy": {
+              "isCelebrity": "$userBasic.isCelebrity",
+              "isIdVerified": "$userBasic.isIdVerified",
+              "isPrivate": "$userBasic.isPrivate",
+              "isFollowPrivate": "$userBasic.isFollowPrivate",
+              "isPostPrivate": "$userBasic.isPostPrivate",
+            }
           },
 
         },
@@ -37873,7 +37871,8 @@ export class PostsService {
                   "isCelebrity": 1,
                   "isIdVerified": 1,
                   "isPrivate": 1,
-
+                  "isFollowPrivate": 1,
+                  "isPostPrivate": 1,
                 }
               }
             ],
@@ -38190,13 +38189,13 @@ export class PostsService {
             "username": "$username.username",
             "avatar": 1,
             "statusCB": 1,
-            "privacy": [{
-              "isCelebrity": "$userBasic.isCelebrity"
-            }, {
-              "isIdVerified": "$userBasic.isIdVerified"
-            }, {
-              "isPrivate": "$userBasic.isPrivate"
-            }]
+            "privacy": {
+              "isCelebrity": "$userBasic.isCelebrity",
+              "isIdVerified": "$userBasic.isIdVerified",
+              "isPrivate": "$userBasic.isPrivate",
+              "isFollowPrivate": "$userBasic.isFollowPrivate",
+              "isPostPrivate": "$userBasic.isPostPrivate",
+            }
           },
 
         },
@@ -38977,7 +38976,8 @@ export class PostsService {
                   "isCelebrity": 1,
                   "isIdVerified": 1,
                   "isPrivate": 1,
-
+                  "isFollowPrivate": 1,
+                  "isPostPrivate": 1,
                 }
               }
             ],
@@ -39294,13 +39294,13 @@ export class PostsService {
             "username": "$username.username",
             "avatar": 1,
             "statusCB": 1,
-            "privacy": [{
-              "isCelebrity": "$userBasic.isCelebrity"
-            }, {
-              "isIdVerified": "$userBasic.isIdVerified"
-            }, {
-              "isPrivate": "$userBasic.isPrivate"
-            }]
+            "privacy": {
+              "isCelebrity": "$userBasic.isCelebrity",
+              "isIdVerified": "$userBasic.isIdVerified",
+              "isPrivate": "$userBasic.isPrivate",
+              "isFollowPrivate": "$userBasic.isFollowPrivate",
+              "isPostPrivate": "$userBasic.isPostPrivate",
+            }
           },
 
         },
