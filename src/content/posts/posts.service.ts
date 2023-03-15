@@ -36511,6 +36511,62 @@ export class PostsService {
         },
         {
           "$lookup": {
+            from: "contentevents",
+            as: "following",
+            let: {
+              localID: '$email',
+              user: email
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$senderParty', '$$localID']
+                      }
+                    },
+                    {
+                      "email": email
+                    },
+                    {
+                      "eventType": "FOLLOWING",
+
+                    },
+                    {
+                      "event": "ACCEPT"
+                    },
+                    {
+                      "active": true
+                    },
+
+                  ]
+                }
+              },
+              {
+                $project: {
+                  following:
+                  {
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          $strLenCP: "$email"
+                        }, 0]
+                      },
+                      then: true,
+                      else: false
+                    }
+                  },
+
+                }
+              }
+            ]
+          },
+
+        },
+        {
+          "$lookup": {
             from: "mediapicts",
             as: "media",
             let: {
@@ -36890,11 +36946,6 @@ export class PostsService {
 
           }
         },
-        //{
-        //		$set:{
-        //				kosong: null
-        //		}
-        //},
         {
           $project: {
             isLike: {
@@ -36922,6 +36973,11 @@ export class PostsService {
               $ifNull: [{
                 $arrayElemAt: ["$follower.follower", 0]
               }, 0]
+            },
+            "following": {
+              $ifNull: [{
+                $arrayElemAt: ["$following.following", 0]
+              }, false]
             },
             "musicTitle": "$music.musicTitle",
             "postID": 1,
@@ -37035,6 +37091,7 @@ export class PostsService {
             },
             "friend": 1,
             "follower": 1,
+            "following": 1,
             "musicTitle": 1,
             "postID": 1,
             "artistName": 1,
@@ -37558,6 +37615,62 @@ export class PostsService {
         },
         {
           "$lookup": {
+            from: "contentevents",
+            as: "following",
+            let: {
+              localID: '$email',
+              user: email
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$senderParty', '$$localID']
+                      }
+                    },
+                    {
+                      "email": email
+                    },
+                    {
+                      "eventType": "FOLLOWING",
+
+                    },
+                    {
+                      "event": "ACCEPT"
+                    },
+                    {
+                      "active": true
+                    },
+
+                  ]
+                }
+              },
+              {
+                $project: {
+                  following:
+                  {
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          $strLenCP: "$email"
+                        }, 0]
+                      },
+                      then: true,
+                      else: false
+                    }
+                  },
+
+                }
+              }
+            ]
+          },
+
+        },
+        {
+          "$lookup": {
             from: "mediavideos",
             as: "media",
             let: {
@@ -37937,11 +38050,6 @@ export class PostsService {
 
           }
         },
-        //{
-        //		$set:{
-        //				kosong: null
-        //		}
-        //},
         {
           $project: {
             isLike: {
@@ -37969,6 +38077,11 @@ export class PostsService {
               $ifNull: [{
                 $arrayElemAt: ["$follower.follower", 0]
               }, 0]
+            },
+            "following": {
+              $ifNull: [{
+                $arrayElemAt: ["$following.following", 0]
+              }, false]
             },
             "musicTitle": "$music.musicTitle",
             "postID": 1,
@@ -38082,6 +38195,7 @@ export class PostsService {
             },
             "friend": 1,
             "follower": 1,
+            "following": 1,
             "musicTitle": 1,
             "postID": 1,
             "artistName": 1,
@@ -38605,6 +38719,62 @@ export class PostsService {
         },
         {
           "$lookup": {
+            from: "contentevents",
+            as: "following",
+            let: {
+              localID: '$email',
+              user: email
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$senderParty', '$$localID']
+                      }
+                    },
+                    {
+                      "email": email
+                    },
+                    {
+                      "eventType": "FOLLOWING",
+
+                    },
+                    {
+                      "event": "ACCEPT"
+                    },
+                    {
+                      "active": true
+                    },
+
+                  ]
+                }
+              },
+              {
+                $project: {
+                  following:
+                  {
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          $strLenCP: "$email"
+                        }, 0]
+                      },
+                      then: true,
+                      else: false
+                    }
+                  },
+
+                }
+              }
+            ]
+          },
+
+        },
+        {
+          "$lookup": {
             from: "mediadiaries",
             as: "media",
             let: {
@@ -38984,11 +39154,6 @@ export class PostsService {
 
           }
         },
-        //{
-        //		$set:{
-        //				kosong: null
-        //		}
-        //},
         {
           $project: {
             isLike: {
@@ -39016,6 +39181,11 @@ export class PostsService {
               $ifNull: [{
                 $arrayElemAt: ["$follower.follower", 0]
               }, 0]
+            },
+            "following": {
+              $ifNull: [{
+                $arrayElemAt: ["$following.following", 0]
+              }, false]
             },
             "musicTitle": "$music.musicTitle",
             "postID": 1,
@@ -39129,6 +39299,7 @@ export class PostsService {
             },
             "friend": 1,
             "follower": 1,
+            "following": 1,
             "musicTitle": 1,
             "postID": 1,
             "artistName": 1,
@@ -39211,7 +39382,6 @@ export class PostsService {
         },
 
       );
-
       pipeline.push(
         {
           $sort: sortObject
