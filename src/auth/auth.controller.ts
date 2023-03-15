@@ -3415,7 +3415,12 @@ export class AuthController {
       try {
 
         fileproofpict = "/" + datauserdetail[0].dokument[0].mediaproofpicts.mediaEndpoint;
-        arrsuport.push(fileproofpict);
+
+        if (datauserdetail[0].dokument[0].mediaproofpicts.mediaEndpoint != null) {
+          arrsuport.push(fileproofpict);
+        } else {
+          arrsuport = []
+        }
 
       } catch (e) {
         fileproofpict = "";
