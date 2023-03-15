@@ -17801,6 +17801,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -20072,6 +20073,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -21129,6 +21131,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -23232,6 +23235,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -24920,6 +24924,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -27018,6 +27023,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -27428,6 +27434,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -28134,6 +28141,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -29132,6 +29140,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -30268,6 +30277,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -31123,6 +31133,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -32985,6 +32996,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -34417,6 +34429,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -35428,6 +35441,7 @@ export class PostsService {
                         ]
                       }]
                     },
+                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                     // "isLiked":
                     // {
                     //   $cond: {

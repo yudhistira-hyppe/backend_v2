@@ -2618,7 +2618,7 @@ export class GetusercontentsController {
                 for (let i = 0; i < lengpict; i++) {
 
                     if (arrpict[i].isApsara == true) {
-                        tempdatapict.push(arrpict[i].apsaraId);
+                        tempdatapict.push(arrpict[i].apsaraThumbId);
                     }
                 }
 
@@ -2628,7 +2628,7 @@ export class GetusercontentsController {
                 for (var i = 0; i < lengpict; i++) {
                     var checkpictketemu = false;
                     for (var j = 0; j < gettempresultpictapsara.length; j++) {
-                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
                             checkpictketemu = true;
                             arrpict[i].media =
                             {
@@ -2638,6 +2638,7 @@ export class GetusercontentsController {
                     }
 
                     if (checkpictketemu == false) {
+                        arrpict[i].apsaraThumbId = "";
                         arrpict[i].apsaraId = "";
                         arrpict[i].apsara = false;
                         arrpict[i].media =
