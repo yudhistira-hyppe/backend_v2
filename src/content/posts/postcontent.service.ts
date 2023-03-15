@@ -5519,4 +5519,561 @@ export class PostContentService {
 
     return;
   }
+
+  async createNewPostV32(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    this.logger.log('createNewPost >>> start: ' + JSON.stringify(body));
+    var res = new CreatePostResponse();
+    res.response_code = 204;
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+    if (profile == undefined) {
+      let msg = new Messages();
+      msg.info = ["Email unknown"];
+      res.messages = msg;
+      return res;
+    }
+
+    if (body.certified && body.certified == "true") {
+      if (profile.isIdVerified != true) {
+        let msg = new Messages();
+        msg.info = ["The user ID has not been verified"];
+        res.messages = msg;
+        return res;
+      }
+    }
+
+    var mime = file.mimetype;
+    if (mime.startsWith('video')) {
+      this.logger.log('createNewPost >>> is video');
+      return this.createNewPostVideoV32(file, body, headers);
+    } else {
+      this.logger.log('createNewPost >>> is picture');
+      return this.createNewPostPictV32(file, body, headers);
+    }
+  }
+
+  private async createNewPostVideoV32(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    this.logger.log('createNewPostVideo >>> start: ' + JSON.stringify(body));
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+
+    var postID = await this.utilService.generateId();
+    let post = await this.buildPost2(body, headers, postID);
+
+    let postType = body.postType;
+    let isShared = null;
+
+    if (body.isShared === undefined) {
+      isShared = true;
+    } else {
+      isShared = body.isShared;
+    }
+    var cm = [];
+
+    let mediaId = "";
+    if (postType == 'vid') {
+      var width_ = 0;
+      var height_ = 0;
+      if (body.width != undefined) {
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+      post.metadata = metadata;
+
+      var med = new Mediavideos();
+      med._id = await this.utilService.generateId();
+      med.mediaID = med._id;
+      med.postID = post.postID;
+      med.active = false;
+      med.createdAt = await this.utilService.getDateTimeString();
+      med.updatedAt = await this.utilService.getDateTimeString();
+      med.mediaMime = file.mimetype;
+      med.mediaType = 'video';
+      med.originalName = file.originalname;
+      med.apsara = true;
+      med._class = 'io.melody.hyppe.content.domain.MediaVideo';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retd = await this.videoService.create(med);
+
+      this.logger.log('createNewPostVideo >>> ' + retd);
+
+      var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retd.mediaID);
+    } else if (postType == 'advertise') {
+
+    }
+    else if (postType == 'story') {
+
+      var mime = file.mimetype;
+      if (mime.startsWith('video')) {
+        var width_ = 0;
+        var height_ = 0;
+        if (body.width != undefined) {
+          width_ = parseInt(body.width.toString());
+        }
+        if (body.height != undefined) {
+          height_ = parseInt(body.height.toString());
+        }
+        let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+        post.metadata = metadata;
+      }
+
+      var mes = new Mediastories();
+      mes._id = await this.utilService.generateId();
+      mes.mediaID = mes._id;
+      mes.postID = post.postID;
+      mes.active = false;
+      mes.createdAt = await this.utilService.getDateTimeString();
+      mes.updatedAt = await this.utilService.getDateTimeString();
+      mes.mediaMime = file.mimetype;
+      mes.mediaType = 'video';
+      mes.originalName = file.originalname;
+      mes.apsara = true;
+      mes._class = 'io.melody.hyppe.content.domain.MediaStory';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var rets = await this.storyService.create(mes);
+
+      this.logger.log('createNewPostVideo >>> ' + rets);
+
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
+      cm.push(stories);
+
+      mediaId = String(rets.mediaID);
+
+    } else if (postType == 'diary') {
+      var width_ = 0;
+      var height_ = 0;
+      if (body.width != undefined) {
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'diary', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+      post.metadata = metadata;
+
+      var mer = new Mediadiaries();
+      mer._id = await this.utilService.generateId();
+      mer.mediaID = mer._id;
+      mer.postID = post.postID;
+      mer.active = false;
+      mer.createdAt = await this.utilService.getDateTimeString();
+      mer.updatedAt = await this.utilService.getDateTimeString();
+      mer.mediaMime = file.mimetype;
+      mer.mediaType = 'video';
+      mer.originalName = file.originalname;
+      mer.apsara = true;
+      mer._class = 'io.melody.hyppe.content.domain.MediaDiary';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retr = await this.diaryService.create(mer);
+
+      this.logger.log('createNewPostVideo >>> ' + retr);
+
+      var diaries = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
+      cm.push(diaries);
+
+      mediaId = String(retr.mediaID);
+    } else if (postType == 'pict') {
+
+      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
+      post.metadata = metadata;
+
+      var medx = new Mediapicts();
+      medx._id = await this.utilService.generateId();
+      medx.mediaID = medx._id;
+      medx.postID = post.postID;
+      medx.active = false;
+      medx.createdAt = await this.utilService.getDateTimeString();
+      medx.updatedAt = await this.utilService.getDateTimeString();
+      medx.mediaMime = file.mimetype;
+      medx.mediaType = 'video';
+      medx.originalName = file.originalname;
+      medx.apsara = true;
+      medx._class = 'io.melody.hyppe.content.domain.MediaPict';
+
+      this.logger.log('createNewPostVideo >>> prepare save music');
+      var retdx = await this.picService.create(medx);
+
+      this.logger.log('createNewPostVideo >>> ' + retdx);
+
+      var vids = { "$ref": "mediapicts", "$id": retdx.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retdx.mediaID);
+    }
+
+    post.contentMedias = cm;
+    post.isShared = isShared;
+    let apost = await this.PostsModel.create(post);
+    if (body.musicId != undefined) {
+      await this.mediamusicService.updateUsed(body.musicId);
+    }
+
+    // const form = new FormData();
+    // form.append('file', file.buffer, { filename: file.originalname });
+    // form.append('postID', post._id);
+    // console.log(form);
+    // axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V2"), form, {
+    //   maxContentLength: Infinity,
+    //   maxBodyLength: Infinity,
+    //   headers: { 'Content-Type': 'multipart/form-data' }
+    // });
+    var postUpload = await this.uploadJavaV3(file, post._id.toString());
+    if (postUpload.data.status) {
+      postUpload.data.email = auth.email;
+      await this.updateNewPostData3(postUpload.data);
+    }
+
+    var res = new CreatePostResponse();
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+    res.data = pd;
+
+    return res;
+  }
+
+  private async createNewPostPictV32(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+
+    var postID = await this.utilService.generateId();
+    var file_commpress = await this.resizeImage(file);
+    var uploadJava = await this.uploadJava(postID, file.originalname, file_commpress);
+    console.log(uploadJava.data);
+    if (uploadJava.data.toString() != "Done") {
+      await this.errorHandler.generateNotAcceptableException(
+        'Failed Upload Content',
+      );
+    }
+
+    let post = await this.buildPost2(body, headers, postID);
+    let postType = body.postType;
+    let isShared = null;
+
+    if (body.isShared === undefined) {
+      isShared = true;
+    } else {
+      isShared = body.isShared;
+    }
+    var cm = [];
+    let mediaId = "";
+
+    if (postType == 'pict') {
+      var med = new Mediapicts();
+      med._id = await this.utilService.generateId();
+      med.mediaID = med._id;
+      med.postID = post.postID;
+      med.active = false;
+      med.createdAt = await this.utilService.getDateTimeString();
+      med.updatedAt = await this.utilService.getDateTimeString();
+      med.mediaMime = file.mimetype;
+      med.mediaType = 'image';
+      med.originalName = file.originalname;
+      med.apsara = true;
+      med._class = 'io.melody.hyppe.content.domain.MediaPict';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retm = await this.picService.create(med);
+
+      this.logger.log('createNewPostVideo >>> ' + retm);
+
+      var vids = { "$ref": "mediapicts", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retm.mediaID);
+    } else if (postType == 'story') {
+      let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
+      post.metadata = metadata;
+
+      var mes = new Mediastories();
+      mes._id = await this.utilService.generateId();
+      mes.mediaID = mes._id;
+      mes.postID = post.postID;
+      mes.active = false;
+      mes.createdAt = await this.utilService.getDateTimeString();
+      mes.updatedAt = await this.utilService.getDateTimeString();
+      mes.mediaMime = file.mimetype;
+      mes.mediaType = 'image';
+      mes.originalName = file.originalname;
+      mes.apsara = true;
+      mes._class = 'io.melody.hyppe.content.domain.MediaStory';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var rets = await this.storyService.create(mes);
+
+      this.logger.log('createNewPostVideo >>> ' + rets);
+
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
+      cm.push(stories);
+
+      mediaId = String(rets.mediaID);
+
+    }
+    post.contentMedias = cm;
+    post.isShared = isShared;
+    let apost = await this.PostsModel.create(post);
+
+    this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
+    if (post.certified) {
+      this.generateCertificate(String(post.postID), 'id');
+    } else {
+      this.logger.error('createNewPostPict >>> post is not certified');
+    }
+
+    var res = new CreatePostResponse();
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+    res.data = pd;
+
+    return res;
+  }
+
+  private async buildPost2(body: any, headers: any, postId: any): Promise<Posts> {
+    this.logger.log('buildPost >>> start');
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+    this.logger.log('buildPost >>> profile: ' + profile.email);
+
+    let post = new Posts();
+    post._id = postId;
+    post.postID = post._id;
+    post.postType = body.postType;
+    post.active = true;
+    post.email = auth.email;
+    post.createdAt = await this.utilService.getDateTimeString();
+    post.updatedAt = await this.utilService.getDateTimeString();
+    let big = BigInt(this.utilService.generateAddExpirationFromToday(1));
+    post.expiration = Long.fromBigInt(big);
+    if (body.musicId != undefined) {
+      post.musicId = mongoose.Types.ObjectId(body.musicId)
+    }
+    post._class = 'io.melody.hyppe.content.domain.ContentPost';
+
+    if (body.description != undefined) {
+      post.description = body.description;
+    }
+
+    if (body.tags != undefined) {
+      var obj = body.tags;
+      // var tgs = obj.split(",");
+      post.tags = obj;
+    }
+
+    if (body.visibility != undefined) {
+      post.visibility = body.visibility;
+    } else {
+      post.visibility = 'PUBLIC';
+    }
+
+    if (body.location != undefined) {
+      post.location = body.location;
+    }
+
+    if (body.lat != undefined) {
+      post.lat = body.lat;
+    }
+
+    if (body.lon != undefined) {
+      post.lon = body.lon;
+    }
+
+    if (body.saleAmount != undefined) {
+      post.saleAmount = body.saleAmount;
+    } else {
+      post.saleAmount = null;
+    }
+
+    if (body.saleLike != undefined) {
+      post.saleLike = body.saleLike;
+    } else {
+      post.saleLike = false;
+    }
+
+    if (body.saleView != undefined) {
+      post.saleView = body.saleView;
+    } else {
+      post.saleView = false;
+    }
+
+    if (body.allowComments != undefined) {
+      post.allowComments = body.allowComments;
+    } else {
+      post.allowComments = true;
+    }
+
+    if (body.isSafe != undefined) {
+      post.isSafe = body.isSafe;
+    } else {
+      post.isSafe = false;
+    }
+
+    if (body.isOwned != undefined) {
+      post.isOwned = body.isOwned;
+    } else {
+      post.isOwned = false;
+    }
+
+    if (body.certified != undefined) {
+      post.certified = <boolean>body.certified;
+    } else {
+      post.certified = false;
+    }
+
+    var usp = { "$ref": "userbasics", "$id": mongoose.Types.ObjectId(profile._id), "$db": "hyppe_trans_db" };
+    post.userProfile = usp;
+
+    if (body.cats != undefined && body.cats.length > 1) {
+      var obj = body.cats;
+      var cats = obj.split(",");
+      var pcats = [];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        // var cat = await this.interestService.findByName(tmp);
+        if (tmp != undefined) {
+          var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(tmp), "$db": "hyppe_infra_db" };
+          pcats.push(objintr);
+        }
+      }
+      post.category = pcats;
+    }
+    // if (body.cats != undefined && body.cats.length > 1) {
+    //   var obj = body.cats;
+    //   var cats = obj;
+    //   var pcats = [];
+    //   for (var i = 0; i < cats.length; i++) {
+    //     var tmp = cats[i];
+    //     // var cat = await this.interestService.findByName(tmp);
+    //     if (tmp != undefined) {
+    //       var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(tmp), "$db": "hyppe_infra_db" };
+    //       pcats.push(objintr);
+    //     }
+    //   }
+    //   post.category = pcats;
+    // }
+
+
+
+    post.likes = Long.fromInt(0);
+    post.views = Long.fromInt(0);
+    post.shares = Long.fromInt(0);
+
+
+    if (body.tagPeople != undefined && body.tagPeople.length > 1) {
+      var obj = body.tagPeople;
+      var cats = obj.split(",");
+      var pcats = [];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        var tp = await this.userAuthService.findOneUsername(tmp);
+        if (await this.utilService.ceckData(tp)) {
+          if (tp != undefined) {
+            var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
+            pcats.push(objintr);
+          }
+        }
+      }
+      post.tagPeople = pcats;
+    }
+
+    if (body.tagDescription != undefined && body.tagDescription.length > 0) {
+      var obj = body.tagDescription;
+      var cats = obj.split(",");
+      var pcats = [];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        var tp = await this.userAuthService.findOneUsername(tmp);
+        if (await this.utilService.ceckData(tp)) {
+          if (tp != undefined || tp != null) {
+            var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+            pcats.push(objintrx);
+          }
+        }
+      }
+      post.tagDescription = pcats;
+    }
+
+    post.active = false;
+
+    //TODO Insight
+    var ins = await this.insightService.findemail(auth.email);
+    if (ins == undefined) {
+      ins = new Insights();
+      ins._id = await this.utilService.generateId();
+      ins.insightID = ins._id;
+      ins.active = true;
+      ins.email = auth.email
+      ins.createdAt = await this.utilService.getDateTimeString();
+      ins.updatedAt = await this.utilService.getDateTimeString();
+      ins._class = 'io.melody.hyppe.content.domain.Insight';
+
+      if (post.postType != 'story') {
+        ins.posts = new Long(1);
+      }
+    } else {
+
+      if (post.postType != 'story') {
+        //TODO BUG BUG BUG
+        let prevPost = ins.posts;
+        let nextPost = Number(prevPost) + 1;
+        ins.posts = new Long(nextPost);
+      }
+
+    }
+    this.insightService.create(ins);
+
+    //TODO ContentEVent
+    var ce = new Contentevents();
+    ce._id = await this.utilService.generateId();
+    ce.contentEventID = ce._id;
+    ce.eventType = 'POST';
+    ce.createdAt = await this.utilService.getDateTimeString();
+    ce.updatedAt = await this.utilService.getDateTimeString();
+    ce.active = true;
+    ce.event = 'ACCEPT';
+    ce.flowIsDone = true;
+    ce.email = auth.email;
+    ce.sequenceNumber = 0;
+    ce._class = 'io.melody.hyppe.content.domain.ContentEvent';
+    this.contentEventService.create(ce);
+    this.createUserscore(ce, auth.email);
+    return post;
+  }
+
+  async createUserscore(data: any, email: string)
+  {
+    let userdata = await this.userService.findOne(email);
+    if(userdata == null || userdata == undefined)
+    {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, auth-user data not found',
+      );
+    }
+    await this.utilService.counscore("CE", "prodAll", "contentevents", data._id, data.eventType.toString(), userdata._id);
+  }
 }
