@@ -457,7 +457,8 @@ export class InterestCountService {
                                                         ]
                                                     }]
                                                 }, false]
-                                        }
+                                        },
+                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
 
                                     }
                                 },
@@ -1014,7 +1015,8 @@ export class InterestCountService {
                                                         ]
                                                     }]
                                                 }, false]
-                                        }
+                                        },
+                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
 
                                     }
                                 },
@@ -1361,7 +1363,8 @@ export class InterestCountService {
                                                         ]
                                                     }]
                                                 }, false]
-                                        }
+                                        },
+                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
 
                                     }
                                 },
@@ -2053,7 +2056,8 @@ export class InterestCountService {
                                                         ]
                                                     }]
                                                 }, false]
-                                        }
+                                        },
+                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
 
                                     }
                                 },
