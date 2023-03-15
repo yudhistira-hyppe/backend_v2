@@ -41,6 +41,7 @@ import { AdsLandingModule } from './adslanding/adslanding.module';
 import { TagCountModule } from '../tag_count/tag_count.module';
 import { InterestCountModule } from '../interest_count/interest_count.module';
 import { InterestdayModule } from '../interestday/interestday.module';
+import { OssContentPictService } from './osscontentpict.service';
 @Module({
 
     imports: [
@@ -66,7 +67,7 @@ import { InterestdayModule } from '../interestday/interestday.module';
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_FULL')
     ],
     controllers: [PostsController],
-    providers: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService, ContentModService, PostBoostService],
-    exports: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService, ContentModService, PostBoostService],
+    providers: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService, ContentModService, PostBoostService, OssContentPictService],
+    exports: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService, ContentModService, PostBoostService, OssContentPictService],
 })
 export class PostsModule { }
