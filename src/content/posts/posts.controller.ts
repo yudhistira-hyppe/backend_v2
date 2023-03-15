@@ -1620,7 +1620,7 @@ export class PostsController {
     @Query('x-auth-user') email: string, @Res() response) {
     if ((id != undefined) && (token != undefined) && (email != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
-        var dataMedia = await this.PostsService.findOnepostID(id);
+        var dataMedia = await this.PostsService.findOnepostID2(id);
         if (await this.utilsService.ceckData(dataMedia)) {
           var image_data = "";
           var mediaMime = "";

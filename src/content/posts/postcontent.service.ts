@@ -45,6 +45,11 @@ import { threadId } from 'worker_threads';
 import { NotificationsService } from '../notifications/notifications.service';
 import { ContentDTO, CreateNotificationsDto, NotifResponseApps } from '../notifications/dto/create-notifications.dto';
 import { MediamusicService } from '../mediamusic/mediamusic.service';
+import { Readable, PassThrough } from "stream";
+import ffmpeg from "fluent-ffmpeg";
+import { OssContentPictService } from './osscontentpict.service';
+
+const webp = require('webp-converter');
 const sharp = require('sharp');
 const Jimp_ = require('jimp');
 const convert = require('heic-convert');
@@ -79,7 +84,8 @@ export class PostContentService {
     private settingsService: SettingsService,
     private readonly notifService: NotificationsService,
     private errorHandler: ErrorHandler,
-    private mediamusicService: MediamusicService,
+    private mediamusicService: MediamusicService, 
+    private ossContentPictService: OssContentPictService,
   ) { }
 
   async uploadVideo(file: Express.Multer.File, postID: string) {
@@ -2029,8 +2035,15 @@ export class PostContentService {
 
     var postID = await this.utilService.generateId();
     var file_commpress = await this.resizeImage(file);
+    
+    //Get Image Information
+    var image_information = await sharp(file_commpress).metadata();
+    console.log("IMAGE INFORMATION file_commpress", image_information);
+
     var uploadJava = await this.uploadJava(postID, file.originalname, file_commpress);
-    console.log(uploadJava.data);
+    // console.log(uploadJava.data);
+    // var rr = "";
+    // if (rr != "Done") {
     if (uploadJava.data.toString() != "Done") {
       await this.errorHandler.generateNotAcceptableException(
         'Failed Upload Content',
@@ -2124,9 +2137,143 @@ export class PostContentService {
     return res;
   }
 
-  async uploadJava(postId: string, filename: string, buffer: Buffer) {
+  private async createNewPostPictV4(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+
+    var postID = await this.utilService.generateId();
+    var extension = "jpg";
+
+    var filename = postID + "." + extension;
+    var filename_thum = postID + "_thum." + extension;
+
+    var file_upload = await this.generate_upload(file, extension);
+    var file_thumnail = await this.generate_thumnail(file, extension);
+
+    var uploadJava = await this.uploadOss(postID, filename, filename_thum, file_upload, file_thumnail);
+    if (uploadJava) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Failed Upload Content',
+      );
+    }
+
+    let post = await this.buildPost(body, headers, postID);
+    let postType = body.postType;
+    let isShared = null;
+
+    if (body.isShared === undefined) {
+      isShared = true;
+    } else {
+      isShared = body.isShared;
+    }
+    var cm = [];
+    let mediaId = "";
+
+    if (postType == 'pict') {
+      var med = new Mediapicts();
+      med._id = await this.utilService.generateId();
+      med.mediaID = med._id;
+      med.postID = post.postID;
+      med.active = false;
+      med.createdAt = await this.utilService.getDateTimeString();
+      med.updatedAt = await this.utilService.getDateTimeString();
+      med.mediaMime = file.mimetype;
+      med.mediaType = 'image';
+      med.originalName = file.originalname;
+      med.apsara = true;
+      med._class = 'io.melody.hyppe.content.domain.MediaPict';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retm = await this.picService.create(med);
+
+      this.logger.log('createNewPostVideo >>> ' + retm);
+
+      var vids = { "$ref": "mediapicts", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retm.mediaID);
+    } else if (postType == 'story') {
+      let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
+      post.metadata = metadata;
+
+      var mes = new Mediastories();
+      mes._id = await this.utilService.generateId();
+      mes.mediaID = mes._id;
+      mes.postID = post.postID;
+      mes.active = false;
+      mes.createdAt = await this.utilService.getDateTimeString();
+      mes.updatedAt = await this.utilService.getDateTimeString();
+      mes.mediaMime = file.mimetype;
+      mes.mediaType = 'image';
+      mes.originalName = file.originalname;
+      mes.apsara = true;
+      mes._class = 'io.melody.hyppe.content.domain.MediaStory';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var rets = await this.storyService.create(mes);
+
+      this.logger.log('createNewPostVideo >>> ' + rets);
+
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
+      cm.push(stories);
+
+      mediaId = String(rets.mediaID);
+
+    }
+    post.contentMedias = cm;
+    post.isShared = isShared;
+    let apost = await this.PostsModel.create(post);
+
+    this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
+    if (post.certified) {
+      this.generateCertificate(String(post.postID), 'id');
+    } else {
+      this.logger.error('createNewPostPict >>> post is not certified');
+    }
+
+    var res = new CreatePostResponse();
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+    res.data = pd;
+
+    return res;
+  }
+
+  async uploadOss(postId: string, filename: string, filename_thum: string, buffer: Buffer, buffer_thum: Buffer) {
+    var result = await this.ossContentPictService.uploadFileBuffer(buffer, postId + "/" + filename);
+    var result_thum = await this.ossContentPictService.uploadFileBuffer(buffer_thum, postId + "/" + filename_thum);
+    
+    if (result != undefined && result_thum != undefined) {
+      if (result.res != undefined) {
+        if (result.res.statusCode != undefined) {
+          if (result.res.statusCode == 200) {
+            return true;
+          } else {
+            return false;
+          }
+        }else{
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }else{
+      return false;
+    }
+  }
+
+  async uploadJava(postId: string, filename_: string, buffer: Buffer) {
+    //Get Image Information
+    var image_information = await sharp(buffer).metadata();
+    console.log("IMAGE INFORMATION buffer", image_information);
     const form = new FormData();
-    form.append('file', buffer, { filename: filename });
+    form.append('file', buffer, { filename: filename_ });
     form.append('postID', postId);
     console.log(form);
     const gettest = await axios.post(this.configService.get("APSARA_UPLOADER_PICTURE_V3"), form, {
@@ -2237,6 +2384,159 @@ export class PostContentService {
     // });
     return file_commpress;
   }
+
+  async generate_upload(file: Express.Multer.File, format:string) {
+    var SIZE_IMAGE_UPLOAD = this.configService.get("SIZE_IMAGE_UPLOAD");
+    var SIZE_IMAGE_RESIZE = this.configService.get("SIZE_IMAGE_RESIZE");
+    console.log("CONFIG SIZE_IMAGE_UPLOAD : " + SIZE_IMAGE_UPLOAD);
+    console.log("CONFIG SIZE_IMAGE_RESIZE : " + SIZE_IMAGE_RESIZE);
+
+    //Get Image Information
+    var image_information = await sharp(file.buffer).metadata();
+    console.log("IMAGE INFORMATION", image_information);
+
+    var image_height = image_information.height;
+    var image_width = image_information.width;
+    var image_size = image_information.size;
+    var image_format = image_information.format;
+    var image_orientation = image_information.orientation;
+
+    //Get Image Mode
+    var image_mode = await this.utilService.getImageMode(image_width, image_height);
+    console.log("IMAGE MODE", image_mode);
+
+    //Get Ceck Mode
+    var New_height = 0;
+    var New_width = 0;
+    if (image_mode == "LANDSCAPE") {
+      if (image_width > SIZE_IMAGE_RESIZE) {
+        New_height = await this.utilService.getHeight(image_width, image_height, SIZE_IMAGE_RESIZE);
+        New_width = SIZE_IMAGE_RESIZE;
+      } else {
+        New_height = image_height;
+        New_width = image_width;
+      }
+    } else if (image_mode == "POTRET") {
+      if (image_height > SIZE_IMAGE_RESIZE) {
+        New_width = await this.utilService.getWidth(image_width, image_height, SIZE_IMAGE_RESIZE);
+        New_height = SIZE_IMAGE_RESIZE;
+      } else {
+        New_height = image_height;
+        New_width = image_width;
+      }
+    }
+
+    //Convert Image
+    const buffers_file = await webp.buffer2webpbuffer(file.buffer, format, "-q 70", "./temp/");
+    var file_commpress = buffers_file;
+
+    //Convert Image Orientation
+    var file_commpress= null;
+    if (image_orientation == 1) {
+      file_commpress = await sharp(buffers_file).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
+    } else if (image_orientation == 6) {
+      file_commpress = await sharp(buffers_file).rotate(90).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+    } else {
+      file_commpress = buffers_file;
+    }
+   
+    fs.writeFile("./temp/some.jpeg", file_commpress, function (err) {
+      if (err) {
+        return console.log(err);
+      }
+      console.log("The file was saved!");
+    });
+    return file_commpress;
+  }
+
+  async generate_thumnail(file: Express.Multer.File, format: string) {
+    var SIZE_IMAGE_UPLOAD = this.configService.get("SIZE_IMAGE_UPLOAD");
+    var SIZE_IMAGE_RESIZE = this.configService.get("SIZE_IMAGE_RESIZE");
+    console.log("CONFIG SIZE_IMAGE_UPLOAD : " + SIZE_IMAGE_UPLOAD);
+    console.log("CONFIG SIZE_IMAGE_RESIZE : " + SIZE_IMAGE_RESIZE);
+
+    //Get Image Information
+    var image_information = await sharp(file.buffer).metadata();
+    console.log("IMAGE INFORMATION", image_information);
+
+    var image_height = image_information.height;
+    var image_width = image_information.width;
+    var image_size = image_information.size;
+    var image_format = image_information.format;
+    var image_orientation = image_information.orientation;
+
+    //Get Image Mode
+    var image_mode = await this.utilService.getImageMode(image_width, image_height);
+    console.log("IMAGE MODE", image_mode);
+
+    //Get Ceck Mode
+    var New_height = 0;
+    var New_width = 0;
+    if (image_mode == "LANDSCAPE") {
+      if (image_width > SIZE_IMAGE_RESIZE) {
+        New_height = await this.utilService.getHeight(image_width, image_height, SIZE_IMAGE_RESIZE);
+        New_width = SIZE_IMAGE_RESIZE;
+      } else {
+        New_height = image_height;
+        New_width = image_width;
+      }
+    } else if (image_mode == "POTRET") {
+      if (image_height > SIZE_IMAGE_RESIZE) {
+        New_width = await this.utilService.getWidth(image_width, image_height, SIZE_IMAGE_RESIZE);
+        New_height = SIZE_IMAGE_RESIZE;
+      } else {
+        New_height = image_height;
+        New_width = image_width;
+      }
+    }
+
+    //Convert Image
+    const buffers_file = await webp.buffer2webpbuffer(file.buffer, format, "-q 70", "./temp/");
+    var file_commpress = buffers_file;
+
+    //Convert Image Orientation
+    var file_commpress = null;
+    if (image_orientation == 1) {
+      file_commpress = await sharp(buffers_file).resize(480, 480).toBuffer();
+    } else if (image_orientation == 6) {
+      file_commpress = await sharp(buffers_file).rotate(90).resize(480, 480).toBuffer();
+    } else {
+      file_commpress = buffers_file;
+    }
+
+    fs.writeFile("./temp/some_thum.jpeg", file_commpress, function (err) {
+      if (err) {
+        return console.log(err);
+      }
+      console.log("The file was saved!");
+    });
+    return file_commpress;
+  }
+
+  async convertImage(image: Buffer, outputFormat: string): Promise<Buffer> {
+    const result = await webp.buffer2webpbuffer(image, "jpg", "-q 80");
+    return result
+    // return new Promise((resolve, reject) => {
+    //   const chunks: Buffer[] = []
+    //   const passthrough = new PassThrough()
+    //   ffmpeg().input(image).outputFormat(outputFormat)
+    //     .on("error", (error) => {
+    //       return reject(error);
+    //     })
+    //     .stream(passthrough, { end: true });
+    //   passthrough.on("data", data => chunks.push(data))
+    //   passthrough.on("error", (error) => {
+    //     return reject(error);
+    //   })
+    //   passthrough.on("end", () => {
+    //     const originalImage = Buffer.concat(chunks)
+    //     //const editedImage = originalImage.copyWithin(4, -4).slice(0, -4)
+    //     return resolve(originalImage)
+    //   })
+    // })
+    // const chunks = ffmpeg().input(image).outputFormat(outputFormat);
+    // return chunks;
+}
 
   async compressImage(buffer: Buffer, mimetype: string) {
     var file_commpress = await Jimp_.read(buffer).then((image) => {
