@@ -447,18 +447,22 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
 
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -629,18 +633,22 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
 
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -810,18 +818,22 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
 
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -992,18 +1004,22 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
 
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -1149,18 +1165,22 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
 
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -1331,18 +1351,22 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
 
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -1488,18 +1512,22 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
 
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -1669,18 +1697,22 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
 
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -1826,18 +1858,22 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
 
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -2007,18 +2043,22 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
 
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -2164,18 +2204,22 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
 
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -2321,18 +2365,22 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
 
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
