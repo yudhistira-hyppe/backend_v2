@@ -1964,29 +1964,39 @@ export class PostsController {
     const messages = {
       "info": ["The process successful"],
     };
-
-    var tempdata = await this.userauthsService.getRecentStory(email);
-    for (var i = 0; i < tempdata.length; i++) {
-      var getdata = tempdata[i].story;
-      for (var j = 0; j < getdata.length; j++) {
-        var listvideo = [];
-        var listimage = [];
-        var getchildata = getdata[j];
-        var response = null;
-        if (getchildata.mediaType == "image" || getchildata.mediaType == "images") {
-          listimage.push(getchildata.apsaraId);
-          try {
-            getchildata.media = await this.postContentService.getImageApsara(listimage);
-          } catch (e) {
-            getchildata.media = {};
-          }
-        }
-
-      }
+    var tempdata = null;
+    try {
+      tempdata = await this.userauthsService.getRecentStory(email);
+    } catch (e) {
+      tempdata = null;
     }
 
+    if (tempdata !== null) {
+      for (var i = 0; i < tempdata.length; i++) {
+        var getdata = tempdata[i].story;
+        for (var j = 0; j < getdata.length; j++) {
+          var listvideo = [];
+          var listimage = [];
+          var getchildata = getdata[j];
+          var response = null;
+          if (getchildata.mediaType == "image" || getchildata.mediaType == "images") {
+            listimage.push(getchildata.apsaraId);
+            try {
+              getchildata.media = await this.postContentService.getImageApsara(listimage);
+            } catch (e) {
+              getchildata.media = {};
+            }
+          }
 
-    data = tempdata;
+        }
+      }
+
+
+      data = tempdata;
+    } else {
+      data = [];
+    }
+
 
 
     return { response_code: 202, data, messages };

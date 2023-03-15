@@ -2634,13 +2634,14 @@ export class GetusercontentsController {
                             {
                                 "ImageInfo": [gettempresultpictapsara[j]]
                             }
+                            arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
                         }
                     }
 
                     if (checkpictketemu == false) {
                         arrpict[i].apsaraThumbId = "";
                         arrpict[i].apsaraId = "";
-                        arrpict[i].apsara = false;
+                        arrpict[i].isApsara = false;
                         arrpict[i].media =
                         {
                             "ImageInfo": []
@@ -2681,12 +2682,13 @@ export class GetusercontentsController {
                             {
                                 "VideoList": [gettempresultvidapsara[j]]
                             }
+                            arrvid[i].mediaThumbEndpoint = gettempresultvidapsara[j].CoverURL;
                         }
                     }
 
                     if (checkvidketemu == false) {
                         arrvid[i].apsaraId = "";
-                        arrvid[i].apsara = false;
+                        arrvid[i].isApsara = false;
                         arrvid[i].media =
                         {
                             "VideoList": []
@@ -2727,12 +2729,13 @@ export class GetusercontentsController {
                             {
                                 "VideoList": [gettempresultdiaryapsara[j]]
                             }
+                            arrdiary[i].mediaThumbEndpoint = gettempresultdiaryapsara[j].CoverURL;
                         }
                     }
 
                     if (checkdiaryketemu == false) {
                         arrdiary[i].apsaraId = "";
-                        arrdiary[i].apsara = false;
+                        arrdiary[i].isApsara = false;
                         arrdiary[i].media =
                         {
                             "VideoList": []
