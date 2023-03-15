@@ -184,11 +184,12 @@ export class InterestCountService {
 
         var pipeline = [];
 
-        pipeline.push({
-            $match: {
-                "_id": new Types.ObjectId(key)
-            }
-        },
+        pipeline.push(
+            {
+                $match: {
+                    "_id": new Types.ObjectId(key)
+                }
+            },
             {
                 $lookup:
                 {
