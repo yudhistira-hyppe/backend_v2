@@ -3331,7 +3331,7 @@ export class GetusercontentsController {
             var resultpictapsara = null;
             for (let i = 0; i < lengpict; i++) {
 
-                if (data[i].apsara == true) {
+                if (data[i].isApsara == true) {
                     tempdatapict.push(data[i].apsaraId);
                 }
             }
@@ -3349,12 +3349,14 @@ export class GetusercontentsController {
                             {
                                 "ImageInfo": [gettempresultpictapsara[j]]
                             }
+
+                            data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
                         }
                     }
 
                     if (checkpictketemu == false) {
                         data[i].apsaraId = "";
-                        data[i].apsara = false;
+                        data[i].isApsara = false;
                         data[i].media =
                         {
                             "ImageInfo": []
@@ -3375,12 +3377,14 @@ export class GetusercontentsController {
                             {
                                 "VideoList": [gettempresultpictapsara[j]]
                             }
+
+                            data[i].mediaThumbEndpoint = gettempresultpictapsara[j].CoverURL;
                         }
                     }
 
                     if (checkpictketemu == false) {
                         data[i].apsaraId = "";
-                        data[i].apsara = false;
+                        data[i].isApsara = false;
                         data[i].media =
                         {
                             "VideoList": []

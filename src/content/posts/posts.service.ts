@@ -36529,7 +36529,7 @@ export class PostsService {
               },
               {
                 $project: {
-                  "apsara": 1,
+                  "isApsara": "$apsara",
                   "apsaraId": 1,
                   "apsaraThumbId": 1,
                   "mediaUri": 1,
@@ -36821,6 +36821,11 @@ export class PostsService {
           }
         },
         {
+          $unwind: {
+            path: "$avatar"
+          }
+        },
+        {
           "$lookup": {
             from: "contentevents",
             as: "isLike",
@@ -36885,6 +36890,11 @@ export class PostsService {
 
           }
         },
+        //{
+        //		$set:{
+        //				kosong: null
+        //		}
+        //},
         {
           $project: {
             isLike: {
@@ -36949,15 +36959,15 @@ export class PostsService {
             "views": "$views",
             "shares": "$shares",
             "comments": "$comments",
-            "insight": [
-              {
-                "likes": "$likes",
-                "views": "$views",
-                "shares": "$shares",
-                "comments": "$comments",
+            "insight":
+            {
+              "likes": "$likes",
+              "views": "$views",
+              "shares": "$shares",
+              "comments": "$comments",
 
-              }
-            ],
+            }
+            ,
             "userProfile": 1,
             "contentMedias": 1,
             "category": "$cats",
@@ -36984,7 +36994,7 @@ export class PostsService {
                       }
                     }, "$boosted.boostSession.end"]
                   },
-                  then: "$kampretTaslim",
+                  then: "$kosong",
                   else: '$boosted'
                 }
               }],
@@ -36995,7 +37005,7 @@ export class PostsService {
             "reportedUser": 1,
             "timeStart": 1,
             "timeEnd": 1,
-            "apsara": "$media.apsara",
+            "isApsara": "$media.isApsara",
             "apsaraId": "$media.apsaraId",
             "apsaraThumbId": "$media.apsaraThumbId",
             "mediaEndpoint": "$media.mediaEndpoint",
@@ -37073,7 +37083,16 @@ export class PostsService {
             "isBoost": 1,
             "boostViewer": 1,
             "boostCount": 1,
-            "boosted": 1,
+            "boosted":
+            {
+              $cond: {
+                if: {
+                  $gt: [{ $size: "$boosted.boostSession" }, 0]
+                },
+                else: [],
+                then: '$boosted'
+              }
+            },
             "contentModeration": 1,
             "reportedStatus": 1,
             "reportedUserCount": 1,
@@ -37081,7 +37100,7 @@ export class PostsService {
             "reportedUser": 1,
             "timeStart": 1,
             "timeEnd": 1,
-            "apsara": 1,
+            "isApsara": 1,
             "apsaraId": 1,
             "apsaraThumbId": 1,
             "mediaEndpoint": 1,
@@ -37095,7 +37114,6 @@ export class PostsService {
             "privacy": 1,
 
           },
-
         },
 
       );
@@ -37558,13 +37576,13 @@ export class PostsService {
               },
               {
                 $project: {
-                  "apsara": 1,
+                  "isApsara": "$apsara",
                   "apsaraId": 1,
                   "apsaraThumbId": 1,
                   "mediaUri": 1,
                   "postID": 1,
                   "mediaEndpoint": {
-                    "$concat": ["/vid/", "$mediaUri"]
+                    "$concat": ["/stream/", "$mediaUri"]
                   },
                   "mediaThumbEndpoint": {
                     "$concat": ["/thumb/", "$postID"]
@@ -37850,6 +37868,11 @@ export class PostsService {
           }
         },
         {
+          $unwind: {
+            path: "$avatar"
+          }
+        },
+        {
           "$lookup": {
             from: "contentevents",
             as: "isLike",
@@ -37914,6 +37937,11 @@ export class PostsService {
 
           }
         },
+        //{
+        //		$set:{
+        //				kosong: null
+        //		}
+        //},
         {
           $project: {
             isLike: {
@@ -37978,15 +38006,15 @@ export class PostsService {
             "views": "$views",
             "shares": "$shares",
             "comments": "$comments",
-            "insight": [
-              {
-                "likes": "$likes",
-                "views": "$views",
-                "shares": "$shares",
-                "comments": "$comments",
+            "insight":
+            {
+              "likes": "$likes",
+              "views": "$views",
+              "shares": "$shares",
+              "comments": "$comments",
 
-              }
-            ],
+            }
+            ,
             "userProfile": 1,
             "contentMedias": 1,
             "category": "$cats",
@@ -38013,7 +38041,7 @@ export class PostsService {
                       }
                     }, "$boosted.boostSession.end"]
                   },
-                  then: "$kampretTaslim",
+                  then: "$kosong",
                   else: '$boosted'
                 }
               }],
@@ -38024,7 +38052,7 @@ export class PostsService {
             "reportedUser": 1,
             "timeStart": 1,
             "timeEnd": 1,
-            "apsara": "$media.apsara",
+            "isApsara": "$media.isApsara",
             "apsaraId": "$media.apsaraId",
             "apsaraThumbId": "$media.apsaraThumbId",
             "mediaEndpoint": "$media.mediaEndpoint",
@@ -38102,7 +38130,16 @@ export class PostsService {
             "isBoost": 1,
             "boostViewer": 1,
             "boostCount": 1,
-            "boosted": 1,
+            "boosted":
+            {
+              $cond: {
+                if: {
+                  $gt: [{ $size: "$boosted.boostSession" }, 0]
+                },
+                else: [],
+                then: '$boosted'
+              }
+            },
             "contentModeration": 1,
             "reportedStatus": 1,
             "reportedUserCount": 1,
@@ -38110,7 +38147,7 @@ export class PostsService {
             "reportedUser": 1,
             "timeStart": 1,
             "timeEnd": 1,
-            "apsara": 1,
+            "isApsara": 1,
             "apsaraId": 1,
             "apsaraThumbId": 1,
             "mediaEndpoint": 1,
@@ -38124,7 +38161,6 @@ export class PostsService {
             "privacy": 1,
 
           },
-
         },
 
       );
@@ -38587,13 +38623,13 @@ export class PostsService {
               },
               {
                 $project: {
-                  "apsara": 1,
+                  "isApsara": "$apsara",
                   "apsaraId": 1,
                   "apsaraThumbId": 1,
                   "mediaUri": 1,
                   "postID": 1,
                   "mediaEndpoint": {
-                    "$concat": ["/diary/", "$mediaUri"]
+                    "$concat": ["/stream/", "$mediaUri"]
                   },
                   "mediaThumbEndpoint": {
                     "$concat": ["/thumb/", "$postID"]
@@ -38879,6 +38915,11 @@ export class PostsService {
           }
         },
         {
+          $unwind: {
+            path: "$avatar"
+          }
+        },
+        {
           "$lookup": {
             from: "contentevents",
             as: "isLike",
@@ -38943,6 +38984,11 @@ export class PostsService {
 
           }
         },
+        //{
+        //		$set:{
+        //				kosong: null
+        //		}
+        //},
         {
           $project: {
             isLike: {
@@ -39007,15 +39053,15 @@ export class PostsService {
             "views": "$views",
             "shares": "$shares",
             "comments": "$comments",
-            "insight": [
-              {
-                "likes": "$likes",
-                "views": "$views",
-                "shares": "$shares",
-                "comments": "$comments",
+            "insight":
+            {
+              "likes": "$likes",
+              "views": "$views",
+              "shares": "$shares",
+              "comments": "$comments",
 
-              }
-            ],
+            }
+            ,
             "userProfile": 1,
             "contentMedias": 1,
             "category": "$cats",
@@ -39042,7 +39088,7 @@ export class PostsService {
                       }
                     }, "$boosted.boostSession.end"]
                   },
-                  then: "$kampretTaslim",
+                  then: "$kosong",
                   else: '$boosted'
                 }
               }],
@@ -39053,7 +39099,7 @@ export class PostsService {
             "reportedUser": 1,
             "timeStart": 1,
             "timeEnd": 1,
-            "apsara": "$media.apsara",
+            "isApsara": "$media.isApsara",
             "apsaraId": "$media.apsaraId",
             "apsaraThumbId": "$media.apsaraThumbId",
             "mediaEndpoint": "$media.mediaEndpoint",
@@ -39131,7 +39177,16 @@ export class PostsService {
             "isBoost": 1,
             "boostViewer": 1,
             "boostCount": 1,
-            "boosted": 1,
+            "boosted":
+            {
+              $cond: {
+                if: {
+                  $gt: [{ $size: "$boosted.boostSession" }, 0]
+                },
+                else: [],
+                then: '$boosted'
+              }
+            },
             "contentModeration": 1,
             "reportedStatus": 1,
             "reportedUserCount": 1,
@@ -39139,7 +39194,7 @@ export class PostsService {
             "reportedUser": 1,
             "timeStart": 1,
             "timeEnd": 1,
-            "apsara": 1,
+            "isApsara": 1,
             "apsaraId": 1,
             "apsaraThumbId": 1,
             "mediaEndpoint": 1,
@@ -39153,8 +39208,8 @@ export class PostsService {
             "privacy": 1,
 
           },
-
         },
+
       );
 
       pipeline.push(
