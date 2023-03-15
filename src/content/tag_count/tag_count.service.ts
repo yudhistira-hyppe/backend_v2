@@ -319,17 +319,22 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
+                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -497,17 +502,21 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -674,17 +683,21 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -850,21 +863,27 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
+                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
                                         createdAt: -1
+
                                     }
                                 },
                                 {
@@ -1006,17 +1025,21 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -1182,21 +1205,27 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
+                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
                                         createdAt: -1
+
                                     }
                                 },
                                 {
@@ -1338,21 +1367,26 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
                                         createdAt: -1
+
                                     }
                                 },
                                 {
@@ -1494,17 +1528,21 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -1671,21 +1709,26 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
                                         createdAt: -1
+
                                     }
                                 },
                                 {
@@ -1827,17 +1870,21 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
@@ -2003,21 +2050,27 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
+                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
                                         createdAt: -1
+
                                     }
                                 },
                                 {
@@ -2159,21 +2212,26 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
+                                        }
                                     }
                                 },
                                 {
                                     $sort: {
+                                        isApsara: -1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
                                         createdAt: -1
+
                                     }
                                 },
                                 {

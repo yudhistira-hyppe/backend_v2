@@ -1038,6 +1038,8 @@ export class PostsController {
     return data;
   }
 
+
+
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts')
   @UseInterceptors(FileInterceptor('postContent'))
@@ -1666,15 +1668,15 @@ export class PostsController {
           fsSourceUri = dataMedia[0].datacontent[0].fsSourceUri;
         }
         if (fsSourceUri != "") {
-            return {
-              response_code: 202,
-              data: {
-                url: 'https://' + process.env.SEAWEEDFS_HOST + fsSourceUri
-              },
-              messages: {
-                info: ['successful'],
-              },
-            };
+          return {
+            response_code: 202,
+            data: {
+              url: 'https://' + process.env.SEAWEEDFS_HOST + fsSourceUri
+            },
+            messages: {
+              info: ['successful'],
+            },
+          };
         } else {
           return {
             response_code: 202,
@@ -1696,7 +1698,7 @@ export class PostsController {
     } else {
       return {
         response_code: 202,
-        data:[],
+        data: [],
         messages: {
           info: ['Logout successful'],
         },

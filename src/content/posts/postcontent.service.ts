@@ -447,7 +447,7 @@ export class PostContentService {
     ce.sequenceNumber = 0;
     ce._class = 'io.melody.hyppe.content.domain.ContentEvent';
     this.contentEventService.create(ce);
-
+    this.createUserscore(ce, auth.email);
     return post;
   }
 
@@ -5818,5 +5818,17 @@ export class PostContentService {
     }
 
     return;
+  }
+
+
+
+  async createUserscore(data: any, email: string) {
+    let userdata = await this.userService.findOne(email);
+    if (userdata == null || userdata == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, auth-user data not found',
+      );
+    }
+    await this.utilService.counscore("CE", "prodAll", "contentevents", data._id, data.eventType.toString(), userdata._id);
   }
 }

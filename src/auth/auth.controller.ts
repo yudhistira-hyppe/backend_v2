@@ -3406,7 +3406,10 @@ export class AuthController {
 
       try {
         fileselfiepict = "/" + datauserdetail[0].dokument[0].mediaSelfiepicts.mediaEndpoint;
-        arrsuport.push(fileselfiepict);
+
+        if (datauserdetail[0].dokument[0].mediaSelfiepicts.mediaEndpoint != null) {
+          arrsuport.push(fileproofpict);
+        }
 
       } catch (e) {
         fileselfiepict = "";
@@ -3415,7 +3418,10 @@ export class AuthController {
       try {
 
         fileproofpict = "/" + datauserdetail[0].dokument[0].mediaproofpicts.mediaEndpoint;
-        arrsuport.push(fileproofpict);
+
+        if (datauserdetail[0].dokument[0].mediaproofpicts.mediaEndpoint != null) {
+          arrsuport.push(fileproofpict);
+        }
 
       } catch (e) {
         fileproofpict = "";
