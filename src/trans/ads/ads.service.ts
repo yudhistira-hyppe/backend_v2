@@ -2597,7 +2597,7 @@ export class AdsService {
                         },
                         interestID: "$interestID",
                         gender: "$gender",
-                        liveAt: "$liveTypeAds",
+                        liveAt: "$liveAt",
                         liveTypeuserads: "$liveTypeAds",
                         typeAdsID: "$typeAdsID",
                         kelamin:
@@ -3284,7 +3284,7 @@ export class AdsService {
                         {
                             $and: [
                                 {
-                                    "nameType": "In App Ads",
+                                    "nameType": nameType,
                                 },
                                 {
                                     liveTypeAds: true
@@ -3294,7 +3294,7 @@ export class AdsService {
                         {
                             $and: [
                                 {
-                                    "nameType": "In App Ads",
+                                    "nameType": nameType,
                                 },
                                 {
                                     liveTypeAds: false

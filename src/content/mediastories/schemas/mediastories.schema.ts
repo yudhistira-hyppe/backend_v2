@@ -44,7 +44,15 @@ export class Mediastories {
  @Prop()
  viewers: any[]; 
  @Prop()
- mediaThumb: String
+    mediaThumb: String
+    @Prop()
+    uploadSource: String;
+    @Prop()
+    mediaThumName: String
+    @Prop()
+    mediaThumBasePath: String
+    @Prop()
+    mediaThumUri: String
  
 }
 

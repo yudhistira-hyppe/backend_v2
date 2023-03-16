@@ -16,5 +16,9 @@ export class CreateMediastoriesDto {
     readonly fsTargetUri: String;
     readonly mediaMime: String;
     readonly rotate: Number;
-    readonly _class:String;
+  readonly _class: String;
+  uploadSource: String;
+  mediaThumName: String;
+  mediaThumBasePath: String;
+  mediaThumUri: String;
   }

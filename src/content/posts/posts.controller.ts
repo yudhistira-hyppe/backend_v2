@@ -40,6 +40,7 @@ import { InterestdayService } from '../interestday/interestday.service';
 import { TagCountDto } from '../tag_count/dto/create-tag_count.dto';
 import { InterestCountDto } from '../interest_count/dto/create-interest_count.dto';
 import { InterestdayDto } from '../interestday/dto/create-interestday.dto';
+import { OssContentPictService } from './osscontentpict.service';
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -61,6 +62,7 @@ export class PostsController {
     private readonly tagCountService: TagCountService,
     private readonly interestCountService: InterestCountService,
     private readonly interestdayService: InterestdayService,
+    private ossContentPictService: OssContentPictService,
     private readonly methodepaymentsService: MethodepaymentsService) { }
 
   @Post()
@@ -336,10 +338,225 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/v4/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
-  async createPostV4(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+  async createPostv4(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("createPost >>> start");
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
-    return this.postContentService.createNewPostV4(file, body, headers);
+    var arrtag = [];
+
+    if (body.tags !== undefined && body.tags !== "") {
+      var tag = body.tags;
+      var splittag = tag.split(',');
+      for (let x = 0; x < splittag.length; x++) {
+
+        var tagreq = splittag[x].replace(/"/g, "");
+        arrtag.push(tagreq)
+
+      }
+      body.tags = arrtag;
+    }
+
+
+    var data = await this.postContentService.createNewPostV4(file, body, headers);
+    var postID = data.data.postID;
+
+    //Tags
+
+    if (body.tags !== undefined && body.tags !== "") {
+      var tag2 = body.tags;
+      for (let i = 0; i < tag2.length; i++) {
+        let id = tag2[i];
+
+        var datatag2 = null;
+
+        try {
+          datatag2 = await this.tagCountService.findOneById(id);
+
+        } catch (e) {
+          datatag2 = null;
+
+        }
+
+        if (datatag2 === null) {
+
+          let tagCountDto_ = new TagCountDto();
+          tagCountDto_._id = id;
+          tagCountDto_.total = 1;
+          tagCountDto_.listdata = [{ "postID": postID }];
+          await this.tagCountService.create(tagCountDto_);
+        }
+        else {
+
+          var datatag3 = null;
+          var lengdata3 = null;
+
+          try {
+            datatag3 = await this.tagCountService.finddatabypostid(id, postID);
+            lengdata3 = datatag3.length;
+
+          } catch (e) {
+            datatag3 = null;
+            lengdata3 = 0;
+          }
+
+          var tagslast = [];
+          var datapostawal = null;
+
+          try {
+            datapostawal = await this.PostsService.findByPostId(postID);
+            tagslast = datapostawal.tags;
+          } catch (e) {
+            datapostawal = null;
+            tagslast = [];
+          }
+
+          if (tagslast.length > 0) {
+            let idnew = tagslast[i];
+            var total2 = 0;
+            var postidlist2 = [];
+            let obj = { "postID": datapostawal.postID };
+            total2 = datatag2.total;
+            postidlist2 = datatag2.listdata;
+            if (id === idnew) {
+              if (lengdata3 == 0) {
+                postidlist2.push(obj);
+              }
+            } else {
+
+            }
+
+            let tagCountDto_ = new TagCountDto();
+            tagCountDto_._id = id;
+            if (id === idnew) {
+              if (lengdata3 == 0) {
+                tagCountDto_.total = total2 + 1;
+              }
+
+            }
+
+            tagCountDto_.listdata = postidlist2;
+            await this.tagCountService.update(id, tagCountDto_);
+          }
+
+        }
+
+      }
+
+    }
+
+    //Interest
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+
+
+    if (body.cats !== undefined && body.cats !== "") {
+      var cats = body.cats;
+      var splitcats = cats.split(',');
+      for (let i = 0; i < splitcats.length; i++) {
+        let id = splitcats[i];
+        var datacats = null;
+        var datacatsday = null;
+
+        try {
+          datacats = await this.interestCountService.findOneById(id);
+
+        } catch (e) {
+          datacats = null;
+
+        }
+
+        if (datacats === null) {
+
+          let interestCountDto_ = new InterestCountDto();
+          interestCountDto_._id = mongoose.Types.ObjectId(id);
+          interestCountDto_.total = 1;
+          interestCountDto_.listdata = [{ "postID": postID }];
+          await this.interestCountService.create(interestCountDto_);
+
+
+        }
+        else {
+
+
+          var catslast = [];
+          var datapostawal = null;
+
+          try {
+            datapostawal = await this.PostsService.findByPostId(postID);
+            catslast = datapostawal.category;
+          } catch (e) {
+            datapostawal = null;
+            catslast = [];
+          }
+          let idnew = catslast[i].oid.toString();
+          var totalcats = 0;
+          var postidlistcats = [];
+          let obj = { "postID": datapostawal.postID };
+          totalcats = datacats.total;
+          postidlistcats = datacats.listdata;
+          if (id === idnew) {
+            postidlistcats.push(obj);
+          }
+
+          let interestCountDto_ = new InterestCountDto();
+          interestCountDto_._id = mongoose.Types.ObjectId(id);
+          if (id === idnew) {
+            interestCountDto_.total = totalcats + 1;
+          }
+
+          interestCountDto_.listdata = postidlistcats;
+          await this.interestCountService.update(id, interestCountDto_);
+        }
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var strdate = dt.toISOString();
+        var repdate = strdate.replace('T', ' ');
+        var splitdate = repdate.split('.');
+        var stringdate = splitdate[0];
+        var date = stringdate.substring(0, 10) + " " + "00:00:00";
+        var cekdata = null;
+
+        try {
+          cekdata = await this.interestdayService.finddate(date);
+
+        } catch (e) {
+          cekdata = null;
+
+        }
+
+        try {
+          datacatsday = await this.interestdayService.finddatabydate(date, id);
+
+        } catch (e) {
+          datacatsday = null;
+
+        }
+
+        if (cekdata.length == 0) {
+          let interestdayDto_ = new InterestdayDto();
+          interestdayDto_.date = date;
+          interestdayDto_.listinterest = [{
+            "_id": mongoose.Types.ObjectId(id),
+            "total": 1,
+            "createdAt": stringdate,
+            "updatedAt": stringdate
+          }];
+          await this.interestdayService.create(interestdayDto_);
+        } else {
+
+
+          if (datacatsday.length > 0) {
+            var idq = datacatsday[0]._id;
+            var idint = datacatsday[0].listinterest._id;
+            var totalint = datacatsday[0].listinterest.total;
+            await this.interestdayService.updatefilter(idq.toString(), idint.toString(), totalint + 1, stringdate);
+          }
+        }
+
+      }
+    }
+    return data;
   }
 
   @Post('api/posts/apsaraId')
@@ -835,7 +1052,7 @@ export class PostsController {
     }
 
 
-    var data = await this.postContentService.createNewPostV3(file, body, headers);
+    var data = await this.postContentService.createNewPostV4(file, body, headers);
     var postID = data.data.postID;
 
     //Tags
@@ -1584,24 +1801,56 @@ export class PostsController {
     @Query('x-auth-user') email: string, @Res() response) {
     if ((id != undefined) && (token != undefined) && (email != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
-        var dataMedia = await this.PostsService.findOnepostID(id);
+        var dataMedia = await this.PostsService.findOnepostID2(id);
         if (await this.utilsService.ceckData(dataMedia)) {
-          var thum_data = "";
-          if (dataMedia[0].datacontent[0].fsTargetThumbUri != undefined) {
-            thum_data = dataMedia[0].datacontent[0].fsTargetThumbUri;
-          } else {
-            thum_data = dataMedia[0].datacontent[0].fsSourceUri;
-          }
-          if (thum_data != '') {
-            var data = await this.PostsService.thum(thum_data);
-            if (data != null) {
-              response.set("Content-Type", "image/jpeg");
-              response.send(data);
+          if (dataMedia[0].datacontent[0].uploadSource != undefined) {
+            console.log("OSS");
+            if (dataMedia[0].datacontent[0].uploadSource == "OSS") {
+              var mediaMime = "";
+              if (dataMedia[0].datacontent[0].mediaMime != undefined) {
+                mediaMime = dataMedia[0].datacontent[0].mediaMime.toString();
+              } else {
+                mediaMime = "image/jpeg";
+              }
+
+              var path = "";
+              if (dataMedia[0].datacontent[0].mediaThumBasePath != undefined) {
+                path = dataMedia[0].datacontent[0].mediaThumBasePath.toString();
+              } else {
+                path = dataMedia[0].datacontent[0].mediaBasePath.toString();
+              }
+              console.log(path);
+
+              var data2 = await this.ossContentPictService.readFile(path);
+              console.log(data2);
+              if (data2 != null) {
+                response.set("Content-Type", "image/jpeg");
+                response.send(data2);
+              } else {
+                response.send(null);
+              }
             } else {
               response.send(null);
             }
           } else {
-            response.send(null);
+            console.log("NON OSS");
+            var thum_data = "";
+            if (dataMedia[0].datacontent[0].fsTargetThumbUri != undefined) {
+              thum_data = dataMedia[0].datacontent[0].fsTargetThumbUri;
+            } else {
+              thum_data = dataMedia[0].datacontent[0].fsSourceUri;
+            }
+            if (thum_data != '') {
+              var data = await this.PostsService.thum(thum_data);
+              if (data != null) {
+                response.set("Content-Type", "image/jpeg");
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
           }
         } else {
           response.send(null);
@@ -1624,26 +1873,58 @@ export class PostsController {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var dataMedia = await this.PostsService.findOnepostID2(id);
         if (await this.utilsService.ceckData(dataMedia)) {
-          var image_data = "";
-          var mediaMime = "";
-          if (dataMedia[0].datacontent[0].fsSourceUri != undefined) {
-            image_data = dataMedia[0].datacontent[0].fsSourceUri;
-          }
-          if (dataMedia[0].datacontent[0].mediaMime != undefined) {
-            mediaMime = dataMedia[0].datacontent[0].mediaMime;
-          } else {
-            mediaMime = "image/jpeg";
-          }
-          if (image_data != '') {
-            var data = await this.PostsService.pict(image_data);
-            if (data != null) {
-              response.set("Content-Type", "image/png");
-              response.send(data);
+          if (dataMedia[0].datacontent[0].uploadSource != undefined) {
+            console.log("OSS");
+            if (dataMedia[0].datacontent[0].uploadSource == "OSS") {
+              var mediaMime = "";
+              if (dataMedia[0].datacontent[0].mediaMime != undefined) {
+                mediaMime = dataMedia[0].datacontent[0].mediaMime.toString();
+              } else {
+                mediaMime = "image/jpeg";
+              }
+
+              var path = "";
+              if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
+                path = dataMedia[0].datacontent[0].mediaBasePath.toString();
+              } else {
+                path = dataMedia[0].datacontent[0].mediaBasePath.toString();
+              }
+              console.log(path);
+
+              var data2 = await this.ossContentPictService.readFile(path);
+              console.log(data2);
+              if (data2 != null) {
+                response.set("Content-Type", "image/jpeg");
+                response.send(data2);
+              } else {
+                response.send(null);
+              }
             } else {
               response.send(null);
             }
           } else {
-            response.send(null);
+            console.log("NON OSS");
+            var image_data = "";
+            var mediaMime = "";
+            if (dataMedia[0].datacontent[0].fsSourceUri != undefined) {
+              image_data = dataMedia[0].datacontent[0].fsSourceUri;
+            }
+            if (dataMedia[0].datacontent[0].mediaMime != undefined) {
+              mediaMime = dataMedia[0].datacontent[0].mediaMime;
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            if (image_data != '') {
+              var data = await this.PostsService.pict(image_data);
+              if (data != null) {
+                response.set("Content-Type", "image/png");
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
           }
         } else {
           response.send(null);

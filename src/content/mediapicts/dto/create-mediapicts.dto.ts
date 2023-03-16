@@ -15,5 +15,9 @@ export class CreateMediapictsDto {
     readonly fsSourceName: String;
     readonly fsTargetUri: String;
     readonly mediaMime: String;
-    readonly _class:String;
+  readonly _class: String;
+    uploadSource: String;
+    mediaThumName: String;
+    mediaThumBasePath: String;
+    mediaThumUri: String;
   }
