@@ -2449,7 +2449,7 @@ export class PostContentService {
     }
 
     //Convert Image
-    const buffers_file = await webp.buffer2webpbuffer(file.buffer, format, "-q 70", "./temp/");
+    const buffers_file = await webp.buffer2webpbuffer(file.buffer, format, "-q 70", this.configService.get("PATH_UPLOAD"));
     var file_commpress = buffers_file;
 
     //Convert Image Orientation
