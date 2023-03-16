@@ -127,10 +127,10 @@ export class PostContentService {
     var mime = file.mimetype;
     if (mime.startsWith('video')) {
       this.logger.log('createNewPost >>> is video');
-      return this.createNewPostVideoV4(file, body, headers);
+      return this.createNewPostVideoV3(file, body, headers);
     } else {
       this.logger.log('createNewPost >>> is picture');
-      return this.createNewPostPictV2(file, body, headers);
+      return this.createNewPostPictV4(file, body, headers);
     }
   }
 
