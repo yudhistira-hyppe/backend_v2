@@ -16,9 +16,9 @@ export class UserAds {
     createdAt: String;
     @Prop()
     description: String;
-    @Prop() 
+    @Prop()
     priority: String;
-    @Prop() 
+    @Prop()
     priorityNumber: number;
     @Prop()
     statusClick: boolean;
@@ -35,6 +35,8 @@ export class UserAds {
     @Prop()
     viewed: number;
     @Prop()
+    viewedUnder: number;
+    @Prop()
     liveTypeuserads: boolean;
     @Prop()
     adstypesId: mongoose.Types.ObjectId;
@@ -46,5 +48,7 @@ export class UserAds {
     isActive: boolean;
     @Prop()
     updateAt: String[];
+    @Prop()
+    clickTime: String[];
 }
 export const UserAdsSchema = SchemaFactory.createForClass(UserAds);

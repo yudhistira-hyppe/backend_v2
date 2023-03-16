@@ -16,11 +16,13 @@ export class CreateUserAdsDto {
     userID: mongoose.Types.ObjectId;
     viewAt: String;
     viewed: number;
+    viewedUnder: number;
     liveAt: string;
     adstypesId: mongoose.Types.ObjectId;
     nameType: string;
     timeViewSecond: number;
     isActive: boolean;
     updateAt: String[];
+    clickTime: String[];
 
 }
