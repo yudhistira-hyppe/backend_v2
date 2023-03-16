@@ -1456,14 +1456,14 @@ export class AdsService {
                                     {
                                         "isActive": true
                                     },
-                                    {
-                                        $or: [
-                                            {
-                                                "liveTypeuserads": true
-                                            },
+                                    // {
+                                    //     $or: [
+                                    //         {
+                                    //             "liveTypeuserads": true
+                                    //         },
 
-                                        ]
-                                    }
+                                    //     ]
+                                    // }
                                 ]
                             },
 
