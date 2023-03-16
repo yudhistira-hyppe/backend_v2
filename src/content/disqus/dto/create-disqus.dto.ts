@@ -142,7 +142,7 @@ export class DisqusComment {
   postType: string;
   content: any;
   disqusLogs: DisquslogsDto[][];
-  isIdVerified: String;
+  isIdVerified: boolean;
   _class: String;
 }
 

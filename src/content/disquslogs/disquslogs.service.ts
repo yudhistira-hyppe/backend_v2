@@ -187,7 +187,7 @@ export class DisquslogsService {
         profile_info["avatar"] = profile.avatar;
       }
       if (profile.isIdVerified != undefined) {
-        profile_info["isIdVerified"] = profile.isIdVerified;
+        profile_info["isIdVerified"] = ((profile.isIdVerified) === "true");
       }
       obj.senderInfo = profile_info;
       obj.receiver = dat.receiver;
