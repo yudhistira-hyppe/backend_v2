@@ -1052,7 +1052,7 @@ export class PostsController {
     }
 
 
-    var data = await this.postContentService.createNewPostV3(file, body, headers);
+    var data = await this.postContentService.createNewPostV4(file, body, headers);
     var postID = data.data.postID;
 
     //Tags
