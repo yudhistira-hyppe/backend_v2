@@ -2472,6 +2472,63 @@ export class PostContentService {
     return file_commpress;
   }
 
+  async generate_thumnail_buffer(buffer: Buffer, format: string) {
+    var SIZE_IMAGE_UPLOAD = this.configService.get("SIZE_IMAGE_UPLOAD");
+    var SIZE_IMAGE_RESIZE = this.configService.get("SIZE_IMAGE_RESIZE");
+    console.log("CONFIG SIZE_IMAGE_UPLOAD : " + SIZE_IMAGE_UPLOAD);
+    console.log("CONFIG SIZE_IMAGE_RESIZE : " + SIZE_IMAGE_RESIZE);
+
+    //Get Image Information
+    var image_information = await sharp(buffer).metadata();
+    console.log("IMAGE INFORMATION", image_information);
+
+    var image_height = image_information.height;
+    var image_width = image_information.width;
+    var image_size = image_information.size;
+    var image_format = image_information.format;
+    var image_orientation = image_information.orientation;
+
+    //Get Image Mode
+    var image_mode = await this.utilService.getImageMode(image_width, image_height);
+    console.log("IMAGE MODE", image_mode);
+
+    //Get Ceck Mode
+    var New_height = 0;
+    var New_width = 0;
+    if (image_mode == "LANDSCAPE") {
+      if (image_width > SIZE_IMAGE_RESIZE) {
+        New_height = await this.utilService.getHeight(image_width, image_height, SIZE_IMAGE_RESIZE);
+        New_width = SIZE_IMAGE_RESIZE;
+      } else {
+        New_height = image_height;
+        New_width = image_width;
+      }
+    } else if (image_mode == "POTRET") {
+      if (image_height > SIZE_IMAGE_RESIZE) {
+        New_width = await this.utilService.getWidth(image_width, image_height, SIZE_IMAGE_RESIZE);
+        New_height = SIZE_IMAGE_RESIZE;
+      } else {
+        New_height = image_height;
+        New_width = image_width;
+      }
+    }
+
+    //Convert Image
+    const buffers_file = await webp.buffer2webpbuffer(buffer, format, "-q 70", "./temp/");
+    var file_commpress = buffers_file;
+
+    //Convert Image Orientation
+    var file_commpress = null;
+    if (image_orientation == 1) {
+      file_commpress = await sharp(buffers_file).resize(480, 480).toBuffer();
+    } else if (image_orientation == 6) {
+      file_commpress = await sharp(buffers_file).rotate(90).resize(480, 480).toBuffer();
+    } else {
+      file_commpress = buffers_file;
+    }
+    return file_commpress;
+  }
+
   async generate_thumnail(file: Express.Multer.File, format: string) {
     var SIZE_IMAGE_UPLOAD = this.configService.get("SIZE_IMAGE_UPLOAD");
     var SIZE_IMAGE_RESIZE = this.configService.get("SIZE_IMAGE_RESIZE");
@@ -2526,13 +2583,6 @@ export class PostContentService {
     } else {
       file_commpress = buffers_file;
     }
-
-    fs.writeFile("./temp/some_thum.jpeg", file_commpress, function (err) {
-      if (err) {
-        return console.log(err);
-      }
-      console.log("The file was saved!");
-    });
     return file_commpress;
   }
 

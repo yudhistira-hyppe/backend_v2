@@ -142,6 +142,7 @@ export class DisqusComment {
   postType: string;
   content: any;
   disqusLogs: DisquslogsDto[][];
+  isIdVerified: String;
   _class: String;
 }
 
