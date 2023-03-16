@@ -2263,6 +2263,7 @@ export class PostContentService {
     }
     post.contentMedias = cm;
     post.isShared = isShared;
+    post.active = true;
     let apost = await this.PostsModel.create(post);
 
     this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
