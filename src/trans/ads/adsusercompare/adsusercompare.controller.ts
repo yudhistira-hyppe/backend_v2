@@ -463,7 +463,44 @@ export class AdsUserCompareController {
                                 info: ['successfully'],
                             },
                         };
-                    } else {
+                    }
+                    else if (body.watchingTime > 0 && body.watchingTime < AdsSkip) {
+                        //const data_userAdsService = await this.userAdsService.findOneByuserIDAds(data_userbasicsService._id.toString(), ads_id.toString());
+                        if (await this.utilsService.ceckData(data_userAdsService)) {
+                            //Update userads
+                            try {
+                                var CreateUserAdsDto_ = new CreateUserAdsDto();
+                                CreateUserAdsDto_.statusView = true;
+                                CreateUserAdsDto_.clickAt = current_date;
+                                CreateUserAdsDto_.viewedUnder = 1;
+                                CreateUserAdsDto_.viewed = 0;
+                                CreateUserAdsDto_.timeViewSecond = watching_time;
+                                await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
+                            } catch (e) {
+                                this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed " + e);
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed, ' + e,
+                                );
+                            }
+                        } else {
+                            this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed User Ads not found");
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed User Ads not found',
+                            );
+                        }
+
+                        this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, successfully " + JSON.stringify(body));
+                        return {
+                            response_code: 202,
+                            data: {
+                                userAds_id: data_userAdsService._id.toString()
+                            },
+                            messages: {
+                                info: ['successfully'],
+                            },
+                        };
+                    }
+                    else {
                         if (await this.utilsService.ceckData(data_userAdsService)) {
                             if (data_adstypesService.AdsSkip == undefined) {
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed data setting Ads Skip not found");
