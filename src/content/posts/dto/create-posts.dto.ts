@@ -135,6 +135,7 @@ export class PostData {
     mediaEndpoint: string;
     privacy?: Privacy;
     username: string;
+    isIdVerified: boolean;
     apsaraId: string;
     apsaraThumbId: string;
     insight: InsightPost;

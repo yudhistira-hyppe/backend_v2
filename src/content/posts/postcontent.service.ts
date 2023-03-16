@@ -3863,7 +3863,7 @@ export class PostContentService {
               if (ub != undefined) {
                 pa.username = ub.username;
               }
-
+              pa.isIdVerified = ua.isIdVerified;
               pa.avatar = await this.getProfileAvatar(ua);
             } else {
               this.logger.log('oid: ' + oid + ' error');
