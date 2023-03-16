@@ -394,6 +394,9 @@ export class DisqusController {
             if (profile.avatar != undefined) {
               retVal_.avatar = profile.avatar;
             }
+            if (profile.isIdVerified != undefined) {
+              retVal_.isIdVerified = ((profile.isIdVerified) === "true");
+            }
             retVal_.postId = con.postID.toString();
             retVal_.eventType = con.eventType;
             retVal_.disqusID = con.disqusID;

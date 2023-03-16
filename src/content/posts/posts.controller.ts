@@ -1255,6 +1255,7 @@ export class PostsController {
     return data;
   }
 
+
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts')
   @UseInterceptors(FileInterceptor('postContent'))
@@ -1828,27 +1829,33 @@ export class PostsController {
                 response.send(null);
               }
             } else {
-              console.log("NON OSS");
-              var thum_data = "";
-              if (dataMedia[0].datacontent[0].fsTargetThumbUri != undefined) {
-                thum_data = dataMedia[0].datacontent[0].fsTargetThumbUri;
-              } else {
-                thum_data = dataMedia[0].datacontent[0].fsSourceUri;
-              }
-              if (thum_data != '') {
-                var data = await this.PostsService.thum(thum_data);
-                if (data != null) {
+              response.send(null);
+            }
+          } else {
+            console.log("NON OSS");
+            var thum_data = "";
+            if (dataMedia[0].datacontent[0].fsTargetThumbUri != undefined) {
+              thum_data = dataMedia[0].datacontent[0].fsTargetThumbUri;
+            } else {
+              thum_data = dataMedia[0].datacontent[0].fsSourceUri;
+            }
+            if (thum_data != '') {
+              var data = await this.PostsService.thum(thum_data);
+              if (data != null) {
+                var data_thum = await this.postContentService.generate_thumnail_buffer(data, "jpg");
+                console.log("data_thum",data_thum);
+                if (data_thum != null) {
                   response.set("Content-Type", "image/jpeg");
-                  response.send(data);
+                  response.send(data_thum);
                 } else {
                   response.send(null);
                 }
               } else {
                 response.send(null);
               }
+            } else {
+              response.send(null);
             }
-          } else {
-            response.send(null);
           }
         } else {
           response.send(null);
