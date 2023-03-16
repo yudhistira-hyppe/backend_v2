@@ -282,6 +282,10 @@ export class UserAdsService {
         return await this.userAdsModel.updateOne({ _id: new ObjectId(_id) }, { $push: { updateAt: datetime } }).exec();
     }
 
+    async updateClickTime(_id: string, datetime: string) {
+        return await this.userAdsModel.updateOne({ _id: new ObjectId(_id) }, { $push: { clickTime: datetime } }).exec();
+    }
+
     async updatesdataUserId_(id: string, createUserAdsDto: CreateUserAdsDto): Promise<Object> {
         let data = await this.userAdsModel.updateOne(
             {
@@ -536,12 +540,13 @@ export class UserAdsService {
         }
 
         var pipeline = [];
-        pipeline.push({
-            $match: {
+        pipeline.push(
+            {
+                $match: {
 
-                statusView: true
-            }
-        },);
+                    statusView: true
+                }
+            },);
 
         if (startdate && startdate !== undefined) {
             pipeline.push({
@@ -561,14 +566,15 @@ export class UserAdsService {
             },);
         }
 
-        pipeline.push({
-            $lookup: {
-                from: "ads",
-                localField: "adsID",
-                foreignField: "_id",
-                as: "adsdata"
-            }
-        },
+        pipeline.push(
+            {
+                $lookup: {
+                    from: "ads",
+                    localField: "adsID",
+                    foreignField: "_id",
+                    as: "adsdata"
+                }
+            },
             {
                 $unwind: "$adsdata"
             },

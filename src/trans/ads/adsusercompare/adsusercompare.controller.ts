@@ -36,9 +36,9 @@ export class AdsUserCompareController {
         private readonly uservouchersService: UservouchersService,
         private readonly vouchersService: VouchersService,
         private mediaprofilepictsService: MediaprofilepictsService,
-        private errorHandler: ErrorHandler,) { 
-            this.locks = new Map();
-        }
+        private errorHandler: ErrorHandler,) {
+        this.locks = new Map();
+    }
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
@@ -436,7 +436,8 @@ export class AdsUserCompareController {
                                 var CreateUserAdsDto_ = new CreateUserAdsDto();
                                 CreateUserAdsDto_.statusView = true;
                                 CreateUserAdsDto_.clickAt = current_date;
-                                CreateUserAdsDto_.viewed = 1;
+                                CreateUserAdsDto_.viewedUnder = 1;
+                                CreateUserAdsDto_.viewed = 0;
                                 CreateUserAdsDto_.timeViewSecond = watching_time;
                                 await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
                             } catch (e) {
@@ -511,7 +512,8 @@ export class AdsUserCompareController {
                                     if (sisa_credit_free >= credit_view) {
                                         used_credit_free = used_credit_free + credit_view;
                                     }
-                                } else if (sisa_credit > 0) {
+                                }
+                                else if (sisa_credit > 0) {
                                     if (watching_time > AdsSkip) {
                                         this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, AdsSkip : " + AdsSkip.toString());
                                         this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, watching_time : " + watching_time.toString());
@@ -555,8 +557,10 @@ export class AdsUserCompareController {
                                     if (userAds_liveTypeuserads) {
                                         var viewedAds = Number(userAds_viewed) + 1;
                                         CreateUserAdsDto_.viewed = viewedAds;
+                                        CreateUserAdsDto_.viewedUnder = 0;
                                     } else {
                                         CreateUserAdsDto_.viewed = 1;
+                                        CreateUserAdsDto_.viewedUnder = 0;
                                     }
                                     CreateUserAdsDto_.timeViewSecond = watching_time;
                                     await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
@@ -629,27 +633,32 @@ export class AdsUserCompareController {
                                         console.log('Unabled to proceed, ' + e);
                                     }
                                 }
-                            } else {
-                                //Update userads
-                                try {
-                                    var CreateUserAdsDto_ = new CreateUserAdsDto();
-                                    CreateUserAdsDto_.statusView = true;
-                                    CreateUserAdsDto_.clickAt = current_date;
-                                    if (userAds_liveTypeuserads) {
-                                        var viewedAds = Number(userAds_viewed) + 1;
-                                        CreateUserAdsDto_.viewed = viewedAds;
-                                    } else {
-                                        CreateUserAdsDto_.viewed = 1;
-                                    }
-                                    CreateUserAdsDto_.timeViewSecond = watching_time;
-                                    await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
-                                } catch (e) {
-                                    this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed " + e);
-                                    await this.errorHandler.generateNotAcceptableException(
-                                        'Unabled to proceed, ' + e,
-                                    );
-                                }
                             }
+                            // else {
+
+
+                            //     //Update userads
+                            //     try {
+                            //         var CreateUserAdsDto_ = new CreateUserAdsDto();
+                            //         CreateUserAdsDto_.statusView = true;
+                            //         CreateUserAdsDto_.clickAt = current_date;
+                            //         if (userAds_liveTypeuserads) {
+                            //             var viewedAds = Number(userAds_viewed) + 1;
+                            //             CreateUserAdsDto_.viewed = viewedAds;
+                            //             CreateUserAdsDto_.viewedUnder = 0;
+                            //         } else {
+                            //             CreateUserAdsDto_.viewed = 1;
+                            //             CreateUserAdsDto_.viewedUnder = 0;
+                            //         }
+                            //         CreateUserAdsDto_.timeViewSecond = watching_time;
+                            //         await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
+                            //     } catch (e) {
+                            //         this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed " + e);
+                            //         await this.errorHandler.generateNotAcceptableException(
+                            //             'Unabled to proceed, ' + e,
+                            //         );
+                            //     }
+                            // }
                             this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, successfully " + rewards.toString());
 
                             return {
@@ -845,12 +854,15 @@ export class AdsUserCompareController {
                     CreateUserAdsDto_.clickAt = current_date;
                     if (userAds_liveTypeuserads) {
                         CreateUserAdsDto_.viewed = userAds_viewed + 1;
+                        CreateUserAdsDto_.viewedUnder = 0;
                     } else {
                         CreateUserAdsDto_.viewed = 1;
+                        CreateUserAdsDto_.viewedUnder = 0;
                     }
                     CreateUserAdsDto_.timeViewSecond = watching_time;
                     await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
                     this.userAdsService.updateUpdateAt(data_userAdsService._id.toString(), current_date);
+                    this.userAdsService.updateClickTime(data_userAdsService._id.toString(), current_date);
                 } catch (e) {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed, ' + e,
