@@ -3343,15 +3343,16 @@ export class GetusercontentsController {
         // console.log(lengpict);
         if (lengpict > 0) {
             var resultpictapsara = null;
-            for (let i = 0; i < lengpict; i++) {
 
-                if (data[i].isApsara == true) {
-                    tempdatapict.push(data[i].apsaraThumbId);
-                }
-            }
 
             // console.log(tempdatapict);
             if (type == "pict") {
+                for (let i = 0; i < lengpict; i++) {
+
+                    if (data[i].isApsara == true) {
+                        tempdatapict.push(data[i].apsaraThumbId);
+                    }
+                }
                 resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
                 let gettempresultpictapsara = resultpictapsara.ImageInfo;
                 for (let i = 0; i < lengpict; i++) {
@@ -3381,6 +3382,12 @@ export class GetusercontentsController {
                 }
 
             } else {
+                for (let i = 0; i < lengpict; i++) {
+
+                    if (data[i].isApsara == true) {
+                        tempdatapict.push(data[i].apsaraId);
+                    }
+                }
                 resultpictapsara = await this.postContentService.getVideoApsara(tempdatapict);
                 let gettempresultpictapsara = resultpictapsara.VideoList;
                 for (let i = 0; i < lengpict; i++) {
