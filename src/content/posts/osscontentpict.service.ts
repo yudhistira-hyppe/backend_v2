@@ -19,10 +19,10 @@ export class OssContentPictService {
     getClient() {
         //---- OSS CONFIG ----
         var client = new OSS({
-            accessKeyId: this.configService.get("OSS_PICT_ACCES_KEY_ID"),
-            accessKeySecret: this.configService.get("OSS_PICT_ACCES_KEY_SECRET"),
-            bucket: this.configService.get("OSS_PICT_BUCKET_PROFILE"),
-            region: this.configService.get("OSS_PICT_REGION")
+            accessKeyId: this.configService.get("OSS_ACCES_KEY_ID"),
+            accessKeySecret: this.configService.get("OSS_ACCES_KEY_SECRET"),
+            bucket: this.configService.get("OSS_BUCKET_PROFILE"),
+            region: this.configService.get("OSS_REGION")
         });
         return client;
     }
@@ -30,7 +30,7 @@ export class OssContentPictService {
     async uploadFileBuffer(file: Buffer, pathUpload: string) {
         try {
             //---- POST FILE OSS ----
-            const result = await this.getClient().put(this.configService.get("OSS_PICT_PATH_UPLOAD") +pathUpload, file);
+            const result = await this.getClient().put(pathUpload, file);
             console.log(result);
             return result;
         } catch (e) {
@@ -44,7 +44,7 @@ export class OssContentPictService {
             }
         }
     }
-    
+
     async readFile(pathUpload: string) {
         try {
             const result = await this.getClient().get(pathUpload);
