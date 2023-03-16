@@ -504,6 +504,10 @@ export class UserauthsService {
       {
         "$project":
         {
+
+          mediaEndpoint: {
+            "$concat": ["/pict/", "$post_data.postID"]
+          },
           username: "$username",
           postID: "$post_data.postID",
           musicId: "$post_data.musicId",
@@ -765,6 +769,7 @@ export class UserauthsService {
           "username": "$username",
           "avatar": 1,
           "statusCB": 1,
+          "mediaEndpoint": 1,
           "privacy": {
             "isCelebrity":
             {
@@ -830,6 +835,7 @@ export class UserauthsService {
       },
       {
         $project: {
+          "mediaEndpoint": 1,
           "storyDate": 1,
           "postID": 1,
           "musicTitle": 1,
@@ -895,6 +901,7 @@ export class UserauthsService {
           {
             "$push":
             {
+              "mediaEndpoint": "$mediaEndpoint",
               "postID": "$postID",
               "musicTitle": "$musicTitle",
               "artistName": "$artistName",
