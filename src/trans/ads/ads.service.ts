@@ -2486,7 +2486,7 @@ export class AdsService {
                             {
                                 "userID":
                                 {
-                                    $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                    $ne: new Object("6214438e602c354635ed7876")
                                 }
                             },
                         ]
@@ -2532,7 +2532,7 @@ export class AdsService {
                                 }
                             },
                             {
-                                "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                "userID": new Object("6214438e602c354635ed7876")
                             },
 
                         ]
