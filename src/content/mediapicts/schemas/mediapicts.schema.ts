@@ -42,7 +42,15 @@ export class Mediapicts {
  @Prop()
  apsaraThumbId: String      
  @Prop()
- viewers: any[]; 
+    viewers: any[];
+    @Prop()
+    uploadSource: String;
+    @Prop()
+    mediaThumName: String
+    @Prop()
+    mediaThumBasePath: String
+    @Prop()
+    mediaThumUri: String
 }
 
 export const MediapictsSchema = SchemaFactory.createForClass(Mediapicts);

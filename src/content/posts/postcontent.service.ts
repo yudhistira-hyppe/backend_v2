@@ -2141,25 +2141,47 @@ export class PostContentService {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
+    var userId = profile._id.toString();
+    let postType = body.postType;
 
     var postID = await this.utilService.generateId();
     var extension = "jpg";
 
     var filename = postID + "." + extension;
     var filename_thum = postID + "_thum." + extension;
+    var filename_original = postID + "_original." + extension;
 
     var file_upload = await this.generate_upload(file, extension);
     var file_thumnail = await this.generate_thumnail(file, extension);
 
-    var uploadJava = await this.uploadOss(postID, filename, filename_thum, file_upload, file_thumnail);
-    if (uploadJava) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Failed Upload Content',
-      );
+    var url_filename = "";
+    var url_filename_thum = "";
+
+    var upload_file_upload = await this.uploadOss(file_upload, postID, filename, userId, postType);
+    var upload_file_thumnail = await this.uploadOss(file_thumnail, postID, filename_thum, userId, postType);
+    var upload_file_original = await this.uploadOss(file.buffer, postID, filename_original, userId, postType);
+
+    if (upload_file_upload != undefined) {
+      if (upload_file_upload.res != undefined) {
+        if (upload_file_upload.res.statusCode != undefined) {
+          if (upload_file_upload.res.statusCode == 200) {
+            url_filename = upload_file_upload.res.requestUrls[0];
+          }
+        }
+      }
+    }
+
+    if (upload_file_thumnail != undefined) {
+      if (upload_file_thumnail.res != undefined) {
+        if (upload_file_thumnail.res.statusCode != undefined) {
+          if (upload_file_thumnail.res.statusCode == 200) {
+            url_filename_thum = upload_file_thumnail.res.requestUrls[0];
+          }
+        }
+      }
     }
 
     let post = await this.buildPost(body, headers, postID);
-    let postType = body.postType;
     let isShared = null;
 
     if (body.isShared === undefined) {
@@ -2175,15 +2197,23 @@ export class PostContentService {
       med._id = await this.utilService.generateId();
       med.mediaID = med._id;
       med.postID = post.postID;
-      med.active = false;
-      med.createdAt = await this.utilService.getDateTimeString();
-      med.updatedAt = await this.utilService.getDateTimeString();
-      med.mediaMime = file.mimetype;
+      med.active = true;
       med.mediaType = 'image';
       med.originalName = file.originalname;
-      med.apsara = true;
+      med.mediaMime = file.mimetype;
+      med.mediaBasePath = userId + "/post/" + postType + "/" + post.postID + "/" + filename;
+      med.mediaUri = filename;
+      med.fsSourceUri = url_filename; 
+      med.fsSourceName = filename;
+      med.fsTargetUri = url_filename;
+      med.createdAt = await this.utilService.getDateTimeString();
+      med.updatedAt = await this.utilService.getDateTimeString();
+      med.apsara = false;
+      med.uploadSource = "OSS";
+      med.mediaThumName = filename_thum;
+      med.mediaThumBasePath = userId + "/post/" + postType + "/" + post.postID + "/" + filename_thum;
+      med.mediaThumUri = url_filename_thum;
       med._class = 'io.melody.hyppe.content.domain.MediaPict';
-
       this.logger.log('createNewPostVideo >>> prepare save');
       var retm = await this.picService.create(med);
 
@@ -2201,13 +2231,23 @@ export class PostContentService {
       mes._id = await this.utilService.generateId();
       mes.mediaID = mes._id;
       mes.postID = post.postID;
-      mes.active = false;
-      mes.createdAt = await this.utilService.getDateTimeString();
-      mes.updatedAt = await this.utilService.getDateTimeString();
-      mes.mediaMime = file.mimetype;
+      mes.active = true;
       mes.mediaType = 'image';
       mes.originalName = file.originalname;
-      mes.apsara = true;
+      mes.mediaMime = file.mimetype;
+      mes.mediaBasePath = userId + "/post/" + postType + "/" + post.postID + "/" + filename;
+      mes.mediaUri = filename;
+      mes.fsSourceUri = url_filename;
+      mes.fsSourceName = filename;
+      mes.fsTargetUri = url_filename;
+      mes.createdAt = await this.utilService.getDateTimeString();
+      mes.updatedAt = await this.utilService.getDateTimeString();
+      mes.apsara = false;
+      mes._class = 'io.melody.hyppe.content.domain.MediaPict';
+      mes.uploadSource = "OSS";
+      mes.mediaThumName = filename_thum;
+      mes.mediaThumBasePath = userId + "/post/" + postType + "/" + post.postID + "/" + filename_thum;
+      mes.mediaThumUri = url_filename_thum;
       mes._class = 'io.melody.hyppe.content.domain.MediaStory';
 
       this.logger.log('createNewPostVideo >>> prepare save');
@@ -2245,27 +2285,9 @@ export class PostContentService {
     return res;
   }
 
-  async uploadOss(postId: string, filename: string, filename_thum: string, buffer: Buffer, buffer_thum: Buffer) {
-    var result = await this.ossContentPictService.uploadFileBuffer(buffer, postId + "/" + filename);
-    var result_thum = await this.ossContentPictService.uploadFileBuffer(buffer_thum, postId + "/" + filename_thum);
-    
-    if (result != undefined && result_thum != undefined) {
-      if (result.res != undefined) {
-        if (result.res.statusCode != undefined) {
-          if (result.res.statusCode == 200) {
-            return true;
-          } else {
-            return false;
-          }
-        }else{
-          return false;
-        }
-      } else {
-        return false;
-      }
-    }else{
-      return false;
-    }
+  async uploadOss(buffer: Buffer, postId: string, filename: string, userId: string, mediaTipe: string) {
+    var result = await this.ossContentPictService.uploadFileBuffer(buffer, userId + "/post/" + mediaTipe +"/"+postId + "/" + filename);
+    return result;
   }
 
   async uploadJava(postId: string, filename_: string, buffer: Buffer) {

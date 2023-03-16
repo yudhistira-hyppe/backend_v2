@@ -44,4 +44,17 @@ export class OssContentPictService {
             }
         }
     }
+    
+    async readFile(pathUpload: string) {
+        try {
+            const result = await this.getClient().get(pathUpload);
+            if (result.res.status == 200) {
+                return Buffer.from(result.content);
+            } else {
+                return null;
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
 }

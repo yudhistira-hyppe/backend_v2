@@ -2597,7 +2597,7 @@ export class AdsService {
                         },
                         interestID: "$interestID",
                         gender: "$gender",
-                        liveAt: "$liveTypeAds",
+                        liveAt: "$liveAt",
                         liveTypeuserads: "$liveTypeAds",
                         typeAdsID: "$typeAdsID",
                         kelamin:
