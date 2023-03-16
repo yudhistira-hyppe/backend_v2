@@ -2159,7 +2159,7 @@ export class PostContentService {
 
     var upload_file_upload = await this.uploadOss(file_upload, postID, filename, userId, postType);
     var upload_file_thumnail = await this.uploadOss(file_thumnail, postID, filename_thum, userId, postType);
-    var upload_file_original = await this.uploadOss(file.buffer, postID, filename_original, userId, postType);
+    this.uploadOss(file.buffer, postID, filename_original, userId, postType);
 
     if (upload_file_upload != undefined) {
       if (upload_file_upload.res != undefined) {
