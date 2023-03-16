@@ -164,7 +164,7 @@ export class PostContentService {
       return this.createNewPostVideoV3(file, body, headers);
     } else {
       this.logger.log('createNewPost >>> is picture');
-      return this.createNewPostPictV4(file, body, headers);
+      return this.createNewPostPictV3(file, body, headers);
     }
   }
 
