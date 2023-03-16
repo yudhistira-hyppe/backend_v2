@@ -3329,7 +3329,8 @@ export class GetusercontentsController {
 
 
         try {
-            data = await this.postsService.landingpage(email, type, skip, limit);
+            // data = await this.postsService.landingpage(email, type, skip, limit);
+            data = await this.postsService.landingpage2(email, type, skip, limit);
             lengpict = data.length;
 
         } catch (e) {
