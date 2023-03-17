@@ -154,7 +154,7 @@ export class DisquslogsService {
   }
 
   async findLogByDisqusId(disqusId: string, dpage: number, dpageRow: number) {
-    let query = this.DisquslogsModel.find({ disqusID: disqusId, active: true }).sort({ sequenceNumber: 1 });
+    let query = this.DisquslogsModel.find({ disqusID: disqusId, active: true }).sort({ sequenceNumber: 1, updatedAt: -1 });
 
     let row = 20;
     let page = 0;
