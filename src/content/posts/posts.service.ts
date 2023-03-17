@@ -40422,7 +40422,7 @@ export class PostsService {
         },
         {
           $project: {
-            isLike: 1,
+            isLiked: "$isLike",
             comment: 1,
             intScore: {
               $size: "$interest"
@@ -41530,7 +41530,7 @@ export class PostsService {
         },
         {
           $project: {
-            isLike: 1,
+            isLiked: "$isLike",
             comment: 1,
             intScore: {
               $size: "$interest"
@@ -42638,7 +42638,7 @@ export class PostsService {
         },
         {
           $project: {
-            isLike: 1,
+            isLiked: "$isLike",
             comment: 1,
             intScore: {
               $size: "$interest"
