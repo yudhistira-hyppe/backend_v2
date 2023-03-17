@@ -375,6 +375,7 @@ export class DisqusController {
           console.log("Payload Query Comment >>>>>> : ", ContentDto_);
           var DisqusResponseComment_ = new DisqusResponseComment();
           let com = await this.disqusService.findDisqusByPost(String(ContentDto_.postID), type);
+          
           console.log('com',com);
 
           let tmp_: DisqusComment[] = [];
@@ -403,7 +404,8 @@ export class DisqusController {
             retVal_.email = con.email;
             retVal_.updatedAt = con.updatedAt;
             retVal_.createdAt = con.createdAt; 
-
+            let get_count = await this.disqusLogService.findDiscusLog(String(con.disqusID));
+            retVal_.comment = get_count.length;
             let dl = await this.disqusLogService.findLogByDisqusId(String(con.disqusID), Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
             retVal_.disqusLogs = dl;
 

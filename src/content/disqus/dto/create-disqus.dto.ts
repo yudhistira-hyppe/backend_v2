@@ -143,6 +143,7 @@ export class DisqusComment {
   content: any;
   disqusLogs: DisquslogsDto[][];
   isIdVerified: boolean;
+  comment: number;
   _class: String;
 }
 

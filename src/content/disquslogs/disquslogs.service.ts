@@ -149,6 +149,10 @@ export class DisquslogsService {
     return this.DisquslogsModel.findOne({ _id: _id, active: true }).exec();
   }
 
+  async findDiscusLog(disqusID: string): Promise<Disquslogs[]> {
+    return this.DisquslogsModel.find({ disqusID: disqusID, sequenceNumber: 0 }).exec();
+  }
+
   async findLogByDisqusId(disqusId: string, dpage: number, dpageRow: number) {
     let query = this.DisquslogsModel.find({ disqusID: disqusId, active: true }).sort({ sequenceNumber: 1 });
 
