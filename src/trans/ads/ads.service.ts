@@ -8921,56 +8921,5281 @@ export class AdsService {
 
     }
 
-    async detailAds(id: ObjectID, startdate: string, enddate: string) {
+    // async detailAds(id: ObjectID, startdate: string, enddate: string) {
+    //     var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+    //     var dateend = currentdate.toISOString();
+
+
+    //     var n1 = new Date(new Date().setDate(new Date().getDate() - 6));
+    //     var dt1 = n1.toISOString();
+    //     var splitdt1 = dt1.split('T');
+    //     var dateend1 = splitdt1[0].toString();
+
+    //     var n2 = new Date(new Date().setDate(new Date().getDate() - 5));
+    //     var dt2 = n2.toISOString();
+    //     var splitdt2 = dt2.split('T');
+    //     var dateend2 = splitdt2[0].toString();
+
+    //     var n3 = new Date(new Date().setDate(new Date().getDate() - 4));
+    //     var dt3 = n3.toISOString();
+    //     var splitdt3 = dt3.split('T');
+    //     var dateend3 = splitdt3[0].toString();
+
+
+    //     var n4 = new Date(new Date().setDate(new Date().getDate() - 3));
+    //     var dt4 = n4.toISOString();
+    //     var splitdt4 = dt4.split('T');
+    //     var dateend4 = splitdt4[0].toString();
+
+    //     var n5 = new Date(new Date().setDate(new Date().getDate() - 2));
+    //     var dt5 = n5.toISOString();
+    //     var splitdt5 = dt5.split('T');
+    //     var dateend5 = splitdt5[0].toString();
+
+    //     var n6 = new Date(new Date().setDate(new Date().getDate() - 1));
+    //     var dt6 = n6.toISOString();
+    //     var splitdt6 = dt6.split('T');
+    //     var dateend6 = splitdt6[0].toString();
+
+    //     var n7 = new Date();
+    //     var dt7 = n7.toISOString();
+    //     var splitdt7 = dt7.split('T');
+    //     var dateend7 = splitdt7[0].toString();
+
+    //     var query = await this.adsModel.aggregate([
+    //         {
+    //             $match: {
+    //                 _id: id,
+
+    //             }
+    //         },
+
+    //         {
+    //             $lookup: {
+    //                 from: "adsplaces",
+    //                 localField: "placingID",
+    //                 foreignField: "_id",
+    //                 as: "placeData"
+    //             }
+    //         },
+    //         {
+    //             $lookup: {
+    //                 from: "adstypes",
+    //                 localField: "typeAdsID",
+    //                 foreignField: "_id",
+    //                 as: "typesData"
+    //             }
+    //         },
+    //         {
+    //             $lookup: {
+    //                 from: "userbasics",
+    //                 localField: "userID",
+    //                 foreignField: "_id",
+    //                 as: "userbasics_data"
+    //             }
+    //         },
+    //         {
+    //             $lookup: {
+    //                 from: "userbasics",
+    //                 localField: "userIDAssesment",
+    //                 foreignField: "_id",
+    //                 as: "adminbasics_data"
+    //             }
+    //         },
+    //         {
+    //             $project: {
+    //                 userID: 1,
+    //                 fullName:
+    //                 {
+    //                     "$arrayElemAt":
+    //                         [
+    //                             "$userbasics_data.fullName", 0
+    //                         ]
+    //                 },
+    //                 email:
+    //                 {
+    //                     "$arrayElemAt":
+    //                         [
+    //                             "$userbasics_data.email", 0
+    //                         ]
+    //                 },
+    //                 timestamp: 1,
+    //                 expiredAt: 1,
+    //                 liveAt: 1,
+    //                 name: 1,
+    //                 description: 1,
+    //                 objectifitas: 1,
+    //                 status: 1,
+    //                 totalClick: 1,
+    //                 totalUsedCredit: 1,
+    //                 totalView: 1,
+    //                 urlLink: 1,
+    //                 isActive: 1,
+    //                 usedCredit: 1,
+    //                 usedCreditFree: 1,
+    //                 creditFree: 1,
+    //                 creditValue: 1,
+    //                 totalCredit: 1,
+    //                 timeStart: 1,
+    //                 timeEnd: 1,
+    //                 namePlace: {
+    //                     $arrayElemAt: ['$placeData.namePlace', 0]
+    //                 },
+    //                 nameType: {
+    //                     $arrayElemAt: ['$typesData.nameType', 0]
+    //                 },
+    //                 idApsara: 1,
+    //                 duration: 1,
+    //                 tayang: 1,
+    //                 type: 1,
+    //                 adminfullName:
+    //                 {
+    //                     "$arrayElemAt":
+    //                         [
+    //                             "$adminbasics_data.fullName", 0
+    //                         ]
+    //                 },
+    //                 listgender:
+    //                     [
+    //                         {
+    //                             $switch:
+    //                             {
+    //                                 branches:
+    //                                     [
+    //                                         {
+    //                                             case:
+    //                                             {
+    //                                                 $eq:
+    //                                                     [
+    //                                                         {
+    //                                                             "$arrayElemAt":
+    //                                                                 [
+    //                                                                     "$gender", 0
+    //                                                                 ]
+    //                                                         },
+    //                                                         "P"
+    //                                                     ]
+    //                                             },
+    //                                             then: "Perempuan"
+    //                                         },
+    //                                         {
+    //                                             case:
+    //                                             {
+    //                                                 $eq:
+    //                                                     [
+    //                                                         {
+    //                                                             "$arrayElemAt":
+    //                                                                 [
+    //                                                                     "$gender", 0
+    //                                                                 ]
+    //                                                         },
+    //                                                         "L"
+    //                                                     ]
+    //                                             },
+    //                                             then: "Laki-laki"
+    //                                         },
+    //                                         {
+    //                                             case:
+    //                                             {
+    //                                                 $eq:
+    //                                                     [
+    //                                                         {
+    //                                                             "$arrayElemAt":
+    //                                                                 [
+    //                                                                     "$gender", 0
+    //                                                                 ]
+    //                                                         },
+    //                                                         "O"
+    //                                                     ]
+    //                                             },
+    //                                             then: "Lainnya"
+    //                                         },
+    //                                     ],
+    //                                 default: null
+    //                             }
+    //                         },
+    //                         {
+    //                             $switch:
+    //                             {
+    //                                 branches:
+    //                                     [
+    //                                         {
+    //                                             case:
+    //                                             {
+    //                                                 $eq:
+    //                                                     [
+    //                                                         {
+    //                                                             "$arrayElemAt":
+    //                                                                 [
+    //                                                                     "$gender", 1
+    //                                                                 ]
+    //                                                         },
+    //                                                         "P"
+    //                                                     ]
+    //                                             },
+    //                                             then: "Perempuan"
+    //                                         },
+    //                                         {
+    //                                             case:
+    //                                             {
+    //                                                 $eq:
+    //                                                     [
+    //                                                         {
+    //                                                             "$arrayElemAt":
+    //                                                                 [
+    //                                                                     "$gender", 1
+    //                                                                 ]
+    //                                                         },
+    //                                                         "L"
+    //                                                     ]
+    //                                             },
+    //                                             then: "Laki-laki"
+    //                                         },
+    //                                         {
+    //                                             case:
+    //                                             {
+    //                                                 $eq:
+    //                                                     [
+    //                                                         {
+    //                                                             "$arrayElemAt":
+    //                                                                 [
+    //                                                                     "$gender", 1
+    //                                                                 ]
+    //                                                         },
+    //                                                         "O"
+    //                                                     ]
+    //                                             },
+    //                                             then: "Lainnya"
+    //                                         },
+    //                                     ],
+    //                                 default: null
+    //                             }
+    //                         },
+    //                         {
+    //                             $switch:
+    //                             {
+    //                                 branches:
+    //                                     [
+    //                                         {
+    //                                             case:
+    //                                             {
+    //                                                 $eq:
+    //                                                     [
+    //                                                         {
+    //                                                             "$arrayElemAt":
+    //                                                                 [
+    //                                                                     "$gender", 2
+    //                                                                 ]
+    //                                                         },
+    //                                                         "P"
+    //                                                     ]
+    //                                             },
+    //                                             then: "Perempuan"
+    //                                         },
+    //                                         {
+    //                                             case:
+    //                                             {
+    //                                                 $eq:
+    //                                                     [
+    //                                                         {
+    //                                                             "$arrayElemAt":
+    //                                                                 [
+    //                                                                     "$gender", 2
+    //                                                                 ]
+    //                                                         },
+    //                                                         "L"
+    //                                                     ]
+    //                                             },
+    //                                             then: "Laki-laki"
+    //                                         },
+    //                                         {
+    //                                             case:
+    //                                             {
+    //                                                 $eq:
+    //                                                     [
+    //                                                         {
+    //                                                             "$arrayElemAt":
+    //                                                                 [
+    //                                                                     "$gender", 2
+    //                                                                 ]
+    //                                                         },
+    //                                                         "O"
+    //                                                     ]
+    //                                             },
+    //                                             then: "Lainnya"
+    //                                         },
+    //                                     ],
+    //                                 default: null
+    //                             }
+    //                         },
+    //                     ]
+    //             }
+    //         },
+    //         {
+    //             $set:
+    //             {
+    //                 "removenull":
+    //                 {
+    //                     $filter:
+    //                     {
+    //                         input: "$listgender",
+    //                         as: "list",
+    //                         cond:
+    //                         {
+    //                             "$ne":
+    //                                 [
+    //                                     "$$list",
+    //                                     null
+    //                                 ]
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         },
+    //         {
+    //             $project: {
+    //                 userID: 1,
+    //                 fullName: 1,
+    //                 email: 1,
+    //                 timestamp: 1,
+    //                 expiredAt: 1,
+    //                 liveAt: 1,
+    //                 name: 1,
+    //                 description: 1,
+    //                 objectifitas: 1,
+    //                 status: 1,
+    //                 totalClick: 1,
+    //                 totalUsedCredit: 1,
+    //                 totalView: 1,
+    //                 urlLink: 1,
+    //                 isActive: 1,
+    //                 usedCredit: 1,
+    //                 usedCreditFree: 1,
+    //                 creditFree: 1,
+    //                 creditValue: 1,
+    //                 totalCredit: 1,
+    //                 timeStart: 1,
+    //                 timeEnd: 1,
+    //                 namePlace: 1,
+    //                 nameType: 1,
+    //                 idApsara: 1,
+    //                 duration: 1,
+    //                 tayang: 1,
+    //                 type: 1,
+    //                 adminfullName: 1,
+    //                 listgender: "$removenull"
+    //             }
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 from: "userads",
+    //                 as: "view",
+    //                 let: {
+    //                     local_id: '$_id'
+    //                 },
+    //                 pipeline: [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             "statusClick": 1,
+    //                             "statusView": 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+
+
+    //                             statusView: true
+    //                         }
+    //                     },
+    //                     {
+    //                         $group: {
+    //                             _id: "$adsID",
+    //                             myCount: {
+    //                                 $sum: 1
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             _id: "$_id",
+    //                             "totalView": "$myCount",
+
+    //                         }
+    //                     }
+    //                 ],
+
+    //             }
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 from: "userads",
+    //                 as: "click",
+    //                 let: {
+    //                     local_id: '$_id'
+    //                 },
+    //                 pipeline: [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             "statusClick": 1,
+    //                             "statusView": 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+
+
+    //                             statusClick: true
+    //                         }
+    //                     },
+    //                     {
+    //                         $group: {
+    //                             _id: "$adsID",
+    //                             myCount: {
+    //                                 $sum: 1
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             _id: "$_id",
+    //                             "totalClick": "$myCount",
+
+    //                         }
+    //                     }
+    //                 ],
+
+    //             }
+    //         },
+    //         {
+    //             $project: {
+    //                 userID: 1,
+    //                 fullName: 1,
+    //                 email: 1,
+    //                 timestamp: 1,
+    //                 expiredAt: 1,
+    //                 liveAt: 1,
+    //                 name: 1,
+    //                 description: 1,
+    //                 objectifitas: 1,
+    //                 status: 1,
+    //                 totalUsedCredit: 1,
+    //                 urlLink: 1,
+    //                 isActive: 1,
+    //                 namePlace: 1,
+    //                 nameType: 1,
+    //                 idApsara: 1,
+    //                 duration: 1,
+    //                 tayang: 1,
+    //                 type: 1,
+    //                 timeStart: 1,
+    //                 timeEnd: 1,
+    //                 usedCredit: 1,
+    //                 usedCreditFree: 1,
+    //                 creditFree: 1,
+    //                 creditValue: 1,
+    //                 totalCredit: 1,
+    //                 totalView: {
+    //                     $arrayElemAt: ['$view.totalView', 0]
+    //                 },
+    //                 totalClick: {
+    //                     $arrayElemAt: ['$click.totalClick', 0]
+    //                 },
+    //                 adminfullName: 1,
+    //                 listgender: 1,
+    //             }
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 from: "userads",
+    //                 as: "viewrange",
+    //                 let: {
+    //                     local_id: '$_id'
+    //                 },
+    //                 pipeline: [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             "statusClick": 1,
+    //                             "statusView": 1,
+    //                             "createdAt": 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+
+
+    //                             statusView: true,
+    //                             createdAt: {
+    //                                 $gte: startdate,
+    //                                 $lte: dateend,
+
+    //                             }
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             }
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 from: "userads",
+    //                 as: "clickrange",
+    //                 let: {
+    //                     local_id: '$_id'
+    //                 },
+    //                 pipeline: [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             "statusClick": 1,
+    //                             "statusView": 1,
+    //                             "createdAt": 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+
+
+    //                             statusClick: true,
+    //                             createdAt: {
+    //                                 $gte: startdate,
+    //                                 $lte: dateend,
+
+    //                             }
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             }
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 from: "userads",
+    //                 as: "sumview",
+    //                 let: {
+    //                     local_id: '$_id'
+    //                 },
+    //                 pipeline: [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             "statusClick": 1,
+    //                             "statusView": 1,
+    //                             "createdAt": 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+
+
+    //                             statusView: true,
+    //                             createdAt: {
+    //                                 $gte: startdate,
+    //                                 $lte: dateend,
+
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $group: {
+    //                             _id: {
+    //                                 tanggal: {
+    //                                     $substrCP: [
+    //                                         "$createdAt",
+    //                                         0,
+    //                                         10
+    //                                     ]
+    //                                 }
+    //                             },
+    //                             total: {
+    //                                 $sum: 1
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             _id: 0,
+    //                             date: "$_id.tanggal",
+    //                             total: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $sort: {
+    //                             date: 1
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             }
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 from: "userads",
+    //                 as: "sumclick",
+    //                 let: {
+    //                     local_id: '$_id'
+    //                 },
+    //                 pipeline: [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             "statusClick": 1,
+    //                             "statusView": 1,
+    //                             "createdAt": 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+
+
+    //                             statusClick: true,
+    //                             createdAt: {
+    //                                 $gte: startdate,
+    //                                 $lte: dateend,
+
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $group: {
+    //                             _id: {
+    //                                 tanggal: {
+    //                                     $substrCP: [
+    //                                         "$createdAt",
+    //                                         0,
+    //                                         10
+    //                                     ]
+    //                                 }
+    //                             },
+    //                             total: {
+    //                                 $sum: 1
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             _id: 0,
+    //                             date: "$_id.tanggal",
+    //                             total: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $sort: {
+    //                             date: 1
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             }
+    //         },
+    //         {
+    //             $addFields:
+    //             {
+    //                 view:
+    //                 {
+    //                     $size: "$viewrange"
+    //                 },
+    //                 click:
+    //                 {
+    //                     $size: "$clickrange"
+    //                 },
+    //                 tview: {
+    //                     $cmp: ["$totalView", 0]
+    //                 },
+    //                 tclick: {
+    //                     $cmp: ["$totalClick", 0]
+    //                 }
+    //             }
+    //         },
+    //         {
+    //             $project: {
+    //                 userID: 1,
+    //                 fullName: 1,
+    //                 email: 1,
+    //                 timestamp: 1,
+    //                 expiredAt: 1,
+    //                 liveAt: 1,
+    //                 name: 1,
+    //                 description: 1,
+    //                 objectifitas: 1,
+    //                 status: 1,
+    //                 totalUsedCredit: 1,
+    //                 urlLink: 1,
+    //                 isActive: 1,
+    //                 namePlace: 1,
+    //                 nameType: 1,
+    //                 idApsara: 1,
+    //                 duration: 1,
+    //                 tayang: 1,
+    //                 type: 1,
+    //                 timeStart: 1,
+    //                 timeEnd: 1,
+    //                 usedCredit: 1,
+    //                 usedCreditFree: 1,
+    //                 creditFree: 1,
+    //                 creditValue: 1,
+    //                 totalCredit: 1,
+    //                 totalView: {
+    //                     $cond: {
+    //                         if: {
+    //                             $or: [{
+    //                                 $eq: ["$tview", - 1]
+    //                             }, {
+    //                                 $eq: ["$tview", 0]
+    //                             },]
+    //                         },
+    //                         then: 0,
+    //                         else: "$totalView"
+    //                     },
+
+    //                 },
+    //                 totalClick: {
+    //                     $cond: {
+    //                         if: {
+    //                             $or: [{
+    //                                 $eq: ["$tclick", - 1]
+    //                             }, {
+    //                                 $eq: ["$tclick", 0]
+    //                             },]
+    //                         },
+    //                         then: 0,
+    //                         else: "$totalClick"
+    //                     },
+
+    //                 },
+    //                 view: 1,
+    //                 click: 1,
+    //                 sumview: 1,
+    //                 sumclick: 1,
+    //                 adminfullName: 1,
+    //                 listgender: 1
+    //             }
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 from: "accountbalances",
+    //                 as: "reward",
+    //                 let: {
+    //                     local_id: '$_id'
+    //                 },
+    //                 pipeline: [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$idtrans', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             "type": 1,
+    //                             "kredit": 1,
+    //                             "timestamp": 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+
+    //                             "type": "rewards",
+    //                             "timestamp": {
+    //                                 $gte: startdate,
+    //                                 $lte: dateend,
+
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $group: {
+    //                             _id: null,
+    //                             totalbiaya: {
+    //                                 $sum: "$kredit"
+    //                             }
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             }
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 from: "userads",
+    //                 as: "clickrange",
+    //                 let: {
+    //                     local_id: '$_id'
+    //                 },
+    //                 pipeline: [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             "statusClick": 1,
+    //                             "statusView": 1,
+    //                             "createdAt": 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+
+
+    //                             statusClick: true,
+    //                             createdAt: {
+    //                                 $gte: startdate,
+    //                                 $lte: dateend,
+
+    //                             }
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             }
+    //         },
+    //         {
+    //             $project: {
+    //                 userID: 1,
+    //                 fullName: 1,
+    //                 email: 1,
+    //                 timestamp: 1,
+    //                 expiredAt: 1,
+    //                 liveAt: 1,
+    //                 name: 1,
+    //                 description: 1,
+    //                 objectifitas: 1,
+    //                 status: 1,
+    //                 totalUsedCredit: 1,
+    //                 urlLink: 1,
+    //                 timeStart: 1,
+    //                 timeEnd: 1,
+    //                 isActive: 1,
+    //                 namePlace: 1,
+    //                 nameType: 1,
+    //                 idApsara: 1,
+    //                 duration: 1,
+    //                 tayang: 1,
+    //                 type: 1,
+    //                 usedCredit: 1,
+    //                 usedCreditFree: 1,
+    //                 creditFree: 1,
+    //                 creditValue: 1,
+    //                 totalCredit: 1,
+    //                 totalView: 1,
+    //                 totalClick: 1,
+    //                 view: 1,
+    //                 click: 1,
+    //                 totalbiaya: {
+    //                     $arrayElemAt: ['$reward.totalbiaya', 0]
+    //                 },
+    //                 sumview: 1,
+    //                 sumclick: 1,
+    //                 adminfullName: 1,
+    //                 listgender: 1,
+    //             }
+    //         },
+    //         {
+    //             $addFields:
+    //             {
+
+    //                 tbiaya: {
+    //                     $cmp: ["$totalbiaya", 0]
+    //                 }
+    //             }
+    //         },
+    //         {
+    //             $project: {
+    //                 userID: 1,
+    //                 fullName: 1,
+    //                 email: 1,
+    //                 timestamp: 1,
+    //                 expiredAt: 1,
+    //                 liveAt: 1,
+    //                 name: 1,
+    //                 description: 1,
+    //                 objectifitas: 1,
+    //                 status: 1,
+    //                 totalUsedCredit: 1,
+    //                 urlLink: 1,
+    //                 isActive: 1,
+    //                 namePlace: 1,
+    //                 nameType: 1,
+    //                 idApsara: 1,
+    //                 duration: 1,
+    //                 tayang: 1,
+    //                 type: 1,
+    //                 usedCredit: 1,
+    //                 usedCreditFree: 1,
+    //                 creditFree: 1,
+    //                 creditValue: 1,
+    //                 totalCredit: 1,
+    //                 totalView: 1,
+    //                 totalClick: 1,
+    //                 timeStart: 1,
+    //                 timeEnd: 1,
+    //                 view: 1,
+    //                 click: 1,
+    //                 totalbiaya: {
+    //                     $cond: {
+    //                         if: {
+    //                             $or: [{
+    //                                 $eq: ["$tbiaya", - 1]
+    //                             }, {
+    //                                 $eq: ["$tbiaya", 0]
+    //                             },]
+    //                         },
+    //                         then: 0,
+    //                         else: "$totalbiaya"
+    //                     },
+
+    //                 },
+    //                 sumview: 1,
+    //                 sumclick: 1,
+    //                 adminfullName: 1,
+    //                 listgender: 1,
+    //             }
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "wilayah",
+    //                 "let": {
+    //                     "local_id": "$_id",
+
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             statusView: true
+    //                         }
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             states: '$ubasic.states',
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             states: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $lookup: {
+    //                             from: 'areas',
+    //                             localField: 'states.$id',
+    //                             foreignField: '_id',
+    //                             as: 'areas_data',
+
+    //                         },
+
+    //                     },
+    //                     {
+    //                         $unwind: {
+    //                             path: "$areas_data",
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             stateName: '$areas_data.stateName'
+    //                         }
+    //                     },
+    //                     {
+    //                         "$group": {
+    //                             "_id": "$stateName",
+    //                             "count": {
+    //                                 "$sum": 1
+    //                             }
+    //                         }
+    //                     }
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "age",
+    //                 "let": {
+    //                     "local_id": "$_id",
+
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             statusView: true
+    //                         }
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             dob: '$ubasic.dob',
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             age: {
+    //                                 $cond: {
+    //                                     if: {
+    //                                         $and: [
+    //                                             '$dob',
+    //                                             {
+    //                                                 $ne: ["$dob", ""]
+    //                                             }
+    //                                         ]
+    //                                     },
+    //                                     then: {
+    //                                         $toInt: {
+    //                                             $divide: [{
+    //                                                 $subtract: [new Date(), {
+    //                                                     $toDate: "$dob"
+    //                                                 }]
+    //                                             }, (365 * 24 * 60 * 60 * 1000)]
+    //                                         }
+    //                                     },
+    //                                     else: 0
+    //                                 }
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             ageQualication: {
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $gt: ["$age", 44]
+    //                                             },
+    //                                             then: "< 44 Tahun"
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $and: [{
+    //                                                     $gte: ["$age", 36]
+    //                                                 }, {
+    //                                                     $lte: ["$age", 44]
+    //                                                 }]
+    //                                             },
+    //                                             then: "35-44 Tahun"
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $and: [{
+    //                                                     $gte: ["$age", 25]
+    //                                                 }, {
+    //                                                     $lte: ["$age", 35]
+    //                                                 }]
+    //                                             },
+    //                                             then: "24-35 Tahun"
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $and: [{
+    //                                                     $gte: ["$age", 14]
+    //                                                 }, {
+    //                                                     $lte: ["$age", 24]
+    //                                                 }]
+    //                                             },
+    //                                             then: "14-24 Tahun"
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $and: [{
+    //                                                     $gte: ["$age", 1]
+    //                                                 }, {
+    //                                                     $lt: ["$age", 14]
+    //                                                 }]
+    //                                             },
+    //                                             then: "< 14 Tahun"
+    //                                         }
+    //                                     ],
+    //                                     "default": "other"
+    //                                 }
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         "$group": {
+    //                             "_id": "$ageQualication",
+    //                             "count": {
+    //                                 "$sum": 1
+    //                             }
+    //                         }
+    //                     }
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "gender",
+    //                 "let": {
+    //                     "local_id": "$_id",
+
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             statusView: true,
+    //                             createdAt: {
+    //                                 $gte: startdate,
+    //                                 $lte: dateend,
+
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         "$group": {
+    //                             "_id": "$gender",
+    //                             "count": {
+    //                                 "$sum": 1
+    //                             }
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "male",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend7,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "MALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "female",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend7,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "FEMALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "other",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend7,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "OTHER"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             $project: {
+    //                 userID: 1,
+    //                 fullName: 1,
+    //                 email: 1,
+    //                 timestamp: 1,
+    //                 expiredAt: 1,
+    //                 liveAt: 1,
+    //                 name: 1,
+    //                 description: 1,
+    //                 objectifitas: 1,
+    //                 status: 1,
+    //                 totalUsedCredit: 1,
+    //                 urlLink: 1,
+    //                 isActive: 1,
+    //                 namePlace: 1,
+    //                 nameType: 1,
+    //                 idApsara: 1,
+    //                 duration: 1,
+    //                 tayang: 1,
+    //                 type: 1,
+    //                 usedCredit: 1,
+    //                 usedCreditFree: 1,
+    //                 creditFree: 1,
+    //                 creditValue: 1,
+    //                 totalCredit: 1,
+    //                 totalView: 1,
+    //                 totalClick: 1,
+    //                 view: 1,
+    //                 click: 1,
+    //                 totalbiaya: 1,
+    //                 wilayah: 1,
+    //                 age: 1,
+    //                 gender: 1,
+    //                 sumview: 1,
+    //                 sumclick: 1,
+    //                 male: 1,
+    //                 female: 1,
+    //                 Day7: {
+    //                     "_id": "Day7",
+    //                     "date": dateend7,
+    //                     "male": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$male"
+    //                             },
+    //                             then: {
+    //                                 $size: "$male"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "female": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$female"
+    //                             },
+    //                             then: {
+    //                                 $size: "$female"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "other": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$other"
+    //                             },
+    //                             then: {
+    //                                 $size: "$other"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+
+    //                 },
+    //                 adminfullName: 1,
+    //                 listgender: 1,
+    //             },
+
+    //         },
+
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "male2",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend6,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "MALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "female2",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend6,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "FEMALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "other2",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend6,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "OTHER"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "male3",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend5,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "MALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "female3",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend5,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "FEMALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "other3",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend5,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "OTHER"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "male4",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend4,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "MALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "female4",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend4,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "FEMALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "other4",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend4,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "OTHER"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "male5",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend3,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "MALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "female5",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend3,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "FEMALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "other5",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend3,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "OTHER"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "male6",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend2,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "MALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "female6",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend2,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "FEMALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "other6",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend2,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "OTHER"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "male7",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend1,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "MALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "female7",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend1,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "FEMALE"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             "$lookup": {
+    //                 "from": "userads",
+    //                 "as": "other7",
+    //                 "let": {
+    //                     "local_id": '$_id'
+    //                 },
+    //                 "pipeline": [
+    //                     {
+    //                         $match:
+    //                         {
+
+
+    //                             $expr: {
+    //                                 $eq: ['$adsID', '$$local_id']
+    //                             }
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             userID: 1,
+    //                             createdAt: 1,
+    //                             statusClick: 1,
+    //                             statusView: 1,
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match:
+    //                         {
+    //                             statusView: true,
+
+    //                             createdAt: {
+    //                                 $regex: dateend1,
+    //                                 $options: 'i'
+    //                             },
+    //                         },
+
+    //                     },
+    //                     {
+    //                         "$lookup": {
+    //                             "from": "userbasics",
+    //                             "as": "ubasic",
+    //                             "let": {
+    //                                 "local_id": "$userID"
+    //                             },
+    //                             "pipeline": [
+    //                                 {
+    //                                     "$match": {
+    //                                         "$expr": {
+    //                                             "$eq": [
+    //                                                 "$_id",
+    //                                                 "$$local_id"
+    //                                             ]
+    //                                         }
+    //                                     }
+    //                                 },
+
+    //                             ],
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             ubasic: {
+    //                                 $arrayElemAt: ['$ubasic', 0]
+    //                             },
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+
+    //                             gender: '$ubasic.gender',
+    //                             createdAt: 1
+    //                         }
+    //                     },
+    //                     {
+    //                         $project: {
+    //                             createdAt: 1,
+    //                             gender: {
+
+    //                                 $switch: {
+    //                                     branches: [
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' FEMALE']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Perempuan']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Wanita']
+    //                                             },
+    //                                             then: 'FEMALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', ' MALE']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Laki-laki']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+    //                                         {
+    //                                             case: {
+    //                                                 $eq: ['$gender', 'Pria']
+    //                                             },
+    //                                             then: 'MALE',
+
+    //                                         },
+
+    //                                     ],
+    //                                     default: "OTHER",
+
+    //                                 },
+
+    //                             },
+
+    //                         }
+    //                     },
+    //                     {
+    //                         $match: {
+    //                             gender: "OTHER"
+    //                         }
+    //                     },
+
+    //                 ],
+
+    //             },
+
+    //         },
+    //         {
+    //             $project: {
+    //                 userID: 1,
+    //                 fullName: 1,
+    //                 email: 1,
+    //                 timestamp: 1,
+    //                 expiredAt: 1,
+    //                 liveAt: 1,
+    //                 name: 1,
+    //                 description: 1,
+    //                 objectifitas: 1,
+    //                 status: 1,
+    //                 totalUsedCredit: 1,
+    //                 urlLink: 1,
+    //                 isActive: 1,
+    //                 namePlace: 1,
+    //                 nameType: 1,
+    //                 idApsara: 1,
+    //                 duration: 1,
+    //                 tayang: 1,
+    //                 type: 1,
+    //                 usedCredit: 1,
+    //                 usedCreditFree: 1,
+    //                 creditFree: 1,
+    //                 creditValue: 1,
+    //                 totalCredit: 1,
+    //                 totalView: 1,
+    //                 totalClick: 1,
+    //                 view: 1,
+    //                 click: 1,
+    //                 totalbiaya: 1,
+    //                 wilayah: 1,
+    //                 age: 1,
+    //                 gender: 1,
+    //                 sumview: 1,
+    //                 sumclick: 1,
+    //                 Day7: 1,
+    //                 Day6: {
+    //                     "_id": "Day6",
+    //                     "date": dateend6,
+    //                     "male": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$male2"
+    //                             },
+    //                             then: {
+    //                                 $size: "$male2"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "female": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$female2"
+    //                             },
+    //                             then: {
+    //                                 $size: "$female2"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "other": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$other2"
+    //                             },
+    //                             then: {
+    //                                 $size: "$other2"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+
+    //                 },
+    //                 Day5: {
+    //                     "_id": "Day5",
+    //                     "date": dateend5,
+    //                     "male": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$male3"
+    //                             },
+    //                             then: {
+    //                                 $size: "$male3"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "female": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$female3"
+    //                             },
+    //                             then: {
+    //                                 $size: "$female3"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "other": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$other3"
+    //                             },
+    //                             then: {
+    //                                 $size: "$other3"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+
+    //                 },
+    //                 Day4: {
+    //                     "_id": "Day4",
+    //                     "date": dateend4,
+    //                     "male": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$male4"
+    //                             },
+    //                             then: {
+    //                                 $size: "$male4"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "female": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$female4"
+    //                             },
+    //                             then: {
+    //                                 $size: "$female4"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "other": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$other4"
+    //                             },
+    //                             then: {
+    //                                 $size: "$other4"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+
+    //                 },
+    //                 Day3: {
+    //                     "_id": "Day3",
+    //                     "date": dateend3,
+    //                     "end": "$timeEnd5",
+    //                     "male": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$male5"
+    //                             },
+    //                             then: {
+    //                                 $size: "$male5"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "female": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$female5"
+    //                             },
+    //                             then: {
+    //                                 $size: "$female5"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "other": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$other5"
+    //                             },
+    //                             then: {
+    //                                 $size: "$other5"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+
+    //                 },
+    //                 Day2: {
+    //                     "_id": "Day2",
+    //                     "date": dateend2,
+    //                     "male": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$male6"
+    //                             },
+    //                             then: {
+    //                                 $size: "$male6"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "female": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$female6"
+    //                             },
+    //                             then: {
+    //                                 $size: "$female6"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "other": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$other6"
+    //                             },
+    //                             then: {
+    //                                 $size: "$other6"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+
+    //                 },
+    //                 Day1: {
+    //                     "_id": "Day1",
+    //                     "date": dateend1,
+    //                     "male": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$male7"
+    //                             },
+    //                             then: {
+    //                                 $size: "$male7"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "female": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$female7"
+    //                             },
+    //                             then: {
+    //                                 $size: "$female7"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+    //                     "other": {
+    //                         $cond: {
+    //                             if: {
+    //                                 $isArray: "$other7"
+    //                             },
+    //                             then: {
+    //                                 $size: "$other7"
+    //                             },
+    //                             else: 0
+    //                         }
+    //                     },
+
+    //                 },
+    //                 adminfullName: 1,
+    //                 listgender: 1,
+    //             },
+
+    //         },
+    //     ]);
+
+    //     var arrayData = [];
+    //     let data = await this.getapsaraDatabaseAds(query, startdate, enddate);
+    //     arrayData.push(data[0])
+    //     return arrayData;
+    // }
+
+    async detailAds2(id: ObjectID, startdate: string, enddate: string) {
         var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-
+    
         var dateend = currentdate.toISOString();
-
-
+    
+    
         var n1 = new Date(new Date().setDate(new Date().getDate() - 6));
         var dt1 = n1.toISOString();
         var splitdt1 = dt1.split('T');
         var dateend1 = splitdt1[0].toString();
-
+    
         var n2 = new Date(new Date().setDate(new Date().getDate() - 5));
         var dt2 = n2.toISOString();
         var splitdt2 = dt2.split('T');
         var dateend2 = splitdt2[0].toString();
-
+    
         var n3 = new Date(new Date().setDate(new Date().getDate() - 4));
         var dt3 = n3.toISOString();
         var splitdt3 = dt3.split('T');
         var dateend3 = splitdt3[0].toString();
-
-
+    
+    
         var n4 = new Date(new Date().setDate(new Date().getDate() - 3));
         var dt4 = n4.toISOString();
         var splitdt4 = dt4.split('T');
         var dateend4 = splitdt4[0].toString();
-
+    
         var n5 = new Date(new Date().setDate(new Date().getDate() - 2));
         var dt5 = n5.toISOString();
         var splitdt5 = dt5.split('T');
         var dateend5 = splitdt5[0].toString();
-
+    
         var n6 = new Date(new Date().setDate(new Date().getDate() - 1));
         var dt6 = n6.toISOString();
         var splitdt6 = dt6.split('T');
         var dateend6 = splitdt6[0].toString();
-
+    
         var n7 = new Date();
         var dt7 = n7.toISOString();
         var splitdt7 = dt7.split('T');
         var dateend7 = splitdt7[0].toString();
-
+    
         var query = await this.adsModel.aggregate([
             {
                 $match: {
                     _id: id,
-
+    
                 }
             },
-
+    
             {
                 $lookup: {
                     from: "adsplaces",
@@ -9027,9 +14252,15 @@ export class AdsService {
                     description: 1,
                     objectifitas: 1,
                     status: 1,
-                    totalClick: 1,
                     totalUsedCredit: 1,
-                    totalView: 1,
+                    totalView: 
+                    {
+                        "$ifNull":
+                        [
+                            "$totalView",
+                            0
+                        ]
+                    },
                     urlLink: 1,
                     isActive: 1,
                     usedCredit: 1,
@@ -9265,7 +14496,6 @@ export class AdsService {
                     description: 1,
                     objectifitas: 1,
                     status: 1,
-                    totalClick: 1,
                     totalUsedCredit: 1,
                     totalView: 1,
                     urlLink: 1,
@@ -9290,57 +14520,6 @@ export class AdsService {
             {
                 "$lookup": {
                     from: "userads",
-                    as: "view",
-                    let: {
-                        local_id: '$_id'
-                    },
-                    pipeline: [
-                        {
-                            $match:
-                            {
-
-
-                                $expr: {
-                                    $eq: ['$adsID', '$$local_id']
-                                }
-                            }
-                        },
-                        {
-                            $project: {
-                                "statusClick": 1,
-                                "statusView": 1,
-
-                            }
-                        },
-                        {
-                            $match: {
-
-
-                                statusView: true
-                            }
-                        },
-                        {
-                            $group: {
-                                _id: "$adsID",
-                                myCount: {
-                                    $sum: 1
-                                }
-                            }
-                        },
-                        {
-                            $project: {
-                                _id: "$_id",
-                                "totalView": "$myCount",
-
-                            }
-                        }
-                    ],
-
-                }
-            },
-            {
-                "$lookup": {
-                    from: "userads",
                     as: "click",
                     let: {
                         local_id: '$_id'
@@ -9349,8 +14528,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -9360,13 +14539,13 @@ export class AdsService {
                             $project: {
                                 "statusClick": 1,
                                 "statusView": 1,
-
+    
                             }
                         },
                         {
                             $match: {
-
-
+    
+    
                                 statusClick: true
                             }
                         },
@@ -9382,11 +14561,11 @@ export class AdsService {
                             $project: {
                                 _id: "$_id",
                                 "totalClick": "$myCount",
-
+    
                             }
                         }
                     ],
-
+    
                 }
             },
             {
@@ -9417,11 +14596,16 @@ export class AdsService {
                     creditFree: 1,
                     creditValue: 1,
                     totalCredit: 1,
-                    totalView: {
-                        $arrayElemAt: ['$view.totalView', 0]
-                    },
-                    totalClick: {
-                        $arrayElemAt: ['$click.totalClick', 0]
+                    totalView: 1,
+                    totalClick: 
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                $arrayElemAt: ['$click.totalClick', 0]
+                            },
+                            0
+                        ]
                     },
                     adminfullName: 1,
                     listgender: 1,
@@ -9438,8 +14622,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -9454,19 +14638,19 @@ export class AdsService {
                         },
                         {
                             $match: {
-
-
+    
+    
                                 statusView: true,
                                 createdAt: {
                                     $gte: startdate,
                                     $lte: dateend,
-
+    
                                 }
                             }
                         },
-
+    
                     ],
-
+    
                 }
             },
             {
@@ -9480,8 +14664,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -9496,19 +14680,19 @@ export class AdsService {
                         },
                         {
                             $match: {
-
-
+    
+    
                                 statusClick: true,
                                 createdAt: {
                                     $gte: startdate,
                                     $lte: dateend,
-
+    
                                 }
                             }
                         },
-
+    
                     ],
-
+    
                 }
             },
             {
@@ -9522,8 +14706,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -9538,13 +14722,13 @@ export class AdsService {
                         },
                         {
                             $match: {
-
-
+    
+    
                                 statusView: true,
                                 createdAt: {
                                     $gte: startdate,
                                     $lte: dateend,
-
+    
                                 }
                             }
                         },
@@ -9569,7 +14753,7 @@ export class AdsService {
                                 _id: 0,
                                 date: "$_id.tanggal",
                                 total: 1,
-
+    
                             }
                         },
                         {
@@ -9577,9 +14761,9 @@ export class AdsService {
                                 date: 1
                             }
                         },
-
+    
                     ],
-
+    
                 }
             },
             {
@@ -9593,8 +14777,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -9609,13 +14793,13 @@ export class AdsService {
                         },
                         {
                             $match: {
-
-
+    
+    
                                 statusClick: true,
                                 createdAt: {
                                     $gte: startdate,
                                     $lte: dateend,
-
+    
                                 }
                             }
                         },
@@ -9640,7 +14824,7 @@ export class AdsService {
                                 _id: 0,
                                 date: "$_id.tanggal",
                                 total: 1,
-
+    
                             }
                         },
                         {
@@ -9648,9 +14832,9 @@ export class AdsService {
                                 date: 1
                             }
                         },
-
+    
                     ],
-
+    
                 }
             },
             {
@@ -9700,20 +14884,7 @@ export class AdsService {
                     creditFree: 1,
                     creditValue: 1,
                     totalCredit: 1,
-                    totalView: {
-                        $cond: {
-                            if: {
-                                $or: [{
-                                    $eq: ["$tview", - 1]
-                                }, {
-                                    $eq: ["$tview", 0]
-                                },]
-                            },
-                            then: 0,
-                            else: "$totalView"
-                        },
-
-                    },
+                    totalView: 1,
                     totalClick: {
                         $cond: {
                             if: {
@@ -9726,7 +14897,7 @@ export class AdsService {
                             then: 0,
                             else: "$totalClick"
                         },
-
+    
                     },
                     view: 1,
                     click: 1,
@@ -9747,8 +14918,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$idtrans', '$$local_id']
                                 }
@@ -9763,12 +14934,12 @@ export class AdsService {
                         },
                         {
                             $match: {
-
+    
                                 "type": "rewards",
                                 "timestamp": {
                                     $gte: startdate,
                                     $lte: dateend,
-
+    
                                 }
                             }
                         },
@@ -9780,9 +14951,9 @@ export class AdsService {
                                 }
                             }
                         },
-
+    
                     ],
-
+    
                 }
             },
             {
@@ -9796,8 +14967,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -9812,19 +14983,19 @@ export class AdsService {
                         },
                         {
                             $match: {
-
-
+    
+    
                                 statusClick: true,
                                 createdAt: {
                                     $gte: startdate,
                                     $lte: dateend,
-
+    
                                 }
                             }
                         },
-
+    
                     ],
-
+    
                 }
             },
             {
@@ -9871,7 +15042,7 @@ export class AdsService {
             {
                 $addFields:
                 {
-
+    
                     tbiaya: {
                         $cmp: ["$totalbiaya", 0]
                     }
@@ -9921,7 +15092,7 @@ export class AdsService {
                             then: 0,
                             else: "$totalbiaya"
                         },
-
+    
                     },
                     sumview: 1,
                     sumclick: 1,
@@ -9935,14 +15106,14 @@ export class AdsService {
                     "as": "wilayah",
                     "let": {
                         "local_id": "$_id",
-
+    
                     },
                     "pipeline": [
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -9950,12 +15121,12 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
@@ -9981,9 +15152,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -9991,21 +15162,21 @@ export class AdsService {
                                 ubasic: {
                                     $arrayElemAt: ['$ubasic', 0]
                                 },
-
+    
                             }
                         },
                         {
                             $project: {
-
+    
                                 states: '$ubasic.states',
-
+    
                             }
                         },
                         {
                             $project: {
-
+    
                                 states: 1,
-
+    
                             }
                         },
                         {
@@ -10014,19 +15185,19 @@ export class AdsService {
                                 localField: 'states.$id',
                                 foreignField: '_id',
                                 as: 'areas_data',
-
+    
                             },
-
+    
                         },
                         {
                             $unwind: {
                                 path: "$areas_data",
-
+    
                             }
                         },
                         {
                             $project: {
-
+    
                                 stateName: '$areas_data.stateName'
                             }
                         },
@@ -10039,9 +15210,9 @@ export class AdsService {
                             }
                         }
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -10049,14 +15220,14 @@ export class AdsService {
                     "as": "age",
                     "let": {
                         "local_id": "$_id",
-
+    
                     },
                     "pipeline": [
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -10064,12 +15235,12 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
@@ -10095,9 +15266,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -10105,18 +15276,18 @@ export class AdsService {
                                 ubasic: {
                                     $arrayElemAt: ['$ubasic', 0]
                                 },
-
+    
                             }
                         },
                         {
                             $project: {
                                 dob: '$ubasic.dob',
-
+    
                             }
                         },
                         {
                             $project: {
-
+    
                                 age: {
                                     $cond: {
                                         if: {
@@ -10139,12 +15310,12 @@ export class AdsService {
                                         else: 0
                                     }
                                 },
-
+    
                             }
                         },
                         {
                             $project: {
-
+    
                                 ageQualication: {
                                     $switch: {
                                         branches: [
@@ -10198,7 +15369,7 @@ export class AdsService {
                                         "default": "other"
                                     }
                                 },
-
+    
                             }
                         },
                         {
@@ -10210,9 +15381,9 @@ export class AdsService {
                             }
                         }
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -10220,14 +15391,14 @@ export class AdsService {
                     "as": "gender",
                     "let": {
                         "local_id": "$_id",
-
+    
                     },
                     "pipeline": [
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -10235,12 +15406,12 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
@@ -10249,7 +15420,7 @@ export class AdsService {
                                 createdAt: {
                                     $gte: startdate,
                                     $lte: dateend,
-
+    
                                 }
                             }
                         },
@@ -10271,9 +15442,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -10281,21 +15452,21 @@ export class AdsService {
                                 ubasic: {
                                     $arrayElemAt: ['$ubasic', 0]
                                 },
-
+    
                             }
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
-
+    
                             }
                         },
                         {
                             $project: {
-
+    
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -10303,65 +15474,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -10372,11 +15543,11 @@ export class AdsService {
                                 }
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -10389,8 +15560,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -10398,25 +15569,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend7,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -10436,9 +15607,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -10451,7 +15622,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -10460,7 +15631,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -10468,65 +15639,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -10534,11 +15705,11 @@ export class AdsService {
                                 gender: "MALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -10551,8 +15722,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -10560,25 +15731,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend7,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -10598,9 +15769,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -10613,7 +15784,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -10622,7 +15793,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -10630,65 +15801,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -10696,11 +15867,11 @@ export class AdsService {
                                 gender: "FEMALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -10713,8 +15884,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -10722,25 +15893,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend7,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -10760,9 +15931,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -10775,7 +15946,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -10784,7 +15955,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -10792,65 +15963,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -10858,11 +16029,11 @@ export class AdsService {
                                 gender: "OTHER"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 $project: {
@@ -10938,14 +16109,14 @@ export class AdsService {
                                 else: 0
                             }
                         },
-
+    
                     },
                     adminfullName: 1,
                     listgender: 1,
                 },
-
+    
             },
-
+    
             {
                 "$lookup": {
                     "from": "userads",
@@ -10957,8 +16128,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -10966,25 +16137,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend6,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -11004,9 +16175,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -11019,7 +16190,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -11028,7 +16199,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -11036,65 +16207,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -11102,11 +16273,11 @@ export class AdsService {
                                 gender: "MALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -11119,8 +16290,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -11128,25 +16299,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend6,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -11166,9 +16337,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -11181,7 +16352,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -11190,7 +16361,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -11198,65 +16369,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -11264,11 +16435,11 @@ export class AdsService {
                                 gender: "FEMALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -11281,8 +16452,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -11290,25 +16461,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend6,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -11328,9 +16499,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -11343,7 +16514,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -11352,7 +16523,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -11360,65 +16531,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -11426,13 +16597,13 @@ export class AdsService {
                                 gender: "OTHER"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
-
+    
             {
                 "$lookup": {
                     "from": "userads",
@@ -11444,8 +16615,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -11453,25 +16624,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend5,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -11491,9 +16662,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -11506,7 +16677,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -11515,7 +16686,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -11523,65 +16694,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -11589,11 +16760,11 @@ export class AdsService {
                                 gender: "MALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -11606,8 +16777,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -11615,25 +16786,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend5,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -11653,9 +16824,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -11668,7 +16839,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -11677,7 +16848,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -11685,65 +16856,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -11751,11 +16922,11 @@ export class AdsService {
                                 gender: "FEMALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -11768,8 +16939,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -11777,25 +16948,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend5,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -11815,9 +16986,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -11830,7 +17001,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -11839,7 +17010,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -11847,65 +17018,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -11913,13 +17084,13 @@ export class AdsService {
                                 gender: "OTHER"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
-
+    
             {
                 "$lookup": {
                     "from": "userads",
@@ -11931,8 +17102,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -11940,25 +17111,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend4,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -11978,9 +17149,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -11993,7 +17164,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -12002,7 +17173,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -12010,65 +17181,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -12076,11 +17247,11 @@ export class AdsService {
                                 gender: "MALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -12093,8 +17264,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -12102,25 +17273,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend4,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -12140,9 +17311,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -12155,7 +17326,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -12164,7 +17335,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -12172,65 +17343,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -12238,11 +17409,11 @@ export class AdsService {
                                 gender: "FEMALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -12255,8 +17426,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -12264,25 +17435,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend4,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -12302,9 +17473,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -12317,7 +17488,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -12326,7 +17497,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -12334,65 +17505,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -12400,13 +17571,13 @@ export class AdsService {
                                 gender: "OTHER"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
-
+    
             {
                 "$lookup": {
                     "from": "userads",
@@ -12418,8 +17589,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -12427,25 +17598,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend3,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -12465,9 +17636,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -12480,7 +17651,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -12489,7 +17660,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -12497,65 +17668,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -12563,11 +17734,11 @@ export class AdsService {
                                 gender: "MALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -12580,8 +17751,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -12589,25 +17760,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend3,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -12627,9 +17798,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -12642,7 +17813,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -12651,7 +17822,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -12659,65 +17830,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -12725,11 +17896,11 @@ export class AdsService {
                                 gender: "FEMALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -12742,8 +17913,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -12751,25 +17922,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend3,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -12789,9 +17960,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -12804,7 +17975,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -12813,7 +17984,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -12821,65 +17992,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -12887,13 +18058,13 @@ export class AdsService {
                                 gender: "OTHER"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
-
+    
             {
                 "$lookup": {
                     "from": "userads",
@@ -12905,8 +18076,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -12914,25 +18085,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend2,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -12952,9 +18123,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -12967,7 +18138,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -12976,7 +18147,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -12984,65 +18155,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -13050,11 +18221,11 @@ export class AdsService {
                                 gender: "MALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -13067,8 +18238,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -13076,25 +18247,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend2,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -13114,9 +18285,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -13129,7 +18300,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -13138,7 +18309,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -13146,65 +18317,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -13212,11 +18383,11 @@ export class AdsService {
                                 gender: "FEMALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -13229,8 +18400,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -13238,25 +18409,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend2,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -13276,9 +18447,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -13291,7 +18462,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -13300,7 +18471,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -13308,65 +18479,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -13374,13 +18545,13 @@ export class AdsService {
                                 gender: "OTHER"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
-
+    
             {
                 "$lookup": {
                     "from": "userads",
@@ -13392,8 +18563,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -13401,25 +18572,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend1,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -13439,9 +18610,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -13454,7 +18625,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -13463,7 +18634,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -13471,65 +18642,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -13537,11 +18708,11 @@ export class AdsService {
                                 gender: "MALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -13554,8 +18725,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -13563,25 +18734,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend1,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -13601,9 +18772,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -13616,7 +18787,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -13625,7 +18796,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -13633,65 +18804,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -13699,11 +18870,11 @@ export class AdsService {
                                 gender: "FEMALE"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 "$lookup": {
@@ -13716,8 +18887,8 @@ export class AdsService {
                         {
                             $match:
                             {
-
-
+    
+    
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -13725,25 +18896,25 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 userID: 1,
                                 createdAt: 1,
                                 statusClick: 1,
                                 statusView: 1,
-
+    
                             }
                         },
                         {
                             $match:
                             {
                                 statusView: true,
-
+    
                                 createdAt: {
                                     $regex: dateend1,
                                     $options: 'i'
                                 },
                             },
-
+    
                         },
                         {
                             "$lookup": {
@@ -13763,9 +18934,9 @@ export class AdsService {
                                             }
                                         }
                                     },
-
+    
                                 ],
-
+    
                             }
                         },
                         {
@@ -13778,7 +18949,7 @@ export class AdsService {
                         },
                         {
                             $project: {
-
+    
                                 gender: '$ubasic.gender',
                                 createdAt: 1
                             }
@@ -13787,7 +18958,7 @@ export class AdsService {
                             $project: {
                                 createdAt: 1,
                                 gender: {
-
+    
                                     $switch: {
                                         branches: [
                                             {
@@ -13795,65 +18966,65 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-
+    
                                             },
-
+    
                                         ],
                                         default: "OTHER",
-
+    
                                     },
-
+    
                                 },
-
+    
                             }
                         },
                         {
@@ -13861,11 +19032,11 @@ export class AdsService {
                                 gender: "OTHER"
                             }
                         },
-
+    
                     ],
-
+    
                 },
-
+    
             },
             {
                 $project: {
@@ -13940,7 +19111,7 @@ export class AdsService {
                                 else: 0
                             }
                         },
-
+    
                     },
                     Day5: {
                         "_id": "Day5",
@@ -13978,7 +19149,7 @@ export class AdsService {
                                 else: 0
                             }
                         },
-
+    
                     },
                     Day4: {
                         "_id": "Day4",
@@ -14016,7 +19187,7 @@ export class AdsService {
                                 else: 0
                             }
                         },
-
+    
                     },
                     Day3: {
                         "_id": "Day3",
@@ -14055,7 +19226,7 @@ export class AdsService {
                                 else: 0
                             }
                         },
-
+    
                     },
                     Day2: {
                         "_id": "Day2",
@@ -14093,7 +19264,7 @@ export class AdsService {
                                 else: 0
                             }
                         },
-
+    
                     },
                     Day1: {
                         "_id": "Day1",
@@ -14131,15 +19302,15 @@ export class AdsService {
                                 else: 0
                             }
                         },
-
+    
                     },
                     adminfullName: 1,
                     listgender: 1,
                 },
-
+    
             },
         ]);
-
+    
         var arrayData = [];
         let data = await this.getapsaraDatabaseAds(query, startdate, enddate);
         arrayData.push(data[0])
