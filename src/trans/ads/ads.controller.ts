@@ -831,7 +831,8 @@ export class AdsController {
             "info": ["The process successful"],
         };
 
-        let data = await this.adsService.detailAds(idads, startdate, enddate);
+        // let data = await this.adsService.detailAds(idads, startdate, enddate);
+        let data = await this.adsService.detailAds2(idads, startdate, enddate);
 
         return { response_code: 202, data, messages };
     }
