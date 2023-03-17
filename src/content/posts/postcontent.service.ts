@@ -2264,7 +2264,6 @@ export class PostContentService {
     post.contentMedias = cm;
     post.isShared = isShared;
     post.active = true;
-    let apost = await this.PostsModel.create(post);
 
     this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
     if (post.certified) {
@@ -2272,8 +2271,9 @@ export class PostContentService {
     } else {
       this.logger.error('createNewPostPict >>> post is not certified');
     }
+    let apost = await this.PostsModel.create(post);
+    this.cmodService.cmodImage(post.postID.toString(), url_filename);
 
-    this.cmodService.cmodImage(body.postID, url_filename);
 
     var res = new CreatePostResponse();
     res.response_code = 202;
