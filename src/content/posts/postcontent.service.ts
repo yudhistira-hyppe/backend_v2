@@ -2272,6 +2272,7 @@ export class PostContentService {
       this.logger.error('createNewPostPict >>> post is not certified');
     }
     let apost = await this.PostsModel.create(post);
+    
     this.cmodService.cmodImage(post.postID.toString(), url_filename);
 
 
