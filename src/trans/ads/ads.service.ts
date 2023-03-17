@@ -1220,6 +1220,7 @@ export class AdsService {
         return query;
     }
 
+
     async findAds(email: string, nameType: string) {
         // var query = await this.adsModel.aggregate([
         //     {
