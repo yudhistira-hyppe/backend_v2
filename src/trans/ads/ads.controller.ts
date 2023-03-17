@@ -710,7 +710,8 @@ export class AdsController {
             throw new BadRequestException("User not found");
         }
 
-        let data = await this.adsService.list(userid, search, startdate, enddate, page, limit);
+        // let data = await this.adsService.list(userid, search, startdate, enddate, page, limit);
+        let data = await this.adsService.list2(userid, search, startdate, enddate, page, limit);
 
         try {
             datacount = await this.adsService.listusercount(userid, search, startdate, enddate);

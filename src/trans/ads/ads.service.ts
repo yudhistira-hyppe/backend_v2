@@ -4411,6 +4411,255 @@ export class AdsService {
         return arrdata;
     }
 
+    async list2(userid: ObjectID, search: string, startdate: string, enddate: string, skip: number, limit: number) {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+    
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+        var pipeline = [];
+        if (userid && userid !== undefined) {
+            pipeline.push({ $match: { userID: userid } });
+        }
+        pipeline.push(
+            {
+                $lookup: {
+                    from: "adsplaces",
+                    localField: "placingID",
+                    foreignField: "_id",
+                    as: "placeData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "adstypes",
+                    localField: "typeAdsID",
+                    foreignField: "_id",
+                    as: "typesData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "userID",
+                    foreignField: "_id",
+                    as: "userbasics_data"
+                }
+            },
+            {
+                $project: {
+                    userID: 1,
+                    fullName: '$user.fullName',
+                    email: '$user.email',
+                    timestamp: 1,
+                    expiredAt: 1,
+                    gender: 1,
+                    liveAt: 1,
+                    name: 1,
+                    description: 1,
+                    objectifitas: 1,
+                    status: 1,
+                    totalClick: 1,
+                    totalUsedCredit: 1,
+                    totalView:1,
+                    urlLink: 1,
+                    isActive: 1,
+                    namePlace: {
+                        $arrayElemAt: ['$placeData.namePlace', 0]
+                    },
+                    nameType: {
+                        $arrayElemAt: ['$typesData.nameType', 0]
+                    },
+                    idApsara: 1,
+                    duration: 1,
+                    tayang: 1,
+                    type: 1
+                }
+            },
+            {
+                "$lookup": {
+                    from: "userads",
+                    as: "click",
+                    let: {
+                        local_id: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+    
+    
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "statusClick": 1,
+                                "statusView": 1,
+    
+                            }
+                        },
+                        {
+                            $match: {
+    
+    
+                                statusClick: true
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$adsID",
+                                myCount: {
+                                    $sum: 1
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: "$_id",
+                                "totalClick": "$myCount",
+    
+                            }
+                        }
+                    ],
+    
+                }
+            },
+            {
+                $project: {
+                    timestamp: 1,
+                    gender: 1,
+                    liveAt: 1,
+                    name: 1,
+                    description: 1,
+                    objectifitas: 1,
+                    status: 1,
+                    totalUsedCredit: 1,
+                    urlLink: 1,
+                    isActive: 1,
+                    namePlace: 1,
+                    nameType: 1,
+                    idApsara: 1,
+                    duration: 1,
+                    tayang: 1,
+                    totalView:1,
+                    totalClick: 
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                $arrayElemAt: ['$click.totalClick', 0]
+                            },
+                            0
+                        ]
+                    },
+                }
+            },
+        );
+        pipeline.push({ $sort: { timestamp: -1 } });
+        if (search && search !== undefined && search != "") {
+            pipeline.push({
+                $match: {
+                    $or: [{
+                        name: {
+                            $regex: search,
+                            $options: 'i'
+                        },
+    
+                    }, {
+                        description: {
+                            $regex: search,
+                            $options: 'i'
+                        },
+    
+                    }],
+                }
+            });
+        }
+        if (startdate && startdate !== undefined) {
+            pipeline.push({ $match: { timestamp: { $gte: startdate } } });
+        }
+        if (enddate && enddate !== undefined) {
+            pipeline.push({ $match: { timestamp: { $lte: dateend } } });
+        }
+        if (skip > 0) {
+            pipeline.push({ $skip: (skip * limit) });
+        }
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
+        }
+    
+        // const util = require('util');
+        // console.log(util.inspect(pipeline, false, null, true));
+    
+        let query = await this.adsModel.aggregate(pipeline);
+        // console.log(query);
+        
+        var listdata = [];
+        var tempresult = null;
+        var tempdata = null;
+        for (var i = 0; i < query.length; i++) {
+            tempdata = query[i];
+            if (tempdata.idApsara != "" || tempdata.idApsara != null) {
+                listdata.push(tempdata.idApsara);
+            }
+            else {
+                listdata.push(undefined);
+            }
+        }
+    
+        //console.log(listdata);
+        var apsaraimagedata = await this.postContentService.getImageApsara(listdata);
+        // console.log(apsaraimagedata);
+        // console.log(resultdata.ImageInfo[0]);
+        tempresult = apsaraimagedata.ImageInfo;
+        for (var i = 0; i < query.length; i++) {
+            for (var j = 0; j < tempresult.length; j++) {
+                if (tempresult[j].ImageId == query[i].idApsara) {
+                    query[i].media =
+                    {
+                        "ImageInfo": [tempresult[j]]
+                    }
+                }
+                else if((query[i].idApsara == '' || query[i].idApsara == null) && (query[i].mediaType == "image" || query[i].mediaType == "images"))
+                {
+                    query[i].media =
+                    {
+                        "ImageInfo": []
+                    }
+                }
+            }
+        }
+    
+        var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
+        // console.log(apsaravideodata);
+        // console.log(resultdata.ImageInfo[0]);
+        tempresult = apsaravideodata.VideoList;
+        for (var i = 0; i < query.length; i++) {
+            for (var j = 0; j < tempresult.length; j++) {
+                if (tempresult[j].VideoId == query[i].idApsara) {
+                    query[i].media =
+                    {
+                        "VideoList": [tempresult[j]]
+                    }
+                }
+                else if((query[i].idApsara == '' || query[i].idApsara == null) && query[i].mediaType == "video")
+                {
+                    query[i].media =
+                    {
+                        "VideoList": []
+                    }
+                }
+            }
+        }
+    
+        return query;
+    }
+
 
     async listusercount(userid: ObjectID, search: string, startdate: string, enddate: string) {
         try {
