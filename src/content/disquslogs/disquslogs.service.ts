@@ -150,7 +150,7 @@ export class DisquslogsService {
   }
 
   async findDiscusLog(disqusID: string): Promise<Disquslogs[]> {
-    return this.DisquslogsModel.find({ disqusID: disqusID, sequenceNumber: 0 }).exec();
+    return this.DisquslogsModel.find({ disqusID: disqusID, sequenceNumber: 0, active: true }).exec();
   }
 
   async findLogByDisqusId(disqusId: string, dpage: number, dpageRow: number) {
