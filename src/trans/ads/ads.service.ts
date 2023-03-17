@@ -4414,7 +4414,7 @@ export class AdsService {
     async list2(userid: ObjectID, search: string, startdate: string, enddate: string, skip: number, limit: number) {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-    
+
             var dateend = currentdate.toISOString();
         } catch (e) {
             dateend = "";
@@ -4462,7 +4462,7 @@ export class AdsService {
                     objectifitas: 1,
                     status: 1,
                     totalUsedCredit: 1,
-                    totalView:1,
+                    totalView: 1,
                     urlLink: 1,
                     isActive: 1,
                     namePlace: {
@@ -4488,8 +4488,8 @@ export class AdsService {
                         {
                             $match:
                             {
-    
-    
+
+
                                 $expr: {
                                     $eq: ['$adsID', '$$local_id']
                                 }
@@ -4499,13 +4499,13 @@ export class AdsService {
                             $project: {
                                 "statusClick": 1,
                                 "statusView": 1,
-    
+
                             }
                         },
                         {
                             $match: {
-    
-    
+
+
                                 statusClick: true
                             }
                         },
@@ -4521,11 +4521,11 @@ export class AdsService {
                             $project: {
                                 _id: "$_id",
                                 "totalClick": "$myCount",
-    
+
                             }
                         }
                     ],
-    
+
                 }
             },
             {
@@ -4548,20 +4548,20 @@ export class AdsService {
                     totalView:
                     {
                         "$ifNull":
-                        [
-                            "$totalView",
-                            0
-                        ]
+                            [
+                                "$totalView",
+                                0
+                            ]
                     },
-                    totalClick: 
+                    totalClick:
                     {
                         "$ifNull":
-                        [
-                            {
-                                $arrayElemAt: ['$click.totalClick', 0]
-                            },
-                            0
-                        ]
+                            [
+                                {
+                                    $arrayElemAt: ['$click.totalClick', 0]
+                                },
+                                0
+                            ]
                     },
                 }
             },
@@ -4575,13 +4575,13 @@ export class AdsService {
                             $regex: search,
                             $options: 'i'
                         },
-    
+
                     }, {
                         description: {
                             $regex: search,
                             $options: 'i'
                         },
-    
+
                     }],
                 }
             });
@@ -4598,13 +4598,13 @@ export class AdsService {
         if (limit > 0) {
             pipeline.push({ $limit: limit });
         }
-    
+
         // const util = require('util');
         // console.log(util.inspect(pipeline, false, null, true));
-    
+
         let query = await this.adsModel.aggregate(pipeline);
         // console.log(query);
-        
+
         var listdata = [];
         var tempresult = null;
         var tempdata = null;
@@ -4617,7 +4617,7 @@ export class AdsService {
                 listdata.push(undefined);
             }
         }
-    
+
         //console.log(listdata);
         var apsaraimagedata = await this.postContentService.getImageApsara(listdata);
         // console.log(apsaraimagedata);
@@ -4631,8 +4631,7 @@ export class AdsService {
                         "ImageInfo": [tempresult[j]]
                     }
                 }
-                else if((query[i].idApsara == '' || query[i].idApsara == null) && (query[i].mediaType == "image" || query[i].mediaType == "images"))
-                {
+                else if ((query[i].idApsara == '' || query[i].idApsara == null) && (query[i].mediaType == "image" || query[i].mediaType == "images")) {
                     query[i].media =
                     {
                         "ImageInfo": []
@@ -4640,7 +4639,7 @@ export class AdsService {
                 }
             }
         }
-    
+
         var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
         // console.log(apsaravideodata);
         // console.log(resultdata.ImageInfo[0]);
@@ -4653,8 +4652,7 @@ export class AdsService {
                         "VideoList": [tempresult[j]]
                     }
                 }
-                else if((query[i].idApsara == '' || query[i].idApsara == null) && query[i].mediaType == "video")
-                {
+                else if ((query[i].idApsara == '' || query[i].idApsara == null) && query[i].mediaType == "video") {
                     query[i].media =
                     {
                         "VideoList": []
@@ -4662,7 +4660,7 @@ export class AdsService {
                 }
             }
         }
-    
+
         return query;
     }
 
