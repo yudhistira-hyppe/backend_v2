@@ -861,6 +861,7 @@ export class DisqusController {
     if (username_ != null && fullName_ != null) {
       retVal["username"] = username_.username;
       retVal["fullName"] = fullName_.fullName;
+      retVal["isIdVerified"] = fullName_.isIdVerified;
       if (avatar_ != null){
         retVal["avatar"] = avatar_;
       }
@@ -876,6 +877,7 @@ export class DisqusController {
         if (username_mate != null && fullName_mate != null) {
           mateInfo['username'] = username_mate.username;
           mateInfo['fullName'] = fullName_mate.fullName;
+          mateInfo["isIdVerified"] = fullName_mate.isIdVerified;
           if (avatar_mate != null) {
             mateInfo['avatar'] = avatar_mate;
           } 
@@ -906,6 +908,7 @@ export class DisqusController {
     if (username_mate2 != null && fullName_mate2 != null) {
       mateInfo["username"] = username_mate2.username;
       mateInfo["fullName"] = fullName_mate2.fullName;
+      mateInfo["isIdVerified"] = fullName_mate2.isIdVerified;
       if (avatar_mate2 != null) {
         mateInfo['avatar'] = avatar_mate2;
       }
