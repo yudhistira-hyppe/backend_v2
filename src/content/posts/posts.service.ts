@@ -40286,6 +40286,26 @@ export class PostsService {
         },
         {
           $project: {
+            selfContent:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$email", email]
+                },
+                then: 1,
+                else: 0
+              }
+            },
+            official:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$email", "hyppers@hyppe.id"]
+                },
+                then: 1,
+                else: 0
+              }
+            },
             isLike: {
               $arrayElemAt: ["$isLike.isLiked", 0]
             },
@@ -40427,6 +40447,8 @@ export class PostsService {
             intScore: {
               $size: "$interest"
             },
+            "selfContent": 1,
+            "official": 1,
             "friend": 1,
             "follower": 1,
             "following": 1,
@@ -41394,6 +41416,26 @@ export class PostsService {
         },
         {
           $project: {
+            selfContent:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$email", email]
+                },
+                then: 1,
+                else: 0
+              }
+            },
+            official:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$email", "hyppers@hyppe.id"]
+                },
+                then: 1,
+                else: 0
+              }
+            },
             isLike: {
               $arrayElemAt: ["$isLike.isLiked", 0]
             },
@@ -41530,6 +41572,8 @@ export class PostsService {
         },
         {
           $project: {
+            selfContent: 1,
+            official: 1,
             isLiked: "$isLike",
             comment: 1,
             intScore: {
@@ -42502,6 +42546,26 @@ export class PostsService {
         },
         {
           $project: {
+            selfContent:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$email", email]
+                },
+                then: 1,
+                else: 0
+              }
+            },
+            official:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$email", "hyppers@hyppe.id"]
+                },
+                then: 1,
+                else: 0
+              }
+            },
             isLike: {
               $arrayElemAt: ["$isLike.isLiked", 0]
             },
@@ -42638,6 +42702,8 @@ export class PostsService {
         },
         {
           $project: {
+            selfContent: 1,
+            official: 1,
             isLiked: "$isLike",
             comment: 1,
             intScore: {
