@@ -2273,6 +2273,8 @@ export class PostContentService {
       this.logger.error('createNewPostPict >>> post is not certified');
     }
 
+    this.cmodService.cmodImage(body.postID, url_filename);
+
     var res = new CreatePostResponse();
     res.response_code = 202;
     let msg = new Messages();
