@@ -57,7 +57,7 @@ export class PostDisqusService {
     return query;
   }
 
-  async updateComment(postID: string) {
+  async updateCommentPlus(postID: string) {
     this.PostsModel.updateOne(
       {
         postID: postID,

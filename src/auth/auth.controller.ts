@@ -3755,4 +3755,18 @@ export class AuthController {
     }
     return getList;
   }
+
+  @Post('api/user/bearer')
+  @HttpCode(HttpStatus.ACCEPTED)
+  @UseGuards(JwtAuthGuard)
+  async bearer(@Headers() headers) {
+    return {
+      "response_code": 202,
+      "messages": {
+        "info": [
+          "The process successful"
+        ]
+      }
+    };
+  }
 }

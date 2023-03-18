@@ -214,7 +214,12 @@ export class DisquslogsService {
             return item_.lineID == dat.parentID
           });
         });
-        res[index_default].push(obj);
+        console.log(res);
+        console.log(res[index_default]);
+        if (res.length>0){
+          res[index_default].push(obj);
+        }
+        
       }
       if (dta.length > 0) {
         res.push(dta)
