@@ -97,7 +97,7 @@ export class PostCommentService {
       console.log((dis.sequenceNumber));
       console.log((dis.sequenceNumber == 0));
       if (dis.sequenceNumber==0){
-        this.postService.updateCommentMin(profile.email.toString(), createDisquslogsDto_.postID.toString());
+        this.postService.updateCommentMin(profile.email.toString(), dis.postID.toString());
         var replyLog = dis.replyLogs;
         console.log(replyLog);
       }
