@@ -161,7 +161,8 @@ export class DisqusController {
           if (ContentDto_.receiverParty != ContentDto_.email.toString()) {
             this.sendCommentFCM(ContentDto_.receiverParty.toString(), "COMMENT", ContentDto_.postID.toString(), ContentDto_.email.toString())
           }
-          this.insightsService.updateComment(ContentDto_.receiverParty.toString())
+          this.insightsService.updateComment(ContentDto_.receiverParty.toString());
+          this.postDisqusService.updateComment(ContentDto_.postID.toString());
           res.response_code = 202;
           let m = new Messages();
           m.info = ["The process successful"]
@@ -375,15 +376,16 @@ export class DisqusController {
           console.log("Payload Query Comment >>>>>> : ", ContentDto_);
           var DisqusResponseComment_ = new DisqusResponseComment();
           let com = await this.disqusService.findDisqusByPost(String(ContentDto_.postID), type);
-          
-          console.log('com',com);
+          //var dataDiscuss = await this.disqusService.getDiscus(String(ContentDto_.postID), type);
+
+          console.log('com', com);
 
           let tmp_: DisqusComment[] = [];
           for (let i = 0; i < com.length; i++) {
             let con = com[i];
             var retVal_ = new DisqusComment();
 
-            retVal_.disqusID = con.disqusID; 
+            retVal_.disqusID = con.disqusID;
             retVal_.active = con.active;
             var profile = await this.utilsService.generateProfile(String(con.email), 'PROFILE');
             if (profile.fullName != undefined) {
@@ -403,7 +405,7 @@ export class DisqusController {
             retVal_.disqusID = con.disqusID;
             retVal_.email = con.email;
             retVal_.updatedAt = con.updatedAt;
-            retVal_.createdAt = con.createdAt; 
+            retVal_.createdAt = con.createdAt;
             let get_count = await this.disqusLogService.findDiscusLog(String(con.disqusID));
             retVal_.comment = get_count.length;
             let dl = await this.disqusLogService.findLogByDisqusId(String(con.disqusID), Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
@@ -419,7 +421,7 @@ export class DisqusController {
             //   retVal.createdAt = con.createdAt;
             //   retVal.updatedAt = con.updatedAt;
 
-              
+
             //   if (profile.username!=undefined){
             //     retVal.username = profile.username;
             //   }

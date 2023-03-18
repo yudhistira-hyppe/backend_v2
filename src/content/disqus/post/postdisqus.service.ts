@@ -57,6 +57,22 @@ export class PostDisqusService {
     return query;
   }
 
+  async updateComment(postID: string) {
+    this.PostsModel.updateOne(
+      {
+        postID: postID,
+      },
+      { $inc: { comments: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
   async findOnepostID2(postID: string): Promise<Object> {
     var datacontent = null;
     var CreatePostsDto_ = await this.PostsModel.findOne({ postID: postID }).exec();

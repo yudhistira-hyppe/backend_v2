@@ -1255,7 +1255,6 @@ export class PostsController {
     return data;
   }
 
-
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts')
   @UseInterceptors(FileInterceptor('postContent'))

@@ -2272,7 +2272,7 @@ export class PostContentService {
       this.logger.error('createNewPostPict >>> post is not certified');
     }
     let apost = await this.PostsModel.create(post);
-    
+
     this.cmodService.cmodImage(post.postID.toString(), url_filename);
 
 
@@ -3614,8 +3614,11 @@ export class PostContentService {
       }
 
       if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
+        this.logger.log("doGetUserPost >>> story: 1679037971313");
         this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
-        query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
+        this.logger.log("doGetUserPost >>> gte: " + this.utilService.generateExpirationFromToday(1));
+        this.logger.log("doGetUserPost >>> ceck: " + (1679037971313 > this.utilService.now()));
+        query.where('expiration').gte(this.utilService.now());
       }
 
       let row = 20;
