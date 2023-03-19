@@ -2275,23 +2275,19 @@ export class PostsController {
             }
           }
 
-
           if (getchildata.music.apsaraThumnail != undefined) {
-            var dataApsaraThumnail = await this.mediamusicService.getImageApsara([getchildata.music.apsaraThumnail])
+            var dataApsaraThumnail = await this.mediamusicService.getImageApsara([getchildata.music.apsaraThumnail]);
             getchildata.music.apsaraThumnailUrl = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == getchildata.music.apsaraThumnail).URL;
+            // getchildata.music.apsaraThumnailUrl = dataApsaraThumnail.ImageInfo[0].URL;
           }
 
         }
       }
 
-
       data = tempdata;
     } else {
       data = [];
     }
-
-
-
     return { response_code: 202, data, messages };
   }
 
