@@ -715,6 +715,7 @@ export class UserauthsService {
           {
             "$arrayElemAt": ["$music.mood.name", 0]
           },
+
           "testDate": 1,
           "mediaType":
           {
@@ -882,7 +883,16 @@ export class UserauthsService {
           "avatar": 1,
           "statusCB": 1,
           "privacy": 1,
-          "isView": 1
+          "isView": 1,
+          "music": {
+            "_id": 1,
+            "musicTitle": "$musicTitle",
+            "artistName": "$artistName",
+            "albumName": "$albumName",
+            "apsaraMusic": "$apsaraMusic",
+            "apsaraThumnail": "$apsaraThumnail",
+
+          },
         }
       },
       {
@@ -936,6 +946,7 @@ export class UserauthsService {
               "insight": "$insight",
               "fullName": "$fullName",
               "username": "$username",
+              "music": "$music",
               "avatar":
               {
                 $cond: {
