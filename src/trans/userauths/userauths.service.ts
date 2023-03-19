@@ -665,6 +665,7 @@ export class UserauthsService {
             },
             {
               $project: {
+                "_id": 1,
                 "musicTitle": 1,
                 "artistName": 1,
                 "albumName": 1,
@@ -684,6 +685,9 @@ export class UserauthsService {
         $project: {
           "storyDate": 1,
           "postID": 1,
+          "musicId": {
+            "$arrayElemAt": ['$music._id', 0]
+          },
           "musicTitle": {
             "$arrayElemAt": ['$music.musicTitle', 0]
           },
@@ -839,6 +843,7 @@ export class UserauthsService {
           "mediaEndpoint": 1,
           "storyDate": 1,
           "postID": 1,
+          "musicId": 1,
           "musicTitle": 1,
           "artistName": 1,
           "albumName": 1,
@@ -885,7 +890,7 @@ export class UserauthsService {
           "privacy": 1,
           "isView": 1,
           "music": {
-            "_id": 1,
+            "_id": "$musicId",
             "musicTitle": "$musicTitle",
             "artistName": "$artistName",
             "albumName": "$albumName",
