@@ -16269,6 +16269,23 @@ export class PostsService {
     return data;
   }
 
+  async updateCommentMin(email: string, postID: string) {
+    this.PostsModel.updateOne(
+      {
+        email: email,
+        postID: postID,
+      },
+      { $inc: { comments: -1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
   async streamV2(mediaFile: string): Promise<any> {
     console.log(mediaFile);
     var data = await this.seaweedfsService.read("/" + mediaFile);

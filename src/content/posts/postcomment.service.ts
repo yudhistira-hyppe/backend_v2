@@ -91,8 +91,16 @@ export class PostCommentService {
         return res;        
     }
 
+    console.log((dis.sender == profile.email || dis.receiver == profile.email));
     if (dis.sender == profile.email || dis.receiver == profile.email) {
       var createDisquslogsDto_ = new CreateDisquslogsDto();
+      console.log((dis.sequenceNumber));
+      console.log((dis.sequenceNumber == 0));
+      if (dis.sequenceNumber==0){
+        this.postService.updateCommentMin(profile.email.toString(), dis.postID.toString());
+        var replyLog = dis.replyLogs;
+        console.log(replyLog);
+      }
       createDisquslogsDto_.active = false;
       await this.disqusLogService.update(body.disqusLogID, createDisquslogsDto_);
         //this.disqusLogService.delete(String(dis._id));
