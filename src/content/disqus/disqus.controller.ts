@@ -375,51 +375,51 @@ export class DisqusController {
           }
           */
         } else if (type == "COMMENT") {
-          console.log("Payload Query Comment >>>>>> : ", ContentDto_);
-          var DisqusResponseComment_ = new DisqusResponseComment();
-          let com = await this.disqusService.findDisqusByPost(String(ContentDto_.postID), type);
+          // console.log("Payload Query Comment >>>>>> : ", ContentDto_);
+          // var DisqusResponseComment_ = new DisqusResponseComment();
+          // let com = await this.disqusService.findDisqusByPost(String(ContentDto_.postID), type);
 
-          // var data = await this.disqusService.getDiscus(String(ContentDto_.postID), type);
-          // return {
-          //   data: data
-          // }
-
-          console.log('com', com);
-
-          let tmp_: DisqusComment[] = [];
-          for (let i = 0; i < com.length; i++) {
-            let con = com[i];
-            var retVal_ = new DisqusComment();
-
-            retVal_.disqusID = con.disqusID;
-            retVal_.active = con.active;
-            var profile = await this.utilsService.generateProfile(String(con.email), 'PROFILE');
-            if (profile.fullName != undefined) {
-              retVal_.fullName = profile.fullName;
-            }
-            if (profile.username != undefined) {
-              retVal_.username = profile.username;
-            }
-            if (profile.avatar != undefined) {
-              retVal_.avatar = profile.avatar;
-            }
-            if (profile.isIdVerified != undefined) {
-              retVal_.isIdVerified = ((profile.isIdVerified) === "true");
-            }
-            retVal_.postId = con.postID.toString();
-            retVal_.eventType = con.eventType;
-            retVal_.disqusID = con.disqusID;
-            retVal_.email = con.email;
-            retVal_.updatedAt = con.updatedAt;
-            retVal_.createdAt = con.createdAt;
-            let get_count = await this.disqusLogService.findDiscusLog(String(con.disqusID));
-            retVal_.comment = get_count.length;
-            let dl = await this.disqusLogService.findLogByDisqusId(String(con.disqusID), Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
-            retVal_.disqusLogs = dl;                       
-            tmp_.push(retVal_);
+          var data = await this.disqusService.getDiscus(String(ContentDto_.postID), type);
+          return {
+            data: data
           }
-          DisqusResponseComment_.data = tmp_;
-          return DisqusResponseComment_;
+
+          // console.log('com', com);
+
+          // let tmp_: DisqusComment[] = [];
+          // for (let i = 0; i < com.length; i++) {
+          //   let con = com[i];
+          //   var retVal_ = new DisqusComment();
+
+          //   retVal_.disqusID = con.disqusID;
+          //   retVal_.active = con.active;
+          //   var profile = await this.utilsService.generateProfile(String(con.email), 'PROFILE');
+          //   if (profile.fullName != undefined) {
+          //     retVal_.fullName = profile.fullName;
+          //   }
+          //   if (profile.username != undefined) {
+          //     retVal_.username = profile.username;
+          //   }
+          //   if (profile.avatar != undefined) {
+          //     retVal_.avatar = profile.avatar;
+          //   }
+          //   if (profile.isIdVerified != undefined) {
+          //     retVal_.isIdVerified = ((profile.isIdVerified) === "true");
+          //   }
+          //   retVal_.postId = con.postID.toString();
+          //   retVal_.eventType = con.eventType;
+          //   retVal_.disqusID = con.disqusID;
+          //   retVal_.email = con.email;
+          //   retVal_.updatedAt = con.updatedAt;
+          //   retVal_.createdAt = con.createdAt;
+          //   let get_count = await this.disqusLogService.findDiscusLog(String(con.disqusID));
+          //   retVal_.comment = get_count.length;
+          //   let dl = await this.disqusLogService.findLogByDisqusId(String(con.disqusID), Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
+          //   retVal_.disqusLogs = dl;                       
+          //   tmp_.push(retVal_);
+          // }
+          // DisqusResponseComment_.data = tmp_;
+          // return DisqusResponseComment_;
         }
 
         isValid = true;

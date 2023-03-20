@@ -380,6 +380,23 @@ export class PostContentService {
         if (await this.utilService.ceckData(tp)) {
           if (tp != undefined) {
             var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
+            let em = String(tp.username);
+            let bodyi = em + ' Menandai kamu di ';
+            let bodye = em + ' Tagged you in ';
+            if (post.postType == 'pict') {
+              bodyi = bodyi + ' HyppePic';
+              bodye = bodye + ' HyppePic';
+            } else if (post.postType == 'vid') {
+              bodyi = bodyi + ' HyppeVideo';
+              bodye = bodye + ' HyppeVideo';
+            } else if (post.postType == 'diary') {
+              bodyi = bodyi + ' HyppeDiary';
+              bodye = bodye + ' HyppeDiary';
+            } else if (post.postType == 'story') {
+              bodyi = bodyi + ' HyppeStory';
+              bodye = bodye + ' HyppeStory';
+            }
+            this.utilService.sendFcmV2(tp.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString());
             pcats.push(objintr);
           }
         }
@@ -397,6 +414,23 @@ export class PostContentService {
         if (await this.utilService.ceckData(tp)) {
           if (tp != undefined || tp != null) {
             var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+            let em = String(tp.username);
+            let bodyi = em + ' Menandai kamu di ';
+            let bodye = em + ' Tagged you in ';
+            if (post.postType == 'pict') {
+              bodyi = bodyi + ' HyppePic';
+              bodye = bodye + ' HyppePic';
+            } else if (post.postType == 'vid') {
+              bodyi = bodyi + ' HyppeVideo';
+              bodye = bodye + ' HyppeVideo';
+            } else if (post.postType == 'diary') {
+              bodyi = bodyi + ' HyppeDiary';
+              bodye = bodye + ' HyppeDiary';
+            } else if (post.postType == 'story') {
+              bodyi = bodyi + ' HyppeStory';
+              bodye = bodye + ' HyppeStory';
+            }
+            this.utilService.sendFcmV2(tp.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString())
             pcats.push(objintrx);
           }
         }
