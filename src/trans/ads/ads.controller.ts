@@ -862,7 +862,8 @@ export class AdsController {
 
         var userid = mongoose.Types.ObjectId(requserid);
 
-        data = await this.adsService.getgraphadsanalytics(userid);
+        // data = await this.adsService.getgraphadsanalytics(userid);
+        data = await this.adsService.getgraphadsanalytics2(userid);
 
 
         return { response_code: 202, data, messages };
