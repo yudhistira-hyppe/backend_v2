@@ -205,7 +205,7 @@ export class DisquslogsService {
       if (dat.sequenceNumber == 0) {
         dta.push(obj);
       } else {
-        var index_default = 0;
+        var index_default = null;
         res.map((item, index) => {
           item.filter((item_, index_) => {
             if (item_.lineID == dat.parentID) {
@@ -216,10 +216,11 @@ export class DisquslogsService {
         });
         console.log(res);
         console.log(res[index_default]);
-        if (res.length>0){
-          res[index_default].push(obj);
+        if (index_default!=null){
+          if (res.length > 0) {
+            res[index_default].push(obj);
+          }
         }
-        
       }
       if (dta.length > 0) {
         res.push(dta)
