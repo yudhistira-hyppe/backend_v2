@@ -39488,6 +39488,54 @@ export class PostsService {
         },
         {
           $set: {
+            lastTime: {
+              "$concat": [
+                {
+                  "$dateToString": {
+                    "format": "%Y-%m-%d",
+                    "date": new Date()
+                  }
+                },
+                " 08:00:00"
+              ]
+            }
+          }
+        },
+        {
+          $set: {
+            timeEnd:
+            {
+              $cond: {
+                if: {
+                  $lt: ["$timeEnd", "$lastTime"]
+                },
+                then: {
+                  "$concat": [
+                    {
+                      "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date":
+                        {
+                          $dateAdd:
+                          {
+                            startDate: new Date(),
+                            unit: "day",
+                            amount: 1
+                          }
+                        }
+                      }
+                    },
+                    " ",
+                    "$boosted.boostSession.timeEnd"
+                  ]
+                },
+                else: "$timeEnd"
+              }
+            },
+          },
+        },
+        {
+          $set: {
 
             "testDate":
             {
@@ -40736,6 +40784,54 @@ export class PostsService {
         },
         {
           $set: {
+            lastTime: {
+              "$concat": [
+                {
+                  "$dateToString": {
+                    "format": "%Y-%m-%d",
+                    "date": new Date()
+                  }
+                },
+                " 08:00:00"
+              ]
+            }
+          }
+        },
+        {
+          $set: {
+            timeEnd:
+            {
+              $cond: {
+                if: {
+                  $lt: ["$timeEnd", "$lastTime"]
+                },
+                then: {
+                  "$concat": [
+                    {
+                      "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date":
+                        {
+                          $dateAdd:
+                          {
+                            startDate: new Date(),
+                            unit: "day",
+                            amount: 1
+                          }
+                        }
+                      }
+                    },
+                    " ",
+                    "$boosted.boostSession.timeEnd"
+                  ]
+                },
+                else: "$timeEnd"
+              }
+            },
+          },
+        },
+        {
+          $set: {
 
             "testDate":
             {
@@ -41976,6 +42072,54 @@ export class PostsService {
               ]
             }
           }
+        },
+        {
+          $set: {
+            lastTime: {
+              "$concat": [
+                {
+                  "$dateToString": {
+                    "format": "%Y-%m-%d",
+                    "date": new Date()
+                  }
+                },
+                " 08:00:00"
+              ]
+            }
+          }
+        },
+        {
+          $set: {
+            timeEnd:
+            {
+              $cond: {
+                if: {
+                  $lt: ["$timeEnd", "$lastTime"]
+                },
+                then: {
+                  "$concat": [
+                    {
+                      "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date":
+                        {
+                          $dateAdd:
+                          {
+                            startDate: new Date(),
+                            unit: "day",
+                            amount: 1
+                          }
+                        }
+                      }
+                    },
+                    " ",
+                    "$boosted.boostSession.timeEnd"
+                  ]
+                },
+                else: "$timeEnd"
+              }
+            },
+          },
         },
         {
           $set: {
