@@ -6609,6 +6609,8 @@ export class TransactionsController {
                     "apsaraId": idapsaradefine,
                     "apsara": apsaradefine,
                     "debetKredit": query[i].debetKredit,
+                    "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+                    "apsaraThumbId": query[i].apsaraThumbId,
                     "media": datanew
 
                 };

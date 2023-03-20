@@ -892,7 +892,8 @@ export class UserbasicsService {
       {
         $match:
         {
-          "email": email
+          "email": email,
+
         }
       },
       {
@@ -1067,6 +1068,7 @@ export class UserbasicsService {
                               {
                                 $eq: ["$status", "Success"]
                               },
+
                             ],
 
                           },
@@ -1081,7 +1083,6 @@ export class UserbasicsService {
 
                     }
                   },
-
 
                 ],
 
@@ -1202,7 +1203,6 @@ export class UserbasicsService {
                       "bank": 1,
                       "amount": 1,
                       "totalamount": 1,
-
                       "postid": 1,
                       "iduserbuyer": 1,
                       "idusersell": 1,
@@ -1282,15 +1282,14 @@ export class UserbasicsService {
                       "apsaraId": {
                         $ifNull: ["$apsaraId", false]
                       },
-                      "apsaraThumbId":
-                      {
-                        "$concat": ["/thumb/", "$postID"]
-                      },
+                      "apsaraThumbId": 1,
                       "mediaEndpoint": {
                         "$concat": ["/stream/", "$postID"]
                       },
                       "mediaUri": 1,
-                      "mediaThumbEndpoint": 1,
+                      "mediaThumbEndpoint": {
+                        "$concat": ["/thumb/", "$postID"]
+                      },
                       "mediaThumbUri": 1,
 
                     }
@@ -1333,7 +1332,7 @@ export class UserbasicsService {
                       },
                       "mediaUri": 1,
                       "mediaThumbEndpoint": {
-                        "$concat": ["/stream/", "$postID"]
+                        "$concat": ["/thumb/", "$postID"]
                       },
                       "mediaThumbUri": 1,
 
@@ -1377,7 +1376,7 @@ export class UserbasicsService {
                       },
                       "mediaUri": 1,
                       "mediaThumbEndpoint": {
-                        "$concat": ["/stream/", "$postID"]
+                        "$concat": ["/thumb/", "$postID"]
                       },
                       "mediaThumbUri": 1,
 
@@ -1453,6 +1452,7 @@ export class UserbasicsService {
                           "email":
                           {
                             $ne: email
+
                           }
                         }
                       ]
@@ -1485,6 +1485,7 @@ export class UserbasicsService {
                           "email":
                           {
                             $ne: email
+
                           }
                         }
                       ]
@@ -2040,6 +2041,192 @@ export class UserbasicsService {
                       "default": "$kampret"
                     }
                   },
+                  "mediaThumbEndpoint":
+                  {
+                    $switch: {
+                      branches: [
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "vid"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$video.mediaThumbEndpoint', {
+                              "$indexOfArray": [
+                                "$video.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "pict"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$pict.mediaThumbEndpoint', {
+                              "$indexOfArray": [
+                                "$pict.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "story"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$story.mediaThumbEndpoint', {
+                              "$indexOfArray": [
+                                "$story.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "diary"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$diary.mediaThumbEndpoint', {
+                              "$indexOfArray": [
+                                "$diary.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+
+                      ],
+                      "default": "$kampret"
+                    }
+                  },
+                  "apsaraThumbId":
+                  {
+                    $switch: {
+                      branches: [
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "vid"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$video.apsaraThumbId', {
+                              "$indexOfArray": [
+                                "$video.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "pict"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$pict.apsaraThumbId', {
+                              "$indexOfArray": [
+                                "$pict.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "story"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$story.apsaraThumbId', {
+                              "$indexOfArray": [
+                                "$story.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "diary"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$diary.apsaraThumbId', {
+                              "$indexOfArray": [
+                                "$diary.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+
+                      ],
+                      "default": "$kampret"
+                    }
+                  },
 
                 }]
               }
@@ -2122,6 +2309,8 @@ export class UserbasicsService {
           "title": '$tester.title',
           "mediaType": '$tester.mediaType',
           "mediaEndpoint": '$tester.mediaEndpoint',
+          "mediaThumbEndpoint": '$tester.mediaThumbEndpoint',
+          "apsaraThumbId": '$tester.apsaraThumbId',
           "apsaraId": '$tester.apsaraId',
           "apsara": '$tester.apsara',
           "debetKredit": '$tester.debetKredit',
