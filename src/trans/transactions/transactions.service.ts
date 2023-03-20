@@ -3565,7 +3565,13 @@ export class TransactionsService {
                                             "mediapicts"
                                         ]
                                     },
-                                    then: "$mediadiaries.mediaThumb"
+                                    then: {
+                                        $concat: [
+                                            "thumb",
+                                            "/",
+                                            "$postID"
+                                        ]
+                                    }
                                 },
                                 {
                                     case: {
@@ -3576,7 +3582,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "$concatthumbdiari",
+                                            "thumb",
                                             "/",
                                             "$postID"
                                         ]
@@ -3591,7 +3597,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "$concatthumbvideo",
+                                            "thumb",
                                             "/",
                                             "$postID"
                                         ]
@@ -3613,7 +3619,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "$concatmediapict",
+                                            "pict",
                                             "/",
                                             "$postID"
                                         ]
@@ -3628,7 +3634,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "$concatmediadiari",
+                                            "stream",
                                             "/",
                                             "$postID"
                                         ]
@@ -3643,7 +3649,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "$concatmediavideo",
+                                            "stream",
                                             "/",
                                             "$postID"
                                         ]
@@ -4215,7 +4221,13 @@ export class TransactionsService {
                                             "mediapicts"
                                         ]
                                     },
-                                    then: "$mediadiaries.mediaThumb"
+                                    then: {
+                                        $concat: [
+                                            "thumb",
+                                            "/",
+                                            "$postID"
+                                        ]
+                                    }
                                 },
                                 {
                                     case: {
@@ -4226,7 +4238,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "$concatthumbdiari",
+                                            "thumb",
                                             "/",
                                             "$postID"
                                         ]
@@ -4241,7 +4253,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "$concatthumbvideo",
+                                            "thumb",
                                             "/",
                                             "$postID"
                                         ]
@@ -4263,7 +4275,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "$concatmediapict",
+                                            "pict",
                                             "/",
                                             "$postID"
                                         ]
@@ -4278,7 +4290,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "$concatmediadiari",
+                                            "stream",
                                             "/",
                                             "$postID"
                                         ]
@@ -4293,7 +4305,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "$concatmediavideo",
+                                            "stream",
                                             "/",
                                             "$postID"
                                         ]
@@ -4694,42 +4706,42 @@ export class TransactionsService {
                         "$switch":
                         {
                             "branches":
-                            [
-                                {
-                                    "case":
+                                [
                                     {
-                                        "$eq":
-                                        [
-                                            "$status",
-                                            "Success"
-                                        ]
+                                        "case":
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$status",
+                                                    "Success"
+                                                ]
+                                        },
+                                        "then": "Success"
                                     },
-                                    "then":"Success"
-                                },
-                                {
-                                    "case":
                                     {
-                                        "$eq":
-                                        [
-                                            "$status",
-                                            "Cancel"
-                                        ]
+                                        "case":
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$status",
+                                                    "Cancel"
+                                                ]
+                                        },
+                                        "then": "Cancel"
                                     },
-                                    "then":"Cancel"
-                                },
-                                {
-                                    "case":
                                     {
-                                        "$eq":
-                                        [
-                                            "$status",
-                                            "WAITING_PAYMENT"
-                                        ]
+                                        "case":
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$status",
+                                                    "WAITING_PAYMENT"
+                                                ]
+                                        },
+                                        "then": "WAITING_PAYMENT"
                                     },
-                                    "then":"WAITING_PAYMENT"
-                                },
-                            ],
-                            "default":"Cancel"
+                                ],
+                            "default": "Cancel"
                         }
                     },
                     user: {
@@ -5066,42 +5078,42 @@ export class TransactionsService {
                         "$switch":
                         {
                             "branches":
-                            [
-                                {
-                                    "case":
+                                [
                                     {
-                                        "$eq":
-                                        [
-                                            "$status",
-                                            "Success"
-                                        ]
+                                        "case":
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$status",
+                                                    "Success"
+                                                ]
+                                        },
+                                        "then": "Success"
                                     },
-                                    "then":"Success"
-                                },
-                                {
-                                    "case":
                                     {
-                                        "$eq":
-                                        [
-                                            "$status",
-                                            "Cancel"
-                                        ]
+                                        "case":
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$status",
+                                                    "Cancel"
+                                                ]
+                                        },
+                                        "then": "Cancel"
                                     },
-                                    "then":"Cancel"
-                                },
-                                {
-                                    "case":
                                     {
-                                        "$eq":
-                                        [
-                                            "$status",
-                                            "WAITING_PAYMENT"
-                                        ]
+                                        "case":
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$status",
+                                                    "WAITING_PAYMENT"
+                                                ]
+                                        },
+                                        "then": "WAITING_PAYMENT"
                                     },
-                                    "then":"WAITING_PAYMENT"
-                                },
-                            ],
-                            "default":"Cancel"
+                                ],
+                            "default": "Cancel"
                         }
                     },
                     user: {

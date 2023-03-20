@@ -5210,7 +5210,7 @@ export class TransactionsController {
                 amounts = databuy[0].amount;
 
                 noinvoice = databuy[0].noinvoice;
-                mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
+
                 mediaThumbUri = databuy[0].mediaThumbUri;
                 try {
                     dataconten = await this.getusercontentsService.findcontenbuy(postid);
@@ -5299,36 +5299,36 @@ export class TransactionsController {
                     idapsaradefine = idapsara;
                 }
 
-                if(databuy[0].mediaType == 'image' || databuy[0].mediaType == 'images')
-                {
-                    if(apsara == true)
-                    {
+                if (databuy[0].mediaType == 'image' || databuy[0].mediaType == 'images') {
+                    if (apsara == true) {
                         dataapsara = await this.postContentService.getImageApsara([idapsara]);
+                        mediaThumbEndpoint = dataapsara.ImageInfo[0].URL;
                     }
-                    else
-                    {
-                        dataapsara = 
+                    else {
+                        dataapsara =
                         {
                             "ImageInfo": []
                         }
+
+                        mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
                     }
                 }
-                else if(databuy[0].mediaType == 'video')
-                {
-                    if(apsara == true)
-                    {
+                else if (databuy[0].mediaType == 'video') {
+                    if (apsara == true) {
                         dataapsara = await this.postContentService.getVideoApsara([idapsara]);
+                        mediaThumbEndpoint = dataapsara.VideoList[0].CoverURL;
                     }
-                    else
-                    {
-                        dataapsara = 
+                    else {
+                        dataapsara =
                         {
                             "VideoList": []
                         }
+
+
+                        mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
                     }
                 }
-                else
-                {
+                else {
                     dataapsara = [];
                 }
 
@@ -5384,7 +5384,7 @@ export class TransactionsController {
                 amounts = databuy[0].amount;
 
                 noinvoice = databuy[0].noinvoice;
-                mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
+
                 mediaThumbUri = databuy[0].mediaThumbUri;
                 try {
                     dataconten = await this.getusercontentsService.findcontenbuy(postid);
@@ -5447,7 +5447,7 @@ export class TransactionsController {
                 var apsara = null;
                 var idapsaradefine = null;
                 var apsaradefine = null;
-                
+
                 try {
                     idapsara = databuy[0].apsaraId;
                 } catch (e) {
@@ -5472,36 +5472,33 @@ export class TransactionsController {
                     idapsaradefine = idapsara;
                 }
 
-                if(databuy[0].mediaType == 'image' || databuy[0].mediaType == 'images')
-                {
-                    if(apsara == true)
-                    {
+                if (databuy[0].mediaType == 'image' || databuy[0].mediaType == 'images') {
+                    if (apsara == true) {
                         dataapsara = await this.postContentService.getImageApsara([idapsara]);
+                        mediaThumbEndpoint = dataapsara.ImageInfo[0].URL;
                     }
-                    else
-                    {
-                        dataapsara = 
+                    else {
+                        dataapsara =
                         {
                             "ImageInfo": []
                         }
+                        mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
                     }
                 }
-                else if(databuy[0].mediaType == 'video')
-                {
-                    if(apsara == true)
-                    {
+                else if (databuy[0].mediaType == 'video') {
+                    if (apsara == true) {
                         dataapsara = await this.postContentService.getVideoApsara([idapsara]);
+                        mediaThumbEndpoint = dataapsara.VideoList[0].CoverURL;
                     }
-                    else
-                    {
-                        dataapsara = 
+                    else {
+                        dataapsara =
                         {
                             "VideoList": []
                         }
+                        mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
                     }
                 }
-                else
-                {
+                else {
                     dataapsara = [];
                 }
 
@@ -5553,7 +5550,7 @@ export class TransactionsController {
                 amounts = databuy[0].amount;
 
                 noinvoice = databuy[0].noinvoice;
-                mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
+
                 mediaThumbUri = databuy[0].mediaThumbUri;
                 try {
                     dataconten = await this.getusercontentsService.findcontenbuy(postid);
@@ -5642,36 +5639,33 @@ export class TransactionsController {
                     idapsaradefine = idapsara;
                 }
 
-                if(databuy[0].mediaType == 'image' || databuy[0].mediaType == 'images')
-                {
-                    if(apsara == true)
-                    {
+                if (databuy[0].mediaType == 'image' || databuy[0].mediaType == 'images') {
+                    if (apsara == true) {
                         dataapsara = await this.postContentService.getImageApsara([idapsara]);
+                        mediaThumbEndpoint = dataapsara.ImageInfo[0].URL;
                     }
-                    else
-                    {
-                        dataapsara = 
+                    else {
+                        dataapsara =
                         {
                             "ImageInfo": []
                         }
+                        mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
                     }
                 }
-                else if(databuy[0].mediaType == 'video')
-                {
-                    if(apsara == true)
-                    {
+                else if (databuy[0].mediaType == 'video') {
+                    if (apsara == true) {
                         dataapsara = await this.postContentService.getVideoApsara([idapsara]);
+                        mediaThumbEndpoint = dataapsara.VideoList[0].CoverURL;
                     }
-                    else
-                    {
-                        dataapsara = 
+                    else {
+                        dataapsara =
                         {
                             "VideoList": []
                         }
+                        mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
                     }
                 }
-                else
-                {
+                else {
                     dataapsara = [];
                 }
 
@@ -5727,7 +5721,7 @@ export class TransactionsController {
                 amounts = databuy[0].amount;
 
                 noinvoice = databuy[0].noinvoice;
-                mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
+
                 mediaThumbUri = databuy[0].mediaThumbUri;
                 try {
                     dataconten = await this.getusercontentsService.findcontenbuy(postid);
@@ -5790,7 +5784,7 @@ export class TransactionsController {
                 var apsara = null;
                 var idapsaradefine = null;
                 var apsaradefine = null;
-                
+
                 try {
                     idapsara = databuy[0].apsaraId;
                 } catch (e) {
@@ -5815,36 +5809,33 @@ export class TransactionsController {
                     idapsaradefine = idapsara;
                 }
 
-                if(databuy[0].mediaType == 'image' || databuy[0].mediaType == 'images')
-                {
-                    if(apsara == true)
-                    {
+                if (databuy[0].mediaType == 'image' || databuy[0].mediaType == 'images') {
+                    if (apsara == true) {
                         dataapsara = await this.postContentService.getImageApsara([idapsara]);
+                        mediaThumbEndpoint = dataapsara.ImageInfo[0].URL;
                     }
-                    else
-                    {
-                        dataapsara = 
+                    else {
+                        dataapsara =
                         {
                             "ImageInfo": []
                         }
+                        mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
                     }
                 }
-                else if(databuy[0].mediaType == 'video')
-                {
-                    if(apsara == true)
-                    {
+                else if (databuy[0].mediaType == 'video') {
+                    if (apsara == true) {
                         dataapsara = await this.postContentService.getVideoApsara([idapsara]);
+                        mediaThumbEndpoint = dataapsara.VideoList[0].CoverURL;
                     }
-                    else
-                    {
-                        dataapsara = 
+                    else {
+                        dataapsara =
                         {
                             "VideoList": []
                         }
+                        mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
                     }
                 }
-                else
-                {
+                else {
                     dataapsara = [];
                 }
 
@@ -5896,7 +5887,7 @@ export class TransactionsController {
                 amounts = databuy[0].amount;
 
                 noinvoice = databuy[0].noinvoice;
-                mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
+
                 mediaThumbUri = databuy[0].mediaThumbUri;
                 try {
                     dataconten = await this.getusercontentsService.findcontenbuy(postid);
@@ -5985,36 +5976,33 @@ export class TransactionsController {
                     idapsaradefine = idapsara;
                 }
 
-                if(databuy[0].mediaType == 'image' || databuy[0].mediaType == 'images')
-                {
-                    if(apsara == true)
-                    {
+                if (databuy[0].mediaType == 'image' || databuy[0].mediaType == 'images') {
+                    if (apsara == true) {
                         dataapsara = await this.postContentService.getImageApsara([idapsara]);
+                        mediaThumbEndpoint = dataapsara.ImageInfo[0].URL;
                     }
-                    else
-                    {
-                        dataapsara = 
+                    else {
+                        dataapsara =
                         {
                             "ImageInfo": []
                         }
+                        mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
                     }
                 }
-                else if(databuy[0].mediaType == 'video')
-                {
-                    if(apsara == true)
-                    {
+                else if (databuy[0].mediaType == 'video') {
+                    if (apsara == true) {
                         dataapsara = await this.postContentService.getVideoApsara([idapsara]);
+                        mediaThumbEndpoint = dataapsara.VideoList[0].CoverURL;
                     }
-                    else
-                    {
-                        dataapsara = 
+                    else {
+                        dataapsara =
                         {
                             "VideoList": []
                         }
+                        mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
                     }
                 }
-                else
-                {
+                else {
                     dataapsara = [];
                 }
 
@@ -6070,7 +6058,7 @@ export class TransactionsController {
                 amounts = databuy[0].amount;
 
                 noinvoice = databuy[0].noinvoice;
-                mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
+
                 mediaThumbUri = databuy[0].mediaThumbUri;
                 try {
                     dataconten = await this.getusercontentsService.findcontenbuy(postid);
@@ -6133,7 +6121,7 @@ export class TransactionsController {
                 var apsara = null;
                 var idapsaradefine = null;
                 var apsaradefine = null;
-                
+
                 try {
                     idapsara = databuy[0].apsaraId;
                 } catch (e) {
@@ -6158,36 +6146,33 @@ export class TransactionsController {
                     idapsaradefine = idapsara;
                 }
 
-                if(databuy[0].mediaType == 'image' || databuy[0].mediaType == 'images')
-                {
-                    if(apsara == true)
-                    {
+                if (databuy[0].mediaType == 'image' || databuy[0].mediaType == 'images') {
+                    if (apsara == true) {
                         dataapsara = await this.postContentService.getImageApsara([idapsara]);
+                        mediaThumbEndpoint = dataapsara.ImageInfo[0].URL;
                     }
-                    else
-                    {
-                        dataapsara = 
+                    else {
+                        dataapsara =
                         {
                             "ImageInfo": []
                         }
+                        mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
                     }
                 }
-                else if(databuy[0].mediaType == 'video')
-                {
-                    if(apsara == true)
-                    {
+                else if (databuy[0].mediaType == 'video') {
+                    if (apsara == true) {
                         dataapsara = await this.postContentService.getVideoApsara([idapsara]);
+                        mediaThumbEndpoint = dataapsara.VideoList[0].CoverURL;
                     }
-                    else
-                    {
-                        dataapsara = 
+                    else {
+                        dataapsara =
                         {
                             "VideoList": []
                         }
+                        mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
                     }
                 }
-                else
-                {
+                else {
                     dataapsara = [];
                 }
 
@@ -8234,6 +8219,7 @@ export class TransactionsController {
                     {
                         "VideoList": [tempresult[j]]
                     }
+                    query[i].mediaThumbEndpoint = tempresult[j].CoverURL;
                 }
                 else if (query[i].apsara == false && query[i].mediaType == "video") {
                     query[i].media =
