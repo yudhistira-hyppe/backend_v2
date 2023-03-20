@@ -378,7 +378,11 @@ export class DisqusController {
           // console.log("Payload Query Comment >>>>>> : ", ContentDto_);
           // var DisqusResponseComment_ = new DisqusResponseComment();
           // let com = await this.disqusService.findDisqusByPost(String(ContentDto_.postID), type);
-          return await this.disqusService.getDiscus(String(ContentDto_.postID), type);
+
+          var data = await this.disqusService.getDiscus(String(ContentDto_.postID), type);
+          return {
+            data: data
+          }
 
           // console.log('com', com);
 
