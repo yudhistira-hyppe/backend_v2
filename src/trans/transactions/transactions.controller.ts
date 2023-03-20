@@ -6805,9 +6805,9 @@ export class TransactionsController {
                     {
                         "ImageInfo": [tempresult[j]]
                     }
+                    query[i].mediaThumbEndpoint = tempresult[j].URL;
                 }
-                else if(query[i].apsara == false && (query[i].mediaType == "image" || query[i].mediaType == "images"))
-                {
+                else if (query[i].apsara == false && (query[i].mediaType == "image" || query[i].mediaType == "images")) {
                     query[i].media =
                     {
                         "ImageInfo": []
@@ -6828,8 +6828,7 @@ export class TransactionsController {
                         "VideoList": [tempresult[j]]
                     }
                 }
-                else if(query[i].apsara == false && query[i].mediaType == "video")
-                {
+                else if (query[i].apsara == false && query[i].mediaType == "video") {
                     query[i].media =
                     {
                         "VideoList": []
@@ -6839,7 +6838,6 @@ export class TransactionsController {
         }
 
         data = query;
-
         var datatrpending = null;
         var datatrpendingjual = null;
 
