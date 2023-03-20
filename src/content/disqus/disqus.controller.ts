@@ -379,9 +379,9 @@ export class DisqusController {
           // var DisqusResponseComment_ = new DisqusResponseComment();
           // let com = await this.disqusService.findDisqusByPost(String(ContentDto_.postID), type);
 
-          var data = await this.disqusService.getDiscus(String(ContentDto_.postID), type);
+          var data = await this.disqusService.getDiscus(String(ContentDto_.postID), type, Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
           return {
-            data: data
+            data: data[0]
           }
 
           // console.log('com', com);

@@ -590,7 +590,8 @@ export class DisqusService {
     //   return query;
     // }
 
-    async getDiscus(postId: string, eventType: string): Promise<Disqus[]> {
+    async getDiscus(postId: string, eventType: string, page: number, row: number): Promise<Disqus[]> {
+        let skip = this.paging(page, row);
         return await this.DisqusModel.aggregate(
             [
                 {
@@ -761,15 +762,15 @@ export class DisqusService {
                                 }
                             },
                             {
-                                $skip: 0
+                                $skip: skip
                             },
                             {
-                                $limit: 5
+                                $limit:row
                             },
                             {
                                 $project: {
                                     disqusLogs: [{
-                                        "_id": "$_id",
+                                        _id: "$_id",
                                         "sequenceNumber": "$sequenceNumber",
                                         "createdAt": "$createdAt",
                                         "txtMessages": "$txtMessages",
@@ -840,7 +841,7 @@ export class DisqusService {
                         "createdAt": 1,
                         "updatedAt": 1,
                         "disqusLogs": "$disqusLogs.disqusLogs",
-                        "comments": {
+                        "comment": {
                             $size: "$countLogs"
                         },
 
@@ -848,6 +849,14 @@ export class DisqusService {
                 }
             ]
         )
+    }
+
+    private paging(page: number, row: number) {
+        if (page == 0 || page == 1) {
+            return 0;
+        }
+        let num = ((page - 1) * row);
+        return num;
     }
 
     async findDisqusByPost(postId: string, eventType: string): Promise<Disqus[]> {
