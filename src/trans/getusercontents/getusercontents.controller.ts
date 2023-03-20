@@ -14,6 +14,7 @@ import { GetuserprofilesService } from '../getuserprofiles/getuserprofiles.servi
 import { PostsService } from '../../content/posts/posts.service';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { PostContentService } from '../../content/posts/postcontent.service';
+import { PostBoostService } from '../../content/posts/postboost.service';
 import { DisquslogsService } from '../../content/disquslogs/disquslogs.service';
 import { ContenteventsService } from '../../content/contentevents/contentevents.service';
 import { TagCountService } from '../../content/tag_count/tag_count.service';
@@ -29,6 +30,7 @@ export class GetusercontentsController {
         private readonly userauthsService: UserauthsService,
         private readonly postsService: PostsService,
         private readonly postContentService: PostContentService,
+        private readonly PostBoostService: PostBoostService,
         private readonly mediaprofilepictsService: MediaprofilepictsService,
         private readonly contenteventsService: ContenteventsService,
         private readonly disquslogsService: DisquslogsService,
@@ -3295,6 +3297,7 @@ export class GetusercontentsController {
         var email = null;
         var data = null;
         var datasearch = null;
+        var emailreceiver = null;
 
 
         var request_json = JSON.parse(JSON.stringify(request.body));
@@ -3358,6 +3361,7 @@ export class GetusercontentsController {
                 resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
                 let gettempresultpictapsara = resultpictapsara.ImageInfo;
                 for (let i = 0; i < lengpict; i++) {
+                    emailreceiver = data[i].email;
                     var checkpictketemu = false;
                     uploadSource = data[i].uploadSource;
                     if (uploadSource == "OSS") {
@@ -3388,6 +3392,7 @@ export class GetusercontentsController {
                             "ImageInfo": []
                         };
                     }
+                    await this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
                     picts.push(data[i]);
                 }
 
@@ -3401,6 +3406,7 @@ export class GetusercontentsController {
                 resultpictapsara = await this.postContentService.getVideoApsara(tempdatapict);
                 let gettempresultpictapsara = resultpictapsara.VideoList;
                 for (let i = 0; i < lengpict; i++) {
+                    emailreceiver = data[i].email;
                     var checkpictketemu = false;
                     for (var j = 0; j < gettempresultpictapsara.length; j++) {
                         if (gettempresultpictapsara[j].VideoId == data[i].apsaraId) {
@@ -3422,6 +3428,10 @@ export class GetusercontentsController {
                             "VideoList": []
                         };
                     }
+
+                    await this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
+
+
                     picts.push(data[i]);
                 }
             }
@@ -3430,11 +3440,13 @@ export class GetusercontentsController {
 
 
         } else {
-            data = [];
+            picts = [];
         }
 
 
         return { response_code: 202, data: picts, messages };
     }
+
+
 
 }
