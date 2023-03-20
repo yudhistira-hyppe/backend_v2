@@ -99,7 +99,7 @@ export class PostCommentService {
       if (dis.sequenceNumber==0){
         this.postService.updateCommentMin(profile.email.toString(), dis.postID.toString());
         var replyLog = dis.replyLogs;
-        console.log(replyLog);
+        console.log("replyLog : ",replyLog);
       }
       createDisquslogsDto_.active = false;
       await this.disqusLogService.update(body.disqusLogID, createDisquslogsDto_);
