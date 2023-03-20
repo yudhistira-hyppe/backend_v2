@@ -774,7 +774,7 @@ export class DisqusService {
                                         "sequenceNumber": "$sequenceNumber",
                                         "createdAt": "$createdAt",
                                         "txtMessages": "$txtMessages",
-                                        "senderInfo": [{
+                                        "senderInfo": {
                                             "fullName": {
                                                 $arrayElemAt: ["$userBasic.fullName", 0]
                                             },
@@ -784,7 +784,7 @@ export class DisqusService {
                                                 $arrayElemAt: ["$userBasic.isIdVerified", 0]
                                             },
 
-                                        }],
+                                        },
                                         "receiver": "$receiver",
                                         "sender": "$sender",
                                         "lineID": "$_id",
