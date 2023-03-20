@@ -6440,271 +6440,271 @@ export class TransactionsController {
         }
     }
 
+    // @Post('api/transactions/historys')
+    // @UseGuards(JwtAuthGuard)
+    // async searchhistorynew(@Req() request: Request): Promise<any> {
+    //     var startdate = null;
+    //     var enddate = null;
+    //     var iduser = null;
+    //     var email = null;
+    //     var type = null;
+
+    //     var skip = null;
+    //     var limit = null;
+
+    //     var query = [];
+    //     var status = null;
+    //     var sell = null;
+    //     var buy = null;
+    //     var withdrawal = null;
+    //     var boost = null;
+    //     var rewards = null;
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    //     if (request_json["email"] !== undefined) {
+    //         email = request_json["email"];
+    //         var ubasic = await this.userbasicsService.findOne(email);
+
+    //         iduser = ubasic._id;
+
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+    //     status = request_json["status"];
+    //     startdate = request_json["startdate"];
+    //     enddate = request_json["enddate"];
+    //     type = request_json["type"];
+    //     sell = request_json["sell"];
+    //     buy = request_json["buy"];
+    //     withdrawal = request_json["withdrawal"];
+    //     boost = request_json["boost"];
+    //     rewards = request_json["rewards"];
+
+    //     if (request_json["skip"] !== undefined) {
+    //         skip = request_json["skip"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+    //     if (request_json["limit"] !== undefined) {
+    //         limit = request_json["limit"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+
+    //     const messages = {
+    //         "info": ["The process successful"],
+    //     };
+
+
+    //     const mongoose = require('mongoose');
+    //     var ObjectId = require('mongodb').ObjectId;
+    //     var idadmin = mongoose.Types.ObjectId(iduser);
+
+
+    //     try {
+    //         query = await this.userbasicsService.transaksiHistory(email, skip, limit, startdate, enddate, sell, buy, withdrawal, rewards, boost);
+    //     } catch (e) {
+    //         query = [];
+    //     }
+
+    //     var datanew = null;
+    //     var data = [];
+    //     let pict: String[] = [];
+    //     var objk = {};
+    //     var type = null;
+    //     var idapsara = null;
+    //     var apsara = null;
+    //     var idapsaradefine = null;
+    //     var apsaradefine = null;
+    //     console.log(query);
+    //     for (var i = 0; i < query.length; i++) {
+    //         if (await this.utilsService.ceckData(query[i])) {
+    //             try {
+    //                 idapsara = query[i].apsaraId;
+    //             } catch (e) {
+    //                 idapsara = "";
+    //             }
+    //             try {
+    //                 apsara = query[i].apsara;
+    //             } catch (e) {
+    //                 apsara = false;
+    //             }
+
+    //             if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+    //                 apsaradefine = false;
+    //             } else {
+    //                 apsaradefine = true;
+    //             }
+
+    //             if (idapsara === undefined || idapsara === "" || idapsara === null || idapsara === "other") {
+    //                 idapsaradefine = "";
+    //             } else {
+    //                 idapsaradefine = idapsara;
+    //             }
+    //             var type = query[i].postType;
+    //             pict = [idapsara];
+
+    //             if (idapsara === "") {
+
+    //             } else {
+    //                 if (type === "pict") {
+
+    //                     try {
+    //                         datanew = await this.postContentService.getImageApsara(pict);
+    //                     } catch (e) {
+    //                         datanew = [];
+    //                     }
+    //                 }
+    //                 else if (type === "vid") {
+    //                     try {
+    //                         datanew = await this.postContentService.getVideoApsara(pict);
+    //                     } catch (e) {
+    //                         datanew = [];
+    //                     }
+
+    //                 }
+    //                 else if (type === "story") {
+    //                     try {
+    //                         datanew = await this.postContentService.getVideoApsara(pict);
+    //                     } catch (e) {
+    //                         datanew = [];
+    //                     }
+    //                 }
+    //                 else if (type === "diary") {
+    //                     try {
+    //                         datanew = await this.postContentService.getVideoApsara(pict);
+    //                     } catch (e) {
+    //                         datanew = [];
+    //                     }
+    //                 }
+    //             }
+    //             objk = {
+    //                 "_id": query[i]._id,
+    //                 "iduser": query[i].iduser,
+    //                 "type": query[i].type,
+    //                 "jenis": query[i].jenis,
+    //                 "timestamp": query[i].timestamp,
+    //                 "description": query[i].description,
+    //                 "noinvoice": query[i].noinvoice,
+    //                 "nova": query[i].nova,
+    //                 "expiredtimeva": query[i].expiredtimeva,
+    //                 "salelike": query[i].salelike,
+    //                 "saleview": query[i].saleview,
+    //                 "bank": query[i].bank,
+    //                 "amount": query[i].amount,
+    //                 "totalamount": query[i].totalamount,
+    //                 "status": query[i].status,
+    //                 "fullName": query[i].fullName,
+    //                 "email": query[i].email,
+    //                 "pembeli": query[i].pembeli,
+    //                 "emailpembeli": query[i].emailpembeli,
+    //                 "penjual": query[i].penjual,
+    //                 "emailpenjual": query[i].emailpenjual,
+    //                 "userNamePenjual": query[i].userNamePenjual,
+    //                 "postID": query[i].postID,
+    //                 "postType": query[i].postType,
+    //                 "descriptionContent": query[i].descriptionContent,
+    //                 "title": query[i].descriptionContent,
+    //                 "mediaType": query[i].mediaType,
+    //                 "mediaEndpoint": query[i].mediaEndpoint,
+    //                 "apsaraId": idapsaradefine,
+    //                 "apsara": apsaradefine,
+    //                 "debetKredit": query[i].debetKredit,
+    //                 "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+    //                 "apsaraThumbId": query[i].apsaraThumbId,
+    //                 "media": datanew
+
+    //             };
+    //             data.push(objk);
+    //         }
+    //     }
+
+    //     var datatrpending = null;
+    //     var datatrpendingjual = null;
+
+    //     try {
+
+    //         datatrpending = await this.transactionsService.findExpirednew(iduser);
+
+
+    //     } catch (e) {
+    //         datatrpending = null;
+
+    //     }
+
+    //     if (datatrpending !== null) {
+    //         var datenow = new Date(Date.now());
+
+
+    //         var lengdatatr = datatrpending.length;
+
+    //         for (var i = 0; i < lengdatatr; i++) {
+
+    //             var idva = datatrpending[i].idva;
+    //             var idtransaction = datatrpending[i]._id;
+    //             var expiredva = new Date(datatrpending[i].expiredtimeva);
+    //             expiredva.setHours(expiredva.getHours() - 7);
+
+    //             if (datenow > expiredva) {
+    //                 let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+    //                 if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+    //                     this.transactionsService.updatestatuscancel(idtransaction);
+
+    //                 }
+
+
+    //             }
+
+
+    //         }
+
+    //     }
+
+    //     try {
+
+    //         datatrpendingjual = await this.transactionsService.findExpiredSell(iduser);
+
+
+    //     } catch (e) {
+    //         datatrpendingjual = null;
+
+    //     }
+
+    //     if (datatrpendingjual !== null) {
+    //         var datenow = new Date(Date.now());
+
+
+    //         var lengdatatr = datatrpendingjual.length;
+
+    //         for (var i = 0; i < lengdatatr; i++) {
+
+    //             var idva = datatrpendingjual[i].idva;
+    //             var idtransaction = datatrpendingjual[i]._id;
+    //             var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
+    //             expiredva.setHours(expiredva.getHours() - 7);
+
+    //             if (datenow > expiredva) {
+    //                 let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+    //                 if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+    //                     await this.transactionsService.updatestatuscancel(idtransaction);
+
+    //                 }
+
+
+    //             }
+
+
+    //         }
+
+    //     }
+
+
+
+    //     return { response_code: 202, data, skip, limit, messages };
+    // }
+
     @Post('api/transactions/historys')
-    @UseGuards(JwtAuthGuard)
-    async searchhistorynew(@Req() request: Request): Promise<any> {
-        var startdate = null;
-        var enddate = null;
-        var iduser = null;
-        var email = null;
-        var type = null;
-
-        var skip = null;
-        var limit = null;
-
-        var query = [];
-        var status = null;
-        var sell = null;
-        var buy = null;
-        var withdrawal = null;
-        var boost = null;
-        var rewards = null;
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["email"] !== undefined) {
-            email = request_json["email"];
-            var ubasic = await this.userbasicsService.findOne(email);
-
-            iduser = ubasic._id;
-
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-        status = request_json["status"];
-        startdate = request_json["startdate"];
-        enddate = request_json["enddate"];
-        type = request_json["type"];
-        sell = request_json["sell"];
-        buy = request_json["buy"];
-        withdrawal = request_json["withdrawal"];
-        boost = request_json["boost"];
-        rewards = request_json["rewards"];
-
-        if (request_json["skip"] !== undefined) {
-            skip = request_json["skip"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        const messages = {
-            "info": ["The process successful"],
-        };
-
-
-        const mongoose = require('mongoose');
-        var ObjectId = require('mongodb').ObjectId;
-        var idadmin = mongoose.Types.ObjectId(iduser);
-
-
-        try {
-            query = await this.userbasicsService.transaksiHistory(email, skip, limit, startdate, enddate, sell, buy, withdrawal, rewards, boost);
-        } catch (e) {
-            query = [];
-        }
-
-        var datanew = null;
-        var data = [];
-        let pict: String[] = [];
-        var objk = {};
-        var type = null;
-        var idapsara = null;
-        var apsara = null;
-        var idapsaradefine = null;
-        var apsaradefine = null;
-        console.log(query);
-        for (var i = 0; i < query.length; i++) {
-            if (await this.utilsService.ceckData(query[i])) {
-                try {
-                    idapsara = query[i].apsaraId;
-                } catch (e) {
-                    idapsara = "";
-                }
-                try {
-                    apsara = query[i].apsara;
-                } catch (e) {
-                    apsara = false;
-                }
-
-                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
-                    apsaradefine = false;
-                } else {
-                    apsaradefine = true;
-                }
-
-                if (idapsara === undefined || idapsara === "" || idapsara === null || idapsara === "other") {
-                    idapsaradefine = "";
-                } else {
-                    idapsaradefine = idapsara;
-                }
-                var type = query[i].postType;
-                pict = [idapsara];
-
-                if (idapsara === "") {
-
-                } else {
-                    if (type === "pict") {
-
-                        try {
-                            datanew = await this.postContentService.getImageApsara(pict);
-                        } catch (e) {
-                            datanew = [];
-                        }
-                    }
-                    else if (type === "vid") {
-                        try {
-                            datanew = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            datanew = [];
-                        }
-
-                    }
-                    else if (type === "story") {
-                        try {
-                            datanew = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            datanew = [];
-                        }
-                    }
-                    else if (type === "diary") {
-                        try {
-                            datanew = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            datanew = [];
-                        }
-                    }
-                }
-                objk = {
-                    "_id": query[i]._id,
-                    "iduser": query[i].iduser,
-                    "type": query[i].type,
-                    "jenis": query[i].jenis,
-                    "timestamp": query[i].timestamp,
-                    "description": query[i].description,
-                    "noinvoice": query[i].noinvoice,
-                    "nova": query[i].nova,
-                    "expiredtimeva": query[i].expiredtimeva,
-                    "salelike": query[i].salelike,
-                    "saleview": query[i].saleview,
-                    "bank": query[i].bank,
-                    "amount": query[i].amount,
-                    "totalamount": query[i].totalamount,
-                    "status": query[i].status,
-                    "fullName": query[i].fullName,
-                    "email": query[i].email,
-                    "pembeli": query[i].pembeli,
-                    "emailpembeli": query[i].emailpembeli,
-                    "penjual": query[i].penjual,
-                    "emailpenjual": query[i].emailpenjual,
-                    "userNamePenjual": query[i].userNamePenjual,
-                    "postID": query[i].postID,
-                    "postType": query[i].postType,
-                    "descriptionContent": query[i].descriptionContent,
-                    "title": query[i].descriptionContent,
-                    "mediaType": query[i].mediaType,
-                    "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": idapsaradefine,
-                    "apsara": apsaradefine,
-                    "debetKredit": query[i].debetKredit,
-                    "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
-                    "apsaraThumbId": query[i].apsaraThumbId,
-                    "media": datanew
-
-                };
-                data.push(objk);
-            }
-        }
-
-        var datatrpending = null;
-        var datatrpendingjual = null;
-
-        try {
-
-            datatrpending = await this.transactionsService.findExpirednew(iduser);
-
-
-        } catch (e) {
-            datatrpending = null;
-
-        }
-
-        if (datatrpending !== null) {
-            var datenow = new Date(Date.now());
-
-
-            var lengdatatr = datatrpending.length;
-
-            for (var i = 0; i < lengdatatr; i++) {
-
-                var idva = datatrpending[i].idva;
-                var idtransaction = datatrpending[i]._id;
-                var expiredva = new Date(datatrpending[i].expiredtimeva);
-                expiredva.setHours(expiredva.getHours() - 7);
-
-                if (datenow > expiredva) {
-                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
-
-                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
-                        this.transactionsService.updatestatuscancel(idtransaction);
-
-                    }
-
-
-                }
-
-
-            }
-
-        }
-
-        try {
-
-            datatrpendingjual = await this.transactionsService.findExpiredSell(iduser);
-
-
-        } catch (e) {
-            datatrpendingjual = null;
-
-        }
-
-        if (datatrpendingjual !== null) {
-            var datenow = new Date(Date.now());
-
-
-            var lengdatatr = datatrpendingjual.length;
-
-            for (var i = 0; i < lengdatatr; i++) {
-
-                var idva = datatrpendingjual[i].idva;
-                var idtransaction = datatrpendingjual[i]._id;
-                var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
-                expiredva.setHours(expiredva.getHours() - 7);
-
-                if (datenow > expiredva) {
-                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
-
-                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
-                        await this.transactionsService.updatestatuscancel(idtransaction);
-
-                    }
-
-
-                }
-
-
-            }
-
-        }
-
-
-
-        return { response_code: 202, data, skip, limit, messages };
-    }
-
-    @Post('api/transactions/historys2')
     @UseGuards(JwtAuthGuard)
     async searchhistorynew2(@Req() request: Request): Promise<any> {
         var startdate = null;
@@ -6805,6 +6805,7 @@ export class TransactionsController {
                     {
                         "ImageInfo": [tempresult[j]]
                     }
+                    query[i].mediaThumbEndpoint = tempresult[j].URL;
                 }
                 else if (query[i].apsara == false && (query[i].mediaType == "image" || query[i].mediaType == "images")) {
                     query[i].media =
@@ -6836,69 +6837,8 @@ export class TransactionsController {
             }
         }
 
-        for (var i = 0; i < query.length; i++) {
-            try {
-                idapsara = query[i].apsaraId;
-            } catch (e) {
-                idapsara = "";
-            }
-            try {
-                apsara = query[i].apsara;
-            } catch (e) {
-                apsara = false;
-            }
 
-            if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
-                apsaradefine = false;
-            } else {
-                apsaradefine = true;
-            }
-
-            if (idapsara === undefined || idapsara === "" || idapsara === null || idapsara === "other") {
-                idapsaradefine = "";
-            } else {
-                idapsaradefine = idapsara;
-            }
-
-            objk = {
-                "_id": query[i]._id,
-                "iduser": query[i].iduser,
-                "type": query[i].type,
-                "jenis": query[i].jenis,
-                "timestamp": query[i].timestamp,
-                "description": query[i].description,
-                "noinvoice": query[i].noinvoice,
-                "nova": query[i].nova,
-                "expiredtimeva": query[i].expiredtimeva,
-                "salelike": query[i].salelike,
-                "saleview": query[i].saleview,
-                "bank": query[i].bank,
-                "amount": query[i].amount,
-                "totalamount": query[i].totalamount,
-                "status": query[i].status,
-                "fullName": query[i].fullName,
-                "email": query[i].email,
-                "pembeli": query[i].pembeli,
-                "emailpembeli": query[i].emailpembeli,
-                "penjual": query[i].penjual,
-                "emailpenjual": query[i].emailpenjual,
-                "userNamePenjual": query[i].userNamePenjual,
-                "postID": query[i].postID,
-                "postType": query[i].postType,
-                "descriptionContent": query[i].descriptionContent,
-                "title": query[i].descriptionContent,
-                "mediaType": query[i].mediaType,
-                "mediaEndpoint": query[i].mediaEndpoint,
-                "apsaraId": idapsaradefine,
-                "apsara": apsaradefine,
-                "debetKredit": query[i].debetKredit,
-                "media": query[i].media,
-
-            };
-
-            data.push(objk);
-        }
-
+        data = query;
         var datatrpending = null;
         var datatrpendingjual = null;
 

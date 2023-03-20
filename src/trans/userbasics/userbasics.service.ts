@@ -1280,7 +1280,7 @@ export class UserbasicsService {
                         $ifNull: ["$apsara", false]
                       },
                       "apsaraId": {
-                        $ifNull: ["$apsaraId", false]
+                        $ifNull: ["$apsaraId", ""]
                       },
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
@@ -1324,7 +1324,7 @@ export class UserbasicsService {
                         $ifNull: ["$apsara", false]
                       },
                       "apsaraId": {
-                        $ifNull: ["$apsaraId", false]
+                        $ifNull: ["$apsaraId", ""]
                       },
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
@@ -1368,7 +1368,7 @@ export class UserbasicsService {
                         $ifNull: ["$apsara", false]
                       },
                       "apsaraId": {
-                        $ifNull: ["$apsaraId", false]
+                        $ifNull: ["$apsaraId", ""]
                       },
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
@@ -1412,7 +1412,7 @@ export class UserbasicsService {
                         $ifNull: ["$apsara", false]
                       },
                       "apsaraId": {
-                        $ifNull: ["$apsaraId", false]
+                        $ifNull: ["$apsaraId", ""]
                       },
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
