@@ -40312,6 +40312,29 @@ export class PostsService {
 
                       ]
                     },
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$picts']
+                          }
+                        },
+                        {
+                          "event": "DONE"
+                        },
+                        {
+                          "email": email,
+
+                        },
+                        {
+                          "eventType": "LIKE"
+                        },
+                        {
+                          "active": true
+                        },
+
+                      ]
+                    },
 
                   ]
                 }
@@ -41526,6 +41549,29 @@ export class PostsService {
                         },
                         {
                           "event": "DONE"
+                        },
+                        {
+                          "eventType": "LIKE"
+                        },
+                        {
+                          "active": true
+                        },
+
+                      ]
+                    },
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$picts']
+                          }
+                        },
+                        {
+                          "event": "DONE"
+                        },
+                        {
+                          "email": email,
+
                         },
                         {
                           "eventType": "LIKE"
@@ -42756,7 +42802,29 @@ export class PostsService {
 
                       ]
                     },
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$picts']
+                          }
+                        },
+                        {
+                          "event": "DONE"
+                        },
+                        {
+                          "email": email,
 
+                        },
+                        {
+                          "eventType": "LIKE"
+                        },
+                        {
+                          "active": true
+                        },
+
+                      ]
+                    },
                   ]
                 }
               },
