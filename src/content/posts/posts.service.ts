@@ -39427,14 +39427,17 @@ export class PostsService {
     var pipeline = [];
     var dataseting = null;
     var sortObject = null;
+    var value = 0;
 
     if (type == "pict") {
       try {
         dataseting = await this.settingsService.findOneByJenis("PictLandingPage");
         sortObject = dataseting.sortObject;
+        value = dataseting.value;
       } catch (e) {
         dataseting = null;
         sortObject = {};
+        value = 0;
       }
 
       pipeline.push(
@@ -39508,6 +39511,37 @@ export class PostsService {
                 }
               }
             }
+          }
+        },
+        {
+          $set: {
+            oldDate:
+            {
+              "$dateToString": {
+                "format": "%Y-%m-%d %H:%M:%S",
+                "date": {
+                  $add: [new Date(), - value]
+                  //$add: [new Date(), - 579600000]
+                }
+              }
+            }
+          }
+        },
+        {
+          $set: {
+            selfContents:
+            {
+              $cond: {
+                if: {
+                  $and: [
+                    { $eq: ["$email", email] },
+                    { $gt: ["$createdAt", "$oldDate"] }
+                  ]
+                },
+                then: 1,
+                else: 0
+              }
+            },
           }
         },
         {
@@ -39662,6 +39696,7 @@ export class PostsService {
         },
         {
           $sort: {
+            selfContents: -1,
             "isBoost": - 1,
             "createdAt": - 1
           }
@@ -39695,6 +39730,9 @@ export class PostsService {
                         $ne: false
                       }
                     },
+                    {
+                      "sequenceNumber": 0
+                    },
 
                   ]
                 }
@@ -39726,8 +39764,7 @@ export class PostsService {
               },
               {
                 $unwind: {
-                  path: "$userComment",
-                  preserveNullAndEmptyArrays: true
+                  path: "$userComment"
                 }
               },
               {
@@ -39928,8 +39965,6 @@ export class PostsService {
               {
                 $match:
                 {
-
-
                   $expr: {
                     $eq: ['$postID', '$$localID']
                   }
@@ -39943,7 +39978,7 @@ export class PostsService {
                   "mediaUri": 1,
                   "postID": 1,
                   "mediaEndpoint": {
-                    "$concat": ["/pict/", "$mediaUri"]
+                    "$concat": ["/pict/", "$postID"]
                   },
                   "mediaThumbEndpoint": {
                     "$concat": ["/thumb/", "$postID"]
@@ -40035,8 +40070,6 @@ export class PostsService {
               {
                 $match:
                 {
-
-
                   $expr: {
                     $in: ['$_id', {
                       $ifNull: ['$$localID', []]
@@ -40093,8 +40126,6 @@ export class PostsService {
               {
                 $match:
                 {
-
-
                   $expr: {
                     $eq: ['$email', '$$localID']
                   }
@@ -40109,6 +40140,7 @@ export class PostsService {
                   "isPrivate": 1,
                   "isFollowPrivate": 1,
                   "isPostPrivate": 1,
+
                 }
               }
             ],
@@ -40122,18 +40154,25 @@ export class PostsService {
           }
         },
         {
+          $set: {
+            kosong: {
+              $ifNull: ['$userBasic.profilePict.$id', "kancut"]
+            }
+          }
+        },
+        {
           "$lookup": {
             from: "mediaprofilepicts",
             as: "avatar",
             let: {
-              localID: '$userBasic.profilePict.$id'
+              localID: '$kosong'
             },
             pipeline: [
               {
                 $match:
                 {
                   $expr: {
-                    $eq: ['$mediaID', '$$localID']
+                    $eq: ['$mediaID', "$$localID"]
                   }
                 }
               },
@@ -40153,6 +40192,12 @@ export class PostsService {
               }
             ],
 
+          }
+        },
+        {
+          $unwind: {
+            path: "$avatar",
+            preserveNullAndEmptyArrays: true
           }
         },
         {
@@ -40231,12 +40276,6 @@ export class PostsService {
           }
         },
         {
-          $unwind: {
-            path: "$avatar",
-            preserveNullAndEmptyArrays: true
-          }
-        },
-        {
           "$lookup": {
             from: "contentevents",
             as: "isLike",
@@ -40302,7 +40341,42 @@ export class PostsService {
           }
         },
         {
+          "$lookup": {
+            from: "disquslogs",
+            as: "countLogs",
+            let: {
+              localID: '$postID'
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$postID', '$$localID']
+                      }
+                    },
+                    {
+                      "active": true,
+
+                    },
+                    {
+                      "sequenceNumber": 0,
+
+                    },
+
+                  ]
+                }
+              }
+            ]
+          },
+
+        },
+        {
           $project: {
+            oldDate: 1,
+            selfContents: 1,
             selfContent:
             {
               $cond: {
@@ -40323,6 +40397,7 @@ export class PostsService {
                 else: 0
               }
             },
+            musik: 1,
             isLike: {
               $arrayElemAt: ["$isLike.isLiked", 0]
             },
@@ -40334,12 +40409,14 @@ export class PostsService {
                 cond: {
                   $in: [
                     "$$stud.$id",
-                    "$userInterest.userInterests"
+                    {
+                      $ifNull: ["$userInterest.userInterests", []]
+                    }
                   ]
                 }
               }
             },
-            "friend": {
+            friend: {
               $ifNull: [{
                 $arrayElemAt: ["$friend.friend", 0]
               }, 0]
@@ -40389,7 +40466,9 @@ export class PostsService {
             "likes": "$likes",
             "views": "$views",
             "shares": "$shares",
-            "comments": "$comments",
+            "comments": {
+              $size: "$countLogs"
+            },
             "insight":
             {
               "likes": "$likes",
@@ -40401,7 +40480,7 @@ export class PostsService {
             ,
             "userProfile": 1,
             "contentMedias": 1,
-            "cats": 1,
+            "cats": "$cats",
             "tagDescription": 1,
             "metadata": 1,
             "boostDate": 1,
@@ -40453,19 +40532,25 @@ export class PostsService {
               "isPrivate": "$userBasic.isPrivate",
               "isFollowPrivate": "$userBasic.isFollowPrivate",
               "isPostPrivate": "$userBasic.isPostPrivate",
+
             }
           },
 
         },
         {
           $project: {
-            isLiked: "$isLike",
+            oldDate: 1,
+            selfContents: 1,
+            official: 1,
+            selfContent: 1,
+            musik: 1,
+            isLiked: {
+              $ifNull: ["$isLike", false]
+            },
             comment: 1,
             intScore: {
               $size: "$interest"
             },
-            "selfContent": 1,
-            "official": 1,
             "friend": 1,
             "follower": 1,
             "following": 1,
@@ -40508,7 +40593,7 @@ export class PostsService {
             "insight": 1,
             "userProfile": 1,
             "contentMedias": 1,
-            "cats": 1,
+            "cats": "$cats",
             "tagDescription": 1,
             "metadata": 1,
             "boostDate": 1,
@@ -40521,7 +40606,9 @@ export class PostsService {
             {
               $cond: {
                 if: {
-                  $gt: [{ $size: "$boosted.boostSession" }, 0]
+                  $gt: [{
+                    $size: "$boosted.boostSession"
+                  }, 0]
                 },
                 else: [],
                 then: '$boosted'
@@ -40548,6 +40635,7 @@ export class PostsService {
             "privacy": 1,
 
           },
+
         },
 
       );
@@ -40562,9 +40650,11 @@ export class PostsService {
       try {
         dataseting = await this.settingsService.findOneByJenis("VidLandingPage");
         sortObject = dataseting.sortObject;
+        value = dataseting.value;
       } catch (e) {
         dataseting = null;
         sortObject = {};
+        value = 0;
       }
 
       pipeline.push(
@@ -40638,6 +40728,37 @@ export class PostsService {
                 }
               }
             }
+          }
+        },
+        {
+          $set: {
+            oldDate:
+            {
+              "$dateToString": {
+                "format": "%Y-%m-%d %H:%M:%S",
+                "date": {
+                  $add: [new Date(), - value]
+                  //$add: [new Date(), - 579600000]
+                }
+              }
+            }
+          }
+        },
+        {
+          $set: {
+            selfContents:
+            {
+              $cond: {
+                if: {
+                  $and: [
+                    { $eq: ["$email", email] },
+                    { $gt: ["$createdAt", "$oldDate"] }
+                  ]
+                },
+                then: 1,
+                else: 0
+              }
+            },
           }
         },
         {
@@ -40792,6 +40913,7 @@ export class PostsService {
         },
         {
           $sort: {
+            selfContents: -1,
             "isBoost": - 1,
             "createdAt": - 1
           }
@@ -40825,6 +40947,9 @@ export class PostsService {
                         $ne: false
                       }
                     },
+                    {
+                      "sequenceNumber": 0
+                    },
 
                   ]
                 }
@@ -40856,8 +40981,7 @@ export class PostsService {
               },
               {
                 $unwind: {
-                  path: "$userComment",
-                  preserveNullAndEmptyArrays: true
+                  path: "$userComment"
                 }
               },
               {
@@ -41058,8 +41182,6 @@ export class PostsService {
               {
                 $match:
                 {
-
-
                   $expr: {
                     $eq: ['$postID', '$$localID']
                   }
@@ -41073,7 +41195,7 @@ export class PostsService {
                   "mediaUri": 1,
                   "postID": 1,
                   "mediaEndpoint": {
-                    "$concat": ["/stream/", "$mediaUri"]
+                    "$concat": ["/stream/", "$postID"]
                   },
                   "mediaThumbEndpoint": {
                     "$concat": ["/thumb/", "$postID"]
@@ -41165,8 +41287,6 @@ export class PostsService {
               {
                 $match:
                 {
-
-
                   $expr: {
                     $in: ['$_id', {
                       $ifNull: ['$$localID', []]
@@ -41223,8 +41343,6 @@ export class PostsService {
               {
                 $match:
                 {
-
-
                   $expr: {
                     $eq: ['$email', '$$localID']
                   }
@@ -41239,6 +41357,7 @@ export class PostsService {
                   "isPrivate": 1,
                   "isFollowPrivate": 1,
                   "isPostPrivate": 1,
+
                 }
               }
             ],
@@ -41252,18 +41371,25 @@ export class PostsService {
           }
         },
         {
+          $set: {
+            kosong: {
+              $ifNull: ['$userBasic.profilePict.$id', "kancut"]
+            }
+          }
+        },
+        {
           "$lookup": {
             from: "mediaprofilepicts",
             as: "avatar",
             let: {
-              localID: '$userBasic.profilePict.$id'
+              localID: '$kosong'
             },
             pipeline: [
               {
                 $match:
                 {
                   $expr: {
-                    $eq: ['$mediaID', '$$localID']
+                    $eq: ['$mediaID', "$$localID"]
                   }
                 }
               },
@@ -41283,6 +41409,12 @@ export class PostsService {
               }
             ],
 
+          }
+        },
+        {
+          $unwind: {
+            path: "$avatar",
+            preserveNullAndEmptyArrays: true
           }
         },
         {
@@ -41361,12 +41493,6 @@ export class PostsService {
           }
         },
         {
-          $unwind: {
-            path: "$avatar",
-            preserveNullAndEmptyArrays: true
-          }
-        },
-        {
           "$lookup": {
             from: "contentevents",
             as: "isLike",
@@ -41432,7 +41558,42 @@ export class PostsService {
           }
         },
         {
+          "$lookup": {
+            from: "disquslogs",
+            as: "countLogs",
+            let: {
+              localID: '$postID'
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$postID', '$$localID']
+                      }
+                    },
+                    {
+                      "active": true,
+
+                    },
+                    {
+                      "sequenceNumber": 0,
+
+                    },
+
+                  ]
+                }
+              }
+            ]
+          },
+
+        },
+        {
           $project: {
+            oldDate: 1,
+            selfContents: 1,
             selfContent:
             {
               $cond: {
@@ -41453,6 +41614,7 @@ export class PostsService {
                 else: 0
               }
             },
+            musik: 1,
             isLike: {
               $arrayElemAt: ["$isLike.isLiked", 0]
             },
@@ -41464,12 +41626,14 @@ export class PostsService {
                 cond: {
                   $in: [
                     "$$stud.$id",
-                    "$userInterest.userInterests"
+                    {
+                      $ifNull: ["$userInterest.userInterests", []]
+                    }
                   ]
                 }
               }
             },
-            "friend": {
+            friend: {
               $ifNull: [{
                 $arrayElemAt: ["$friend.friend", 0]
               }, 0]
@@ -41519,7 +41683,9 @@ export class PostsService {
             "likes": "$likes",
             "views": "$views",
             "shares": "$shares",
-            "comments": "$comments",
+            "comments": {
+              $size: "$countLogs"
+            },
             "insight":
             {
               "likes": "$likes",
@@ -41531,7 +41697,7 @@ export class PostsService {
             ,
             "userProfile": 1,
             "contentMedias": 1,
-            "cats": 1,
+            "cats": "$cats",
             "tagDescription": 1,
             "metadata": 1,
             "boostDate": 1,
@@ -41583,15 +41749,21 @@ export class PostsService {
               "isPrivate": "$userBasic.isPrivate",
               "isFollowPrivate": "$userBasic.isFollowPrivate",
               "isPostPrivate": "$userBasic.isPostPrivate",
+
             }
           },
 
         },
         {
           $project: {
-            selfContent: 1,
+            oldDate: 1,
+            selfContents: 1,
             official: 1,
-            isLiked: "$isLike",
+            selfContent: 1,
+            musik: 1,
+            isLiked: {
+              $ifNull: ["$isLike", false]
+            },
             comment: 1,
             intScore: {
               $size: "$interest"
@@ -41638,7 +41810,7 @@ export class PostsService {
             "insight": 1,
             "userProfile": 1,
             "contentMedias": 1,
-            "cats": 1,
+            "cats": "$cats",
             "tagDescription": 1,
             "metadata": 1,
             "boostDate": 1,
@@ -41651,7 +41823,9 @@ export class PostsService {
             {
               $cond: {
                 if: {
-                  $gt: [{ $size: "$boosted.boostSession" }, 0]
+                  $gt: [{
+                    $size: "$boosted.boostSession"
+                  }, 0]
                 },
                 else: [],
                 then: '$boosted'
@@ -41678,6 +41852,7 @@ export class PostsService {
             "privacy": 1,
 
           },
+
         },
 
       );
@@ -41692,9 +41867,11 @@ export class PostsService {
       try {
         dataseting = await this.settingsService.findOneByJenis("DiaryLandingPage");
         sortObject = dataseting.sortObject;
+        value = dataseting.value;
       } catch (e) {
         dataseting = null;
         sortObject = {};
+        value = 0;
       }
 
       pipeline.push(
@@ -41768,6 +41945,37 @@ export class PostsService {
                 }
               }
             }
+          }
+        },
+        {
+          $set: {
+            oldDate:
+            {
+              "$dateToString": {
+                "format": "%Y-%m-%d %H:%M:%S",
+                "date": {
+                  $add: [new Date(), - value]
+                  //$add: [new Date(), - 579600000]
+                }
+              }
+            }
+          }
+        },
+        {
+          $set: {
+            selfContents:
+            {
+              $cond: {
+                if: {
+                  $and: [
+                    { $eq: ["$email", email] },
+                    { $gt: ["$createdAt", "$oldDate"] }
+                  ]
+                },
+                then: 1,
+                else: 0
+              }
+            },
           }
         },
         {
@@ -41922,6 +42130,7 @@ export class PostsService {
         },
         {
           $sort: {
+            selfContents: -1,
             "isBoost": - 1,
             "createdAt": - 1
           }
@@ -41955,6 +42164,9 @@ export class PostsService {
                         $ne: false
                       }
                     },
+                    {
+                      "sequenceNumber": 0
+                    },
 
                   ]
                 }
@@ -41986,8 +42198,7 @@ export class PostsService {
               },
               {
                 $unwind: {
-                  path: "$userComment",
-                  preserveNullAndEmptyArrays: true
+                  path: "$userComment"
                 }
               },
               {
@@ -42188,8 +42399,6 @@ export class PostsService {
               {
                 $match:
                 {
-
-
                   $expr: {
                     $eq: ['$postID', '$$localID']
                   }
@@ -42203,7 +42412,7 @@ export class PostsService {
                   "mediaUri": 1,
                   "postID": 1,
                   "mediaEndpoint": {
-                    "$concat": ["/stream/", "$mediaUri"]
+                    "$concat": ["/stream/", "$postID"]
                   },
                   "mediaThumbEndpoint": {
                     "$concat": ["/thumb/", "$postID"]
@@ -42295,8 +42504,6 @@ export class PostsService {
               {
                 $match:
                 {
-
-
                   $expr: {
                     $in: ['$_id', {
                       $ifNull: ['$$localID', []]
@@ -42353,8 +42560,6 @@ export class PostsService {
               {
                 $match:
                 {
-
-
                   $expr: {
                     $eq: ['$email', '$$localID']
                   }
@@ -42369,6 +42574,7 @@ export class PostsService {
                   "isPrivate": 1,
                   "isFollowPrivate": 1,
                   "isPostPrivate": 1,
+
                 }
               }
             ],
@@ -42382,18 +42588,25 @@ export class PostsService {
           }
         },
         {
+          $set: {
+            kosong: {
+              $ifNull: ['$userBasic.profilePict.$id', "kancut"]
+            }
+          }
+        },
+        {
           "$lookup": {
             from: "mediaprofilepicts",
             as: "avatar",
             let: {
-              localID: '$userBasic.profilePict.$id'
+              localID: '$kosong'
             },
             pipeline: [
               {
                 $match:
                 {
                   $expr: {
-                    $eq: ['$mediaID', '$$localID']
+                    $eq: ['$mediaID', "$$localID"]
                   }
                 }
               },
@@ -42413,6 +42626,12 @@ export class PostsService {
               }
             ],
 
+          }
+        },
+        {
+          $unwind: {
+            path: "$avatar",
+            preserveNullAndEmptyArrays: true
           }
         },
         {
@@ -42491,12 +42710,6 @@ export class PostsService {
           }
         },
         {
-          $unwind: {
-            path: "$avatar",
-            preserveNullAndEmptyArrays: true
-          }
-        },
-        {
           "$lookup": {
             from: "contentevents",
             as: "isLike",
@@ -42562,7 +42775,42 @@ export class PostsService {
           }
         },
         {
+          "$lookup": {
+            from: "disquslogs",
+            as: "countLogs",
+            let: {
+              localID: '$postID'
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$postID', '$$localID']
+                      }
+                    },
+                    {
+                      "active": true,
+
+                    },
+                    {
+                      "sequenceNumber": 0,
+
+                    },
+
+                  ]
+                }
+              }
+            ]
+          },
+
+        },
+        {
           $project: {
+            oldDate: 1,
+            selfContents: 1,
             selfContent:
             {
               $cond: {
@@ -42583,6 +42831,7 @@ export class PostsService {
                 else: 0
               }
             },
+            musik: 1,
             isLike: {
               $arrayElemAt: ["$isLike.isLiked", 0]
             },
@@ -42594,12 +42843,14 @@ export class PostsService {
                 cond: {
                   $in: [
                     "$$stud.$id",
-                    "$userInterest.userInterests"
+                    {
+                      $ifNull: ["$userInterest.userInterests", []]
+                    }
                   ]
                 }
               }
             },
-            "friend": {
+            friend: {
               $ifNull: [{
                 $arrayElemAt: ["$friend.friend", 0]
               }, 0]
@@ -42649,7 +42900,9 @@ export class PostsService {
             "likes": "$likes",
             "views": "$views",
             "shares": "$shares",
-            "comments": "$comments",
+            "comments": {
+              $size: "$countLogs"
+            },
             "insight":
             {
               "likes": "$likes",
@@ -42661,7 +42914,7 @@ export class PostsService {
             ,
             "userProfile": 1,
             "contentMedias": 1,
-            "cats": 1,
+            "cats": "$cats",
             "tagDescription": 1,
             "metadata": 1,
             "boostDate": 1,
@@ -42713,15 +42966,21 @@ export class PostsService {
               "isPrivate": "$userBasic.isPrivate",
               "isFollowPrivate": "$userBasic.isFollowPrivate",
               "isPostPrivate": "$userBasic.isPostPrivate",
+
             }
           },
 
         },
         {
           $project: {
-            selfContent: 1,
+            oldDate: 1,
+            selfContents: 1,
             official: 1,
-            isLiked: "$isLike",
+            selfContent: 1,
+            musik: 1,
+            isLiked: {
+              $ifNull: ["$isLike", false]
+            },
             comment: 1,
             intScore: {
               $size: "$interest"
@@ -42768,7 +43027,7 @@ export class PostsService {
             "insight": 1,
             "userProfile": 1,
             "contentMedias": 1,
-            "cats": 1,
+            "cats": "$cats",
             "tagDescription": 1,
             "metadata": 1,
             "boostDate": 1,
@@ -42781,7 +43040,9 @@ export class PostsService {
             {
               $cond: {
                 if: {
-                  $gt: [{ $size: "$boosted.boostSession" }, 0]
+                  $gt: [{
+                    $size: "$boosted.boostSession"
+                  }, 0]
                 },
                 else: [],
                 then: '$boosted'
@@ -42808,6 +43069,7 @@ export class PostsService {
             "privacy": 1,
 
           },
+
         },
 
       );
