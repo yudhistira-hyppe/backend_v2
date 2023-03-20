@@ -39985,7 +39985,7 @@ export class PostsService {
                   },
                   "mediaThumbUri": "$mediaThumb",
                   "mediaType": 1,
-
+                  "uploadSource": 1
                 }
               }
             ],
@@ -40466,6 +40466,7 @@ export class PostsService {
             "likes": "$likes",
             "views": "$views",
             "shares": "$shares",
+            "uploadSource": "$media.uploadSource",
             "comments": {
               $size: "$countLogs"
             },
@@ -40602,6 +40603,7 @@ export class PostsService {
             "isBoost": 1,
             "boostViewer": 1,
             "boostCount": 1,
+            "uploadSource": 1,
             "boosted":
             {
               $cond: {

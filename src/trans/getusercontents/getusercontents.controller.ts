@@ -3340,6 +3340,7 @@ export class GetusercontentsController {
         }
 
         var tempdatapict = [];
+        var uploadSource = null;
         // console.log(lengpict);
         if (lengpict > 0) {
             var resultpictapsara = null;
@@ -3348,26 +3349,48 @@ export class GetusercontentsController {
             // console.log(tempdatapict);
             if (type == "pict") {
                 for (let i = 0; i < lengpict; i++) {
-
+                    uploadSource = data[i].uploadSource;
                     if (data[i].isApsara == true) {
-                        tempdatapict.push(data[i].apsaraThumbId);
+
+                        if (uploadSource == "OSS") {
+                            tempdatapict.push(data[i].apsaraId);
+                        } else {
+                            tempdatapict.push(data[i].apsaraThumbId);
+                        }
+
                     }
                 }
                 resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
                 let gettempresultpictapsara = resultpictapsara.ImageInfo;
                 for (let i = 0; i < lengpict; i++) {
                     var checkpictketemu = false;
-                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
-                        if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
-                            checkpictketemu = true;
-                            data[i].media =
-                            {
-                                "ImageInfo": [gettempresultpictapsara[j]]
-                            }
+                    uploadSource = data[i].uploadSource;
+                    if (uploadSource == "OSS") {
+                        for (var j = 0; j < gettempresultpictapsara.length; j++) {
+                            if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                                checkpictketemu = true;
+                                data[i].media =
+                                {
+                                    "ImageInfo": [gettempresultpictapsara[j]]
+                                }
 
-                            data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                            }
+                        }
+                    } else {
+                        for (var j = 0; j < gettempresultpictapsara.length; j++) {
+                            if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
+                                checkpictketemu = true;
+                                data[i].media =
+                                {
+                                    "ImageInfo": [gettempresultpictapsara[j]]
+                                }
+
+                                data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                            }
                         }
                     }
+
 
                     if (checkpictketemu == false) {
                         data[i].apsaraThumbId = "";

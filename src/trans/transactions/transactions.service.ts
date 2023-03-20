@@ -3567,7 +3567,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "thumb",
+                                            "/thumb",
                                             "/",
                                             "$postID"
                                         ]
@@ -3582,7 +3582,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "thumb",
+                                            "/thumb",
                                             "/",
                                             "$postID"
                                         ]
@@ -3597,7 +3597,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "thumb",
+                                            "/thumb",
                                             "/",
                                             "$postID"
                                         ]
@@ -3619,7 +3619,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "pict",
+                                            "/pict",
                                             "/",
                                             "$postID"
                                         ]
@@ -3634,7 +3634,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "stream",
+                                            "/stream",
                                             "/",
                                             "$postID"
                                         ]
@@ -3649,7 +3649,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "stream",
+                                            "/stream",
                                             "/",
                                             "$postID"
                                         ]
@@ -4223,7 +4223,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "thumb",
+                                            "/thumb",
                                             "/",
                                             "$postID"
                                         ]
@@ -4238,7 +4238,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "thumb",
+                                            "/thumb",
                                             "/",
                                             "$postID"
                                         ]
@@ -4253,7 +4253,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "thumb",
+                                            "/thumb",
                                             "/",
                                             "$postID"
                                         ]
@@ -4275,7 +4275,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "pict",
+                                            "/pict",
                                             "/",
                                             "$postID"
                                         ]
@@ -4290,7 +4290,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "stream",
+                                            "/stream",
                                             "/",
                                             "$postID"
                                         ]
@@ -4305,7 +4305,7 @@ export class TransactionsService {
                                     },
                                     then: {
                                         $concat: [
-                                            "stream",
+                                            "/stream",
                                             "/",
                                             "$postID"
                                         ]
