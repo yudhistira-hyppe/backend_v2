@@ -6837,7 +6837,6 @@ export class TransactionsController {
             }
         }
 
-
         data = query;
         var datatrpending = null;
         var datatrpendingjual = null;
