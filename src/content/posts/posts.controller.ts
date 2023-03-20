@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { FormDataRequest } from 'nestjs-form-data';
 import { PostsService } from './posts.service';
+import { MediamusicService } from '../mediamusic/mediamusic.service';
 import { CreatePostResponse, CreatePostsDto, PostLandingResponseApps, PostResponseApps, TagPeople } from './dto/create-posts.dto';
 import { Posts } from './schemas/posts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
@@ -62,6 +63,7 @@ export class PostsController {
     private readonly tagCountService: TagCountService,
     private readonly interestCountService: InterestCountService,
     private readonly interestdayService: InterestdayService,
+    private readonly mediamusicService: MediamusicService,
     private ossContentPictService: OssContentPictService,
     private readonly methodepaymentsService: MethodepaymentsService) { }
 
@@ -1842,7 +1844,7 @@ export class PostsController {
               var data = await this.PostsService.thum(thum_data);
               if (data != null) {
                 var data_thum = await this.postContentService.generate_thumnail_buffer(data, "jpg");
-                console.log("data_thum",data_thum);
+                console.log("data_thum", data_thum);
                 if (data_thum != null) {
                   response.set("Content-Type", "image/jpeg");
                   response.send(data_thum);
@@ -2273,17 +2275,19 @@ export class PostsController {
             }
           }
 
+          if (getchildata.music.apsaraThumnail != undefined) {
+            var dataApsaraThumnail = await this.mediamusicService.getImageApsara([getchildata.music.apsaraThumnail]);
+            getchildata.music.apsaraThumnailUrl = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == getchildata.music.apsaraThumnail).URL;
+            // getchildata.music.apsaraThumnailUrl = dataApsaraThumnail.ImageInfo[0].URL;
+          }
+
         }
       }
-
 
       data = tempdata;
     } else {
       data = [];
     }
-
-
-
     return { response_code: 202, data, messages };
   }
 
