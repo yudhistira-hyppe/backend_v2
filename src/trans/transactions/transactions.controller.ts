@@ -6806,8 +6806,7 @@ export class TransactionsController {
                         "ImageInfo": [tempresult[j]]
                     }
                 }
-                else if(query[i].apsara == false && (query[i].mediaType == "image" || query[i].mediaType == "images"))
-                {
+                else if (query[i].apsara == false && (query[i].mediaType == "image" || query[i].mediaType == "images")) {
                     query[i].media =
                     {
                         "ImageInfo": []
@@ -6828,8 +6827,7 @@ export class TransactionsController {
                         "VideoList": [tempresult[j]]
                     }
                 }
-                else if(query[i].apsara == false && query[i].mediaType == "video")
-                {
+                else if (query[i].apsara == false && query[i].mediaType == "video") {
                     query[i].media =
                     {
                         "VideoList": []
@@ -6838,8 +6836,7 @@ export class TransactionsController {
             }
         }
 
-        for(var i = 0; i < query.length; i++)
-        {
+        for (var i = 0; i < query.length; i++) {
             try {
                 idapsara = query[i].apsaraId;
             } catch (e) {
