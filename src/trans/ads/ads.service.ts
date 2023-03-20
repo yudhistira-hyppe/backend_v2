@@ -21288,6 +21288,2517 @@ export class AdsService {
         return query;
     }
 
+    async getgraphadsanalytics2(userid: Types.ObjectId) {
+        var query = await this.adsModel.aggregate([
+            {
+                "$match":
+                {
+                    "$and":
+                    [
+                        {
+                            "$expr":
+                            {
+                                "$eq":
+                                [
+                                    "$userID",
+                                    userid
+                                ]
+                            }
+                        },
+                        {
+                            "$or":
+                            [
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                        [
+                                            "$status",
+                                            "APPROVE"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                        [
+                                            "$status",
+                                            "FINISH"
+                                        ]
+                                    }
+                                },
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from:"userads",
+                    let:
+                    {
+                        ads_fk: "$_id"
+                    },
+                    as:'view_data',
+                    pipeline:
+                    [
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$adsID",
+                                                "$$ads_fk"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        updateAt:
+                                        {
+                                            "$exists":true,
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                {
+                                                    "$size":"$updateAt"
+                                                },
+                                                0
+                                            ]
+                                        }
+                                    },
+                                    // {
+                                    //     "$expr":
+                                    //     {
+                                    //         "$gt":
+                                    //         [
+                                    //             {
+                                    //                 "$last":"$updateAt"
+                                    //             },
+                                    //             "$timeStart"
+                                    //         ]
+                                    //     }
+                                    // },
+                                ]
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:1,
+                                userID:1,
+                                adsID:1,
+                                updateAt:"$updateAt",
+                                timeStart:
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 579600000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$updateAt",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$gte":
+                                    [
+                                        "$updateAt",
+                                        "$timeStart"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:1,
+                                adsID:1,
+                                userID:1,
+                                updateAt:1,
+                                timeStart:1
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from:"userads",
+                    let:
+                    {
+                        ads_fk: "$_id"
+                    },
+                    as:'click_data',
+                    pipeline:
+                    [
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$adsID",
+                                                "$$ads_fk"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        clickTime:
+                                        {
+                                            "$exists":true,
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                {
+                                                    "$size":"$clickTime"
+                                                },
+                                                0
+                                            ]
+                                        }
+                                    },
+                                    // {
+                                    //     "$expr":
+                                    //     {
+                                    //         "$gt":
+                                    //         [
+                                    //             {
+                                    //                 "$last":"$clickTime"
+                                    //             },
+                                    //             "$timeStart"
+                                    //         ]
+                                    //     }
+                                    // },
+                                ]
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:1,
+                                userID:1,
+                                adsID:1,
+                                clickTime:"$clickTime",
+                                timeStart:
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 579600000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$clickTime",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$gte":
+                                    [
+                                        "$clickTime",
+                                        "$timeStart"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:1,
+                                adsID:1,
+                                userID:1,
+                                clickTime:1,
+                                timeStart:1
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                "$project":
+                {
+                    _id:1,
+                    name:1,
+                    view_data:1,
+                    click_data:1
+                }
+            },
+            {
+                "$facet":
+                {
+                    "days7view":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 61200000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), 25200000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$view_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$view_data.updateAt",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        }
+                    ],
+                    "days7click":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 61200000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), 25200000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$click_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$click_data.clickTime",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        }
+                    ],
+                    "days6view":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 147600000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 61200000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$view_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$view_data.updateAt",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        }
+                    ],
+                    "days6click":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 147600000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 61200000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$click_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$click_data.clickTime",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        }
+                    ],
+                    "days5view":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 234000000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 147600000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$view_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$view_data.updateAt",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        },
+                    ],
+                    "days5click":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 234000000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 147600000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$click_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$click_data.clickTime",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        }
+                    ],
+                    "days4view":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 320400000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 234000000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$view_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$view_data.updateAt",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        }
+                    ],
+                    "days4click":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 320400000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 234000000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$click_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$click_data.clickTime",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        }
+                    ],
+                    "days3view":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 406800000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 320400000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$view_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$view_data.updateAt",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        }
+                    ],
+                    "days3click":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 406800000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 320400000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$click_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$click_data.clickTime",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        }
+                    ],
+                    "days2view":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 493200000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 406800000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$view_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$view_data.updateAt",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        }
+                    ],
+                    "days2click":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 493200000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 406800000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$click_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$click_data.clickTime",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        }
+                    ],
+                    "days1view":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 579600000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 493200000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$view_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$view_data.updateAt",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        },
+                    ],
+                    "days1click":
+                    [
+                        {
+                            $set: {
+                                "timerangeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 579600000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timerangeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 493200000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$click_data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                record:"$click_data.clickTime",
+                                timerangeStart:1,
+                                timerangeEnd:1
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        record:
+                                        {
+                                            "$exists":true
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$record",
+                                                "$timerangeStart",
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$lte":
+                                            [
+                                                "$record",
+                                                "$timerangeEnd",
+                                            ]
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        },
+                    ],
+                    "genders":
+                    [
+                        {
+                            "$project":
+                            {
+                                data:
+                                {
+                                    "$concatArrays":
+                                    [
+                                        "$view_data", "$click_data"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$gt":
+                                    [
+                                        "$data",
+                                        0
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                userID:"$data.userID",
+                                result:"$data.record_data"
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$result",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$lookup":
+                            {
+                                from:'userbasics',
+                                let:
+                                {
+                                    basic_fk:"$userID"
+                                },
+                                as:'basic_data',
+                                pipeline:
+                                [
+                                    {
+                                        "$match":
+                                        {
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$_id",
+                                                    "$$basic_fk"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:0,
+                                            gender:{
+                                                $switch: {
+                                                    branches: [
+                                                        {
+                                                            case: {
+                                                                $eq: ['$gender', 'FEMALE']
+                                                            },
+                                                            then: 'FEMALE',
+            
+                                                        },
+                                                        {
+                                                            case: {
+                                                                $eq: ['$gender', ' FEMALE']
+                                                            },
+                                                            then: 'FEMALE',
+            
+                                                        },
+                                                        {
+                                                            case: {
+                                                                $eq: ['$gender', 'Perempuan']
+                                                            },
+                                                            then: 'FEMALE',
+            
+                                                        },
+                                                        {
+                                                            case: {
+                                                                $eq: ['$gender', 'Wanita']
+                                                            },
+                                                            then: 'FEMALE',
+            
+                                                        },
+                                                        {
+                                                            case: {
+                                                                $eq: ['$gender', 'MALE']
+                                                            },
+                                                            then: 'MALE',
+            
+                                                        },
+                                                        {
+                                                            case: {
+                                                                $eq: ['$gender', ' MALE']
+                                                            },
+                                                            then: 'MALE',
+            
+                                                        },
+                                                        {
+                                                            case: {
+                                                                $eq: ['$gender', 'Laki-laki']
+                                                            },
+                                                            then: 'MALE',
+            
+                                                        },
+                                                        {
+                                                            case: {
+                                                                $eq: ['$gender', 'Pria']
+                                                            },
+                                                            then: 'MALE',
+            
+                                                        },
+            
+                                                    ],
+                                                    default: "OTHER",
+            
+                                                },
+            
+                                            },
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:0,
+                                gender:
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$basic_data", 0
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:"$gender.gender",
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                totaldata:
+                                {
+                                    "$sum":"$count"
+                                },
+                                data:
+                                {
+                                    "$push":
+                                    {
+                                        _id:"$_id",
+                                        count:"$count"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$data"
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:0,
+                                remark: 
+                                {
+                                    "$ifNull":
+                                    [
+                                        "$data._id",
+                                        "Lainnya"
+                                    ]
+                                },
+                                range:"$data.count",
+                                percent:
+                                {
+                                    "$multiply":
+                                    [
+                                        {
+                                            "$divide":
+                                                [
+                                                    "$data.count", "$totaldata"
+                                                ]
+                                        }, 100
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    "age":
+                    [
+                        {
+                            "$project":
+                            {
+                                data:
+                                {
+                                    "$concatArrays":
+                                    [
+                                        "$view_data", "$click_data"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$gt":
+                                    [
+                                        "$data",
+                                        0
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                userID:"$data.userID",
+                                result:"$data.record_data"
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$result",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$lookup":
+                            {
+                                from:'userbasics',
+                                let:
+                                {
+                                    basic_fk:"$userID"
+                                },
+                                as:'basic_data',
+                                pipeline:
+                                [
+                                    {
+                                        "$match":
+                                        {
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$_id",
+                                                    "$$basic_fk"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:0,
+                                            dob:
+                                            {
+                                                $cond: {
+                                                    if: {
+                                                        $and: ['$dob', {
+                                                            $ne: ["$dob", ""]
+                                                        }]
+                                                    },
+                                                    then: {
+                                                        $toInt: {
+                                                            $divide: [{
+                                                                $subtract: [new Date(), {
+                                                                    $toDate: "$dob"
+                                                                }]
+                                                            }, (365 * 24 * 60 * 60 * 1000)]
+                                                        }
+                                                    },
+                                                    else: 0
+                                                }
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:0,
+                                            dob:
+                                            {
+                                                $switch: {
+                                                    branches: [
+                                                        {
+                                                            case: {
+                                                                $gt: ["$dob", 44]
+                                                            },
+                                                            then: "< 44 Tahun"
+                                                        },
+                                                        {
+                                                            case: {
+                                                                $and: [{
+                                                                    $gte: ["$dob", 36]
+                                                                }, {
+                                                                    $lte: ["$dob", 44]
+                                                                }]
+                                                            },
+                                                            then: "35-44 Tahun"
+                                                        },
+                                                        {
+                                                            case: {
+                                                                $and: [{
+                                                                    $gte: ["$dob", 25]
+                                                                }, {
+                                                                    $lte: ["$dob", 35]
+                                                                }]
+                                                            },
+                                                            then: "24-35 Tahun"
+                                                        },
+                                                        {
+                                                            case: {
+                                                                $and: [{
+                                                                    $gte: ["$dob", 14]
+                                                                }, {
+                                                                    $lte: ["$dob", 24]
+                                                                }]
+                                                            },
+                                                            then: "14-24 Tahun"
+                                                        },
+                                                        {
+                                                            case: {
+                                                                $and: [{
+                                                                    $gte: ["$dob", 1]
+                                                                }, {
+                                                                    $lt: ["$dob", 14]
+                                                                }]
+                                                            },
+                                                            then: "< 14 Tahun"
+                                                        }
+                                                    ],
+                                                    "default": "other"
+                                                }
+                                            },
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:0,
+                                dob:
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$basic_data", 0
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:"$dob.dob",
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                totaldata:
+                                {
+                                    "$sum":"$count"
+                                },
+                                data:
+                                {
+                                    "$push":
+                                    {
+                                        _id:"$_id",
+                                        count:"$count"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$data"
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:0,
+                                remark: 
+                                {
+                                    "$ifNull":
+                                    [
+                                        "$data._id",
+                                        "Lainnya"
+                                    ]
+                                },
+                                range:"$data.count",
+                                percent:
+                                {
+                                    "$multiply":
+                                    [
+                                        {
+                                            "$divide":
+                                                [
+                                                    "$data.count", "$totaldata"
+                                                ]
+                                        }, 100
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    "area":
+                    [
+                        {
+                            "$project":
+                            {
+                                data:
+                                {
+                                    "$concatArrays":
+                                    [
+                                        "$view_data", "$click_data"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$data",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$gt":
+                                    [
+                                        "$data",
+                                        0
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                userID:"$data.userID",
+                                result:"$data.record_data"
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$result",
+                                preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$lookup":
+                            {
+                                from:'userbasics',
+                                let:
+                                {
+                                    basic_fk:"$userID"
+                                },
+                                as:'basic_data',
+                                pipeline:
+                                [
+                                    {
+                                        "$match":
+                                        {
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$_id",
+                                                    "$$basic_fk"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:0,
+                                            cities:1
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            $lookup: 
+                            {
+                                from: 'cities',
+                                localField: 'basic_data.cities.$id',
+                                foreignField: '_id',
+                                as: 'citiesView'
+                            },
+                        },
+                        {
+                            $lookup: 
+                            {
+                                from: 'areas',
+                                localField: 'citiesView.stateID',
+                                foreignField: 'stateID',
+                                as: 'areasView',
+                            },
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:0,
+                                area:
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$areasView.stateName", 0
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:"$area",
+                                count:
+                                {
+                                    "$sum":1
+                                }
+                            }
+                        },
+                        {
+                            "$group":
+                            {
+                                _id:null,
+                                totaldata:
+                                {
+                                    "$sum":"$count"
+                                },
+                                data:
+                                {
+                                    "$push":
+                                    {
+                                        _id:"$_id",
+                                        count:"$count"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$data"
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:0,
+                                remark: 
+                                {
+                                    "$ifNull":
+                                    [
+                                        "$data._id",
+                                        "Lainnya"
+                                    ]
+                                },
+                                range:"$data.count",
+                                percent:
+                                {
+                                    "$multiply":
+                                    [
+                                        {
+                                            "$divide":
+                                                [
+                                                    "$data.count", "$totaldata"
+                                                ]
+                                        }, 100
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "$project":
+                {
+                    day: [
+                        {
+                            day7:
+                            [
+                                {
+                                    _id:"Day7",
+                                    view:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days7view.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    click:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days7click.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    timeStart:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), - 61200000] // 1 hari 61200000
+                                            }
+                                        }
+                                    },
+                                    timeEndt:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), 25200000]
+                                            }
+                                        }
+                                    },
+                                }
+                            ],
+                            day6:
+                            [
+                                {
+                                    _id:"Day6",
+                                    view:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days6view.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    click:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days6click.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    timeStart:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), - 147600000] // 1 hari 61200000
+                                            }
+                                        }
+                                    },
+                                    timeEndt:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), - 61200000]
+                                            }
+                                        }
+                                    },
+                                }
+                            ],
+                            day5:
+                            [
+                                {
+                                    _id:"Day5",
+                                    view:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days5view.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    click:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days5click.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    timeStart:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), - 234000000] // 1 hari 61200000
+                                            }
+                                        }
+                                    },
+                                    timeEndt:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), - 147600000]
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            day4:
+                            [
+                                {
+                                    _id:"Day4",
+                                    view:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days4view.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    click:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days4click.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    timeStart:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), - 320400000] // 1 hari 61200000
+                                            }
+                                        }
+                                    },
+                                    timeEndt:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), - 234000000]
+                                            }
+                                        }
+                                    },
+                                }
+                            ],
+                            day3:
+                            [
+                                {
+                                    _id:"Day3",
+                                    view:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days3view.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    click:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days3click.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    timeStart:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), - 406800000] // 1 hari 61200000
+                                            }
+                                        }
+                                    },
+                                    timeEndt:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), - 320400000]
+                                            }
+                                        }
+                                    },
+                                }
+                            ],
+                            day2:
+                            [
+                                {
+                                    _id:"Day2",
+                                    view:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days2view.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    click:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days2click.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    timeStart:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), - 493200000] // 1 hari 61200000
+                                            }
+                                        }
+                                    },
+                                    timeEndt:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), - 406800000]
+                                            }
+                                        }
+                                    },
+                                }
+                            ],
+                            day1:
+                            [
+                                {
+                                    _id:"Day1",
+                                    view:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days1view.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    click:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$days1click.count", 0
+                                                ]
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    timeStart:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), - 579600000] // 1 hari 61200000
+                                            }
+                                        }
+                                    },
+                                    timeEndt:
+                                    {
+                                        "$dateToString": {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date": {
+                                                $add: [new Date(), - 493200000]
+                                            }
+                                        }
+                                    },
+                                }
+                            ]
+                        },
+                    ],
+                    genders:"$genders",
+                    age:"$age",
+                    area:"$area"
+                }
+            }
+        ])
+
+        return query;
+    }
+
     async countadsuser(iduser: ObjectID) {
         var query = await this.adsModel.aggregate(
 
