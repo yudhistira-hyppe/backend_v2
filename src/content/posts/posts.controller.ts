@@ -1366,12 +1366,12 @@ export class PostsController {
               if (tp1.email == userEmail) {
                 tp1.status = "UNLINK";
               } else {
-                for (let i = 0; i < following.length; i++) {
-                  let fol = following[i];
-                  if (fol.email == tp1.email) {
+                var ceck_data_FOLLOWER = await this.contenteventsService.ceckData(tp1.email, "FOLLOWER", "ACCEPT", userEmail, "", "");
+                if (await this.utilsService.ceckData(ceck_data_FOLLOWER)) {
+                  if (ceck_data_FOLLOWER.active) {
                     tp1.status = "FOLLOWING";
-                  }
-                }
+                  } 
+                } 
               }
               atp1.push(tp1);
             }
