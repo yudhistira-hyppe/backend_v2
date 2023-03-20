@@ -381,7 +381,7 @@ export class DisqusController {
 
           var data = await this.disqusService.getDiscus(String(ContentDto_.postID), type, Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
           return {
-            data: data[0]
+            data: data
           }
 
           // console.log('com', com);
