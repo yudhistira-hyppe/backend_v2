@@ -40301,6 +40301,9 @@ export class PostsService {
 
                         },
                         {
+                          "event": "DONE"
+                        },
+                        {
                           "eventType": "LIKE"
                         },
                         {
@@ -41522,6 +41525,9 @@ export class PostsService {
 
                         },
                         {
+                          "event": "DONE"
+                        },
+                        {
                           "eventType": "LIKE"
                         },
                         {
@@ -42737,6 +42743,9 @@ export class PostsService {
                         {
                           "senderParty": email,
 
+                        },
+                        {
+                          "event": "DONE"
                         },
                         {
                           "eventType": "LIKE"
