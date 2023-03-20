@@ -3351,12 +3351,7 @@ export class GetusercontentsController {
                 for (let i = 0; i < lengpict; i++) {
                     uploadSource = data[i].uploadSource;
                     if (data[i].isApsara == true) {
-
-                        if (uploadSource == "OSS") {
-                            tempdatapict.push(data[i].apsaraId);
-                        } else {
-                            tempdatapict.push(data[i].apsaraThumbId);
-                        }
+                        tempdatapict.push(data[i].apsaraThumbId);
 
                     }
                 }
@@ -3366,18 +3361,10 @@ export class GetusercontentsController {
                     var checkpictketemu = false;
                     uploadSource = data[i].uploadSource;
                     if (uploadSource == "OSS") {
-                        for (var j = 0; j < gettempresultpictapsara.length; j++) {
-                            if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
-                                checkpictketemu = true;
-                                data[i].media =
-                                {
-                                    "ImageInfo": [gettempresultpictapsara[j]]
-                                }
+                        data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
 
-                                data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-                            }
-                        }
                     } else {
+
                         for (var j = 0; j < gettempresultpictapsara.length; j++) {
                             if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
                                 checkpictketemu = true;

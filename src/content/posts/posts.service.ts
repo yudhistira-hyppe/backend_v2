@@ -39985,7 +39985,8 @@ export class PostsService {
                   },
                   "mediaThumbUri": "$mediaThumb",
                   "mediaType": 1,
-                  "uploadSource": 1
+                  "uploadSource": 1,
+                  "mediaThumUri": 1
                 }
               }
             ],
@@ -40523,6 +40524,7 @@ export class PostsService {
             "mediaUri": "$media.mediaUri",
             "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
             "mediaThumbUri": "$media.mediaThumbUri",
+            "mediaThumUri": "$media.mediaThumUri",
             "fullName": "$userBasic.fullName",
             "username": "$username.username",
             "avatar": 1,
@@ -40635,6 +40637,7 @@ export class PostsService {
             "avatar": 1,
             "statusCB": 1,
             "privacy": 1,
+            "mediaThumUri": 1,
 
           },
 
