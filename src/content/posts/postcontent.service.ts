@@ -396,6 +396,10 @@ export class PostContentService {
               bodyi = bodyi + ' HyppeStory';
               bodye = bodye + ' HyppeStory';
             }
+            console.log(tp.email.toString());
+            console.log(body.postID.toString());
+            console.log(post.postType.toString());
+            console.log(post.postType.toString());
             this.utilService.sendFcmV2(tp.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString());
             pcats.push(objintr);
           }
