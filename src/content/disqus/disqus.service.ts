@@ -765,7 +765,7 @@ export class DisqusService {
                                                 from: "mediaprofilepicts",
                                                 as: "detailAvatar",
                                                 let: {
-                                                    localID: '$userBasic.profilePict.$id'
+                                                    localID: '$detailUserBasic.profilePict.$id'
                                                 },
                                                 pipeline: [
                                                     {
@@ -813,7 +813,7 @@ export class DisqusService {
                                                         $arrayElemAt: ["$detailUserBasic.fullName", 0]
                                                     },
                                                     "username": "$detailUserAuth.username",
-                                                    "avatar": "$avatar",
+                                                    "avatar": "$detailAvatar",
                                                     "isIdVerified": {
                                                         $arrayElemAt: ["$detailUserBasic.isIdVerified", 0]
                                                     },
