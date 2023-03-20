@@ -794,11 +794,33 @@ export class DisqusService {
 
             },
             {
-                $lookup: {
-                    from: 'disquslogs',
-                    localField: 'postID',
-                    foreignField: 'postID',
-                    as: 'countLogs',
+                "$lookup": {
+                    from: "disquslogs",
+                    as: "countLogs",
+                    let: {
+                        localID: '$postID'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$postID', '$$localID']
+                                        }
+                                    },
+                                    {
+                                        "active": true,
+                                    },
+                                    {
+                                        "sequenceNumber": 0,
+                                    },
+
+                                ]
+                            }
+                        }
+                    ]
                 },
 
             },
@@ -814,7 +836,9 @@ export class DisqusService {
                     "createdAt": 1,
                     "updatedAt": 1,
                     "disqusLogs": 1,
-                    "comment": { $size: "$countLogs" },
+                    "comment": {
+                        $size: "$countLogs"
+                    },
 
                 }
             }

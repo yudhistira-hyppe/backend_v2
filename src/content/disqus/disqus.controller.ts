@@ -378,7 +378,11 @@ export class DisqusController {
           console.log("Payload Query Comment >>>>>> : ", ContentDto_);
           var DisqusResponseComment_ = new DisqusResponseComment();
           let com = await this.disqusService.findDisqusByPost(String(ContentDto_.postID), type);
-          //var dataDiscuss = await this.disqusService.getDiscus(String(ContentDto_.postID), type);
+
+          // var data = await this.disqusService.getDiscus(String(ContentDto_.postID), type);
+          // return {
+          //   data: data
+          // }
 
           console.log('com', com);
 
@@ -411,60 +415,7 @@ export class DisqusController {
             let get_count = await this.disqusLogService.findDiscusLog(String(con.disqusID));
             retVal_.comment = get_count.length;
             let dl = await this.disqusLogService.findLogByDisqusId(String(con.disqusID), Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
-            retVal_.disqusLogs = dl;
-
-            // if (detailOnly == undefined || detailOnly == false) {
-            //   retVal.email = con.email;
-            //   retVal.room = con.room;
-            //   retVal.postId = String(con.postID);
-
-            //   retVal.eventType = con.eventType;
-            //   retVal.active = con.active;
-            //   retVal.createdAt = con.createdAt;
-            //   retVal.updatedAt = con.updatedAt;
-
-
-            //   if (profile.username!=undefined){
-            //     retVal.username = profile.username;
-            //   }
-            //   if (profile.avatar != undefined) {
-            //     retVal.avatar = profile.avatar;
-            //   }
-
-
-            //   var senderReciverInfo = {};
-            //   var currentEmail = (ContentDto_.email) ? ContentDto_.email : email_header;
-            //   if ((profile_mate != null) && (profile != null) && (currentEmail == profile_mate.email)) {
-            //     senderReciverInfo['email'] = profile.fullName;
-            //     senderReciverInfo['username'] = profile.username;
-            //     senderReciverInfo['fullName'] = profile.fullName;
-            //     if (profile.avatar != null) {
-            //       senderReciverInfo['avatar'] = profile.avatar;
-            //     }
-            //   } else if ((profile_mate != null) && (profile != null) && (currentEmail == profile.email)) {
-            //     senderReciverInfo['email'] = profile_mate.fullName;
-            //     senderReciverInfo['username'] = profile_mate.username;
-            //     senderReciverInfo['fullName'] = profile_mate.fullName;
-            //     if (profile_mate.avatar != null) {
-            //       senderReciverInfo['avatar'] = profile_mate.avatar;
-            //     }
-            //   }
-            //   retVal.senderOrReceiverInfo = senderReciverInfo;
-
-            //   let dl = await this.disqusLogService.findLogByDisqusId(String(con.disqusID), Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
-            //   retVal.disqusLogs = dl;
-
-            //   if ((ContentDto_.pageNumber != undefined) && (ContentDto_.pageRow != undefined)) {
-            //     var pageNumber = Number(ContentDto_.pageNumber);
-            //     var pageRow = Number(ContentDto_.pageRow);
-            //     var offset = pageNumber * pageRow;
-            //     // retVal['disqusLogs'] = profile.avatar;
-            //     // retVal.put("disqusLogs",streamSupplier.get().skip(offset).limit(pageRow).collect(Collectors.toList()));
-            //   } else {
-            //     // retVal['disqusLogs'] = profile.avatar;
-            //     // retVal.put("disqusLogs", streamSupplier.get().collect(Collectors.toList()));
-            //   }
-            // }                        
+            retVal_.disqusLogs = dl;                       
             tmp_.push(retVal_);
           }
           DisqusResponseComment_.data = tmp_;

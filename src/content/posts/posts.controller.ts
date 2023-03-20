@@ -1378,7 +1378,6 @@ export class PostsController {
           }
         }
 
-
         return {
           response_code: 202,
           data: atp1,
