@@ -3774,6 +3774,17 @@ export class PostContentService {
         let ps = posts[i];
         let pa = new PostData();
 
+        var ceck_data_DONE = await this.contentEventService.ceckData(String(iam.email), "LIKE", "DONE", ps.email.toString(), "", ps.postID.toString());
+        
+        if (await this.utilService.ceckData(ceck_data_DONE)) {
+          if (ceck_data_DONE.active) {
+            pa.isLiked = true;
+          } else {
+            pa.isLiked = false;
+          }
+        } else {
+          pa.isLiked = false;
+        }
         pa.active = ps.active;
         pa.allowComments = ps.allowComments;
         pa.certified = ps.certified;
