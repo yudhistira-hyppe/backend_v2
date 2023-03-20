@@ -641,6 +641,9 @@ export class DisqusService {
                                                 {
                                                     'active': true
                                                 },
+                                                {
+                                                    sequenceNumber: 0
+                                                }
 
                                             ]
                                         },
@@ -653,6 +656,180 @@ export class DisqusService {
                                 $sort: {
                                     "createdAt": 1
                                 }
+                            },
+                            {
+                                "$lookup": {
+                                    from: "disquslogs",
+                                    as: "detailDisquss",
+                                    let: {
+                                        localID: '$_id'
+                                    },
+                                    pipeline: [
+                                        {
+                                            $match:
+                                            {
+                                                $or: [
+                                                    {
+                                                        $and: [
+                                                            {
+                                                                $expr: {
+                                                                    $eq: ['$parentID', '$$localID']
+                                                                }
+                                                            },
+                                                            {
+                                                                'active': true
+                                                            },
+                                                            {
+                                                                sequenceNumber: 1
+                                                            }
+
+                                                        ]
+                                                    },
+
+                                                ]
+                                            },
+
+                                        },
+                                        {
+                                            $sort: {
+                                                "updateAt": 1
+                                            }
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'reactions_repo',
+                                                as: 'detailEmot',
+                                                let: {
+                                                    localID: '$reactionUri'
+                                                },
+                                                pipeline: [
+                                                    {
+                                                        $match:
+                                                        {
+                                                            $or: [
+                                                                {
+                                                                    $expr: {
+                                                                        $eq: ['$URL', '$$localID']
+                                                                    }
+                                                                },
+
+                                                            ]
+                                                        }
+                                                    },
+
+                                                ],
+
+                                            },
+
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: "$detailEmot",
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'userbasics',
+                                                localField: 'sender',
+                                                foreignField: 'email',
+                                                as: 'detailUserBasic',
+
+                                            },
+
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: "$detailUserbasic",
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'userauths',
+                                                localField: 'sender',
+                                                foreignField: 'email',
+                                                as: 'detailUserAuth',
+
+                                            },
+
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: "$detailUserAuth",
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            "$lookup": {
+                                                from: "mediaprofilepicts",
+                                                as: "detailAvatar",
+                                                let: {
+                                                    localID: '$userBasic.profilePict.$id'
+                                                },
+                                                pipeline: [
+                                                    {
+                                                        $match:
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$mediaID', {
+                                                                    $ifNull: ['$$localID', []]
+                                                                }]
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        $project: {
+                                                            "mediaBasePath": 1,
+                                                            "mediaUri": 1,
+                                                            "originalName": 1,
+                                                            "fsSourceUri": 1,
+                                                            "fsSourceName": 1,
+                                                            "fsTargetUri": 1,
+                                                            "mediaType": 1,
+                                                            "mediaEndpoint": {
+                                                                "$concat": ["/profilepict/", "$mediaID"]
+                                                            }
+                                                        }
+                                                    }
+                                                ],
+
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: "$detailAvatar",
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                "_id": "$_id",
+                                                "sequenceNumber": "$sequenceNumber",
+                                                "createdAt": "$createdAt",
+                                                "txtMessages": "$txtMessages",
+                                                "senderInfo": {
+                                                    "fullName": {
+                                                        $arrayElemAt: ["$detailUserBasic.fullName", 0]
+                                                    },
+                                                    "username": "$detailUserAuth.username",
+                                                    "avatar": "$avatar",
+                                                    "isIdVerified": {
+                                                        $arrayElemAt: ["$detailUserBasic.isIdVerified", 0]
+                                                    },
+
+                                                },
+                                                "receiver": "$receiver",
+                                                "sender": "$sender",
+                                                "lineID": "$_id",
+                                                "active": "$active",
+                                                "updatedAt": "$updatedAt",
+                                            }
+                                        }
+                                    ],
+
+                                },
+
                             },
                             {
                                 $lookup: {
@@ -762,15 +939,15 @@ export class DisqusService {
                                 }
                             },
                             {
-                                $skip: skip
+                                $skip: 0
                             },
                             {
-                                $limit:row
+                                $limit: 5
                             },
                             {
                                 $project: {
                                     disqusLogs: [{
-                                        _id: "$_id",
+                                        "_id": "$_id",
                                         "sequenceNumber": "$sequenceNumber",
                                         "createdAt": "$createdAt",
                                         "txtMessages": "$txtMessages",
@@ -789,7 +966,8 @@ export class DisqusService {
                                         "sender": "$sender",
                                         "lineID": "$_id",
                                         "active": "$active",
-                                        "updatedAt": "$updatedAt"
+                                        "updatedAt": "$updatedAt",
+                                        detailDisquss: "$detailDisquss",
                                     }]
                                 }
                             }
@@ -817,9 +995,11 @@ export class DisqusService {
                                         },
                                         {
                                             "active": true,
+
                                         },
                                         {
                                             "sequenceNumber": 0,
+
                                         },
 
                                     ]
@@ -845,6 +1025,18 @@ export class DisqusService {
                             $size: "$countLogs"
                         },
 
+                    }
+                },
+                {
+                    $skip: skip
+                },
+                {
+                    $limit: row
+                },
+                {
+                    $sort: {
+                        sequenceNumber: 1,
+                        updatedAt: 1
                     }
                 }
             ]
