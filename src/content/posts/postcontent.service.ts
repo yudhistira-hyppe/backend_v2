@@ -396,7 +396,10 @@ export class PostContentService {
               bodyi = bodyi + ' HyppeStory';
               bodye = bodye + ' HyppeStory';
             }
-            this.utilService.sendFcmV2(tp.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString());
+            console.log(tp.email.toString());
+            console.log(postId);
+            console.log(post.postType.toString());
+            this.utilService.sendFcmV2(tp.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", postId, post.postType.toString());
             pcats.push(objintr);
           }
         }
@@ -430,7 +433,7 @@ export class PostContentService {
               bodyi = bodyi + ' HyppeStory';
               bodye = bodye + ' HyppeStory';
             }
-            this.utilService.sendFcmV2(tp.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString())
+            this.utilService.sendFcmV2(tp.email.toString(), auth.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString())
             pcats.push(objintrx);
           }
         }
