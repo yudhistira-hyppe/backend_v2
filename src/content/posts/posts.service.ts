@@ -40297,7 +40297,7 @@ export class PostsService {
                           }
                         },
                         {
-                          "email": email,
+                          "senderParty": email,
 
                         },
                         {
@@ -41518,7 +41518,7 @@ export class PostsService {
                           }
                         },
                         {
-                          "email": email,
+                          "senderParty": email,
 
                         },
                         {
@@ -42735,7 +42735,7 @@ export class PostsService {
                           }
                         },
                         {
-                          "email": email,
+                          "senderParty": email,
 
                         },
                         {
