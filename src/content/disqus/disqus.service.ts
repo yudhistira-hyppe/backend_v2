@@ -654,7 +654,7 @@ export class DisqusService {
                             },
                             {
                                 $sort: {
-                                    "createdAt": 1
+                                    "updateAt": -1
                                 }
                             },
                             {
