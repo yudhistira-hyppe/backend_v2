@@ -620,6 +620,16 @@ export class DisqusService {
 
                 },
                 {
+                    $lookup: {
+                        from: 'userbasics',
+                        localField: 'email',
+                        foreignField: 'email',
+                        as: 'user',
+
+                    },
+
+                },
+                {
                     "$lookup": {
                         from: "disquslogs",
                         as: "disqusLogs",
@@ -644,7 +654,6 @@ export class DisqusService {
                                                 {
                                                     sequenceNumber: 0
                                                 }
-
                                             ]
                                         },
 
@@ -677,7 +686,6 @@ export class DisqusService {
                                                             {
                                                                 sequenceNumber: 1
                                                             }
-
                                                         ]
                                                     },
 
@@ -819,6 +827,7 @@ export class DisqusService {
                                                 "lineID": "$_id",
                                                 "active": "$active",
                                                 "updatedAt": "$updatedAt",
+
                                             }
                                         },
                                         {
@@ -943,9 +952,10 @@ export class DisqusService {
                             },
                             {
                                 $limit: row
-                            }, {
+                            },
+                            {
                                 $sort: {
-                                    updatedAt: -1
+                                    updatedAt: - 1
                                 }
                             },
                             {
@@ -972,13 +982,13 @@ export class DisqusService {
                                         "active": "$active",
                                         "updatedAt": "$updatedAt",
                                         detailDisquss: "$detailDisquss",
+
                                     }]
                                 }
                             }
                         ],
 
                     },
-
 
                 },
                 {
@@ -1017,6 +1027,7 @@ export class DisqusService {
                 {
                     $project: {
                         "_id": 1,
+                        "isIdVerified": { $arrayElemAt: ["$user. isIdVerified", 0] },
                         "disqusID": 1,
                         "postID": 1,
                         "email": 1,
@@ -1032,6 +1043,7 @@ export class DisqusService {
 
                     }
                 },
+
             ]
         )
     }
