@@ -24554,7 +24554,217 @@ export class AdsService {
         return query;
     }
 
-    async consolegetlistads(startdate: string, enddate: string, statuslist: any[], mincredit: number, maxcredit: number, page: number, limit: number, sorting: boolean) {
+    // async consolegetlistads(startdate: string, enddate: string, statuslist: any[], mincredit: number, maxcredit: number, page: number, limit: number, sorting: boolean) {
+    //     var pipeline = [];
+
+    //     pipeline.push(
+    //         {
+    //             "$lookup":
+    //             {
+    //                 "from": "adstypes",
+    //                 "as": "type_data",
+    //                 "let":
+    //                 {
+    //                     "type_fk": "$typeAdsID"
+    //                 },
+    //                 "pipeline":
+    //                     [
+    //                         {
+    //                             "$match":
+    //                             {
+    //                                 "$expr":
+    //                                 {
+    //                                     "$eq":
+    //                                         [
+    //                                             "$_id",
+    //                                             "$$type_fk"
+    //                                         ]
+    //                                 }
+    //                             },
+    //                         },
+    //                         {
+    //                             "$project":
+    //                             {
+    //                                 nameType: 1
+    //                             }
+    //                         }
+    //                     ]
+    //             }
+    //         },
+    //         {
+    //             "$lookup":
+    //             {
+    //                 "from": "adsplaces",
+    //                 "as": "place_data",
+    //                 "let":
+    //                 {
+    //                     "place_fk": "$placingID"
+    //                 },
+    //                 "pipeline":
+    //                     [
+    //                         {
+    //                             "$match":
+    //                             {
+    //                                 "$expr":
+    //                                 {
+    //                                     "$eq":
+    //                                         [
+    //                                             "$_id",
+    //                                             "$$place_fk"
+    //                                         ]
+    //                                 }
+    //                             },
+    //                         },
+    //                         {
+    //                             "$project":
+    //                             {
+    //                                 namePlace: 1
+    //                             }
+    //                         }
+    //                     ]
+    //             }
+    //         },
+    //         {
+    //             "$project":
+    //             {
+    //                 _id: 1,
+    //                 userID: 1,
+    //                 typesID: 1,
+    //                 type_data:
+    //                 {
+    //                     "$first": "$type_data.nameType"
+    //                 },
+    //                 placingID: 1,
+    //                 place_data:
+    //                 {
+    //                     "$first": "$place_data.namePlace"
+    //                 },
+    //                 name: 1,
+    //                 status: 1,
+    //                 timestamp: 1,
+    //                 creditFree: 1,
+    //                 totalUsedCredit: 1,
+    //                 usedCreditFree: 1,
+    //                 usedCredit: 1,
+    //                 totalCredit: 1,
+    //                 idApsara: 1,
+    //                 totalView:
+    //                 {
+    //                     "$ifNull":
+    //                         [
+    //                             "$totalView",
+    //                             0
+    //                         ]
+    //                 },
+    //                 isActive: 1,
+    //                 apsara: {
+    //                     "$cond":
+    //                     {
+    //                         if:
+    //                         {
+    //                             "$eq": ["$idApsara", null]
+    //                         },
+    //                         then: false,
+    //                         else: true
+    //                     }
+    //                 },
+    //                 type: 1,
+    //                 tempreportedUserCount:
+    //                 {
+    //                     "$ifNull":
+    //                         [
+    //                             "$reportedUserCount",
+    //                             0
+    //                         ]
+    //                 },
+    //                 tempstatus: "$status"
+    //             }
+    //         },);
+
+    //     //filter by date range
+    //     if (startdate != undefined && enddate != undefined) {
+    //         var before = new Date(startdate).toISOString().split("T")[0];
+    //         var input = new Date(enddate);
+    //         input.setDate(input.getDate() + 1);
+    //         var today = new Date(input).toISOString().split("T")[0];
+
+    //         pipeline.push({
+    //             "$match":
+    //             {
+    //                 timestamp:
+    //                 {
+    //                     "$gte": before,
+    //                     "$lte": today
+    //                 },
+    //             }
+    //         },);
+    //     }
+
+    //     //filter by status
+    //     if (statuslist != undefined) {
+    //         pipeline.push({
+    //             "$match":
+    //             {
+    //                 status:
+    //                 {
+    //                     "$in": statuslist
+    //                 }
+    //             }
+    //         });
+    //     }
+
+    //     //filter by totalUsedCredit range 
+    //     if (mincredit != undefined && maxcredit != undefined) {
+    //         pipeline.push({
+    //             "$match":
+    //             {
+    //                 totalUsedCredit:
+    //                 {
+    //                     "$gte": mincredit,
+    //                     "$lte": maxcredit
+    //                 },
+    //             }
+    //         },);
+    //     }
+
+
+    //     if (sorting == true) {
+    //         pipeline.push({
+    //             "$sort":
+    //             {
+    //                 timestamp: -1
+    //             }
+    //         })
+    //     }
+    //     else {
+    //         pipeline.push({
+    //             "$sort":
+    //             {
+    //                 timestamp: 1
+    //             }
+    //         })
+    //     }
+
+    //     if (page > 0) {
+    //         pipeline.push({
+    //             "$skip": (limit * page)
+    //         });
+    //     }
+
+    //     if (limit > 0) {
+    //         pipeline.push({
+    //             "$limit": limit
+    //         });
+    //     }
+
+    //     //console.log(JSON.stringify(pipeline));
+
+    //     var query = await this.adsModel.aggregate(pipeline);
+
+    //     return query;
+    // }
+
+    async consolegetlistads2(startdate: string, enddate: string, statuslist: any[], mincredit: number, maxcredit: number, page: number, limit: number, sorting: boolean) {
         var pipeline = [];
 
         pipeline.push(
@@ -24702,15 +24912,49 @@ export class AdsService {
 
         //filter by status
         if (statuslist != undefined) {
-            pipeline.push({
-                "$match":
-                {
-                    status:
+            let checklist = statuslist.includes('NONACTIVE');
+
+            if(checklist == true)
+            {
+                var templiststatus = [];
+                statuslist.forEach((e) => {
+                    if(e != 'NONACTIVE')
                     {
-                        "$in": statuslist
+                        templiststatus.push(e);
                     }
-                }
-            });
+                });
+
+                pipeline.push({
+                    "$match":
+                    {
+                        "$or":
+                        [
+                            {
+                                status:
+                                {
+                                    "$in": templiststatus
+                                }
+                            },
+                            {
+                                status:"APPROVE",
+                                isActive:false
+                            }
+                        ]
+                    }
+                });
+            }
+            else
+            {
+                pipeline.push({
+                    "$match":
+                    {
+                        status:
+                        {
+                            "$in": statuslist
+                        }
+                    }
+                });
+            }
         }
 
         //filter by totalUsedCredit range 
@@ -24760,6 +25004,62 @@ export class AdsService {
         //console.log(JSON.stringify(pipeline));
 
         var query = await this.adsModel.aggregate(pipeline);
+
+        var listdata = [];
+        var tempresult = null;
+        var tempdata = null;
+        for (var i = 0; i < query.length; i++) {
+            tempdata = query[i];
+            if (tempdata.apsara == true) {
+                listdata.push(tempdata.idApsara);
+            }
+            else {
+                listdata.push(undefined);
+            }
+        }
+
+        var apsaraimagedata = await this.postContentService.getImageApsara(listdata);
+        // console.log(resultdata.ImageInfo[0]);
+        tempresult = apsaraimagedata.ImageInfo;
+        for (var i = 0; i < query.length; i++) {
+            for (var j = 0; j < tempresult.length; j++) {
+                if (tempresult[j].ImageId == query[i].idApsara) {
+                    query[i].media =
+                    {
+                        "ImageInfo": [tempresult[j]]
+                    }
+                }
+                else if(query[i].apsara == false && (query[i].type == "image" || query[i].type == "images"))
+                {
+                    query[i].media =
+                    {
+                        "ImageInfo": []
+                    }
+                }
+            }
+        }
+
+        var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
+        // console.log(apsaravideodata);
+        // console.log(resultdata.ImageInfo[0]);
+        tempresult = apsaravideodata.VideoList;
+        for (var i = 0; i < query.length; i++) {
+            for (var j = 0; j < tempresult.length; j++) {
+                if (tempresult[j].VideoId == query[i].idApsara) {
+                    query[i].media =
+                    {
+                        "VideoList": [tempresult[j]]
+                    }
+                }
+                else if(query[i].apsara == false && query[i].type == "video")
+                {
+                    query[i].media =
+                    {
+                        "VideoList": []
+                    }
+                }
+            }
+        }
 
         return query;
     }

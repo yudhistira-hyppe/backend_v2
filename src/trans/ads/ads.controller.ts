@@ -994,90 +994,6 @@ export class AdsController {
     //     return { response_code: 202, data, messages };
     // }
 
-    // @Post('console/adscenter/listads')
-    // @UseGuards(JwtAuthGuard)
-    // async getlistads(@Req() request: Request): Promise<any> {
-    //     var data = null;
-    //     var page = null;
-    //     var limit = null;
-    //     var sorting = false;
-    //     var status = null;
-    //     var startdate = null;
-    //     var mincredit = null;
-    //     var maxcredit = null;
-    //     var enddate = null;
-
-    //     const messages = {
-    //         "info": ["The process successful"],
-    //     };
-
-    //     var request_json = JSON.parse(JSON.stringify(request.body));
-
-    //     if (request_json["startdate"] !== undefined && request_json["enddate"] !== undefined) {
-    //         startdate = request_json["startdate"];
-    //         enddate = request_json["enddate"];
-    //     }
-
-    //     if (request_json["mincredit"] !== undefined && request_json["maxcredit"] !== undefined) {
-    //         mincredit = Number(request_json["mincredit"]);
-    //         maxcredit = Number(request_json["maxcredit"]);
-    //     }
-
-    //     if (request_json["limit"] !== undefined) {
-    //         limit = (Number(request_json["limit"]) !== parseInt('0') ? Number(request_json["limit"]) : parseInt('10'));
-    //     }
-
-    //     if (request_json["page"] !== undefined) {
-    //         page = Number(request_json["page"]);
-    //     }
-
-    //     if (request_json["status"] !== undefined) {
-    //         status = request_json["status"];
-    //     }
-
-    //     if (request_json["descending"] !== undefined) {
-    //         sorting = request_json["descending"];
-    //     }
-    //     else {
-    //         throw new BadRequestException("Unabled to proceed");
-    //     }
-
-    //     var getdata = null;
-    //     var total = 0;
-    //     try {
-    //         var tempdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, page, limit, sorting);
-    //         total = tempdata.length;
-    //         for (var i = 0; i < total; i++) {
-    //             getdata = await this.adsService.getapsaraDatabaseAdsNew(tempdata, i);
-    //         }
-    //     }
-    //     catch (e) {
-    //         getdata = [];
-    //     }
-
-
-    //     try {
-    //         var resultdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, undefined, undefined, sorting);
-    //         var totalsearch = resultdata.length;
-    //     }
-    //     catch (e) {
-    //         var resultdata = [];
-    //         var totalsearch = 0;
-    //     }
-
-    //     var totalpage = 0;
-    //     var gettotal = (totalsearch / limit).toFixed(0);
-    //     var sisa = (totalsearch % limit);
-    //     if (sisa > 0 && sisa < 5) {
-    //         totalpage = parseInt(gettotal) + 1;
-    //     }
-    //     else {
-    //         totalpage = parseInt(gettotal);
-    //     }
-
-    //     return { response_code: 202, data: getdata, totalsearch: totalsearch, totalpage: totalpage, totaldatainpage: total, limit: limit, page: page, messages };
-    // }
-
     @Post('console/adscenter/listads')
     @UseGuards(JwtAuthGuard)
     async getlistads2(@Req() request: Request): Promise<any> {
@@ -1129,11 +1045,13 @@ export class AdsController {
         var getdata = null;
         var total = 0;
         try {
-            var tempdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, page, limit, sorting);
-            total = tempdata.length;
-            for (var i = 0; i < total; i++) {
-                getdata = await this.adsService.getapsaraDatabaseAdsNew(tempdata, i);
-            }
+            // var tempdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, page, limit, sorting);
+            getdata = await this.adsService.consolegetlistads2(startdate, enddate, status, mincredit, maxcredit, page, limit, sorting);
+            total = getdata.length;
+            // total = tempdata.length;
+            // for (var i = 0; i < total; i++) {
+            //     getdata = await this.adsService.getapsaraDatabaseAdsNew(tempdata, i);
+            // }
         }
         catch (e) {
             getdata = [];
@@ -1141,7 +1059,8 @@ export class AdsController {
 
 
         try {
-            var resultdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, undefined, undefined, sorting);
+            // var resultdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, undefined, undefined, sorting);
+            var resultdata = await this.adsService.consolegetlistads2(startdate, enddate, status, mincredit, maxcredit, undefined, undefined, sorting);
             var totalsearch = resultdata.length;
         }
         catch (e) {
