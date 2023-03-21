@@ -692,7 +692,7 @@ export class DisqusService {
                                         },
                                         {
                                             $sort: {
-                                                "updateAt": 1
+                                                "updateAt": -1
                                             }
                                         },
                                         {
