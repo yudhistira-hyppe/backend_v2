@@ -29,6 +29,11 @@ export class DisqusContentEventController {
     retVal.disqusID = CreateDisquslogsDto_.disqusID;
     retVal.disqusLogs = arrayisquslogs;
     retVal.email = CreateDisqusDto_.email;
+
+    var profile = await this.utilsService.generateProfile(String(CreateDisqusDto_.email), 'PROFILE');
+    if (profile.username != undefined) {
+      retVal.username = profile.username;
+    }
     retVal.room = CreateDisqusDto_.room;
     retVal.fcmMessage = Messages;
 
@@ -90,6 +95,8 @@ export class DisqusContentEventController {
     retVal.disqusID = DisqusLog.disqusID;
     retVal.postType = DisqusLog.postType;
     retVal.lineID = DisqusLog._id;
+    var userAuth = await this.utilsService.getUsertname(DisqusLog.sender.toString());
+    retVal.username = userAuth;
     retVal.sender = DisqusLog.sender;
     retVal.receiver = DisqusLog.receiver;
     retVal.active = DisqusLog.active;
