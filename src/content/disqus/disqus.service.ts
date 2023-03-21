@@ -1027,7 +1027,8 @@ export class DisqusService {
                 {
                     $project: {
                         "_id": 1,
-                        "isIdVerified": { $arrayElemAt: ["$user. isIdVerified", 0] },
+                        "isIdVerified": { $arrayElemAt: ["$user.isIdVerified", 0] },
+                        "user": 1,
                         "disqusID": 1,
                         "postID": 1,
                         "email": 1,
