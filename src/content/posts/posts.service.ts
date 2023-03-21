@@ -214,6 +214,18 @@ export class PostsService {
     );
   }
 
+  async updateBoostCount(id: string, countBoost: number) {
+    let data = await this.PostsModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "boostCount": countBoost,
+        },
+
+      });
+    return data;
+  }
+
+
   async updateReaction(email: string, postID: string) {
     this.PostsModel.updateOne(
       {
@@ -39890,62 +39902,62 @@ export class PostsService {
           },
 
         },
-        {
-          "$lookup": {
-            from: "contentevents",
-            as: "follower",
-            let: {
-              localID: '$email',
-              user: email
-            },
-            pipeline: [
-              {
-                $match:
-                {
-                  $and: [
-                    {
-                      $expr: {
-                        $eq: ['$receiverParty', '$$localID']
-                      }
-                    },
-                    {
-                      "email": email
-                    },
-                    {
-                      "eventType": "FOLLOWER",
+        // {
+        //   "$lookup": {
+        //     from: "contentevents",
+        //     as: "follower",
+        //     let: {
+        //       localID: '$email',
+        //       user: email
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match:
+        //         {
+        //           $and: [
+        //             {
+        //               $expr: {
+        //                 $eq: ['$receiverParty', '$$localID']
+        //               }
+        //             },
+        //             {
+        //               "email": email
+        //             },
+        //             {
+        //               "eventType": "FOLLOWER",
 
-                    },
-                    {
-                      "event": "ACCEPT"
-                    },
-                    {
-                      "active": true
-                    },
+        //             },
+        //             {
+        //               "event": "ACCEPT"
+        //             },
+        //             {
+        //               "active": true
+        //             },
 
-                  ]
-                }
-              },
-              {
-                $project: {
-                  follower:
-                  {
-                    $cond: {
-                      if: {
-                        $gt: [{
-                          $strLenCP: "$email"
-                        }, 0]
-                      },
-                      then: 1,
-                      else: 0
-                    }
-                  },
+        //           ]
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           follower:
+        //           {
+        //             $cond: {
+        //               if: {
+        //                 $gt: [{
+        //                   $strLenCP: "$email"
+        //                 }, 0]
+        //               },
+        //               then: 1,
+        //               else: 0
+        //             }
+        //           },
 
-                }
-              }
-            ]
-          },
+        //         }
+        //       }
+        //     ]
+        //   },
 
-        },
+        // },
         {
           "$lookup": {
             from: "contentevents",
@@ -40324,97 +40336,97 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-        {
-          "$lookup": {
-            from: "contentevents",
-            as: "isLike",
-            let: {
-              picts: '$postID',
+        // {
+        //   "$lookup": {
+        //     from: "contentevents",
+        //     as: "isLike",
+        //     let: {
+        //       picts: '$postID',
 
-            },
-            pipeline: [
-              {
-                $match:
-                {
-                  $or: [
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$postID', '$$picts']
-                          }
-                        },
-                        {
-                          "senderParty": email,
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match:
+        //         {
+        //           $or: [
+        //             {
+        //               $and: [
+        //                 {
+        //                   $expr: {
+        //                     $eq: ['$postID', '$$picts']
+        //                   }
+        //                 },
+        //                 {
+        //                   "senderParty": email,
 
-                        },
-                        {
-                          "event": "DONE"
-                        },
-                        {
-                          "eventType": "LIKE"
-                        },
-                        {
-                          "active": true
-                        },
+        //                 },
+        //                 {
+        //                   "event": "DONE"
+        //                 },
+        //                 {
+        //                   "eventType": "LIKE"
+        //                 },
+        //                 {
+        //                   "active": true
+        //                 },
 
-                      ]
-                    },
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$postID', '$$picts']
-                          }
-                        },
-                        {
-                          "event": "DONE"
-                        },
-                        {
-                          "email": email,
+        //               ]
+        //             },
+        //             {
+        //               $and: [
+        //                 {
+        //                   $expr: {
+        //                     $eq: ['$postID', '$$picts']
+        //                   }
+        //                 },
+        //                 {
+        //                   "event": "DONE"
+        //                 },
+        //                 {
+        //                   "email": email,
 
-                        },
-                        {
-                          "eventType": "LIKE"
-                        },
-                        {
-                          "active": true
-                        },
+        //                 },
+        //                 {
+        //                   "eventType": "LIKE"
+        //                 },
+        //                 {
+        //                   "active": true
+        //                 },
 
-                      ]
-                    },
+        //               ]
+        //             },
 
-                  ]
-                }
-              },
-              {
-                $set: {
-                  kancut: {
-                    $ifNull: ["email", "kosong"]
-                  }
-                }
-              },
-              {
-                $project: {
-                  "email": 1,
-                  "postID": 1,
-                  isLiked:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: ["$kancut", "kosong"]
-                      },
-                      then: false,
-                      else: true
-                    }
-                  },
+        //           ]
+        //         }
+        //       },
+        //       {
+        //         $set: {
+        //           kancut: {
+        //             $ifNull: ["email", "kosong"]
+        //           }
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           "email": 1,
+        //           "postID": 1,
+        //           isLiked:
+        //           {
+        //             $cond: {
+        //               if: {
+        //                 $eq: ["$kancut", "kosong"]
+        //               },
+        //               then: false,
+        //               else: true
+        //             }
+        //           },
 
-                }
-              }
-            ],
+        //         }
+        //       }
+        //     ],
 
-          }
-        },
+        //   }
+        // },
         {
           "$lookup": {
             from: "disquslogs",
@@ -40496,11 +40508,11 @@ export class PostsService {
                 $arrayElemAt: ["$friend.friend", 0]
               }, 0]
             },
-            "follower": {
-              $ifNull: [{
-                $arrayElemAt: ["$follower.follower", 0]
-              }, 0]
-            },
+            // "follower": {
+            //   $ifNull: [{
+            //     $arrayElemAt: ["$follower.follower", 0]
+            //   }, 0]
+            // },
             "following": {
               $ifNull: [{
                 $arrayElemAt: ["$following.following", 0]
@@ -40629,7 +40641,7 @@ export class PostsService {
               $size: "$interest"
             },
             "friend": 1,
-            "follower": 1,
+            // "follower": 1,
             "following": 1,
             "musicTitle": 1,
             "postID": 1,
@@ -41186,62 +41198,62 @@ export class PostsService {
           },
 
         },
-        {
-          "$lookup": {
-            from: "contentevents",
-            as: "follower",
-            let: {
-              localID: '$email',
-              user: email
-            },
-            pipeline: [
-              {
-                $match:
-                {
-                  $and: [
-                    {
-                      $expr: {
-                        $eq: ['$receiverParty', '$$localID']
-                      }
-                    },
-                    {
-                      "email": email
-                    },
-                    {
-                      "eventType": "FOLLOWER",
+        // {
+        //   "$lookup": {
+        //     from: "contentevents",
+        //     as: "follower",
+        //     let: {
+        //       localID: '$email',
+        //       user: email
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match:
+        //         {
+        //           $and: [
+        //             {
+        //               $expr: {
+        //                 $eq: ['$receiverParty', '$$localID']
+        //               }
+        //             },
+        //             {
+        //               "email": email
+        //             },
+        //             {
+        //               "eventType": "FOLLOWER",
 
-                    },
-                    {
-                      "event": "ACCEPT"
-                    },
-                    {
-                      "active": true
-                    },
+        //             },
+        //             {
+        //               "event": "ACCEPT"
+        //             },
+        //             {
+        //               "active": true
+        //             },
 
-                  ]
-                }
-              },
-              {
-                $project: {
-                  follower:
-                  {
-                    $cond: {
-                      if: {
-                        $gt: [{
-                          $strLenCP: "$email"
-                        }, 0]
-                      },
-                      then: 1,
-                      else: 0
-                    }
-                  },
+        //           ]
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           follower:
+        //           {
+        //             $cond: {
+        //               if: {
+        //                 $gt: [{
+        //                   $strLenCP: "$email"
+        //                 }, 0]
+        //               },
+        //               then: 1,
+        //               else: 0
+        //             }
+        //           },
 
-                }
-              }
-            ]
-          },
+        //         }
+        //       }
+        //     ]
+        //   },
 
-        },
+        // },
         {
           "$lookup": {
             from: "contentevents",
@@ -41619,97 +41631,97 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-        {
-          "$lookup": {
-            from: "contentevents",
-            as: "isLike",
-            let: {
-              picts: '$postID',
+        // {
+        //   "$lookup": {
+        //     from: "contentevents",
+        //     as: "isLike",
+        //     let: {
+        //       picts: '$postID',
 
-            },
-            pipeline: [
-              {
-                $match:
-                {
-                  $or: [
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$postID', '$$picts']
-                          }
-                        },
-                        {
-                          "senderParty": email,
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match:
+        //         {
+        //           $or: [
+        //             {
+        //               $and: [
+        //                 {
+        //                   $expr: {
+        //                     $eq: ['$postID', '$$picts']
+        //                   }
+        //                 },
+        //                 {
+        //                   "senderParty": email,
 
-                        },
-                        {
-                          "event": "DONE"
-                        },
-                        {
-                          "eventType": "LIKE"
-                        },
-                        {
-                          "active": true
-                        },
+        //                 },
+        //                 {
+        //                   "event": "DONE"
+        //                 },
+        //                 {
+        //                   "eventType": "LIKE"
+        //                 },
+        //                 {
+        //                   "active": true
+        //                 },
 
-                      ]
-                    },
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$postID', '$$picts']
-                          }
-                        },
-                        {
-                          "event": "DONE"
-                        },
-                        {
-                          "email": email,
+        //               ]
+        //             },
+        //             {
+        //               $and: [
+        //                 {
+        //                   $expr: {
+        //                     $eq: ['$postID', '$$picts']
+        //                   }
+        //                 },
+        //                 {
+        //                   "event": "DONE"
+        //                 },
+        //                 {
+        //                   "email": email,
 
-                        },
-                        {
-                          "eventType": "LIKE"
-                        },
-                        {
-                          "active": true
-                        },
+        //                 },
+        //                 {
+        //                   "eventType": "LIKE"
+        //                 },
+        //                 {
+        //                   "active": true
+        //                 },
 
-                      ]
-                    },
+        //               ]
+        //             },
 
-                  ]
-                }
-              },
-              {
-                $set: {
-                  kancut: {
-                    $ifNull: ["email", "kosong"]
-                  }
-                }
-              },
-              {
-                $project: {
-                  "email": 1,
-                  "postID": 1,
-                  isLiked:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: ["$kancut", "kosong"]
-                      },
-                      then: false,
-                      else: true
-                    }
-                  },
+        //           ]
+        //         }
+        //       },
+        //       {
+        //         $set: {
+        //           kancut: {
+        //             $ifNull: ["email", "kosong"]
+        //           }
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           "email": 1,
+        //           "postID": 1,
+        //           isLiked:
+        //           {
+        //             $cond: {
+        //               if: {
+        //                 $eq: ["$kancut", "kosong"]
+        //               },
+        //               then: false,
+        //               else: true
+        //             }
+        //           },
 
-                }
-              }
-            ],
+        //         }
+        //       }
+        //     ],
 
-          }
-        },
+        //   }
+        // },
         {
           "$lookup": {
             from: "disquslogs",
@@ -41791,11 +41803,11 @@ export class PostsService {
                 $arrayElemAt: ["$friend.friend", 0]
               }, 0]
             },
-            "follower": {
-              $ifNull: [{
-                $arrayElemAt: ["$follower.follower", 0]
-              }, 0]
-            },
+            // "follower": {
+            //   $ifNull: [{
+            //     $arrayElemAt: ["$follower.follower", 0]
+            //   }, 0]
+            // },
             "following": {
               $ifNull: [{
                 $arrayElemAt: ["$following.following", 0]
@@ -41922,7 +41934,7 @@ export class PostsService {
               $size: "$interest"
             },
             "friend": 1,
-            "follower": 1,
+            // "follower": 1,
             "following": 1,
             "musicTitle": 1,
             "postID": 1,
@@ -42477,62 +42489,62 @@ export class PostsService {
           },
 
         },
-        {
-          "$lookup": {
-            from: "contentevents",
-            as: "follower",
-            let: {
-              localID: '$email',
-              user: email
-            },
-            pipeline: [
-              {
-                $match:
-                {
-                  $and: [
-                    {
-                      $expr: {
-                        $eq: ['$receiverParty', '$$localID']
-                      }
-                    },
-                    {
-                      "email": email
-                    },
-                    {
-                      "eventType": "FOLLOWER",
+        // {
+        //   "$lookup": {
+        //     from: "contentevents",
+        //     as: "follower",
+        //     let: {
+        //       localID: '$email',
+        //       user: email
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match:
+        //         {
+        //           $and: [
+        //             {
+        //               $expr: {
+        //                 $eq: ['$receiverParty', '$$localID']
+        //               }
+        //             },
+        //             {
+        //               "email": email
+        //             },
+        //             {
+        //               "eventType": "FOLLOWER",
 
-                    },
-                    {
-                      "event": "ACCEPT"
-                    },
-                    {
-                      "active": true
-                    },
+        //             },
+        //             {
+        //               "event": "ACCEPT"
+        //             },
+        //             {
+        //               "active": true
+        //             },
 
-                  ]
-                }
-              },
-              {
-                $project: {
-                  follower:
-                  {
-                    $cond: {
-                      if: {
-                        $gt: [{
-                          $strLenCP: "$email"
-                        }, 0]
-                      },
-                      then: 1,
-                      else: 0
-                    }
-                  },
+        //           ]
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           follower:
+        //           {
+        //             $cond: {
+        //               if: {
+        //                 $gt: [{
+        //                   $strLenCP: "$email"
+        //                 }, 0]
+        //               },
+        //               then: 1,
+        //               else: 0
+        //             }
+        //           },
 
-                }
-              }
-            ]
-          },
+        //         }
+        //       }
+        //     ]
+        //   },
 
-        },
+        // },
         {
           "$lookup": {
             from: "contentevents",
@@ -42910,96 +42922,96 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-        {
-          "$lookup": {
-            from: "contentevents",
-            as: "isLike",
-            let: {
-              picts: '$postID',
+        // {
+        //   "$lookup": {
+        //     from: "contentevents",
+        //     as: "isLike",
+        //     let: {
+        //       picts: '$postID',
 
-            },
-            pipeline: [
-              {
-                $match:
-                {
-                  $or: [
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$postID', '$$picts']
-                          }
-                        },
-                        {
-                          "senderParty": email,
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match:
+        //         {
+        //           $or: [
+        //             {
+        //               $and: [
+        //                 {
+        //                   $expr: {
+        //                     $eq: ['$postID', '$$picts']
+        //                   }
+        //                 },
+        //                 {
+        //                   "senderParty": email,
 
-                        },
-                        {
-                          "event": "DONE"
-                        },
-                        {
-                          "eventType": "LIKE"
-                        },
-                        {
-                          "active": true
-                        },
+        //                 },
+        //                 {
+        //                   "event": "DONE"
+        //                 },
+        //                 {
+        //                   "eventType": "LIKE"
+        //                 },
+        //                 {
+        //                   "active": true
+        //                 },
 
-                      ]
-                    },
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$postID', '$$picts']
-                          }
-                        },
-                        {
-                          "event": "DONE"
-                        },
-                        {
-                          "email": email,
+        //               ]
+        //             },
+        //             {
+        //               $and: [
+        //                 {
+        //                   $expr: {
+        //                     $eq: ['$postID', '$$picts']
+        //                   }
+        //                 },
+        //                 {
+        //                   "event": "DONE"
+        //                 },
+        //                 {
+        //                   "email": email,
 
-                        },
-                        {
-                          "eventType": "LIKE"
-                        },
-                        {
-                          "active": true
-                        },
+        //                 },
+        //                 {
+        //                   "eventType": "LIKE"
+        //                 },
+        //                 {
+        //                   "active": true
+        //                 },
 
-                      ]
-                    },
-                  ]
-                }
-              },
-              {
-                $set: {
-                  kancut: {
-                    $ifNull: ["email", "kosong"]
-                  }
-                }
-              },
-              {
-                $project: {
-                  "email": 1,
-                  "postID": 1,
-                  isLiked:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: ["$kancut", "kosong"]
-                      },
-                      then: false,
-                      else: true
-                    }
-                  },
+        //               ]
+        //             },
+        //           ]
+        //         }
+        //       },
+        //       {
+        //         $set: {
+        //           kancut: {
+        //             $ifNull: ["email", "kosong"]
+        //           }
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           "email": 1,
+        //           "postID": 1,
+        //           isLiked:
+        //           {
+        //             $cond: {
+        //               if: {
+        //                 $eq: ["$kancut", "kosong"]
+        //               },
+        //               then: false,
+        //               else: true
+        //             }
+        //           },
 
-                }
-              }
-            ],
+        //         }
+        //       }
+        //     ],
 
-          }
-        },
+        //   }
+        // },
         {
           "$lookup": {
             from: "disquslogs",
@@ -43086,11 +43098,11 @@ export class PostsService {
                 $arrayElemAt: ["$follower.follower", 0]
               }, 0]
             },
-            "following": {
-              $ifNull: [{
-                $arrayElemAt: ["$following.following", 0]
-              }, false]
-            },
+            // "following": {
+            //   $ifNull: [{
+            //     $arrayElemAt: ["$following.following", 0]
+            //   }, false]
+            // },
             "musicTitle": "$music.musicTitle",
             "postID": 1,
             "artistName": "$music.artistName",
@@ -43212,7 +43224,7 @@ export class PostsService {
               $size: "$interest"
             },
             "friend": 1,
-            "follower": 1,
+            // "follower": 1,
             "following": 1,
             "musicTitle": 1,
             "postID": 1,

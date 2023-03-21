@@ -3405,6 +3405,7 @@ export class GetusercontentsController {
                             if (boosted[0] != undefined) {
                                 boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
                                 boosted = boosted;
+                                await this.postsService.updateBoostCount(data[i].postID, boostCount + 1);
                             } else {
                                 boostCount = 0;
                                 boosted = [];
@@ -3417,7 +3418,7 @@ export class GetusercontentsController {
                         boostCount = 0;
                         boosted = [];
                     }
-                    await this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
+                    this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
 
                     // if(boosted !==null || boosted.length>0){
 
@@ -3467,6 +3468,8 @@ export class GetusercontentsController {
                             if (boosted[0] != undefined) {
                                 boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
                                 boosted = boosted;
+
+                                await this.postsService.updateBoostCount(data[i].postID, boostCount + 1);
                             } else {
                                 boostCount = 0;
                                 boosted = [];
@@ -3479,7 +3482,7 @@ export class GetusercontentsController {
                         boostCount = 0;
                         boosted = [];
                     }
-                    await this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
+                    this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
 
 
                     picts.push(data[i]);
