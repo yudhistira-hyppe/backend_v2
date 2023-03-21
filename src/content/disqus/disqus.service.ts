@@ -653,12 +653,6 @@ export class DisqusService {
 
                             },
                             {
-                                $sort: {
-                                    "sequenceNumber": 1,
-                                    "updateAt": -1
-                                }
-                            },
-                            {
                                 "$lookup": {
                                     from: "disquslogs",
                                     as: "detailDisquss",
@@ -693,8 +687,7 @@ export class DisqusService {
                                         },
                                         {
                                             $sort: {
-                                                "sequenceNumber": 1,
-                                                "updateAt": -1
+                                                "updateAt": 1
                                             }
                                         },
                                         {
@@ -830,10 +823,9 @@ export class DisqusService {
                                         },
                                         {
                                             $sort: {
-                                                "sequenceNumber": 1,
-                                                "updateAt": -1
+                                                updatedAt: 1
                                             }
-                                        },
+                                        }
                                     ],
 
                                 },
@@ -858,12 +850,6 @@ export class DisqusService {
                                                     },
 
                                                 ]
-                                            }
-                                        },
-                                        {
-                                            $sort: {
-                                                "sequenceNumber": 1,
-                                                "updateAt": -1
                                             }
                                         },
 
@@ -957,11 +943,9 @@ export class DisqusService {
                             },
                             {
                                 $limit: row
-                            },
-                            {
+                            }, {
                                 $sort: {
-                                    "sequenceNumber": 1,
-                                    "updateAt": -1
+                                    updatedAt: -1
                                 }
                             },
                             {
@@ -995,6 +979,7 @@ export class DisqusService {
 
                     },
 
+
                 },
                 {
                     "$lookup": {
@@ -1024,13 +1009,7 @@ export class DisqusService {
 
                                     ]
                                 }
-                            },
-                            {
-                                $sort: {
-                                    "sequenceNumber": 1,
-                                    "updateAt": -1
-                                }
-                            },
+                            }
                         ]
                     },
 
@@ -1053,12 +1032,6 @@ export class DisqusService {
 
                     }
                 },
-                // {
-                //     $sort: {
-                //         "sequenceNumber": 1,
-                //         "updateAt": -1
-                //     }
-                // },
             ]
         )
     }
