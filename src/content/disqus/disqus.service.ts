@@ -1036,7 +1036,7 @@ export class DisqusService {
                 {
                     $sort: {
                         sequenceNumber: 1,
-                        updatedAt: 1
+                        updatedAt: -1
                     }
                 }
             ]
