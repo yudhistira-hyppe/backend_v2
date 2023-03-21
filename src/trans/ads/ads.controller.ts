@@ -887,7 +887,7 @@ export class AdsController {
         }
 
         var getdatabase = await this.adsService.getAdsanalyticsgraph(startdate, enddate);
-
+        
         var getdata = [];
         var total = 0;
         try {
