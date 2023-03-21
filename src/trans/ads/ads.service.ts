@@ -25016,7 +25016,7 @@ export class AdsService {
                                 0
                             ]
                     },
-                    tempstatus: "$status"
+                    // tempstatus: "$status"
                 }
             },);
 
@@ -25041,49 +25041,48 @@ export class AdsService {
 
         //filter by status
         if (statuslist != undefined) {
-            let checklist = statuslist.includes('NONACTIVE');
-
-            if(checklist == true)
-            {
-                var templiststatus = [];
-                statuslist.forEach((e) => {
-                    if(e != 'NONACTIVE')
+            var templiststatus = [];
+            var listkriteria = [];
+            statuslist.forEach((e) => {
+                if(e != 'NONACTIVE' && e != 'APPROVE')
+                {
+                    templiststatus.push(e);
+                }
+                else
+                {
+                    if(e == 'APPROVE')
                     {
-                        templiststatus.push(e);
+                        listkriteria.push({
+                            status:"APPROVE",
+                            isActive:true
+                        });
                     }
-                });
-
-                pipeline.push({
-                    "$match":
+                    else if(e == 'NONACTIVE')
                     {
-                        "$or":
-                        [
-                            {
-                                status:"APPROVE",
-                                isActive:false
-                            },
-                            {
-                                status:
-                                {
-                                    "$in": templiststatus
-                                }
-                            },
-                        ]
+                        listkriteria.push({
+                            status:"APPROVE",
+                            isActive:false
+                        });
+                    }
+                }
+            });
+
+            if(templiststatus.length != 0)
+            {
+                listkriteria.push({
+                    status:
+                    {
+                        "$in": templiststatus
                     }
                 });
             }
-            else
-            {
-                pipeline.push({
-                    "$match":
-                    {
-                        status:
-                        {
-                            "$in": statuslist
-                        }
-                    }
-                });
-            }
+
+            pipeline.push({
+                "$match":
+                {
+                    "$or":listkriteria
+                }
+            });
         }
 
         //filter by totalUsedCredit range 
@@ -25130,7 +25129,7 @@ export class AdsService {
             });
         }
 
-        //console.log(JSON.stringify(pipeline));
+        // console.log(JSON.stringify(pipeline));
 
         var query = await this.adsModel.aggregate(pipeline);
 
