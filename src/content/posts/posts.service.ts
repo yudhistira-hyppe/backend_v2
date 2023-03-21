@@ -40336,97 +40336,67 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-        // {
-        //   "$lookup": {
-        //     from: "contentevents",
-        //     as: "isLike",
-        //     let: {
-        //       picts: '$postID',
+        {
+          "$lookup": {
+            from: "contentevents",
+            as: "isLike",
+            let: {
+              picts: '$postID',
 
-        //     },
-        //     pipeline: [
-        //       {
-        //         $match:
-        //         {
-        //           $or: [
-        //             {
-        //               $and: [
-        //                 {
-        //                   $expr: {
-        //                     $eq: ['$postID', '$$picts']
-        //                   }
-        //                 },
-        //                 {
-        //                   "senderParty": email,
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$postID', '$$picts']
+                      }
+                    },
+                    {
+                      "eventType": "LIKE"
+                    },
+                    {
+                      "event": "DONE"
+                    },
+                    {
+                      "active": true
+                    },
+                    {
+                      "email": email,
+                    },
+                  ]
+                },
+              },
+              {
+                $set: {
+                  kancut: {
+                    $ifNull: ["email", "kosong"]
+                  }
+                }
+              },
+              {
+                $project: {
+                  "email": 1,
+                  "postID": 1,
+                  isLiked:
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$kancut", "kosong"]
+                      },
+                      then: false,
+                      else: true
+                    }
+                  },
 
-        //                 },
-        //                 {
-        //                   "event": "DONE"
-        //                 },
-        //                 {
-        //                   "eventType": "LIKE"
-        //                 },
-        //                 {
-        //                   "active": true
-        //                 },
+                }
+              }
+            ],
 
-        //               ]
-        //             },
-        //             {
-        //               $and: [
-        //                 {
-        //                   $expr: {
-        //                     $eq: ['$postID', '$$picts']
-        //                   }
-        //                 },
-        //                 {
-        //                   "event": "DONE"
-        //                 },
-        //                 {
-        //                   "email": email,
-
-        //                 },
-        //                 {
-        //                   "eventType": "LIKE"
-        //                 },
-        //                 {
-        //                   "active": true
-        //                 },
-
-        //               ]
-        //             },
-
-        //           ]
-        //         }
-        //       },
-        //       {
-        //         $set: {
-        //           kancut: {
-        //             $ifNull: ["email", "kosong"]
-        //           }
-        //         }
-        //       },
-        //       {
-        //         $project: {
-        //           "email": 1,
-        //           "postID": 1,
-        //           isLiked:
-        //           {
-        //             $cond: {
-        //               if: {
-        //                 $eq: ["$kancut", "kosong"]
-        //               },
-        //               then: false,
-        //               else: true
-        //             }
-        //           },
-
-        //         }
-        //       }
-        //     ],
-
-        //   }
-        // },
+          }
+        },
         {
           "$lookup": {
             from: "disquslogs",
@@ -41631,97 +41601,67 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-        // {
-        //   "$lookup": {
-        //     from: "contentevents",
-        //     as: "isLike",
-        //     let: {
-        //       picts: '$postID',
+        {
+          "$lookup": {
+            from: "contentevents",
+            as: "isLike",
+            let: {
+              picts: '$postID',
 
-        //     },
-        //     pipeline: [
-        //       {
-        //         $match:
-        //         {
-        //           $or: [
-        //             {
-        //               $and: [
-        //                 {
-        //                   $expr: {
-        //                     $eq: ['$postID', '$$picts']
-        //                   }
-        //                 },
-        //                 {
-        //                   "senderParty": email,
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$postID', '$$picts']
+                      }
+                    },
+                    {
+                      "eventType": "LIKE"
+                    },
+                    {
+                      "event": "DONE"
+                    },
+                    {
+                      "active": true
+                    },
+                    {
+                      "email": email,
+                    },
+                  ]
+                },
+              },
+              {
+                $set: {
+                  kancut: {
+                    $ifNull: ["email", "kosong"]
+                  }
+                }
+              },
+              {
+                $project: {
+                  "email": 1,
+                  "postID": 1,
+                  isLiked:
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$kancut", "kosong"]
+                      },
+                      then: false,
+                      else: true
+                    }
+                  },
 
-        //                 },
-        //                 {
-        //                   "event": "DONE"
-        //                 },
-        //                 {
-        //                   "eventType": "LIKE"
-        //                 },
-        //                 {
-        //                   "active": true
-        //                 },
+                }
+              }
+            ],
 
-        //               ]
-        //             },
-        //             {
-        //               $and: [
-        //                 {
-        //                   $expr: {
-        //                     $eq: ['$postID', '$$picts']
-        //                   }
-        //                 },
-        //                 {
-        //                   "event": "DONE"
-        //                 },
-        //                 {
-        //                   "email": email,
-
-        //                 },
-        //                 {
-        //                   "eventType": "LIKE"
-        //                 },
-        //                 {
-        //                   "active": true
-        //                 },
-
-        //               ]
-        //             },
-
-        //           ]
-        //         }
-        //       },
-        //       {
-        //         $set: {
-        //           kancut: {
-        //             $ifNull: ["email", "kosong"]
-        //           }
-        //         }
-        //       },
-        //       {
-        //         $project: {
-        //           "email": 1,
-        //           "postID": 1,
-        //           isLiked:
-        //           {
-        //             $cond: {
-        //               if: {
-        //                 $eq: ["$kancut", "kosong"]
-        //               },
-        //               then: false,
-        //               else: true
-        //             }
-        //           },
-
-        //         }
-        //       }
-        //     ],
-
-        //   }
-        // },
+          }
+        },
         {
           "$lookup": {
             from: "disquslogs",
@@ -42922,96 +42862,67 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-        // {
-        //   "$lookup": {
-        //     from: "contentevents",
-        //     as: "isLike",
-        //     let: {
-        //       picts: '$postID',
+        {
+          "$lookup": {
+            from: "contentevents",
+            as: "isLike",
+            let: {
+              picts: '$postID',
 
-        //     },
-        //     pipeline: [
-        //       {
-        //         $match:
-        //         {
-        //           $or: [
-        //             {
-        //               $and: [
-        //                 {
-        //                   $expr: {
-        //                     $eq: ['$postID', '$$picts']
-        //                   }
-        //                 },
-        //                 {
-        //                   "senderParty": email,
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$postID', '$$picts']
+                      }
+                    },
+                    {
+                      "eventType": "LIKE"
+                    },
+                    {
+                      "event": "DONE"
+                    },
+                    {
+                      "active": true
+                    },
+                    {
+                      "email": email,
+                    },
+                  ]
+                },
+              },
+              {
+                $set: {
+                  kancut: {
+                    $ifNull: ["email", "kosong"]
+                  }
+                }
+              },
+              {
+                $project: {
+                  "email": 1,
+                  "postID": 1,
+                  isLiked:
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$kancut", "kosong"]
+                      },
+                      then: false,
+                      else: true
+                    }
+                  },
 
-        //                 },
-        //                 {
-        //                   "event": "DONE"
-        //                 },
-        //                 {
-        //                   "eventType": "LIKE"
-        //                 },
-        //                 {
-        //                   "active": true
-        //                 },
+                }
+              }
+            ],
 
-        //               ]
-        //             },
-        //             {
-        //               $and: [
-        //                 {
-        //                   $expr: {
-        //                     $eq: ['$postID', '$$picts']
-        //                   }
-        //                 },
-        //                 {
-        //                   "event": "DONE"
-        //                 },
-        //                 {
-        //                   "email": email,
-
-        //                 },
-        //                 {
-        //                   "eventType": "LIKE"
-        //                 },
-        //                 {
-        //                   "active": true
-        //                 },
-
-        //               ]
-        //             },
-        //           ]
-        //         }
-        //       },
-        //       {
-        //         $set: {
-        //           kancut: {
-        //             $ifNull: ["email", "kosong"]
-        //           }
-        //         }
-        //       },
-        //       {
-        //         $project: {
-        //           "email": 1,
-        //           "postID": 1,
-        //           isLiked:
-        //           {
-        //             $cond: {
-        //               if: {
-        //                 $eq: ["$kancut", "kosong"]
-        //               },
-        //               then: false,
-        //               else: true
-        //             }
-        //           },
-
-        //         }
-        //       }
-        //     ],
-
-        //   }
-        // },
+          }
+        },
         {
           "$lookup": {
             from: "disquslogs",
@@ -43321,6 +43232,105 @@ export class PostsService {
     return query;
   }
 
+  async eventLike(email: string, postid: string) {
+    var query = await this.PostsModel.aggregate([
+      {
+        $match: { postID: postid }
+      },
+      {
+        "$lookup": {
+          from: "contentevents",
+          as: "isLike",
+          let: {
+            picts: '$postID',
+
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $or: [
+                  {
+                    $and: [
+                      {
+                        $expr: {
+                          $eq: ['$postID', '$$picts']
+                        }
+                      },
+                      {
+                        "senderParty": email,
+
+                      },
+                      {
+                        "event": "DONE"
+                      },
+                      {
+                        "eventType": "LIKE"
+                      },
+                      {
+                        "active": true
+                      },
+
+                    ]
+                  },
+                  {
+                    $and: [
+                      {
+                        $expr: {
+                          $eq: ['$postID', '$$picts']
+                        }
+                      },
+                      {
+                        "event": "DONE"
+                      },
+                      {
+                        "email": email,
+
+                      },
+                      {
+                        "eventType": "LIKE"
+                      },
+                      {
+                        "active": true
+                      },
+
+                    ]
+                  },
+
+                ]
+              }
+            },
+            {
+              $set: {
+                kancut: {
+                  $ifNull: ["email", "kosong"]
+                }
+              }
+            },
+            {
+              $project: {
+                "email": 1,
+                "postID": 1,
+                isLiked:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ["$kancut", "kosong"]
+                    },
+                    then: false,
+                    else: true
+                  }
+                },
+
+              }
+            }
+          ],
+
+        }
+      },
+    ]);
+    return query;
+  }
 }
 
 

@@ -3368,6 +3368,8 @@ export class GetusercontentsController {
                     boostCount = data[i].boostCount;
                     var checkpictketemu = false;
                     uploadSource = data[i].uploadSource;
+
+
                     if (uploadSource == "OSS") {
                         data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
 
@@ -3420,9 +3422,6 @@ export class GetusercontentsController {
                     }
                     this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
 
-                    // if(boosted !==null || boosted.length>0){
-
-                    // }
                     picts.push(data[i]);
                 }
 
