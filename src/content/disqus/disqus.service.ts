@@ -654,7 +654,7 @@ export class DisqusService {
                             },
                             {
                                 $sort: {
-                                    "updateAt": -1
+                                    "createdAt": 1
                                 }
                             },
                             {
@@ -692,7 +692,7 @@ export class DisqusService {
                                         },
                                         {
                                             $sort: {
-                                                "updateAt": -1
+                                                "updateAt": 1
                                             }
                                         },
                                         {
@@ -1036,7 +1036,7 @@ export class DisqusService {
                 {
                     $sort: {
                         sequenceNumber: 1,
-                        updatedAt: 1
+                        updatedAt: -1
                     }
                 }
             ]
