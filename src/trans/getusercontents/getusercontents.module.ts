@@ -25,6 +25,7 @@ import { GetuserprofilesModule } from '../getuserprofiles/getuserprofiles.module
 import { ContenteventsModule } from '../../content/contentevents/contentevents.module';
 import { TagCountModule } from '../../content/tag_count/tag_count.module';
 import { InterestCountModule } from '../../content/interest_count/interest_count.module';
+
 @Module({
 
     imports: [

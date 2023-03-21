@@ -39488,6 +39488,54 @@ export class PostsService {
         },
         {
           $set: {
+            lastTime: {
+              "$concat": [
+                {
+                  "$dateToString": {
+                    "format": "%Y-%m-%d",
+                    "date": new Date()
+                  }
+                },
+                " 08:00:00"
+              ]
+            }
+          }
+        },
+        {
+          $set: {
+            timeEnd:
+            {
+              $cond: {
+                if: {
+                  $lt: ["$timeEnd", "$lastTime"]
+                },
+                then: {
+                  "$concat": [
+                    {
+                      "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date":
+                        {
+                          $dateAdd:
+                          {
+                            startDate: new Date(),
+                            unit: "day",
+                            amount: 1
+                          }
+                        }
+                      }
+                    },
+                    " ",
+                    "$boosted.boostSession.timeEnd"
+                  ]
+                },
+                else: "$timeEnd"
+              }
+            },
+          },
+        },
+        {
+          $set: {
 
             "testDate":
             {
@@ -39985,7 +40033,8 @@ export class PostsService {
                   },
                   "mediaThumbUri": "$mediaThumb",
                   "mediaType": 1,
-
+                  "uploadSource": 1,
+                  "mediaThumUri": 1
                 }
               }
             ],
@@ -40296,6 +40345,32 @@ export class PostsService {
                           }
                         },
                         {
+                          "senderParty": email,
+
+                        },
+                        {
+                          "event": "DONE"
+                        },
+                        {
+                          "eventType": "LIKE"
+                        },
+                        {
+                          "active": true
+                        },
+
+                      ]
+                    },
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$picts']
+                          }
+                        },
+                        {
+                          "event": "DONE"
+                        },
+                        {
                           "email": email,
 
                         },
@@ -40466,6 +40541,7 @@ export class PostsService {
             "likes": "$likes",
             "views": "$views",
             "shares": "$shares",
+            "uploadSource": "$media.uploadSource",
             "comments": {
               $size: "$countLogs"
             },
@@ -40522,6 +40598,7 @@ export class PostsService {
             "mediaUri": "$media.mediaUri",
             "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
             "mediaThumbUri": "$media.mediaThumbUri",
+            "mediaThumUri": "$media.mediaThumUri",
             "fullName": "$userBasic.fullName",
             "username": "$username.username",
             "avatar": 1,
@@ -40602,6 +40679,7 @@ export class PostsService {
             "isBoost": 1,
             "boostViewer": 1,
             "boostCount": 1,
+            "uploadSource": 1,
             "boosted":
             {
               $cond: {
@@ -40633,6 +40711,7 @@ export class PostsService {
             "avatar": 1,
             "statusCB": 1,
             "privacy": 1,
+            "mediaThumUri": 1,
 
           },
 
@@ -40702,6 +40781,54 @@ export class PostsService {
               ]
             }
           }
+        },
+        {
+          $set: {
+            lastTime: {
+              "$concat": [
+                {
+                  "$dateToString": {
+                    "format": "%Y-%m-%d",
+                    "date": new Date()
+                  }
+                },
+                " 08:00:00"
+              ]
+            }
+          }
+        },
+        {
+          $set: {
+            timeEnd:
+            {
+              $cond: {
+                if: {
+                  $lt: ["$timeEnd", "$lastTime"]
+                },
+                then: {
+                  "$concat": [
+                    {
+                      "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date":
+                        {
+                          $dateAdd:
+                          {
+                            startDate: new Date(),
+                            unit: "day",
+                            amount: 1
+                          }
+                        }
+                      }
+                    },
+                    " ",
+                    "$boosted.boostSession.timeEnd"
+                  ]
+                },
+                else: "$timeEnd"
+              }
+            },
+          },
         },
         {
           $set: {
@@ -41513,6 +41640,32 @@ export class PostsService {
                           }
                         },
                         {
+                          "senderParty": email,
+
+                        },
+                        {
+                          "event": "DONE"
+                        },
+                        {
+                          "eventType": "LIKE"
+                        },
+                        {
+                          "active": true
+                        },
+
+                      ]
+                    },
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$picts']
+                          }
+                        },
+                        {
+                          "event": "DONE"
+                        },
+                        {
                           "email": email,
 
                         },
@@ -41919,6 +42072,54 @@ export class PostsService {
               ]
             }
           }
+        },
+        {
+          $set: {
+            lastTime: {
+              "$concat": [
+                {
+                  "$dateToString": {
+                    "format": "%Y-%m-%d",
+                    "date": new Date()
+                  }
+                },
+                " 08:00:00"
+              ]
+            }
+          }
+        },
+        {
+          $set: {
+            timeEnd:
+            {
+              $cond: {
+                if: {
+                  $lt: ["$timeEnd", "$lastTime"]
+                },
+                then: {
+                  "$concat": [
+                    {
+                      "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date":
+                        {
+                          $dateAdd:
+                          {
+                            startDate: new Date(),
+                            unit: "day",
+                            amount: 1
+                          }
+                        }
+                      }
+                    },
+                    " ",
+                    "$boosted.boostSession.timeEnd"
+                  ]
+                },
+                else: "$timeEnd"
+              }
+            },
+          },
         },
         {
           $set: {
@@ -42730,6 +42931,32 @@ export class PostsService {
                           }
                         },
                         {
+                          "senderParty": email,
+
+                        },
+                        {
+                          "event": "DONE"
+                        },
+                        {
+                          "eventType": "LIKE"
+                        },
+                        {
+                          "active": true
+                        },
+
+                      ]
+                    },
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$picts']
+                          }
+                        },
+                        {
+                          "event": "DONE"
+                        },
+                        {
                           "email": email,
 
                         },
@@ -42742,7 +42969,6 @@ export class PostsService {
 
                       ]
                     },
-
                   ]
                 }
               },
