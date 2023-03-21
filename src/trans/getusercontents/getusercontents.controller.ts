@@ -3344,6 +3344,8 @@ export class GetusercontentsController {
 
         var tempdatapict = [];
         var uploadSource = null;
+        var boosted = null;
+        var boostCount = null;
         // console.log(lengpict);
         if (lengpict > 0) {
             var resultpictapsara = null;
@@ -3362,6 +3364,8 @@ export class GetusercontentsController {
                 let gettempresultpictapsara = resultpictapsara.ImageInfo;
                 for (let i = 0; i < lengpict; i++) {
                     emailreceiver = data[i].email;
+                    boosted = data[i].boosted;
+                    boostCount = data[i].boostCount;
                     var checkpictketemu = false;
                     uploadSource = data[i].uploadSource;
                     if (uploadSource == "OSS") {
@@ -3392,7 +3396,32 @@ export class GetusercontentsController {
                             "ImageInfo": []
                         };
                     }
+
+                    if (boosted !== null || boosted.length > 0) {
+                        console.log("boosted: " + data[i].postID);
+                        this.postsService.updateBoostViewer(data[i].postID, email);
+                        //pd.boostJangkauan = this.countBoosted(obj, email);
+                        if (boosted.length > 0) {
+                            if (boosted[0] != undefined) {
+                                boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
+                                boosted = boosted;
+                            } else {
+                                boostCount = 0;
+                                boosted = [];
+                            }
+                        } else {
+                            boostCount = 0;
+                            boosted = [];
+                        }
+                    } else {
+                        boostCount = 0;
+                        boosted = [];
+                    }
                     await this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
+
+                    // if(boosted !==null || boosted.length>0){
+
+                    // }
                     picts.push(data[i]);
                 }
 
@@ -3407,6 +3436,8 @@ export class GetusercontentsController {
                 let gettempresultpictapsara = resultpictapsara.VideoList;
                 for (let i = 0; i < lengpict; i++) {
                     emailreceiver = data[i].email;
+                    boostCount = data[i].boostCount;
+                    boosted = data[i].boosted;
                     var checkpictketemu = false;
                     for (var j = 0; j < gettempresultpictapsara.length; j++) {
                         if (gettempresultpictapsara[j].VideoId == data[i].apsaraId) {
@@ -3428,7 +3459,26 @@ export class GetusercontentsController {
                             "VideoList": []
                         };
                     }
-
+                    if (boosted !== null || boosted.length > 0) {
+                        console.log("boosted: " + data[i].postID);
+                        this.postsService.updateBoostViewer(data[i].postID, email);
+                        //pd.boostJangkauan = this.countBoosted(obj, email);
+                        if (boosted.length > 0) {
+                            if (boosted[0] != undefined) {
+                                boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
+                                boosted = boosted;
+                            } else {
+                                boostCount = 0;
+                                boosted = [];
+                            }
+                        } else {
+                            boostCount = 0;
+                            boosted = [];
+                        }
+                    } else {
+                        boostCount = 0;
+                        boosted = [];
+                    }
                     await this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
 
 
