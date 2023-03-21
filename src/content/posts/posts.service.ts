@@ -43004,16 +43004,16 @@ export class PostsService {
                 $arrayElemAt: ["$friend.friend", 0]
               }, 0]
             },
-            "follower": {
-              $ifNull: [{
-                $arrayElemAt: ["$follower.follower", 0]
-              }, 0]
-            },
-            // "following": {
+            // "follower": {
             //   $ifNull: [{
-            //     $arrayElemAt: ["$following.following", 0]
-            //   }, false]
+            //     $arrayElemAt: ["$follower.follower", 0]
+            //   }, 0]
             // },
+            "following": {
+              $ifNull: [{
+                $arrayElemAt: ["$following.following", 0]
+              }, false]
+            },
             "musicTitle": "$music.musicTitle",
             "postID": 1,
             "artistName": "$music.artistName",
