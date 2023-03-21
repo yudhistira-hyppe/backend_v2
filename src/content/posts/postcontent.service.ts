@@ -378,7 +378,7 @@ export class PostContentService {
         var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
         if (await this.utilService.ceckData(tp)) {
-          if (tp != undefined) {
+          if (tp.username != undefined) {
             var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
             let em = String(tp.username);
             let bodyi = em + ' Menandai kamu di ';
@@ -433,7 +433,10 @@ export class PostContentService {
               bodyi = bodyi + ' HyppeStory';
               bodye = bodye + ' HyppeStory';
             }
-            this.utilService.sendFcmV2(tp.email.toString(), auth.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString())
+            console.log(tp.email.toString());
+            console.log(postId);
+            console.log(post.postType.toString());
+            this.utilService.sendFcmV2(tp.email.toString(), auth.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", postId, post.postType.toString())
             pcats.push(objintrx);
           }
         }

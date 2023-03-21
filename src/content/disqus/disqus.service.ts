@@ -654,7 +654,8 @@ export class DisqusService {
                             },
                             {
                                 $sort: {
-                                    "createdAt": 1
+                                    "sequenceNumber": 1,
+                                    "updateAt": -1
                                 }
                             },
                             {
@@ -692,7 +693,8 @@ export class DisqusService {
                                         },
                                         {
                                             $sort: {
-                                                "updateAt": 1
+                                                "sequenceNumber": 1,
+                                                "updateAt": -1
                                             }
                                         },
                                         {
@@ -825,7 +827,13 @@ export class DisqusService {
                                                 "active": "$active",
                                                 "updatedAt": "$updatedAt",
                                             }
-                                        }
+                                        },
+                                        {
+                                            $sort: {
+                                                "sequenceNumber": 1,
+                                                "updateAt": -1
+                                            }
+                                        },
                                     ],
 
                                 },
@@ -850,6 +858,12 @@ export class DisqusService {
                                                     },
 
                                                 ]
+                                            }
+                                        },
+                                        {
+                                            $sort: {
+                                                "sequenceNumber": 1,
+                                                "updateAt": -1
                                             }
                                         },
 
@@ -939,10 +953,16 @@ export class DisqusService {
                                 }
                             },
                             {
-                                $skip: 0
+                                $skip: skip
                             },
                             {
-                                $limit: 5
+                                $limit: row
+                            },
+                            {
+                                $sort: {
+                                    "sequenceNumber": 1,
+                                    "updateAt": -1
+                                }
                             },
                             {
                                 $project: {
@@ -1004,7 +1024,13 @@ export class DisqusService {
 
                                     ]
                                 }
-                            }
+                            },
+                            {
+                                $sort: {
+                                    "sequenceNumber": 1,
+                                    "updateAt": -1
+                                }
+                            },
                         ]
                     },
 
@@ -1027,18 +1053,12 @@ export class DisqusService {
 
                     }
                 },
-                {
-                    $skip: skip
-                },
-                {
-                    $limit: row
-                },
-                {
-                    $sort: {
-                        sequenceNumber: 1,
-                        updatedAt: -1
-                    }
-                }
+                // {
+                //     $sort: {
+                //         "sequenceNumber": 1,
+                //         "updateAt": -1
+                //     }
+                // },
             ]
         )
     }
