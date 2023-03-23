@@ -17808,6 +17808,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -17856,7 +17857,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -18555,6 +18556,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -18614,6 +18616,7 @@ export class PostsService {
                     scoreVid: - 1,
                     comments: - 1,
                     likes: - 1,
+                    viewed: -1
 
                   }
                 },
@@ -19308,6 +19311,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -19367,6 +19371,7 @@ export class PostsService {
                     scoreDiary: - 1,
                     comments: - 1,
                     likes: - 1,
+                    viewed: -1
 
                   }
                 },
@@ -20068,6 +20073,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -20128,7 +20134,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -20364,6 +20370,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -20423,7 +20430,7 @@ export class PostsService {
                     scoreVid: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -21126,6 +21133,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -21186,7 +21194,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -21420,6 +21428,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -21479,7 +21488,7 @@ export class PostsService {
                     scoreDiary: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -22177,6 +22186,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -22236,7 +22246,7 @@ export class PostsService {
                     scoreVid: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -22469,6 +22479,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -22528,7 +22539,7 @@ export class PostsService {
                     scoreDiary: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -23230,6 +23241,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -23290,7 +23302,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -23526,6 +23538,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -23585,7 +23598,7 @@ export class PostsService {
                     scoreVid: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -23818,6 +23831,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -23877,7 +23891,7 @@ export class PostsService {
                     scoreDiary: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -24603,6 +24617,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -24662,7 +24677,7 @@ export class PostsService {
                     scoreVid: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -24919,6 +24934,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -24979,7 +24995,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -25230,6 +25246,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -25289,7 +25306,7 @@ export class PostsService {
                     scoreDiary: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -26202,6 +26219,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -26261,7 +26279,7 @@ export class PostsService {
                     scoreDiary: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -26608,6 +26626,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -26667,7 +26686,7 @@ export class PostsService {
                     scoreVid: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -27018,6 +27037,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -27078,7 +27098,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -27429,6 +27449,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -27489,7 +27510,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -27725,6 +27746,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -27784,7 +27806,7 @@ export class PostsService {
                     scoreVid: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -28136,6 +28158,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -28196,7 +28219,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -28432,6 +28455,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -28491,7 +28515,7 @@ export class PostsService {
                     scoreVid: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -28724,6 +28748,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -28783,7 +28808,7 @@ export class PostsService {
                     scoreDiary: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -29135,6 +29160,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -29195,7 +29221,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -29428,6 +29454,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -29487,7 +29514,7 @@ export class PostsService {
                     scoreDiary: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -30272,6 +30299,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -30332,7 +30360,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -31128,6 +31156,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -31188,7 +31217,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -31424,6 +31453,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -31483,7 +31513,7 @@ export class PostsService {
                     scoreVid: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -32276,6 +32306,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -32335,7 +32366,7 @@ export class PostsService {
                     scoreVid: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -32568,6 +32599,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -32627,7 +32659,7 @@ export class PostsService {
                     scoreDiary: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -32991,6 +33023,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -33051,7 +33084,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -33287,6 +33320,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -33346,7 +33380,7 @@ export class PostsService {
                     scoreVid: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -33579,6 +33613,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -33638,7 +33673,7 @@ export class PostsService {
                     scoreDiary: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -34424,6 +34459,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -34484,7 +34520,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -34720,6 +34756,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -34779,7 +34816,7 @@ export class PostsService {
                     scoreVid: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -35012,6 +35049,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -35071,7 +35109,7 @@ export class PostsService {
                     scoreDiary: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -35436,6 +35474,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -35496,7 +35535,7 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -35732,6 +35771,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -35791,7 +35831,7 @@ export class PostsService {
                     scoreVid: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
@@ -36024,6 +36064,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -36083,7 +36124,7 @@ export class PostsService {
                     scoreDiary: - 1,
                     comments: - 1,
                     likes: - 1,
-
+                    viewed: -1
                   }
                 },
                 {
