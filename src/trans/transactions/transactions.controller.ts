@@ -8171,6 +8171,7 @@ export class TransactionsController {
         var apsara = null;
         var idapsaradefine = null;
         var apsaradefine = null;
+        var arrdata = [];
         console.log(query);
         //push ke data
         var listdata = [];
@@ -8229,8 +8230,13 @@ export class TransactionsController {
                 }
             }
         }
-
-        data = query;
+        for (var i = 0; i < query.length; i++) {
+            tempdata = query[i];
+            if (tempdata._id !== undefined) {
+                arrdata.push(tempdata);
+            }
+        }
+        data = arrdata;
         var datatrpending = null;
         var datatrpendingjual = null;
 

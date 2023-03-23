@@ -1370,8 +1370,8 @@ export class PostsController {
                 if (await this.utilsService.ceckData(ceck_data_FOLLOWER)) {
                   if (ceck_data_FOLLOWER.active) {
                     tp1.status = "FOLLOWING";
-                  } 
-                } 
+                  }
+                }
               }
               atp1.push(tp1);
             }
@@ -2267,11 +2267,17 @@ export class PostsController {
           var response = null;
           if (getchildata.mediaType == "image" || getchildata.mediaType == "images") {
             listimage.push(getchildata.apsaraId);
-            try {
-              getchildata.media = await this.postContentService.getImageApsara(listimage);
-            } catch (e) {
+
+            if (getchildata.apsara == true) {
+              try {
+                getchildata.media = await this.postContentService.getImageApsara(listimage);
+              } catch (e) {
+                getchildata.media = {};
+              }
+            } else {
               getchildata.media = {};
             }
+
           }
 
           if (getchildata.music.apsaraThumnail != undefined) {
