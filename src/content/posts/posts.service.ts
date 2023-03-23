@@ -40418,10 +40418,6 @@ export class PostsService {
                       "active": true,
 
                     },
-                    {
-                      "sequenceNumber": 0,
-
-                    },
 
                   ]
                 }
@@ -41683,10 +41679,6 @@ export class PostsService {
                       "active": true,
 
                     },
-                    {
-                      "sequenceNumber": 0,
-
-                    },
 
                   ]
                 }
@@ -42942,10 +42934,6 @@ export class PostsService {
                     },
                     {
                       "active": true,
-
-                    },
-                    {
-                      "sequenceNumber": 0,
 
                     },
 
