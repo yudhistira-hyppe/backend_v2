@@ -2502,6 +2502,8 @@ export class PostContentService {
       file_commpress = await sharp(buffers_file).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
     } else if (image_orientation == 6) {
       file_commpress = await sharp(buffers_file).rotate(90).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+    } else if (image_orientation == 8) {
+      file_commpress = await sharp(buffers_file).rotate(270).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
     } else {
       file_commpress = buffers_file;
     }
