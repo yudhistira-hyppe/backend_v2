@@ -102,6 +102,7 @@ export class PostCommentService {
         console.log("replyLog : ",replyLog);
       }
       var ByparentID = await this.disqusLogService.findByParentID(body.disqusLogID);
+      console.log(ByparentID.length);
       if (ByparentID.length > 0) {
         this.postService.updateCommentMin2(profile.email.toString(), dis.postID.toString(), ((ByparentID.length)*-1));
         await this.disqusLogService.updateMany(body.disqusLogID);

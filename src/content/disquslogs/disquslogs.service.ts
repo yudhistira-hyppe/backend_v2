@@ -29,7 +29,7 @@ export class DisquslogsService {
   }
 
   async findByParentID(id: string): Promise<Disquslogs[]> {
-    return this.DisquslogsModel.find({ postID :id}).exec();
+    return this.DisquslogsModel.find({ parentID :id}).exec();
   }
 
   async findOne(id: string): Promise<Disquslogs> {
