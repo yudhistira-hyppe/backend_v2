@@ -86,6 +86,10 @@ export class DisquslogsService {
     return data;
   }
 
+  async updateMany(id: string) {
+    return await this.DisquslogsModel.updateMany({ "parentID": id }, { "$set": { "active": false } });
+  }
+
   async deletedicusslog(request: any): Promise<any> {
     const data_discuslog = await this.DisquslogsModel.findOne({ _id: request._id }).exec();
     if (await this.utilsService.ceckData(data_discuslog)) {

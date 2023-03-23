@@ -103,6 +103,7 @@ export class PostCommentService {
       }
       createDisquslogsDto_.active = false;
       await this.disqusLogService.update(body.disqusLogID, createDisquslogsDto_);
+      await this.disqusLogService.updateMany(body.disqusLogID);
         //this.disqusLogService.delete(String(dis._id));
     }
 
