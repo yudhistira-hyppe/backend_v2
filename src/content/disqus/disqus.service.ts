@@ -1012,6 +1012,460 @@ export class DisqusService {
                                             "active": true,
 
                                         },
+                                    ]
+                                }
+                            }
+                        ]
+                    },
+
+                },
+                {
+                    $project: {
+                        "_id": 1,
+                        "isIdVerified": { $arrayElemAt: ["$user.isIdVerified", 0] },
+                        "user": 1,
+                        "disqusID": 1,
+                        "postID": 1,
+                        "email": 1,
+                        "eventType": 1,
+                        "active": 1,
+                        "room": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1,
+                        "disqusLogs": "$disqusLogs.disqusLogs",
+                        "comment": {
+                            $size: "$countLogs"
+                        },
+
+                    }
+                },
+
+            ]
+        )
+    }
+
+    async getDiscus2(postId: string, eventType: string, page: number, row: number): Promise<Disqus[]> {
+        let skip = this.paging(page, row);
+        return await this.DisqusModel.aggregate(
+            [
+                {
+                    $match:
+                    {
+                        $or: [
+                            {
+                                $and: [
+                                    {
+                                        "postID": postId,
+
+                                    },
+                                    {
+                                        "eventType": eventType,
+
+                                    },
+                                    {
+                                        "active": true
+                                    },
+
+                                ]
+                            },
+
+                        ]
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: 'userbasics',
+                        localField: 'email',
+                        foreignField: 'email',
+                        as: 'user',
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "disquslogs",
+                        as: "disqusLogs",
+                        let: {
+                            localID: '$postID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $or: [
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$postID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    'active': true
+                                                },
+                                                {
+                                                    sequenceNumber: 0
+                                                }
+                                            ]
+                                        },
+
+                                    ]
+                                },
+
+                            },
+                            {
+                                "$lookup": {
+                                    from: "disquslogs",
+                                    as: "detailDisquss",
+                                    let: {
+                                        localID: '$_id'
+                                    },
+                                    pipeline: [
+                                        {
+                                            $match:
+                                            {
+                                                $or: [
+                                                    {
+                                                        $and: [
+                                                            {
+                                                                $expr: {
+                                                                    $eq: ['$parentID', '$$localID']
+                                                                }
+                                                            },
+                                                            {
+                                                                'active': true
+                                                            },
+                                                            {
+                                                                sequenceNumber: 1
+                                                            }
+                                                        ]
+                                                    },
+
+                                                ]
+                                            },
+
+                                        },
+                                        {
+                                            $sort: {
+                                                "updateAt": 1
+                                            }
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'reactions_repo',
+                                                as: 'detailEmot',
+                                                let: {
+                                                    localID: '$reactionUri'
+                                                },
+                                                pipeline: [
+                                                    {
+                                                        $match:
+                                                        {
+                                                            $or: [
+                                                                {
+                                                                    $expr: {
+                                                                        $eq: ['$URL', '$$localID']
+                                                                    }
+                                                                },
+
+                                                            ]
+                                                        }
+                                                    },
+
+                                                ],
+
+                                            },
+
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: "$detailEmot",
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'userbasics',
+                                                localField: 'sender',
+                                                foreignField: 'email',
+                                                as: 'detailUserBasic',
+
+                                            },
+
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: "$detailUserbasic",
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $lookup: {
+                                                from: 'userauths',
+                                                localField: 'sender',
+                                                foreignField: 'email',
+                                                as: 'detailUserAuth',
+
+                                            },
+
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: "$detailUserAuth",
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            "$lookup": {
+                                                from: "mediaprofilepicts",
+                                                as: "detailAvatar",
+                                                let: {
+                                                    localID: '$detailUserBasic.profilePict.$id'
+                                                },
+                                                pipeline: [
+                                                    {
+                                                        $match:
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$mediaID', {
+                                                                    $ifNull: ['$$localID', []]
+                                                                }]
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        $project: {
+                                                            "mediaBasePath": 1,
+                                                            "mediaUri": 1,
+                                                            "originalName": 1,
+                                                            "fsSourceUri": 1,
+                                                            "fsSourceName": 1,
+                                                            "fsTargetUri": 1,
+                                                            "mediaType": 1,
+                                                            "mediaEndpoint": {
+                                                                "$concat": ["/profilepict/", "$mediaID"]
+                                                            }
+                                                        }
+                                                    }
+                                                ],
+
+                                            }
+                                        },
+                                        {
+                                            $unwind: {
+                                                path: "$detailAvatar",
+                                                preserveNullAndEmptyArrays: true
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                "_id": "$_id",
+                                                "sequenceNumber": "$sequenceNumber",
+                                                "createdAt": "$createdAt",
+                                                "txtMessages": "$txtMessages",
+                                                "senderInfo": {
+                                                    "fullName": {
+                                                        $arrayElemAt: ["$detailUserBasic.fullName", 0]
+                                                    },
+                                                    "username": "$detailUserAuth.username",
+                                                    "avatar": "$detailAvatar",
+                                                    "isIdVerified": {
+                                                        $arrayElemAt: ["$detailUserBasic.isIdVerified", 0]
+                                                    },
+
+                                                },
+                                                "receiver": "$receiver",
+                                                "sender": "$sender",
+                                                "lineID": "$_id",
+                                                "active": "$active",
+                                                "updatedAt": "$updatedAt",
+
+                                            }
+                                        },
+                                        {
+                                            $sort: {
+                                                updatedAt: 1
+                                            }
+                                        }
+                                    ],
+
+                                },
+
+                            },
+                            {
+                                $lookup: {
+                                    from: 'reactions_repo',
+                                    as: 'emot',
+                                    let: {
+                                        localID: '$reactionUri'
+                                    },
+                                    pipeline: [
+                                        {
+                                            $match:
+                                            {
+                                                $or: [
+                                                    {
+                                                        $expr: {
+                                                            $eq: ['$URL', '$$localID']
+                                                        }
+                                                    },
+
+                                                ]
+                                            }
+                                        },
+
+                                    ],
+
+                                },
+
+                            },
+                            {
+                                $unwind: {
+                                    path: "$emot",
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'userbasics',
+                                    localField: 'sender',
+                                    foreignField: 'email',
+                                    as: 'userBasic',
+
+                                },
+
+                            },
+                            {
+                                $unwind: {
+                                    path: "$userbasic",
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $lookup: {
+                                    from: 'userauths',
+                                    localField: 'sender',
+                                    foreignField: 'email',
+                                    as: 'userAuth',
+
+                                },
+
+                            },
+                            {
+                                $unwind: {
+                                    path: "$userAuth",
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    from: "mediaprofilepicts",
+                                    as: "avatar",
+                                    let: {
+                                        localID: '$userBasic.profilePict.$id'
+                                    },
+                                    pipeline: [
+                                        {
+                                            $match:
+                                            {
+                                                $expr: {
+                                                    $in: ['$mediaID', {
+                                                        $ifNull: ['$$localID', []]
+                                                    }]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                "mediaBasePath": 1,
+                                                "mediaUri": 1,
+                                                "originalName": 1,
+                                                "fsSourceUri": 1,
+                                                "fsSourceName": 1,
+                                                "fsTargetUri": 1,
+                                                "mediaType": 1,
+                                                "mediaEndpoint": {
+                                                    "$concat": ["/profilepict/", "$mediaID"]
+                                                }
+                                            }
+                                        }
+                                    ],
+
+                                }
+                            },
+                            {
+                                $unwind: {
+                                    path: "$avatar",
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                $skip: skip
+                            },
+                            {
+                                $limit: row
+                            },
+                            {
+                                $sort: {
+                                    updatedAt: - 1
+                                }
+                            },
+                            {
+                                $project: {
+                                    disqusLogs: [{
+                                        "_id": "$_id",
+                                        "sequenceNumber": "$sequenceNumber",
+                                        "createdAt": "$createdAt",
+                                        "txtMessages": "$txtMessages",
+                                        "senderInfo": {
+                                            "fullName": {
+                                                $arrayElemAt: ["$userBasic.fullName", 0]
+                                            },
+                                            "username": "$userAuth.username",
+                                            "avatar": "$avatar",
+                                            "isIdVerified": {
+                                                $arrayElemAt: ["$userBasic.isIdVerified", 0]
+                                            },
+
+                                        },
+                                        "receiver": "$receiver",
+                                        "sender": "$sender",
+                                        "lineID": "$_id",
+                                        "active": "$active",
+                                        "updatedAt": "$updatedAt",
+                                        detailDisquss: "$detailDisquss",
+
+                                    }]
+                                }
+                            }
+                        ],
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "disquslogs",
+                        as: "countLogs",
+                        let: {
+                            localID: '$postID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $eq: ['$postID', '$$localID']
+                                            }
+                                        },
+                                        {
+                                            "active": true,
+
+                                        },
                                         {
                                             "sequenceNumber": 0,
 
