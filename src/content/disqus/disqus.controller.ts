@@ -162,9 +162,7 @@ export class DisqusController {
             this.sendCommentFCM(ContentDto_.receiverParty.toString(), "COMMENT", ContentDto_.postID.toString(), ContentDto_.email.toString())
           }
           this.insightsService.updateComment(ContentDto_.receiverParty.toString());
-          if ((ContentDto_.parentID == undefined) || (ContentDto_.parentID == "")) {
-            this.postDisqusService.updateCommentPlus(ContentDto_.postID.toString());
-          }
+          this.postDisqusService.updateCommentPlus(ContentDto_.postID.toString());
           res.response_code = 202;
           let m = new Messages();
           m.info = ["The process successful"]

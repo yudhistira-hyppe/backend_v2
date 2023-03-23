@@ -28,6 +28,10 @@ export class DisquslogsService {
     return this.DisquslogsModel.find().exec();
   }
 
+  async findByParentID(id: string): Promise<Disquslogs[]> {
+    return this.DisquslogsModel.find({ postID :id}).exec();
+  }
+
   async findOne(id: string): Promise<Disquslogs> {
     return this.DisquslogsModel.findOne({ _id: id, active: true }).exec();
   }

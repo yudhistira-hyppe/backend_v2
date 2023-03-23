@@ -101,9 +101,13 @@ export class PostCommentService {
         var replyLog = dis.replyLogs;
         console.log("replyLog : ",replyLog);
       }
+      var ByparentID = await this.disqusLogService.findByParentID(body.disqusLogID);
+      if (ByparentID.length > 0) {
+        this.postService.updateCommentMin2(profile.email.toString(), dis.postID.toString(), ((ByparentID.length)*-1));
+        await this.disqusLogService.updateMany(body.disqusLogID);
+      }
       createDisquslogsDto_.active = false;
       await this.disqusLogService.update(body.disqusLogID, createDisquslogsDto_);
-      await this.disqusLogService.updateMany(body.disqusLogID);
         //this.disqusLogService.delete(String(dis._id));
     }
 
