@@ -3346,9 +3346,11 @@ export class GetusercontentsController {
         var uploadSource = null;
         var boosted = null;
         var boostCount = null;
+        var version = null;
         // console.log(lengpict);
         if (lengpict > 0) {
             var resultpictapsara = null;
+            version = data[0].version;
 
 
             // console.log(tempdatapict);
@@ -3384,6 +3386,7 @@ export class GetusercontentsController {
                                 }
 
                                 data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
                             }
                         }
                     }
@@ -3493,10 +3496,11 @@ export class GetusercontentsController {
 
         } else {
             picts = [];
+            version = "";
         }
 
 
-        return { response_code: 202, data: picts, messages };
+        return { response_code: 202, data: picts, version: version.toString(), messages };
     }
 
 

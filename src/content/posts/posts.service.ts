@@ -41270,7 +41270,27 @@ export class PostsService {
 
         },
         {
+          $lookup: {
+            from: "settings",
+            as: "setting",
+            pipeline: [
+              {
+                $match:
+                {
+                  "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                }
+              },
+            ]
+          }
+        },
+        {
+          $unwind: {
+            path: "$setting"
+          }
+        },
+        {
           $project: {
+            version: "$setting.value",
             oldDate: 1,
             selfContents: 1,
             official: 1,
@@ -42531,7 +42551,27 @@ export class PostsService {
 
         },
         {
+          $lookup: {
+            from: "settings",
+            as: "setting",
+            pipeline: [
+              {
+                $match:
+                {
+                  "_id": new Types.ObjectId("62bbdb4ba7520000050077a7"),
+                }
+              },
+            ]
+          }
+        },
+        {
+          $unwind: {
+            path: "$setting"
+          }
+        },
+        {
           $project: {
+            version: "$setting.value",
             oldDate: 1,
             selfContents: 1,
             official: 1,
@@ -43790,7 +43830,27 @@ export class PostsService {
 
         },
         {
+          $lookup: {
+            from: "settings",
+            as: "setting",
+            pipeline: [
+              {
+                $match:
+                {
+                  "_id": new Types.ObjectId("62bbdb4ba7520000050077a7"),
+                }
+              },
+            ]
+          }
+        },
+        {
+          $unwind: {
+            path: "$setting"
+          }
+        },
+        {
           $project: {
+            version: "$setting.value",
             oldDate: 1,
             selfContents: 1,
             official: 1,
