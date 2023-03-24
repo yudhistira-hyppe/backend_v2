@@ -9103,10 +9103,24 @@ export class TransactionsService {
             });
 
         if (penjual && penjual !== undefined) {
-            pipeline.push({ $match: { penjual: penjual } });
+            pipeline.push({
+                $match: {
+                    penjual: {
+                        $regex: penjual,
+                        $options: 'i'
+                    },
+                }
+            });
         }
         if (pembeli && pembeli !== undefined) {
-            pipeline.push({ $match: { pembeli: pembeli } });
+            pipeline.push({
+                $match: {
+                    pembeli: {
+                        $regex: pembeli,
+                        $options: 'i'
+                    },
+                }
+            });
         }
         pipeline.push({
             $sort: {
@@ -9229,10 +9243,24 @@ export class TransactionsService {
             });
 
         if (penjual && penjual !== undefined) {
-            pipeline.push({ $match: { penjual: penjual } });
+            pipeline.push({
+                $match: {
+                    penjual: {
+                        $regex: penjual,
+                        $options: 'i'
+                    },
+                }
+            });
         }
         if (pembeli && pembeli !== undefined) {
-            pipeline.push({ $match: { pembeli: pembeli } });
+            pipeline.push({
+                $match: {
+                    pembeli: {
+                        $regex: pembeli,
+                        $options: 'i'
+                    },
+                }
+            });
         }
         pipeline.push({
             $group: {
