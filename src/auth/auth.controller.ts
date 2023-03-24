@@ -3594,16 +3594,16 @@ export class AuthController {
             quality: 1
           });
           console.log("outputBuffer", await sharp(outputBuffer).metadata());
-          file_convert = await sharp(outputBuffer).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
+          file_convert = await sharp(outputBuffer).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
         } else {
           file_convert = await sharp(files.profilePict[0].buffer, { failOnError: false }).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
         }
 
         var image_information2 = await sharp(file_convert).metadata();
-        console.log("image_information", image_information);
+        console.log("image_information2", image_information2);
 
         var image_orientation2 = image_information2.orientation;
-        console.log("image_orientation", image_orientation2);
+        console.log("image_orientation2", image_orientation2);
 
 
         var thumnail = null;

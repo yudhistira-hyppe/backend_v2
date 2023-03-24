@@ -948,15 +948,15 @@ export class DisqusService {
                                 }
                             },
                             {
+                                $sort: {
+                                    updatedAt: - 1
+                                }
+                            },
+                            {
                                 $skip: skip
                             },
                             {
                                 $limit: row
-                            },
-                            {
-                                $sort: {
-                                    updatedAt: - 1
-                                }
                             },
                             {
                                 $project: {
