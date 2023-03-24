@@ -20,6 +20,11 @@ export class MediaprofilepictsService {
     return createMediaprofilepictsDto;
   }
 
+  async findByOssName(text: string): Promise<Mediaprofilepicts[]> {
+    const ndto = await this.MediaprofilepictsModel.find({ 'fsTargetUri': { $regex: text, $options: 'i' } }).exec();
+    return ndto;
+  }
+
   async createV2(dto: Mediaprofilepicts): Promise<Mediaprofilepicts> {
     const ndto = await this.MediaprofilepictsModel.create(dto);
     return ndto;

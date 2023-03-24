@@ -28,4 +28,16 @@ export class MediaprofilepictsController {
     async delete(@Param('id') id: string) {
       return this.MediaprofilepictsService.delete(id);
     }
+
+  @Post("/move/oss")
+    async moveOss(){
+      var dataProfile = await this.MediaprofilepictsService.findByOssName("be-staging");
+      for (var i = 0; i < dataProfile.length; i++) {
+
+        var path_ori = dataProfile[i].mediaThumBasePath.toString();
+        var path_thum = dataProfile[i].mediaBasePath.toString();
+        //var data2 = await this.ossService.readFile(path);
+      }
+      console.log(dataProfile.length);
+    }
 }

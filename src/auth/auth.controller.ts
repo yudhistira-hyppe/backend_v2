@@ -3562,15 +3562,49 @@ export class AuthController {
         var fileName = userId + extension;
         var mimetype = files.profilePict[0].mimetype;
 
+        var image_information = await sharp(files.profilePict[0].buffer).metadata();
+
+        var image_height = image_information.height;
+        var image_width = image_information.width;
+        var image_orientation = image_information.orientation;
+
+        //Get Image Mode
+        var image_mode = await this.utilsService.getImageMode(image_width, image_height);
+        console.log("IMAGE MODE", image_mode);
+
+        //Get Ceck Mode
+        var New_height = 0;
+        var New_width = 0;
+        if (image_mode == "LANDSCAPE") {
+          New_height = image_height;
+          New_width = image_width;
+        } else if (image_mode == "POTRET") {
+          New_height = image_height;
+          New_width = image_width;
+        }
+
         var thumnail = null;
+        var ori = null;
         try {
-          thumnail = await sharp(files.profilePict[0].buffer).resize(100, 100).toBuffer();
+          if (image_orientation == 1) {
+            thumnail = await sharp(files.profilePict[0].buffer).resize(100, 100).toBuffer();
+            ori = await sharp(files.profilePict[0].buffer).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
+          } else if (image_orientation == 6) {
+            thumnail = await sharp(files.profilePict[0].buffer).rotate(90).resize(100, 100).toBuffer();
+            ori = await sharp(files.profilePict[0].buffer).rotate(90).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+          } else if (image_orientation == 8) {
+            thumnail = await sharp(files.profilePict[0].buffer).rotate(270).resize(100, 100).toBuffer();
+            ori = await sharp(files.profilePict[0].buffer).rotate(270).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+          } else {
+            thumnail = await sharp(files.profilePict[0].buffer).resize(100, 100).toBuffer();
+            ori = files.profilePict[0].buffer;
+          }
           console.log(typeof thumnail);
         } catch (e) {
           console.log("THUMNAIL", "FAILED TO CREATE THUMNAIL");
         }
 
-        var result = await this.ossService.uploadFile(files.profilePict[0], userId + "/profilePict/" + fileName);
+        var result = await this.ossService.uploadFileBuffer(Buffer.from(ori), userId + "/profilePict/" + fileName);
         var result_thum = await this.ossService.uploadFileBuffer(Buffer.from(thumnail), userId + "/profilePict/" + userId + "_thum" + extension);
         console.log("THUMNAIL_UPLOAD", result_thum);
         if (result != undefined) {

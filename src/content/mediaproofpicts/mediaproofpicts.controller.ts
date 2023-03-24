@@ -59,7 +59,11 @@ export class MediaproofpictsController {
     return this.MediaproofpictsService.delete(id);
   }
 
-
+  @Post("/move/oss")
+  async moveOss() {
+    var dataProfile = await this.MediaproofpictsService.findByOssName("be-staging");
+    console.log(dataProfile.length);
+  }
 
   // @Post()
   // @UseInterceptors(FileFieldsInterceptor([
