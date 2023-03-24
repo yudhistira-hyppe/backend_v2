@@ -62,6 +62,7 @@ import { UserbankaccountsService } from '../trans/userbankaccounts/userbankaccou
 import { OssService } from '../stream/oss/oss.service';
 import { CreateMediaprofilepictsDto } from 'src/content/mediaprofilepicts/dto/create-mediaprofilepicts.dto';
 const sharp = require('sharp');
+const convert = require('heic-convert');
 
 @Controller()
 export class AuthController {
@@ -3563,7 +3564,8 @@ export class AuthController {
         var mimetype = files.profilePict[0].mimetype;
 
         var image_information = await sharp(files.profilePict[0].buffer).metadata();
-
+        console.log("IMAGE INFORMATION", image_information);
+        var image_format = image_information.format;
         var image_height = image_information.height;
         var image_width = image_information.width;
         var image_orientation = image_information.orientation;
@@ -3575,6 +3577,7 @@ export class AuthController {
         //Get Ceck Mode
         var New_height = 0;
         var New_width = 0;
+
         if (image_mode == "LANDSCAPE") {
           New_height = image_height;
           New_width = image_width;
@@ -3583,21 +3586,41 @@ export class AuthController {
           New_width = image_width;
         }
 
+        var file_convert = null;
+        if (image_format == "heif") {
+          const outputBuffer = await convert({
+            buffer: files.profilePict[0].buffer,
+            format: 'JPEG',
+            quality: 1
+          });
+          console.log("outputBuffer", await sharp(outputBuffer).metadata());
+          file_convert = await sharp(outputBuffer).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
+        } else {
+          file_convert = await sharp(files.profilePict[0].buffer, { failOnError: false }).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
+        }
+
+        var image_information2 = await sharp(file_convert).metadata();
+        console.log("image_information", image_information);
+
+        var image_orientation2 = image_information2.orientation;
+        console.log("image_orientation", image_orientation2);
+
+
         var thumnail = null;
         var ori = null;
         try {
-          if (image_orientation == 1) {
-            thumnail = await sharp(files.profilePict[0].buffer).resize(100, 100).toBuffer();
-            ori = await sharp(files.profilePict[0].buffer).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
-          } else if (image_orientation == 6) {
-            thumnail = await sharp(files.profilePict[0].buffer).rotate(90).resize(100, 100).toBuffer();
-            ori = await sharp(files.profilePict[0].buffer).rotate(90).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
-          } else if (image_orientation == 8) {
-            thumnail = await sharp(files.profilePict[0].buffer).rotate(270).resize(100, 100).toBuffer();
-            ori = await sharp(files.profilePict[0].buffer).rotate(270).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+          if (image_orientation2 == 1) {
+            thumnail = await sharp(file_convert).resize(100, 100).toBuffer();
+            ori = await sharp(file_convert).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
+          } else if (image_orientation2 == 6) {
+            thumnail = await sharp(file_convert).rotate(90).resize(100, 100).toBuffer();
+            ori = await sharp(file_convert).rotate(90).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+          } else if (image_orientation2 == 8) {
+            thumnail = await sharp(file_convert).rotate(270).resize(100, 100).toBuffer();
+            ori = await sharp(file_convert).rotate(270).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
           } else {
-            thumnail = await sharp(files.profilePict[0].buffer).resize(100, 100).toBuffer();
-            ori = files.profilePict[0].buffer;
+            thumnail = await sharp(file_convert).resize(100, 100).toBuffer();
+            ori = file_convert;
           }
           console.log(typeof thumnail);
         } catch (e) {
