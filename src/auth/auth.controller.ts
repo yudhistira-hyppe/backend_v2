@@ -3507,9 +3507,9 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/posts/profilepicture')
+  @Post('api/posts/v2/profilepicture')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'profilePict', maxCount: 1 }, { name: 'proofPict', maxCount: 1, }]))
-  async uploadProfile(
+  async uploadProfile_v2(
     @UploadedFiles() files: {
       profilePict?: Express.Multer.File[],
       proofPict?: Express.Multer.File[]
@@ -3594,16 +3594,16 @@ export class AuthController {
             quality: 1
           });
           console.log("outputBuffer", await sharp(outputBuffer).metadata());
-          file_convert = await sharp(outputBuffer).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
+          file_convert = await sharp(outputBuffer).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
         } else {
           file_convert = await sharp(files.profilePict[0].buffer, { failOnError: false }).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
         }
 
         var image_information2 = await sharp(file_convert).metadata();
-        console.log("image_information", image_information);
+        console.log("image_information2", image_information2);
 
         var image_orientation2 = image_information2.orientation;
-        console.log("image_orientation", image_orientation2);
+        console.log("image_orientation2", image_orientation2);
 
 
         var thumnail = null;
@@ -3628,6 +3628,198 @@ export class AuthController {
         }
 
         var result = await this.ossService.uploadFileBuffer(Buffer.from(ori), userId + "/profilePict/" + fileName);
+        var result_thum = await this.ossService.uploadFileBuffer(Buffer.from(thumnail), userId + "/profilePict/" + userId + "_thum" + extension);
+        console.log("THUMNAIL_UPLOAD", result_thum);
+        if (result != undefined) {
+          if (result.res != undefined) {
+            if (result.res.statusCode != undefined) {
+              if (result.res.statusCode == 200) {
+                try {
+                  if (datauserbasicsService.profilePict != undefined) {
+                    var profilePict_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
+                    var data_mediaprofpicts = await this.mediaprofilepictsService.findOne(profilePict_json.$id);
+                    if (await this.utilsService.ceckData(data_mediaprofpicts)) {
+                      id_mediaprofilepicts = data_mediaprofpicts._id.toString();
+
+                      createMediaproofpictsDto.mediaID = id_mediaprofilepicts;
+                      createMediaproofpictsDto.mediaBasePath = userId + "/profilePict/" + fileName;
+                      createMediaproofpictsDto.mediaUri = fileName;
+                      createMediaproofpictsDto.originalName = originalName;
+
+                      createMediaproofpictsDto.fsSourceUri = result.res.requestUrls[0];
+                      createMediaproofpictsDto.fsSourceName = fileName;
+                      createMediaproofpictsDto.fsTargetUri = result.res.requestUrls[0];
+                      createMediaproofpictsDto.uploadSource = "OSS";
+
+                      createMediaproofpictsDto.mediaThumBasePath = userId + "/profilePict/" + userId + "_thum" + extension;
+                      createMediaproofpictsDto.mediaThumName = userId + "_thum" + extension;
+                      createMediaproofpictsDto.mediaThumUri = result_thum.res.requestUrls[0];
+                      createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
+                      await this.mediaprofilepictsService.updatebyId(id_mediaprofilepicts, createMediaproofpictsDto);
+                    } else {
+                      createMediaproofpictsDto._id = id_mediaprofilepicts;
+                      createMediaproofpictsDto.mediaID = id_mediaprofilepicts;
+                      createMediaproofpictsDto.active = true;
+                      createMediaproofpictsDto.createdAt = current_date;
+                      createMediaproofpictsDto.updatedAt = current_date;
+                      createMediaproofpictsDto.postType = 'profilepict';
+                      createMediaproofpictsDto.mediaType = 'image';
+
+                      createMediaproofpictsDto.mediaBasePath = userId + "/profilepict/" + fileName;
+                      createMediaproofpictsDto.mediaUri = fileName;
+                      createMediaproofpictsDto.originalName = originalName;
+
+                      createMediaproofpictsDto.fsSourceUri = result.res.requestUrls[0];
+                      createMediaproofpictsDto.fsSourceName = fileName;
+                      createMediaproofpictsDto.fsTargetUri = result.res.requestUrls[0];
+
+                      createMediaproofpictsDto.mediaThumBasePath = userId + "/profilePict/" + userId + "_thum" + extension;
+                      createMediaproofpictsDto.mediaThumName = userId + "_thum" + extension;
+                      createMediaproofpictsDto.mediaMime = mimetype;
+                      createMediaproofpictsDto.uploadSource = "OSS";
+                      createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
+                      await this.mediaprofilepictsService.create(createMediaproofpictsDto);
+                    }
+                  } else {
+                    createMediaproofpictsDto._id = id_mediaprofilepicts;
+                    createMediaproofpictsDto.mediaID = id_mediaprofilepicts;
+                    createMediaproofpictsDto.active = true;
+                    createMediaproofpictsDto.createdAt = current_date;
+                    createMediaproofpictsDto.updatedAt = current_date;
+                    createMediaproofpictsDto.postType = 'profilepict';
+                    createMediaproofpictsDto.mediaType = 'image';
+
+                    createMediaproofpictsDto.mediaBasePath = userId + "/profilepict/" + fileName;
+                    createMediaproofpictsDto.mediaUri = fileName;
+                    createMediaproofpictsDto.originalName = originalName;
+
+                    createMediaproofpictsDto.fsSourceUri = result.res.requestUrls[0];
+                    createMediaproofpictsDto.fsSourceName = fileName;
+                    createMediaproofpictsDto.fsTargetUri = result.res.requestUrls[0];
+
+                    createMediaproofpictsDto.mediaThumBasePath = userId + "/profilePict/" + userId + "_thum" + extension;
+                    createMediaproofpictsDto.mediaThumName = userId + "_thum" + extension;
+                    createMediaproofpictsDto.mediaMime = mimetype;
+                    createMediaproofpictsDto.uploadSource = "OSS";
+                    createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
+                    await this.mediaprofilepictsService.create(createMediaproofpictsDto);
+                  }
+
+                  var json_mediaprofilepicts = { "$ref": "mediaprofilepicts", "$id": id_mediaprofilepicts, "$db": "hyppe_content_db" };
+                  datauserbasicsService.profilePict = json_mediaprofilepicts;
+                  await this.userbasicsService.updatebyEmailV2(request.email, datauserbasicsService);
+
+                  return {
+                    "response_code": 202,
+                    "messages": {
+                      "info": [
+                        "Update Profile Successful"
+                      ]
+                    }
+                  };
+                } catch (e) {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed update profile picture ' + e,
+                  );
+                }
+              } else {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed update profile picture ',
+                );
+              }
+            } else {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed update profile picture ',
+              );
+            }
+          } else {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed update profile picture ',
+            );
+          }
+        } else {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed update profile picture ',
+          );
+        }
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed cardPict is required',
+        );
+      }
+    } else {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed user not found',
+      );
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/profilepicture')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'profilePict', maxCount: 1 }, { name: 'proofPict', maxCount: 1, }]))
+  async uploadProfile(
+    @UploadedFiles() files: {
+      profilePict?: Express.Multer.File[],
+      proofPict?: Express.Multer.File[]
+    },
+    @Body() request,
+    @Headers() headers) {
+
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed token and email not match',
+      );
+    }
+
+    if (headers['x-auth-token'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed header email is required',
+      );
+    }
+
+    if (request.email == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed param mail is required',
+      );
+    }
+
+    //Get User Userbasics
+    const datauserbasicsService = await this.userbasicsService.findOne(
+      headers['x-auth-user'],
+    );
+
+    var re = /(?:\.([^.]+))?$/;
+
+    var current_date = await this.utilsService.getDateTimeString();
+    var id_mediaprofilepicts = await this.utilsService.generateId();
+    var createMediaproofpictsDto = new CreateMediaprofilepictsDto();
+    //Ceck User Userbasics
+    if (await this.utilsService.ceckData(datauserbasicsService)) {
+      if (files.profilePict != undefined) {
+
+        var originalName = files.profilePict[0].originalname;
+        //var extension = originalName.substring(originalName.lastIndexOf('.'), originalName.length);
+        // var textSplit = originalName.split('.');
+        // var extension = '.jpg';
+        // if (textSplit.length == 2) {
+        //   extension = textSplit[1];
+        // } else {
+        //   extension = textSplit[textSplit.length - 1];
+        // }
+        var extension = '.jpeg';
+        var userId = datauserbasicsService._id.toString();
+        var fileName = userId + extension;
+        var mimetype = files.profilePict[0].mimetype;
+
+        var thumnail = null;
+        try {
+          thumnail = await sharp(files.profilePict[0].buffer).resize(100, 100).toBuffer();
+          console.log(typeof thumnail);
+        } catch (e) {
+          console.log("THUMNAIL", "FAILED TO CREATE THUMNAIL");
+        }
+
+        var result = await this.ossService.uploadFile(files.profilePict[0], userId + "/profilePict/" + fileName);
         var result_thum = await this.ossService.uploadFileBuffer(Buffer.from(thumnail), userId + "/profilePict/" + userId + "_thum" + extension);
         console.log("THUMNAIL_UPLOAD", result_thum);
         if (result != undefined) {
