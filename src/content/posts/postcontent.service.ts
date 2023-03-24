@@ -2502,6 +2502,8 @@ export class PostContentService {
       file_commpress = await sharp(buffers_file).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
     } else if (image_orientation == 6) {
       file_commpress = await sharp(buffers_file).rotate(90).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+    } else if (image_orientation == 8) {
+      file_commpress = await sharp(buffers_file).rotate(270).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
     } else {
       file_commpress = buffers_file;
     }
@@ -5234,7 +5236,22 @@ export class PostContentService {
       post.category = pcats;
     }
 
-
+    // if (body.tagPeople != undefined && body.tagPeople.length > 1) {
+    //   var obj = body.tagPeople;
+    //   var cats = obj.split(",");
+    //   var pcats = [];
+    //   for (var i = 0; i < cats.length; i++) {
+    //     var tmp = cats[i];
+    //     var tp = await this.userAuthService.findOneUsername(tmp);
+    //     if (await this.utilService.ceckData(tp)) {
+    //       if (tp != undefined) {
+    //         var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
+    //         pcats.push(objintr);
+    //       }
+    //     }
+    //   }
+    //   post.tagPeople = pcats;
+    // }
 
     if (body.tagPeople != undefined && body.tagPeople.length > 1) {
       var obj = body.tagPeople;
@@ -5244,14 +5261,51 @@ export class PostContentService {
         var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
         if (await this.utilService.ceckData(tp)) {
-          if (tp != undefined) {
+          if (tp.username != undefined) {
             var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
+            let em = String(tp.username);
+            let bodyi = em + ' Menandai kamu di ';
+            let bodye = em + ' Tagged you in ';
+            if (post.postType == 'pict') {
+              bodyi = bodyi + ' HyppePic';
+              bodye = bodye + ' HyppePic';
+            } else if (post.postType == 'vid') {
+              bodyi = bodyi + ' HyppeVideo';
+              bodye = bodye + ' HyppeVideo';
+            } else if (post.postType == 'diary') {
+              bodyi = bodyi + ' HyppeDiary';
+              bodye = bodye + ' HyppeDiary';
+            } else if (post.postType == 'story') {
+              bodyi = bodyi + ' HyppeStory';
+              bodye = bodye + ' HyppeStory';
+            }
+            console.log(tp.email.toString());
+            console.log(body.postID);
+            console.log(post.postType.toString());
+            this.utilService.sendFcmV2(tp.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID, post.postType.toString());
             pcats.push(objintr);
           }
         }
       }
       post.tagPeople = pcats;
     }
+
+    // if (body.tagDescription != undefined && body.tagDescription.length > 0) {
+    //   var obj = body.tagDescription;
+    //   var cats = obj.split(",");
+    //   var pcats = [];
+    //   for (var i = 0; i < cats.length; i++) {
+    //     var tmp = cats[i];
+    //     var tp = await this.userAuthService.findOneUsername(tmp);
+    //     if (await this.utilService.ceckData(tp)) {
+    //       if (tp != undefined) {
+    //         var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+    //         pcats.push(objintrx);
+    //       }
+    //     }
+    //   }
+    //   post.tagDescription = pcats;
+    // }
 
     if (body.tagDescription != undefined && body.tagDescription.length > 0) {
       var obj = body.tagDescription;
@@ -5261,8 +5315,28 @@ export class PostContentService {
         var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
         if (await this.utilService.ceckData(tp)) {
-          if (tp != undefined) {
+          if (tp != undefined || tp != null) {
             var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+            let em = String(tp.username);
+            let bodyi = em + ' Menandai kamu di ';
+            let bodye = em + ' Tagged you in ';
+            if (post.postType == 'pict') {
+              bodyi = bodyi + ' HyppePic';
+              bodye = bodye + ' HyppePic';
+            } else if (post.postType == 'vid') {
+              bodyi = bodyi + ' HyppeVideo';
+              bodye = bodye + ' HyppeVideo';
+            } else if (post.postType == 'diary') {
+              bodyi = bodyi + ' HyppeDiary';
+              bodye = bodye + ' HyppeDiary';
+            } else if (post.postType == 'story') {
+              bodyi = bodyi + ' HyppeStory';
+              bodye = bodye + ' HyppeStory';
+            }
+            console.log(tp.email.toString());
+            console.log(body.postID);
+            console.log(post.postType.toString());
+            this.utilService.sendFcmV2(tp.email.toString(), auth.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID, post.postType.toString())
             pcats.push(objintrx);
           }
         }

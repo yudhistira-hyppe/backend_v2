@@ -28,6 +28,10 @@ export class DisquslogsService {
     return this.DisquslogsModel.find().exec();
   }
 
+  async findByParentID(id: string): Promise<Disquslogs[]> {
+    return this.DisquslogsModel.find({ parentID :id}).exec();
+  }
+
   async findOne(id: string): Promise<Disquslogs> {
     return this.DisquslogsModel.findOne({ _id: id, active: true }).exec();
   }
@@ -84,6 +88,10 @@ export class DisquslogsService {
       throw new Error('Todo is not found!');
     }
     return data;
+  }
+
+  async updateMany(id: string) {
+    return await this.DisquslogsModel.updateMany({ "parentID": id }, { "$set": { "active": false } });
   }
 
   async deletedicusslog(request: any): Promise<any> {
