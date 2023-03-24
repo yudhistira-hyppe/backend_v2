@@ -41264,7 +41264,8 @@ export class PostsService {
               "isFollowPrivate": "$userBasic.isFollowPrivate",
               "isPostPrivate": "$userBasic.isPostPrivate",
 
-            }
+            },
+            "verified": "$userBasic.isIdVerified",
           },
 
         },
@@ -41282,6 +41283,7 @@ export class PostsService {
             intScore: {
               $size: "$interest"
             },
+            "verified": 1,
             "friend": 1,
             // "follower": 1,
             "following": 1,
@@ -42523,7 +42525,8 @@ export class PostsService {
               "isFollowPrivate": "$userBasic.isFollowPrivate",
               "isPostPrivate": "$userBasic.isPostPrivate",
 
-            }
+            },
+            "verified": "$userBasic.isIdVerified",
           },
 
         },
@@ -42541,6 +42544,7 @@ export class PostsService {
             intScore: {
               $size: "$interest"
             },
+            "verified": 1,
             "friend": 1,
             // "follower": 1,
             "following": 1,
@@ -43780,7 +43784,8 @@ export class PostsService {
               "isFollowPrivate": "$userBasic.isFollowPrivate",
               "isPostPrivate": "$userBasic.isPostPrivate",
 
-            }
+            },
+            "verified": "$userBasic.isIdVerified",
           },
 
         },
@@ -43798,6 +43803,7 @@ export class PostsService {
             intScore: {
               $size: "$interest"
             },
+            "verified": 1,
             "friend": 1,
             // "follower": 1,
             "following": 1,
