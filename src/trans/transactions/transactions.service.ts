@@ -8995,7 +8995,7 @@ export class TransactionsService {
         return query;
     }
 
-    async jualbeli(startdate: string, enddate: string, status: any[], descending: boolean, page: number, limit: number) {
+    async jualbeli(startdate: string, enddate: string, status: any[], descending: boolean, page: number, limit: number, penjual: string, pembeli: string) {
         var pipeline = [];
         var order = null;
         try {
@@ -9102,6 +9102,12 @@ export class TransactionsService {
                 }
             });
 
+        if (penjual && penjual !== undefined) {
+            pipeline.push({ $match: { penjual: penjual } });
+        }
+        if (pembeli && pembeli !== undefined) {
+            pipeline.push({ $match: { pembeli: pembeli } });
+        }
         pipeline.push({
             $sort: {
                 timestamp: order
@@ -9119,7 +9125,7 @@ export class TransactionsService {
 
     }
 
-    async jualbelicount(startdate: string, enddate: string, status: any[]) {
+    async jualbelicount(startdate: string, enddate: string, status: any[], penjual: string, pembeli: string) {
         var pipeline = [];
         var order = null;
         try {
@@ -9221,6 +9227,13 @@ export class TransactionsService {
 
                 }
             });
+
+        if (penjual && penjual !== undefined) {
+            pipeline.push({ $match: { penjual: penjual } });
+        }
+        if (pembeli && pembeli !== undefined) {
+            pipeline.push({ $match: { pembeli: pembeli } });
+        }
         pipeline.push({
             $group: {
                 _id: null,

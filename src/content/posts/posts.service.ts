@@ -17663,6 +17663,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -17682,7 +17683,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -18422,6 +18437,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -18442,7 +18458,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreVid: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -19177,6 +19207,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -19197,7 +19228,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreDiary: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -19940,6 +19985,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -19959,7 +20005,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -20090,7 +20150,6 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
-                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -20103,6 +20162,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -20236,6 +20296,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -20256,7 +20317,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreVid: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -20448,6 +20523,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -21000,6 +21076,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -21019,7 +21096,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -21150,7 +21241,6 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
-                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -21163,6 +21253,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -21222,7 +21313,6 @@ export class PostsService {
                 },
 
               ],
-
             "diary":
               [
                 {
@@ -21294,6 +21384,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -21314,7 +21405,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreDiary: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -21506,6 +21611,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -21516,6 +21622,7 @@ export class PostsService {
                 },
 
               ],
+
           },
 
         },
@@ -22052,6 +22159,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -22072,7 +22180,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreVid: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -22264,6 +22386,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -22345,6 +22468,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -22365,7 +22489,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreDiary: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -22557,6 +22695,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -22567,6 +22706,7 @@ export class PostsService {
                 },
 
               ],
+
           },
 
         },
@@ -23108,6 +23248,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -23127,7 +23268,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -23258,7 +23413,6 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
-                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -23271,6 +23425,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -23404,6 +23559,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -23424,7 +23580,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreVid: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -23616,6 +23786,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -23697,6 +23868,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -23717,7 +23889,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreDiary: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -23909,6 +24095,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -23919,6 +24106,7 @@ export class PostsService {
                 },
 
               ],
+
           },
 
         },
@@ -24483,6 +24671,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -24503,7 +24692,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreVid: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -24695,6 +24898,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -24801,6 +25005,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -24820,7 +25025,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -24951,7 +25170,6 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
-                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -24964,6 +25182,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -25112,6 +25331,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -25132,7 +25352,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreDiary: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -25324,6 +25558,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -25334,6 +25569,7 @@ export class PostsService {
                 },
 
               ],
+
           },
 
         },
@@ -26085,6 +26321,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -26105,7 +26342,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreDiary: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -26297,6 +26548,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -26307,6 +26559,7 @@ export class PostsService {
                 },
 
               ],
+
             "tags":
               [
                 {
@@ -26492,6 +26745,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -26512,7 +26766,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreVid: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -26704,6 +26972,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -26904,6 +27173,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -26923,7 +27193,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -27054,7 +27338,6 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
-                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -27067,6 +27350,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -27316,6 +27600,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -27335,7 +27620,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -27466,7 +27765,6 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
-                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -27479,6 +27777,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -27612,6 +27911,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -27632,7 +27932,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreVid: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -27824,6 +28138,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -28025,6 +28340,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -28044,7 +28360,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -28175,7 +28505,6 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
-                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -28188,6 +28517,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -28321,6 +28651,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -28341,7 +28672,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreVid: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -28533,6 +28878,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -28614,6 +28960,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -28634,7 +28981,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreDiary: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -28826,6 +29187,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -28836,6 +29198,7 @@ export class PostsService {
                 },
 
               ],
+
             "tags":
               [
                 {
@@ -29027,6 +29390,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -29046,7 +29410,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -29177,7 +29555,6 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
-                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -29190,6 +29567,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -29320,6 +29698,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -29340,7 +29719,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreDiary: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -29532,6 +29925,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -29542,6 +29936,7 @@ export class PostsService {
                 },
 
               ],
+
             "tags":
               [
                 {
@@ -30166,6 +30561,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -30185,7 +30581,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -30316,7 +30726,6 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
-                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -30329,6 +30738,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -31023,6 +31433,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -31042,7 +31453,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -31173,7 +31598,6 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
-                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -31186,6 +31610,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -31319,6 +31744,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -31339,7 +31765,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreVid: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -31531,6 +31971,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -32172,6 +32613,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -32192,7 +32634,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreVid: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -32384,6 +32840,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -32465,6 +32922,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -32485,7 +32943,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreDiary: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -32677,6 +33149,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -32687,6 +33160,7 @@ export class PostsService {
                 },
 
               ],
+
             "tags":
               [
                 {
@@ -32890,6 +33364,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -32909,7 +33384,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -33040,7 +33529,6 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
-                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -33053,6 +33541,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -33186,6 +33675,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -33206,7 +33696,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreVid: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -33398,6 +33902,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -33479,6 +33984,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -33499,7 +34005,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreDiary: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -33691,6 +34211,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -33701,6 +34222,7 @@ export class PostsService {
                 },
 
               ],
+
             "tags":
               [
                 {
@@ -34326,6 +34848,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -34345,7 +34868,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -34476,7 +35013,6 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
-                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -34489,6 +35025,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -34622,6 +35159,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -34642,7 +35180,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreVid: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -34834,6 +35386,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -34915,6 +35468,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -34935,7 +35489,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreDiary: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -35127,6 +35695,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -35137,6 +35706,7 @@ export class PostsService {
                 },
 
               ],
+
             "tags":
               [
                 {
@@ -35341,6 +35911,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "scorePict": 1,
                           "_id": 1,
                           "postID": 1,
@@ -35360,7 +35931,21 @@ export class PostsService {
                           "isLiked": 1,
 
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scorePict: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -35491,7 +36076,6 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
-                    "viewed": "$pict.insight.views",
                     "monetize":
                     {
                       $cond: {
@@ -35504,6 +36088,7 @@ export class PostsService {
                     },
                     "comments": "$pict.comments",
                     "likes": "$pict.likes",
+                    "viewed": "$pict.insight.views",
                     "insight":
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
@@ -35637,6 +36222,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -35657,7 +36243,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreVid: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -35849,6 +36449,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -35930,6 +36531,7 @@ export class PostsService {
                           },
                           "comments": "$comments",
                           "likes": "$likes",
+                          "views": "$views",
                           "_id": 1,
                           "postID": 1,
                           "createdAt": 1,
@@ -35950,7 +36552,21 @@ export class PostsService {
                             $meta: "textScore"
                           }
                         }
-                      }
+                      },
+                      {
+                        $sort: {
+                          scoreDiary: - 1,
+                          comments: - 1,
+                          likes: - 1,
+                          views: -1
+                        }
+                      },
+                      {
+                        $skip: skip
+                      },
+                      {
+                        $limit: limit
+                      },
                     ],
                     as: "pict"
                   },
@@ -36142,6 +36758,7 @@ export class PostsService {
                     comments: - 1,
                     likes: - 1,
                     viewed: -1
+
                   }
                 },
                 {
@@ -36152,6 +36769,7 @@ export class PostsService {
                 },
 
               ],
+
           },
 
         },

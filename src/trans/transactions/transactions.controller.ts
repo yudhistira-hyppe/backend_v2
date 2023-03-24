@@ -9939,9 +9939,14 @@ export class TransactionsController {
         var totalallrow = null;
         var total = null;
         var dataquery = null;
+        var penjual = null;
+        var pembeli = null;
+
         var request_json = JSON.parse(JSON.stringify(request.body));
 
         status = request_json["status"];
+        pembeli = request_json["pembeli"];
+        penjual = request_json["penjual"];
         startdate = request_json["startdate"];
         enddate = request_json["enddate"];
         type = request_json["type"];
@@ -9965,7 +9970,7 @@ export class TransactionsController {
 
         var dataid = null;
         try {
-            dataquery = await this.transactionsService.jualbeli(startdate, enddate, status, descending, page, limit);
+            dataquery = await this.transactionsService.jualbeli(startdate, enddate, status, descending, page, limit, penjual, pembeli);
             dataid = dataquery[0]._id
         } catch (e) {
             dataquery = [];
@@ -9989,7 +9994,7 @@ export class TransactionsController {
             totalsearch = 0;
         } else {
             try {
-                datasearch = await this.transactionsService.jualbelicount(startdate, enddate, status);
+                datasearch = await this.transactionsService.jualbelicount(startdate, enddate, status, penjual, pembeli);
                 totalsearch = datasearch[0].totalpost;
             } catch (e) {
                 totalsearch = 0;
@@ -10003,7 +10008,7 @@ export class TransactionsController {
 
             try {
 
-                dataall = await this.transactionsService.jualbelicount(undefined, undefined, undefined);
+                dataall = await this.transactionsService.jualbelicount(undefined, undefined, undefined, undefined, undefined);
                 totalallrow = dataall[0].totalpost;
 
             } catch (e) {
