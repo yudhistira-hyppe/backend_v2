@@ -7,10 +7,12 @@ import { Mediaproofpicts, MediaproofpictsSchema } from './schemas/mediaproofpict
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { MulterModule } from '@nestjs/platform-express';
 import { v4 as uuidv4 } from 'uuid';
+import { OssModule } from '../../stream/oss/oss.module';
 
 @Module({
 
     imports: [
+        OssModule,
         ConfigModule.forRoot(), NestjsFormDataModule,
 
         MongooseModule.forFeature([{ name: Mediaproofpicts.name, schema: MediaproofpictsSchema }], 'SERVER_FULL')

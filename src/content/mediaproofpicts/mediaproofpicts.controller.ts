@@ -3,6 +3,7 @@ import { MediaproofpictsService } from './mediaproofpicts.service';
 import { CreateMediaproofpictsDto } from './dto/create-mediaproofpicts.dto';
 import { Mediaproofpicts } from './schemas/mediaproofpicts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { OssService } from '../../stream/oss/oss.service';
 
 // import { FormDataRequest } from 'nestjs-form-data';
 // import { FileInterceptor, FilesInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -36,6 +37,7 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 @Controller('api/mediaproofpicts')
 export class MediaproofpictsController {
   constructor(private readonly MediaproofpictsService: MediaproofpictsService,
+    private readonly ossService: OssService, 
   ) { }
 
   @Post()
@@ -61,8 +63,51 @@ export class MediaproofpictsController {
 
   @Post("/move/oss")
   async moveOss() {
-    var dataProfile = await this.MediaproofpictsService.findByOssName("be-staging");
-    console.log(dataProfile.length);
+    var OSS_path = "http://be-production.oss-ap-southeast-5.aliyuncs.com/";
+    var mediaproofpicts = await this.MediaproofpictsService.findByOssName("be-staging");
+    console.log(mediaproofpicts.length);
+    for (var i = 0; i < mediaproofpicts.length;i++){
+      var mediaproofpicts_mediaBasePath = mediaproofpicts[i].mediaBasePath.toString();
+      var mediaproofpicts_mediaSelfieBasePath = mediaproofpicts[i].mediaSelfieBasePath.toString(); 
+      var mediaproofpicts_SupportfsSourceUri = mediaproofpicts[i].mediaSupportUri;
+      
+      var mediaproofpicts_fsSourceUri = OSS_path + mediaproofpicts_mediaBasePath;
+      var mediaproofpicts_SelfiefsSourceUri = OSS_path + mediaproofpicts_mediaSelfieBasePath;
+
+      console.log("KTP FILE", mediaproofpicts_fsSourceUri);
+      console.log("SELFI FILE", mediaproofpicts_SelfiefsSourceUri);
+
+      var buffer_mediaproofpicts_mediaBasePath = await this.ossService.readFile(mediaproofpicts_mediaBasePath);
+      var upload_mediaproofpicts_mediaBasePath = await this.ossService.uploadFileBuffer2(Buffer.from(buffer_mediaproofpicts_mediaBasePath), mediaproofpicts_mediaBasePath);
+
+      var buffer_mediaproofpicts_mediaSelfieBasePath = await this.ossService.readFile(mediaproofpicts_mediaSelfieBasePath);
+      var upload_mediaproofpicts_mediaSelfieBasePath = await this.ossService.uploadFileBuffer2(Buffer.from(buffer_mediaproofpicts_mediaSelfieBasePath), mediaproofpicts_mediaSelfieBasePath);
+
+      var array_support_file = [];
+      if (mediaproofpicts_SupportfsSourceUri.length > 0) {
+        console.log("-----START-----");
+        for (var j = 0; j < mediaproofpicts_SupportfsSourceUri.length; j++) {
+          var mediaproofpicts_SupportfsSourceUri_mediaBasePath = mediaproofpicts_SupportfsSourceUri[j];
+          var buffer_mediaproofpicts_SupportfsSourceUri_mediaBasePath = await this.ossService.readFile(mediaproofpicts_SupportfsSourceUri_mediaBasePath);
+          var upload_mediaproofpicts_SupportfsSourceUri_mediaBasePath = await this.ossService.uploadFileBuffer2(Buffer.from(buffer_mediaproofpicts_SupportfsSourceUri_mediaBasePath), mediaproofpicts_SupportfsSourceUri_mediaBasePath);
+          array_support_file.push(OSS_path + mediaproofpicts_SupportfsSourceUri_mediaBasePath);
+        }
+        console.log("SUPPORT FILE",array_support_file);
+        console.log("-----END-----");
+      }else{
+          console.log("mediaproofpicts_SupportfsSourceUri",0);
+      }
+
+      var CreateMediaproofpictsDto_ = new CreateMediaproofpictsDto();
+      CreateMediaproofpictsDto_.fsSourceUri = mediaproofpicts_fsSourceUri;
+      CreateMediaproofpictsDto_.fsTargetUri = mediaproofpicts_fsSourceUri;
+
+      CreateMediaproofpictsDto_.SelfiefsSourceUri = mediaproofpicts_SelfiefsSourceUri;
+      CreateMediaproofpictsDto_.SelfiefsTargetUri = mediaproofpicts_SelfiefsSourceUri;
+
+      CreateMediaproofpictsDto_.SupportfsSourceUri = array_support_file;
+      await this.MediaproofpictsService.updatebyId(mediaproofpicts[i]._id.toString(), CreateMediaproofpictsDto_);
+    }
   }
 
   // @Post()

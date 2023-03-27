@@ -3,10 +3,12 @@ import { MediaprofilepictsService } from './mediaprofilepicts.service';
 import { CreateMediaprofilepictsDto } from './dto/create-mediaprofilepicts.dto';
 import { Mediaprofilepicts } from './schemas/mediaprofilepicts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { OssService } from 'src/stream/oss/oss.service';
 
 @Controller('api/mediaprofilepicts')
 export class MediaprofilepictsController {
-    constructor(private readonly MediaprofilepictsService: MediaprofilepictsService) {}
+    constructor(private readonly MediaprofilepictsService: MediaprofilepictsService,
+      private readonly ossService: OssService) {}
 
     @Post()
     async create(@Body() CreateMediaprofilepictsDto: CreateMediaprofilepictsDto) {
@@ -30,14 +32,27 @@ export class MediaprofilepictsController {
     }
 
   @Post("/move/oss")
-    async moveOss(){
+  async moveOss() {
+      var OSS_path = "http://be-production.oss-ap-southeast-5.aliyuncs.com/";
       var dataProfile = await this.MediaprofilepictsService.findByOssName("be-staging");
       for (var i = 0; i < dataProfile.length; i++) {
+        console.log(dataProfile[i]._id.toString());
+        var mediaproofpicts_mediaBasePath = dataProfile[i].mediaBasePath.toString();
+        var new_mediaproofpicts_mediaBasePath = mediaproofpicts_mediaBasePath.replace("profilepict", "profilePict");
+        var mediaproofpicts_fsSourceUri = OSS_path + new_mediaproofpicts_mediaBasePath;
 
-        var path_ori = dataProfile[i].mediaThumBasePath.toString();
-        var path_thum = dataProfile[i].mediaBasePath.toString();
-        //var data2 = await this.ossService.readFile(path);
+        var buffer_mediaproofpicts_mediaBasePath = await this.ossService.readFile(new_mediaproofpicts_mediaBasePath);
+        var upload_mediaproofpicts_mediaBasePath = await this.ossService.uploadFileBuffer2(Buffer.from(buffer_mediaproofpicts_mediaBasePath), new_mediaproofpicts_mediaBasePath);
+        if (dataProfile[i].mediaThumBasePath != undefined) {
+          var mediaproofpicts_mediaThumBasePath = dataProfile[i].mediaThumBasePath.toString();
+          var buffer_mediaproofpicts_mediaThumBasePath = await this.ossService.readFile(mediaproofpicts_mediaThumBasePath);
+          var upload_mediaproofpicts_mediaBasePath = await this.ossService.uploadFileBuffer2(Buffer.from(buffer_mediaproofpicts_mediaThumBasePath), mediaproofpicts_mediaThumBasePath);
+        }
+        var Mediaprofilepicts_ = new Mediaprofilepicts();
+        Mediaprofilepicts_.fsSourceUri = mediaproofpicts_fsSourceUri;
+        Mediaprofilepicts_.fsTargetUri = mediaproofpicts_fsSourceUri;
+        Mediaprofilepicts_.mediaBasePath = new_mediaproofpicts_mediaBasePath;
+        await this.MediaprofilepictsService.updatebyId(dataProfile[i]._id.toString(), Mediaprofilepicts_); 
       }
-      console.log(dataProfile.length);
     }
 }
