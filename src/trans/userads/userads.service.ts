@@ -2433,6 +2433,379 @@ export class UserAdsService {
             });
         }
 
+        console.log(JSON.stringify(pipeline));
+
+        var query = await this.userAdsModel.aggregate(pipeline);
+        return query;
+    }
+
+    async listpenontondetail2(idads: string, statusClick: any, statusView: any, limit: number, page: number) {
+        var pipeline = [];
+        pipeline.push(
+            {
+                $match: {
+                    "adsID": new Types.ObjectId(idads)
+                }
+            },
+        );
+        
+        if (statusClick != undefined && statusClick == true) 
+        {
+            pipeline.push({
+                "$unwind":
+                {
+                    path: "$clickTime",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    "adsID": 1,
+                    "createdAt": '$clickTime',
+                    "description": 1,
+                    "priority": 1,
+                    "priorityNumber": 1,
+                    "statusClick": 1,
+                    "statusView": 1,
+                    "userID": 1,
+                    "liveAt": 1,
+                    "viewed": 1,
+                    "liveTypeuserads": 1,
+                    "adstypesId": 1,
+                    "isActive": 1,
+                    "updateAt": 1,
+                    "clickAt": 1,
+                    "timeViewSecond": 1
+                }
+            },);
+        }
+        else if(statusView != undefined && statusView == true)
+        {
+            pipeline.push({
+                "$unwind":
+                {
+                    path: "$updateAt",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    "adsID": 1,
+                    "createdAt": '$updateAt',
+                    "description": 1,
+                    "priority": 1,
+                    "priorityNumber": 1,
+                    "statusClick": 1,
+                    "statusView": 1,
+                    "userID": 1,
+                    "liveAt": 1,
+                    "viewed": 1,
+                    "liveTypeuserads": 1,
+                    "adstypesId": 1,
+                    "isActive": 1,
+                    "updateAt": 1,
+                    "clickAt": 1,
+                    "timeViewSecond": 1
+                }
+            },);
+        }
+
+        pipeline.push(
+            {
+                $match: 
+                {
+                    "viewed": { "$ne": 0 }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    localField: 'userID',
+                    foreignField: '_id',
+                    as: 'userbasics_data',
+                },
+
+            },
+            {
+                $lookup: {
+                    from: 'areas',
+                    localField: 'userbasics_data.states.$id',
+                    foreignField: '_id',
+                    as: 'areas_data',
+
+                },
+
+            },
+            {
+                $lookup: {
+                    from: 'ads',
+                    localField: 'adsID',
+                    foreignField: '_id',
+                    as: 'adsdata',
+
+                },
+
+            },
+            {
+                $project: {
+                    user: {
+                        $arrayElemAt: ['$userbasics_data', 0]
+                    },
+                    areas:
+                    {
+                        $cond: {
+                            if: {
+                                $eq: ['$areas_data', []]
+                            },
+                            then: "OTHER",
+                            else: {
+                                $arrayElemAt: ["$areas_data.stateName", 0]
+                            },
+
+                        }
+                    },
+                    areasId:
+                    {
+                        $cond: {
+                            if: {
+                                $eq: ['$areas_data', []]
+                            },
+                            then: "",
+                            else: {
+                                $arrayElemAt: ["$areas_data._id", 0]
+                            },
+
+                        }
+                    },
+                    adsID: 1,
+                    clickAt: 1,
+                    createdAt: 1,
+                    description: 1,
+                    priority: 1,
+                    statusClick: 1,
+                    statusView: 1,
+                    updatedAt: 1,
+                    viewAt: 1,
+                    viewed: 1,
+                    name: {
+                        $arrayElemAt: ['$adsdata.name', 0]
+                    },
+                    typeid: {
+                        $arrayElemAt: ['$adsdata.typeAdsID', 0]
+                    },
+
+                }
+            },
+            {
+                $lookup: {
+                    from: 'adstypes',
+                    localField: 'typeid',
+                    foreignField: '_id',
+                    as: 'typeads',
+
+                },
+            },
+            {
+                $project: {
+                    profilpictid: '$user.profilePict.$id',
+                    fullName: '$user.fullName',
+                    clickAt: 1,
+                    createdAt: 1,
+                    description: 1,
+                    priority: 1,
+                    statusClick: 1,
+                    statusView: {
+                        $cond: {
+                            if: {
+                                $eq: ["$statusClick", true]
+                            },
+                            then: true,
+                            else: '$statusView'
+                        }
+                    },
+                    updatedAt: 1,
+                    viewAt: 1,
+                    viewed: 1,
+                    name: 1,
+                    adsID: 1,
+                    areas: 1,
+                    areasId: 1,
+                    typeads: {
+                        $arrayElemAt: ['$typeads.nameType', 0]
+                    },
+                    valueType: {
+                        $arrayElemAt: ['$typeads.creditValue', 0]
+                    },
+
+                }
+            },
+            {
+                $lookup: {
+                    from: 'mediaprofilepicts',
+                    localField: 'profilpictid',
+                    foreignField: '_id',
+                    as: 'profilePict_data',
+
+                },
+
+            },
+            {
+                $project: {
+                    profilpict: {
+                        $arrayElemAt: ['$profilePict_data', 0]
+                    },
+                    fullName: 1,
+                    clickAt: 1,
+                    createdAt: 1,
+                    description: 1,
+                    priority: 1,
+                    statusClick: 1,
+                    statusView: 1,
+                    updatedAt: 1,
+                    viewAt: 1,
+                    viewed: 1,
+                    name: 1,
+                    typeads: 1,
+                    valueType: 1,
+                    adsID: 1,
+                    areas: 1,
+                    areasId: 1,
+                    avatar: {
+                        mediaBasePath: '$profilpict.mediaBasePath',
+                        mediaID: '$profilpict.mediaID',
+                        mediaUri: '$profilpict.mediaUri',
+                        mediaType: '$profilpict.mediaType',
+                        mediaEndpoint: '$profilpict.fsTargetUri',
+                        medreplace: {
+                            $replaceOne: {
+                                input: "$profilpict.mediaUri",
+                                find: "_0001.jpeg",
+                                replacement: ""
+                            }
+                        },
+
+                    },
+
+                }
+            },
+            {
+                $addFields: {
+
+                    concat: '/profilepict',
+                    pict: {
+                        $replaceOne: {
+                            input: "$profilpict.mediaUri",
+                            find: "_0001.jpeg",
+                            replacement: ""
+                        }
+                    },
+
+                },
+
+            },
+            {
+                $project: {
+                    fullName: 1,
+                    clickAt: 1,
+                    createdAt: 1,
+                    description: 1,
+                    priority: 1,
+                    statusClick: 1,
+                    statusView: 1,
+                    updatedAt: 1,
+                    viewAt: 1,
+                    viewed: 1,
+                    name: 1,
+                    adsID: 1,
+                    typeads: 1,
+                    valueType: 1,
+                    concat: '$concat',
+                    pict: '$pict',
+                    areas: 1,
+                    areasId: 1,
+                    avatar: {
+                        mediaBasePath: '$profilpict.mediaBasePath',
+                        mediaUri: '$profilpict.mediaUri',
+                        mediaID: '$profilpict.mediaID',
+                        mediaType: '$profilpict.mediaType',
+                        mediaEndpoint: '$profilpict.fsTargetUri',
+                        medreplace: {
+                            $replaceOne: {
+                                input: "$profilpict.mediaUri",
+                                find: "_0001.jpeg",
+                                replacement: ""
+                            }
+                        },
+
+                    },
+
+                }
+            },
+            {
+                $project: {
+                    fullName: 1,
+                    clickAt: 1,
+                    createdAt: 1,
+                    description: 1,
+                    priority: 1,
+                    statusClick: 1,
+                    statusView: 1,
+                    updatedAt: 1,
+                    viewAt: 1,
+                    viewed: 1,
+                    name: 1,
+                    typeads: 1,
+                    valueType: 1,
+                    adsID: 1,
+                    areas: 1,
+                    areasId: 1,
+                    avatar: {
+                        mediaBasePath: '$avatar.mediaBasePath',
+                        mediaUri: '$avatar.mediaUri',
+                        mediaType: '$avatar.mediaType',
+                        mediaEndpoint: {
+                            $concat: ["$concat", "/", "$avatar.mediaID"]
+                        },
+
+                    },
+
+                }
+            },
+            {
+                $sort: {
+                    createdAt: - 1
+                },
+
+            },
+        );
+
+        if (statusClick != undefined && statusClick == true) {
+            pipeline.push({
+                "$match": {
+                    statusClick: statusClick
+                }
+            });
+        }
+        else if (statusView != undefined && statusView == true) {
+            pipeline.push({
+                "$match": {
+                    statusView: statusView
+                }
+            });
+        }
+        if (page > 0) {
+            pipeline.push({
+                "$skip": page * limit
+            });
+        }
+        if (limit > 0) {
+            pipeline.push({
+                "$limit": limit
+            });
+        }
+
+        // console.log(JSON.stringify(pipeline));
+
         var query = await this.userAdsModel.aggregate(pipeline);
         return query;
     }

@@ -623,7 +623,8 @@ export class UserAdsController {
         var getdata = null;
         var lengthdata = null;
         try {
-            getdata = await this.userAdsService.listpenontondetail(iddata, click, view, limit, page);
+            // getdata = await this.userAdsService.listpenontondetail(iddata, click, view, limit, page);
+            getdata = await this.userAdsService.listpenontondetail2(iddata, click, view, limit, page);
             lengthdata = getdata.length;
         }
         catch (e) {
@@ -633,7 +634,8 @@ export class UserAdsController {
         var temptotalsearch = null;
         var lengthsearch = 0;
         try {
-            temptotalsearch = await this.userAdsService.listpenontondetail(iddata, click, view, undefined, undefined);
+            // temptotalsearch = await this.userAdsService.listpenontondetail(iddata, click, view, undefined, undefined);
+            temptotalsearch = await this.userAdsService.listpenontondetail2(iddata, click, view, undefined, undefined);
             lengthsearch = temptotalsearch.length;
         }
         catch (e) {
