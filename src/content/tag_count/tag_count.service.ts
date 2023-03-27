@@ -237,6 +237,7 @@ export class TagCountService {
                                                     },
                                                     "mediaThumbUri": 1,
                                                     "mediaType": 1,
+                                                    "uploadSource": 1,
 
                                                 }
                                             }
@@ -292,6 +293,7 @@ export class TagCountService {
                                         "isViewed": "$pict.isViewed",
                                         "allowComments": "$pict.allowComments",
                                         "saleAmount": "$pict.saleAmount",
+                                        "uploadSource": "$media.uploadSource",
                                         "monetize":
                                         {
                                             $cond: {
@@ -781,6 +783,7 @@ export class TagCountService {
                                                     },
                                                     "mediaThumbUri": 1,
                                                     "mediaType": 1,
+                                                    "uploadSource": 1,
 
                                                 }
                                             }
@@ -836,6 +839,7 @@ export class TagCountService {
                                         "isViewed": "$pict.isViewed",
                                         "allowComments": "$pict.allowComments",
                                         "saleAmount": "$pict.saleAmount",
+                                        "uploadSource": "$media.uploadSource",
                                         "monetize":
                                         {
                                             $cond: {
@@ -1123,6 +1127,7 @@ export class TagCountService {
                                                     },
                                                     "mediaThumbUri": 1,
                                                     "mediaType": 1,
+                                                    "uploadSource": 1,
 
                                                 }
                                             }
@@ -1178,6 +1183,7 @@ export class TagCountService {
                                         "isViewed": "$pict.isViewed",
                                         "allowComments": "$pict.allowComments",
                                         "saleAmount": "$pict.saleAmount",
+                                        "uploadSource": "$media.uploadSource",
                                         "monetize":
                                         {
                                             $cond: {
@@ -1968,6 +1974,7 @@ export class TagCountService {
                                                     },
                                                     "mediaThumbUri": 1,
                                                     "mediaType": 1,
+                                                    "uploadSource": 1,
 
                                                 }
                                             }
@@ -2023,6 +2030,7 @@ export class TagCountService {
                                         "isViewed": "$pict.isViewed",
                                         "allowComments": "$pict.allowComments",
                                         "saleAmount": "$pict.saleAmount",
+                                        "uploadSource": "$media.uploadSource",
                                         "monetize":
                                         {
                                             $cond: {

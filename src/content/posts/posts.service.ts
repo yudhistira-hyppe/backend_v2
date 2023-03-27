@@ -17740,6 +17740,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -17828,6 +17829,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {
@@ -20062,6 +20064,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -20150,6 +20153,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {
@@ -21153,6 +21157,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -21241,6 +21246,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {
@@ -23325,6 +23331,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -23413,6 +23420,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {
@@ -25082,6 +25090,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -25170,6 +25179,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {
@@ -25242,7 +25252,6 @@ export class PostsService {
                 },
 
               ],
-
           },
 
         },
@@ -27250,6 +27259,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -27338,6 +27348,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {
@@ -27677,6 +27688,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -27765,6 +27777,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {
@@ -28417,6 +28430,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -28505,6 +28519,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {
@@ -29467,6 +29482,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -29555,6 +29571,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {
@@ -30638,6 +30655,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -30726,6 +30744,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {
@@ -31510,6 +31529,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -31598,6 +31618,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {
@@ -33441,6 +33462,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -33529,6 +33551,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {
@@ -34925,6 +34948,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -35013,6 +35037,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {
@@ -35988,6 +36013,7 @@ export class PostsService {
                           },
                           "mediaThumbUri": 1,
                           "mediaType": 1,
+                          "uploadSource": 1,
 
                         }
                       }
@@ -36076,6 +36102,7 @@ export class PostsService {
                     "isViewed": "$pict.isViewed",
                     "allowComments": "$pict.allowComments",
                     "saleAmount": "$pict.saleAmount",
+                    "uploadSource": "$media.uploadSource",
                     "monetize":
                     {
                       $cond: {

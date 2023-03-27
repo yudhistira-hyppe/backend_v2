@@ -366,6 +366,7 @@ export class InterestCountService {
                                                     },
                                                     "mediaThumbUri": 1,
                                                     "mediaType": 1,
+                                                    "uploadSource": 1,
 
                                                 }
                                             }
@@ -421,6 +422,7 @@ export class InterestCountService {
                                         "isViewed": "$pict.isViewed",
                                         "allowComments": "$pict.allowComments",
                                         "saleAmount": "$pict.saleAmount",
+                                        "uploadSource": "$media.uploadSource",
                                         "monetize":
                                         {
                                             $cond: {
@@ -924,6 +926,7 @@ export class InterestCountService {
                                                     },
                                                     "mediaThumbUri": 1,
                                                     "mediaType": 1,
+                                                    "uploadSource": 1,
 
                                                 }
                                             }
@@ -979,6 +982,7 @@ export class InterestCountService {
                                         "isViewed": "$pict.isViewed",
                                         "allowComments": "$pict.allowComments",
                                         "saleAmount": "$pict.saleAmount",
+                                        "uploadSource": "$media.uploadSource",
                                         "monetize":
                                         {
                                             $cond: {
@@ -1272,6 +1276,7 @@ export class InterestCountService {
                                                     },
                                                     "mediaThumbUri": 1,
                                                     "mediaType": 1,
+                                                    "uploadSource": 1,
 
                                                 }
                                             }
@@ -1327,6 +1332,7 @@ export class InterestCountService {
                                         "isViewed": "$pict.isViewed",
                                         "allowComments": "$pict.allowComments",
                                         "saleAmount": "$pict.saleAmount",
+                                        "uploadSource": "$media.uploadSource",
                                         "monetize":
                                         {
                                             $cond: {
@@ -1965,6 +1971,7 @@ export class InterestCountService {
                                                     },
                                                     "mediaThumbUri": 1,
                                                     "mediaType": 1,
+                                                    "uploadSource": 1,
 
                                                 }
                                             }
@@ -2020,6 +2027,7 @@ export class InterestCountService {
                                         "isViewed": "$pict.isViewed",
                                         "allowComments": "$pict.allowComments",
                                         "saleAmount": "$pict.saleAmount",
+                                        "uploadSource": "$media.uploadSource",
                                         "monetize":
                                         {
                                             $cond: {
