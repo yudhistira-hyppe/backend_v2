@@ -16986,7 +16986,7 @@ export class PostsService {
       {
         $out:
         {
-          db: 'ProdAll',
+          db: 'prodAll',
           coll: 'interest_count'
         }
       },
