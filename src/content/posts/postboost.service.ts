@@ -3538,6 +3538,13 @@ export class PostBoostService {
   }
 
   public async markViewedNew(postid: string, email: string, receiver: string) {
+    var userbasic1 = await this.userService.findOne(email);
+
+    if (userbasic1 == null || userbasic1 == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, auth-user data not found',
+      );
+    }
     if (email !== receiver) {
       this.logger.log("markViewed >>> pid: " + postid + ", email: " + email + ", receiver: " + receiver);
       let checkDone = await this.contentEventsService.ceckData(email, "VIEW", "DONE", receiver, "", postid);
@@ -3577,7 +3584,11 @@ export class PostBoostService {
         CreateContenteventsDto2.senderParty = email;
         CreateContenteventsDto2.postID = postid;
         try {
-          await this.contentEventsService.create(CreateContenteventsDto1);
+
+          const resultdata1 = await this.contentEventsService.create(CreateContenteventsDto1);
+          let idevent1 = resultdata1._id;
+          let event1 = resultdata1.eventType.toString();
+          await this.utilService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
           await this.contentEventsService.create(CreateContenteventsDto2);
           await this.postxService.updateView(receiver, postid);
         } catch (error) {
