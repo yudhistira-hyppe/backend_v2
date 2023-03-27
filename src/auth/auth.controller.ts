@@ -3665,7 +3665,7 @@ export class AuthController {
                       createMediaproofpictsDto.postType = 'profilepict';
                       createMediaproofpictsDto.mediaType = 'image';
 
-                      createMediaproofpictsDto.mediaBasePath = userId + "/profilepict/" + fileName;
+                      createMediaproofpictsDto.mediaBasePath = userId + "/profilePict/" + fileName;
                       createMediaproofpictsDto.mediaUri = fileName;
                       createMediaproofpictsDto.originalName = originalName;
 
@@ -3689,7 +3689,7 @@ export class AuthController {
                     createMediaproofpictsDto.postType = 'profilepict';
                     createMediaproofpictsDto.mediaType = 'image';
 
-                    createMediaproofpictsDto.mediaBasePath = userId + "/profilepict/" + fileName;
+                    createMediaproofpictsDto.mediaBasePath = userId + "/profilePict/" + fileName;
                     createMediaproofpictsDto.mediaUri = fileName;
                     createMediaproofpictsDto.originalName = originalName;
 

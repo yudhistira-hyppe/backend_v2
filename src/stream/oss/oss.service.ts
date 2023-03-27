@@ -27,6 +27,17 @@ export class OssService {
     return client;
   }
 
+  getClient2() {
+    //---- OSS CONFIG ----
+    var client = new OSS({
+      accessKeyId: this.configService.get("OSS_PORD_ACCES_KEY_ID"),
+      accessKeySecret: this.configService.get("OSS_PORD_ACCES_KEY_SECRET"),
+      bucket: this.configService.get("OSS_PORD_BUCKET_PROFILE"),
+      region: this.configService.get("OSS_PORD_REGION")
+    });
+    return client;
+  }
+
   async uploadFile(file: Express.Multer.File, pathUpload: string) {
     //---- CREATE FILE BUFFER ----
     var buffer = file.buffer;
@@ -51,6 +62,24 @@ export class OssService {
     try {
       //---- POST FILE OSS ----
       const result = await this.getClient().put(pathUpload, file);
+      console.log(result);
+      return result;
+    } catch (e) {
+      console.log(e);
+      return {
+        res: {
+          status: 400,
+          statusCode: 400,
+          statusMessage: e,
+        }
+      }
+    }
+  }
+
+  async uploadFileBuffer2(file: Buffer, pathUpload: string) {
+    try {
+      //---- POST FILE OSS ----
+      const result = await this.getClient2().put(pathUpload, file);
       console.log(result);
       return result;
     } catch (e) {

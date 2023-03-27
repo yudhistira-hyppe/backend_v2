@@ -21,7 +21,7 @@ export class MediaproofpictsService {
   }
 
   async findByOssName(text: string): Promise<Mediaproofpicts[]> {
-    const ndto = await this.MediaproofpictsModel.find({ 'fsSourceUri': { $regex: text, $options: 'i' } }).exec();
+    const ndto = await this.MediaproofpictsModel.find({ 'SelfiefsSourceUri': { $regex: text, $options: 'i' } }).exec();
     return ndto;
   }
 
