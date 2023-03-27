@@ -4111,7 +4111,11 @@ export class PostContentService {
                 }
                 pa.apsaraId = String(pic.apsaraId);
                 pa.isApsara = true;
-                pa.apsaraThumbId = String(pic.apsaraThumbId);
+                if (pic.apsaraThumbId != undefined) {
+                  pa.apsaraThumbId = String(pic.apsaraThumbId);
+                }else{
+                  pa.apsaraThumbId = String(pic.apsaraId);
+                }
               } else {
                 pa.mediaEndpoint = '/pict/' + pic.postID;
                 pa.mediaUri = pic.mediaUri;
