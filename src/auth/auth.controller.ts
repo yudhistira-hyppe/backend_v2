@@ -3507,7 +3507,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/posts/v2/profilepicture')
+  @Post('api/posts/profilepicture')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'profilePict', maxCount: 1 }, { name: 'proofPict', maxCount: 1, }]))
   async uploadProfile_v2(
     @UploadedFiles() files: {
@@ -3755,7 +3755,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/posts/profilepicture')
+  @Post('api/posts/v2/profilepicture')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'profilePict', maxCount: 1 }, { name: 'proofPict', maxCount: 1, }]))
   async uploadProfile(
     @UploadedFiles() files: {
