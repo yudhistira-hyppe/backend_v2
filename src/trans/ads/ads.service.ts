@@ -14520,24 +14520,6 @@ export class AdsService {
                                                         ]
                                                     }
                                                 },
-                                                {
-                                                    clickTime:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$clickTime"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
                                             ]
                                         }
                                     },
@@ -14545,8 +14527,12 @@ export class AdsService {
                                         "$project":
                                         {
                                             _id:1,
+                                            userID:1,
                                             adsID:1,
-                                            clickTime:1
+                                            createdAt:1,
+                                            statusClick:1,
+                                            clickAt:1,
+                                            clickTime:1,
                                         }
                                     },
                                     {
@@ -14554,6 +14540,18 @@ export class AdsService {
                                         {
                                             path:"$clickTime",
                                             preserveNullAndEmptyArrays:true
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$statusClick", true
+                                                ]
+                                            }
                                         }
                                     },
                                     // {
@@ -14596,45 +14594,36 @@ export class AdsService {
                                     {
                                         "$match":
                                         {
-                                            "$and":
-                                            [
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$eq":
-                                                        [
-                                                            "$adsID",
-                                                            "$$local_id"
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    updateAt:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$updateAt"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                            ]
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$adsID",
+                                                    "$$local_id"
+                                                ]
+                                            }
                                         }
                                     },
                                     {
                                         "$project":
                                         {
                                             _id:1,
+                                            userID:1,
                                             adsID:1,
-                                            updateAt:1
+                                            statusView:
+                                            {
+                                                "$cond": 
+                                                {
+                                                    if: {
+                                                        $eq: ["$statusClick", true]
+                                                    },
+                                                    then: true,
+                                                    else: '$statusView'
+                                                }
+                                            },
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:1,
                                         }
                                     },
                                     {
@@ -14642,6 +14631,38 @@ export class AdsService {
                                         {
                                             path:"$updateAt",
                                             preserveNullAndEmptyArrays:true
+                                        }
+                                    },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:1,
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:
+                                            {
+                                                "$ifNull":
+                                                [
+                                                    "$updateAt",
+                                                    "$createdAt"
+                                                ]
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$statusView",
+                                                    true
+                                                ]
+                                            }
                                         }
                                     },
                                     // {
@@ -14683,45 +14704,36 @@ export class AdsService {
                                     {
                                         "$match":
                                         {
-                                            "$and":
-                                            [
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$eq":
-                                                        [
-                                                            "$adsID",
-                                                            "$$local_id"
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    updateAt:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$updateAt"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                            ]
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$adsID",
+                                                    "$$local_id"
+                                                ]
+                                            }
                                         }
                                     },
                                     {
                                         "$project":
                                         {
                                             _id:1,
+                                            userID:1,
                                             adsID:1,
-                                            updateAt:1
+                                            statusView:
+                                            {
+                                                "$cond": 
+                                                {
+                                                    if: {
+                                                        $eq: ["$statusClick", true]
+                                                    },
+                                                    then: true,
+                                                    else: '$statusView'
+                                                }
+                                            },
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:1,
                                         }
                                     },
                                     {
@@ -14732,13 +14744,47 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            updateAt: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:1,
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:
                                             {
-                                                $gte: startdate,
-                                                $lte: dateend,
-                                            }
+                                                "$ifNull":
+                                                [
+                                                    "$updateAt",
+                                                    "$createdAt"
+                                                ]
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusView",
+                                                            true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    updateAt: 
+                                                    {
+                                                        $gte: startdate,
+                                                        $lte: dateend,
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -14812,24 +14858,6 @@ export class AdsService {
                                                         ]
                                                     }
                                                 },
-                                                {
-                                                    clickTime:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$clickTime"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
                                             ]
                                         }
                                     },
@@ -14837,8 +14865,12 @@ export class AdsService {
                                         "$project":
                                         {
                                             _id:1,
+                                            userID:1,
                                             adsID:1,
-                                            clickTime:1
+                                            createdAt:1,
+                                            statusClick:1,
+                                            clickAt:1,
+                                            clickTime:1,
                                         }
                                     },
                                     {
@@ -14849,13 +14881,68 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            clickTime: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            clickAt:1,
+                                            statusClick:1,
+                                            clickTime:
                                             {
-                                                $gte: startdate,
-                                                $lte: dateend,
-                                            }
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusClick", true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    clickTime: 
+                                                    {
+                                                        $gte: startdate,
+                                                        $lte: dateend,
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -14979,53 +15066,75 @@ export class AdsService {
                                     {
                                         "$match":
                                         {
-                                            "$and":
-                                            [
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$eq":
-                                                        [
-                                                            "$adsID",
-                                                            "$$local_id"
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    updateAt:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$updateAt"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                            ]
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$adsID",
+                                                    "$$local_id"
+                                                ]
+                                            }
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:
+                                            {
+                                                "$cond": 
+                                                {
+                                                    if: {
+                                                        $eq: ["$statusClick", true]
+                                                    },
+                                                    then: true,
+                                                    else: '$statusView'
+                                                }
+                                            },
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
                                             path:"$updateAt",
                                             preserveNullAndEmptyArrays:true
+                                        }
+                                    },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:1,
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:
+                                            {
+                                                "$ifNull":
+                                                [
+                                                    "$updateAt",
+                                                    "$createdAt"
+                                                ]
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$statusView",
+                                                    true
+                                                ]
+                                            }
                                         }
                                     },
                                     {
@@ -15119,41 +15228,79 @@ export class AdsService {
                                                         ]
                                                     }
                                                 },
-                                                {
-                                                    clickTime:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$clickTime"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
                                             ]
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         clickTime:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            statusClick:1,
+                                            clickAt:1,
+                                            clickTime:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
                                             path:"$clickTime",
                                             preserveNullAndEmptyArrays:true
+                                        }
+                                    },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            clickAt:1,
+                                            statusClick:1,
+                                            clickTime:
+                                            {
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$statusClick", true
+                                                ]
+                                            }
                                         }
                                     },
                                     {
@@ -15316,53 +15463,75 @@ export class AdsService {
                                     {
                                         "$match":
                                         {
-                                            "$and":
-                                            [
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$eq":
-                                                        [
-                                                            "$adsID",
-                                                            "$$local_id"
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    updateAt:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$updateAt"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                            ]
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$adsID",
+                                                    "$$local_id"
+                                                ]
+                                            }
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:
+                                            {
+                                                "$cond": 
+                                                {
+                                                    if: {
+                                                        $eq: ["$statusClick", true]
+                                                    },
+                                                    then: true,
+                                                    else: '$statusView'
+                                                }
+                                            },
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
                                             path:"$updateAt",
                                             preserveNullAndEmptyArrays:true
+                                        }
+                                    },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:1,
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:
+                                            {
+                                                "$ifNull":
+                                                [
+                                                    "$updateAt",
+                                                    "$createdAt"
+                                                ]
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$statusView",
+                                                    true
+                                                ]
+                                            }
                                         }
                                     },
                                     {
@@ -15513,41 +15682,79 @@ export class AdsService {
                                                         ]
                                                     }
                                                 },
-                                                {
-                                                    clickTime:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$clickTime"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
                                             ]
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            statusClick:1,
+                                            clickAt:1,
+                                            clickTime:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
                                             path:"$clickTime",
                                             preserveNullAndEmptyArrays:true
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$statusClick", true
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            clickAt:1,
+                                            statusClick:1,
+                                            clickTime:
+                                            {
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
                                         }
                                     },
                                     {
@@ -15767,48 +15974,38 @@ export class AdsService {
                                     {
                                         "$match":
                                         {
-                                            "$and":
-                                            [
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$eq":
-                                                        [
-                                                            "$adsID",
-                                                            "$$local_id"
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    updateAt:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$updateAt"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                            ]
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$adsID",
+                                                    "$$local_id"
+                                                ]
+                                            }
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:
+                                            {
+                                                "$cond": 
+                                                {
+                                                    if: {
+                                                        $eq: ["$statusClick", true]
+                                                    },
+                                                    then: true,
+                                                    else: '$statusView'
+                                                }
+                                            },
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -15817,13 +16014,47 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            updateAt: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:1,
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:
                                             {
-                                                $gte: startdate,
-                                                $lte: dateend,
-                                            }
+                                                "$ifNull":
+                                                [
+                                                    "$updateAt",
+                                                    "$createdAt"
+                                                ]
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusView",
+                                                            true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    updateAt: 
+                                                    {
+                                                        $gte: startdate,
+                                                        $lte: dateend,
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -15960,36 +16191,21 @@ export class AdsService {
                                                         ]
                                                     }
                                                 },
-                                                {
-                                                    clickTime:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$clickTime"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
                                             ]
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            statusClick:1,
+                                            clickAt:1,
+                                            clickTime:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -15998,13 +16214,68 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            clickTime: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            clickAt:1,
+                                            statusClick:1,
+                                            clickTime:
                                             {
-                                                $gte: startdate,
-                                                $lte: dateend,
-                                            }
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusClick", true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    clickTime: 
+                                                    {
+                                                        $gte: startdate,
+                                                        $lte: dateend,
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -16167,48 +16438,38 @@ export class AdsService {
                                     {
                                         "$match":
                                         {
-                                            "$and":
-                                            [
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$eq":
-                                                        [
-                                                            "$adsID",
-                                                            "$$local_id"
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    updateAt:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$updateAt"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                            ]
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$adsID",
+                                                    "$$local_id"
+                                                ]
+                                            }
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:
+                                            {
+                                                "$cond": 
+                                                {
+                                                    if: {
+                                                        $eq: ["$statusClick", true]
+                                                    },
+                                                    then: true,
+                                                    else: '$statusView'
+                                                }
+                                            },
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -16217,13 +16478,47 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            updateAt: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:1,
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:
                                             {
-                                                $regex: dateend7,
-                                                $options: 'i'
-                                            }
+                                                "$ifNull":
+                                                [
+                                                    "$updateAt",
+                                                    "$createdAt"
+                                                ]
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusView",
+                                                            true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    updateAt: 
+                                                    {
+                                                        $regex: dateend7,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -16360,36 +16655,21 @@ export class AdsService {
                                                         ]
                                                     }
                                                 },
-                                                {
-                                                    clickTime:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$clickTime"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
                                             ]
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            statusClick:1,
+                                            clickAt:1,
+                                            clickTime:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -16398,13 +16678,68 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            clickTime: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            clickAt:1,
+                                            statusClick:1,
+                                            clickTime:
                                             {
-                                                $regex: dateend7,
-                                                $options: 'i'
-                                            }
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusClick", true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    clickTime: 
+                                                    {
+                                                        $regex: dateend7,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -16610,48 +16945,38 @@ export class AdsService {
                                     {
                                         "$match":
                                         {
-                                            "$and":
-                                            [
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$eq":
-                                                        [
-                                                            "$adsID",
-                                                            "$$local_id"
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    updateAt:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$updateAt"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                            ]
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$adsID",
+                                                    "$$local_id"
+                                                ]
+                                            }
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:
+                                            {
+                                                "$cond": 
+                                                {
+                                                    if: {
+                                                        $eq: ["$statusClick", true]
+                                                    },
+                                                    then: true,
+                                                    else: '$statusView'
+                                                }
+                                            },
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -16660,13 +16985,47 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            updateAt: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:1,
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:
                                             {
-                                                $regex: dateend6,
-                                                $options: 'i'
-                                            }
+                                                "$ifNull":
+                                                [
+                                                    "$updateAt",
+                                                    "$createdAt"
+                                                ]
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusView",
+                                                            true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    updateAt: 
+                                                    {
+                                                        $regex: dateend6,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -16803,36 +17162,21 @@ export class AdsService {
                                                         ]
                                                     }
                                                 },
-                                                {
-                                                    clickTime:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$clickTime"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
                                             ]
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            statusClick:1,
+                                            clickAt:1,
+                                            clickTime:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -16841,13 +17185,68 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            clickTime: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            clickAt:1,
+                                            statusClick:1,
+                                            clickTime:
                                             {
-                                                $regex: dateend6,
-                                                $options: 'i'
-                                            }
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusClick", true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    clickTime: 
+                                                    {
+                                                        $regex: dateend6,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -17053,48 +17452,38 @@ export class AdsService {
                                     {
                                         "$match":
                                         {
-                                            "$and":
-                                            [
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$eq":
-                                                        [
-                                                            "$adsID",
-                                                            "$$local_id"
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    updateAt:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$updateAt"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                            ]
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$adsID",
+                                                    "$$local_id"
+                                                ]
+                                            }
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:
+                                            {
+                                                "$cond": 
+                                                {
+                                                    if: {
+                                                        $eq: ["$statusClick", true]
+                                                    },
+                                                    then: true,
+                                                    else: '$statusView'
+                                                }
+                                            },
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -17103,13 +17492,47 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            updateAt: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:1,
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:
                                             {
-                                                $regex: dateend5,
-                                                $options: 'i'
-                                            }
+                                                "$ifNull":
+                                                [
+                                                    "$updateAt",
+                                                    "$createdAt"
+                                                ]
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusView",
+                                                            true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    updateAt: 
+                                                    {
+                                                        $regex: dateend5,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -17246,36 +17669,21 @@ export class AdsService {
                                                         ]
                                                     }
                                                 },
-                                                {
-                                                    clickTime:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$clickTime"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
                                             ]
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            statusClick:1,
+                                            clickAt:1,
+                                            clickTime:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -17284,13 +17692,68 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            clickTime: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            clickAt:1,
+                                            statusClick:1,
+                                            clickTime:
                                             {
-                                                $regex: dateend5,
-                                                $options: 'i'
-                                            }
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusClick", true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    clickTime: 
+                                                    {
+                                                        $regex: dateend5,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -17496,48 +17959,38 @@ export class AdsService {
                                     {
                                         "$match":
                                         {
-                                            "$and":
-                                            [
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$eq":
-                                                        [
-                                                            "$adsID",
-                                                            "$$local_id"
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    updateAt:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$updateAt"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                            ]
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$adsID",
+                                                    "$$local_id"
+                                                ]
+                                            }
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:
+                                            {
+                                                "$cond": 
+                                                {
+                                                    if: {
+                                                        $eq: ["$statusClick", true]
+                                                    },
+                                                    then: true,
+                                                    else: '$statusView'
+                                                }
+                                            },
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -17546,13 +17999,47 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            updateAt: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:1,
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:
                                             {
-                                                $regex: dateend4,
-                                                $options: 'i'
-                                            }
+                                                "$ifNull":
+                                                [
+                                                    "$updateAt",
+                                                    "$createdAt"
+                                                ]
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusView",
+                                                            true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    updateAt: 
+                                                    {
+                                                        $regex: dateend4,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -17689,36 +18176,21 @@ export class AdsService {
                                                         ]
                                                     }
                                                 },
-                                                {
-                                                    clickTime:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$clickTime"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
                                             ]
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            statusClick:1,
+                                            clickAt:1,
+                                            clickTime:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -17727,13 +18199,68 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            clickTime: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            clickAt:1,
+                                            statusClick:1,
+                                            clickTime:
                                             {
-                                                $regex: dateend4,
-                                                $options: 'i'
-                                            }
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusClick", true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    clickTime: 
+                                                    {
+                                                        $regex: dateend4,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -17939,48 +18466,38 @@ export class AdsService {
                                     {
                                         "$match":
                                         {
-                                            "$and":
-                                            [
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$eq":
-                                                        [
-                                                            "$adsID",
-                                                            "$$local_id"
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    updateAt:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$updateAt"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                            ]
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$adsID",
+                                                    "$$local_id"
+                                                ]
+                                            }
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:
+                                            {
+                                                "$cond": 
+                                                {
+                                                    if: {
+                                                        $eq: ["$statusClick", true]
+                                                    },
+                                                    then: true,
+                                                    else: '$statusView'
+                                                }
+                                            },
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -17989,13 +18506,47 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            updateAt: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:1,
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:
                                             {
-                                                $regex: dateend3,
-                                                $options: 'i'
-                                            }
+                                                "$ifNull":
+                                                [
+                                                    "$updateAt",
+                                                    "$createdAt"
+                                                ]
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusView",
+                                                            true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    updateAt: 
+                                                    {
+                                                        $regex: dateend3,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -18132,36 +18683,21 @@ export class AdsService {
                                                         ]
                                                     }
                                                 },
-                                                {
-                                                    clickTime:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$clickTime"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
                                             ]
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            statusClick:1,
+                                            clickAt:1,
+                                            clickTime:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -18170,13 +18706,68 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            clickTime: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            clickAt:1,
+                                            statusClick:1,
+                                            clickTime:
                                             {
-                                                $regex: dateend3,
-                                                $options: 'i'
-                                            }
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusClick", true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    clickTime: 
+                                                    {
+                                                        $regex: dateend3,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -18382,48 +18973,38 @@ export class AdsService {
                                     {
                                         "$match":
                                         {
-                                            "$and":
-                                            [
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$eq":
-                                                        [
-                                                            "$adsID",
-                                                            "$$local_id"
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    updateAt:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$updateAt"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                            ]
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$adsID",
+                                                    "$$local_id"
+                                                ]
+                                            }
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:
+                                            {
+                                                "$cond": 
+                                                {
+                                                    if: {
+                                                        $eq: ["$statusClick", true]
+                                                    },
+                                                    then: true,
+                                                    else: '$statusView'
+                                                }
+                                            },
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -18432,13 +19013,47 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            updateAt: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:1,
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:
                                             {
-                                                $regex: dateend2,
-                                                $options: 'i'
-                                            }
+                                                "$ifNull":
+                                                [
+                                                    "$updateAt",
+                                                    "$createdAt"
+                                                ]
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusView",
+                                                            true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    updateAt: 
+                                                    {
+                                                        $regex: dateend2,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -18575,36 +19190,21 @@ export class AdsService {
                                                         ]
                                                     }
                                                 },
-                                                {
-                                                    clickTime:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$clickTime"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
                                             ]
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            statusClick:1,
+                                            clickAt:1,
+                                            clickTime:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -18613,13 +19213,68 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            clickTime: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            clickAt:1,
+                                            statusClick:1,
+                                            clickTime:
                                             {
-                                                $regex: dateend2,
-                                                $options: 'i'
-                                            }
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusClick", true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    clickTime: 
+                                                    {
+                                                        $regex: dateend2,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -18825,48 +19480,38 @@ export class AdsService {
                                     {
                                         "$match":
                                         {
-                                            "$and":
-                                            [
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$eq":
-                                                        [
-                                                            "$adsID",
-                                                            "$$local_id"
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    updateAt:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$updateAt"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                            ]
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$adsID",
+                                                    "$$local_id"
+                                                ]
+                                            }
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:
+                                            {
+                                                "$cond": 
+                                                {
+                                                    if: {
+                                                        $eq: ["$statusClick", true]
+                                                    },
+                                                    then: true,
+                                                    else: '$statusView'
+                                                }
+                                            },
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -18875,13 +19520,47 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            updateAt: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:1,
+                                            statusClick:1,
+                                            createdAt:1,
+                                            updateAt:
                                             {
-                                                $regex: dateend1,
-                                                $options: 'i'
-                                            }
+                                                "$ifNull":
+                                                [
+                                                    "$updateAt",
+                                                    "$createdAt"
+                                                ]
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusView",
+                                                            true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    updateAt: 
+                                                    {
+                                                        $regex: dateend1,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -19018,36 +19697,21 @@ export class AdsService {
                                                         ]
                                                     }
                                                 },
-                                                {
-                                                    clickTime:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$clickTime"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
                                             ]
                                         }
                                     },
-                                    // {
-                                    //     "$project":
-                                    //     {
-                                    //         _id:1,
-                                    //         adsID:1,
-                                    //         updateAt:1,
-                                    //         userID:1
-                                    //     }
-                                    // },
+                                    {
+                                        "$project":
+                                        {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            statusClick:1,
+                                            clickAt:1,
+                                            clickTime:1,
+                                        }
+                                    },
                                     {
                                         "$unwind":
                                         {
@@ -19056,13 +19720,68 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match": 
+                                        "$project":
                                         {
-                                            clickTime: 
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            clickAt:1,
+                                            statusClick:1,
+                                            clickTime:
                                             {
-                                                $regex: dateend1,
-                                                $options: 'i'
-                                            }
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusClick", true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    clickTime: 
+                                                    {
+                                                        $regex: dateend1,
+                                                        $options: 'i'
+                                                    }
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -22007,49 +22726,14 @@ export class AdsService {
                         {
                             "$match":
                             {
-                                "$and":
-                                [
-                                    {
-                                        "$expr":
-                                        {
-                                            "$eq":
-                                            [
-                                                "$adsID",
-                                                "$$ads_fk"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        updateAt:
-                                        {
-                                            "$exists":true,
-                                        }
-                                    },
-                                    {
-                                        "$expr":
-                                        {
-                                            "$gt":
-                                            [
-                                                {
-                                                    "$size":"$updateAt"
-                                                },
-                                                0
-                                            ]
-                                        }
-                                    },
-                                    // {
-                                    //     "$expr":
-                                    //     {
-                                    //         "$gt":
-                                    //         [
-                                    //             {
-                                    //                 "$last":"$updateAt"
-                                    //             },
-                                    //             "$timeStart"
-                                    //         ]
-                                    //     }
-                                    // },
-                                ]
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$adsID",
+                                        "$$ads_fk"
+                                    ]
+                                }
                             }
                         },
                         {
@@ -22058,7 +22742,20 @@ export class AdsService {
                                 _id:1,
                                 userID:1,
                                 adsID:1,
-                                updateAt:"$updateAt",
+                                statusView:
+                                {
+                                    "$cond": 
+                                    {
+                                        if: {
+                                            $eq: ["$statusClick", true]
+                                        },
+                                        then: true,
+                                        else: '$statusView'
+                                    }
+                                },
+                                statusClick:1,
+                                createdAt:1,
+                                updateAt:1,
                                 timeStart:
                                 {
                                     "$dateToString": {
@@ -22075,6 +22772,26 @@ export class AdsService {
                             {
                                 path:"$updateAt",
                                 preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:1,
+                                userID:1,
+                                adsID:1,
+                                statusView:1,
+                                statusClick:1,
+                                createdAt:1,
+                                updateAt:
+                                {
+                                    "$ifNull":
+                                    [
+                                        "$updateAt",
+                                        "$createdAt"
+                                    ]
+                                },
+                                timeStart:1
                             }
                         },
                         {
@@ -22096,6 +22813,7 @@ export class AdsService {
                                 _id:1,
                                 adsID:1,
                                 userID:1,
+                                statusView:1,
                                 updateAt:1,
                                 timeStart:1
                             }
@@ -22129,36 +22847,6 @@ export class AdsService {
                                             ]
                                         }
                                     },
-                                    {
-                                        clickTime:
-                                        {
-                                            "$exists":true,
-                                        }
-                                    },
-                                    {
-                                        "$expr":
-                                        {
-                                            "$gt":
-                                            [
-                                                {
-                                                    "$size":"$clickTime"
-                                                },
-                                                0
-                                            ]
-                                        }
-                                    },
-                                    // {
-                                    //     "$expr":
-                                    //     {
-                                    //         "$gt":
-                                    //         [
-                                    //             {
-                                    //                 "$last":"$clickTime"
-                                    //             },
-                                    //             "$timeStart"
-                                    //         ]
-                                    //     }
-                                    // },
                                 ]
                             }
                         },
@@ -22168,7 +22856,10 @@ export class AdsService {
                                 _id:1,
                                 userID:1,
                                 adsID:1,
-                                clickTime:"$clickTime",
+                                createdAt:1,
+                                statusClick:1,
+                                clickAt:1,
+                                clickTime:1,
                                 timeStart:
                                 {
                                     "$dateToString": {
@@ -22185,6 +22876,48 @@ export class AdsService {
                             {
                                 path:"$clickTime",
                                 preserveNullAndEmptyArrays:true
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:1,
+                                userID:1,
+                                adsID:1,
+                                createdAt:1,
+                                clickAt:1,
+                                statusClick:1,
+                                clickTime:
+                                {
+                                    "$switch":
+                                    {
+                                        branches:
+                                        [
+                                            {
+                                                case:
+                                                {
+                                                    "$ne":
+                                                    [
+                                                        "$clickTime", null
+                                                    ]
+                                                },
+                                                then:"$clickTime"
+                                            },
+                                            {
+                                                case:
+                                                {
+                                                    "$ne":
+                                                    [
+                                                        "$clickAt", null
+                                                    ]
+                                                },
+                                                then:"$clickAt"
+                                            },
+                                        ],
+                                        default:"$createdAt"
+                                    }
+                                },
+                                timeStart:1
                             }
                         },
                         {
@@ -22206,6 +22939,7 @@ export class AdsService {
                                 _id:1,
                                 adsID:1,
                                 userID:1,
+                                statusClick:1,
                                 clickTime:1,
                                 timeStart:1
                             }
@@ -22219,7 +22953,7 @@ export class AdsService {
                     _id:1,
                     name:1,
                     view_data:1,
-                    click_data:1
+                    click_data:1,
                 }
             },
             {
@@ -22263,6 +22997,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusView:"$view_data.statusView",
                                 record:"$view_data.updateAt",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -22273,6 +23008,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusView", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -22351,6 +23095,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusClick:"$click_data.statusClick",
                                 record:"$click_data.clickTime",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -22361,6 +23106,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusClick", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -22439,6 +23193,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusView:"$view_data.statusView",
                                 record:"$view_data.updateAt",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -22449,6 +23204,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusView", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -22527,6 +23291,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusClick:"$click_data.statusClick",
                                 record:"$click_data.clickTime",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -22537,6 +23302,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusClick", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -22615,6 +23389,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusView:"$view_data.statusView",
                                 record:"$view_data.updateAt",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -22625,6 +23400,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusView", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -22703,6 +23487,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusClick:"$click_data.statusClick",
                                 record:"$click_data.clickTime",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -22713,6 +23498,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusClick", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -22791,6 +23585,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusView:"$view_data.statusView",
                                 record:"$view_data.updateAt",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -22801,6 +23596,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusView", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -22879,6 +23683,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusClick:"$click_data.statusClick",
                                 record:"$click_data.clickTime",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -22889,6 +23694,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusClick", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -22967,6 +23781,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusView:"$view_data.statusView",
                                 record:"$view_data.updateAt",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -22977,6 +23792,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusView", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -23055,6 +23879,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusClick:"$click_data.statusClick",
                                 record:"$click_data.clickTime",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -23065,6 +23890,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusClick", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -23143,6 +23977,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusView:"$view_data.statusView",
                                 record:"$view_data.updateAt",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -23153,6 +23988,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusView", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -23231,6 +24075,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusClick:"$click_data.statusClick",
                                 record:"$click_data.clickTime",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -23241,6 +24086,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusClick", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -23319,6 +24173,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusView:"$view_data.statusView",
                                 record:"$view_data.updateAt",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -23329,6 +24184,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusView", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -23407,6 +24271,7 @@ export class AdsService {
                         {
                             "$project":
                             {
+                                statusClick:"$click_data.statusClick",
                                 record:"$click_data.clickTime",
                                 timerangeStart:1,
                                 timerangeEnd:1
@@ -23417,6 +24282,15 @@ export class AdsService {
                             {
                                 "$and":
                                 [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusClick", true
+                                            ]
+                                        }
+                                    },
                                     {
                                         record:
                                         {
@@ -23479,30 +24353,39 @@ export class AdsService {
                             }
                         },
                         {
-                            "$match":
-                            {
-                                "$expr":
-                                {
-                                    "$gt":
-                                    [
-                                        "$data",
-                                        0
-                                    ]
-                                }
-                            }
-                        },
-                        {
                             "$project":
                             {
                                 userID:"$data.userID",
-                                result:"$data.record_data"
+                                statusClick:"$data.statusClick",
+                                statusView:"$data.statusView",
+                                updateAt:"$data.updateAt",
+                                clickTime:"$data.clickTime",
                             }
                         },
                         {
-                            "$unwind":
+                            "$match":
                             {
-                                path:"$result",
-                                preserveNullAndEmptyArrays:true
+                                "$or":
+                                [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusClick", true
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusView", true
+                                            ]
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -23701,30 +24584,39 @@ export class AdsService {
                             }
                         },
                         {
-                            "$match":
-                            {
-                                "$expr":
-                                {
-                                    "$gt":
-                                    [
-                                        "$data",
-                                        0
-                                    ]
-                                }
-                            }
-                        },
-                        {
                             "$project":
                             {
                                 userID:"$data.userID",
-                                result:"$data.record_data"
+                                statusClick:"$data.statusClick",
+                                statusView:"$data.statusView",
+                                updateAt:"$data.updateAt",
+                                clickTime:"$data.clickTime",
                             }
                         },
                         {
-                            "$unwind":
+                            "$match":
                             {
-                                path:"$result",
-                                preserveNullAndEmptyArrays:true
+                                "$or":
+                                [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusClick", true
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusView", true
+                                            ]
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -23937,23 +24829,39 @@ export class AdsService {
                             }
                         },
                         {
-                            "$match":
-                            {
-                                "$expr":
-                                {
-                                    "$gt":
-                                    [
-                                        "$data",
-                                        0
-                                    ]
-                                }
-                            }
-                        },
-                        {
                             "$project":
                             {
                                 userID:"$data.userID",
-                                result:"$data.record_data"
+                                statusClick:"$data.statusClick",
+                                statusView:"$data.statusView",
+                                updateAt:"$data.updateAt",
+                                clickTime:"$data.clickTime",
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$or":
+                                [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusClick", true
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusView", true
+                                            ]
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -24454,7 +25362,49 @@ export class AdsService {
                     area:"$area"
                 }
             }
-        ])
+        ]);
+
+        var array = [];
+        var data = query[0].genders;
+        var result = null;
+        for(var i = 0; i < data.length; i++)
+        {
+            result = data[i];
+            var temp = result.percent;
+            temp = temp.toFixed(2);
+            result.percent = temp;
+            array.push(result);
+        }
+
+        query[0].genders = array;
+
+        array = [];
+        var data = query[0].age;
+        var result = null;
+        for(var i = 0; i < data.length; i++)
+        {
+            result = data[i];
+            var temp = result.percent;
+            temp = temp.toFixed(2);
+            result.percent = temp;
+            array.push(result);
+        }
+
+        query[0].age = array;
+
+        array = [];
+        var data = query[0].area;
+        var result = null;
+        for(var i = 0; i < data.length; i++)
+        {
+            result = data[i];
+            var temp = result.percent;
+            temp = temp.toFixed(2);
+            result.percent = temp;
+            array.push(result);
+        }
+
+        query[0].area = array;
 
         return query;
     }
