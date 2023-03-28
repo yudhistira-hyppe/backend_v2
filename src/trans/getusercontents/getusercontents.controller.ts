@@ -3478,6 +3478,7 @@ export class GetusercontentsController {
         var uploadSource = null;
         var apsaraId = null;
         var apsaraThumbId = null;
+        var postType = null;
         // console.log(lengpict);
         if (lengpict > 0) {
             var resultpictapsara = null;
@@ -3488,6 +3489,7 @@ export class GetusercontentsController {
             if (type == "pict") {
 
                 for (let i = 0; i < lengpict; i++) {
+
                     uploadSource = data[i].uploadSource;
                     try {
                         apsaraId = data[i].apsaraId;
@@ -3586,6 +3588,10 @@ export class GetusercontentsController {
 
             } else {
                 for (let i = 0; i < lengpict; i++) {
+                    postType = data[i].posttype;
+                    if (postType === "diary") {
+                        data[i].saleAmount = 0;
+                    }
 
                     if (data[i].isApsara == true) {
                         tempdatapict.push(data[i].apsaraId);
@@ -3646,10 +3652,6 @@ export class GetusercontentsController {
                     picts.push(data[i]);
                 }
             }
-
-
-
-
         } else {
             picts = [];
             version = "";
