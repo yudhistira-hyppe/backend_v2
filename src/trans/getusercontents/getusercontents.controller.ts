@@ -3588,7 +3588,7 @@ export class GetusercontentsController {
 
             } else {
                 for (let i = 0; i < lengpict; i++) {
-                    postType = data[i].posttype;
+                    postType = data[i].postType;
                     if (postType === "diary") {
                         data[i].saleAmount = 0;
                     }
