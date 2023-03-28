@@ -592,6 +592,8 @@ export class UserAdsController {
         var data = null;
 
         var iddata = null;
+        var startdate = null;
+        var enddate = null;
         var page = null;
         var limit = null;
         var click = null;
@@ -602,6 +604,20 @@ export class UserAdsController {
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["id"] !== undefined) {
             iddata = request_json["id"];
+        }
+        else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["startdate"] !== undefined) {
+            startdate = request_json["startdate"];
+        }
+        else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["enddate"] !== undefined) {
+            enddate = request_json["enddate"];
         }
         else {
             throw new BadRequestException("Unabled to proceed");
@@ -624,7 +640,7 @@ export class UserAdsController {
         var lengthdata = null;
         try {
             // getdata = await this.userAdsService.listpenontondetail(iddata, click, view, limit, page);
-            getdata = await this.userAdsService.listpenontondetail2(iddata, click, view, limit, page);
+            getdata = await this.userAdsService.listpenontondetail2(iddata, click, view, startdate, enddate, limit, page);
             lengthdata = getdata.length;
         }
         catch (e) {
@@ -635,7 +651,7 @@ export class UserAdsController {
         var lengthsearch = 0;
         try {
             // temptotalsearch = await this.userAdsService.listpenontondetail(iddata, click, view, undefined, undefined);
-            temptotalsearch = await this.userAdsService.listpenontondetail2(iddata, click, view, undefined, undefined);
+            temptotalsearch = await this.userAdsService.listpenontondetail2(iddata, click, view, startdate, enddate, undefined, undefined);
             lengthsearch = temptotalsearch.length;
         }
         catch (e) {

@@ -2439,7 +2439,11 @@ export class UserAdsService {
         return query;
     }
 
-    async listpenontondetail2(idads: string, statusClick: any, statusView: any, limit: number, page: number) {
+    async listpenontondetail2(idads: string, statusClick: any, statusView: any, startdate:string, enddate:string, limit: number, page: number) {
+        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+    
+        var dateend = currentdate.toISOString();
+        
         var pipeline = [];
         pipeline.push(
             {
@@ -2461,7 +2465,7 @@ export class UserAdsService {
             {
                 $project: {
                     "adsID": 1,
-                    "createdAt": '$clickTime',
+                    "createdAt": 1,
                     "description": 1,
                     "priority": 1,
                     "priorityNumber": 1,
@@ -2475,7 +2479,47 @@ export class UserAdsService {
                     "isActive": 1,
                     "updateAt": 1,
                     "clickAt": 1,
+                    "clickTime":
+                    {
+                        "$switch":
+                        {
+                            branches:
+                            [
+                                {
+                                    case:
+                                    {
+                                        "$ne":
+                                        [
+                                            "$clickTime", null
+                                        ]
+                                    },
+                                    then:"$clickTime"
+                                },
+                                {
+                                    case:
+                                    {
+                                        "$ne":
+                                        [
+                                            "$clickAt", null
+                                        ]
+                                    },
+                                    then:"$clickAt"
+                                },
+                            ],
+                            default:"$createdAt"
+                        }
+                    },
                     "timeViewSecond": 1
+                }
+            },
+            {
+                "$match":
+                {
+                    "clickTime":
+                    {
+                        "$gte":startdate,
+                        "$lte":dateend
+                    }
                 }
             },);
         }
@@ -2491,7 +2535,7 @@ export class UserAdsService {
             {
                 $project: {
                     "adsID": 1,
-                    "createdAt": '$updateAt',
+                    "createdAt": 1,
                     "description": 1,
                     "priority": 1,
                     "priorityNumber": 1,
@@ -2503,9 +2547,26 @@ export class UserAdsService {
                     "liveTypeuserads": 1,
                     "adstypesId": 1,
                     "isActive": 1,
-                    "updateAt": 1,
+                    "updateAt": 
+                    {
+                        "$ifNull":
+                        [
+                            "$updateAt",
+                            "$createdAt"
+                        ]
+                    },
                     "clickAt": 1,
                     "timeViewSecond": 1
+                },
+            },
+            {
+                "$match":
+                {
+                    "updateAt":
+                    {
+                        "$gte":startdate,
+                        "$lte":dateend
+                    }
                 }
             },);
         }
@@ -2585,6 +2646,7 @@ export class UserAdsService {
                     statusClick: 1,
                     statusView: 1,
                     updatedAt: 1,
+                    clickTime:1,
                     viewAt: 1,
                     viewed: 1,
                     name: {
@@ -2614,7 +2676,8 @@ export class UserAdsService {
                     description: 1,
                     priority: 1,
                     statusClick: 1,
-                    statusView: {
+                    statusView: 
+                    {
                         $cond: {
                             if: {
                                 $eq: ["$statusClick", true]
@@ -2624,6 +2687,7 @@ export class UserAdsService {
                         }
                     },
                     updatedAt: 1,
+                    clickTime:1,
                     viewAt: 1,
                     viewed: 1,
                     name: 1,
@@ -2662,6 +2726,7 @@ export class UserAdsService {
                     statusClick: 1,
                     statusView: 1,
                     updatedAt: 1,
+                    clickTime:1,
                     viewAt: 1,
                     viewed: 1,
                     name: 1,
@@ -2713,6 +2778,7 @@ export class UserAdsService {
                     statusClick: 1,
                     statusView: 1,
                     updatedAt: 1,
+                    clickTime:1,
                     viewAt: 1,
                     viewed: 1,
                     name: 1,
@@ -2751,6 +2817,7 @@ export class UserAdsService {
                     statusClick: 1,
                     statusView: 1,
                     updatedAt: 1,
+                    clickTime:1,
                     viewAt: 1,
                     viewed: 1,
                     name: 1,

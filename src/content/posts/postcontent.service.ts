@@ -4104,10 +4104,18 @@ export class PostContentService {
               let pic = await this.picService.findOne(String(med.oid));
               if (pic.apsara == true) {
                 pics.push(pic.apsaraId);
-                pics_thumnail.push(pic.apsaraThumbId);
+                if (pic.apsaraThumbId != undefined) {
+                  pics_thumnail.push(pic.apsaraThumbId);
+                } else {
+                  pics_thumnail.push(pic.apsaraId);
+                }
                 pa.apsaraId = String(pic.apsaraId);
                 pa.isApsara = true;
-                pa.apsaraThumbId = String(pic.apsaraThumbId);
+                if (pic.apsaraThumbId != undefined) {
+                  pa.apsaraThumbId = String(pic.apsaraThumbId);
+                }else{
+                  pa.apsaraThumbId = String(pic.apsaraId);
+                }
               } else {
                 pa.mediaEndpoint = '/pict/' + pic.postID;
                 pa.mediaUri = pic.mediaUri;
@@ -4489,7 +4497,11 @@ export class PostContentService {
               let pic = await this.picService.findOne(String(med.oid));
               if (pic.apsara == true) {
                 xpics.push(String(pic.apsaraId));
-                xpics.push(String(pic.apsaraThumbId));
+                if (pic.apsaraThumbId != undefined) {
+                  xpics.push(String(pic.apsaraThumbId));
+                } else {
+                  xpics.push(String(pic.apsaraId));
+                }
                 pa.apsaraId = String(pic.apsaraId);
                 pa.apsaraThumbId = String(pic.apsaraThumbId);
                 pa.isApsara = true;
@@ -5836,7 +5848,11 @@ export class PostContentService {
                 let pic = await this.picService.findOne(String(med.oid));
                 if (pic.apsara == true) {
                   xpics.push(String(pic.apsaraId));
-                  xpics.push(String(pic.apsaraThumbId));
+                  if (pic.apsaraThumbId != undefined) {
+                    xpics.push(String(pic.apsaraThumbId));
+                  } else {
+                    xpics.push(String(pic.apsaraId));
+                  }
                   cn.apsaraId = String(pic.apsaraId);
                   cn.apsaraThumbId = String(pic.apsaraThumbId);
                   cn.isApsara = true;
