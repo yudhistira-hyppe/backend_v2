@@ -14887,7 +14887,36 @@ export class AdsService {
                                             userID:1,
                                             adsID:1,
                                             createdAt:1,
-                                            clickAt:1,
+                                            clickAt:
+                                            {
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
                                             statusClick:1,
                                             clickTime:
                                             {
@@ -16684,7 +16713,36 @@ export class AdsService {
                                             userID:1,
                                             adsID:1,
                                             createdAt:1,
-                                            clickAt:1,
+                                            clickAt:
+                                            {
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
                                             statusClick:1,
                                             clickTime:
                                             {
@@ -17191,7 +17249,36 @@ export class AdsService {
                                             userID:1,
                                             adsID:1,
                                             createdAt:1,
-                                            clickAt:1,
+                                            clickAt:
+                                            {
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
                                             statusClick:1,
                                             clickTime:
                                             {
@@ -17698,7 +17785,36 @@ export class AdsService {
                                             userID:1,
                                             adsID:1,
                                             createdAt:1,
-                                            clickAt:1,
+                                            clickAt:
+                                            {
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
                                             statusClick:1,
                                             clickTime:
                                             {
@@ -18205,7 +18321,36 @@ export class AdsService {
                                             userID:1,
                                             adsID:1,
                                             createdAt:1,
-                                            clickAt:1,
+                                            clickAt:
+                                            {
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
                                             statusClick:1,
                                             clickTime:
                                             {
@@ -18712,7 +18857,36 @@ export class AdsService {
                                             userID:1,
                                             adsID:1,
                                             createdAt:1,
-                                            clickAt:1,
+                                            clickAt:
+                                            {
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
                                             statusClick:1,
                                             clickTime:
                                             {
@@ -19219,7 +19393,36 @@ export class AdsService {
                                             userID:1,
                                             adsID:1,
                                             createdAt:1,
-                                            clickAt:1,
+                                            clickAt:
+                                            {
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
                                             statusClick:1,
                                             clickTime:
                                             {
@@ -19726,7 +19929,36 @@ export class AdsService {
                                             userID:1,
                                             adsID:1,
                                             createdAt:1,
-                                            clickAt:1,
+                                            clickAt:
+                                            {
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
+                                            },
                                             statusClick:1,
                                             clickTime:
                                             {
@@ -20227,18 +20459,9 @@ export class AdsService {
                     },
                     view:
                     {
-                        "$ifNull":
+                        "$arrayElemAt":
                         [
-                            {
-                                "$size":
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$totalview.view", 0
-                                    ]
-                                }
-                            },
-                            0
+                            "$detail.totalViewADS", 0
                         ]
                     },
                     click:
@@ -25628,44 +25851,6 @@ export class AdsService {
                                 pipeline:
                                 [
                                     {
-                                        "$match":
-                                        {
-                                            "$and":
-                                            [
-                                                {
-                                                    updateAt:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$updateAt"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$last":"$updateAt"
-                                                            },
-                                                            before
-                                                        ]
-                                                    }
-                                                },
-                                            ]
-                                        }
-                                    },
-                                    {
                                         "$unwind":
                                         {
                                             path:"$updateAt",
@@ -25673,13 +25858,57 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match":
+                                        "$project":
                                         {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            statusView:
+                                            {
+                                                "$cond": 
+                                                {
+                                                    if: {
+                                                        $eq: ["$statusClick", true]
+                                                    },
+                                                    then: true,
+                                                    else: '$statusView'
+                                                }
+                                            },
+                                            statusClick:1,
+                                            createdAt:1,
                                             updateAt:
                                             {
-                                                "$gte": before,
-                                                "$lte": today
+                                                "$ifNull":
+                                                [
+                                                    "$updateAt",
+                                                    "$createdAt"
+                                                ]
                                             },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusView",
+                                                            true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    updateAt:
+                                                    {
+                                                        "$gte": before,
+                                                        "$lte": today
+                                                    },
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -25723,44 +25952,6 @@ export class AdsService {
                                 pipeline:
                                 [
                                     {
-                                        "$match":
-                                        {
-                                            "$and":
-                                            [
-                                                {
-                                                    clickTime:
-                                                    {
-                                                        "$exists":true,
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$size":"$clickTime"
-                                                            },
-                                                            0
-                                                        ]
-                                                    }
-                                                },
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$gt":
-                                                        [
-                                                            {
-                                                                "$last":"$clickTime"
-                                                            },
-                                                            before
-                                                        ]
-                                                    }
-                                                },
-                                            ]
-                                        }
-                                    },
-                                    {
                                         "$unwind":
                                         {
                                             path:"$clickTime",
@@ -25768,13 +25959,68 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "$match":
+                                        "$project":
                                         {
+                                            _id:1,
+                                            userID:1,
+                                            adsID:1,
+                                            createdAt:1,
+                                            clickAt:1,
+                                            statusClick:1,
                                             clickTime:
                                             {
-                                                "$gte": before,
-                                                "$lte": today
+                                                "$switch":
+                                                {
+                                                    branches:
+                                                    [
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickTime", null
+                                                                ]
+                                                            },
+                                                            then:"$clickTime"
+                                                        },
+                                                        {
+                                                            case:
+                                                            {
+                                                                "$ne":
+                                                                [
+                                                                    "$clickAt", null
+                                                                ]
+                                                            },
+                                                            then:"$clickAt"
+                                                        },
+                                                    ],
+                                                    default:"$createdAt"
+                                                }
                                             },
+                                        }
+                                    },
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                            "$statusClick", true
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    clickTime:
+                                                    {
+                                                        "$gte": before,
+                                                        "$lte": today
+                                                    },
+                                                }
+                                            ]
                                         }
                                     },
                                     {
@@ -25810,13 +26056,13 @@ export class AdsService {
                                 ]
                             }
                         },
-                            {
-                                    "$project":
-                                    {
-                                            view_data:1,
-                                            click_data:1
-                                    }
-                            },
+                        {
+                                "$project":
+                                {
+                                        view_data:1,
+                                        click_data:1
+                                }
+                        },
                         {
                             "$project":
                             {
@@ -25832,27 +26078,27 @@ export class AdsService {
                         {
                             "$unwind":
                             {
-                                    path:"$data"
+                                path:"$data"
                             }
                         },
                         {
                             "$group":
                             {
-                                    _id:"$data.createdAt",
-                                    totalview:
-                                    {
-                                            "$sum":"$data.totalview"
-                                    },
-                                    totalclick:
-                                    {
-                                            "$sum":"$data.totalclick"
-                                    }
+                                _id:"$data.createdAt",
+                                totalview:
+                                {
+                                    "$sum":"$data.totalview"
+                                },
+                                totalclick:
+                                {
+                                    "$sum":"$data.totalclick"
+                                }
                             }
                         },
                         {
                             "$sort":
                             {
-                                    _id:1
+                                _id:1
                             }
                         },
                         {
