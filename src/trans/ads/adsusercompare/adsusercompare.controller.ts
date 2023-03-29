@@ -463,8 +463,7 @@ export class AdsUserCompareController {
                                 info: ['successfully'],
                             },
                         };
-                    }
-                    else if (body.watchingTime > 0 && body.watchingTime < AdsSkip) {
+                    }else if (body.watchingTime > 0 && body.watchingTime < AdsSkip) {
                         //const data_userAdsService = await this.userAdsService.findOneByuserIDAds(data_userbasicsService._id.toString(), ads_id.toString());
                         if (await this.utilsService.ceckData(data_userAdsService)) {
                             //Update userads
@@ -499,8 +498,7 @@ export class AdsUserCompareController {
                                 info: ['successfully'],
                             },
                         };
-                    }
-                    else {
+                    }else {
                         if (await this.utilsService.ceckData(data_userAdsService)) {
                             if (data_adstypesService.AdsSkip == undefined) {
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed data setting Ads Skip not found");
@@ -549,8 +547,7 @@ export class AdsUserCompareController {
                                     if (sisa_credit_free >= credit_view) {
                                         used_credit_free = used_credit_free + credit_view;
                                     }
-                                }
-                                else if (sisa_credit > 0) {
+                                }else if (sisa_credit > 0) {
                                     if (watching_time > AdsSkip) {
                                         this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, AdsSkip : " + AdsSkip.toString());
                                         this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, watching_time : " + watching_time.toString());
@@ -565,7 +562,15 @@ export class AdsUserCompareController {
                                                 }
                                             }
                                         } else {
-                                            rewards = true;
+                                            if ((userID != null) && (adsID != null)) {
+                                                const ceck_rewars = await this.userAdsService.findUserAdsRewars(userID, adsID, AdsSkip);
+                                                if (await this.utilsService.ceckData(ceck_rewars)) {
+                                                    rewards = false;
+                                                } else {
+                                                    rewards = true;
+                                                }
+                                            }
+                                            //rewards = true;
                                         }
                                     }
                                     if (sisa_credit < credit_view) {
@@ -862,7 +867,15 @@ export class AdsUserCompareController {
                                 }
                             }
                         } else {
-                            rewards = true;
+                            if ((userID != null) && (adsID != null)) {
+                                const ceck_rewars = await this.userAdsService.findUserAdsRewars(userID, adsID, AdsSkip);
+                                if (await this.utilsService.ceckData(ceck_rewars)) {
+                                    rewards = false;
+                                } else {
+                                    rewards = true;
+                                }
+                            }
+                            //rewards = true;
                         }
                     }
                     if (sisa_credit < credit_view) {
