@@ -1329,7 +1329,9 @@ export class PostsController {
     if (body.pageRow !== undefined) {
       pageRow = body.pageRow;
     }
-
+    const messages = {
+      "info": ["The process successful"],
+    };
     try {
 
       data = await this.notifService.getNotification2(email, eventType, parseInt(pageNumber), parseInt(pageRow));
@@ -1443,7 +1445,7 @@ export class PostsController {
     }
 
 
-    return data;
+    return { response_code: 202, data, messages };
   }
 
   @Post('api/posts/getnotificationAll')
