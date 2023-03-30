@@ -111,18 +111,18 @@ export class NotificationsService {
     return res;
   }
 
-  async getNotificationAll(){
+  async getNotificationAll() {
     const query = await this.NotificationsModel.aggregate([
-      { $match: { email: "ikanhiu@getnada.com", eventType:"FOLLOWER" } },
-      { 
-        $group: { 
-          _id: { 
-            eventType: "$eventType", 
-            email: "$email", 
-            event: "$event", 
-            mate: "$mate", 
-            senderOrReceiverInfo: "$senderOrReceiverInfo", 
-            title: "$title", 
+      { $match: { email: "ikanhiu@getnada.com", eventType: "FOLLOWER" } },
+      {
+        $group: {
+          _id: {
+            eventType: "$eventType",
+            email: "$email",
+            event: "$event",
+            mate: "$mate",
+            senderOrReceiverInfo: "$senderOrReceiverInfo",
+            title: "$title",
             body: "$body",
             bodyId: "$bodyId",
             active: "$active",
@@ -130,7 +130,7 @@ export class NotificationsService {
             updatedAt: "$updatedAt",
             contentEventID: "$contentEventID"
           },
-        } 
+        }
       },
       {
         $project: {
@@ -162,8 +162,8 @@ export class NotificationsService {
     }
 
     if (body.eventType != undefined) {
-      if (body.eventType =="GENERAL"){
-        query.where('eventType', { $in: ['VERIFICATIONID', 'SUPPORTFILE', 'TRANSACTION', 'POST', 'ADS VIEW', 'BOOST_CONTENT', 'BOOST_BUY', 'CONTENT', 'ADS CLICK', 'BANK', 'CONTENTMOD', 'KYC'] }); 
+      if (body.eventType == "GENERAL") {
+        query.where('eventType', { $in: ['VERIFICATIONID', 'SUPPORTFILE', 'TRANSACTION', 'POST', 'ADS VIEW', 'BOOST_CONTENT', 'BOOST_BUY', 'CONTENT', 'ADS CLICK', 'BANK', 'CONTENTMOD', 'KYC'] });
       } else {
         query.where('eventType', body.eventType);
       }
@@ -190,5 +190,409 @@ export class NotificationsService {
     }
     let num = ((page - 1) * row);
     return num;
+  }
+
+  async getNotification2(email: string, eventType: string, skip: number, limit: number) {
+    var pipeline = [];
+
+    if (eventType && eventType !== undefined) {
+      pipeline.push(
+        {
+          $match:
+          {
+            $or: [
+              {
+                $and: [
+                  {
+                    "email": email
+
+                  },
+                  {
+                    "eventType": eventType,
+
+                  },
+                  {
+                    "active": true
+                  },
+
+                ]
+              },
+
+            ]
+          },
+
+        },
+      );
+    } else {
+      pipeline.push(
+        {
+          $match:
+          {
+            $or: [
+              {
+                $and: [
+                  {
+                    "email": email
+
+                  },
+
+                  {
+                    "active": true
+                  },
+
+                ]
+              },
+
+            ]
+          },
+
+        },
+      );
+    }
+
+    pipeline.push(
+
+      {
+        $lookup: {
+          from: 'posts',
+          localField: 'postID',
+          foreignField: 'postID',
+          as: 'post',
+
+        },
+
+      },
+      {
+        $unwind: {
+          path: "$post",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'mediapicts',
+          localField: 'postID',
+          foreignField: 'postID',
+          as: 'pict',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'mediavideos',
+          localField: 'postID',
+          foreignField: 'postID',
+          as: 'vid',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'mediadiaries',
+          localField: 'postID',
+          foreignField: 'postID',
+          as: 'diary',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'mediastories',
+          localField: 'postID',
+          foreignField: 'postID',
+          as: 'story',
+
+        },
+
+      },
+      {
+        $unwind: {
+          path: "$post",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$pict",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$vid",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$diary",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$story",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $sort: {
+          createdAt: - 1
+        }
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: limit
+      },
+      {
+        $project: {
+          active: 1,
+          body: 1,
+          bodyId: 1,
+          contentEventID: 1,
+          createdAt: 1,
+          email: 1,
+          event: 1,
+          eventType: 1,
+          flowIsDone: 1,
+          mate: 1,
+          postType: "$post.postType",
+          notificationID: 1,
+          postID: 1,
+          senderOrReceiverInfo: 1,
+          title: 1,
+          updatedAt: 1,
+
+          content: {
+            uploadSource: "$pict.uploadSource",
+            apsaraId:
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: "$pict.apsaraId",
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: "$vid.apsaraId",
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: "$diary.apsaraId",
+                        else: '$story.apsaraId'
+                      }
+                    },
+
+                  }
+                },
+
+              }
+            },
+            apsaraThumbId:
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: "$pict.apsaraThumbId",
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: "$vid.apsaraThumbId",
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: "$diary.apsaraThumbId",
+                        else: '$story.apsaraThumbId'
+                      }
+                    },
+
+                  }
+                },
+
+              }
+            },
+            isApsara:
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: "$pict.apsara",
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: "$vid.apsara",
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: "$diary.apsara",
+                        else: '$story.apsara'
+                      }
+                    },
+
+                  }
+                },
+
+              }
+            },
+            mediaEndpoint: //"/pict/fbbac412 - 2a03 - 989a - 8855 - fe949890e9f9",
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: {
+                  $concat: ["/thumb/", "$postID",]
+                },
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: {
+                      $concat: ["/thumb/", "$postID",]
+                    },
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: {
+                          $concat: ["/pict/", "$postID",]
+                        },
+                        else: '$story.apsara'
+                      },
+
+                    }
+                  }
+                },
+
+              }
+            },
+            mediaThumName:
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: "$pict.mediaThumName",
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: "$vid.mediaThumName",
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: "$diary.mediaThumName",
+                        else: '$story.mediaThumName'
+                      }
+                    },
+
+                  }
+                },
+
+              }
+            },
+            mediaThumBasePath:
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: "$pict.mediaThumBasePath",
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: "$vid.mediaThumBasePath",
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: "$diary.mediaThumBasePath",
+                        else: '$story.mediaThumBasePath'
+                      }
+                    },
+
+                  }
+                },
+
+              }
+            },
+            mediaThumUri:
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: "$pict.mediaThumUri",
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: "$vid.mediaThumUri",
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: "$diary.mediaThumUri",
+                        else: '$story.mediaThumUri'
+                      }
+                    },
+
+                  }
+                },
+
+              }
+            },
+
+
+          }
+        }
+      },
+    );
+    var query = await this.NotificationsModel.aggregate(pipeline);
+    return query;
   }
 }

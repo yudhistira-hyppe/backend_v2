@@ -983,7 +983,12 @@ export class UserauthsService {
           }
         }
       },
-
+      {
+        "$sort":
+        {
+          'story.createdAt': - 1
+        }
+      },
       {
         "$project":
         {

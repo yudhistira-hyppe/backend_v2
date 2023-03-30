@@ -1006,6 +1006,7 @@ export class AdsController {
         var mincredit = null;
         var maxcredit = null;
         var enddate = null;
+        var namaads = null;
 
         const messages = {
             "info": ["The process successful"],
@@ -1035,6 +1036,10 @@ export class AdsController {
             status = request_json["status"];
         }
 
+        if (request_json["name"] !== undefined) {
+            namaads = request_json["name"];
+        }
+
         if (request_json["descending"] !== undefined) {
             sorting = request_json["descending"];
         }
@@ -1046,7 +1051,7 @@ export class AdsController {
         var total = 0;
         try {
             // var tempdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, page, limit, sorting);
-            getdata = await this.adsService.consolegetlistads2(startdate, enddate, status, mincredit, maxcredit, page, limit, sorting);
+            getdata = await this.adsService.consolegetlistads2(startdate, enddate, status, mincredit, maxcredit, namaads, page, limit, sorting);
             total = getdata.length;
             // total = tempdata.length;
             // for (var i = 0; i < total; i++) {
@@ -1060,7 +1065,7 @@ export class AdsController {
 
         try {
             // var resultdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, undefined, undefined, sorting);
-            var resultdata = await this.adsService.consolegetlistads2(startdate, enddate, status, mincredit, maxcredit, undefined, undefined, sorting);
+            var resultdata = await this.adsService.consolegetlistads2(startdate, enddate, status, mincredit, maxcredit, namaads, undefined, undefined, sorting);
             var totalsearch = resultdata.length;
         }
         catch (e) {
