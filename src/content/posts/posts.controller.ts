@@ -1309,6 +1309,21 @@ export class PostsController {
     return y;
   }
 
+  // @Post('api/posts/getnotification2')
+  // @UseInterceptors(FileInterceptor('postContent'))
+  // async getNotification2(@Body() body, @Headers() headers) {
+  //   this.logger.log("getNotification >>> start: " + JSON.stringify(body));
+  //   var email=null;
+  //   try{
+  //     email=headers.x-auth-user;
+  //   }catch(e){
+
+  //   }
+  //   let y = await this.postContentService.getNotification2(body.email, headers);
+  //   this.logger.log("getNotification >>> res: " + JSON.stringify(y));
+  //   return y;
+  // }
+
   @Post('api/posts/getnotificationAll')
   async getNotificationAll() {
     return await this.notifService.getNotificationAll();

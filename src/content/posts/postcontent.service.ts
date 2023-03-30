@@ -84,7 +84,7 @@ export class PostContentService {
     private settingsService: SettingsService,
     private readonly notifService: NotificationsService,
     private errorHandler: ErrorHandler,
-    private mediamusicService: MediamusicService, 
+    private mediamusicService: MediamusicService,
     private ossContentPictService: OssContentPictService,
   ) { }
 
@@ -2075,7 +2075,7 @@ export class PostContentService {
 
     var postID = await this.utilService.generateId();
     var file_commpress = await this.resizeImage(file);
-    
+
     //Get Image Information
     var image_information = await sharp(file_commpress).metadata();
     console.log("IMAGE INFORMATION file_commpress", image_information);
@@ -2243,7 +2243,7 @@ export class PostContentService {
       med.mediaMime = file.mimetype;
       med.mediaBasePath = userId + "/post/" + postType + "/" + post.postID + "/" + filename;
       med.mediaUri = filename;
-      med.fsSourceUri = url_filename; 
+      med.fsSourceUri = url_filename;
       med.fsSourceName = filename;
       med.fsTargetUri = url_filename;
       med.createdAt = await this.utilService.getDateTimeString();
@@ -2330,7 +2330,7 @@ export class PostContentService {
   }
 
   async uploadOss(buffer: Buffer, postId: string, filename: string, userId: string, mediaTipe: string) {
-    var result = await this.ossContentPictService.uploadFileBuffer(buffer, userId + "/post/" + mediaTipe +"/"+postId + "/" + filename);
+    var result = await this.ossContentPictService.uploadFileBuffer(buffer, userId + "/post/" + mediaTipe + "/" + postId + "/" + filename);
     return result;
   }
 
@@ -2451,7 +2451,7 @@ export class PostContentService {
     return file_commpress;
   }
 
-  async generate_upload(file: Express.Multer.File, format:string) {
+  async generate_upload(file: Express.Multer.File, format: string) {
     var SIZE_IMAGE_UPLOAD = this.configService.get("SIZE_IMAGE_UPLOAD");
     var SIZE_IMAGE_RESIZE = this.configService.get("SIZE_IMAGE_RESIZE");
     console.log("CONFIG SIZE_IMAGE_UPLOAD : " + SIZE_IMAGE_UPLOAD);
@@ -2497,7 +2497,7 @@ export class PostContentService {
     var file_commpress = buffers_file;
 
     //Convert Image Orientation
-    var file_commpress= null;
+    var file_commpress = null;
     if (image_orientation == 1) {
       file_commpress = await sharp(buffers_file).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
     } else if (image_orientation == 6) {
@@ -2507,7 +2507,7 @@ export class PostContentService {
     } else {
       file_commpress = buffers_file;
     }
-   
+
     fs.writeFile("./temp/some.jpeg", file_commpress, function (err) {
       if (err) {
         return console.log(err);
@@ -2654,7 +2654,7 @@ export class PostContentService {
     // })
     // const chunks = ffmpeg().input(image).outputFormat(outputFormat);
     // return chunks;
-}
+  }
 
   async compressImage(buffer: Buffer, mimetype: string) {
     var file_commpress = await Jimp_.read(buffer).then((image) => {
@@ -3817,7 +3817,7 @@ export class PostContentService {
         let pa = new PostData();
 
         var ceck_data_DONE = await this.contentEventService.ceckData(String(iam.email), "LIKE", "DONE", ps.email.toString(), "", ps.postID.toString());
-        
+
         if (await this.utilService.ceckData(ceck_data_DONE)) {
           if (ceck_data_DONE.active) {
             pa.isLiked = true;
@@ -4113,7 +4113,7 @@ export class PostContentService {
                 pa.isApsara = true;
                 if (pic.apsaraThumbId != undefined) {
                   pa.apsaraThumbId = String(pic.apsaraThumbId);
-                }else{
+                } else {
                   pa.apsaraThumbId = String(pic.apsaraId);
                 }
               } else {
@@ -5977,6 +5977,374 @@ export class PostContentService {
     }
 
     return payload;
+  }
+
+  async getNotification2(email: string, eventType: string, skip: number, limit: number) {
+    var pipeline = [];
+
+    pipeline.push(
+      {
+        $match:
+        {
+          $or: [
+            {
+              $and: [
+                {
+                  "email": email
+
+                },
+                {
+                  "eventType": eventType
+
+                },
+                {
+                  "active": true
+                },
+
+              ]
+            },
+
+          ]
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'posts',
+          localField: 'postID',
+          foreignField: 'postID',
+          as: 'post',
+
+        },
+
+      },
+      {
+        $unwind: {
+          path: "$postID"
+        }
+      },
+      {
+        $lookup: {
+          from: 'mediapicts',
+          localField: 'postID',
+          foreignField: 'postID',
+          as: 'pict',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'mediavideos',
+          localField: 'postID',
+          foreignField: 'postID',
+          as: 'vid',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'mediadiaries',
+          localField: 'postID',
+          foreignField: 'postID',
+          as: 'diary',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'mediastories',
+          localField: 'postID',
+          foreignField: 'postID',
+          as: 'story',
+
+        },
+
+      },
+      {
+        $unwind: {
+          path: "$post",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$pict",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$vid",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$diary",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: "$story",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $sort: {
+          createdAt: - 1
+        }
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: limit
+      },
+      {
+        $project: {
+          active: 1,
+          body: 1,
+          bodyId: 1,
+          contentEventID: 1,
+          createdAt: 1,
+          email: 1,
+          event: 1,
+          eventType: 1,
+          flowIsDone: 1,
+          mate: 1,
+          postType: "$post.postType",
+          notificationID: 1,
+          postID: 1,
+          senderOrReceiverInfo: 1,
+          title: 1,
+          updatedAt: 1,
+          content: {
+            apsaraId:
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: "$pict.apsaraId",
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: "$vid.apsaraId",
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: "$diary.apsaraId",
+                        else: '$story.apsaraId'
+                      }
+                    },
+
+                  }
+                },
+
+              }
+            },
+            apsaraThumbId:
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: "$pict.apsaraThumbId",
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: "$vid.apsaraThumbId",
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: "$diary.apsaraThumbId",
+                        else: '$story.apsaraThumbId'
+                      }
+                    },
+
+                  }
+                },
+
+              }
+            },
+            apsara:
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: "$pict.apsara",
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: "$vid.apsara",
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: "$diary.apsara",
+                        else: '$story.apsara'
+                      }
+                    },
+
+                  }
+                },
+
+              }
+            },
+            mediaEndpoint: //"/pict/fbbac412 - 2a03 - 989a - 8855 - fe949890e9f9",
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: {
+                  $concat: ["/thumb/", "$postID",]
+                },
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: {
+                      $concat: ["/thumb/", "$postID",]
+                    },
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: {
+                          $concat: ["/pict/", "$postID",]
+                        },
+                        else: '$story.apsara'
+                      },
+
+                    }
+                  }
+                },
+
+              }
+            },
+            mediaThumName:
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: "$pict.mediaThumName",
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: "$vid.mediaThumName",
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: "$diary.mediaThumName",
+                        else: '$story.mediaThumName'
+                      }
+                    },
+
+                  }
+                },
+
+              }
+            },
+            mediaThumBasePath:
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: "$pict.mediaThumBasePath",
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: "$vid.mediaThumBasePath",
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: "$diary.mediaThumBasePath",
+                        else: '$story.mediaThumBasePath'
+                      }
+                    },
+
+                  }
+                },
+
+              }
+            },
+            mediaThumUri:
+            {
+              $cond: {
+                if: {
+                  $eq: ['$post.postType', 'pict']
+                },
+                then: "$pict.mediaThumUri",
+                else:
+                {
+                  $cond: {
+                    if: {
+                      $eq: ['$post.postType', 'vid']
+                    },
+                    then: "$vid.mediaThumUri",
+                    else:
+                    {
+                      $cond: {
+                        if: {
+                          $eq: ['$post.postType', 'diary']
+                        },
+                        then: "$diary.mediaThumUri",
+                        else: '$story.mediaThumUri'
+                      }
+                    },
+
+                  }
+                },
+
+              }
+            },
+          }
+        }
+      },
+    );
+    var query = await this.PostsModel.aggregate(pipeline);
+    return query;
   }
 
   async cmodCheckResult(postID: string) {
