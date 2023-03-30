@@ -3417,8 +3417,6 @@ export class GetusercontentsController {
     @UseGuards(JwtAuthGuard)
     async contentlandingpage(@Req() request: Request): Promise<any> {
 
-
-
         var skip = 0;
         var limit = 0;
         var type = null;
@@ -3483,8 +3481,6 @@ export class GetusercontentsController {
         if (lengpict > 0) {
             var resultpictapsara = null;
             version = data[0].version;
-
-
             // console.log(tempdatapict);
             if (type == "pict") {
 
@@ -3588,10 +3584,11 @@ export class GetusercontentsController {
 
             } else {
                 for (let i = 0; i < lengpict; i++) {
-                    postType = data[i].postType;
-                    if (postType === "diary") {
-                        data[i].saleAmount = 0;
-                    }
+                    //ini buat produksion
+                    // postType = data[i].postType;
+                    // if (postType === "diary") {
+                    //     data[i].saleAmount = 0;
+                    // }
 
                     if (data[i].isApsara == true) {
                         tempdatapict.push(data[i].apsaraId);
