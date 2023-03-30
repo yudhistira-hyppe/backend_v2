@@ -2951,13 +2951,30 @@ export class UserAdsService {
 
                 }
             },
-            {
-                $sort: {
-                    createdAt: - 1
-                },
-
-            },
         );
+
+        if (statusClick != undefined && statusClick == true) 
+        {
+            pipeline.push(
+                {
+                    $sort: 
+                    {
+                        clickTime: - 1
+                    },
+                },
+            );
+        }
+        else if(statusView != undefined && statusView == true)
+        {
+            pipeline.push(
+                {
+                    $sort: 
+                    {
+                        updateAt: - 1
+                    },
+                },
+            );
+        }
 
         if (page > 0) {
             pipeline.push({
