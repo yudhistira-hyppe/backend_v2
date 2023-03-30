@@ -264,7 +264,8 @@ export class NotificationsService {
       },
       {
         $unwind: {
-          path: "$postID"
+          path: "$post",
+          preserveNullAndEmptyArrays: true
         }
       },
       {
