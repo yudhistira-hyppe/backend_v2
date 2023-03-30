@@ -2487,7 +2487,7 @@ export class UserAdsService {
     async listpenontondetail2(idads: string, statusClick: any, statusView: any, startdate:string, enddate:string, limit: number, page: number) {
         var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
     
-        var dateend = currentdate.toISOString();
+        var dateend = currentdate.toISOString().split("T")[0];
         
         var pipeline = [];
         pipeline.push(
@@ -2589,11 +2589,25 @@ export class UserAdsService {
             {
                 "$match":
                 {
-                    "clickTime":
-                    {
-                        "$gte":startdate,
-                        "$lte":dateend
-                    }
+                    "$and":
+                    [
+                        {
+                            "$expr":
+                            {
+                                "$eq":
+                                [
+                                    "$statusView", true
+                                ]
+                            }
+                        },
+                        {
+                            "clickTime":
+                            {
+                                "$gte":startdate,
+                                "$lte":dateend
+                            }
+                        }
+                    ]
                 }
             },);
         }
@@ -2614,7 +2628,18 @@ export class UserAdsService {
                     "priority": 1,
                     "priorityNumber": 1,
                     "statusClick": 1,
-                    "statusView": 1,
+                    "statusView": 
+                    {
+                        "$cond": 
+                        {
+                            if: 
+                            {
+                                $eq: ["$statusClick", true]
+                            },
+                            then: true,
+                            else: '$statusView'
+                        }
+                    },
                     "userID": 1,
                     "liveAt": 1,
                     "viewed": 1,
@@ -2636,11 +2661,25 @@ export class UserAdsService {
             {
                 "$match":
                 {
-                    "updateAt":
-                    {
-                        "$gte":startdate,
-                        "$lte":dateend
-                    }
+                    "$and":
+                    [
+                        {
+                            "$expr":
+                            {
+                                "$eq":
+                                [
+                                    "$statusView", true
+                                ]
+                            }
+                        },
+                        {
+                            "updateAt":
+                            {
+                                "$gte":startdate,
+                                "$lte":dateend
+                            }
+                        }
+                    ]
                 }
             },);
         }
@@ -2719,7 +2758,7 @@ export class UserAdsService {
                     priority: 1,
                     statusClick: 1,
                     statusView: 1,
-                    updatedAt: 1,
+                    updateAt: 1,
                     clickTime:1,
                     viewAt: 1,
                     viewed: 1,
@@ -2760,7 +2799,7 @@ export class UserAdsService {
                             else: '$statusView'
                         }
                     },
-                    updatedAt: 1,
+                    updateAt: 1,
                     clickTime:1,
                     viewAt: 1,
                     viewed: 1,
@@ -2799,7 +2838,7 @@ export class UserAdsService {
                     priority: 1,
                     statusClick: 1,
                     statusView: 1,
-                    updatedAt: 1,
+                    updateAt: 1,
                     clickTime:1,
                     viewAt: 1,
                     viewed: 1,
@@ -2851,7 +2890,7 @@ export class UserAdsService {
                     priority: 1,
                     statusClick: 1,
                     statusView: 1,
-                    updatedAt: 1,
+                    updateAt: 1,
                     clickTime:1,
                     viewAt: 1,
                     viewed: 1,
@@ -2890,7 +2929,7 @@ export class UserAdsService {
                     priority: 1,
                     statusClick: 1,
                     statusView: 1,
-                    updatedAt: 1,
+                    updateAt: 1,
                     clickTime:1,
                     viewAt: 1,
                     viewed: 1,
@@ -2920,20 +2959,6 @@ export class UserAdsService {
             },
         );
 
-        if (statusClick != undefined && statusClick == true) {
-            pipeline.push({
-                "$match": {
-                    statusClick: statusClick
-                }
-            });
-        }
-        else if (statusView != undefined && statusView == true) {
-            pipeline.push({
-                "$match": {
-                    statusView: statusView
-                }
-            });
-        }
         if (page > 0) {
             pipeline.push({
                 "$skip": page * limit
