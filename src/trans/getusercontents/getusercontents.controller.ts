@@ -3585,10 +3585,10 @@ export class GetusercontentsController {
             } else {
                 for (let i = 0; i < lengpict; i++) {
                     //ini buat produksion
-                    // postType = data[i].postType;
-                    // if (postType === "diary") {
-                    //     data[i].saleAmount = 0;
-                    // }
+                    postType = data[i].postType;
+                    if (postType === "diary") {
+                        data[i].saleAmount = 0;
+                    }
 
                     if (data[i].isApsara == true) {
                         tempdatapict.push(data[i].apsaraId);
