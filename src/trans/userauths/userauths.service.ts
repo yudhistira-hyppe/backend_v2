@@ -901,17 +901,19 @@ export class UserauthsService {
         }
       },
       {
+        "$sort":
+        {
+          createdAt: - 1
+        }
+      },
+      {
         "$group":
         {
           _id: {
             email: "$email",
             username: "$username"
           },
-          maxcreatedAt:
-          {
-            "$last": "$createdAt",
 
-          },
           story:
           {
             "$push":
@@ -981,12 +983,7 @@ export class UserauthsService {
           }
         }
       },
-      {
-        "$sort":
-        {
-          maxcreatedAt: - 1
-        }
-      },
+
       {
         "$project":
         {
