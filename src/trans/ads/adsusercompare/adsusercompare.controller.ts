@@ -796,12 +796,13 @@ export class AdsUserCompareController {
             }
 
             //const data_userAdsService = await this.userAdsService.findOneByuserIDAds(data_userbasicsService._id.toString(), ads_id.toString());
-            const data_userAdsService = await this.userAdsService.findOnestatusView(userads_id.toString());
-            if (!(await this.utilsService.ceckData(data_userAdsService))) {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed User ads not found',
-                );
-            }
+            const data_userAdsService = await this.userAdsService.getAdsUser(userads_id.toString());
+            //const data_userAdsService = await this.userAdsService.findOnestatusView(userads_id.toString());
+            // if (!(await this.utilsService.ceckData(data_userAdsService))) {
+            //     await this.errorHandler.generateNotAcceptableException(
+            //         'Unabled to proceed User ads not found',
+            //     );
+            // }
 
             var ads_rewards = 0;
 
