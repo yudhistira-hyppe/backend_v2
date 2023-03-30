@@ -1309,15 +1309,142 @@ export class PostsController {
     return y;
   }
 
-  // @Post('api/posts/getnotification2')
-  // @UseInterceptors(FileInterceptor('postContent'))
-  // async getNotification2(@Body() body,  @Headers('x-auth-user') email: string) {
-  //   this.logger.log("getNotification >>> start: " + JSON.stringify(body));
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/getnotification2')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async getNotification2(@Body() body, @Headers('x-auth-user') email: string) {
+    this.logger.log("getNotification >>> start: " + JSON.stringify(body));
+    var eventType = null;
+    var pageRow = null;
+    var pageNumber = null;
+    var data = null;
+    var lengpict = null;
+    if (body.eventType !== undefined) {
+      eventType = body.eventType;
+    }
+    if (body.pageNumber !== undefined) {
+      pageNumber = body.pageNumber;
+    }
 
-  //   let y = await this.postContentService.getNotification2(email, headers);
-  //   this.logger.log("getNotification >>> res: " + JSON.stringify(y));
-  //   return y;
-  // }
+    if (body.pageRow !== undefined) {
+      pageRow = body.pageRow;
+    }
+
+    try {
+
+      data = await this.notifService.getNotification2(email, eventType, parseInt(pageNumber), parseInt(pageRow));
+      lengpict = data.length;
+
+    } catch (e) {
+      data = null;
+      lengpict = 0;
+
+    }
+
+    var datatemp = [];
+    var tempdatapict = [];
+    var apsaraId = null;
+    var isApsara = null;
+    var apsaraThumbId = null;
+    var uploadSource = null;
+    var postType = null;
+    // console.log(lengpict);
+    if (lengpict > 0) {
+
+      for (let i = 0; i < lengpict; i++) {
+
+        try {
+          apsaraId = data[i].content.apsaraId;
+        } catch (e) {
+          apsaraId = "";
+        }
+        try {
+          isApsara = data[i].content.isApsara;
+        } catch (e) {
+          isApsara = "";
+        }
+        try {
+          apsaraThumbId = data[i].content.apsaraThumbId;
+        } catch (e) {
+          apsaraThumbId = "";
+        }
+
+        try {
+          postType = data[i].postType;
+        } catch (e) {
+          postType = "";
+        }
+
+
+        if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+          tempdatapict.push(data[i].content.apsaraThumbId);
+
+        }
+        else if (apsaraId !== undefined && apsaraThumbId === undefined) {
+          tempdatapict.push(data[i].content.apsaraId);
+
+        }
+        else if (apsaraId === undefined && apsaraThumbId !== undefined) {
+          tempdatapict.push(data[i].content.apsaraThumbId);
+
+        }
+
+        if (postType === "pict") {
+          var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+          var gettempresultpictapsara = resultpictapsara.ImageInfo;
+          uploadSource = data[i].content.uploadSource;
+
+
+          if (uploadSource == "OSS") {
+            data[i].content.mediaThumbEndpoint = data[i].content.mediaEndpoint;
+
+          } else {
+            for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+              if (gettempresultpictapsara[j].ImageId == data[i].content.apsaraThumbId) {
+
+                data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
+              }
+              else if (gettempresultpictapsara[j].ImageId == data[i].content.apsaraId) {
+
+                data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+              }
+            }
+          }
+
+
+        } else {
+          var resultvidapsara = await this.postContentService.getVideoApsara(tempdatapict);
+          var gettempresultvidapsara = resultvidapsara.VideoList;
+
+          for (var j = 0; j < gettempresultvidapsara.length; j++) {
+
+            if (gettempresultvidapsara[j].VideoId == data[i].content.apsaraId) {
+
+              data[i].content.mediaThumbEndpoint = gettempresultvidapsara[j].CoverURL;
+
+            }
+
+          }
+        }
+
+
+
+
+      }
+
+
+    } else {
+      data = [];
+    }
+
+
+    return data;
+  }
 
   @Post('api/posts/getnotificationAll')
   async getNotificationAll() {
