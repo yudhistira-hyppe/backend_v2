@@ -586,7 +586,7 @@ export class AdsUserCompareController {
                                     }
                                 }
 
-                                if (ads_totalView == ads_tayang) {
+                                if ((ads_totalView + 1) == ads_tayang) {
                                     adsStatus = false;
                                     adsStatustext = 'FINISH';
                                 }
@@ -634,7 +634,7 @@ export class AdsUserCompareController {
                                     }
                                 }
 
-                                if (ads_totalView == ads_tayang) {
+                                if ((ads_totalView + 1) == ads_tayang) {
                                     var CreateUserAdsDto_ = new CreateUserAdsDto();
                                     CreateUserAdsDto_.isActive = adsStatus;
                                     await this.userAdsService.updatesAlladsNotActive(data_userAdsService.adsID.toString(), CreateUserAdsDto_);

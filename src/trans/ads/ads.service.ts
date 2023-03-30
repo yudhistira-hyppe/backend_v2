@@ -26749,7 +26749,7 @@ export class AdsService {
     //     return query;
     // }
 
-    async consolegetlistads2(startdate: string, enddate: string, statuslist: any[], mincredit: number, maxcredit: number, page: number, limit: number, sorting: boolean) {
+    async consolegetlistads2(startdate: string, enddate: string, statuslist: any[], mincredit: number, maxcredit: number, namaads: string, page: number, limit: number, sorting: boolean) {
         var pipeline = [];
 
         pipeline.push(
@@ -26780,7 +26780,8 @@ export class AdsService {
                             {
                                 "$project":
                                 {
-                                    nameType: 1
+                                    nameType: 1,
+                                    creditValue:1,
                                 }
                             }
                         ]
@@ -26827,12 +26828,18 @@ export class AdsService {
                     typesID: 1,
                     type_data:
                     {
-                        "$first": "$type_data.nameType"
+                        "$arrayElemAt":
+                        [
+                            "$type_data.nameType", 0
+                        ]
                     },
                     placingID: 1,
                     place_data:
                     {
-                        "$first": "$place_data.namePlace"
+                        "$arrayElemAt":
+                        [
+                            "$place_data.namePlace", 0
+                        ]
                     },
                     name: 1,
                     status: 1,
@@ -26872,9 +26879,43 @@ export class AdsService {
                                 0
                             ]
                     },
+                    sumtotalusedCredit:
+                    {
+                        "$multiply":
+                        [
+                            {
+                                "$ifNull":
+                                [
+                                    "$totalView",
+                                    0
+                                ]
+                            },
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$type_data.creditValue", 0
+                                ]
+                            }
+                        ]
+                    }
                     // tempstatus: "$status"
                 }
             },);
+
+        //filter by name of ads
+        if(namaads != undefined)
+        {
+            pipeline.push({
+                "$match":
+                {
+                    name:
+                    {
+                        $regex:namaads,
+                        $options:"i"
+                    }
+                }
+            });
+        }
 
         //filter by date range
         if (startdate != undefined && enddate != undefined) {
@@ -26946,11 +26987,27 @@ export class AdsService {
             pipeline.push({
                 "$match":
                 {
-                    totalUsedCredit:
-                    {
-                        "$gte": mincredit,
-                        "$lte": maxcredit
-                    },
+                    "$and":
+                    [
+                        {
+                            "$expr":
+                            {
+                                "$gte":
+                                [
+                                    "$sumtotalusedCredit", mincredit
+                                ]
+                            }
+                        },
+                        {
+                            "$expr":
+                            {
+                                "$lte":
+                                [
+                                    "$sumtotalusedCredit", maxcredit
+                                ]
+                            }
+                        }
+                    ]
                 }
             },);
         }
