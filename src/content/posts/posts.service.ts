@@ -17264,7 +17264,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaUri"]
+                            "$concat": ["/profilepict/", "$mediaID"]
                           }
                         }
                       },
@@ -18044,7 +18044,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaUri"]
+                            "$concat": ["/profilepict/", "$mediaID"]
                           }
                         }
                       },
@@ -18818,7 +18818,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaUri"]
+                            "$concat": ["/profilepict/", "$mediaID"]
                           }
                         }
                       },
@@ -19588,7 +19588,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaUri"]
+                            "$concat": ["/profilepict/", "$mediaID"]
                           }
                         }
                       },
@@ -20681,7 +20681,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaUri"]
+                            "$concat": ["/profilepict/", "$mediaID"]
                           }
                         }
                       },
@@ -21771,7 +21771,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaUri"]
+                            "$concat": ["/profilepict/", "$mediaID"]
                           }
                         }
                       },
@@ -22855,7 +22855,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaUri"]
+                            "$concat": ["/profilepict/", "$mediaID"]
                           }
                         }
                       },
@@ -24258,7 +24258,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaUri"]
+                            "$concat": ["/profilepict/", "$mediaID"]
                           }
                         }
                       },
@@ -25819,7 +25819,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaUri"]
+                            "$concat": ["/profilepict/", "$mediaID"]
                           }
                         }
                       },
@@ -30179,7 +30179,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaUri"]
+                            "$concat": ["/profilepict/", "$mediaID"]
                           }
                         }
                       },
@@ -31053,7 +31053,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaUri"]
+                            "$concat": ["/profilepict/", "$mediaID"]
                           }
                         }
                       },
@@ -32239,7 +32239,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaUri"]
+                            "$concat": ["/profilepict/", "$mediaID"]
                           }
                         }
                       },
@@ -32559,7 +32559,6 @@ export class PostsService {
                 },
 
               ],
-
             "vid":
               [
                 {
@@ -34472,7 +34471,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaUri"]
+                            "$concat": ["/profilepict/", "$mediaID"]
                           }
                         }
                       },
