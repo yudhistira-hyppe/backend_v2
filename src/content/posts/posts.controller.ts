@@ -1311,15 +1311,10 @@ export class PostsController {
 
   // @Post('api/posts/getnotification2')
   // @UseInterceptors(FileInterceptor('postContent'))
-  // async getNotification2(@Body() body, @Headers() headers) {
+  // async getNotification2(@Body() body,  @Headers('x-auth-user') email: string) {
   //   this.logger.log("getNotification >>> start: " + JSON.stringify(body));
-  //   var email=null;
-  //   try{
-  //     email=headers.x-auth-user;
-  //   }catch(e){
 
-  //   }
-  //   let y = await this.postContentService.getNotification2(body.email, headers);
+  //   let y = await this.postContentService.getNotification2(email, headers);
   //   this.logger.log("getNotification >>> res: " + JSON.stringify(y));
   //   return y;
   // }

@@ -27,7 +27,8 @@ export class UserbankaccountsService {
                     foreignField: "_id",
                     as: "dataBank"
                 }
-            }, {
+            },
+            {
                 $project: {
                     databank: {
                         $arrayElemAt: [
@@ -41,7 +42,8 @@ export class UserbankaccountsService {
                     statusInquiry: "$statusInquiry",
                     active: "$active"
                 }
-            }, {
+            },
+            {
                 $project: {
                     userId: "$userId",
                     noRek: "$noRek",
@@ -54,12 +56,44 @@ export class UserbankaccountsService {
                     urlEbanking: "$databank.urlEbanking",
                     bankIcon: "$databank.bankIcon"
                 }
-            }, {
+            },
+            {
+                $addFields: {
+
+                    stinquiry: {
+                        $cmp: ["$statusInquiry", 0]
+                    }
+                },
+
+            },
+            {
+                $project: {
+                    userId: 1,
+                    noRek: 1,
+                    nama: 1,
+                    statusInquiry: {
+                        $cond: {
+                            if: {
+                                $eq: ["$stinquiry", - 1]
+                            },
+                            then: false,
+                            else: "$statusInquiry"
+                        }
+                    },
+                    active: 1,
+                    bankId: 1,
+                    bankcode: 1,
+                    bankname: 1,
+                    urlEbanking: 1,
+                    bankIcon: 1
+                }
+            },
+            {
                 $match: {
-                    userId: iduser, active: true
+                    userId: iduser,
+                    active: true
                 }
             }
-
         ]);
         return query;
     }
