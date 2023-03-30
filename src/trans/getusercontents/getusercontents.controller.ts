@@ -3483,8 +3483,6 @@ export class GetusercontentsController {
         if (lengpict > 0) {
             var resultpictapsara = null;
             version = data[0].version;
-
-
             // console.log(tempdatapict);
             if (type == "pict") {
 
