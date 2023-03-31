@@ -6053,4 +6053,8 @@ export class PostContentService {
     }
     await this.utilService.counscore("CE", "prodAll", "contentevents", data._id, data.eventType.toString(), userdata._id);
   }
+
+  async getMediapictSeaweedMigration(): Promise<Mediapicts[]> {
+    return await this.picService.getMediapictSeaweedMigration();
+  }
 }

@@ -515,7 +515,7 @@ export class MediamusicController {
     const status_ = (status != undefined) ? status.toString().split(',') : [];
     const sort_ = sort;
 
-    const dataAll = await this.mediamusicService.getMusicFilterWitoutSkipLimit(genre_, theme_, mood_, musicTitle_, artistName_, createdAtStart_, createdAtEnd_, status_, sort_);
+    //const dataAll = await this.mediamusicService.getMusicFilterWitoutSkipLimit(genre_, theme_, mood_, musicTitle_, artistName_, createdAtStart_, createdAtEnd_, status_, sort_);
     const data = await this.mediamusicService.getMusicFilter(pageNumber_, pageRow_, genre_, theme_, mood_, musicTitle_, artistName_, createdAtStart_, createdAtEnd_, status_, sort_);
     
     let thumnail_data: string[] = [];
@@ -555,7 +555,6 @@ export class MediamusicController {
     
     var Response = {
       response_code: 202,
-      totalRow: dataAll.length.toString(),
       pageRow: pageRow_,
       pageNumber_: pageNumber_,
       data: data_,

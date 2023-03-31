@@ -42,6 +42,7 @@ import { TagCountDto } from '../tag_count/dto/create-tag_count.dto';
 import { InterestCountDto } from '../interest_count/dto/create-interest_count.dto';
 import { InterestdayDto } from '../interestday/dto/create-interestday.dto';
 import { OssContentPictService } from './osscontentpict.service';
+import { Mediapicts } from '../mediapicts/schemas/mediapicts.schema';
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -2588,5 +2589,12 @@ export class PostsController {
     return { response_code: 202, pilihan, messages }
   }
 
-
+  @Post('api/posts/seaweed/migration')
+  async mediapictSeaweedMigration(){
+    var Mediapicts_ = await this.postContentService.getMediapictSeaweedMigration();
+    console.log(Mediapicts_.length);
+    for (var i = 0; i < Mediapicts_.length;i++){
+      
+    }
+  } 
 }
