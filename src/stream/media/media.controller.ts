@@ -21,6 +21,7 @@ import { CreateMediaprofilepictsDto } from "src/content/mediaprofilepicts/dto/cr
 import { Mediaprofilepicts } from "src/content/mediaprofilepicts/schemas/mediaprofilepicts.schema";
 import { ContenteventsService } from "../../content/contentevents/contentevents.service";
 import { OssService } from "../oss/oss.service";
+import { FriendListService } from "../../content/friend_list/friend_list.service";
 
 //import FormData from "form-data";
 const multer = require('multer');
@@ -66,6 +67,7 @@ export class MediaController {
     constructor(
         private readonly contenteventsService: ContenteventsService,
         private readonly mediaService: MediaService,
+        private readonly friendListService: FriendListService,
         private readonly errorHandler: ErrorHandler,
         private readonly awsService: AwsService,
         private readonly ossService: OssService,
@@ -618,66 +620,66 @@ export class MediaController {
             //Ceck face detect true
             if (face_detect_selfiepict.FaceDetails.length > 0 && face_detect_cardPict.FaceDetails.length > 0) {
                 //try {
-                    var data_comparing = {
-                        "SimilarityThreshold": Similarity,
-                        "SourceImage": {
-                            "Bytes": buffer_cardPict
+                var data_comparing = {
+                    "SimilarityThreshold": Similarity,
+                    "SourceImage": {
+                        "Bytes": buffer_cardPict
+                    },
+                    "TargetImage": {
+                        "Bytes": buffer_selfiepict
+                    }
+                };
+
+                //Face comparing
+                face_detect_selfiepict = await this.awsService.comparing(data_comparing);
+                if (face_detect_selfiepict.FaceMatches.length > 0) {
+                    emailuserbasic = datauserbasicsService.email;
+                    var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.status = 'FINISH';
+                    _CreateMediaproofpictsDto.valid = true;
+                    await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
+                    iduserbasic = datauserbasicsService._id;
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, true, 'verified');
+                    await this.userauthsService.update(emailuserbasic, 'ROLE_PREMIUM');
+                    //await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+
+                    await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_VERIFIED');
+                    return {
+                        "response_code": 202,
+                        "data": {
+                            "id_mediaproofpicts": id_mediaproofpicts_,
+                            "valid": true
                         },
-                        "TargetImage": {
-                            "Bytes": buffer_selfiepict
+                        "messages": {
+                            "info": [
+                                "Face match"
+                            ]
                         }
                     };
-
-                    //Face comparing
-                    face_detect_selfiepict = await this.awsService.comparing(data_comparing);
-                    if (face_detect_selfiepict.FaceMatches.length > 0) {
-                        emailuserbasic = datauserbasicsService.email;
-                        var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
-                        _CreateMediaproofpictsDto.status = 'FINISH';
-                        _CreateMediaproofpictsDto.valid = true;
-                        await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
-                        iduserbasic = datauserbasicsService._id;
-                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic, true, 'verified');
-                        await this.userauthsService.update(emailuserbasic, 'ROLE_PREMIUM');
-                        //await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
-
-                        await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_VERIFIED');
-                        return {
+                } else {
+                    await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REJECT');
+                    var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.status = 'FAILED';
+                    _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict dan Selfie Pict';
+                    iduserbasic = datauserbasicsService._id;
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'unverified');
+                    await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
+                    //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
+                    await this.errorHandler.generateCustomNotAcceptableException(
+                        {
                             "response_code": 202,
                             "data": {
                                 "id_mediaproofpicts": id_mediaproofpicts_,
-                                "valid": true
+                                "valid": false
                             },
                             "messages": {
                                 "info": [
-                                    "Face match"
+                                    "Face not match"
                                 ]
                             }
-                        };
-                    } else {
-                        await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REJECT');
-                        var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
-                        _CreateMediaproofpictsDto.status = 'FAILED';
-                        _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict dan Selfie Pict';
-                        iduserbasic = datauserbasicsService._id;
-                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'unverified');
-                        await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
-                        //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
-                        await this.errorHandler.generateCustomNotAcceptableException(
-                            {
-                                "response_code": 202,
-                                "data": {
-                                    "id_mediaproofpicts": id_mediaproofpicts_,
-                                    "valid": false
-                                },
-                                "messages": {
-                                    "info": [
-                                        "Face not match"
-                                    ]
-                                }
-                            }
-                        );
-                    }
+                        }
+                    );
+                }
                 // } catch (err) {
                 //     await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REJECT');
                 //     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
@@ -1863,26 +1865,30 @@ export class MediaController {
             throw new BadRequestException("Unabled to proceed");
         }
 
-        data = await this.mediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, page, limit);
-        let datasearch = await this.mediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, 0, 0);
-        var totalsearch = datasearch.length;
-        var allrow = await this.mediaproofpictsService.listkyc(undefined, undefined, undefined, undefined, descending, 0, 0);
-        var totalallrow = allrow.length;
+        try {
+            data = await this.mediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, page, limit);
+        } catch (e) {
+            data = null;
+        }
+        // let datasearch = await this.mediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, 0, 0);
+        // var totalsearch = datasearch.length;
+        // var allrow = await this.mediaproofpictsService.listkyc(undefined, undefined, undefined, undefined, descending, 0, 0);
+        // var totalallrow = allrow.length;
         var totalrow = data.length;
 
-        var tpage = null;
-        var tpage2 = null;
-        var totalpage = null;
-        tpage2 = (totalsearch / limit).toFixed(0);
-        tpage = (totalsearch % limit);
-        if (tpage > 0 && tpage < 5) {
-            totalpage = parseInt(tpage2) + 1;
+        // var tpage = null;
+        // var tpage2 = null;
+        // var totalpage = null;
+        // tpage2 = (totalsearch / limit).toFixed(0);
+        // tpage = (totalsearch % limit);
+        // if (tpage > 0 && tpage < 5) {
+        //     totalpage = parseInt(tpage2) + 1;
 
-        } else {
-            totalpage = parseInt(tpage2);
-        }
+        // } else {
+        //     totalpage = parseInt(tpage2);
+        // }
 
-        return { response_code: 202, data, page, limit, totalrow, totalallrow, totalsearch, totalpage, messages };
+        return { response_code: 202, data, page, limit, totalrow, totalallrow: 0, totalsearch: 0, totalpage: 0, messages };
     }
 
     @Post('api/mediaproofpicts/detailkyc')
@@ -1903,6 +1909,7 @@ export class MediaController {
         var lengsupport = null;
         var datafriend = null;
         var lengfrend = null;
+        var totalfriend = null;
 
         var arrsuport = [];
         const messages = {
@@ -1919,11 +1926,11 @@ export class MediaController {
         try {
             datakyc = await this.mediaproofpictsService.detailkyc(id);
             try {
-                datafriend = await this.contenteventsService.friendnew(datakyc[0].email);
-                lengfrend = datafriend.length;
+                datafriend = await this.friendListService.findOnebyemail(datakyc[0].email);
+                totalfriend = datafriend.totalfriend;
             } catch (e) {
                 datafriend = null;
-                lengfrend = 0;
+                totalfriend = 0;
             }
             try {
                 fileselfiepict = datakyc[0].mediaSelfieUri;
@@ -1971,7 +1978,7 @@ export class MediaController {
 
                     followers: datakyc[0].insight.followers,
                     followings: datakyc[0].insight.followings,
-                    friends: lengfrend
+                    friends: totalfriend
                 };
             } else {
                 objinsig = {};

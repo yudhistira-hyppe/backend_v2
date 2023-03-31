@@ -13,9 +13,11 @@ import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediapr
 import { UserauthsModule } from '../../trans/userauths/userauths.module';
 import { ContenteventsModule } from "../../content/contentevents/contentevents.module";
 import { OssModule } from '../oss/oss.module';
+import { FriendListModule } from "../../content/friend_list/friend_list.module";
 @Module({
   imports: [
     OssModule,
+    FriendListModule,
     UserauthsModule,
     MediaprofilepictsModule,
     SettingsModule,

@@ -881,13 +881,12 @@ export class AdsController {
             startdate = request_json["startdate"];
             enddate = request_json["enddate"];
         }
-        else 
-        {
+        else {
             throw new BadRequestException("Unabled to proceed");
         }
 
         var getdatabase = await this.adsService.getAdsanalyticsgraph(startdate, enddate);
-        
+
         var getdata = [];
         var total = 0;
         try {
@@ -1063,29 +1062,29 @@ export class AdsController {
         }
 
 
-        try {
-            // var resultdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, undefined, undefined, sorting);
-            var resultdata = await this.adsService.consolegetlistads2(startdate, enddate, status, mincredit, maxcredit, namaads, undefined, undefined, sorting);
-            var totalsearch = resultdata.length;
-        }
-        catch (e) {
-            var resultdata = [];
-            var totalsearch = 0;
-        }
+        // try {
+        //     // var resultdata = await this.adsService.consolegetlistads(startdate, enddate, status, mincredit, maxcredit, undefined, undefined, sorting);
+        //     var resultdata = await this.adsService.consolegetlistads2(startdate, enddate, status, mincredit, maxcredit, namaads, undefined, undefined, sorting);
+        //     var totalsearch = resultdata.length;
+        // }
+        // catch (e) {
+        //     var resultdata = [];
+        //     var totalsearch = 0;
+        // }
 
-        var totalpage = 0;
-        var gettotal = (totalsearch / limit).toFixed(0);
-        var sisa = (totalsearch % limit);
-        if (sisa > 0 && sisa < 5) {
-            totalpage = parseInt(gettotal) + 1;
-        }
-        else {
-            totalpage = parseInt(gettotal);
-        }
+        // var totalpage = 0;
+        // var gettotal = (totalsearch / limit).toFixed(0);
+        // var sisa = (totalsearch % limit);
+        // if (sisa > 0 && sisa < 5) {
+        //     totalpage = parseInt(gettotal) + 1;
+        // }
+        // else {
+        //     totalpage = parseInt(gettotal);
+        // }
 
         this.updatelistdataads();
 
-        return { response_code: 202, data: getdata, totalsearch: totalsearch, totalpage: totalpage, totaldatainpage: total, limit: limit, page: page, messages };
+        return { response_code: 202, data: getdata, totalsearch: 0, totalpage: 0, totaldatainpage: total, limit: limit, page: page, messages };
     }
 
     @Get('console/adscenter/historydetail/:id')
@@ -1107,18 +1106,15 @@ export class AdsController {
         var data = await this.adsService.getalldatabyforREPORTstatus();
         var iddata = [];
 
-        if(data.length != 0)
-        {
-            for(var i = 0 ; i < data.length; i++)
-            {
+        if (data.length != 0) {
+            for (var i = 0; i < data.length; i++) {
                 iddata.push(data[i]._id);
             }
 
             var listid = [];
             const mongoose = require('mongoose');
 
-            for (var i = 0; i < data.length; i++) 
-            {
+            for (var i = 0; i < data.length; i++) {
                 var setiddata = mongoose.Types.ObjectId(iddata[i]);
                 listid.push(setiddata);
             }
