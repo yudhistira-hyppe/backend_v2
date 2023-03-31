@@ -592,34 +592,34 @@ export class UserticketsController {
     var dataall = null;
     total = data.length;
 
-    try {
-      datasearch = await this.userticketsService.filterdatacount(search, assignto, sumber, kategori, level, status, startdate, enddate, iduser, close);
-      totalsearch = datasearch[0].count;
-    } catch (e) {
-      datasearch = null;
-      totalsearch = 0;
-    }
+    // try {
+    //   datasearch = await this.userticketsService.filterdatacount(search, assignto, sumber, kategori, level, status, startdate, enddate, iduser, close);
+    //   totalsearch = datasearch[0].count;
+    // } catch (e) {
+    //   datasearch = null;
+    //   totalsearch = 0;
+    // }
 
-    try {
-      dataall = await this.userticketsService.filterdatacount(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
-      totalallrow = dataall[0].count;
-    } catch (e) {
-      totalallrow = 0;
-    }
+    // try {
+    //   dataall = await this.userticketsService.filterdatacount(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+    //   totalallrow = dataall[0].count;
+    // } catch (e) {
+    //   totalallrow = 0;
+    // }
 
 
-    var tpage = null;
-    var tpage2 = null;
+    // var tpage = null;
+    // var tpage2 = null;
 
-    tpage2 = (totalsearch / limit).toFixed(0);
-    tpage = (totalsearch % limit);
-    if (tpage > 0 && tpage < 5) {
-      totalpage = parseInt(tpage2) + 1;
+    // tpage2 = (totalsearch / limit).toFixed(0);
+    // tpage = (totalsearch % limit);
+    // if (tpage > 0 && tpage < 5) {
+    //   totalpage = parseInt(tpage2) + 1;
 
-    } else {
-      totalpage = parseInt(tpage2);
-    }
-    return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
+    // } else {
+    //   totalpage = parseInt(tpage2);
+    // }
+    return { response_code: 202, data, page, limit, total, totalallrow: 0, totalsearch: 0, totalpage: 0, messages };
 
   }
 

@@ -344,7 +344,7 @@ export class NotificationsService {
         }
       },
       {
-        $skip: skip
+        $skip: (skip * limit)
       },
       {
         $limit: limit
@@ -591,6 +591,43 @@ export class NotificationsService {
           }
         }
       },
+      {
+        $set: {
+          tester: {
+            $ifNull: ['$content.apsara', "dodol"]
+          }
+        }
+      },
+      {
+        $project: {
+          active: 1,
+          body: 1,
+          bodyId: 1,
+          contentEventID: 1,
+          createdAt: 1,
+          email: 1,
+          event: 1,
+          eventType: 1,
+          flowIsDone: 1,
+          mate: 1,
+          postType: 1,
+          notificationID: 1,
+          postID: 1,
+          senderOrReceiverInfo: 1,
+          title: 1,
+          updatedAt: 1,
+          content:
+          {
+            $cond: {
+              if: {
+                $eq: ["$tester", "dodol"],
+              },
+              then: "$kancutTaslim",
+              else: "$content"
+            }
+          },
+        }
+      }
     );
     var query = await this.NotificationsModel.aggregate(pipeline);
     return query;
