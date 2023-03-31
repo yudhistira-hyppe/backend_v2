@@ -1865,26 +1865,30 @@ export class MediaController {
             throw new BadRequestException("Unabled to proceed");
         }
 
-        data = await this.mediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, page, limit);
-        let datasearch = await this.mediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, 0, 0);
-        var totalsearch = datasearch.length;
-        var allrow = await this.mediaproofpictsService.listkyc(undefined, undefined, undefined, undefined, descending, 0, 0);
-        var totalallrow = allrow.length;
+        try {
+            data = await this.mediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, page, limit);
+        } catch (e) {
+            data = null;
+        }
+        // let datasearch = await this.mediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, 0, 0);
+        // var totalsearch = datasearch.length;
+        // var allrow = await this.mediaproofpictsService.listkyc(undefined, undefined, undefined, undefined, descending, 0, 0);
+        // var totalallrow = allrow.length;
         var totalrow = data.length;
 
-        var tpage = null;
-        var tpage2 = null;
-        var totalpage = null;
-        tpage2 = (totalsearch / limit).toFixed(0);
-        tpage = (totalsearch % limit);
-        if (tpage > 0 && tpage < 5) {
-            totalpage = parseInt(tpage2) + 1;
+        // var tpage = null;
+        // var tpage2 = null;
+        // var totalpage = null;
+        // tpage2 = (totalsearch / limit).toFixed(0);
+        // tpage = (totalsearch % limit);
+        // if (tpage > 0 && tpage < 5) {
+        //     totalpage = parseInt(tpage2) + 1;
 
-        } else {
-            totalpage = parseInt(tpage2);
-        }
+        // } else {
+        //     totalpage = parseInt(tpage2);
+        // }
 
-        return { response_code: 202, data, page, limit, totalrow, totalallrow, totalsearch, totalpage, messages };
+        return { response_code: 202, data, page, limit, totalrow, totalallrow: 0, totalsearch: 0, totalpage: 0, messages };
     }
 
     @Post('api/mediaproofpicts/detailkyc')
