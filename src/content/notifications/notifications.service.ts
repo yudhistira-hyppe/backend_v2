@@ -344,7 +344,7 @@ export class NotificationsService {
         }
       },
       {
-        $skip: skip
+        $skip: (skip * limit)
       },
       {
         $limit: limit
