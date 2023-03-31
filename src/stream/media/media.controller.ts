@@ -27,6 +27,7 @@ import { FriendListService } from "../../content/friend_list/friend_list.service
 const multer = require('multer');
 var FormData = require('form-data');
 var path = require("path");
+const sharp = require('sharp');
 
 export const multerConfig = {
     //dest: process.env.PATH_UPLOAD,
@@ -321,14 +322,18 @@ export class MediaController {
         let cardPict_etx = '';
         let cardPict_mimetype = '';
         let cardPict_filename_new = '';
+        let cardPict_filename_new_thum = '';
         let url_cardPict = '';
+        let url_cardPict_thum = '';
 
         //Var selfiepict
         let selfiepict_filename = '';
         let selfiepict_etx = '';
         let selfiepict_mimetype = '';
         let selfiepict_filename_new = '';
+        let selfiepict_filename_new_thum = '';
         let url_selfiepict = '';
+        let url_selfiepict_thum = '';
 
         //Var buffer
         let buffer_cardPict = null;
@@ -373,6 +378,7 @@ export class MediaController {
                 // }
                 cardPict_etx = '.jpeg';
                 cardPict_filename_new = iduserbasic + cardPict_etx;
+                cardPict_filename_new_thum = iduserbasic +"_thum"+cardPict_etx;
                 cardPict_mimetype = files.cardPict[0].mimetype;
 
                 var result = await this.ossService.uploadFile(files.cardPict[0], iduserbasic + "/kyc/proofpict/" + cardPict_filename_new);
@@ -381,6 +387,34 @@ export class MediaController {
                         if (result.res.statusCode != undefined) {
                             if (result.res.statusCode == 200) {
                                 url_cardPict = result.res.requestUrls[0];
+                            } else {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed cardPict failed upload',
+                                );
+                            }
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed cardPict failed upload',
+                            );
+                        }
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed cardPict failed upload',
+                        );
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed cardPict failed upload',
+                    );
+                }
+
+                var cardPict_thum = await this.generate_thumnail(files.cardPict[0], "jpeg");
+                var result_thum = await this.ossService.uploadFileBuffer(cardPict_thum, iduserbasic + "/kyc/proofpict/" + cardPict_filename_new_thum);
+                if (result_thum != undefined) {
+                    if (result_thum.res != undefined) {
+                        if (result_thum.res.statusCode != undefined) {
+                            if (result_thum.res.statusCode == 200) {
+                                url_cardPict_thum = result_thum.res.requestUrls[0];
                             } else {
                                 await this.errorHandler.generateNotAcceptableException(
                                     'Unabled to proceed cardPict failed upload',
@@ -438,6 +472,7 @@ export class MediaController {
                 // }
                 selfiepict_etx = '.jpeg';
                 selfiepict_filename_new = iduserbasic + selfiepict_etx;
+                selfiepict_filename_new_thum = iduserbasic + "_thum" + selfiepict_etx;
                 selfiepict_mimetype = files.selfiepict[0].mimetype;
 
                 var result = await this.ossService.uploadFile(files.selfiepict[0], iduserbasic + "/kyc/selfiepict/" + selfiepict_filename_new);
@@ -446,6 +481,34 @@ export class MediaController {
                         if (result.res.statusCode != undefined) {
                             if (result.res.statusCode == 200) {
                                 url_selfiepict = result.res.requestUrls[0];
+                            } else {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed cardPict failed upload',
+                                );
+                            }
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed cardPict failed upload',
+                            );
+                        }
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed cardPict failed upload',
+                        );
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed cardPict failed upload',
+                    );
+                }
+
+                var selfiepict_thum = await this.generate_thumnail(files.selfiepict[0], "jpeg");
+                var result_thum = await this.ossService.uploadFileBuffer(selfiepict_thum, iduserbasic + "/kyc/selfiepict/" + selfiepict_filename_new_thum);
+                if (result_thum != undefined) {
+                    if (result_thum.res != undefined) {
+                        if (result_thum.res.statusCode != undefined) {
+                            if (result_thum.res.statusCode == 200) {
+                                url_selfiepict_thum = result_thum.res.requestUrls[0];
                             } else {
                                 await this.errorHandler.generateNotAcceptableException(
                                     'Unabled to proceed cardPict failed upload',
@@ -514,6 +577,8 @@ export class MediaController {
                     CreateMediaproofpictsDto_.fsSourceUri = url_cardPict;
                     CreateMediaproofpictsDto_.fsSourceName = cardPict_filename_new;
                     CreateMediaproofpictsDto_.fsTargetUri = url_cardPict;
+                    CreateMediaproofpictsDto_.mediaThumBasePath = iduserbasic + "/kyc/proofpict/" + cardPict_filename_new_thum;
+                    CreateMediaproofpictsDto_.mediaThumUri = url_cardPict_thum;
 
                     CreateMediaproofpictsDto_.mediaMime = cardPict_mimetype;
                     CreateMediaproofpictsDto_.proofpictUploadSource = "OSS";
@@ -526,6 +591,8 @@ export class MediaController {
                     CreateMediaproofpictsDto_.SelfiefsSourceUri = url_selfiepict;
                     CreateMediaproofpictsDto_.SelfiefsSourceName = selfiepict_filename_new;
                     CreateMediaproofpictsDto_.SelfiefsTargetUri = url_selfiepict;
+                    CreateMediaproofpictsDto_.SelfiemediaThumBasePath = iduserbasic + "/kyc/selfiepict/" + selfiepict_filename_new_thum;
+                    CreateMediaproofpictsDto_.SelfiemediaThumUri = url_selfiepict_thum;
 
                     CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype;
                     CreateMediaproofpictsDto_.SelfieUploadSource = "OSS";
@@ -759,6 +826,43 @@ export class MediaController {
                 'Unabled to proceed user not found',
             );
         }
+    }
+
+    async generate_thumnail(file: Express.Multer.File, format: string) {
+        var SIZE_IMAGE_RESIZE = 320;
+        console.log("CONFIG SIZE_IMAGE_RESIZE : " + SIZE_IMAGE_RESIZE);
+
+        //Get Image Information
+        var image_information = await sharp(file.buffer).metadata();
+        console.log("IMAGE INFORMATION", image_information);
+
+        var image_height = image_information.height;
+        var image_width = image_information.width;
+        var image_size = image_information.size;
+        var image_format = image_information.format;
+        var image_orientation = image_information.orientation;
+
+        //Get Image Mode
+        var image_mode = await this.utilsService.getImageMode(image_width, image_height);
+        console.log("IMAGE MODE", image_mode);
+
+        var thumnail = null;
+        var ori = null;
+        try {
+            if (image_orientation == 1) {
+                thumnail = await sharp(file.buffer).resize(100, 100).toBuffer();
+            } else if (image_orientation == 6) {
+                thumnail = await sharp(file.buffer).rotate(90).resize(100, 100).toBuffer();
+            } else if (image_orientation == 8) {
+                thumnail = await sharp(file.buffer).rotate(270).resize(100, 100).toBuffer();
+            } else {
+                thumnail = await sharp(file.buffer).resize(100, 100).toBuffer();
+            }
+            console.log(typeof thumnail);
+        } catch (e) {
+            console.log("THUMNAIL", "FAILED TO CREATE THUMNAIL");
+        }
+        return thumnail;
     }
 
     @UseGuards(JwtAuthGuard)

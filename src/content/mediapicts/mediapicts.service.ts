@@ -112,7 +112,7 @@ export class MediapictsService {
     return query;
   }
 
-  async getMediapictSeaweedMigration(): Promise<Mediapicts[]> {
+  async getDataMediapictSeaweed(): Promise<Mediapicts[]> {
     return await this.MediapictsModel.find({ apsaraId: { $eq: null }, uploadSource: { $eq: null }, mediaBasePath: { $eq: null } }).exec();
   }
 }
