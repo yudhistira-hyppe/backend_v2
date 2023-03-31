@@ -1377,17 +1377,22 @@ export class PostsController {
         } catch (e) {
           postType = "";
         }
+        try {
 
+          uploadSource = data[i].content.uploadSource;
+        } catch (e) {
+          uploadSource = "";
+        }
 
-        if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+        if (apsaraId !== '' && apsaraThumbId !== '') {
           tempdatapict.push(data[i].content.apsaraThumbId);
 
         }
-        else if (apsaraId !== undefined && apsaraThumbId === undefined) {
+        else if (apsaraId !== '' && apsaraThumbId === '') {
           tempdatapict.push(data[i].content.apsaraId);
 
         }
-        else if (apsaraId === undefined && apsaraThumbId !== undefined) {
+        else if (apsaraId === '' && apsaraThumbId !== '') {
           tempdatapict.push(data[i].content.apsaraThumbId);
 
         }
@@ -1395,8 +1400,6 @@ export class PostsController {
         if (postType === "pict") {
           var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
           var gettempresultpictapsara = resultpictapsara.ImageInfo;
-          uploadSource = data[i].content.uploadSource;
-
 
           if (uploadSource == "OSS") {
             data[i].content.mediaThumbEndpoint = data[i].content.mediaEndpoint;
@@ -2590,11 +2593,11 @@ export class PostsController {
   }
 
   @Post('api/posts/seaweed/migration')
-  async mediapictSeaweedMigration(){
+  async mediapictSeaweedMigration() {
     var Mediapicts_ = await this.postContentService.getMediapictSeaweedMigration();
     console.log(Mediapicts_.length);
-    for (var i = 0; i < Mediapicts_.length;i++){
-      
+    for (var i = 0; i < Mediapicts_.length; i++) {
+
     }
-  } 
+  }
 }
