@@ -37,6 +37,10 @@ export class Mediaproofpicts {
   @Prop()
   mediaMime: String
   @Prop()
+  mediaThumBasePath: String
+  @Prop()
+  mediaThumUri: String
+  @Prop()
   proofpictUploadSource: String;
   @Prop() nama: String
   @Prop() tempatLahir: String
@@ -55,6 +59,10 @@ export class Mediaproofpicts {
   @Prop() SelfiefsSourceName: String
   @Prop() SelfiefsTargetUri: String
   @Prop() SelfiemediaMime: String;
+  @Prop()
+  SelfiemediaThumBasePath: String
+  @Prop()
+  SelfiemediaThumUri: String
   @Prop()
   SelfieUploadSource: String;
 

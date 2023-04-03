@@ -6054,7 +6054,12 @@ export class PostContentService {
     await this.utilService.counscore("CE", "prodAll", "contentevents", data._id, data.eventType.toString(), userdata._id);
   }
 
-  async getMediapictSeaweedMigration(): Promise<Mediapicts[]> {
-    return await this.picService.getMediapictSeaweedMigration();
+  async getDataMediapictSeaweed(): Promise<Mediapicts[]> {
+    return await this.picService.getDataMediapictSeaweed();
+  }
+
+  async getImageMediapictSeaweed(mediapicts: string): Promise<any> {
+    var data = await this.seaweedfsService.read(mediapicts.replace('/localrepo', ''));
+    return data;
   }
 }

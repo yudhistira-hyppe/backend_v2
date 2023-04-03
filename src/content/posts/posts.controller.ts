@@ -2593,11 +2593,11 @@ export class PostsController {
   }
 
   @Post('api/posts/seaweed/migration')
-  async mediapictSeaweedMigration() {
-    var Mediapicts_ = await this.postContentService.getMediapictSeaweedMigration();
+  async mediapictSeaweedMigration(){
+    var Mediapicts_ = await this.postContentService.getDataMediapictSeaweed();
     console.log(Mediapicts_.length);
-    for (var i = 0; i < Mediapicts_.length; i++) {
-
+    for (var i = 0; i < Mediapicts_.length;i++){
+      
     }
   }
 }
