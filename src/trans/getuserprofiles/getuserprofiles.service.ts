@@ -339,7 +339,7 @@ export class GetuserprofilesService {
         $addFields: {
 
           concat: '/profilepict',
-          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: ".jpeg", replacement: "" } },
         },
       },
       {
