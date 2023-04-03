@@ -594,7 +594,7 @@ export class NotificationsService {
       {
         $set: {
           tester: {
-            $ifNull: ['$content.apsara', "dodol"]
+            $ifNull: ['$content.isApsara', "dodol"]
           }
         }
       },
@@ -610,7 +610,7 @@ export class NotificationsService {
           eventType: 1,
           flowIsDone: 1,
           mate: 1,
-          postType: 1,
+          postType: "$post.postType",
           notificationID: 1,
           postID: 1,
           senderOrReceiverInfo: 1,
