@@ -36,6 +36,7 @@ import { UserticketsModule } from '../trans/usertickets/usertickets.module';
 import { UserticketdetailsModule } from '../trans/usertickets/userticketdetails/userticketdetails.module';
 import { OssModule } from '../stream/oss/oss.module';
 import { UserbankaccountsModule } from '../trans/userbankaccounts/userbankaccounts.module';
+import { FriendListModule } from 'src/content/friend_list/friend_list.module';
 @Module({
   imports: [
     UserbankaccountsModule,
@@ -67,6 +68,7 @@ import { UserbankaccountsModule } from '../trans/userbankaccounts/userbankaccoun
     ReferralModule,
     PostsModule,
     UserticketsModule,
+    FriendListModule,
     ActivityeventsModule, JwtModule.register({
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },

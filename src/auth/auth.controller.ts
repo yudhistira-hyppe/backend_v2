@@ -61,6 +61,7 @@ import { GroupService } from '../trans/usermanagement/group/group.service';
 import { UserbankaccountsService } from '../trans/userbankaccounts/userbankaccounts.service';
 import { OssService } from '../stream/oss/oss.service';
 import { CreateMediaprofilepictsDto } from 'src/content/mediaprofilepicts/dto/create-mediaprofilepicts.dto';
+import { FriendListService } from 'src/content/friend_list/friend_list.service';
 const sharp = require('sharp');
 const convert = require('heic-convert');
 
@@ -91,6 +92,7 @@ export class AuthController {
     private userticketsService: UserticketsService,
     private userbankaccountsService: UserbankaccountsService,
     private userticketdetailsService: UserticketdetailsService,
+    private friendListService: FriendListService,
   ) { }
 
   @UseGuards(LocalAuthGuard)
@@ -3460,16 +3462,25 @@ export class AuthController {
       }
 
       try {
-        datafrend = await this.contenteventsService.findfriend(email);
-        console.log(datafrend);
-        lengfrend = datafrend.length;
-        for (var i = 0; i < lengfrend; i++) {
-          emailfrend = datafrend[i]._id.email;
+        //versi lama
+        // datafrend = await this.contenteventsService.findfriend(email);
+        // console.log(datafrend);
+        // lengfrend = datafrend.length;
+        // for (var i = 0; i < lengfrend; i++) {
+        //   emailfrend = datafrend[i]._id.email;
 
-          if (email === emailfrend) {
-            lengfrend = lengfrend - 1;
-          }
-        }
+        //   if (email === emailfrend) {
+        //     lengfrend = lengfrend - 1;
+        //   }
+        // }
+
+        //versi baru
+        const mongoose = require('mongoose');
+        let getid = mongoose.Types.ObjectId(id);
+        datafrend = await this.friendListService.findOne(getid);
+        lengfrend = datafrend.totalfriend;
+        datafrend = datafrend.friendlist;
+        // console.log(lengfrend);
       } catch (e) {
         datafrend = null;
       }
