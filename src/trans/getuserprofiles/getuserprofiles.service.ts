@@ -352,7 +352,7 @@ export class GetuserprofilesService {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
             mediaType: '$profilpict.mediaType',
-            mediaEndpoint: { $concat: ["$concat", "/", "$pict"] },
+            mediaEndpoint: { $concat: ["$concat", "/", "$profilpict.mediaID"] },
 
           },
         },
