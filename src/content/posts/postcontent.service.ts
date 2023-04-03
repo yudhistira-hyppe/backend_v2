@@ -4077,7 +4077,7 @@ export class PostContentService {
                 pa.isApsara = true;
               } else {
                 pa.mediaThumbUri = video.mediaThumb;
-                pa.mediaEndpoint = '/stream/' + video.mediaUri;
+                pa.mediaEndpoint = '/stream/' + video.postID;
                 pa.mediaThumbEndpoint = '/thumb/' + video.postID;
               }
 
@@ -4146,7 +4146,7 @@ export class PostContentService {
                 pa.isApsara = true;
               } else {
                 pa.mediaThumbUri = diary.mediaThumb;
-                pa.mediaEndpoint = '/stream/' + diary.mediaUri;
+                pa.mediaEndpoint = '/stream/' + diary.postID;
                 pa.mediaThumbEndpoint = '/thumb/' + diary.postID;
               }
 
@@ -4177,7 +4177,7 @@ export class PostContentService {
                   pa.isApsara = true;
                 } else {
                   pa.mediaThumbUri = story.mediaThumb;
-                  pa.mediaEndpoint = '/stream/' + story.mediaUri;
+                  pa.mediaEndpoint = '/stream/' + story.postID;
                   pa.mediaThumbEndpoint = '/thumb/' + story.postID;
                 }
                 pa.mediaType = 'video';
@@ -4188,7 +4188,7 @@ export class PostContentService {
                   pa.isApsara = true;
                 } else {
                   pa.mediaThumbUri = story.mediaThumb;
-                  pa.mediaEndpoint = '/pict/' + story.mediaUri;
+                  pa.mediaEndpoint = '/pict/' + story.postID;
                   pa.mediaThumbEndpoint = '/thumb/' + story.postID;
                 }
                 pa.mediaType = 'image';
