@@ -610,7 +610,7 @@ export class NotificationsService {
           eventType: 1,
           flowIsDone: 1,
           mate: 1,
-          postType: "$post.postType",
+          postType: 1,
           notificationID: 1,
           postID: 1,
           senderOrReceiverInfo: 1,
