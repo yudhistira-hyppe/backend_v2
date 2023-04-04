@@ -1384,15 +1384,15 @@ export class PostsController {
           uploadSource = "";
         }
 
-        if (apsaraId !== '' && apsaraThumbId !== '') {
+        if (apsaraId !== undefined && apsaraThumbId !== undefined) {
           tempdatapict.push(data[i].content.apsaraThumbId);
 
         }
-        else if (apsaraId !== '' && apsaraThumbId === '') {
+        else if (apsaraId !== undefined && apsaraThumbId === undefined) {
           tempdatapict.push(data[i].content.apsaraId);
 
         }
-        else if (apsaraId === '' && apsaraThumbId !== '') {
+        else if (apsaraId === undefined && apsaraThumbId !== undefined) {
           tempdatapict.push(data[i].content.apsaraThumbId);
 
         }
@@ -2593,11 +2593,11 @@ export class PostsController {
   }
 
   @Post('api/posts/seaweed/migration')
-  async mediapictSeaweedMigration(){
+  async mediapictSeaweedMigration() {
     var Mediapicts_ = await this.postContentService.getDataMediapictSeaweed();
     console.log(Mediapicts_.length);
-    for (var i = 0; i < Mediapicts_.length;i++){
-      
+    for (var i = 0; i < Mediapicts_.length; i++) {
+
     }
   }
 }
