@@ -480,9 +480,9 @@ export class NotificationsService {
                           $eq: ['$post.postType', 'diary']
                         },
                         then: {
-                          $concat: ["/pict/", "$postID",]
+                          $concat: ["/thumb/", "$postID",]
                         },
-                        else: '$story.apsara'
+                        else: { $concat: ["/thumb/", "$postID",] }
                       },
 
                     }
