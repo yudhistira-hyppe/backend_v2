@@ -31,12 +31,7 @@ export class NotificationsService {
   async findlatest(email: string, skip: number, limit: number): Promise<object> {
     const query = await this.NotificationsModel.aggregate([
       { $match: { email: email } },
-      {
-        $addFields: {
 
-          createdAt: "$createdAt"
-        }
-      },
       { $sort: { createdAt: -1 }, },
       { $skip: skip },
       { $limit: limit },
