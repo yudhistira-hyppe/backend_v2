@@ -1357,47 +1357,48 @@ export class PostsController {
       for (let i = 0; i < lengpict; i++) {
 
         try {
-          apsaraId = data[i].content.apsaraId;
-        } catch (e) {
-          apsaraId = "";
-        }
-        try {
-          isApsara = data[i].content.isApsara;
-        } catch (e) {
-          isApsara = "";
-        }
-        try {
-          apsaraThumbId = data[i].content.apsaraThumbId;
-        } catch (e) {
-          apsaraThumbId = "";
-        }
-
-        try {
           postType = data[i].postType;
         } catch (e) {
           postType = "";
         }
-        try {
-
-          uploadSource = data[i].content.uploadSource;
-        } catch (e) {
-          uploadSource = "";
-        }
-
-        if (apsaraId !== undefined && apsaraThumbId !== undefined) {
-          tempdatapict.push(data[i].content.apsaraThumbId);
-
-        }
-        else if (apsaraId !== undefined && apsaraThumbId === undefined) {
-          tempdatapict.push(data[i].content.apsaraId);
-
-        }
-        else if (apsaraId === undefined && apsaraThumbId !== undefined) {
-          tempdatapict.push(data[i].content.apsaraThumbId);
-
-        }
 
         if (postType === "pict") {
+          try {
+            apsaraId = data[i].content.apsaraId;
+          } catch (e) {
+            apsaraId = "";
+          }
+          try {
+            isApsara = data[i].content.isApsara;
+          } catch (e) {
+            isApsara = "";
+          }
+          try {
+            apsaraThumbId = data[i].content.apsaraThumbId;
+          } catch (e) {
+            apsaraThumbId = "";
+          }
+
+
+          try {
+
+            uploadSource = data[i].content.uploadSource;
+          } catch (e) {
+            uploadSource = "";
+          }
+
+          if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+            tempdatapict.push(data[i].content.apsaraThumbId);
+
+          }
+          else if (apsaraId !== undefined && apsaraThumbId === undefined) {
+            tempdatapict.push(data[i].content.apsaraId);
+
+          }
+          else if (apsaraId === undefined && apsaraThumbId !== undefined) {
+            tempdatapict.push(data[i].content.apsaraThumbId);
+
+          }
           var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
           var gettempresultpictapsara = resultpictapsara.ImageInfo;
 
@@ -1423,7 +1424,32 @@ export class PostsController {
           }
 
 
-        } else {
+        }
+        else if (postType === "vid" || postType === "diary") {
+          try {
+            apsaraId = data[i].content.apsaraId;
+          } catch (e) {
+            apsaraId = "";
+          }
+          try {
+            isApsara = data[i].content.isApsara;
+          } catch (e) {
+            isApsara = "";
+          }
+
+          try {
+
+            uploadSource = data[i].content.uploadSource;
+          } catch (e) {
+            uploadSource = "";
+          }
+
+
+          if (apsaraId !== undefined) {
+            tempdatapict.push(data[i].content.apsaraId);
+
+          }
+
           var resultvidapsara = await this.postContentService.getVideoApsara(tempdatapict);
           var gettempresultvidapsara = resultvidapsara.VideoList;
 
