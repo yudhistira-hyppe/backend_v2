@@ -2508,12 +2508,12 @@ export class PostContentService {
       file_commpress = buffers_file;
     }
 
-    fs.writeFile("./temp/some.jpeg", file_commpress, function (err) {
-      if (err) {
-        return console.log(err);
-      }
-      console.log("The file was saved!");
-    });
+    // fs.writeFile("./temp/some.jpeg", file_commpress, function (err) {
+    //   if (err) {
+    //     return console.log(err);
+    //   }
+    //   console.log("The file was saved!");
+    // });
     return file_commpress;
   }
 

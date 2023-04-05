@@ -1,5 +1,5 @@
-import { Body, Controller, Post, UploadedFiles, Logger, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards } from "@nestjs/common";
-import { AnyFilesInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express/multer";
+import { Body, Controller, Post, UploadedFiles, Logger, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards, UploadedFile } from "@nestjs/common";
+import { AnyFilesInterceptor, FileFieldsInterceptor, FileInterceptor } from "@nestjs/platform-express/multer";
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
 import { MediaService } from "./media.service";
@@ -27,7 +27,8 @@ import { FriendListService } from "../../content/friend_list/friend_list.service
 const multer = require('multer');
 var FormData = require('form-data');
 var path = require("path");
-const sharp = require('sharp');
+const sharp = require('sharp'); 
+const vision = require("@google-cloud/vision");
 
 export const multerConfig = {
     //dest: process.env.PATH_UPLOAD,
@@ -79,6 +80,21 @@ export class MediaController {
         private readonly mediaprofilepictsService: MediaprofilepictsService,
         private readonly userauthsService: UserauthsService,
         private readonly seaweedfsService: SeaweedfsService) { }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Post('api/posts/gettext')
+    @UseInterceptors(FileInterceptor('cardPict'))
+    async uploadGetText(@UploadedFile() file: Express.Multer.File,){
+        if (file!=undefined){
+            const vision = require('@google-cloud/vision');
+            const client = new vision.ImageAnnotatorClient();
+            const [result] = await client.labelDetection('./resources/wakeupcat.jpg');
+            const labels = result.labelAnnotations;
+            console.log('Labels:');
+            labels.forEach(label => console.log(label.description));
+        }
+    }
 
     @UseGuards(JwtAuthGuard)
     @Post('api/posts/v1/profilepicture')
