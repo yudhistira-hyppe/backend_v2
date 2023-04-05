@@ -1,5 +1,5 @@
-import { Body, Controller, Post, UploadedFiles, Logger, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards } from "@nestjs/common";
-import { AnyFilesInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express/multer";
+import { Body, Controller, Post, UploadedFiles, Logger, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards, UploadedFile } from "@nestjs/common";
+import { AnyFilesInterceptor, FileFieldsInterceptor, FileInterceptor } from "@nestjs/platform-express/multer";
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
 import { MediaService } from "./media.service";
@@ -22,12 +22,15 @@ import { Mediaprofilepicts } from "src/content/mediaprofilepicts/schemas/mediapr
 import { ContenteventsService } from "../../content/contentevents/contentevents.service";
 import { OssService } from "../oss/oss.service";
 import { FriendListService } from "../../content/friend_list/friend_list.service";
+import { ConfigService } from "@nestjs/config";
+import { createWriteStream } from "fs";
 
 //import FormData from "form-data";
 const multer = require('multer');
 var FormData = require('form-data');
 var path = require("path");
-const sharp = require('sharp');
+const sharp = require('sharp'); 
+const vision = require("@google-cloud/vision");
 
 export const multerConfig = {
     //dest: process.env.PATH_UPLOAD,
@@ -78,7 +81,35 @@ export class MediaController {
         private readonly userbasicsService: UserbasicsService,
         private readonly mediaprofilepictsService: MediaprofilepictsService,
         private readonly userauthsService: UserauthsService,
-        private readonly seaweedfsService: SeaweedfsService) { }
+        private readonly seaweedfsService: SeaweedfsService,
+        private readonly configService: ConfigService) { }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Post('api/posts/gettext')
+    @UseInterceptors(FileInterceptor('cardPict'))
+    async uploadGetText(@UploadedFile() file: Express.Multer.File,){
+        if (file != undefined) {
+            let fn = file.originalname;
+            let ext = fn.split(".");
+            var generateName = new mongoose.Types.ObjectId();
+            let nm = this.configService.get("PATH_UPLOAD") + generateName.toString() + "." + ext[1];
+            const ws = createWriteStream(nm);
+            ws.write(file.buffer);
+            ws.close();
+
+
+
+            const vision = require('@google-cloud/vision');
+            const client = new vision.ImageAnnotatorClient({
+                keyFilename: this.configService.get("GOOGLE_APPLICATION_CREDENTIALS")
+            });
+            const [result] = await client.textDetection(this.configService.get("PATH_UPLOAD") + generateName.toString() + "." + ext[1]);
+            const labels = result.textAnnotations;
+            console.log('Labels:');
+            labels.forEach(label => console.log(label.description));
+        }
+    }
 
     @UseGuards(JwtAuthGuard)
     @Post('api/posts/v1/profilepicture')

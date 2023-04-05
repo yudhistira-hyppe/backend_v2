@@ -1526,6 +1526,7 @@ export class ContenteventsController {
               $id: id_discus_log,
               $db: 'hyppe_content_db',
             });
+            CreateDisqusDto_.updatedAt = current_date;
             CreateDisqusDto_.disqusLogs = data_disqusLogs;
             CreateDisqusDto_.lastestMessage = Emote.toString();
             this.disqusContentEventService.update(id_discus, CreateDisqusDto_);
