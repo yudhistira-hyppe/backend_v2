@@ -7623,14 +7623,13 @@ export class AuthService {
         insights = await this.insightsService.findOne(insights_json.$id);
       }
 
-      var mediaID = null;
-      if (mediaprofilepicts != null) {
-        mediaID = mediaprofilepicts.mediaID;
-      }
-
       var mediaUri = null;
       if (mediaprofilepicts != null) {
         mediaUri = mediaprofilepicts.mediaUri;
+      }
+      var mediaID = null;
+      if (mediaprofilepicts != null) {
+        mediaID = mediaprofilepicts.mediaID;
       }
 
       let result = null;
