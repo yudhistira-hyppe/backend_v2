@@ -187,10 +187,10 @@ export class NotificationsService {
     return num;
   }
 
-  async getNotification2(email: string, eventType: string, skip: number, limit: number) {
+  async getNotification2(email: string, eventType: string, skip: number, limit: number,) {
     var pipeline = [];
 
-    if (eventType && eventType !== undefined) {
+    if (eventType && eventType !== undefined && eventType !== "GENERAL") {
       pipeline.push(
         {
           $match:
@@ -218,7 +218,37 @@ export class NotificationsService {
 
         },
       );
-    } else {
+    }
+    else if (eventType && eventType !== undefined && eventType === "GENERAL") {
+      pipeline.push(
+        {
+          $match:
+          {
+            $or: [
+              {
+                $and: [
+                  {
+                    "email": email
+
+                  },
+                  {
+                    "eventType": { $in: ['VERIFICATIONID', 'SUPPORTFILE', 'TRANSACTION', 'POST', 'ADS VIEW', 'BOOST_CONTENT', 'BOOST_BUY', 'CONTENT', 'ADS CLICK', 'BANK', 'CONTENTMOD', 'KYC'] },
+
+                  },
+                  {
+                    "active": true
+                  },
+
+                ]
+              },
+
+            ]
+          },
+
+        },
+      );
+    }
+    else {
       pipeline.push(
         {
           $match:
