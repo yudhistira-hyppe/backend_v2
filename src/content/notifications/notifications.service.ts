@@ -364,6 +364,22 @@ export class NotificationsService {
         }
       },
       {
+        $lookup: {
+          from: 'userbasics',
+          localField: 'senderOrReceiverInfo.fullName',
+          foreignField: 'fullName',
+          as: 'userSender',
+
+        },
+
+      },
+      {
+        $unwind: {
+          path: "$userSender",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
         $sort: {
           createdAt: - 1
         }
@@ -390,7 +406,14 @@ export class NotificationsService {
           mediaTypeStory: '$story.mediaType',
           notificationID: 1,
           postID: 1,
-          senderOrReceiverInfo: 1,
+          senderOrReceiverInfo:
+          {
+            fullName: "$senderOrReceiverInfo.fullName",
+            username: "$senderOrReceiverInfo.username",
+            avatar: {
+              mediaEndpoint: { $concat: ["/profilepict/", '$userSender.profilePict.$id'] }
+            }
+          },
           title: 1,
           updatedAt: 1,
 
