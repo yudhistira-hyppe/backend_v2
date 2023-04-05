@@ -365,9 +365,25 @@ export class NotificationsService {
       },
       {
         $lookup: {
+          from: 'userauths',
+          localField: 'senderOrReceiverInfo.username',
+          foreignField: 'username',
+          as: 'userNameSender',
+
+        },
+
+      },
+      {
+        $unwind: {
+          path: "$userNameSender",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
           from: 'userbasics',
-          localField: 'senderOrReceiverInfo.fullName',
-          foreignField: 'fullName',
+          localField: 'userNameSender.email',
+          foreignField: 'email',
           as: 'userSender',
 
         },
