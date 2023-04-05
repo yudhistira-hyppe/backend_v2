@@ -1351,6 +1351,7 @@ export class PostsController {
     var apsaraThumbId = null;
     var uploadSource = null;
     var postType = null;
+    var mediaTypeStory = null;
     // console.log(lengpict);
     if (lengpict > 0) {
 
@@ -1361,7 +1362,11 @@ export class PostsController {
         } catch (e) {
           postType = "";
         }
-
+        try {
+          mediaTypeStory = data[i].mediaTypeStory;
+        } catch (e) {
+          mediaTypeStory = "";
+        }
         if (postType === "pict") {
           try {
             apsaraId = data[i].content.apsaraId;
@@ -1445,7 +1450,7 @@ export class PostsController {
           }
 
 
-          if (apsaraId !== undefined) {
+          if (apsaraId !== undefined && apsaraId !== '') {
             tempdatapict.push(data[i].content.apsaraId);
 
           }
@@ -1461,6 +1466,61 @@ export class PostsController {
 
             }
 
+          }
+        }
+        else {
+
+
+          try {
+            apsaraId = data[i].content.apsaraId;
+          } catch (e) {
+            apsaraId = "";
+          }
+          try {
+            isApsara = data[i].content.isApsara;
+          } catch (e) {
+            isApsara = "";
+          }
+
+          try {
+
+            uploadSource = data[i].content.uploadSource;
+          } catch (e) {
+            uploadSource = "";
+          }
+
+
+          if (apsaraId !== undefined && apsaraId !== '') {
+            tempdatapict.push(data[i].content.apsaraId);
+
+          }
+
+          if (mediaTypeStory !== undefined && mediaTypeStory === "video") {
+            var resultvidapsara = await this.postContentService.getVideoApsara(tempdatapict);
+            var gettempresultvidapsara = resultvidapsara.VideoList;
+
+            for (var j = 0; j < gettempresultvidapsara.length; j++) {
+
+              if (gettempresultvidapsara[j].VideoId == data[i].content.apsaraId) {
+
+                data[i].content.mediaThumbEndpoint = gettempresultvidapsara[j].CoverURL;
+
+              }
+
+            }
+          } else {
+            var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+            var gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+            for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+
+              if (gettempresultpictapsara[j].ImageId == data[i].content.apsaraId) {
+
+                data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+              }
+            }
           }
         }
 

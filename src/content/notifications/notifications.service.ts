@@ -357,6 +357,7 @@ export class NotificationsService {
           flowIsDone: 1,
           mate: 1,
           postType: "$post.postType",
+          mediaTypeStory: '$story.mediaType',
           notificationID: 1,
           postID: 1,
           senderOrReceiverInfo: 1,
@@ -482,7 +483,22 @@ export class NotificationsService {
                         then: {
                           $concat: ["/thumb/", "$postID",]
                         },
-                        else: { $concat: ["/thumb/", "$postID",] }
+                        else: {
+
+
+                          $cond: {
+                            if: {
+                              $eq: ['$story.mediaType', 'video']
+                            },
+                            then: {
+                              $concat: ["/thumb/", "$postID",]
+                            },
+                            else: {
+                              $concat: ["/pict/", "$postID",]
+                            }
+                          },
+
+                        }
                       },
 
                     }
@@ -606,6 +622,7 @@ export class NotificationsService {
           flowIsDone: 1,
           mate: 1,
           postType: 1,
+          mediaTypeStory: 1,
           notificationID: 1,
           postID: 1,
           senderOrReceiverInfo: 1,
