@@ -625,7 +625,7 @@ export class AuthService {
             info: ['Unabled to proceed, Password parameter required '],
           },
         });
-      }else{
+      } else {
         if (req.body.password == req.body.email) {
           if (lang == "en") {
             await this.errorHandler.generateNotAcceptableException(
@@ -7093,10 +7093,14 @@ export class AuthService {
       if (mediaprofilepicts != null) {
         mediaUri = mediaprofilepicts.mediaUri;
       }
+      var mediaID = null;
+      if (mediaprofilepicts != null) {
+        mediaID = mediaprofilepicts.mediaID;
+      }
 
       let result = null;
-      if (mediaUri != null) {
-        result = '/profilepict/' + mediaUri.replace('_0001.jpeg', '');
+      if (mediaID != null) {
+        result = '/profilepict/' + mediaID;
       }
 
       var mediaprofilepicts_res = {}

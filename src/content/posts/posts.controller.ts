@@ -1351,26 +1351,11 @@ export class PostsController {
     var apsaraThumbId = null;
     var uploadSource = null;
     var postType = null;
+    var mediaTypeStory = null;
     // console.log(lengpict);
     if (lengpict > 0) {
 
       for (let i = 0; i < lengpict; i++) {
-
-        try {
-          apsaraId = data[i].content.apsaraId;
-        } catch (e) {
-          apsaraId = "";
-        }
-        try {
-          isApsara = data[i].content.isApsara;
-        } catch (e) {
-          isApsara = "";
-        }
-        try {
-          apsaraThumbId = data[i].content.apsaraThumbId;
-        } catch (e) {
-          apsaraThumbId = "";
-        }
 
         try {
           postType = data[i].postType;
@@ -1378,26 +1363,47 @@ export class PostsController {
           postType = "";
         }
         try {
-
-          uploadSource = data[i].content.uploadSource;
+          mediaTypeStory = data[i].mediaTypeStory;
         } catch (e) {
-          uploadSource = "";
+          mediaTypeStory = "";
         }
-
-        if (apsaraId !== '' && apsaraThumbId !== '') {
-          tempdatapict.push(data[i].content.apsaraThumbId);
-
-        }
-        else if (apsaraId !== '' && apsaraThumbId === '') {
-          tempdatapict.push(data[i].content.apsaraId);
-
-        }
-        else if (apsaraId === '' && apsaraThumbId !== '') {
-          tempdatapict.push(data[i].content.apsaraThumbId);
-
-        }
-
         if (postType === "pict") {
+          try {
+            apsaraId = data[i].content.apsaraId;
+          } catch (e) {
+            apsaraId = "";
+          }
+          try {
+            isApsara = data[i].content.isApsara;
+          } catch (e) {
+            isApsara = "";
+          }
+          try {
+            apsaraThumbId = data[i].content.apsaraThumbId;
+          } catch (e) {
+            apsaraThumbId = "";
+          }
+
+
+          try {
+
+            uploadSource = data[i].content.uploadSource;
+          } catch (e) {
+            uploadSource = "";
+          }
+
+          if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+            tempdatapict.push(data[i].content.apsaraThumbId);
+
+          }
+          else if (apsaraId !== undefined && apsaraThumbId === undefined) {
+            tempdatapict.push(data[i].content.apsaraId);
+
+          }
+          else if (apsaraId === undefined && apsaraThumbId !== undefined) {
+            tempdatapict.push(data[i].content.apsaraThumbId);
+
+          }
           var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
           var gettempresultpictapsara = resultpictapsara.ImageInfo;
 
@@ -1423,7 +1429,32 @@ export class PostsController {
           }
 
 
-        } else {
+        }
+        else if (postType === "vid" || postType === "diary") {
+          try {
+            apsaraId = data[i].content.apsaraId;
+          } catch (e) {
+            apsaraId = "";
+          }
+          try {
+            isApsara = data[i].content.isApsara;
+          } catch (e) {
+            isApsara = "";
+          }
+
+          try {
+
+            uploadSource = data[i].content.uploadSource;
+          } catch (e) {
+            uploadSource = "";
+          }
+
+
+          if (apsaraId !== undefined && apsaraId !== '') {
+            tempdatapict.push(data[i].content.apsaraId);
+
+          }
+
           var resultvidapsara = await this.postContentService.getVideoApsara(tempdatapict);
           var gettempresultvidapsara = resultvidapsara.VideoList;
 
@@ -1435,6 +1466,61 @@ export class PostsController {
 
             }
 
+          }
+        }
+        else {
+
+
+          try {
+            apsaraId = data[i].content.apsaraId;
+          } catch (e) {
+            apsaraId = "";
+          }
+          try {
+            isApsara = data[i].content.isApsara;
+          } catch (e) {
+            isApsara = "";
+          }
+
+          try {
+
+            uploadSource = data[i].content.uploadSource;
+          } catch (e) {
+            uploadSource = "";
+          }
+
+
+          if (apsaraId !== undefined && apsaraId !== '') {
+            tempdatapict.push(data[i].content.apsaraId);
+
+          }
+
+          if (mediaTypeStory !== undefined && mediaTypeStory === "video") {
+            var resultvidapsara = await this.postContentService.getVideoApsara(tempdatapict);
+            var gettempresultvidapsara = resultvidapsara.VideoList;
+
+            for (var j = 0; j < gettempresultvidapsara.length; j++) {
+
+              if (gettempresultvidapsara[j].VideoId == data[i].content.apsaraId) {
+
+                data[i].content.mediaThumbEndpoint = gettempresultvidapsara[j].CoverURL;
+
+              }
+
+            }
+          } else {
+            var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+            var gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+            for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+
+              if (gettempresultpictapsara[j].ImageId == data[i].content.apsaraId) {
+
+                data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+              }
+            }
           }
         }
 
@@ -2593,11 +2679,11 @@ export class PostsController {
   }
 
   @Post('api/posts/seaweed/migration')
-  async mediapictSeaweedMigration(){
+  async mediapictSeaweedMigration() {
     var Mediapicts_ = await this.postContentService.getDataMediapictSeaweed();
     console.log(Mediapicts_.length);
-    for (var i = 0; i < Mediapicts_.length;i++){
-      
+    for (var i = 0; i < Mediapicts_.length; i++) {
+
     }
   }
 }

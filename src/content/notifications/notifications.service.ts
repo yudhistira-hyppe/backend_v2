@@ -31,12 +31,7 @@ export class NotificationsService {
   async findlatest(email: string, skip: number, limit: number): Promise<object> {
     const query = await this.NotificationsModel.aggregate([
       { $match: { email: email } },
-      {
-        $addFields: {
 
-          createdAt: "$createdAt"
-        }
-      },
       { $sort: { createdAt: -1 }, },
       { $skip: skip },
       { $limit: limit },
@@ -362,6 +357,7 @@ export class NotificationsService {
           flowIsDone: 1,
           mate: 1,
           postType: "$post.postType",
+          mediaTypeStory: '$story.mediaType',
           notificationID: 1,
           postID: 1,
           senderOrReceiverInfo: 1,
@@ -485,9 +481,24 @@ export class NotificationsService {
                           $eq: ['$post.postType', 'diary']
                         },
                         then: {
-                          $concat: ["/pict/", "$postID",]
+                          $concat: ["/thumb/", "$postID",]
                         },
-                        else: '$story.apsara'
+                        else: {
+
+
+                          $cond: {
+                            if: {
+                              $eq: ['$story.mediaType', 'video']
+                            },
+                            then: {
+                              $concat: ["/thumb/", "$postID",]
+                            },
+                            else: {
+                              $concat: ["/pict/", "$postID",]
+                            }
+                          },
+
+                        }
                       },
 
                     }
@@ -594,7 +605,7 @@ export class NotificationsService {
       {
         $set: {
           tester: {
-            $ifNull: ['$content.apsara', "dodol"]
+            $ifNull: ['$content.isApsara', "dodol"]
           }
         }
       },
@@ -611,6 +622,7 @@ export class NotificationsService {
           flowIsDone: 1,
           mate: 1,
           postType: 1,
+          mediaTypeStory: 1,
           notificationID: 1,
           postID: 1,
           senderOrReceiverInfo: 1,

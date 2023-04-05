@@ -66,13 +66,13 @@ export class NotificationsController {
       "info": ["The process successful"],
     };
 
-    let dataall = await this.NotificationsService.findAll();
-    var totalAllrows = dataall.length;
+    // let dataall = await this.NotificationsService.findAll();
+    // var totalAllrows = dataall.length;
 
 
     let data = await this.NotificationsService.findlatest(email, skip, limit);
 
-    return { response_code: 202, data, totalAllrows, messages };
+    return { response_code: 202, data, totalAllrows: 0, messages };
   }
 
 
