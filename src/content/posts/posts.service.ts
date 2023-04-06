@@ -40308,6 +40308,29 @@ export class PostsService {
           }
         },
         {
+          $set: {
+            viewerCount: {
+              $cond: {
+                if: {
+                  $isArray: "$viewer"
+                },
+                then:
+                {
+                  $size: {
+                    $filter: {
+                      input: "$viewer",
+                      cond: {
+                        $eq: ["$$this", email]
+                      }
+                    }
+                  }
+                },
+                else: 0
+              }
+            }
+          }
+        },
+        {
           $match:
           {
             $or: [
@@ -40459,6 +40482,7 @@ export class PostsService {
         },
         {
           $sort: {
+            viewerCount: 1,
             selfContents: -1,
             "isBoost": - 1,
             "createdAt": - 1
@@ -41131,6 +41155,8 @@ export class PostsService {
         },
         {
           $project: {
+            viewerCount: 1,
+            viewer: 1,
             oldDate: 1,
             selfContents: 1,
             selfContent:
@@ -41317,6 +41343,8 @@ export class PostsService {
         },
         {
           $project: {
+            viewerCount: 1,
+            viewer: 1,
             version: "$setting.value",
             oldDate: 1,
             selfContents: 1,
@@ -41592,6 +41620,29 @@ export class PostsService {
           }
         },
         {
+          $set: {
+            viewerCount: {
+              $cond: {
+                if: {
+                  $isArray: "$viewer"
+                },
+                then:
+                {
+                  $size: {
+                    $filter: {
+                      input: "$viewer",
+                      cond: {
+                        $eq: ["$$this", email]
+                      }
+                    }
+                  }
+                },
+                else: 0
+              }
+            }
+          }
+        },
+        {
           $match:
           {
             $or: [
@@ -41743,6 +41794,7 @@ export class PostsService {
         },
         {
           $sort: {
+            viewerCount: 1,
             selfContents: -1,
             "isBoost": - 1,
             "createdAt": - 1
@@ -42414,6 +42466,8 @@ export class PostsService {
         },
         {
           $project: {
+            viewerCount: 1,
+            viewer: 1,
             oldDate: 1,
             selfContents: 1,
             selfContent:
@@ -42598,6 +42652,8 @@ export class PostsService {
         },
         {
           $project: {
+            viewerCount: 1,
+            viewer: 1,
             version: "$setting.value",
             oldDate: 1,
             selfContents: 1,
@@ -42871,6 +42927,29 @@ export class PostsService {
           }
         },
         {
+          $set: {
+            viewerCount: {
+              $cond: {
+                if: {
+                  $isArray: "$viewer"
+                },
+                then:
+                {
+                  $size: {
+                    $filter: {
+                      input: "$viewer",
+                      cond: {
+                        $eq: ["$$this", email]
+                      }
+                    }
+                  }
+                },
+                else: 0
+              }
+            }
+          }
+        },
+        {
           $match:
           {
             $or: [
@@ -43022,6 +43101,7 @@ export class PostsService {
         },
         {
           $sort: {
+            viewerCount: 1,
             selfContents: -1,
             "isBoost": - 1,
             "createdAt": - 1
@@ -43693,6 +43773,8 @@ export class PostsService {
         },
         {
           $project: {
+            viewerCount: 1,
+            viewer: 1,
             oldDate: 1,
             selfContents: 1,
             selfContent:
@@ -43877,6 +43959,8 @@ export class PostsService {
         },
         {
           $project: {
+            viewerCount: 1,
+            viewer: 1,
             version: "$setting.value",
             oldDate: 1,
             selfContents: 1,
