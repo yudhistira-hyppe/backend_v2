@@ -944,8 +944,7 @@ export class PostContentService {
       mediaId = String(retd.mediaID);
     } else if (postType == 'advertise') {
 
-    }
-    else if (postType == 'story') {
+    } else if (postType == 'story') {
 
       var mime = file.mimetype;
       if (mime.startsWith('video')) {
@@ -1063,7 +1062,9 @@ export class PostContentService {
     //   maxBodyLength: Infinity,
     //   headers: { 'Content-Type': 'multipart/form-data' }
     // });
+    console.log("POST REQUEST VIDEO", JSON.stringify(body));
     var postUpload = await this.uploadJavaV3(file, post._id.toString());
+    console.log("POST RESPONSE JAVA", postUpload);
     if (postUpload.data.status) {
       postUpload.data.email = auth.email;
       await this.updateNewPostData3(postUpload.data);
