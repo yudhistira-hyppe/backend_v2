@@ -40314,7 +40314,7 @@ export class PostsService {
                 if: {
                   $isArray: "$viewer"
                 },
-                then:
+                else:
                 {
                   $cond: {
                     if: {
@@ -40334,7 +40334,7 @@ export class PostsService {
                     else: 0
                   },
                 },
-                else: 0
+                then: 0
               }
             }
           }
@@ -41635,7 +41635,7 @@ export class PostsService {
                 if: {
                   $isArray: "$viewer"
                 },
-                then:
+                else:
                 {
                   $cond: {
                     if: {
@@ -41655,7 +41655,7 @@ export class PostsService {
                     else: 0
                   },
                 },
-                else: 0
+                then: 0
               }
             }
           }
@@ -42951,7 +42951,7 @@ export class PostsService {
                 if: {
                   $isArray: "$viewer"
                 },
-                then:
+                else:
                 {
                   $cond: {
                     if: {
@@ -42971,7 +42971,7 @@ export class PostsService {
                     else: 0
                   },
                 },
-                else: 0
+                then: 0
               }
             }
           }
