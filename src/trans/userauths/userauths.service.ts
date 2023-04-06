@@ -207,6 +207,7 @@ export class UserauthsService {
 
     if (username !== undefined) {
       const query = await this.userauthModel.aggregate([
+
         {
           "$match": {
             "username": {
@@ -378,8 +379,9 @@ export class UserauthsService {
     return query;
   }
 
-  async getRecentStory(email: string) {
+  async getRecentStory(email: string, page: number, limit: number) {
     var query = await this.userauthModel.aggregate([
+
       {
         "$lookup":
         {
@@ -613,39 +615,39 @@ export class UserauthsService {
 
         }
       },
-      {
-        "$lookup": {
-          from: "mediaprofilepicts",
-          as: "avatar",
-          let: {
-            localID: {
-              "$arrayElemAt": ["$userBasic.profilePict.$id", 0]
-            },
-
-          },
-          pipeline: [
-            {
-              $match:
-              {
-
-
-                $expr: {
-                  $eq: ['$mediaID', '$$localID']
-                }
-              }
-            },
-            {
-              $project: {
-
-                "mediaEndpoint": {
-                  "$concat": ["/profilepict/", "$mediaID"]
-                }
-              }
-            }
-          ],
-
-        }
-      },
+      //      {
+      //        "$lookup": {
+      //          from: "mediaprofilepicts",
+      //          as: "avatar",
+      //          let: {
+      //            localID: {
+      //              "$arrayElemAt": ["$userBasic.profilePict.$id", 0]
+      //            },
+      //
+      //          },
+      //          pipeline: [
+      //            {
+      //              $match:
+      //              {
+      //
+      //
+      //                $expr: {
+      //                  $eq: ['$mediaID', '$$localID']
+      //                }
+      //              }
+      //            },
+      //            {
+      //              $project: {
+      //
+      //                "mediaEndpoint": {
+      //                  "$concat": ["/profilepict/", "$mediaID"]
+      //                }
+      //              }
+      //            }
+      //          ],
+      //
+      //        }
+      //      },
 
       {
         "$lookup": {
@@ -719,7 +721,6 @@ export class UserauthsService {
           {
             "$arrayElemAt": ["$music.mood.name", 0]
           },
-
           "testDate": 1,
           "mediaType":
           {
@@ -772,7 +773,16 @@ export class UserauthsService {
             "$arrayElemAt": ["$userBasic.fullName", 0]
           },
           "username": "$username",
-          "avatar": 1,
+          "avatar": {
+            "_id": {
+              "$arrayElemAt": ["$userBasic.profilePict.$id", 0]
+            },
+            "mediaEndpoint": {
+              "$concat": ["/profilepict/", {
+                "$arrayElemAt": ["$userBasic.profilePict.$id", 0]
+              }]
+            }
+          },
           "statusCB": 1,
           "mediaEndpoint": 1,
           "privacy": {
@@ -898,6 +908,7 @@ export class UserauthsService {
             "apsaraThumnail": "$apsaraThumnail",
 
           },
+
         }
       },
       {
@@ -913,7 +924,6 @@ export class UserauthsService {
             email: "$email",
             username: "$username"
           },
-
           story:
           {
             "$push":
@@ -958,12 +968,10 @@ export class UserauthsService {
               {
                 $cond: {
                   if: {
-                    $eq: ["$avatar", []]
+                    $eq: ["$avatar", {}]
                   },
                   then: null,
-                  else: {
-                    "$arrayElemAt": ["$avatar", 0]
-                  }
+                  else: "$avatar"
                 }
               },
               "statusCB": "$statusCB",
@@ -998,6 +1006,13 @@ export class UserauthsService {
           story: 1
         }
       },
+      {
+        $skip: (page * limit)
+      },
+      {
+        $limit: limit
+      },
+
     ]);
 
 

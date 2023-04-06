@@ -187,10 +187,10 @@ export class NotificationsService {
     return num;
   }
 
-  async getNotification2(email: string, eventType: string, skip: number, limit: number) {
+  async getNotification2(email: string, eventType: string, skip: number, limit: number,) {
     var pipeline = [];
 
-    if (eventType && eventType !== undefined) {
+    if (eventType && eventType !== undefined && eventType !== "GENERAL") {
       pipeline.push(
         {
           $match:
@@ -218,7 +218,37 @@ export class NotificationsService {
 
         },
       );
-    } else {
+    }
+    else if (eventType && eventType !== undefined && eventType === "GENERAL") {
+      pipeline.push(
+        {
+          $match:
+          {
+            $or: [
+              {
+                $and: [
+                  {
+                    "email": email
+
+                  },
+                  {
+                    "eventType": { $in: ['VERIFICATIONID', 'SUPPORTFILE', 'TRANSACTION', 'POST', 'ADS VIEW', 'BOOST_CONTENT', 'BOOST_BUY', 'CONTENT', 'ADS CLICK', 'BANK', 'CONTENTMOD', 'KYC'] },
+
+                  },
+                  {
+                    "active": true
+                  },
+
+                ]
+              },
+
+            ]
+          },
+
+        },
+      );
+    }
+    else {
       pipeline.push(
         {
           $match:
@@ -334,6 +364,38 @@ export class NotificationsService {
         }
       },
       {
+        $lookup: {
+          from: 'userauths',
+          localField: 'senderOrReceiverInfo.username',
+          foreignField: 'username',
+          as: 'userNameSender',
+
+        },
+
+      },
+      {
+        $unwind: {
+          path: "$userNameSender",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'userbasics',
+          localField: 'userNameSender.email',
+          foreignField: 'email',
+          as: 'userSender',
+
+        },
+
+      },
+      {
+        $unwind: {
+          path: "$userSender",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
         $sort: {
           createdAt: - 1
         }
@@ -360,7 +422,14 @@ export class NotificationsService {
           mediaTypeStory: '$story.mediaType',
           notificationID: 1,
           postID: 1,
-          senderOrReceiverInfo: 1,
+          senderOrReceiverInfo:
+          {
+            fullName: "$senderOrReceiverInfo.fullName",
+            username: "$senderOrReceiverInfo.username",
+            avatar: {
+              mediaEndpoint: { $concat: ["/profilepict/", '$userSender.profilePict.$id'] }
+            }
+          },
           title: 1,
           updatedAt: 1,
 
