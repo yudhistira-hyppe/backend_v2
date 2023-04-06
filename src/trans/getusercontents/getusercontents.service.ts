@@ -25488,8 +25488,7 @@ export class GetusercontentsService {
             "ImageInfo": [tempresult[j]]
           }
         }
-        else if(query[i].apsara == false && (query[i].mediaType == "image" || query[i].mediaType == "images"))
-        {
+        else if (query[i].apsara == false && (query[i].mediaType == "image" || query[i].mediaType == "images")) {
           query[i].media =
           {
             "ImageInfo": []
@@ -25510,8 +25509,7 @@ export class GetusercontentsService {
             "VideoList": [tempresult[j]]
           }
         }
-        else if(query[i].apsara == false && query[i].mediaType == "video")
-        {
+        else if (query[i].apsara == false && query[i].mediaType == "video") {
           query[i].media =
           {
             "VideoList": []
@@ -25521,6 +25519,10 @@ export class GetusercontentsService {
     }
 
     return query;
+  }
+
+  async updatePostviewer(postid: string, email: string) {
+    return await this.getusercontentsModel.updateOne({ postID: postid }, { $push: { viewer: email } }).exec();
   }
 }
 

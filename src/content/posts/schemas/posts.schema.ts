@@ -112,6 +112,8 @@ export class Posts {
   statusCB: string;
   @Prop()
   moderationReason: string;
+  @Prop()
+  viewer: any[];
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

@@ -2330,4 +2330,25 @@ export class DisqusService {
 
         return query;
     }    
+
+    async setNonactivepost(listid:any[])
+    {
+        var query = await this.DisqusModel.updateMany(
+            {
+                postID:
+                {
+                    "$in":listid
+                },
+                eventType:"COMMENT"
+            },
+            {
+                "$set":
+                {
+                    active:false
+                }
+            }
+        );
+
+        return query;
+    }
 }

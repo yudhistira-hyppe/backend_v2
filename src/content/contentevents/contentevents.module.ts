@@ -16,9 +16,10 @@ import { DisqusContentEventController } from './discus/disquscontentevent.contro
 import { ReactionsRepoModule } from '../../infra/reactions_repo/reactions_repo.module';
 import { FriendListModule } from '../friend_list/friend_list.module';
 import { UserbasicsModule } from 'src/trans/userbasics/userbasics.module';
-
+import { NewpostsModule } from '../newposts/newposts.module';
 @Module({
     imports: [
+        NewpostsModule,
         ReactionsRepoModule,
         DisqusContentEventModule,
         DisquslogsModule,

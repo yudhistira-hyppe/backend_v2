@@ -300,6 +300,7 @@ export class PostsService {
             "$db": "hyppe_trans_db"
           },
           "saleAmount": 0,
+          //"comments":0,
           "certified": true,
           "createdAt": createdAt,
           "updatedAt": createdAt,
@@ -44086,6 +44087,10 @@ export class PostsService {
       },
     ]);
     return query;
+  }
+
+  async updatePostviewer(postid: string, email: string) {
+    return await this.PostsModel.updateOne({ postID: postid }, { $push: { viewer: email } }).exec();
   }
 }
 
