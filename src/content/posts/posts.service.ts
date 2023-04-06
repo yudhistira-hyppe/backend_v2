@@ -40314,13 +40314,14 @@ export class PostsService {
                 if: {
                   $isArray: "$viewer"
                 },
-                else:
+                then:
                 {
                   $cond: {
                     if: {
                       $gt: ["$isBoost", 3]
                     },
-                    then:
+                    then: 0,
+                    else:
                     {
                       $size: {
                         $filter: {
@@ -40331,10 +40332,9 @@ export class PostsService {
                         }
                       }
                     },
-                    else: 0
                   },
                 },
-                then: 0
+                else: 0
               }
             }
           }
@@ -41635,13 +41635,14 @@ export class PostsService {
                 if: {
                   $isArray: "$viewer"
                 },
-                else:
+                then:
                 {
                   $cond: {
                     if: {
                       $gt: ["$isBoost", 3]
                     },
-                    then:
+                    then: 0,
+                    else:
                     {
                       $size: {
                         $filter: {
@@ -41652,10 +41653,9 @@ export class PostsService {
                         }
                       }
                     },
-                    else: 0
                   },
                 },
-                then: 0
+                else: 0
               }
             }
           }
@@ -42951,13 +42951,14 @@ export class PostsService {
                 if: {
                   $isArray: "$viewer"
                 },
-                else:
+                then:
                 {
                   $cond: {
                     if: {
                       $gt: ["$isBoost", 3]
                     },
-                    then:
+                    then: 0,
+                    else:
                     {
                       $size: {
                         $filter: {
@@ -42968,10 +42969,9 @@ export class PostsService {
                         }
                       }
                     },
-                    else: 0
                   },
                 },
-                then: 0
+                else: 0
               }
             }
           }
