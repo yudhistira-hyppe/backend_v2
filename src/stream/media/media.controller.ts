@@ -88,26 +88,121 @@ export class MediaController {
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('api/posts/gettext')
     @UseInterceptors(FileInterceptor('cardPict'))
-    async uploadGetText(@UploadedFile() file: Express.Multer.File,){
+    async uploadGetText(@UploadedFile() file: Express.Multer.File, @Body() body,){
+        if (body.fullName == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, Param fullName is required',
+            );
+        }
+        var getSetting = await this.utilsService.getSetting_("642e3ded2d0a0000b8000b02");
+        var fullName = body.fullName.toLowerCase();
+        var fullNameSplit = fullName.split(" ");
+
+        var cardPictNumber_ = "";
+        var persetaseCardNumber_ = 0;
+        var CardNumber_ = false;
+        var cardPictName_ = "";
+        var persetaseCardName_ = 0;
+        var CardName_ = false;
+        var StatusKYC_ = false;
+
         if (file != undefined) {
-            let fn = file.originalname;
-            let ext = fn.split(".");
-            var generateName = new mongoose.Types.ObjectId();
-            let nm = this.configService.get("PATH_UPLOAD") + generateName.toString() + "." + ext[1];
-            const ws = createWriteStream(nm);
+            var originalname = file.originalname;
+            var ext = originalname.split(".");
+            var generateFileName = new mongoose.Types.ObjectId();
+            var pathSave = this.configService.get("PATH_UPLOAD") + generateFileName.toString() + "." + ext[1];
+
+            const ws = createWriteStream(pathSave);
             ws.write(file.buffer);
             ws.close();
+            await new Promise<void>((resolve, reject) => {
+                ws.on('finish', async () => {
+                    const vision = require('@google-cloud/vision');
+                    const client = new vision.ImageAnnotatorClient({
+                        keyFilename: this.configService.get("GOOGLE_APPLICATION_CREDENTIALS")
+                    });
+                    const [result] = await client.textDetection(pathSave);
+                    const labels = result.textAnnotations;
+                    if (fs.existsSync(pathSave)) {
+                        fs.unlink(pathSave, (err) => {
+                            if (err) {
+                                throw err;
+                            }
+                            console.log("Delete File successfully.");
+                        });
+                    }
+                    var k = 0;
+                    await labels.forEach((labels_) => {
+                        var description_ = labels_.description;
+                        if (description_.length == 16) {
+                            if (/[0-9]/.test(description_)) {
+                                cardPictNumber_ = description_;
+                                persetaseCardNumber_ = 100;
+                                CardNumber_ = true;
+                            }
+                        }
+                        if (k == 0) {
+                            var search = new RegExp(body.fullName.toLowerCase(), 'i');
+                            var separateLines = description_.split(/\r?\n|\r|\n/g);
+                            let searchName = separateLines.filter(item => search.test(item));
+                            if (searchName.length > 0) {
+                                cardPictName_ = searchName[0];
+                                persetaseCardName_ = 100;
+                                CardName_ = true;
+                            }else{
+                                var nama_ceck = fullName
+                                for (var z = fullNameSplit.length; z>0; z--) {
+                                    if (fullNameSplit.length > 1) {
+                                        if (z >= 1) {
+                                            var namaReplace = nama_ceck.replace(fullNameSplit[z - 1].toLowerCase(), "");
+                                            var search_1 = new RegExp(namaReplace.toLowerCase(), 'i');
+                                            let searchName_1 = separateLines.filter(item => search_1.test(item));
+                                            if (searchName_1.length > 0) {
+                                                cardPictName_ = searchName_1[0];
+                                                persetaseCardName_ = ((z - 1) / fullNameSplit.length) * 100;
+                                                if (persetaseCardName_ >= getSetting) {
+                                                    CardName_ = true;
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        k++;
+                    });               
+                    console.log(cardPictNumber_);
+                    console.log(cardPictName_);
 
+                    resolve(); 
+                }).on('error', err => {
+                    reject(err);
+                });
 
-
-            const vision = require('@google-cloud/vision');
-            const client = new vision.ImageAnnotatorClient({
-                keyFilename: this.configService.get("GOOGLE_APPLICATION_CREDENTIALS")
             });
-            const [result] = await client.textDetection(this.configService.get("PATH_UPLOAD") + generateName.toString() + "." + ext[1]);
-            const labels = result.textAnnotations;
-            console.log('Labels:');
-            labels.forEach(label => console.log(label.description));
+            if (CardNumber_ && CardName_){
+                StatusKYC_ = true;  
+            }
+            return {
+                response_code: 202,
+                data: {
+                    cardPictNumber: cardPictNumber_,
+                    persetaseCardNumber: persetaseCardNumber_,
+                    CardNumber: CardNumber_, 
+                    cardPictName: cardPictName_, 
+                    persetaseCardName: persetaseCardName_,
+                    CardName: CardName_,
+                    StatusKYC: StatusKYC_, 
+                },
+                messages: {
+                    info: ['Successful'],
+                },
+            }
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, Param cardPict is required',
+            );  
         }
     }
 
