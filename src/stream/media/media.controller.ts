@@ -94,13 +94,17 @@ export class MediaController {
                 'Unabled to proceed, Param fullName is required',
             );
         }
+        var getSetting = await this.utilsService.getSetting_("642e3ded2d0a0000b8000b02");
         var fullName = body.fullName.toLowerCase();
         var fullNameSplit = fullName.split(" ");
 
         var cardPictNumber_ = "";
         var persetaseCardNumber_ = 0;
+        var CardNumber_ = false;
         var cardPictName_ = "";
         var persetaseCardName_ = 0;
+        var CardName_ = false;
+        var StatusKYC_ = false;
 
         if (file != undefined) {
             var originalname = file.originalname;
@@ -134,6 +138,7 @@ export class MediaController {
                             if (/[0-9]/.test(description_)) {
                                 cardPictNumber_ = description_;
                                 persetaseCardNumber_ = 100;
+                                CardNumber_ = true;
                             }
                         }
                         if (k == 0) {
@@ -143,6 +148,7 @@ export class MediaController {
                             if (searchName.length > 0) {
                                 cardPictName_ = searchName[0];
                                 persetaseCardName_ = 100;
+                                CardName_ = true;
                             }else{
                                 var nama_ceck = fullName
                                 for (var z = fullNameSplit.length; z>0; z--) {
@@ -154,6 +160,9 @@ export class MediaController {
                                             if (searchName_1.length > 0) {
                                                 cardPictName_ = searchName_1[0];
                                                 persetaseCardName_ = ((z - 1) / fullNameSplit.length) * 100;
+                                                if (persetaseCardName_ >= getSetting) {
+                                                    CardName_ = true;
+                                                }
                                                 break;
                                             }
                                         }
@@ -172,13 +181,19 @@ export class MediaController {
                 });
 
             });
+            if (CardNumber_ && CardName_){
+                StatusKYC_ = true;  
+            }
             return {
                 response_code: 202,
                 data: {
                     cardPictNumber: cardPictNumber_,
-                    persetaseCardNumber: persetaseCardNumber_, 
+                    persetaseCardNumber: persetaseCardNumber_,
+                    CardNumber: CardNumber_, 
                     cardPictName: cardPictName_, 
-                    persetaseCardName: persetaseCardName_, 
+                    persetaseCardName: persetaseCardName_,
+                    CardName: CardName_,
+                    StatusKYC: StatusKYC_, 
                 },
                 messages: {
                     info: ['Successful'],

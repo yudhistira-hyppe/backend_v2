@@ -1145,7 +1145,7 @@ export class PostContentService {
       }
 
       let meta = post.metadata;
-      let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: meta.width, height: meta.height };
+      let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: body.width, height: body.height };
       post.metadata = metadata;
       post.active = true;
       //TODO 
