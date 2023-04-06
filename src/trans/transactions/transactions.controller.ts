@@ -1245,6 +1245,7 @@ export class TransactionsController {
                         await this.utilsService.sendFcm(emailbuyer.toString(), titleinsuksesbeli, titleensuksesbeli, bodyinsuksesbeli, bodyensuksesbeli, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
 
                         await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy, timedate);
+
                         if (datapost.boosted != undefined) {
 
                             var DateStart = (new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 31))).toISOString();

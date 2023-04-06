@@ -24,6 +24,8 @@ import { Disquslogs } from '../disquslogs/schemas/disquslogs.schema';
 import { ReactionsRepoService } from '../../infra/reactions_repo/reactions_repo.service';
 import { FriendListService } from '../friend_list/friend_list.service';
 import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
+import { NewpostsService } from '../newposts/newposts.service';
+
 
 @Controller()
 export class ContenteventsController {
@@ -41,6 +43,7 @@ export class ContenteventsController {
     private readonly disqusContentEventController: DisqusContentEventController,
     private readonly friendListService: FriendListService,
     private readonly userbasicsService: UserbasicsService,
+    private readonly NewpostsService: NewpostsService,
     private readonly errorHandler: ErrorHandler) { }
 
   @Post('api/contentevents')
@@ -1011,6 +1014,7 @@ export class ContenteventsController {
 
       this.checkFriendbasedString(email_user, email_receiverParty, "create");
     } else if (eventType == "VIEW") {
+
       if (email_user !== email_receiverParty) {
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW Email Not Same >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify({ postID: request.body.postID, email_user: email_user, email_receiverParty: email_receiverParty }));
         var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEW", "DONE", email_receiverParty, "", request.body.postID);
@@ -1049,6 +1053,8 @@ export class ContenteventsController {
           CreateContenteventsDto2.senderParty = email_user
           CreateContenteventsDto2.postID = request.body.postID
 
+
+
           if (await this.utilsService.ceckData(Insight_receiver)) {
             var _id_receiver = (await this.utilsService.generateId());
             var CreateInsightlogsDto_receiver = new CreateInsightlogsDto()
@@ -1072,6 +1078,8 @@ export class ContenteventsController {
             var CreateInsightsDto_receiver = new CreateInsightsDto()
             CreateInsightsDto_receiver.insightLogs = LogInsught_receiver;
             await this.insightsService.updateone(email_receiverParty, CreateInsightsDto_receiver)
+
+
           }
 
           try {
@@ -1090,6 +1098,7 @@ export class ContenteventsController {
           }
         }
       }
+      var datapost = await this.NewpostsService.updatePostviewer(request.body.postID, email_user);
     } else if (eventType == "LIKE") {
       var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "LIKE", "DONE", email_receiverParty, "", request.body.postID);
       var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "LIKE", "ACCEPT", "", email_user, request.body.postID);

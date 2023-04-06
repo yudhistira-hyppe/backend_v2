@@ -55,6 +55,7 @@ export class CreatePostsDto {
     boostCount: number;
     isBoost: number;
     moderationReason: string;
+    viewer: any[];
 }
 
 export class CreatePostResponse {
@@ -154,7 +155,7 @@ export class PostData {
     apsaraThumnail: string;
     reportedStatus: string;
     reportedUserCount: number;
-
+    viewer: any[];
 
 
 }
