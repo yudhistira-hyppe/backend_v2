@@ -40316,14 +40316,23 @@ export class PostsService {
                 },
                 then:
                 {
-                  $size: {
-                    $filter: {
-                      input: "$viewer",
-                      cond: {
-                        $eq: ["$$this", email]
+                  $cond: {
+                    if: {
+                      $gt: ["$isBoost", 3]
+                    },
+                    then:
+                    {
+                      $size: {
+                        $filter: {
+                          input: "$viewer",
+                          cond: {
+                            $eq: ["$$this", email]
+                          }
+                        }
                       }
-                    }
-                  }
+                    },
+                    else: 0
+                  },
                 },
                 else: 0
               }
@@ -41628,14 +41637,23 @@ export class PostsService {
                 },
                 then:
                 {
-                  $size: {
-                    $filter: {
-                      input: "$viewer",
-                      cond: {
-                        $eq: ["$$this", email]
+                  $cond: {
+                    if: {
+                      $gt: ["$isBoost", 3]
+                    },
+                    then:
+                    {
+                      $size: {
+                        $filter: {
+                          input: "$viewer",
+                          cond: {
+                            $eq: ["$$this", email]
+                          }
+                        }
                       }
-                    }
-                  }
+                    },
+                    else: 0
+                  },
                 },
                 else: 0
               }
@@ -42935,14 +42953,23 @@ export class PostsService {
                 },
                 then:
                 {
-                  $size: {
-                    $filter: {
-                      input: "$viewer",
-                      cond: {
-                        $eq: ["$$this", email]
+                  $cond: {
+                    if: {
+                      $gt: ["$isBoost", 3]
+                    },
+                    then:
+                    {
+                      $size: {
+                        $filter: {
+                          input: "$viewer",
+                          cond: {
+                            $eq: ["$$this", email]
+                          }
+                        }
                       }
-                    }
-                  }
+                    },
+                    else: 0
+                  },
                 },
                 else: 0
               }
