@@ -140,24 +140,26 @@ export class MediaController {
                             var search = new RegExp(body.fullName.toLowerCase(), 'i');
                             var separateLines = description_.split(/\r?\n|\r|\n/g);
                             let searchName = separateLines.filter(item => search.test(item));
-                            // if (searchName.length > 0) {
-                            //     cardPictName_ = searchName[0];
-                            //     persetaseCardName_ = 100;
-                            // }else{
-                                var nama_ceck = fullName;
-                                for (var z = fullNameSplit.length; fullNameSplit.length > 0; z--) {
+                            if (searchName.length > 0) {
+                                cardPictName_ = searchName[0];
+                                persetaseCardName_ = 100;
+                            }else{
+                                var nama_ceck = fullName
+                                for (var z = fullNameSplit.length; z>0; z--) {
                                     if (fullNameSplit.length > 1) {
-                                        var namaReplace = nama_ceck.replace(fullNameSplit[z - 1].toLowerCase(), "");
-                                        var search_1 = new RegExp(namaReplace.toLowerCase(), 'i');
-                                        let searchName_1 = separateLines.filter(item => search_1.test(item));
-                                        if (searchName_1.length > 0) {
-                                            cardPictName_ = searchName_1[0];
-                                            persetaseCardName_ = ((z - 1) /fullNameSplit.length)*100;
-                                            break;
+                                        if (z >= 1) {
+                                            var namaReplace = nama_ceck.replace(fullNameSplit[z - 1].toLowerCase(), "");
+                                            var search_1 = new RegExp(namaReplace.toLowerCase(), 'i');
+                                            let searchName_1 = separateLines.filter(item => search_1.test(item));
+                                            if (searchName_1.length > 0) {
+                                                cardPictName_ = searchName_1[0];
+                                                persetaseCardName_ = ((z - 1) / fullNameSplit.length) * 100;
+                                                break;
+                                            }
                                         }
                                     }
                                 }
-                            //}
+                            }
                         }
                         k++;
                     });               
