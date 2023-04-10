@@ -426,11 +426,11 @@ export class AdsUserCompareController {
                         if (await this.utilsService.ceckData(data_userAdsService)) {
                             //Update userads
                             try {
+                                var userAds_viewedUnder = (data_userAdsService.viewedUnder != undefined) ? data_userAdsService.viewedUnder : 0;
                                 var CreateUserAdsDto_ = new CreateUserAdsDto();
                                 CreateUserAdsDto_.statusView = true;
                                 CreateUserAdsDto_.clickAt = current_date;
-                                CreateUserAdsDto_.viewedUnder = 1;
-                                CreateUserAdsDto_.viewed = 0;
+                                CreateUserAdsDto_.viewedUnder = userAds_viewedUnder+1;
                                 CreateUserAdsDto_.timeViewSecond = watching_time;
                                 await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
                             } catch (e) {
@@ -461,11 +461,11 @@ export class AdsUserCompareController {
                         if (await this.utilsService.ceckData(data_userAdsService)) {
                             //Update userads
                             try {
+                                var userAds_viewedUnder = (data_userAdsService.viewedUnder != undefined) ? data_userAdsService.viewedUnder : 0;
                                 var CreateUserAdsDto_ = new CreateUserAdsDto();
                                 CreateUserAdsDto_.statusView = true;
                                 CreateUserAdsDto_.clickAt = current_date;
-                                CreateUserAdsDto_.viewedUnder = 1;
-                                CreateUserAdsDto_.viewed = 0;
+                                CreateUserAdsDto_.viewedUnder = userAds_viewedUnder+1;
                                 CreateUserAdsDto_.timeViewSecond = watching_time;
                                 await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
                             } catch (e) {

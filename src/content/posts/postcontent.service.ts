@@ -2306,6 +2306,10 @@ export class PostContentService {
     post.isShared = isShared;
     post.active = true;
 
+    if (post.certified) {
+      this.generateCertificate(String(post.postID), 'id');
+    }
+    
     if (body.tagPeople != undefined && body.tagPeople.length > 1) {
       var obj = body.tagPeople;
       var cats = obj.split(",");
