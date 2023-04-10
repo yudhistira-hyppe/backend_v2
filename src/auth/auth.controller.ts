@@ -538,14 +538,12 @@ export class AuthController {
 
     //Ceck User Userdevices
     const data_userdevices = await this.userdevicesService.findOneEmail(LoginRequest_.email, LoginRequest_.deviceId);
-    if(data_userdevices != null && data_userdevices != undefined)
-    {
-      if(data_userdevices.devicetype != undefined && data_userdevices.devicetype != null)
-      {
+    if (data_userdevices != null && data_userdevices != undefined) {
+      if (data_userdevices.devicetype != undefined && data_userdevices.devicetype != null) {
         getdevicedata = data_userdevices.devicetype;
       }
     }
-    
+
     //Ceck User Userauths
     const data_userauths = await this.userauthsService.findOneByEmail(
       LoginRequest_.email,
@@ -1642,7 +1640,8 @@ export class AuthController {
     if ((id != undefined) && (token != undefined) && (email != undefined) && (index != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
-
+        var datathummb = null;
+        var data2 = null;
         if (mediaproofpicts.SupportUploadSource != undefined) {
           if (mediaproofpicts.SupportUploadSource == "OSS") {
             if (mediaproofpicts.mediaMime != undefined) {
@@ -1650,7 +1649,19 @@ export class AuthController {
             } else {
               mediaMime = "image/jpeg";
             }
-            var data2 = await this.ossService.readFile(mediaproofpicts.SupportfsTargetUri[index].toString());
+
+            try {
+              datathummb = mediaproofpicts.mediaSupportUriThumb;
+            } catch (e) {
+              datathummb = null;
+            }
+
+            if (datathummb !== null && datathummb !== undefined) {
+              data2 = await this.ossService.readFile(mediaproofpicts.mediaSupportUriThumb[index].toString());
+            } else {
+              data2 = await this.ossService.readFile(mediaproofpicts.SupportfsTargetUri[index].toString());
+            }
+
             if (data2 != null) {
               response.set("Content-Type", "image/jpeg");
               response.send(data2);
