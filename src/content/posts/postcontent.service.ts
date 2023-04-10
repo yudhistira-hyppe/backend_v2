@@ -1,7 +1,7 @@
 import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Int32, Long, ObjectId } from 'mongodb';
-import { Model, Types } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar, PostLandingResponseApps, PostLandingData, PostBuildData, VideoList, ImageInfo, GetVideoPlayAuthResponse } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
@@ -2306,60 +2306,78 @@ export class PostContentService {
     post.isShared = isShared;
     post.active = true;
 
-    let myus = await this.userAuthService.findOneByEmail(post.email);
-    let tag = post.tagPeople;
-    if (tag != undefined && tag.length > 0) {
-      tag.forEach(el => {
-        let oid = el.oid;
-        this.userAuthService.findById(oid).then((as) => {
-          let em = String(myus.username);
-          let bodyi = em + ' Menandai kamu di ';
-          let bodye = em + ' Tagged you in ';
-          if (post.postType == 'pict') {
-            bodyi = bodyi + ' HyppePic';
-            bodye = bodye + ' HyppePic';
-          } else if (post.postType == 'vid') {
-            bodyi = bodyi + ' HyppeVideo';
-            bodye = bodye + ' HyppeVideo';
-          } else if (post.postType == 'diary') {
-            bodyi = bodyi + ' HyppeDiary';
-            bodye = bodye + ' HyppeDiary';
-          } else if (post.postType == 'story') {
-            bodyi = bodyi + ' HyppeStory';
-            bodye = bodye + ' HyppeStory';
+    if (body.tagPeople != undefined && body.tagPeople.length > 1) {
+      var obj = body.tagPeople;
+      var cats = obj.split(",");
+      var pcats = [];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        var tp = await this.userAuthService.findOneUsername(tmp);
+        if (await this.utilService.ceckData(tp)) {
+          if (tp.username != undefined) {
+            var objintr = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+            let em = String(tp.username);
+            let bodyi = em + ' Menandai kamu di ';
+            let bodye = em + ' Tagged you in ';
+            if (post.postType == 'pict') {
+              bodyi = bodyi + ' HyppePic';
+              bodye = bodye + ' HyppePic';
+            } else if (post.postType == 'vid') {
+              bodyi = bodyi + ' HyppeVideo';
+              bodye = bodye + ' HyppeVideo';
+            } else if (post.postType == 'diary') {
+              bodyi = bodyi + ' HyppeDiary';
+              bodye = bodye + ' HyppeDiary';
+            } else if (post.postType == 'story') {
+              bodyi = bodyi + ' HyppeStory';
+              bodye = bodye + ' HyppeStory';
+            }
+            console.log(tp.email.toString());
+            console.log(post.postType.toString());
+            //this.utilService.sendFcmV2(tp.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", postId, post.postType.toString());
+            pcats.push(objintr);
           }
-          this.utilService.sendFcmV2(as.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString())
-          //this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned', bodyi, bodye, 'REACTION', 'ACCEPT', String(post.postID), String(post.postType));
-        });
-      });
+        }
+      }
+      post.tagPeople = pcats;
     }
 
-    let tagd = post.tagDescription;
-    if (tagd != undefined && tagd.length > 0) {
-      tagd.forEach(el => {
-        let oid = el.oid;
-        this.userAuthService.findById(oid).then((as) => {
-          let em = String(myus.username);
-          let bodyi = em + ' Menandai kamu di ';
-          let bodye = em + ' Tagged you in ';
-          if (post.postType == 'pict') {
-            bodyi = bodyi + ' HyppePic';
-            bodye = bodye + ' HyppePic';
-          } else if (post.postType == 'vid') {
-            bodyi = bodyi + ' HyppeVideo';
-            bodye = bodye + ' HyppeVideo';
-          } else if (post.postType == 'diary') {
-            bodyi = bodyi + ' HyppeDiary';
-            bodye = bodye + ' HyppeDiary';
-          } else if (post.postType == 'story') {
-            bodyi = bodyi + ' HyppeStory';
-            bodye = bodye + ' HyppeStory';
+    if (body.tagDescription != undefined && body.tagDescription.length > 0) {
+      var obj = body.tagDescription;
+      var cats = obj.split(",");
+      var pcats = [];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        var tp = await this.userAuthService.findOneUsername(tmp);
+        if (await this.utilService.ceckData(tp)) {
+          if (tp != undefined || tp != null) {
+            var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+            let em = String(tp.username);
+            let bodyi = em + ' Menandai kamu di ';
+            let bodye = em + ' Tagged you in ';
+            if (post.postType == 'pict') {
+              bodyi = bodyi + ' HyppePic';
+              bodye = bodye + ' HyppePic';
+            } else if (post.postType == 'vid') {
+              bodyi = bodyi + ' HyppeVideo';
+              bodye = bodye + ' HyppeVideo';
+            } else if (post.postType == 'diary') {
+              bodyi = bodyi + ' HyppeDiary';
+              bodye = bodye + ' HyppeDiary';
+            } else if (post.postType == 'story') {
+              bodyi = bodyi + ' HyppeStory';
+              bodye = bodye + ' HyppeStory';
+            }
+            console.log(tp.email.toString());
+            console.log(post.postType.toString());
+            //this.utilService.sendFcmV2(tp.email.toString(), auth.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", postId, post.postType.toString())
+            pcats.push(objintrx);
           }
-          this.utilService.sendFcmV2(as.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString())
-          //this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned', bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
-        });
-      });
+        }
+      }
+      post.tagDescription = pcats;
     }
+
 
     this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
     if (post.certified) {
