@@ -615,39 +615,6 @@ export class UserauthsService {
 
         }
       },
-      //      {
-      //        "$lookup": {
-      //          from: "mediaprofilepicts",
-      //          as: "avatar",
-      //          let: {
-      //            localID: {
-      //              "$arrayElemAt": ["$userBasic.profilePict.$id", 0]
-      //            },
-      //
-      //          },
-      //          pipeline: [
-      //            {
-      //              $match:
-      //              {
-      //
-      //
-      //                $expr: {
-      //                  $eq: ['$mediaID', '$$localID']
-      //                }
-      //              }
-      //            },
-      //            {
-      //              $project: {
-      //
-      //                "mediaEndpoint": {
-      //                  "$concat": ["/profilepict/", "$mediaID"]
-      //                }
-      //              }
-      //            }
-      //          ],
-      //
-      //        }
-      //      },
 
       {
         "$lookup": {
