@@ -1,5 +1,6 @@
 import { PostAgentProfileRequest } from "aws-sdk/clients/codeguruprofiler";
 import { List } from "aws-sdk/lib/model";
+import mongoose from "mongoose";
 import { DisquslogsDto } from "src/content/disquslogs/dto/create-disquslogs.dto";
 import { CreatePostsDto } from "src/content/posts/dto/create-posts.dto";
 import { AvatarDTO } from "src/utils/data/Profile";
@@ -20,7 +21,8 @@ export class CreateDisqusDto {
     lastestMessage: String;
     emailActive: boolean; 
     mateActive: boolean;
-    disqusLogs: any[];
+  disqusLogs: any[];
+  idtransaction: mongoose.Types.ObjectId;
      _class:String;
   }
 

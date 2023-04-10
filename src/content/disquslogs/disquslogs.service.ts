@@ -1,6 +1,6 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { CreateDisquslogsDto, DisquslogsDto } from './dto/create-disquslogs.dto';
 import { Disquslogs, DisquslogsDocument } from './schemas/disquslogs.schema';
 import { UtilsService } from '../../utils/utils.service';
@@ -430,6 +430,20 @@ export class DisquslogsService {
       ]
     );
 
+    return query;
+  }
+
+  async noneActiveAllDiscusLog(postID: string, idtransaction: string) {
+    var query = await this.DisquslogsModel.updateMany(
+      { postID: postID },
+      { active: false, idtransaction: idtransaction },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      }).clone().exec();
     return query;
   }
 }

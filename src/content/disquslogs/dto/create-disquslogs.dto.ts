@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 export class CreateDisquslogsDto {
   
 
@@ -35,7 +37,8 @@ export class CreateDisquslogsDto {
   ];
      _class: String;
     receiverActive: boolean;
-    senderActive: boolean;
+  senderActive: boolean;
+  idtransaction: mongoose.Types.ObjectId;
   }
 
 

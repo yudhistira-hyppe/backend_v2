@@ -1,6 +1,6 @@
 import { Injectable, NotAcceptableException, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { CreateDisqusDto, DisqusResponseApps } from './dto/create-disqus.dto';
 import { Disqus, DisqusDocument } from './schemas/disqus.schema';
 import { UtilsService } from '../../utils/utils.service';
@@ -2331,24 +2331,18 @@ export class DisqusService {
         return query;
     }    
 
-    async setNonactivepost(listid:any[])
+    async noneActiveAllDiscus(postID: string, idtransaction: string)
     {
         var query = await this.DisqusModel.updateMany(
-            {
-                postID:
-                {
-                    "$in":listid
-                },
-                eventType:"COMMENT"
-            },
-            {
-                "$set":
-                {
-                    active:false
+            { postID: postID },
+            { active: false, idtransaction: idtransaction },
+            function (err, docs) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(docs);
                 }
-            }
-        );
-
+            }).clone().exec();
         return query;
     }
 }
