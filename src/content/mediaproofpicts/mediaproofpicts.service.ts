@@ -255,7 +255,7 @@ export class MediaproofpictsService {
             mediaUri: '$profilpict.mediaUri',
             mediaType: '$profilpict.mediaType',
             mediaEndpoint: {
-              $concat: ["$concat", "/", "$pict"]
+              $concat: ["$concat", "/", "$profilpict.mediaID"]
             },
 
           },
@@ -567,7 +567,7 @@ export class MediaproofpictsService {
             mediaUri: '$profilpict.mediaUri',
             mediaType: '$profilpict.mediaType',
             mediaEndpoint: {
-              $concat: ["$concat", "/", "$pict"]
+              $concat: ["$concat", "/", "$profilpict.mediaID"]
             },
 
           },

@@ -27108,7 +27108,7 @@ export class AdsService {
     async getDetailHistoryIklan(id: string) {
         const mongoose = require('mongoose');
         var iddata = mongoose.Types.ObjectId(id);
-
+    
         var query = await this.adsModel.aggregate([
             {
                 "$match":
@@ -27209,37 +27209,61 @@ export class AdsService {
                                                     fullName: 1,
                                                     mediaBasePath:
                                                     {
-                                                        "$arrayElemAt":
-                                                            [
-                                                                "$profile_data.mediaBasePath", 0
-                                                            ]
+                                                        "$ifNull":
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                [
+                                                                    "$profile_data.mediaBasePath", 0
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
                                                     },
                                                     mediaUri:
                                                     {
-                                                        "$arrayElemAt":
-                                                            [
-                                                                "$profile_data.mediaUri", 0
-                                                            ]
+                                                        "$ifNull":
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                [
+                                                                    "$profile_data.mediaUri", 0
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
                                                     },
                                                     mediaType:
                                                     {
-                                                        "$arrayElemAt":
-                                                            [
-                                                                "$profile_data.mediaType", 0
-                                                            ]
+                                                        "$ifNull":
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                [
+                                                                    "$profile_data.mediaType", 0
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
                                                     },
                                                     mediaEndpoint:
                                                     {
-                                                        "$concat":
-                                                            [
-                                                                "/profilepict/",
-                                                                {
-                                                                    "$arrayElemAt":
-                                                                        [
-                                                                            "$profile_data.mediaUri", 0
-                                                                        ]
-                                                                }
-                                                            ]
+                                                        "$ifNull":
+                                                        [
+                                                            {
+                                                                "$concat":
+                                                                [
+                                                                    "/profilepict/",
+                                                                    {
+                                                                        "$arrayElemAt":
+                                                                            [
+                                                                                "$profile_data.mediaUri", 0
+                                                                            ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
                                                     },
                                                 }
                                             }
@@ -27250,7 +27274,13 @@ export class AdsService {
                                 "$project":
                                 {
                                     titlerow: "pemohon",
-                                    tempcreatedAt: "$timestamp",
+                                    tempcreatedAt: 
+                                    {
+                                        "$dateFromString":
+                                        {
+                                            dateString:"$timestamp"
+                                        }
+                                    },
                                     users: "$userID",
                                     //status:"$status",
                                     profile:
@@ -27367,37 +27397,61 @@ export class AdsService {
                                                     fullName: 1,
                                                     mediaBasePath:
                                                     {
-                                                        "$arrayElemAt":
-                                                            [
-                                                                "$profile_data.mediaBasePath", 0
-                                                            ]
+                                                        "$ifNull":
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                [
+                                                                    "$profile_data.mediaBasePath", 0
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
                                                     },
                                                     mediaUri:
                                                     {
-                                                        "$arrayElemAt":
-                                                            [
-                                                                "$profile_data.mediaUri", 0
-                                                            ]
+                                                        "$ifNull":
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                [
+                                                                    "$profile_data.mediaUri", 0
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
                                                     },
                                                     mediaType:
                                                     {
-                                                        "$arrayElemAt":
-                                                            [
-                                                                "$profile_data.mediaType", 0
-                                                            ]
+                                                        "$ifNull":
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                [
+                                                                    "$profile_data.mediaType", 0
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
                                                     },
                                                     mediaEndpoint:
                                                     {
-                                                        "$concat":
-                                                            [
-                                                                "/profilepict/",
-                                                                {
-                                                                    "$arrayElemAt":
-                                                                        [
-                                                                            "$profile_data.mediaUri", 0
-                                                                        ]
-                                                                }
-                                                            ]
+                                                        "$ifNull":
+                                                        [
+                                                            {
+                                                                "$concat":
+                                                                [
+                                                                    "/profilepict/",
+                                                                    {
+                                                                        "$arrayElemAt":
+                                                                            [
+                                                                                "$profile_data.mediaUri", 0
+                                                                            ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
                                                     },
                                                 }
                                             }
@@ -27408,7 +27462,13 @@ export class AdsService {
                                 "$project":
                                 {
                                     titlerow: "adminapprove",
-                                    tempcreatedAt: "$timestamp",
+                                    tempcreatedAt:
+                                    {
+                                        "$dateFromString":
+                                        {
+                                            dateString:"$updatedAt"
+                                        }
+                                    },
                                     users: "$userIDAssesment",
                                     status: "$status",
                                     profile:
@@ -27453,14 +27513,12 @@ export class AdsService {
                                                 }
                                             },
                                             {
-                                                "$sort":
+                                                "$unwind":
                                                 {
-                                                    createdAt: -1
+                                                    path:"$updateAt",
+                                                    preserveNullAndEmptyArrays:true,
                                                 }
                                             },
-                                            // {
-                                            //     "$limit":1
-                                            // },
                                             {
                                                 "$project":
                                                 {
@@ -27468,7 +27526,24 @@ export class AdsService {
                                                     adsID: 1,
                                                     userID: 1,
                                                     createdAt: 1,
+                                                    updateAt:
+                                                    {
+                                                        "$ifNull":
+                                                        [
+                                                            "$updateAt",
+                                                            "$createdAt"
+                                                        ]
+                                                    }
                                                 }
+                                            },
+                                            {
+                                                "$sort":
+                                                {
+                                                    updateAt: -1
+                                                }
+                                            },
+                                            {
+                                                "$limit":1
                                             },
                                         ]
                                 }
@@ -27488,7 +27563,7 @@ export class AdsService {
                                     {
                                         "$arrayElemAt":
                                             [
-                                                "$userads_data.createdAt", 0
+                                                "$userads_data.updateAt", 0
                                             ]
                                     },
                                     status: 1,
@@ -27582,37 +27657,61 @@ export class AdsService {
                                                     fullName: 1,
                                                     mediaBasePath:
                                                     {
-                                                        "$arrayElemAt":
-                                                            [
-                                                                "$profile_data.mediaBasePath", 0
-                                                            ]
+                                                        "$ifNull":
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                [
+                                                                    "$profile_data.mediaBasePath", 0
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
                                                     },
                                                     mediaUri:
                                                     {
-                                                        "$arrayElemAt":
-                                                            [
-                                                                "$profile_data.mediaUri", 0
-                                                            ]
+                                                        "$ifNull":
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                [
+                                                                    "$profile_data.mediaUri", 0
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
                                                     },
                                                     mediaType:
                                                     {
-                                                        "$arrayElemAt":
-                                                            [
-                                                                "$profile_data.mediaType", 0
-                                                            ]
+                                                        "$ifNull":
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                [
+                                                                    "$profile_data.mediaType", 0
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
                                                     },
                                                     mediaEndpoint:
                                                     {
-                                                        "$concat":
-                                                            [
-                                                                "/profilepict/",
-                                                                {
-                                                                    "$arrayElemAt":
-                                                                        [
-                                                                            "$profile_data.mediaUri", 0
-                                                                        ]
-                                                                }
-                                                            ]
+                                                        "$ifNull":
+                                                        [
+                                                            {
+                                                                "$concat":
+                                                                [
+                                                                    "/profilepict/",
+                                                                    {
+                                                                        "$arrayElemAt":
+                                                                            [
+                                                                                "$profile_data.mediaUri", 0
+                                                                            ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
                                                     },
                                                 }
                                             }
@@ -27623,7 +27722,13 @@ export class AdsService {
                                 "$project":
                                 {
                                     titlerow: "lastpenonton",
-                                    tempcreatedAt: "$createdAt",
+                                    tempcreatedAt: 
+                                    {
+                                        "$dateFromString":
+                                        {
+                                            dateString:"$lastwatch"
+                                        }
+                                    },
                                     users: "$userID",
                                     //status:"$status",
                                     profile:
@@ -27653,7 +27758,7 @@ export class AdsService {
                 }
             }
         ]);
-
+    
         return query;
     }
 
