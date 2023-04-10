@@ -1245,6 +1245,8 @@ export class TransactionsController {
                         await this.utilsService.sendFcm(emailbuyer.toString(), titleinsuksesbeli, titleensuksesbeli, bodyinsuksesbeli, bodyensuksesbeli, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
 
                         await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy, timedate);
+                        this.postsService.noneActiveAllDiscus(postid, idtransaction);
+                        this.postsService.noneActiveAllDiscusLog(postid, idtransaction);
 
                         if (datapost.boosted != undefined) {
 

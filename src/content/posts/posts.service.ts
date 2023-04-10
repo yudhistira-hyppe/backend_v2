@@ -33,6 +33,8 @@ import { SettingsService } from '../../trans/settings/settings.service';
 import * as fs from 'fs';
 
 import { Queue, Job } from 'bull';
+import { DisqusService } from '../disqus/disqus.service';
+import { DisquslogsService } from '../disquslogs/disquslogs.service';
 
 
 @Injectable()
@@ -49,8 +51,10 @@ export class PostsService {
     private readonly errorHandler: ErrorHandler,
     private interestService: InterestsService,
     private userAuthService: UserauthsService,
-    private videoService: MediavideosService,
+    private videoService: MediavideosService, 
     private insightService: InsightsService,
+    private disqusService: DisqusService,
+    private disquslogsService: DisquslogsService,
     private contentEventService: ContenteventsService,
     private readonly mediadiariesService: MediadiariesService,
     private readonly mediastoriesService: MediastoriesService,
@@ -300,7 +304,7 @@ export class PostsService {
             "$db": "hyppe_trans_db"
           },
           "saleAmount": 0,
-          //"comments":0,
+          "comments":0,
           "certified": true,
           "createdAt": createdAt,
           "updatedAt": createdAt,
@@ -308,6 +312,16 @@ export class PostsService {
         }
       });
     return data;
+  }
+
+  async noneActiveAllDiscus(postID: string, idtransaction: string) {
+    var query = await this.disqusService.noneActiveAllDiscus(postID, idtransaction);
+    return query;
+  }
+
+  async noneActiveAllDiscusLog(postID: string, idtransaction: string) {
+    var query = await this.disquslogsService.noneActiveAllDiscusLog(postID, idtransaction);
+    return query;
   }
 
   async updatesalelike(id: string): Promise<Object> {
@@ -399,6 +413,22 @@ export class PostsService {
     let data = await this.PostsModel.updateOne({ "postID": postID },
       { $set: { "reportedStatus": reportedStatus, "reportedUserCount": reportedUserCount, "reportedUser": reportedUser, "contentModeration": contentModeration, "contentModerationResponse": contentModerationResponse, "reportedUserHandle": reportedUserHandle } });
     return data;
+  }
+
+  async updateCommentToNol(postID: string) {
+    this.PostsModel.updateOne(
+      {
+        postID: postID,
+      },
+      { comments: 0 },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
   }
 
   async updateStatusCB(id: string, cb: string) {

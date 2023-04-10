@@ -38,6 +38,8 @@ export class Disquslogs {
    senderActive: boolean
    @Prop()
    parentID: String;
+   @Prop()
+   idtransaction: mongoose.Types.ObjectId;
 
 
  @Prop([{type:Object}])

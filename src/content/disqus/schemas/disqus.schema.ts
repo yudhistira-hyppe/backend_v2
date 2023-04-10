@@ -37,7 +37,9 @@ lastestMessage: String
  @Prop()
 _class: String
 @Prop()
-txtMessages: String
+    txtMessages: String
+    @Prop()
+    idtransaction: mongoose.Types.ObjectId;
 } 
 
 export const DisqusSchema = SchemaFactory.createForClass(Disqus);
