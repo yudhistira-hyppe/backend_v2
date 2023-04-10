@@ -2420,7 +2420,9 @@ export class MediaController {
         var iduserbasic = null;
         var url_cardPict = null;
         let id_mediaproofpicts_ = null;
-
+        var url_cardPict_thum = null;
+        var arrayThumbUri = [];
+        var supportFile_filename_new_thum = null;
         //Var current date
         var current_date = await this.utilsService.getDateTimeString();
 
@@ -2487,8 +2489,38 @@ export class MediaController {
                                 'Unabled to proceed supportfile failed upload',
                             );
                         }
+
+                        var cardPict_thum = await this.generate_thumnail(files[i], "jpeg");
+                        supportFile_filename_new_thum = mongoose_gen_meida + "_thum" + '_000' + (i + 1) + supportFile_etx;
+                        var result_thum = await this.ossService.uploadFileBuffer(cardPict_thum, iduserbasic + "/kyc/supportfile/" + supportFile_filename_new_thum);
+                        if (result_thum != undefined) {
+                            if (result_thum.res != undefined) {
+                                if (result_thum.res.statusCode != undefined) {
+                                    if (result_thum.res.statusCode == 200) {
+                                        url_cardPict_thum = result_thum.res.requestUrls[0];
+                                    } else {
+                                        await this.errorHandler.generateNotAcceptableException(
+                                            'Unabled to proceed cardPict failed upload',
+                                        );
+                                    }
+                                } else {
+                                    await this.errorHandler.generateNotAcceptableException(
+                                        'Unabled to proceed cardPict failed upload',
+                                    );
+                                }
+                            } else {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed cardPict failed upload',
+                                );
+                            }
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed cardPict failed upload',
+                            );
+                        }
                         var pathnew = iduserbasic + '/kyc/supportfile/' + supportFile_filename_new
                         arrayUri.push(pathnew);
+                        arrayThumbUri.push(url_cardPict_thum);
                         arrayName.push(supportFile_filename);
                         arraySuri.push(url_cardPict);
                         arraySname.push(supportFile_filename);
@@ -2517,6 +2549,7 @@ export class MediaController {
                         CreateMediaproofpictsDto_.mediaSupportType = 'supportfile';
                         CreateMediaproofpictsDto_.mediaSupportBasePath = idmediaproofpict + '/supportfile/';
                         CreateMediaproofpictsDto_.mediaSupportUri = arrayUri;
+                        CreateMediaproofpictsDto_.mediaSupportUriThumb = arrayThumbUri;
                         CreateMediaproofpictsDto_.SupportOriginalName = arrayName;
                         CreateMediaproofpictsDto_.SupportfsSourceUri = arraySuri;
                         CreateMediaproofpictsDto_.SupportfsSourceName = arraySname;
@@ -2612,7 +2645,7 @@ export class MediaController {
         var arrayName = [];
         var arraySuri = [];
         var arraySname = [];
-
+        var arrayThumbUri = [];
         //Var cardPict
         let cardPict_data = null;
         let cardPict_filename = '';
@@ -2651,6 +2684,7 @@ export class MediaController {
         var bodyinsukses = null;
         var bodyensukses = null;
         var eventType = null;
+        var supportFile_filename_new_thum = null;
         var event = null;
         if (await this.utilsService.ceckData(datauserbasicsService)) {
             // var mongoose_gen_meida = new mongoose.Types.ObjectId();
@@ -2666,7 +2700,7 @@ export class MediaController {
 
             var paths = IdMediaproofpictsDto;
             var mongoose_gen_meida = paths;
-
+            var url_cardPict_thum = null;
             //Ceck cardPict
             if (files1.cardPict != undefined) {
                 var FormData_ = new FormData();
@@ -2760,6 +2794,7 @@ export class MediaController {
                         supportFile_filename_new = mongoose_gen_meida + '_000' + (i + 1) + supportFile_etx;
                         supportFile_mimetype = files1.supportFile[i].mimetype;
 
+
                         var result = await this.ossService.uploadFile(files1.supportFile[i], iduserbasic + "/kyc/supportfile/" + supportFile_filename_new);
                         console.log(result)
                         if (result != undefined) {
@@ -2787,8 +2822,38 @@ export class MediaController {
                                 'Unabled to proceed supportfile failed upload',
                             );
                         }
+
+                        var cardPict_thum = await this.generate_thumnail(files1.supportFile[i], "jpeg");
+                        supportFile_filename_new_thum = mongoose_gen_meida + "_thum" + '_000' + (i + 1) + supportFile_etx;
+                        var result_thum = await this.ossService.uploadFileBuffer(cardPict_thum, iduserbasic + "/kyc/supportfile/" + supportFile_filename_new_thum);
+                        if (result_thum != undefined) {
+                            if (result_thum.res != undefined) {
+                                if (result_thum.res.statusCode != undefined) {
+                                    if (result_thum.res.statusCode == 200) {
+                                        url_cardPict_thum = result_thum.res.requestUrls[0];
+                                    } else {
+                                        await this.errorHandler.generateNotAcceptableException(
+                                            'Unabled to proceed cardPict failed upload',
+                                        );
+                                    }
+                                } else {
+                                    await this.errorHandler.generateNotAcceptableException(
+                                        'Unabled to proceed cardPict failed upload',
+                                    );
+                                }
+                            } else {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed cardPict failed upload',
+                                );
+                            }
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed cardPict failed upload',
+                            );
+                        }
                         var pathnew = iduserbasic + '/kyc/supportfile/' + supportFile_filename_new
                         arrayUri.push(pathnew);
+                        arrayThumbUri.push(url_cardPict_thum);
                         arrayName.push(supportFile_filename);
                         arraySuri.push(url_cardPict);
                         arraySname.push(supportFile_filename);
@@ -2848,6 +2913,7 @@ export class MediaController {
                 CreateMediaproofpictsDto_.SupportfsSourceName = arraySname;
                 CreateMediaproofpictsDto_.SupportfsTargetUri = arrayUri;
                 CreateMediaproofpictsDto_.SupportmediaMime = supportFile_mimetype;
+                CreateMediaproofpictsDto_.mediaSupportUriThumb = arrayThumbUri;
 
 
                 CreateMediaproofpictsDto_.status = 'IN_PROGGRESS';
