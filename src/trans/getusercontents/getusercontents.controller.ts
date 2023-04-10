@@ -2433,6 +2433,8 @@ export class GetusercontentsController {
         var buy = null;
         var reported = null;
         var popular = null;
+        var hashtag = null;
+        var userid = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -2457,18 +2459,21 @@ export class GetusercontentsController {
         startmount = request_json["startmount"];
         endmount = request_json["endmount"];
         descending = request_json["descending"];
-        iduser = request_json["iduser"];
         buy = request_json["buy"];
         reported = request_json["reported"];
         popular = request_json["popular"];
-        var userid = mongoose.Types.ObjectId(iduser);
+        hashtag = request_json["hashtag"];
+        if (request_json["limit"] !== undefined) {
+            iduser = request_json["iduser"];
+            userid = mongoose.Types.ObjectId(iduser);
+        }
         var query = null;
         var datasearch = null;
         var dataall = null;
 
         if (iduser !== undefined) {
             try {
-                query = await this.getusercontentsService.databasenew2(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+                query = await this.getusercontentsService.databasenew3(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, hashtag, startdate, enddate, startmount, endmount, descending, page, limit, popular);
                 data = query;
             } catch (e) {
                 query = null;
@@ -2476,7 +2481,7 @@ export class GetusercontentsController {
             }
         } else {
             try {
-                query = await this.getusercontentsService.databasenew2(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+                query = await this.getusercontentsService.databasenew3(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, hashtag, startdate, enddate, startmount, endmount, descending, page, limit, popular);
                 data = query;
             } catch (e) {
                 query = null;
