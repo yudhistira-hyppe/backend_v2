@@ -74,6 +74,7 @@ export class Mediaproofpicts {
   @Prop() SupportfsSourceName: any[];
   @Prop() SupportfsTargetUri: any[];
   @Prop() SupportmediaMime: String;
+  @Prop() mediaSupportUriThumb: any[];
   @Prop()
   SupportUploadSource: String;
   @Prop() status: String;

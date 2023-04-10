@@ -50,6 +50,7 @@ export class CreateMediaproofpictsDto {
   SupportfsSourceUri: any[];
   SupportfsSourceName: any[];
   SupportfsTargetUri: any[];
+  mediaSupportUriThumb: any[];
   SupportmediaMime: String;
   SupportUploadSource: String;
   email: String;
