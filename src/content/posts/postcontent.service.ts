@@ -2306,6 +2306,61 @@ export class PostContentService {
     post.isShared = isShared;
     post.active = true;
 
+    let myus = await this.userAuthService.findOneByEmail(post.email);
+    let tag = post.tagPeople;
+    if (tag != undefined && tag.length > 0) {
+      tag.forEach(el => {
+        let oid = el.oid;
+        this.userAuthService.findById(oid).then((as) => {
+          let em = String(myus.username);
+          let bodyi = em + ' Menandai kamu di ';
+          let bodye = em + ' Tagged you in ';
+          if (post.postType == 'pict') {
+            bodyi = bodyi + ' HyppePic';
+            bodye = bodye + ' HyppePic';
+          } else if (post.postType == 'vid') {
+            bodyi = bodyi + ' HyppeVideo';
+            bodye = bodye + ' HyppeVideo';
+          } else if (post.postType == 'diary') {
+            bodyi = bodyi + ' HyppeDiary';
+            bodye = bodye + ' HyppeDiary';
+          } else if (post.postType == 'story') {
+            bodyi = bodyi + ' HyppeStory';
+            bodye = bodye + ' HyppeStory';
+          }
+          this.utilService.sendFcmV2(as.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString())
+          //this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned', bodyi, bodye, 'REACTION', 'ACCEPT', String(post.postID), String(post.postType));
+        });
+      });
+    }
+
+    let tagd = post.tagDescription;
+    if (tagd != undefined && tagd.length > 0) {
+      tagd.forEach(el => {
+        let oid = el.oid;
+        this.userAuthService.findById(oid).then((as) => {
+          let em = String(myus.username);
+          let bodyi = em + ' Menandai kamu di ';
+          let bodye = em + ' Tagged you in ';
+          if (post.postType == 'pict') {
+            bodyi = bodyi + ' HyppePic';
+            bodye = bodye + ' HyppePic';
+          } else if (post.postType == 'vid') {
+            bodyi = bodyi + ' HyppeVideo';
+            bodye = bodye + ' HyppeVideo';
+          } else if (post.postType == 'diary') {
+            bodyi = bodyi + ' HyppeDiary';
+            bodye = bodye + ' HyppeDiary';
+          } else if (post.postType == 'story') {
+            bodyi = bodyi + ' HyppeStory';
+            bodye = bodye + ' HyppeStory';
+          }
+          this.utilService.sendFcmV2(as.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString())
+          //this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned', bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
+        });
+      });
+    }
+
     this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
     if (post.certified) {
       this.generateCertificate(String(post.postID), 'id');
