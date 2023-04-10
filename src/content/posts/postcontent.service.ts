@@ -2334,7 +2334,7 @@ export class PostContentService {
             }
             console.log(tp.email.toString());
             console.log(post.postType.toString());
-            //this.utilService.sendFcmV2(tp.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", postId, post.postType.toString());
+            this.utilService.sendFcmV2(tp.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", postID, post.postType.toString());
             pcats.push(objintr);
           }
         }
@@ -2370,7 +2370,7 @@ export class PostContentService {
             }
             console.log(tp.email.toString());
             console.log(post.postType.toString());
-            //this.utilService.sendFcmV2(tp.email.toString(), auth.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", postId, post.postType.toString())
+            this.utilService.sendFcmV2(tp.email.toString(), auth.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", postID, post.postType.toString())
             pcats.push(objintrx);
           }
         }
