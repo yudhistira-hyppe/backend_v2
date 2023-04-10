@@ -202,6 +202,15 @@ export class MediaproofpictsService {
                       "FINISH"
                     ]
                   },
+                  then: "BYSYSTEM"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$status",
+                      "DISETUJUI"
+                    ]
+                  },
                   then: "DISETUJUI"
                 },
               ],
@@ -470,9 +479,17 @@ export class MediaproofpictsService {
                       "FINISH"
                     ]
                   },
+                  then: "BYSYSTEM"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$status",
+                      "DISETUJUI"
+                    ]
+                  },
                   then: "DISETUJUI"
                 },
-
               ],
               default: ""
             }
@@ -797,6 +814,15 @@ export class MediaproofpictsService {
                     $eq: [
                       "$status",
                       "FINISH"
+                    ]
+                  },
+                  then: "BYSYSTEM"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$status",
+                      "DISETUJUI"
                     ]
                   },
                   then: "DISETUJUI"

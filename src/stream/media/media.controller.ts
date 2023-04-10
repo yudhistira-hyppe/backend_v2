@@ -29,7 +29,7 @@ import { createWriteStream } from "fs";
 const multer = require('multer');
 var FormData = require('form-data');
 var path = require("path");
-const sharp = require('sharp'); 
+const sharp = require('sharp');
 const vision = require("@google-cloud/vision");
 
 export const multerConfig = {
@@ -88,7 +88,7 @@ export class MediaController {
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('api/posts/gettext')
     @UseInterceptors(FileInterceptor('cardPict'))
-    async uploadGetText(@UploadedFile() file: Express.Multer.File, @Body() body,){
+    async uploadGetText(@UploadedFile() file: Express.Multer.File, @Body() body,) {
         if (body.fullName == undefined) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, Param fullName is required',
@@ -149,9 +149,9 @@ export class MediaController {
                                 cardPictName_ = searchName[0];
                                 persetaseCardName_ = 100;
                                 CardName_ = true;
-                            }else{
+                            } else {
                                 var nama_ceck = fullName
-                                for (var z = fullNameSplit.length; z>0; z--) {
+                                for (var z = fullNameSplit.length; z > 0; z--) {
                                     if (fullNameSplit.length > 1) {
                                         if (z >= 1) {
                                             var namaReplace = nama_ceck.replace(fullNameSplit[z - 1].toLowerCase(), "");
@@ -171,29 +171,29 @@ export class MediaController {
                             }
                         }
                         k++;
-                    });               
+                    });
                     console.log(cardPictNumber_);
                     console.log(cardPictName_);
 
-                    resolve(); 
+                    resolve();
                 }).on('error', err => {
                     reject(err);
                 });
 
             });
-            if (CardNumber_ && CardName_){
-                StatusKYC_ = true;  
+            if (CardNumber_ && CardName_) {
+                StatusKYC_ = true;
             }
             return {
                 response_code: 202,
                 data: {
                     cardPictNumber: cardPictNumber_,
                     persetaseCardNumber: persetaseCardNumber_,
-                    CardNumber: CardNumber_, 
-                    cardPictName: cardPictName_, 
+                    CardNumber: CardNumber_,
+                    cardPictName: cardPictName_,
                     persetaseCardName: persetaseCardName_,
                     CardName: CardName_,
-                    StatusKYC: StatusKYC_, 
+                    StatusKYC: StatusKYC_,
                 },
                 messages: {
                     info: ['Successful'],
@@ -202,7 +202,7 @@ export class MediaController {
         } else {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, Param cardPict is required',
-            );  
+            );
         }
     }
 
@@ -504,7 +504,7 @@ export class MediaController {
                 // }
                 cardPict_etx = '.jpeg';
                 cardPict_filename_new = iduserbasic + cardPict_etx;
-                cardPict_filename_new_thum = iduserbasic +"_thum"+cardPict_etx;
+                cardPict_filename_new_thum = iduserbasic + "_thum" + cardPict_etx;
                 cardPict_mimetype = files.cardPict[0].mimetype;
 
                 var result = await this.ossService.uploadFile(files.cardPict[0], iduserbasic + "/kyc/proofpict/" + cardPict_filename_new);
@@ -2337,7 +2337,7 @@ export class MediaController {
             ];
             try {
 
-                let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "FINISH", kycHandle);
+                let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "DISETUJUI", kycHandle);
                 await this.userbasicsService.updateStatusKycName(nama, jenisKelamin, email, true, "verified", tglLahir);
                 await this.utilsService.sendFcmV2(email.toString(), email.toString(), 'KYC', 'REQUEST', 'KYC_VERIFIED');
 
