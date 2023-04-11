@@ -985,8 +985,8 @@ export class MediaController {
             } else {
                 thumnail = await sharp(file.buffer).resize(100, 100).toBuffer();
             }
-            console.log(typeof thumnail);
         } catch (e) {
+            console.log("E", e);
             console.log("THUMNAIL", "FAILED TO CREATE THUMNAIL");
         }
         return thumnail;
