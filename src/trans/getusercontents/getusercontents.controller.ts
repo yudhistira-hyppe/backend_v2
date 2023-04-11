@@ -2473,7 +2473,7 @@ export class GetusercontentsController {
 
         if (iduser !== undefined) {
             try {
-                query = await this.getusercontentsService.databasenew3(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, hashtag, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+                query = await this.getusercontentsService.databasenew2(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, hashtag, startdate, enddate, startmount, endmount, descending, page, limit, popular);
                 data = query;
             } catch (e) {
                 query = null;
@@ -2481,7 +2481,7 @@ export class GetusercontentsController {
             }
         } else {
             try {
-                query = await this.getusercontentsService.databasenew3(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, hashtag, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+                query = await this.getusercontentsService.databasenew2(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, hashtag, startdate, enddate, startmount, endmount, descending, page, limit, popular);
                 data = query;
             } catch (e) {
                 query = null;
