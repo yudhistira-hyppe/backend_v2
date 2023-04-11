@@ -977,16 +977,17 @@ export class MediaController {
         var ori = null;
         try {
             if (image_orientation == 1) {
-                thumnail = await sharp(file.buffer).resize(100, 100).jpeg({ quality: 100 }).toBuffer();
+                thumnail = await sharp(file.buffer).resize(480, 480).toBuffer();
             } else if (image_orientation == 6) {
-                thumnail = await sharp(file.buffer).rotate(90).resize(100, 100).jpeg({ quality: 100 }).toBuffer();
+                thumnail = await sharp(file.buffer).rotate(90).resize(480, 480).toBuffer();
             } else if (image_orientation == 8) {
-                thumnail = await sharp(file.buffer).rotate(270).resize(100, 100).jpeg({ quality: 100 }).toBuffer();
+                thumnail = await sharp(file.buffer).rotate(270).resize(480, 480).toBuffer();
             } else {
-                thumnail = await sharp(file.buffer).resize(100, 100).jpeg({ quality: 100 }).toBuffer();
+                thumnail = await sharp(file.buffer).resize(480, 480).toBuffer();
             }
+            console.log(typeof thumnail);
         } catch (e) {
-            console.log("E", e);
+            console.log(e, "FAILED TO CREATE THUMNAIL");
             console.log("THUMNAIL", "FAILED TO CREATE THUMNAIL");
         }
         return thumnail;
