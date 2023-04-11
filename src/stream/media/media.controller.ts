@@ -977,13 +977,13 @@ export class MediaController {
         var ori = null;
         try {
             if (image_orientation == 1) {
-                thumnail = await sharp(file.buffer).resize(480, 480).toBuffer();
+                thumnail = await sharp(file.buffer, { failOnError: false }).resize(480, 480).toBuffer();
             } else if (image_orientation == 6) {
-                thumnail = await sharp(file.buffer).rotate(90).resize(480, 480).toBuffer();
+                thumnail = await sharp(file.buffer, { failOnError: false }).rotate(90).resize(480, 480).toBuffer();
             } else if (image_orientation == 8) {
-                thumnail = await sharp(file.buffer).rotate(270).resize(480, 480).toBuffer();
+                thumnail = await sharp(file.buffer, { failOnError: false }).rotate(270).resize(480, 480).toBuffer();
             } else {
-                thumnail = await sharp(file.buffer).resize(480, 480).toBuffer();
+                thumnail = await sharp(file.buffer, { failOnError: false }).resize(480, 480).toBuffer();
             }
             console.log(typeof thumnail);
         } catch (e) {
