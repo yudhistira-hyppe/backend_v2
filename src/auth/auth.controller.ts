@@ -1511,7 +1511,7 @@ export class AuthController {
               mediaMime = "image/jpeg";
             }
             var path = "";
-            if (mediaproofpicts.mediaThumBasePath!=undefined) {
+            if (mediaproofpicts.mediaThumBasePath != undefined) {
               path = mediaproofpicts.mediaThumBasePath.toString();
             } else {
               path = mediaproofpicts.mediaBasePath.toString();
@@ -1653,7 +1653,7 @@ export class AuthController {
               mediaMime = "image/jpeg";
             }
             var path = "";
-            if (mediaproofpicts.SelfiemediaThumBasePath != undefined){
+            if (mediaproofpicts.SelfiemediaThumBasePath != undefined) {
               path = mediaproofpicts.SelfiemediaThumBasePath.toString();
             } else {
               path = mediaproofpicts.mediaSelfieBasePath.toString();
@@ -1804,7 +1804,7 @@ export class AuthController {
               datathummb = null;
             }
 
-            if (datathummb !== null && datathummb !== undefined) {
+            if (datathummb !== null && datathummb !== undefined && datathummb.length > 0) {
               data2 = await this.ossService.readFile(mediaproofpicts.mediaSupportUriThumb[index].toString());
             } else {
               data2 = await this.ossService.readFile(mediaproofpicts.SupportfsTargetUri[index].toString());
