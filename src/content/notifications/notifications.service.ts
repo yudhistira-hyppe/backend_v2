@@ -363,26 +363,26 @@ export class NotificationsService {
           preserveNullAndEmptyArrays: true
         }
       },
-      {
-        $lookup: {
-          from: 'userauths',
-          localField: 'senderOrReceiverInfo.username',
-          foreignField: 'username',
-          as: 'userNameSender',
+      // {
+      //   $lookup: {
+      //     from: 'userauths',
+      //     localField: 'senderOrReceiverInfo.username',
+      //     foreignField: 'username',
+      //     as: 'userNameSender',
 
-        },
+      //   },
 
-      },
-      {
-        $unwind: {
-          path: "$userNameSender",
-          preserveNullAndEmptyArrays: true
-        }
-      },
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$userNameSender",
+      //     preserveNullAndEmptyArrays: true
+      //   }
+      // },
       {
         $lookup: {
           from: 'userbasics',
-          localField: 'userNameSender.email',
+          localField: 'mate',
           foreignField: 'email',
           as: 'userSender',
 
