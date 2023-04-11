@@ -508,6 +508,7 @@ export class MediaController {
                 cardPict_mimetype = files.cardPict[0].mimetype;
 
                 var result = await this.ossService.uploadFile(files.cardPict[0], iduserbasic + "/kyc/proofpict/" + cardPict_filename_new);
+                console.log("RESULT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",result);
                 if (result != undefined) {
                     if (result.res != undefined) {
                         if (result.res.statusCode != undefined) {
