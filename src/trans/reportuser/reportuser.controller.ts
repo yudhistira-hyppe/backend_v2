@@ -2807,6 +2807,16 @@ export class ReportuserController {
                     };
                     arrkyc.push(objtidakditangguhkan);
                 }
+                let objbysystem = {}
+                if (id === "BYSYSTEM") {
+                    objbysystem = {
+                        "_id": "BYSYSTEM",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#71A500D9"
+                    };
+                    arrkyc.push(objbysystem);
+                }
 
             }
         } else {
