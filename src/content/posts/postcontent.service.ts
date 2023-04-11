@@ -1106,7 +1106,7 @@ export class PostContentService {
   }
 
   async updateNewPostData3(body: any) {
-    this.logger.log('updateNewPost >>> start');
+    this.logger.log('updateNewPost >>> start', body);
     let post = await this.postService.findid(body.postID);
     if (post == undefined) {
       return;
