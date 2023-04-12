@@ -2968,7 +2968,7 @@ export class GetusercontentsController {
                     uploadSource = arrpict[i].uploadSource;
 
                     if (uploadSource == "OSS") {
-                        arrpict[i].mediaThumbEndpoint = arrpict[i].mediaThumUri;
+                        arrpict[i].mediaThumbEndpoint = "/thumb/" + postID;
 
                     } else {
                         if (gettempresultpictapsara.length > 0) {
@@ -3292,7 +3292,7 @@ export class GetusercontentsController {
                     uploadSource = arrpict[i].uploadSource;
 
                     if (uploadSource == "OSS") {
-                        arrpict[i].mediaThumbEndpoint = arrpict[i].mediaThumUri;
+                        arrpict[i].mediaThumbEndpoint = "/thumb/" + postID;
 
                     }
                     else {
