@@ -2920,6 +2920,7 @@ export class GetusercontentsController {
         }
 
         var tempdatapict = [];
+        var postID = null;
         // console.log(lengpict);
         if (lengpict > 0) {
 
@@ -2930,6 +2931,11 @@ export class GetusercontentsController {
                     //     tempdatapict.push(arrpict[i].apsaraThumbId);
                     // }
                     uploadSource = arrpict[i].uploadSource;
+                    try {
+                        postID = arrpict[i].postID
+                    } catch (e) {
+                        postID = "";
+                    }
                     try {
                         apsaraId = arrpict[i].apsaraId;
                     } catch (e) {
@@ -2991,6 +2997,9 @@ export class GetusercontentsController {
 
                                 }
                             }
+                        }
+                        else {
+                            arrpict[i].mediaThumbEndpoint = "/thumb/" + postID;
                         }
                     }
 
@@ -3221,6 +3230,7 @@ export class GetusercontentsController {
         }
 
         var tempdatapict = [];
+        var postID = null;
         // console.log(lengpict);
         if (lengpict > 0) {
 
@@ -3233,6 +3243,11 @@ export class GetusercontentsController {
                     //     tempdatapict.push(arrpict[i].apsaraThumbId);
                     // }
                     uploadSource = arrpict[i].uploadSource;
+                    try {
+                        postID = arrpict[i].postID
+                    } catch (e) {
+                        postID = "";
+                    }
                     try {
                         apsaraId = arrpict[i].apsaraId;
                     } catch (e) {
@@ -3305,6 +3320,9 @@ export class GetusercontentsController {
 
                                     arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
 
+                                }
+                                else {
+                                    arrpict[i].mediaThumbEndpoint = "/thumb/" + postID;
                                 }
                             }
                         }
