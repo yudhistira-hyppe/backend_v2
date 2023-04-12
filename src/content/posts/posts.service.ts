@@ -51,7 +51,7 @@ export class PostsService {
     private readonly errorHandler: ErrorHandler,
     private interestService: InterestsService,
     private userAuthService: UserauthsService,
-    private videoService: MediavideosService, 
+    private videoService: MediavideosService,
     private insightService: InsightsService,
     private disqusService: DisqusService,
     private disquslogsService: DisquslogsService,
@@ -304,7 +304,7 @@ export class PostsService {
             "$db": "hyppe_trans_db"
           },
           "saleAmount": 0,
-          "comments":0,
+          "comments": 0,
           "certified": true,
           "createdAt": createdAt,
           "updatedAt": createdAt,
@@ -40201,7 +40201,6 @@ export class PostsService {
         {
           "$set": {
             "timeStart": {
-
               "$concat": [
                 {
                   "$dateToString": {
@@ -40277,7 +40276,9 @@ export class PostsService {
                 else: "$timeEnd"
               }
             },
+
           },
+
         },
         {
           $set: {
@@ -40313,7 +40314,7 @@ export class PostsService {
               "$dateToString": {
                 "format": "%Y-%m-%d %H:%M:%S",
                 "date": {
-                  $add: [new Date(), - value]
+                  $add: [new Date(), - 30600000]
                   //$add: [new Date(), - 579600000]
                 }
               }
@@ -40327,14 +40328,19 @@ export class PostsService {
               $cond: {
                 if: {
                   $and: [
-                    { $eq: ["$email", email] },
-                    { $gt: ["$createdAt", "$oldDate"] }
+                    {
+                      $eq: ["$email", email]
+                    },
+                    {
+                      $gt: ["$createdAt", "$oldDate"]
+                    }
                   ]
                 },
                 then: 1,
                 else: 0
               }
             },
+
           }
         },
         {
@@ -40346,23 +40352,14 @@ export class PostsService {
                 },
                 then:
                 {
-                  $cond: {
-                    if: {
-                      $gt: ["$isBoost", 3]
-                    },
-                    then: 0,
-                    else:
-                    {
-                      $size: {
-                        $filter: {
-                          input: "$viewer",
-                          cond: {
-                            $eq: ["$$this", email]
-                          }
-                        }
+                  $size: {
+                    $filter: {
+                      input: "$viewer",
+                      cond: {
+                        $eq: ["$$this", email]
                       }
-                    },
-                  },
+                    }
+                  }
                 },
                 else: 0
               }
@@ -40389,6 +40386,11 @@ export class PostsService {
                   {
                     "postType": "pict"
                   },
+                  //{
+                  //    "viewer": {
+                  //        $nin: [ "vuvyxi@abyssmail.com" ]
+                  //    }
+                  //},
                   {
                     $expr: {
                       $lte: ["$boosted.boostSession.start", "$testDate",]
@@ -40473,6 +40475,11 @@ export class PostsService {
               },
               {
                 $and: [
+                  //{
+                  //    "viewer": {
+                  //        $nin: [ "vuvyxi@abyssmail.com" ]
+                  //    }
+                  //},
                   {
                     "reportedStatus": {
                       $ne: "OWNED"
@@ -40522,7 +40529,7 @@ export class PostsService {
         {
           $sort: {
             viewerCount: 1,
-            selfContents: -1,
+            selfContents: - 1,
             "isBoost": - 1,
             "createdAt": - 1
           }
