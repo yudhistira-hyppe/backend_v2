@@ -2962,32 +2962,34 @@ export class GetusercontentsController {
                     uploadSource = arrpict[i].uploadSource;
 
                     if (uploadSource == "OSS") {
-                        arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
+                        arrpict[i].mediaThumbEndpoint = arrpict[i].mediaThumUri;
 
                     } else {
-                        for (var j = 0; j < gettempresultpictapsara.length; j++) {
+                        if (gettempresultpictapsara.length > 0) {
+                            for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
-                            if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
-                                // checkpictketemu = true;
-                                arrpict[i].media =
-                                {
-                                    "ImageInfo": [gettempresultpictapsara[j]]
+                                if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
+                                    // checkpictketemu = true;
+                                    arrpict[i].media =
+                                    {
+                                        "ImageInfo": [gettempresultpictapsara[j]]
+                                    }
+
+                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
                                 }
+                                else if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
 
-                                arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                    arrpict[i].media =
+                                    {
+                                        "ImageInfo": [gettempresultpictapsara[j]]
+                                    }
 
+                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
 
-
-                            }
-                            else if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
-
-                                arrpict[i].media =
-                                {
-                                    "ImageInfo": [gettempresultpictapsara[j]]
                                 }
-
-                                arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
                             }
                         }
                     }
@@ -3275,32 +3277,35 @@ export class GetusercontentsController {
                     uploadSource = arrpict[i].uploadSource;
 
                     if (uploadSource == "OSS") {
-                        arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
+                        arrpict[i].mediaThumbEndpoint = arrpict[i].mediaThumUri;
 
-                    } else {
-                        for (var j = 0; j < gettempresultpictapsara.length; j++) {
+                    }
+                    else {
+                        if (gettempresultpictapsara.length > 0) {
+                            for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
-                            if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
-                                // checkpictketemu = true;
-                                arrpict[i].media =
-                                {
-                                    "ImageInfo": [gettempresultpictapsara[j]]
+                                if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
+                                    // checkpictketemu = true;
+                                    arrpict[i].media =
+                                    {
+                                        "ImageInfo": [gettempresultpictapsara[j]]
+                                    }
+
+                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
                                 }
+                                else if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
 
-                                arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                    arrpict[i].media =
+                                    {
+                                        "ImageInfo": [gettempresultpictapsara[j]]
+                                    }
 
+                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
 
-
-                            }
-                            else if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
-
-                                arrpict[i].media =
-                                {
-                                    "ImageInfo": [gettempresultpictapsara[j]]
                                 }
-
-                                arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
                             }
                         }
                     }
