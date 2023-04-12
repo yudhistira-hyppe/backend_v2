@@ -2998,9 +2998,7 @@ export class GetusercontentsController {
                                 }
                             }
                         }
-                        else {
-                            arrpict[i].mediaThumbEndpoint = "/thumb/" + postID;
-                        }
+
                     }
 
                     picts.push(arrpict[i]);
@@ -3321,9 +3319,7 @@ export class GetusercontentsController {
                                     arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
 
                                 }
-                                else {
-                                    arrpict[i].mediaThumbEndpoint = "/thumb/" + postID;
-                                }
+
                             }
                         }
                     }
