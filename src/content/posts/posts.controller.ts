@@ -1514,12 +1514,14 @@ export class PostsController {
 
             for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
+              if (apsaraId !== undefined && apsaraId !== "") {
+                if (gettempresultpictapsara[j].ImageId == apsaraId) {
 
-              if (gettempresultpictapsara[j].ImageId == data[i].content.apsaraId) {
+                  data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
 
-                data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
+                }
               }
+
             }
           }
         }
