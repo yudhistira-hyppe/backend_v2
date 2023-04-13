@@ -545,7 +545,7 @@ export class UserauthsService {
       {
         "$sort":
         {
-          createdAt: - 1
+          createdAt: 1
         }
       },
       {
@@ -881,7 +881,7 @@ export class UserauthsService {
       {
         "$sort":
         {
-          createdAt: - 1
+          createdAt: 1
         }
       },
       {

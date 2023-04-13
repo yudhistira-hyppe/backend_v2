@@ -17629,7 +17629,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -17720,7 +17719,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -17729,6 +17728,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -17896,7 +17896,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -17914,7 +17916,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -17922,14 +17923,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -18700,12 +18695,6 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
           },
@@ -19470,12 +19459,6 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
 
@@ -19953,7 +19936,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -20044,7 +20026,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -20053,6 +20035,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -20220,7 +20203,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -20238,7 +20223,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -20246,14 +20230,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -20560,12 +20538,6 @@ export class PostsService {
                     viewed: -1
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -21046,7 +21018,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -21137,7 +21108,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -21146,6 +21117,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -21313,7 +21285,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -21331,7 +21305,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -21339,14 +21312,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -21650,12 +21617,6 @@ export class PostsService {
                     viewed: -1
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -22426,12 +22387,6 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
             "diary":
@@ -22735,14 +22690,9 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
+
 
           },
 
@@ -23220,7 +23170,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -23311,7 +23260,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -23320,6 +23269,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -23487,7 +23437,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -23505,7 +23457,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -23513,14 +23464,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -23828,12 +23773,6 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
             "diary":
@@ -24137,14 +24076,9 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
+
 
           },
 
@@ -24940,12 +24874,6 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
           },
@@ -24979,7 +24907,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -25070,7 +24997,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -25079,6 +25006,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -25246,7 +25174,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -25264,7 +25194,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -25272,14 +25201,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -25601,14 +25524,9 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
+
 
           },
 
@@ -26591,12 +26509,6 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
 
@@ -27015,12 +26927,6 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
             "tags":
@@ -27148,7 +27054,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -27239,7 +27144,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -27248,6 +27153,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -27415,7 +27321,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -27433,7 +27341,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -27441,14 +27348,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -27577,7 +27478,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -27668,7 +27568,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -27677,6 +27577,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -27844,7 +27745,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -27862,7 +27765,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -27870,14 +27772,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -28184,12 +28080,6 @@ export class PostsService {
                     viewed: -1
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -28319,7 +28209,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -28410,7 +28299,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -28419,6 +28308,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -28586,7 +28476,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -28604,7 +28496,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -28612,14 +28503,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -28926,12 +28811,6 @@ export class PostsService {
                     viewed: -1
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -29235,12 +29114,6 @@ export class PostsService {
                     viewed: -1
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -29371,7 +29244,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -29462,7 +29334,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -29471,6 +29343,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -29638,7 +29511,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -29656,7 +29531,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -29664,14 +29538,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -29975,12 +29843,6 @@ export class PostsService {
                     viewed: -1
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -30544,7 +30406,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -30635,7 +30496,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -30644,6 +30505,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -30811,7 +30673,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -30829,7 +30693,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -30837,14 +30700,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -31418,7 +31275,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -31509,7 +31365,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -31518,6 +31374,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -31685,7 +31542,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -31703,7 +31562,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -31711,14 +31569,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -32025,12 +31877,6 @@ export class PostsService {
                     viewed: -1
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -32894,12 +32740,6 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
             "diary":
@@ -33203,12 +33043,6 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
 
@@ -33350,7 +33184,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -33441,7 +33274,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -33450,6 +33283,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -33617,7 +33451,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -33635,7 +33471,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -33643,14 +33478,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -33958,12 +33787,6 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
             "diary":
@@ -34266,12 +34089,6 @@ export class PostsService {
                     viewed: -1
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -34836,7 +34653,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -34927,7 +34743,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -34936,6 +34752,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -35103,7 +34920,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -35121,7 +34940,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -35129,14 +34947,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -35444,12 +35256,6 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
             "diary":
@@ -35752,12 +35558,6 @@ export class PostsService {
                     viewed: -1
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -35901,7 +35701,6 @@ export class PostsService {
                             {
                               $text: {
                                 $search: key
-
                               }
                             },
                             {
@@ -35992,7 +35791,7 @@ export class PostsService {
                           scorePict: - 1,
                           comments: - 1,
                           likes: - 1,
-                          views: -1
+                          views: - 1
                         }
                       },
                       {
@@ -36001,6 +35800,7 @@ export class PostsService {
                       {
                         $limit: limit
                       },
+
                     ],
                     as: "pict"
                   },
@@ -36168,7 +35968,9 @@ export class PostsService {
                         ]
                       }]
                     },
-                    "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                    "apsaraThumbId": {
+                      $arrayElemAt: ['$media.apsaraThumbId', 0]
+                    },
                     // "isLiked":
                     // {
                     //   $cond: {
@@ -36186,7 +35988,6 @@ export class PostsService {
                     //     else: "$taslimKONAG"
                     //   }
                     // },
-
                   }
                 },
                 {
@@ -36194,14 +35995,8 @@ export class PostsService {
                     scorePict: - 1,
                     comments: - 1,
                     likes: - 1,
-                    viewed: -1
+                    viewed: - 1
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -36509,12 +36304,6 @@ export class PostsService {
 
                   }
                 },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
 
               ],
             "diary":
@@ -36817,12 +36606,6 @@ export class PostsService {
                     viewed: -1
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
