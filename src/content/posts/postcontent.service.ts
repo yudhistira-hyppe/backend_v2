@@ -3651,7 +3651,7 @@ export class PostContentService {
           }
         },
       ]
-    }).sort({ createdAt : -1 });
+    });
     let query = this.PostsModel.find();
     let con = true;
     if (body.visibility != undefined) {
@@ -3752,7 +3752,7 @@ export class PostContentService {
       let skip = this.paging(page, row);
       query.skip(skip);
       query.limit(row);
-      query.sort({ 'createdAt': -1, 'postType': 1 });
+      query.sort({ 'createdAt': 1, 'postType': 1 });
       let res = await query.exec();
       let ed = await this.utilService.getDateTimeDate();
       let gap = ed.getTime() - st.getTime();
