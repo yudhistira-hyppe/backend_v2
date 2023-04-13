@@ -3651,7 +3651,7 @@ export class PostContentService {
           }
         },
       ]
-    });
+    }).sort({ createdAt : 1 });
     let query = this.PostsModel.find();
     let con = true;
     if (body.visibility != undefined) {
