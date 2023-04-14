@@ -1070,6 +1070,7 @@ export class DisqusController {
       this.disquscontactsService.create(c1);
     }
 
+    retVal.type = "MESSAGES";
     retVal.email = dis.email;
     retVal.room = dis.room;
     retVal.disqusID = dis.disqusID;

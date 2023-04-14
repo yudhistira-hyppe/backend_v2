@@ -42,6 +42,7 @@ export class DisqusContentEventController {
     retVal.createdAt = CreateDisqusDto_.createdAt;
     retVal.updatedAt = CreateDisqusDto_.updatedAt;
     retVal.lastestMessage = CreateDisqusDto_.lastestMessage;
+    retVal.type = "REACTION";
 
     var profile = await this.utilsService.generateProfile(String(CreateDisqusDto_.email), 'PROFILE');
     if (profile.username != undefined) {
