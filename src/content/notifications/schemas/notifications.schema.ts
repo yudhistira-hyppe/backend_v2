@@ -50,7 +50,8 @@ export class Notifications {
   devices: any[]
   @Prop()
   actionButtons: String
-
+  @Prop()
+  deviceType: String
 }
 
 export const NotificationsSchema = SchemaFactory.createForClass(Notifications);

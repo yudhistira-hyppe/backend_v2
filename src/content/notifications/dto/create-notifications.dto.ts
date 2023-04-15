@@ -30,6 +30,7 @@ export class CreateNotificationsDto {
     content: ContentDTO;
     devices: any[];
     actionButtons: String;
+    deviceType: String;
 }
 
 export class ContentDTO {
