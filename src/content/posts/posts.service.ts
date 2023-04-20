@@ -40581,16 +40581,9 @@ export class PostsService {
               {
                 $match:
                 {
-                  $and: [
-                    {
-                      $expr: {
-                        $eq: ['$postID', '$$localID']
-                      }
-                    },
-                    {
-                      "apsara": true
-                    }
-                  ]
+                  $expr: {
+                    $eq: ['$postID', '$$localID']
+                  }
                 }
               },
               {
