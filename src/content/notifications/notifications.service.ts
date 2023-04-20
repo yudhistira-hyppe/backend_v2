@@ -39,6 +39,32 @@ export class NotificationsService {
     return query;
   }
 
+  async findbusinesslatest(email: string, skip: number, limit: number): Promise<object> {
+    const query = await this.NotificationsModel.aggregate([
+      { 
+        "$match": 
+        {
+          "$and":
+          [
+            {
+              email: email
+            },
+            {
+              deviceType:"WEB"
+            }
+            // {
+            //   eventType:"TRANSACTION"
+            // }
+          ]  
+        } 
+      },
+      { "$sort": { createdAt: -1 }, },
+      { "$skip": skip },
+      { "$limit": limit },
+    ]);
+    return query;
+  }
+
 
   //    async findOne(id: string): Promise<Notifications> {
   //     return this.NotificationsModel.findOne({ _id: id }).exec();

@@ -753,6 +753,205 @@ export class UtilsService {
     }
   }
 
+  async sendFcmWebMode(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID_?: string, postType?: string, noinvoice?: string, jenis?: string) {
+
+    console.log(postID_);
+    var emailuserbasic = null;
+    var datadevice = null;
+    var languages = null;
+    var payload = null;
+    var idlanguages = null;
+    var datalanguage = null;
+    var langIso = null;
+    var idprofilepict = null;
+    var profilepict = null;
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+    var dtstring = dt.toISOString();
+    var splitdt = dtstring.split(".");
+    var date = splitdt[0].replace("T", " ");
+    var mediaprofilepicts = null;
+    var bodypayload = null;
+    let createNotificationsDto = new CreateNotificationsDto();
+
+    const datauserbasicsService = await this.userbasicsService.findOne(
+      email
+    );
+    if (await this.ceckData(datauserbasicsService)) {
+      emailuserbasic = datauserbasicsService.email;
+
+      try {
+        profilepict = datauserbasicsService.profilePict;
+        idprofilepict = profilepict.oid;
+        mediaprofilepicts = await this.mediaprofilepictsService.findOne(idprofilepict);
+      } catch (e) {
+        mediaprofilepicts = null;
+      }
+      const user_userAuth = await this.userauthsService.findOne(
+        emailuserbasic
+      );
+
+      var mediaUri = null;
+      var mediaBasePath = null;
+      var mediaType = null;
+      var mediaEndpoint = null;
+      if (mediaprofilepicts != null) {
+        mediaUri = mediaprofilepicts.mediaUri;
+      }
+
+      let result = null;
+      if (mediaUri != null) {
+        result = '/profilepict/' + mediaUri.replace('_0001.jpeg', '');
+      }
+      if (mediaprofilepicts != null) {
+        if (mediaprofilepicts.mediaBasePath != null) {
+          mediaBasePath = mediaprofilepicts.mediaBasePath;
+        }
+
+        if (mediaprofilepicts.mediaUri != null) {
+          mediaUri = mediaprofilepicts.mediaUri;
+        }
+
+        if (mediaprofilepicts.mediaType != null) {
+          mediaType = mediaprofilepicts.mediaType;
+        }
+      }
+
+      if (result != null) {
+        mediaEndpoint = result;
+      }
+
+      var senderreceiver = {
+        fullName: datauserbasicsService.fullName,
+        avatar: {
+          mediaBasePath: mediaBasePath,
+          mediaUri: mediaUri,
+          mediaType: mediaType,
+          mediaEndpoint: mediaEndpoint
+        },
+        username: user_userAuth.username.toString()
+      };
+      try {
+        languages = datauserbasicsService.languages;
+        idlanguages = languages.oid.toString();
+        datalanguage = await this.languagesService.findOne(idlanguages)
+        langIso = datalanguage.langIso;
+
+        console.log(idlanguages)
+      } catch (e) {
+        languages = null;
+        idlanguages = "";
+        datalanguage = null;
+        langIso = "";
+      }
+      var pid = null;
+      if (jenis === "TRANSACTION" && noinvoice !== undefined) {
+
+        pid = noinvoice;
+      }
+      else if (jenis === "APPEAL" && postID_ !== undefined) {
+
+        pid = postID_;
+      } else {
+        pid = "";
+      }
+
+
+      if (langIso === "id") {
+
+        payload = {
+
+          notification: {
+            title: titlein,
+            body: bodyin,
+            tag: "background"
+          },
+          data: {
+            postID: pid,
+            postType: postType
+          }
+        };
+      }
+      else if (langIso === "en") {
+        payload = {
+
+          notification: {
+            title: titleen,
+            body: bodyen,
+            tag: "background"
+          },
+          data: {
+            postID: pid,
+            postType: postType
+          }
+        };
+      } else {
+        payload = {
+
+          notification: {
+            title: titlein,
+            body: bodyin,
+            tag: "background"
+          },
+          data: {
+            postID: pid,
+            postType: postType
+          }
+        };
+      }
+
+
+
+
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
+
+
+      var arraydevice = [];
+      datadevice = await this.userdevicesService.findActive(emailuserbasic);
+      for (var i = 0; i < datadevice.length; i++) {
+        var deviceid = datadevice[i].deviceID;
+        await admin.messaging().sendToDevice(deviceid, payload);
+
+        arraydevice.push(deviceid);
+
+      }
+      var generateID = await this.generateId();
+      createNotificationsDto._id = generateID;
+      createNotificationsDto.notificationID = generateID;
+      createNotificationsDto.email = emailuserbasic;
+      createNotificationsDto.eventType = eventType;
+      createNotificationsDto.event = event;
+      createNotificationsDto.mate = emailuserbasic;
+      createNotificationsDto.devices = arraydevice;
+      createNotificationsDto.title = payload.notification.title;
+      createNotificationsDto.body = bodyen;
+      createNotificationsDto.bodyId = bodyin;
+      createNotificationsDto.active = true;
+      createNotificationsDto.flowIsDone = true;
+      createNotificationsDto.createdAt = date;
+      createNotificationsDto.updatedAt = date;
+      createNotificationsDto.actionButtons = null;
+      createNotificationsDto.contentEventID = null;
+      createNotificationsDto.senderOrReceiverInfo = senderreceiver;
+      createNotificationsDto.deviceType = "WEB";
+
+      if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION" || eventType == "CONTENT" || eventType == "POST" || eventType == "BANK") {
+        if (postID_ != undefined) {
+          createNotificationsDto.postID = postID_;
+        }
+        if (postID_ != undefined) {
+          createNotificationsDto.postType = postType;
+        }
+      }
+
+      console.log('notif: ' + JSON.stringify(createNotificationsDto));
+      await this.notificationsService.create(createNotificationsDto);
+
+
+    }
+  }
+
   async getSetting(jenis: string) {
     return (await this.settingsService.findOneByJenis(jenis)).value;
   }

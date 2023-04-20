@@ -109,7 +109,8 @@ export class DisqusResDto {
   postType: string;
   content: any;
   disqusLogs: DisquslogsDto[];
-  _class:String;
+  _class: String;
+  type: String;
 }
 
 export class Messages {
