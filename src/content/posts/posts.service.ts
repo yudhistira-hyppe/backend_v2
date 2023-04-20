@@ -40581,9 +40581,16 @@ export class PostsService {
               {
                 $match:
                 {
-                  $expr: {
-                    $eq: ['$postID', '$$localID']
-                  }
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$postID', '$$localID']
+                      }
+                    },
+                    {
+                      "apsara": true
+                    }
+                  ]
                 }
               },
               {
@@ -41902,9 +41909,16 @@ export class PostsService {
               {
                 $match:
                 {
-                  $expr: {
-                    $eq: ['$postID', '$$localID']
-                  }
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$postID', '$$localID']
+                      }
+                    },
+                    {
+                      "apsara": true
+                    }
+                  ]
                 }
               },
               {
@@ -43218,9 +43232,16 @@ export class PostsService {
               {
                 $match:
                 {
-                  $expr: {
-                    $eq: ['$postID', '$$localID']
-                  }
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$postID', '$$localID']
+                      }
+                    },
+                    {
+                      "apsara": true
+                    }
+                  ]
                 }
               },
               {
