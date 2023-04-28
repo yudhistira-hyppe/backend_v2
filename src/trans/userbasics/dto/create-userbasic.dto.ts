@@ -39,11 +39,7 @@ export class CreateUserbasicDto {
     $id: String;
     $db: String;
   };
-  userInterests: [{
-    $ref: String;
-    $id: ObjectId;
-    $db: String;
-  }];
+  userInterests: any[];
   userAuth: {
     $ref: String;
     $id: ObjectId;

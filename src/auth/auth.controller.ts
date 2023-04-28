@@ -1369,6 +1369,13 @@ export class AuthController {
     return await this.authService.signup(request);
   }
 
+
+  @Post('api/user/signuploop')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async signuploop(@Req() request: any) {
+
+    return await this.authService.signupLoop(request);
+  }
   @Post('api/user/verifyaccount')
   @HttpCode(HttpStatus.ACCEPTED)
   async verifyaccount(@Req() request: any) {
