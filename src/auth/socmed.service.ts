@@ -1067,8 +1067,18 @@ export class SocmedService {
     }
 
 
-    if (req.body.uuid != undefined) {
-      uuid = req.body.uuid;
+    if (req.body.uuid == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'uuid is mandatory',
+      );
+    } else {
+      if (req.body.uuid == '') {
+        await this.errorHandler.generateNotAcceptableException(
+          'uuid is mandatory',
+        );
+      } else {
+        uuid = req.body.uuid;
+      }
     }
 
     if (!(await this.utilsService.validasiEmail(user_email.trim()))) {
