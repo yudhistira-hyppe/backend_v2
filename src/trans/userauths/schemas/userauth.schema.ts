@@ -80,6 +80,8 @@ export class Userauth {
   };
   @Prop()
   loginSource: String;
+  @Prop()
+  uuid: String;
 }
 
 export const UserauthSchema = SchemaFactory.createForClass(Userauth);
