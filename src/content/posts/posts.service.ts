@@ -25555,7 +25555,7 @@ export class PostsService {
                         $match:
                         {
                           "_id": {
-                            $regex: key
+                            $regex: key, $options: 'i'
                           }
                         }
                       },
@@ -25666,7 +25666,7 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key
+                            $regex: key, $options: 'i'
                           }
                         }
                       },
@@ -26522,7 +26522,7 @@ export class PostsService {
                         $match:
                         {
                           "_id": {
-                            $regex: key
+                            $regex: key, $options: 'i'
                           }
                         }
                       },
@@ -26939,7 +26939,7 @@ export class PostsService {
                         $match:
                         {
                           "_id": {
-                            $regex: key
+                            $regex: key, $options: 'i'
                           }
                         }
                       },
@@ -27363,7 +27363,7 @@ export class PostsService {
                         $match:
                         {
                           "_id": {
-                            $regex: key
+                            $regex: key, $options: 'i'
                           }
                         }
                       },
@@ -28093,7 +28093,7 @@ export class PostsService {
                         $match:
                         {
                           "_id": {
-                            $regex: key
+                            $regex: key, $options: 'i'
                           }
                         }
                       },
@@ -29128,7 +29128,7 @@ export class PostsService {
                         $match:
                         {
                           "_id": {
-                            $regex: key
+                            $regex: key, $options: 'i'
                           }
                         }
                       },
@@ -29857,7 +29857,7 @@ export class PostsService {
                         $match:
                         {
                           "_id": {
-                            $regex: key
+                            $regex: key, $options: 'i'
                           }
                         }
                       },
@@ -30716,7 +30716,7 @@ export class PostsService {
                         $match:
                         {
                           "_id": {
-                            $regex: key
+                            $regex: key, $options: 'i'
                           }
                         }
                       },
@@ -31890,7 +31890,7 @@ export class PostsService {
                         $match:
                         {
                           "_id": {
-                            $regex: key
+                            $regex: key, $options: 'i'
                           }
                         }
                       },
@@ -33056,7 +33056,7 @@ export class PostsService {
                         $match:
                         {
                           "_id": {
-                            $regex: key
+                            $regex: key, $options: 'i'
                           }
                         }
                       },
@@ -34103,7 +34103,7 @@ export class PostsService {
                         $match:
                         {
                           "_id": {
-                            $regex: key
+                            $regex: key, $options: 'i'
                           }
                         }
                       },
@@ -35572,7 +35572,7 @@ export class PostsService {
                         $match:
                         {
                           "_id": {
-                            $regex: key
+                            $regex: key, $options: 'i'
                           }
                         }
                       },
