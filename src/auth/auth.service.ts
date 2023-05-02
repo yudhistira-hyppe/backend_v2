@@ -590,10 +590,15 @@ export class AuthService {
     var type = 'ENROL';
     var CurrentStatus = '';
     var CurrentEvent = '';
+    var user_regSrc = "";
 
     var lang = "id";
     if (req.body.lang != undefined) {
       lang = req.body.lang.toString();
+    }
+
+    if (req.body.regSrc != undefined) {
+      user_regSrc = req.body.regSrc.toString();
     }
 
     var current_date = await this.utilsService.getDateTimeString();
@@ -1685,7 +1690,7 @@ export class AuthService {
             data_CreateUserauthDto.email = user_email;
             data_CreateUserauthDto.createdAt = current_date;
             data_CreateUserauthDto.updatedAt = current_date;
-            data_CreateUserauthDto.regSrc = 'iOS';
+            data_CreateUserauthDto.regSrc = user_regSrc;
             data_CreateUserauthDto.isExpiryPass = false;
             data_CreateUserauthDto.isEmailVerified = false;
             data_CreateUserauthDto.otpAttempt = Long.fromString('0');
