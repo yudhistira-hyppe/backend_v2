@@ -31,11 +31,12 @@ export class CreateUserauthDto {
   ];
   _class: String;
   oneTimePassword: String;
-  upgradeRole: String; 
+  upgradeRole: String;
   otpToken: String;
   location: {
     latitude: Double;
     longitude: Double;
   }
   loginSource: String;
+  uuid: String;
 }
