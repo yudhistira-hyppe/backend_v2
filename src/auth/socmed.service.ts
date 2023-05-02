@@ -1120,7 +1120,7 @@ export class SocmedService {
       type = 'LOGIN';
       userUuid = datauserauthsService.uuid;
       if (datauserauthsService.isEmailVerified != undefined) {
-        if (userUuid !== undefined) {
+        if (userUuid == undefined) {
           this.userauthsService.updatebyId(datauserauthsService._id.toString(), { isEmailVerified: true, loginSource: user_socmedSource, uuid: uuid });
         } else {
           this.userauthsService.updatebyId(datauserauthsService._id.toString(), { isEmailVerified: true, loginSource: user_socmedSource });
