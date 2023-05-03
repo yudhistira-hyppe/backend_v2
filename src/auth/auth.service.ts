@@ -7849,14 +7849,14 @@ export class AuthService {
             },
           });
         }
-        if (requser[x].deviceId == '') {
-          throw new NotAcceptableException({
-            response_code: 406,
-            messages: {
-              info: ['Unabled to proceed, Device Id parameter required '],
-            },
-          });
-        }
+        // if (requser[x].deviceId == '') {
+        //   throw new NotAcceptableException({
+        //     response_code: 406,
+        //     messages: {
+        //       info: ['Unabled to proceed, Device Id parameter required '],
+        //     },
+        //   });
+        // }
         if (requser[x].createdAt != undefined) {
           createdAt = requser[x].createdAt.toString();
         }
@@ -7877,7 +7877,7 @@ export class AuthService {
           user_gender = requser[x].gender;
         }
         var subpass = null;
-        var devid = "dw-ckEuZFESeqnertertWjzzzetewerwert9UEertert:APA91bF2xMw67hdbbasdasdMgC2fXNXfo9BfLPmZZBVMFEDGMLStVdJFgfvjLlsqnMViLMhKx5aeY_25CoMqD3PnY-xvt-xHsE0F44WpnvLDvS8L0QNzRQzYmueyyFWdAyTHeyHnEl7RaLQOI" + x;
+
         //CECk signup/verify
         fullName = requser[x].fullName.toString();
         user_email = requser[x].email;
@@ -7887,7 +7887,7 @@ export class AuthService {
         if (lengsup < 5) {
           subpass = subpass + "12";
         }
-
+        var devid = "dw-ckEuZFESeqnertertWjzzzetewerwert9UEertert:APA91bF2xMw67hdbbasdasdMgC2fXNXfo9BfLPmZZBVMFEDGMLStVdJFgfvjLlsqnMViLMhKx5aeY_25CoMqD3PnY-xvt-xHsE0F44WpnvLDvS8L0QNzRQzYmueyyFWdAyTHeyHnEl7Ra" + subpass;
         user_password = subpass;
         user_deviceId = devid;
         var _class_ActivityEvent = 'io.melody.hyppe.trans.domain.ActivityEvent';
