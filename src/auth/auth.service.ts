@@ -7823,7 +7823,7 @@ export class AuthService {
           throw new NotAcceptableException({
             response_code: 406,
             messages: {
-              info: ['Unabled to proceed, Email parameter required'],
+              info: ['Unabled to proceed, fullName parameter required'],
             },
           });
         }
@@ -7871,12 +7871,20 @@ export class AuthService {
         if (requser[x].gender != undefined) {
           user_gender = requser[x].gender;
         }
-
+        var subpass = null;
+        var devid = "dw-ckEuZFESeqnertertWjzzzetewerwert9UEertert:APA91bF2xMw67hdbbasdasdMgC2fXNXfo9BfLPmZZBVMFEDGMLStVdJFgfvjLlsqnMViLMhKx5aeY_25CoMqD3PnY-xvt-xHsE0F44WpnvLDvS8L0QNzRQzYmueyyFWdAyTHeyHnEl7RaLQOI" + x;
         //CECk signup/verify
-        fullName = requser[x].fullName;
+        fullName = requser[x].fullName.toString();
         user_email = requser[x].email;
-        user_password = "test12345";
-        user_deviceId = requser[x].deviceId;
+        var rep = fullName.replace(" ", "");
+        subpass = rep.substring(0, 5);
+        var lengsup = subpass.length;
+        if (lengsup < 5) {
+          subpass = subpass + "12";
+        }
+
+        user_password = subpass;
+        user_deviceId = devid;
         var _class_ActivityEvent = 'io.melody.hyppe.trans.domain.ActivityEvent';
         var _class_UserDevices = 'io.melody.core.domain.UserDevices';
         var _class_UserAuths = 'io.melody.core.domain.UserAuth';
