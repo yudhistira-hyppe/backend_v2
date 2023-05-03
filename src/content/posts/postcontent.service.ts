@@ -1281,8 +1281,9 @@ export class PostContentService {
       }
     }
 
+    var lang = await this.utilService.getUserlanguages(post.email.toString());
     if (post.certified) {
-      this.generateCertificate(String(post.postID), 'id');
+      this.generateCertificate(String(body.postID), lang.toString());
     }
 
     let myus = await this.userAuthService.findOneByEmail(post.email);
@@ -1740,8 +1741,9 @@ export class PostContentService {
       }
     }
 
+    var lang = await this.utilService.getUserlanguages(post.email.toString());
     if (post.certified) {
-      this.generateCertificate(String(post.postID), 'id');
+      this.generateCertificate(String(body.postID), lang.toString());
     }
 
     let myus = await this.userAuthService.findOneByEmail(post.email);
@@ -2307,7 +2309,7 @@ export class PostContentService {
     post.active = true;
 
     if (post.certified) {
-      this.generateCertificate(String(post.postID), 'id');
+      this.generateCertificate(postID, 'id');
     }
     
     if (body.tagPeople != undefined && body.tagPeople.length > 1) {
@@ -2383,9 +2385,10 @@ export class PostContentService {
     }
 
 
+    var lang = await this.utilService.getUserlanguages(auth.email.toString());
     this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
     if (post.certified) {
-      this.generateCertificate(String(post.postID), 'id');
+      this.generateCertificate(postID.toString(), lang.toString());
     } else {
       this.logger.error('createNewPostPict >>> post is not certified');
     }
@@ -6136,8 +6139,16 @@ export class PostContentService {
     return await this.picService.getDataMediapictSeaweed();
   }
 
-  async getImageMediapictSeaweed(mediapicts: string): Promise<any> {
-    var data = await this.seaweedfsService.read(mediapicts.replace('/localrepo', ''));
+  async getDataMediavidSeaweed(): Promise<Mediavideos[]> {
+    return await this.videoService.getDataMediavideosSeaweed();
+  }
+
+  async getDataMediadiariesSeaweed(): Promise<Mediadiaries[]> {
+    return await this.diaryService.getDataMediadiariesSeaweed();
+  }
+
+  async getSeaweedFile(media: string): Promise<any> {
+    var data = await this.seaweedfsService.read(media.replace('/localrepo', ''));
     return data;
   }
 }
