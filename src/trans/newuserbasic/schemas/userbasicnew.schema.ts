@@ -64,11 +64,11 @@ export class Userbasic {
     };
     @Prop([{ type: Object }])
     userInterests: [
-            {
-                $ref: String;
-                $id: String;
-                $db: String;
-            },
+        {
+            $ref: String;
+            $id: String;
+            $db: String;
+        },
     ];
     @Prop({ type: Object })
     userAuth: {
@@ -116,6 +116,8 @@ export class Userbasic {
     otp_attemp: number;
     @Prop()
     statusKyc: string;
+    @Prop()
+    import: String;
 }
 
 export const UserbasicnewSchema = SchemaFactory.createForClass(Userbasic);

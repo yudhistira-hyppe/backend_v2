@@ -136,6 +136,8 @@ export class Userbasic {
   listAddKyc: any[];
   @Prop()
   userAssets: mongoose.Types.ObjectId[];
+  @Prop()
+  import: String;
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);

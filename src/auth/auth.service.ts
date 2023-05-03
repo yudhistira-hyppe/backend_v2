@@ -7828,7 +7828,7 @@ export class AuthService {
           throw new NotAcceptableException({
             response_code: 406,
             messages: {
-              info: ['Unabled to proceed, Email parameter required'],
+              info: ['Unabled to proceed, fullName parameter required'],
             },
           });
         }
@@ -7849,14 +7849,14 @@ export class AuthService {
             },
           });
         }
-        if (requser[x].deviceId == '') {
-          throw new NotAcceptableException({
-            response_code: 406,
-            messages: {
-              info: ['Unabled to proceed, Device Id parameter required '],
-            },
-          });
-        }
+        // if (requser[x].deviceId == '') {
+        //   throw new NotAcceptableException({
+        //     response_code: 406,
+        //     messages: {
+        //       info: ['Unabled to proceed, Device Id parameter required '],
+        //     },
+        //   });
+        // }
         if (requser[x].createdAt != undefined) {
           createdAt = requser[x].createdAt.toString();
         }
@@ -7876,12 +7876,24 @@ export class AuthService {
         if (requser[x].gender != undefined) {
           user_gender = requser[x].gender;
         }
+        var subpass = null;
 
         //CECk signup/verify
-        fullName = requser[x].fullName;
+        fullName = requser[x].fullName.toString();
+
         user_email = requser[x].email;
-        user_password = "test12345";
-        user_deviceId = requser[x].deviceId;
+        var rep = fullName.replace(" ", "");
+        rep = rep.replace(" ", "");
+        rep = rep.replace(" ", "");
+        var lengname = rep.length;
+        subpass = rep.substring(lengname, lengname - 5);
+        var lengsup = subpass.length;
+        if (lengsup < 5) {
+          subpass = subpass + "12";
+        }
+        var devid = "dw-ckEuZFESeqnertertWjzzzetewerwert9UEertert:APA91bF2xMw67hdbbasdasdMgC2fXNXfo9BfLPmZZBVMFEDGMLStVdJFgfvjLlsqnMViLMhKx5aeY_25CoMqD3PnY-xvt-xHsE0F44WpnvLDvS8L0QNzRQzYmueyyFWdAyTHeyHnEl7Ra" + subpass;
+        user_password = subpass;
+        user_deviceId = devid;
         var _class_ActivityEvent = 'io.melody.hyppe.trans.domain.ActivityEvent';
         var _class_UserDevices = 'io.melody.core.domain.UserDevices';
         var _class_UserAuths = 'io.melody.core.domain.UserAuth';
@@ -8056,7 +8068,7 @@ export class AuthService {
                 await this.userdevicesService.create(data_CreateUserdeviceDto);
               } catch (error) {
                 await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Create Userdevices. Error:' + error,
+                  "Unabled to proceed Create Userdevice " + user_email + " row " + x + " Error: " + error
                 );
               }
             }
@@ -8098,7 +8110,7 @@ export class AuthService {
               await this.userauthsService.create(data_CreateUserauthDto);
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Create UserAuth. Error: ' + error,
+                "Unabled to proceed Create UserAuth " + user_email + " row " + x + " Error: " + error
               );
             }
 
@@ -8122,6 +8134,7 @@ export class AuthService {
               data_CreateUserbasicDto.createdAt = createdAt;
               data_CreateUserbasicDto.updatedAt = updatedAt;
               data_CreateUserbasicDto.statusKyc = 'unverified';
+              data_CreateUserbasicDto.import = "YES";
               data_CreateUserbasicDto.insight = {
                 $ref: 'insights',
                 $id: Object(ID_insights),
@@ -8149,7 +8162,7 @@ export class AuthService {
 
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Create UserBasic. Error: ' + error,
+                "Unabled to proceed Create UserBasic " + user_email + " row " + x + " Error: " + error
               );
             }
 
@@ -8204,8 +8217,7 @@ export class AuthService {
               );
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Create Activity events Parent. Error: ' +
-                error,
+                "Unabled to proceed Create Activity Event " + user_email + " row " + x + " Error: " + error
               );
             }
 
@@ -8248,8 +8260,7 @@ export class AuthService {
               );
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Create Activity events Child. Error: ' +
-                error,
+                "Unabled to proceed Create Activity Event child " + user_email + " row " + x + " Error: " + error
               );
             }
             const datajwtrefreshtokenService = await this.jwtrefreshtokenService.findOne(user_email);
@@ -8265,7 +8276,7 @@ export class AuthService {
             //   );
             // }
             data = {
-              fullName: username_,
+              fullName: fullName,
               gender: user_gender,
               isIdVerified: "false",
               isEmailVerified: "true",
@@ -8281,22 +8292,22 @@ export class AuthService {
           } else {
             if (user_langIso == "en") {
               await this.errorHandler.generateNotAcceptableException(
-                'Sorry! This email already registered.',
+                "Sorry! This email " + user_email + " already registered.",
               );
             } else {
               await this.errorHandler.generateNotAcceptableException(
-                'Maaf! Email ini sudah terdaftar.',
+                "Maaf! Email " + user_email + " sudah terdaftar.",
               );
             }
           }
         } else {
           if (user_langIso == "en") {
             await this.errorHandler.generateNotAcceptableException(
-              'Sorry! This email already registered.',
+              "Sorry! This email " + user_email + " already registered.",
             );
           } else {
             await this.errorHandler.generateNotAcceptableException(
-              'Maaf! Email ini sudah terdaftar.',
+              "Maaf! Email " + user_email + " sudah terdaftar.",
             );
           }
         }
