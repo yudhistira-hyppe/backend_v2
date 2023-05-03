@@ -8276,7 +8276,7 @@ export class AuthService {
             //   );
             // }
             data = {
-              fullName: username_,
+              fullName: fullName,
               gender: user_gender,
               isIdVerified: "false",
               isEmailVerified: "true",
