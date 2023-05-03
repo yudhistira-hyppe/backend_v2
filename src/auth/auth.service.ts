@@ -7882,9 +7882,10 @@ export class AuthService {
         fullName = requser[x].fullName.toString();
 
         user_email = requser[x].email;
-        var rep = fullName.replace(" ", "");
+        var rep = fullName.split(" ");
         var lengname = rep.length;
-        subpass = rep.substring(lengname, 5);
+        var lengsplit = rep[lengname - 1].length;
+        subpass = rep[lengname - 1].substring(lengsplit, lengsplit - 5);
         var lengsup = subpass.length;
         if (lengsup < 5) {
           subpass = subpass + "12";
