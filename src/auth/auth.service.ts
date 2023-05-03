@@ -7880,9 +7880,11 @@ export class AuthService {
 
         //CECk signup/verify
         fullName = requser[x].fullName.toString();
+
         user_email = requser[x].email;
         var rep = fullName.replace(" ", "");
-        subpass = rep.substring(0, 5);
+        var lengname = rep.length;
+        subpass = rep.substring(lengname, 5);
         var lengsup = subpass.length;
         if (lengsup < 5) {
           subpass = subpass + "12";
@@ -8064,7 +8066,7 @@ export class AuthService {
                 await this.userdevicesService.create(data_CreateUserdeviceDto);
               } catch (error) {
                 await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Create Userdevices. Error:' + error,
+                  "Unabled to proceed Create Userdevice " + user_email + " row " + x + " Error: " + error
                 );
               }
             }
@@ -8106,7 +8108,7 @@ export class AuthService {
               await this.userauthsService.create(data_CreateUserauthDto);
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Create UserAuth. Error: ' + error,
+                "Unabled to proceed Create UserAuth " + user_email + " row " + x + " Error: " + error
               );
             }
 
@@ -8157,7 +8159,7 @@ export class AuthService {
 
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Create UserBasic. Error: ' + error,
+                "Unabled to proceed Create UserBasic " + user_email + " row " + x + " Error: " + error
               );
             }
 
@@ -8212,8 +8214,7 @@ export class AuthService {
               );
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Create Activity events Parent. Error: ' +
-                error,
+                "Unabled to proceed Create Activity Event " + user_email + " row " + x + " Error: " + error
               );
             }
 
@@ -8256,8 +8257,7 @@ export class AuthService {
               );
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Create Activity events Child. Error: ' +
-                error,
+                "Unabled to proceed Create Activity Event child " + user_email + " row " + x + " Error: " + error
               );
             }
             const datajwtrefreshtokenService = await this.jwtrefreshtokenService.findOne(user_email);
@@ -8289,22 +8289,22 @@ export class AuthService {
           } else {
             if (user_langIso == "en") {
               await this.errorHandler.generateNotAcceptableException(
-                'Sorry! This email already registered.',
+                "Sorry! This email " + user_email + " already registered.",
               );
             } else {
               await this.errorHandler.generateNotAcceptableException(
-                'Maaf! Email ini sudah terdaftar.',
+                "Maaf! Email " + user_email + " sudah terdaftar.",
               );
             }
           }
         } else {
           if (user_langIso == "en") {
             await this.errorHandler.generateNotAcceptableException(
-              'Sorry! This email already registered.',
+              "Sorry! This email " + user_email + " already registered.",
             );
           } else {
             await this.errorHandler.generateNotAcceptableException(
-              'Maaf! Email ini sudah terdaftar.',
+              "Maaf! Email " + user_email + " sudah terdaftar.",
             );
           }
         }
