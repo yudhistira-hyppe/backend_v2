@@ -76,4 +76,5 @@ export class CreateUserbasicnewDto {
   otppinVerified: Boolean;
   otp_attemp: number;
   statusKyc: string;
+  import: String;
 }

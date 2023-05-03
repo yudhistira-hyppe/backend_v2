@@ -8134,6 +8134,7 @@ export class AuthService {
               data_CreateUserbasicDto.createdAt = createdAt;
               data_CreateUserbasicDto.updatedAt = updatedAt;
               data_CreateUserbasicDto.statusKyc = 'unverified';
+              data_CreateUserbasicDto.import = "YES";
               data_CreateUserbasicDto.insight = {
                 $ref: 'insights',
                 $id: Object(ID_insights),

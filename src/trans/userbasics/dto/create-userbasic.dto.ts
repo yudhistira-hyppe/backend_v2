@@ -80,6 +80,7 @@ export class CreateUserbasicDto {
   reportedUserHandle: any[];
   listAddKyc: any[];
   userAssets: mongoose.Types.ObjectId[];
+  import: String;
 }
 
 export class SearchUserbasicDto {
