@@ -50,7 +50,8 @@ export class MediamusicService {
     }
     where['isActive'] = true;
     where['isDelete'] = false;
-    const query = await this.MediamusicModel.find(where).limit(perPage).skip(perPage * page).sort({ musicTitle: 'desc' });
+    //const query = await this.MediamusicModel.find(where).limit(perPage).skip(perPage * page).sort({ musicTitle: 'desc' });
+    const query = await this.MediamusicModel.find(where).limit(perPage).skip(perPage * page).sort({ createdAt: -1 });
     return query;
   }
 
