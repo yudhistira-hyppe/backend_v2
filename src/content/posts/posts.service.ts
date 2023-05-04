@@ -5846,10 +5846,13 @@ export class PostsService {
             likes: '$insight.likes'
           },
           avatar: {
+            mediaID: '$avatar.mediaID',
             mediaBasePath: '$avatar.mediaBasePath',
             mediaUri: '$avatar.mediaUri',
             mediaType: '$avatar.mediaType',
-            mediaEndpoint: '$avatar.fsTargetUri',
+            mediaEndpoint: {
+              "$concat": ["/profilepict/", "$avatar.mediaID"]
+            },
             medreplace: {
               $replaceOne: {
                 input: "$avatar.mediaUri",
