@@ -113,6 +113,6 @@ export class MediapictsService {
   }
 
   async getDataMediapictSeaweed(): Promise<Mediapicts[]> {
-    return await this.MediapictsModel.find({ apsaraId: { $eq: null }, uploadSource: { $eq: null }, mediaBasePath: { $eq: null } }).exec();
+    return await this.MediapictsModel.find({ apsaraId: { $eq: null }, uploadSource: { $eq: null }, mediaBasePath: { $ne: null } }).exec();
   }
 }

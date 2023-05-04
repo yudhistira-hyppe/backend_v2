@@ -113,4 +113,8 @@ export class MediadiariesService {
     ]);
     return query;
   }
+
+  async getDataMediadiariesSeaweed(): Promise<Mediadiaries[]> {
+    return await this.MediadiariesModel.find({ apsaraId: { $eq: null }, mediaBasePath: { $ne: null } }).exec();
+  }
 }

@@ -122,4 +122,8 @@ export class MediavideosService {
     ]);
     return query;
   }
+
+  async getDataMediavideosSeaweed(): Promise<Mediavideos[]> {
+    return await this.MediavideosModel.find({ apsaraId: { $eq: null }, mediaBasePath: { $ne: null } }).exec();
+  }
 }
