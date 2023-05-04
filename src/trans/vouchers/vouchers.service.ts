@@ -112,8 +112,11 @@ export class VouchersService {
         return this.vouchersModel.find({ expiredAt: { $lte: expiredAt } });
     }
 
+    // async findExpirednactive(expiredAt: string): Promise<Vouchers[]> {
+    //     return this.vouchersModel.find({ $and: [{ isActive: true }, { expiredAt: { $gte: expiredAt } }] });
+    // }
     async findExpirednactive(expiredAt: string): Promise<Vouchers[]> {
-        return this.vouchersModel.find({ $and: [{ isActive: true }, { expiredAt: { $gte: expiredAt } }] });
+        return this.vouchersModel.find({ $and: [{ isActive: true }] });
     }
 
     async finddetailbuy(idvoucher: any[]): Promise<Vouchers[]> {
