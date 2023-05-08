@@ -19,7 +19,7 @@ export class SettingsController {
         return this.settingsService.findAll();
     }
 
-
+    @UseGuards(JwtAuthGuard)
     @Post()
     async create(@Body() CreateSettingsDto: CreateSettingsDto) {
         const messages = {
