@@ -6352,9 +6352,9 @@ export class PostContentService {
       if (dateCurrent.getTime() >= timeEndDate) {
         break;
       }
-      if (i == 1) {
-        break;
-      }
+      // if (i == 1) {
+      //   break;
+      // }
       var video = await this.getSeaweedFile(Mediadiaries_[i].fsSourceUri.toString());
       if (video != null) {
         var mime = Mediadiaries_[i].mediaMime.toString().replace("video/", "");
