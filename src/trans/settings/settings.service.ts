@@ -34,8 +34,34 @@ export class SettingsService {
             new: true
         }).exec();
     }
-    async findOneByJenisremark(jenis: string,remark:string): Promise<Settings> {
-        return this.settingsModel.findOne({ jenis: jenis,remark:remark }).exec();
+    async findOneByJenisremark(jenis: string, remark: string): Promise<Settings> {
+        return this.settingsModel.findOne({ jenis: jenis, remark: remark }).exec();
     }
-    
+
+
+    async create(CreateSettingsDto: CreateSettingsDto): Promise<Settings> {
+        const createSettingsDto = await this.settingsModel.create(CreateSettingsDto);
+        return createSettingsDto;
+    }
+    async delete(id: string) {
+        const deletedCat = await this.settingsModel
+            .findByIdAndRemove({ _id: id })
+            .exec();
+        return deletedCat;
+    }
+    async update(
+        id: string,
+        CreateSettingsDto: CreateSettingsDto,
+    ): Promise<Settings> {
+        let data = await this.settingsModel.findByIdAndUpdate(
+            id,
+            CreateSettingsDto,
+            { new: true },
+        );
+
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
+        return data;
+    }
 }

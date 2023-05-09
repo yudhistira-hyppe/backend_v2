@@ -26845,6 +26845,7 @@ export class AdsService {
                     usedCreditFree: 1,
                     usedCredit: 1,
                     totalCredit: 1,
+                    liveAt: 1,
                     idApsara: 1,
                     totalView:
                     {

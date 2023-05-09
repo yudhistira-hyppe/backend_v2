@@ -113,4 +113,28 @@ export class InterestsRepoService {
     ]);
     return query;
   }
+
+  async update(id:string, CreateInterestsRepoDto: CreateInterestsRepoDto)
+  {
+    var mongoose = require('mongoose');
+    var repoID = mongoose.Types.ObjectId(id);
+    var result = await this.interestsrepoModel.updateOne(
+      {
+        _id:repoID
+      },
+      {
+        "$set":
+        {
+          "interestName": CreateInterestsRepoDto.interestName,
+          "interestNameId": CreateInterestsRepoDto.interestNameId,
+          "icon": CreateInterestsRepoDto.icon,
+          "langIso": CreateInterestsRepoDto.langIso,
+          "updatedAt": CreateInterestsRepoDto.updatedAt,
+          "thumbnail": CreateInterestsRepoDto.thumbnail
+        }
+      }
+    );
+
+    return result;
+  }
 }

@@ -5,8 +5,8 @@ export type SettingsDocument = Settings & Document;
 
 @Schema()
 export class Settings {
-    @Prop({ type: mongoose.Schema.Types.ObjectId })
-    _id: { oid: String }
+    //@Prop({ type: mongoose.Schema.Types.ObjectId })
+    _id: mongoose.Schema.Types.ObjectId
     @Prop()
     jenis: string
 
