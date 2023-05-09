@@ -46,7 +46,11 @@ export class Mediadiaries {
  @Prop()
  originalName: String  
  @Prop()
- viewers: any[]; 
+viewers: any[];
+@Prop()
+statusMigration: String
+@Prop()
+descMigration: String
 }
 
 export const MediadiariesSchema = SchemaFactory.createForClass(Mediadiaries);

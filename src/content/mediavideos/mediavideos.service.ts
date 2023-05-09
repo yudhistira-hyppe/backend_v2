@@ -41,6 +41,22 @@ export class MediavideosService {
     return this.MediavideosModel.findOne({ postID: id }).exec();
   }
 
+  async updatebyId(id: string, Mediavideos_: Mediavideos) {
+    this.MediavideosModel.updateOne(
+      {
+        _id: id,
+      },
+      Mediavideos_,
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
   async delete(id: string) {
     const deletedCat = await this.MediavideosModel.findByIdAndRemove({
       _id: id,
