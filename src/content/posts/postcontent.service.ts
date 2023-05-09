@@ -6261,7 +6261,9 @@ export class PostContentService {
       if (dateCurrent.getTime() >= timeEndDate){
         break;
       }
-
+      // if (i == 1) {
+      //   break;
+      // }
       var image = await this.getSeaweedFile(Mediapicts_[i].fsSourceUri.toString());
       if (image != null) {
         console.log("GET DATA POST IMAGE");
@@ -6311,9 +6313,9 @@ export class PostContentService {
       if (dateCurrent.getTime() >= timeEndDate) {
         break;
       }
-      if (i == 1) {
-        break;
-      }
+      // if (i == 1) {
+      //   break;
+      // }
       var video = await this.getSeaweedFile(Mediavideos_[i].fsSourceUri.toString());
       if (video != null) {
         var _id = Mediavideos_[i]._id.toString(); 
@@ -6483,7 +6485,6 @@ export class PostContentService {
     med.descMigration = "";
     med.statusMigration = "SUCCESS";
     console.log(post);
-    console.log(med);
     console.log("UPDATE DB VIDEO");
     await this.videoService.updatebyId(post._id, med);
   }
@@ -6494,6 +6495,7 @@ export class PostContentService {
     med.apsara = true;
     med.descMigration = "";
     med.statusMigration = "SUCCESS";
+    console.log(post);
     console.log("UPDATE DB VIDEO");
     await this.diaryService.updatebyId(post._id, med);
   }
