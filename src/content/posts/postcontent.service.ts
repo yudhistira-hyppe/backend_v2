@@ -6482,6 +6482,8 @@ export class PostContentService {
     med.apsara = true;
     med.descMigration = "";
     med.statusMigration = "SUCCESS";
+    console.log(post);
+    console.log(med);
     console.log("UPDATE DB VIDEO");
     await this.videoService.updatebyId(post._id, med);
   }
