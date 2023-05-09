@@ -28,6 +28,22 @@ export class MediadiariesService {
     return this.MediadiariesModel.findOne({ _id: id }).exec();
   }
 
+  async updatebyId(id: string, Mediadiaries_: Mediadiaries) {
+    this.MediadiariesModel.updateOne(
+      {
+        _id: id,
+      },
+      Mediadiaries_,
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
   async findOnepostID(id: string): Promise<Mediadiaries> {
     return this.MediadiariesModel.findOne({ postID: id }).exec();
   }

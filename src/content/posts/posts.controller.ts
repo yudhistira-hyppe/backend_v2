@@ -2695,12 +2695,10 @@ export class PostsController {
   async mediapictSeaweedMigration() {
     var Mediapicts_ = await this.postContentService.getDataMediapictSeaweed();
     console.log(Mediapicts_.length);
-    for (var i = 0; i < Mediapicts_.length; i++) {
-      var image = await this.postContentService.getSeaweedFile(Mediapicts_[i].fsSourceUri.toString());
-      console.log(image);
-      if(i==3){
-        break;
-      }
+    this.postContentService.runMigrationPict(Mediapicts_);
+    return {
+      status:202,
+      messages:"RUN MIGRATION PICT"
     }
   }
 
@@ -2708,12 +2706,10 @@ export class PostsController {
   async mediavidSeaweedMigration() {
     var Mediavid_ = await this.postContentService.getDataMediavidSeaweed();
     console.log(Mediavid_.length);
-    for (var i = 0; i < Mediavid_.length; i++) {
-      var video = await this.postContentService.getSeaweedFile(Mediavid_[i].fsSourceUri.toString());
-      console.log(video);
-      if (i == 3) {
-        break;
-      }
+    this.postContentService.runMigrationVid(Mediavid_);
+    return {
+      status: 202,
+      messages: "RUN MIGRATION VID"
     }
   }
 
@@ -2721,12 +2717,10 @@ export class PostsController {
   async mediadiariesSeaweedMigration() {
     var Mediadiaries_ = await this.postContentService.getDataMediadiariesSeaweed();
     console.log(Mediadiaries_.length);
-    for (var i = 0; i < Mediadiaries_.length; i++) {
-      var diaries = await this.postContentService.getSeaweedFile(Mediadiaries_[i].fsSourceUri.toString());
-      console.log(diaries);
-      if (i == 3) {
-        break;
-      }
+    this.postContentService.runMigrationDiary(Mediadiaries_);
+    return {
+      status: 202,
+      messages: "RUN MIGRATION DIARRY"
     }
   }
 }

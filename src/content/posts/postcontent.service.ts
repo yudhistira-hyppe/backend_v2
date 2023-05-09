@@ -2532,6 +2532,72 @@ export class PostContentService {
     return file_commpress;
   }
 
+  async generate_upload_buffer(file: Buffer, format: string) {
+    var SIZE_IMAGE_UPLOAD = this.configService.get("SIZE_IMAGE_UPLOAD");
+    var SIZE_IMAGE_RESIZE = this.configService.get("SIZE_IMAGE_RESIZE");
+    console.log("CONFIG SIZE_IMAGE_UPLOAD : " + SIZE_IMAGE_UPLOAD);
+    console.log("CONFIG SIZE_IMAGE_RESIZE : " + SIZE_IMAGE_RESIZE);
+
+    //Get Image Information
+    var image_information = await sharp(file).metadata();
+    console.log("IMAGE INFORMATION", image_information);
+
+    var image_height = image_information.height;
+    var image_width = image_information.width;
+    var image_size = image_information.size;
+    var image_format = image_information.format;
+    var image_orientation = image_information.orientation;
+
+    //Get Image Mode
+    var image_mode = await this.utilService.getImageMode(image_width, image_height);
+    console.log("IMAGE MODE", image_mode);
+
+    //Get Ceck Mode
+    var New_height = 0;
+    var New_width = 0;
+    if (image_mode == "LANDSCAPE") {
+      if (image_width > SIZE_IMAGE_RESIZE) {
+        New_height = await this.utilService.getHeight(image_width, image_height, SIZE_IMAGE_RESIZE);
+        New_width = SIZE_IMAGE_RESIZE;
+      } else {
+        New_height = image_height;
+        New_width = image_width;
+      }
+    } else if (image_mode == "POTRET") {
+      if (image_height > SIZE_IMAGE_RESIZE) {
+        New_width = await this.utilService.getWidth(image_width, image_height, SIZE_IMAGE_RESIZE);
+        New_height = SIZE_IMAGE_RESIZE;
+      } else {
+        New_height = image_height;
+        New_width = image_width;
+      }
+    }
+
+    //Convert Image
+    const buffers_file = await webp.buffer2webpbuffer(file, format, "-q 70", this.configService.get("PATH_UPLOAD"));
+    var file_commpress = buffers_file;
+
+    //Convert Image Orientation
+    var file_commpress = null;
+    if (image_orientation == 1) {
+      file_commpress = await sharp(buffers_file).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
+    } else if (image_orientation == 6) {
+      file_commpress = await sharp(buffers_file).rotate(90).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+    } else if (image_orientation == 8) {
+      file_commpress = await sharp(buffers_file).rotate(270).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+    } else {
+      file_commpress = buffers_file;
+    }
+
+    // fs.writeFile("./temp/some.jpeg", file_commpress, function (err) {
+    //   if (err) {
+    //     return console.log(err);
+    //   }
+    //   console.log("The file was saved!");
+    // });
+    return file_commpress;
+  }
+
   async generate_upload(file: Express.Multer.File, format: string) {
     var SIZE_IMAGE_UPLOAD = this.configService.get("SIZE_IMAGE_UPLOAD");
     var SIZE_IMAGE_RESIZE = this.configService.get("SIZE_IMAGE_RESIZE");
@@ -6150,5 +6216,242 @@ export class PostContentService {
   async getSeaweedFile(media: string): Promise<any> {
     var data = await this.seaweedfsService.read(media.replace('/localrepo', ''));
     return data;
+  }
+
+  async runMigrationPict(Mediapicts_: Mediapicts[]) {
+    var timeEnd = await this.utilService.getSetting_("6323d7ca3325000002003f72");
+    var date = new Date();
+    var timeEndDate = null;
+    date.setDate(date.getDate() + 1);
+    if (timeEnd.toString().length>1){
+      timeEndDate = Date.parse(date.toISOString().substring(0, 10) + " " + timeEnd.toString()+":00:00");
+    } else {
+      timeEndDate = Date.parse(date.toISOString().substring(0, 10) + " 0" + timeEnd.toString() + ":00:00");
+    }
+    console.log("------------------------------ DATA LENGTH " + Mediapicts_.length + " ------------------------------");
+
+    for (var i = 0; i < Mediapicts_.length; i++) {
+      var dateCurrent = await this.utilService.getDateTime();
+      console.log("------------------------------ START INDEX NUMBER " + i +" ------------------------------");
+      console.log("------------------------------ CURRENT DATE " + dateCurrent + " ------------------------------");
+      console.log("------------------------------ POST ID " + Mediapicts_[0].postID.toString() + " ------------------------------");
+      if (dateCurrent.getTime() >= timeEndDate){
+        break;
+      }
+
+      var image = await this.getSeaweedFile(Mediapicts_[i].fsSourceUri.toString());
+      if (image != null) {
+        console.log("GET DATA POST IMAGE");
+        var dataPost = await this.postService.findByPostId(Mediapicts_[i].postID.toString());
+        if (await this.utilService.ceckData(dataPost)) {
+          var email = dataPost.email.toString();
+          console.log("GET DATA USER IMAGE");
+          var dataUser = await this.userService.findOne(email);
+          if (await this.utilService.ceckData(dataUser)) {
+
+            var _id = Mediapicts_[i]._id.toString();
+            var postID = Mediapicts_[i].postID.toString();
+            var userId = dataUser._id.toString();
+            var postType = "pict";
+            var format = "jpg";
+            await this.prossesMigrationPict(image, _id, postID, userId, postType, format);
+            console.log("------------------------------ END INDEX NUMBER " + i + " ------------------------------");
+          } else {
+            await this.updateDataMigrationPictLogs(Mediapicts_[0]._id.toString(), "FAILED", "DATA USER NULL");
+          }
+        } else {
+          await this.updateDataMigrationPictLogs(Mediapicts_[0]._id.toString(), "FAILED", "DATA POST NULL");
+        }
+      } else {
+        await this.updateDataMigrationPictLogs(Mediapicts_[0]._id.toString(), "FAILED", "IMAGE NULL");
+      }
+    }
+  }
+
+  async runMigrationVid(Mediavideos_: Mediavideos[]) {
+    var timeEnd = await this.utilService.getSetting_("6323d7ca3325000002003f72");
+    var date = new Date();
+    var timeEndDate = null;
+    date.setDate(date.getDate() + 1);
+    if (timeEnd.toString().length > 1) {
+      timeEndDate = Date.parse(date.toISOString().substring(0, 10) + " " + timeEnd.toString() + ":00:00");
+    } else {
+      timeEndDate = Date.parse(date.toISOString().substring(0, 10) + " 0" + timeEnd.toString() + ":00:00");
+    }
+    console.log("------------------------------ DATA LENGTH " + Mediavideos_.length + " ------------------------------");
+    for (var i = 0; i < Mediavideos_.length; i++) {
+      var dateCurrent = await this.utilService.getDateTime();
+      console.log("------------------------------ START INDEX NUMBER " + i + " ------------------------------");
+      console.log("------------------------------ CURRENT DATE " + dateCurrent + " ------------------------------");
+      console.log("------------------------------ POST ID " + Mediavideos_[0].postID.toString() + " ------------------------------");
+      if (dateCurrent.getTime() >= timeEndDate) {
+        break;
+      }
+      if (i ==1) {
+        break;
+      }
+      var video = await this.getSeaweedFile(Mediavideos_[i].fsSourceUri.toString());
+      if (video != null) {
+        var _id = Mediavideos_[i]._id.toString();
+        var postID = Mediavideos_[i].postID.toString();
+        await this.prossesMigrationVid(video, _id, postID);
+        console.log("------------------------------ END INDEX NUMBER " + i + " ------------------------------");
+      } else {
+        await this.updateDataMigrationVidLogs(Mediavideos_[0]._id.toString(), "FAILED", "VIDEO NULL");
+      }
+    }
+  }
+
+  async runMigrationDiary(Mediadiaries_: Mediadiaries[]) {
+    for (var i = 0; i < Mediadiaries_.length; i++) {
+      var video = await this.getSeaweedFile(Mediadiaries_[i].fsSourceUri.toString());
+      if (video != null) {
+        var _id = Mediadiaries_[i]._id.toString();
+        var postID = Mediadiaries_[i].postID.toString();
+        await this.prossesMigrationDiary(video, _id, postID);
+      } else {
+        await this.updateDataMigrationDiaryLogs(Mediadiaries_[0]._id.toString(), "FAILED", "VIDEO NULL");
+      }
+    }
+  }
+
+  async prossesMigrationPict(file: any, _id: string, postID: string, userId: string, postType: string, format: string){
+    try {
+      console.log(typeof file);
+      //GENERATE FILE
+      console.log("GENERATE FILE");
+      var file_upload = await this.generate_upload_buffer(file, format);
+      console.log("GENERATE THUMNAIL");
+      var file_thumnail = await this.generate_thumnail_buffer(file, format);
+
+      var filename = postID + "." + format;
+      var filename_thum = postID + "_thum." + format;
+      var filename_original = postID + "_original." + format;
+
+      var url_filename = "";
+      var url_filename_thum = "";
+
+      //UPLOAD OSS
+      console.log("OSS UPLOAD FILE");
+      var upload_file_upload = await this.uploadOss(file_upload, postID, filename, userId, postType);
+      console.log("OSS UPLOAD THUMNAIL");
+      var upload_file_thumnail = await this.uploadOss(file_thumnail, postID, filename_thum, userId, postType);
+      console.log("OSS UPLOAD ORIGINAL");
+      this.uploadOss(file.buffer, postID, filename_original, userId, postType);
+
+      //GET URL PICT FROM RESPONSE
+      if (upload_file_upload != undefined) {
+        if (upload_file_upload.res != undefined) {
+          if (upload_file_upload.res.statusCode != undefined) {
+            if (upload_file_upload.res.statusCode == 200) {
+              url_filename = upload_file_upload.res.requestUrls[0];
+            }
+          }
+        }
+      }
+
+      //GET URL PICT THUMNAIL FROM RESPONSE
+      if (upload_file_thumnail != undefined) {
+        if (upload_file_thumnail.res != undefined) {
+          if (upload_file_thumnail.res.statusCode != undefined) {
+            if (upload_file_thumnail.res.statusCode == 200) {
+              url_filename_thum = upload_file_thumnail.res.requestUrls[0];
+            }
+          }
+        }
+      }
+
+      const postData = {
+        _id: _id,
+        userId: userId,
+        postType: postType,
+        postID: postID,
+        filename: filename,
+        url_filename: url_filename,
+        filename_thum: filename_thum,
+        url_filename_thum: url_filename_thum,
+      }
+      await this.updateDataMigrationPict(postData);
+    } catch (e) {
+      await this.updateDataMigrationPictLogs(_id, "FAILED", e.toString());
+    }
+  }
+
+  async prossesMigrationVid(file: any, _id: string, postID: string) {
+    try {
+      var postUpload = await this.uploadJavaV3(file, postID);
+      if (postUpload.data.status) {
+        await this.updateDataMigrationVid(postUpload.data);
+      }
+    } catch (e) {
+      await this.updateDataMigrationVidLogs(_id, "FAILED", e.toString());
+    }
+  }
+
+  async prossesMigrationDiary(file: any, _id: string, postID: string) {
+    try {
+      var postUpload = await this.uploadJavaV3(file, postID);
+      if (postUpload.data.status) {
+        await this.updateDataMigrationDiary(postUpload.data);
+      }
+    } catch (e) {
+      await this.updateDataMigrationDiaryLogs(_id, "FAILED", e.toString());
+    }
+  }
+
+  async updateDataMigrationPict(post: any) {
+    var med = new Mediapicts();
+    med.mediaBasePath = post.userId + "/post/" + post.postType + "/" + post.postID + "/" + post.filename;
+    med.mediaUri = post.filename;
+    med.fsSourceUri = post.url_filename;
+    med.fsSourceName = post.filename;
+    med.fsTargetUri = post.url_filename;
+    med.apsara = false;
+    med.uploadSource = "OSS";
+    med.mediaThumName = post.filename_thum;
+    med.mediaThumBasePath = post.userId + "/post/" + post.postType + "/" + post.postID + "/" + post.filename_thum;
+    med.mediaThumUri = post.url_filename_thum;
+    med.descMigration = "";
+    med.statusMigration = "SUCCESS";
+    await this.picService.updatebyId(post._id, med);
+  }
+
+  async updateDataMigrationVid(post: any) {
+    var med = new Mediavideos();
+    med.apsaraId = post.videoId;
+    med.apsara = true;
+    med.descMigration = "";
+    med.statusMigration = "SUCCESS";
+    await this.videoService.updatebyId(post._id, med);
+  }
+
+  async updateDataMigrationDiary(post: any) {
+    var med = new Mediadiaries();
+    med.apsaraId = post.videoId;
+    med.apsara = true;
+    med.descMigration = "";
+    med.statusMigration = "SUCCESS";
+    await this.diaryService.updatebyId(post._id, med);
+  }
+
+  async updateDataMigrationPictLogs(_id: string, statusMigration_: string, descMigration_: string) {
+    var med = new Mediapicts();
+    med.statusMigration = statusMigration_;
+    med.descMigration = descMigration_;
+    await this.picService.updatebyId(_id, med);
+  }
+
+  async updateDataMigrationVidLogs(_id: string, statusMigration_: string, descMigration_: string) {
+    var med = new Mediavideos();
+    med.statusMigration = statusMigration_;
+    med.descMigration = descMigration_;
+    await this.videoService.updatebyId(_id, med);
+  }
+
+  async updateDataMigrationDiaryLogs(_id: string, statusMigration_: string, descMigration_: string) {
+    var med = new Mediadiaries();
+    med.statusMigration = statusMigration_;
+    med.descMigration = descMigration_;
+    await this.diaryService.updatebyId(_id, med);
   }
 }

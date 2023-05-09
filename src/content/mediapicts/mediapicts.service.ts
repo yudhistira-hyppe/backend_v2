@@ -26,6 +26,22 @@ export class MediapictsService {
     return this.MediapictsModel.findOne({ _id: id }).exec();
   }
 
+  async updatebyId(id: string, Mediapicts_: Mediapicts) {
+    this.MediapictsModel.updateOne(
+      {
+        _id: id,
+      },
+      Mediapicts_,
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
   async findOnepostID(id: string): Promise<Mediapicts> {
     return this.MediapictsModel.findOne({ postID: id }).exec();
   }

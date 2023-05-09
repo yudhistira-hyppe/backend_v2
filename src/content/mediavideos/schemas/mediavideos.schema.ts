@@ -46,7 +46,11 @@ export class Mediavideos {
   @Prop()
   apsaraId: String   
   @Prop()
-  viewers: any[];    
+  viewers: any[];
+  @Prop()
+  statusMigration: String
+  @Prop()
+  descMigration: String
 }
 
 export const MediavideosSchema = SchemaFactory.createForClass(Mediavideos);
