@@ -514,21 +514,36 @@ export class ActivityeventsService {
             $arrayElemAt: ["$areas_data._id", 0]
           },
           avatar: {
-            mediaID: '$avatar.mediaID',
-            mediaBasePath: '$avatar.mediaBasePath',
-            mediaUri: '$avatar.mediaUri',
-            mediaType: '$avatar.mediaType',
-            mediaEndpoint: {
-              "$concat": ["/profilepict/", "$avatar.mediaID"]
+            mediaBasePath: {
+              $arrayElemAt: ['$avatar.mediaBasePath', 0]
             },
-            medreplace: {
-              $replaceOne: {
-                input: "$avatar.mediaUri",
-                find: "_0001.jpeg",
-                replacement: ""
-              }
+            mediaUri: {
+              $arrayElemAt: ['$avatar.mediaUri', 0]
             },
+            mediaType: {
+              $arrayElemAt: ['$avatar.mediaType', 0]
+            },
+            // mediaEndpoint:
+            // {
+            //   $concat: [
+            //     '/profilepict/',
+            //     {
+            //       $replaceOne: {
+            //         input: {
+            //           $arrayElemAt: ["$avatar.mediaUri", 0]
+            //         },
+            //         find: "_0001.jpeg",
+            //         replacement: ""
+            //       }
+            //     },
 
+            //   ]
+            // },
+            mediaEndpoint: {
+              "$concat": ["/profilepict/", {
+                $arrayElemAt: ['$avatar.mediaID', 0]
+              },]
+            },
           },
           lastlogin: "$createdAt"
 
