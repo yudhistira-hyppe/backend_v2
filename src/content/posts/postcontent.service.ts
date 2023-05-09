@@ -1083,6 +1083,28 @@ export class PostContentService {
     return res;
   }
 
+  async uploadJavaV3_buffer(file: any, postId: string, originalname: string): Promise<any> {
+    var Url = this.configService.get("APSARA_UPLOADER_VIDEO_V3");
+    return new Promise(async function (resolve, reject) {
+      const form = new FormData();
+      form.append('file', file, { filename: originalname });
+      form.append('postID', postId);
+      console.log(form);
+
+      await axios.post(Url, form, {
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        headers: { 'Content-Type': 'multipart/form-data' }
+      }).then(response => {
+        console.log("postUpload", response.data);
+        return resolve(response);
+      }).catch(err => {
+        console.error(err);
+        return reject(err);
+      });
+    });
+  }
+
   async uploadJavaV3(file: any, postId: string): Promise<any> {
     var Url = this.configService.get("APSARA_UPLOADER_VIDEO_V3");
     return new Promise(async function (resolve, reject) {
@@ -6292,9 +6314,10 @@ export class PostContentService {
       }
       var video = await this.getSeaweedFile(Mediavideos_[i].fsSourceUri.toString());
       if (video != null) {
-        var _id = Mediavideos_[i]._id.toString();
+        var _id = Mediavideos_[i]._id.toString(); 
         var postID = Mediavideos_[i].postID.toString();
-        await this.prossesMigrationVid(video, _id, postID);
+        var originalName = Mediavideos_[i].originalName.toString();
+        await this.prossesMigrationVid(video, _id, postID, originalName);
         console.log("------------------------------ END INDEX NUMBER " + i + " ------------------------------");
       } else {
         await this.updateDataMigrationVidLogs(Mediavideos_[0]._id.toString(), "FAILED", "VIDEO NULL");
@@ -6308,7 +6331,8 @@ export class PostContentService {
       if (video != null) {
         var _id = Mediadiaries_[i]._id.toString();
         var postID = Mediadiaries_[i].postID.toString();
-        await this.prossesMigrationDiary(video, _id, postID);
+        var originalName = Mediadiaries_[i].originalName.toString();
+        await this.prossesMigrationDiary(video, _id, postID, originalName);
       } else {
         await this.updateDataMigrationDiaryLogs(Mediadiaries_[0]._id.toString(), "FAILED", "VIDEO NULL");
       }
@@ -6377,9 +6401,9 @@ export class PostContentService {
     }
   }
 
-  async prossesMigrationVid(file: any, _id: string, postID: string) {
+  async prossesMigrationVid(file: any, _id: string, postID: string, originalname: string) {
     try {
-      var postUpload = await this.uploadJavaV3(file, postID);
+      var postUpload = await this.uploadJavaV3_buffer(file, postID, originalname);
       if (postUpload.data.status) {
         await this.updateDataMigrationVid(postUpload.data);
       }
@@ -6388,9 +6412,9 @@ export class PostContentService {
     }
   }
 
-  async prossesMigrationDiary(file: any, _id: string, postID: string) {
+  async prossesMigrationDiary(file: any, _id: string, postID: string, originalname: string) {
     try {
-      var postUpload = await this.uploadJavaV3(file, postID);
+      var postUpload = await this.uploadJavaV3_buffer(file, postID, originalname);
       if (postUpload.data.status) {
         await this.updateDataMigrationDiary(postUpload.data);
       }
