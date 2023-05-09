@@ -6435,7 +6435,7 @@ export class PostContentService {
       var postUpload = await this.uploadJavaV3_buffer(file, postID, originalname);
       console.log("APSARA UPLOAD VID STATUS " + postUpload.data.status);
       if (postUpload.data.status) {
-        postUpload._id = _id;
+        postUpload.data._id = _id;
         await this.updateDataMigrationVid(postUpload.data);
       }
     } catch (e) {
@@ -6450,7 +6450,7 @@ export class PostContentService {
       var postUpload = await this.uploadJavaV3_buffer(file, postID, originalname);
       console.log("APSARA UPLOAD VID STATUS " + postUpload.data.status);
       if (postUpload.data.status) {
-        postUpload._id = _id;
+        postUpload.data._id = _id;
         await this.updateDataMigrationDiary(postUpload.data);
       }
     } catch (e) {
