@@ -6256,6 +6256,7 @@ export class PostContentService {
       var dateCurrent = await this.utilService.getDateTime();
       console.log("------------------------------ START INDEX NUMBER " + i +" ------------------------------");
       console.log("------------------------------ CURRENT DATE " + dateCurrent + " ------------------------------");
+      console.log("------------------------------ CURRENT DATE " + dateCurrent.getTime() + " ------------------------------");
       console.log("------------------------------ POST ID " + Mediapicts_[0].postID.toString() + " ------------------------------");
       if (dateCurrent.getTime() >= timeEndDate){
         break;
@@ -6305,6 +6306,7 @@ export class PostContentService {
       var dateCurrent = await this.utilService.getDateTime();
       console.log("------------------------------ START INDEX NUMBER " + i + " ------------------------------");
       console.log("------------------------------ CURRENT DATE " + dateCurrent + " ------------------------------");
+      console.log("------------------------------ CURRENT DATE " + dateCurrent.getTime() + " ------------------------------");
       console.log("------------------------------ POST ID " + Mediavideos_[0].postID.toString() + " ------------------------------");
       if (dateCurrent.getTime() >= timeEndDate) {
         break;
@@ -6326,13 +6328,35 @@ export class PostContentService {
   }
 
   async runMigrationDiary(Mediadiaries_: Mediadiaries[]) {
+    var timeEnd = await this.utilService.getSetting_("6323d7ca3325000002003f72");
+    var date = new Date();
+    var timeEndDate = null;
+    date.setDate(date.getDate() + 1);
+    if (timeEnd.toString().length > 1) {
+      timeEndDate = Date.parse(date.toISOString().substring(0, 10) + " " + timeEnd.toString() + ":00:00");
+    } else {
+      timeEndDate = Date.parse(date.toISOString().substring(0, 10) + " 0" + timeEnd.toString() + ":00:00");
+    }
+    console.log("------------------------------ DATA LENGTH " + Mediadiaries_.length + " ------------------------------");
     for (var i = 0; i < Mediadiaries_.length; i++) {
+      var dateCurrent = await this.utilService.getDateTime();
+      console.log("------------------------------ START INDEX NUMBER " + i + " ------------------------------");
+      console.log("------------------------------ CURRENT DATE " + dateCurrent + " ------------------------------");
+      console.log("------------------------------ CURRENT DATE " + dateCurrent.getTime() + " ------------------------------");
+      console.log("------------------------------ POST ID " + Mediadiaries_[0].postID.toString() + " ------------------------------");
+      if (dateCurrent.getTime() >= timeEndDate) {
+        break;
+      }
+      if (i == 1) {
+        break;
+      }
       var video = await this.getSeaweedFile(Mediadiaries_[i].fsSourceUri.toString());
       if (video != null) {
         var _id = Mediadiaries_[i]._id.toString();
         var postID = Mediadiaries_[i].postID.toString();
         var originalName = Mediadiaries_[i].originalName.toString();
         await this.prossesMigrationDiary(video, _id, postID, originalName);
+        console.log("------------------------------ END INDEX NUMBER " + i + " ------------------------------");
       } else {
         await this.updateDataMigrationDiaryLogs(Mediadiaries_[0]._id.toString(), "FAILED", "VIDEO NULL");
       }
