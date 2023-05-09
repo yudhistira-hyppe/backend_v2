@@ -6318,9 +6318,10 @@ export class PostContentService {
       // }
       var video = await this.getSeaweedFile(Mediavideos_[i].fsSourceUri.toString());
       if (video != null) {
+        var mime = Mediavideos_[i].mediaMime.toString().replace("video/", "");
         var _id = Mediavideos_[i]._id.toString(); 
         var postID = Mediavideos_[i].postID.toString();
-        var originalName = Mediavideos_[i].originalName.toString();
+        var originalName = (Mediavideos_[i].originalName != undefined) ? Mediavideos_[i].originalName.toString() : postID + "." + mime;
         console.log("PROCCESS MIGRATION");
         await this.prossesMigrationVid(video, _id, postID, originalName);
         console.log("------------------------------ END INDEX NUMBER " + i + " ------------------------------");
@@ -6356,9 +6357,10 @@ export class PostContentService {
       }
       var video = await this.getSeaweedFile(Mediadiaries_[i].fsSourceUri.toString());
       if (video != null) {
+        var mime = Mediadiaries_[i].mediaMime.toString().replace("video/", "");
         var _id = Mediadiaries_[i]._id.toString();
         var postID = Mediadiaries_[i].postID.toString();
-        var originalName = Mediadiaries_[i].originalName.toString();
+        var originalName = (Mediadiaries_[i].originalName != undefined) ? Mediadiaries_[i].originalName.toString() : postID + "." + mime;
         console.log("PROCCESS MIGRATION");
         await this.prossesMigrationDiary(video, _id, postID, originalName);
         console.log("------------------------------ END INDEX NUMBER " + i + " ------------------------------");
