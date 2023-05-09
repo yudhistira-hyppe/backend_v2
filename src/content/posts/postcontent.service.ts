@@ -6393,7 +6393,7 @@ export class PostContentService {
       console.log("OSS UPLOAD THUMNAIL");
       var upload_file_thumnail = await this.uploadOss(file_thumnail, postID, filename_thum, userId, postType);
       console.log("OSS UPLOAD ORIGINAL");
-      this.uploadOss(file.buffer, postID, filename_original, userId, postType);
+      this.uploadOss(file, postID, filename_original, userId, postType);
 
       //GET URL PICT FROM RESPONSE
       if (upload_file_upload != undefined) {
