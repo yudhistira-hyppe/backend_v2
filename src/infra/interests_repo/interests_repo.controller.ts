@@ -13,19 +13,14 @@ export class InterestsRepoController {
       private readonly OssServices: OssService,
     ) {}
 
-    // @Post()
-    // @UseGuards(JwtAuthGuard)
-    // async create(@Body() CreateInterestsRepoDto: CreateInterestsRepoDto) {
     @UseGuards(JwtAuthGuard)
     @Post()
     @UseInterceptors(FileFieldsInterceptor([{ name: 'icon_file', maxCount: 1 }]))
-    // @UseInterceptors(FileInterceptor('icon_file'))
     async create(
       @UploadedFiles() files: { 
         icon_file?: Express.Multer.File[]
       },
       @Body() request,
-      // @Headers() headers) {
       ) {
       var mongoose = require('mongoose');
       var dt = new Date(Date.now());
@@ -43,8 +38,6 @@ export class InterestsRepoController {
       insertdata.langIso = request.langIso;
       insertdata.thumbnail = request.thumbnail;
       
-      // console.log(files.icon_file[0]);
-      //abis ini tes
       if(files.icon_file == undefined)
       {
         throw new BadRequestException("Unabled to proceed. icon file is required");
@@ -120,19 +113,15 @@ export class InterestsRepoController {
       return this.InterestsRepoService.findOne(id);
     }
 
-    // @UseGuards(JwtAuthGuard)
-    // async update(@Res() res, @Request() request) {
     @UseGuards(JwtAuthGuard)
     @Post('update')
     @UseInterceptors(FileFieldsInterceptor([{ name: 'icon_file', maxCount: 1 }]))
-    // @UseInterceptors(FileInterceptor('icon_file'))
     async update(
       @UploadedFiles() files: { 
         icon_file?: Express.Multer.File[]
       },
       @Body() request,
       @Res() res,
-      // @Headers() headers) {
       ) {
     
       var repoID = null;
@@ -185,17 +174,17 @@ export class InterestsRepoController {
         }
     }
 
-    @Delete(':id')
-    async delete(@Param('id') id: string) {
-      this.InterestsRepoService.delete(id);
+    // @Delete(':id')
+    // async delete(@Param('id') id: string) {
+    //   await this.InterestsRepoService.delete(id);
 
-      const messages = {
-        "info": ["The process successful"],
-      };
+    //   const messages = {
+    //     "info": ["The process successful"],
+    //   };
 
-      return {
-          response_code: 202,
-          messages: messages,
-      };
-    }
+    //   return {
+    //       response_code: 202,
+    //       messages: messages,
+    //   };
+    // }
 }
