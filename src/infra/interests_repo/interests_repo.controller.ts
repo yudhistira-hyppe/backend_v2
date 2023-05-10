@@ -1,12 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Post, Res, Req, Request, Put, UseGuards, BadRequestException, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Res, Req, Request, Put, UseGuards, BadRequestException, HttpStatus, UploadedFile, UploadedFiles, Headers, UseInterceptors } from '@nestjs/common';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express/multer';
 import { InterestsRepoService } from './interests_repo.service';
 import { CreateInterestsRepoDto } from './dto/create-interests_repo.dto';
 import { Interestsrepo } from './schemas/interests_repo.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { OssService } from 'src/stream/oss/oss.service';
 
 @Controller('api/interestsrepo')
 export class InterestsRepoController {
-    constructor(private readonly InterestsRepoService: InterestsRepoService) {}
+    constructor(
+      private readonly InterestsRepoService: InterestsRepoService,
+      private readonly OssServices: OssService,
+    ) {}
 
     @Post()
     @UseGuards(JwtAuthGuard)
@@ -39,6 +44,44 @@ export class InterestsRepoController {
     @UseGuards(JwtAuthGuard)
     async findAll(): Promise<Interestsrepo[]> {
       return this.InterestsRepoService.findAll();
+    }
+
+    @Post('list')
+    @UseGuards(JwtAuthGuard)
+    async findAllForList(@Request() request) {
+      var page = null;
+      var limit = null;
+      var search = null;
+
+      var request_json = JSON.parse(JSON.stringify(request.body));
+      if (request_json["search"] !== undefined) {
+        search = request_json["search"];
+      }
+
+      if (request_json["page"] !== undefined) {
+        page = Number(request_json["page"]);
+      } else {
+          throw new BadRequestException("Unabled to proceed");
+      }
+
+      if (request_json["limit"] !== undefined) {
+        limit = Number(request_json["limit"]);
+      } else {
+          throw new BadRequestException("Unabled to proceed");
+      }
+
+      var data = await this.InterestsRepoService.getInterestPagination(search, page, limit);
+      //return this.InterestsRepoService.findAll();
+
+      const messages = {
+        "info": ["The process successful"],
+      };
+
+      return {
+          response_code: 202,
+          data:data,
+          messages: messages,
+      };
     }
   
     @Get(':id')

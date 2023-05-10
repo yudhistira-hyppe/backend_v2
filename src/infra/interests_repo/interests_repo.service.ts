@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { CreateInterestsRepoDto } from './dto/create-interests_repo.dto';
 import { Interestsrepo, InterestsrepoDocument } from './schemas/interests_repo.schema';
+import { Integer } from 'aws-sdk/clients/codeguruprofiler';
 
 @Injectable()
 export class InterestsRepoService {
@@ -136,5 +137,155 @@ export class InterestsRepoService {
     );
 
     return result;
+  }
+
+  async getInterestPagination(search:string, page:number, limit:number)
+  {
+    var pipeline = [];
+
+    if(search != null)
+    {
+      pipeline.push(
+        {
+          "$match":
+          {
+            "$or":
+            [
+              {
+                "interestName":
+                {
+                  "$regex":search,
+                  "$options":"i"
+                }
+              },
+              {
+                "interestNameId":
+                {
+                  "$regex":search,
+                  "$options":"i"
+                }
+              },
+            ]
+          }
+        },
+        {
+          "$project":
+          {
+            _id:1,
+            interestName:1,
+            icon:1,
+            createdAt:1,
+            updatedAt:1,
+            _class:1,
+            langIso:1,
+            interestNameId:1,
+            thumbnail:1,
+            posisihurufenglish:
+            {
+              "$cond":
+              {
+                if:
+                {
+                  "$eq":
+                  [
+                    {
+                      "$indexOfBytes": [ "$interestName", search ]
+                    },
+                    -1
+                  ]
+                },
+                then:
+                {
+                  "$strLenCP":"$interestNameId"
+                },
+                else:
+                {
+                  "$indexOfBytes": [ "$interestName", search ]
+                }
+              }
+            },
+            posisihurufindo:
+            {
+              "$cond":
+              {
+                if:
+                {
+                  "$eq":
+                  [
+                    {
+                      "$indexOfBytes": [ "$interestNameId", search ]
+                    },
+                    -1
+                  ]
+                },
+                then:
+                {
+                  "$strLenCP":"$interestName"
+                },
+                else:
+                {
+                  "$indexOfBytes": [ "$interestNameId", search ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "$project":
+          {
+            _id:1,
+            interestName:1,
+            icon:1,
+            createdAt:1,
+            updatedAt:1,
+            _class:1,
+            langIso:1,
+            interestNameId:1,
+            thumbnail:1,
+      			// posisihurufenglish:1,
+      			// posisihurufindo:1,
+            fixsort:
+            {
+              "$cond":
+              {
+                if:
+                {
+                  "$gt":
+                  [
+                    "$posisihurufenglish",
+                    "$posisihurufindo"
+                  ]
+                },
+                then:"$posisihurufindo",
+                else:"$posisihurufenglish"
+              }
+            }
+          }
+        },
+        {
+          "$sort":
+          {
+            fixsort:1
+          }
+        }
+      );
+    }
+
+    if(page > 0)
+    {
+      pipeline.push({
+          "$skip":limit * page
+      });
+    }
+
+    if(limit > 0)
+    {
+      pipeline.push({   
+          "$limit":limit
+      });
+    }
+
+    var query = await this.interestsrepoModel.aggregate(pipeline);
+    return query;
   }
 }

@@ -4,11 +4,13 @@ import { InterestsRepoService } from './interests_repo.service';
 import { InterestsRepoController } from './interests_repo.controller';
 import { ConfigModule } from '@nestjs/config';
 import { Interestsrepo, InterestsrepoSchema } from './schemas/interests_repo.schema';
+import { OssModule } from 'src/stream/oss/oss.module';
 
 @Module({
 
     imports: [
         ConfigModule.forRoot(),
+        OssModule,
         MongooseModule.forFeature([{ name: Interestsrepo.name, schema: InterestsrepoSchema }], 'SERVER_FULL')
     ],
     controllers: [InterestsRepoController],
