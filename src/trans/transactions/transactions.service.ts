@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { HttpService } from '@nestjs/axios';
 import { ObjectId } from 'mongodb';
 import mongoose, { Model, Types } from 'mongoose';
 import { CreateTransactionsDto, VaCallback } from './dto/create-transactions.dto';
@@ -10,6 +11,7 @@ import { MediapictsService } from '../../content/mediapicts/mediapicts.service';
 import { MediadiariesService } from '../../content/mediadiaries/mediadiaries.service';
 import { PostContentService } from '../../content/posts/postcontent.service';
 import { type } from 'os';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TransactionsService {
@@ -21,6 +23,8 @@ export class TransactionsService {
         private readonly mediapictsService: MediapictsService,
         private readonly mediadiariesService: MediadiariesService,
         private readonly postContentService: PostContentService,
+        private readonly httpService: HttpService,
+        private readonly configService: ConfigService
 
     ) { }
 
@@ -9274,5 +9278,12 @@ export class TransactionsService {
         var query = await this.transactionsModel.aggregate(pipeline);
         return query;
 
+    }
+
+    async callbackVA(callbackVA: VaCallback) {
+        let config = { headers: { "Content-Type": "application/json" } };
+        const res = await this.httpService.post(this.configService.get("HYPPE_ENDPOINT") + 'pg/oy/callback/va', callbackVA, config).toPromise();
+        const data = res.data;
+        return data;
     }
 }

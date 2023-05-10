@@ -8255,27 +8255,46 @@ export class TransactionsController {
 
         if (datatrpending !== null) {
             var datenow = new Date(Date.now());
-
-
+            var callback = null;
+            var statuswaiting = null;
             var lengdatatr = datatrpending.length;
 
             for (var i = 0; i < lengdatatr; i++) {
 
                 var idva = datatrpending[i].idva;
                 var idtransaction = datatrpending[i]._id;
+                statuswaiting = datatrpending[i].status;
                 var expiredva = new Date(datatrpending[i].expiredtimeva);
                 expiredva.setHours(expiredva.getHours() - 7);
 
-                if (datenow > expiredva) {
-                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+                // if (datenow > expiredva) {
+                let cekstatusva = await this.oyPgService.staticVaInfo(idva);
 
-                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
-                        this.transactionsService.updatestatuscancel(idtransaction);
+                if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                    await this.transactionsService.updatestatuscancel(idtransaction);
 
+                } else if (cekstatusva.va_status === "COMPLETE") {
+
+                    if (statuswaiting == "WAITING_PAYMENT") {
+                        var VaCallback_ = new VaCallback();
+                        VaCallback_.va_number = cekstatusva.va_number;
+                        VaCallback_.amount = cekstatusva.amount;
+                        VaCallback_.partner_user_id = cekstatusva.partner_user_id;
+                        VaCallback_.success = true;
+                        try {
+                            callback = await this.transactionsService.callbackVA(VaCallback_);
+                            console.log(callback)
+
+                        } catch (e) {
+                            e.toString()
+                        }
                     }
 
-
                 }
+
+
+
+                //}
 
 
             }
@@ -8295,26 +8314,44 @@ export class TransactionsController {
         if (datatrpendingjual !== null) {
             var datenow = new Date(Date.now());
 
-
+            var statuswaiting = null;
             var lengdatatr = datatrpendingjual.length;
 
             for (var i = 0; i < lengdatatr; i++) {
 
                 var idva = datatrpendingjual[i].idva;
                 var idtransaction = datatrpendingjual[i]._id;
+                statuswaiting = datatrpendingjual[i].status;
                 var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
                 expiredva.setHours(expiredva.getHours() - 7);
 
-                if (datenow > expiredva) {
-                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+                // if (datenow > expiredva) {
+                let cekstatusva = await this.oyPgService.staticVaInfo(idva);
 
-                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
-                        await this.transactionsService.updatestatuscancel(idtransaction);
-
-                    }
-
+                if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                    await this.transactionsService.updatestatuscancel(idtransaction);
 
                 }
+                else if (cekstatusva.va_status === "COMPLETE") {
+
+                    if (statuswaiting == "WAITING_PAYMENT") {
+                        var VaCallback_ = new VaCallback();
+                        VaCallback_.va_number = cekstatusva.va_number;
+                        VaCallback_.amount = cekstatusva.amount;
+                        VaCallback_.partner_user_id = cekstatusva.partner_user_id;
+                        VaCallback_.success = true;
+                        try {
+                            callback = await this.transactionsService.callbackVA(VaCallback_);
+                            console.log(callback)
+
+                        } catch (e) {
+                            e.toString()
+                        }
+                    }
+
+                }
+
+                //}
 
 
             }
@@ -10075,6 +10112,8 @@ export class TransactionsController {
 
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
+
+
 
 }
 

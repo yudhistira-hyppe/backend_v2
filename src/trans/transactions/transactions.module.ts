@@ -27,10 +27,13 @@ import { UtilsModule } from '../../utils/utils.module';
 import { MediastoriesModule } from '../../content/mediastories/mediastories.module';
 import { LanguagesModule } from '../../infra/languages/languages.module';
 import { AdsModule } from '../ads/ads.module';
+import { HttpModule } from '@nestjs/axios';
+
 
 @Module({
 
     imports: [
+        HttpModule,
         BoostintervalModule,
         BoostsessionModule,
         UtilsModule,
