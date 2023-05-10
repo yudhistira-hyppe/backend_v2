@@ -839,4 +839,19 @@ export class WithdrawsService {
 
     }
 
+    async findbyuser(iduser: ObjectId) {
+        const query = await this.withdrawsModel.aggregate([
+            {
+                $match: {
+
+                    idUser: iduser,
+
+                }
+            },
+
+
+        ]);
+        return query;
+    }
+
 }

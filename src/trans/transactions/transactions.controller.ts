@@ -8253,7 +8253,7 @@ export class TransactionsController {
 
         }
 
-        if (datatrpending !== null) {
+        if (datatrpending !== null && datatrpending.length > 0) {
             var datenow = new Date(Date.now());
             var callback = null;
             var statuswaiting = null;
@@ -8311,7 +8311,7 @@ export class TransactionsController {
 
         }
 
-        if (datatrpendingjual !== null) {
+        if (datatrpendingjual !== null && datatrpendingjual.length > 0) {
             var datenow = new Date(Date.now());
 
             var statuswaiting = null;
@@ -8357,8 +8357,6 @@ export class TransactionsController {
             }
 
         }
-
-
 
         return { response_code: 202, data, skip, limit, messages };
     }
