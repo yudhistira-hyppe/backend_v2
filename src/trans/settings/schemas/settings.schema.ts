@@ -11,7 +11,7 @@ export class Settings {
     jenis: string
 
     @Prop()
-    value: number
+    value: any
     @Prop()
     remark: string
     @Prop()
