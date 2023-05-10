@@ -5,17 +5,17 @@ import { ConfigService } from '@nestjs/config';
 import * as admin from 'firebase-admin';
 import { ServiceAccount } from "firebase-admin";
 
-const httpsOptions = {
-  key: fs.readFileSync(process.env.PRIVATE_KEY),
-  cert: fs.readFileSync(process.env.CERTIFICATE),
-};
+// const httpsOptions = {
+//   key: fs.readFileSync(process.env.PRIVATE_KEY),
+//   cert: fs.readFileSync(process.env.CERTIFICATE),
+// };
 
 
 async function bootstrap() {
-  //const app = await NestFactory.create(AppModule);
-  const app = await NestFactory.create(AppModule, {
-    httpsOptions,
-  });
+  const app = await NestFactory.create(AppModule);
+  // const app = await NestFactory.create(AppModule, {
+  //   httpsOptions,
+  // });
   const configService: ConfigService = app.get(ConfigService);
   const adminConfig: ServiceAccount = {
     "projectId": configService.get<string>('FIREBASE_PROJECT_ID'),
