@@ -13,21 +13,45 @@ export class InterestsRepoController {
       private readonly OssServices: OssService,
     ) {}
 
-    @Post()
     @UseGuards(JwtAuthGuard)
-    async create(@Body() CreateInterestsRepoDto: CreateInterestsRepoDto) {
+    @Post()
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'icon_file', maxCount: 1 }]))
+    async create(
+      @UploadedFiles() files: { 
+        icon_file?: Express.Multer.File[]
+      },
+      @Body() request,
+      ) {
       var mongoose = require('mongoose');
       var dt = new Date(Date.now());
       dt.setHours(dt.getHours() + 7); // timestamp
       var hasilconvert = dt.toISOString().split("T");
       var convert = hasilconvert[0] + " " + hasilconvert[1].split(".")[0];
 
-      CreateInterestsRepoDto._id = new mongoose.Types.ObjectId();
-      CreateInterestsRepoDto.createdAt = convert;
-      CreateInterestsRepoDto.updatedAt = convert;
-      CreateInterestsRepoDto._class = "io.melody.hyppe.infra.domain.Interests";
+      var insertdata = new CreateInterestsRepoDto();
+      insertdata._id = new mongoose.Types.ObjectId();
+      insertdata.createdAt = convert;
+      insertdata.updatedAt = convert;
+      insertdata._class = "io.melody.hyppe.infra.domain.Interests";
+      insertdata.interestName = request.interestName;
+      insertdata.interestNameId = request.interestNameId;
+      insertdata.langIso = request.langIso;
+      insertdata.thumbnail = request.thumbnail;
       
-      await this.InterestsRepoService.create(CreateInterestsRepoDto);
+      if(files.icon_file == undefined)
+      {
+        throw new BadRequestException("Unabled to proceed. icon file is required");
+      }
+      else
+      {
+        var insertfile = files.icon_file[0];
+        var lowercase = insertdata.interestName.toLocaleLowerCase();
+        var path = "images/icon_interest/" + lowercase + "." + insertfile.originalname.split(".")[1];
+        var result = await this.OssServices.uploadFile(insertfile, path);
+        insertdata.icon = result.url;
+      }
+
+      await this.InterestsRepoService.create(insertdata);
 
       const messages = {
         "info": ["The process successful"],
@@ -35,7 +59,7 @@ export class InterestsRepoController {
 
       return {
           response_code: 202,
-          data: CreateInterestsRepoDto,
+          data: insertdata,
           messages: messages,
       };
     }
@@ -89,13 +113,20 @@ export class InterestsRepoController {
       return this.InterestsRepoService.findOne(id);
     }
 
-    @Post('update')
     @UseGuards(JwtAuthGuard)
-    async update(@Res() res, @Request() request) {
+    @Post('update')
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'icon_file', maxCount: 1 }]))
+    async update(
+      @UploadedFiles() files: { 
+        icon_file?: Express.Multer.File[]
+      },
+      @Body() request,
+      @Res() res,
+      ) {
+    
       var repoID = null;
-      var request_json = JSON.parse(JSON.stringify(request.body));
-      if (request_json["repoID"] !== undefined) {
-        repoID = request_json["repoID"];
+      if (request.repoID !== undefined) {
+        repoID = request.repoID;
       } else {
           throw new BadRequestException("Unabled to proceed");
       }
@@ -107,11 +138,19 @@ export class InterestsRepoController {
 
       var updatedata = new CreateInterestsRepoDto();
       updatedata.updatedAt = convert;
-      updatedata.interestNameId = request_json["interestNameId"];
-      updatedata.interestName = request_json["interestName"];
-      updatedata.icon = request_json["icon"];
-      updatedata.langIso = request_json["langIso"];
-      updatedata.thumbnail = request_json["thumbnail"];
+      updatedata.interestNameId = request.interestNameId;
+      updatedata.interestName = request.interestName;
+      updatedata.langIso = request.langIso;
+      updatedata.thumbnail = request.thumbnail;
+
+      if(files.icon_file != undefined)
+      {
+        var insertfile = files.icon_file[0];
+        var lowercase = updatedata.interestName.toLocaleLowerCase();
+        var path = "images/icon_interest/" + lowercase + "." + insertfile.originalname.split(".")[1];
+        var result = await this.OssServices.uploadFile(insertfile, path);
+        updatedata.icon = result.url;
+      }
       
       const messages = {
         "info": ["The process successful"],
@@ -121,17 +160,11 @@ export class InterestsRepoController {
         "info": ["Todo is not found!"],
       };
 
-      // //stuck disini. why ???
-      // return {
-      //     response_code: 202,
-      //     messages: messages,
-      // };
-
       try {
             let data = await this.InterestsRepoService.update(repoID, updatedata);
             return res.status(HttpStatus.OK).json({
                 response_code: 202,
-                "data": data,
+                "data": updatedata,
                 "message": messages
             });
         } catch (e) {
@@ -141,17 +174,17 @@ export class InterestsRepoController {
         }
     }
 
-    @Delete(':id')
-    async delete(@Param('id') id: string) {
-      this.InterestsRepoService.delete(id);
+    // @Delete(':id')
+    // async delete(@Param('id') id: string) {
+    //   await this.InterestsRepoService.delete(id);
 
-      const messages = {
-        "info": ["The process successful"],
-      };
+    //   const messages = {
+    //     "info": ["The process successful"],
+    //   };
 
-      return {
-          response_code: 202,
-          messages: messages,
-      };
-    }
+    //   return {
+    //       response_code: 202,
+    //       messages: messages,
+    //   };
+    // }
 }
