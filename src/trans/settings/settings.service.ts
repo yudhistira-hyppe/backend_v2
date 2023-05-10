@@ -64,4 +64,30 @@ export class SettingsService {
         }
         return data;
     }
+
+    async list(jenis: string) {
+        var pipeline = [];
+
+        if (jenis && jenis !== undefined) {
+
+            pipeline.push({
+                $match: {
+                    jenis: {
+                        $regex: jenis,
+                        $options: 'i'
+                    },
+
+                }
+            }
+            );
+
+        }
+        pipeline.push(
+            { $sort: { _id: 1 } }
+        );
+
+        var query = await this.settingsModel.aggregate(pipeline);
+        return query;
+    }
+
 }

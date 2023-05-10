@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Res, Request, UseGuards, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Res, Request, UseGuards, HttpStatus, Req } from '@nestjs/common';
 import { SettingsService } from './settings.service';
 import { CreateSettingsDto } from './dto/create-settings.dto';
 import { Settings } from './schemas/settings.schema';
@@ -60,4 +60,30 @@ export class SettingsController {
             });
         }
     }
+
+
+    @Post('/list')
+    @UseGuards(JwtAuthGuard)
+    async profileuser(@Req() request: Request): Promise<any> {
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var jenis = null;
+        var data = null;
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        jenis = request_json["jenis"];
+
+        try {
+            data = await this.settingsService.list(jenis);
+
+        } catch (e) {
+            data = [];
+
+        }
+        return { response_code: 202, data, messages };
+
+
+    }
+
 }
