@@ -101,6 +101,7 @@ import { DeepArModule } from './trans/deepar/deepar.module';
 import { AssetsFilterModule } from './assets/filter/assets-filter.module';
 import { AdsLandingModule } from './content/posts/adslanding/adslanding.module';
 import { OssModule } from './stream/oss/oss.module';
+import { Settings2Module } from './trans/settings2/settings2.module';
 @Module({
   imports: [
     OssModule,
@@ -224,6 +225,7 @@ import { OssModule } from './stream/oss/oss.module';
     AdrolesModule,
     AuthModule,
     SocketModule,
+    Settings2Module,
   ], providers: [],
 })
 export class AppModule { }
