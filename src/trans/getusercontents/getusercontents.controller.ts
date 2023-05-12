@@ -19,6 +19,7 @@ import { DisquslogsService } from '../../content/disquslogs/disquslogs.service';
 import { ContenteventsService } from '../../content/contentevents/contentevents.service';
 import { TagCountService } from '../../content/tag_count/tag_count.service';
 import { InterestCountService } from '../../content/interest_count/interest_count.service';
+import { UtilsService } from '../../utils/utils.service';
 @Controller()
 export class GetusercontentsController {
     constructor(private readonly getusercontentsService: GetusercontentsService,
@@ -35,6 +36,7 @@ export class GetusercontentsController {
         private readonly contenteventsService: ContenteventsService,
         private readonly disquslogsService: DisquslogsService,
         private readonly tagCountService: TagCountService,
+        private utilsService: UtilsService,
         private readonly interestCountService: InterestCountService,
     ) { }
 
@@ -3683,7 +3685,7 @@ export class GetusercontentsController {
         }
 
 
-        return { response_code: 202, data: picts, version: version.toString(), messages };
+        return { response_code: 202, data: picts, version: version.toString(), version_ios: (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(), messages };
     }
 
 

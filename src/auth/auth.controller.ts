@@ -875,7 +875,8 @@ export class AuthController {
         GlobalResponse_.response_code = 202;
         GlobalResponse_.data = ProfileDTO_;
         GlobalResponse_.messages = GlobalMessages_;
-        GlobalResponse_.version = await this.utilsService.getversion();
+        GlobalResponse_.version = (await this.utilsService.getSetting_("62bbdb4ba7520000050077a7")).toString();
+        GlobalResponse_.version_ios = (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString();
         return GlobalResponse_;
       } else {
         var messages = "Tidak dapat melanjutkan, Email pengguna belum diverifikasi";
@@ -1194,6 +1195,7 @@ export class AuthController {
   async deviceactivity(@Body() DeviceActivityRequest_: DeviceActivityRequest, @Headers() headers) {
     var getDeviceAr = await this.utilsService.getDeepAr("63a3ff2cd42900004b003ec2");
     var getSetting = await this.utilsService.getSetting_("62bbdb4ba7520000050077a7");
+    var getSetting_ios = await this.utilsService.getSetting_("645da79c295b0000520048c2");
     var user_email_header = headers['x-auth-user'];
     var user_email = DeviceActivityRequest_.email;
     var user_deviceId = DeviceActivityRequest_.deviceId;
@@ -1333,6 +1335,7 @@ export class AuthController {
             info: ['Device activity logging successful'],
           },
           version: getSetting.toString(),
+          version_ios: getSetting_ios.toString(),
         };
       } else {
         await this.errorHandler.generateNotAcceptableException(

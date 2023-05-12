@@ -6,4 +6,5 @@ export class GlobalResponse {
     data: ProfileDTO;
     messages: GlobalMessages;
     version: string;
+    version_ios: string;
 }

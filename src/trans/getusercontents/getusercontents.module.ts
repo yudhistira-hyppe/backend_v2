@@ -25,6 +25,7 @@ import { GetuserprofilesModule } from '../getuserprofiles/getuserprofiles.module
 import { ContenteventsModule } from '../../content/contentevents/contentevents.module';
 import { TagCountModule } from '../../content/tag_count/tag_count.module';
 import { InterestCountModule } from '../../content/interest_count/interest_count.module';
+import { UtilsModule } from '../../utils/utils.module';
 
 @Module({
 
@@ -33,7 +34,7 @@ import { InterestCountModule } from '../../content/interest_count/interest_count
         GetcontenteventsModule, SettingsModule, CountriesModule, GetuserprofilesModule, ContenteventsModule, TagCountModule, InterestCountModule,
 
         MongooseModule.forFeature([{ name: Getusercontents.name, schema: GetusercontentsSchema }], 'SERVER_FULL'),
-
+        UtilsModule,
 
 
 
