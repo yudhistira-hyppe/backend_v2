@@ -1,17 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { distinctUntilChanged } from 'rxjs';
 
-export type SettingsDocument = Settings & Document;
-
-@Schema()
-export class Settings {
+export type SettingsDocument = SettingsString & Document;
+@Schema({ collection:'settings' })
+export class SettingsString {
     //@Prop({ type: mongoose.Schema.Types.ObjectId })
     _id: mongoose.Schema.Types.ObjectId
     @Prop()
     jenis: string
-
     @Prop()
-    value: any[]
+    value: string
+    @Prop()
+    jenisdata: string
+    @Prop()
+    typedata: string
     @Prop()
     remark: string
     @Prop()
@@ -23,8 +26,6 @@ export class Settings {
     sortObject: {}
 
 
-
-
 }
 
-export const SettingsSchema = SchemaFactory.createForClass(Settings);
+export const Settings3Schema = SchemaFactory.createForClass(SettingsString);

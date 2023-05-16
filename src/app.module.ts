@@ -102,6 +102,8 @@ import { AssetsFilterModule } from './assets/filter/assets-filter.module';
 import { AdsLandingModule } from './content/posts/adslanding/adslanding.module';
 import { OssModule } from './stream/oss/oss.module';
 import { Settings2Module } from './trans/settings2/settings2.module';
+import { Settings3Module } from './trans/settings3/settings3.module';
+import { Settings4Module } from './trans/settings4/settings4.module';
 @Module({
   imports: [
     OssModule,
@@ -226,6 +228,8 @@ import { Settings2Module } from './trans/settings2/settings2.module';
     AuthModule,
     SocketModule,
     Settings2Module,
+    Settings3Module,
+    Settings4Module,
   ], providers: [],
 })
 export class AppModule { }

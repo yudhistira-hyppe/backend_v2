@@ -1,18 +1,18 @@
-import { Settings2Service } from './settings2.service';
+import { Settings3Service } from './settings3.service';
 import { Body, Controller, Delete, Get, Param, Post, Put, Res, Request, UseGuards, HttpStatus, Req, BadRequestException } from '@nestjs/common';
-import { CreateSettings2Dto } from './dto/create-settings2.dto';
-import { SettingsBoolean } from './schemas/settings2.schema';
+import { CreateSettings3Dto } from './dto/create-settings3.dto';
+import { SettingsString } from './schemas/settings3.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Max } from 'class-validator';
 
-@Controller('api/settings/boolean')
-export class Settings2Controller {
-  constructor(private readonly settings2Service: Settings2Service) {}
+@Controller('api/settings/string')
+export class Settings3Controller {
+  constructor(private readonly settings3Service: Settings3Service) {}
 
   // @UseGuards(JwtAuthGuard)
   // @Get()
-  // async findAll(): Promise<SettingsBoolean[]> {
-  //     return this.settings2Service.findAll();
+  // async findAll(): Promise<SettingsString[]> {
+  //     return this.settings3Service.findAll();
   // }
 
   @UseGuards(JwtAuthGuard)
@@ -75,7 +75,7 @@ export class Settings2Controller {
         sortObject = request_json["sortObject"];
       }
 
-      var insertdata = new CreateSettings2Dto();
+      var insertdata = new CreateSettings3Dto();
       var mongoose = require('mongoose');
       insertdata._id = mongoose.Types.ObjectId();
       insertdata.jenis = jenis;
@@ -85,9 +85,9 @@ export class Settings2Controller {
       insertdata.sortObject = sortObject;
       insertdata.Max = max;
       insertdata.Min = min;
-      insertdata.value = value;
+      insertdata.value = value.toString();
 
-      var data = await this.settings2Service.create(insertdata);
+      var data = await this.settings3Service.create(insertdata);
       return { response_code: 202, data, messages };
   }
 
@@ -155,7 +155,7 @@ export class Settings2Controller {
         sortObject = request_json["sortObject"];
       }
 
-      var updatedata = new CreateSettings2Dto();
+      var updatedata = new CreateSettings3Dto();
       updatedata.jenis = jenis;
       updatedata.jenisdata = jenisdata;
       updatedata.remark = remark;
@@ -163,12 +163,12 @@ export class Settings2Controller {
       updatedata.sortObject = sortObject;
       updatedata.Max = max;
       updatedata.Min = min;
-      updatedata.value = value;
+      updatedata.value = value.toString();
 
       try {
 
 
-          let data = await this.settings2Service.update(id, updatedata);
+          let data = await this.settings3Service.update(id, updatedata);
           return res.status(HttpStatus.OK).json({
               response_code: 202,
               "data": data,
