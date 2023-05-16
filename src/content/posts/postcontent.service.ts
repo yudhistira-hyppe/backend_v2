@@ -2608,7 +2608,8 @@ export class PostContentService {
     } else if (image_orientation == 8) {
       file_commpress = await sharp(buffers_file).rotate(270).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
     } else {
-      file_commpress = buffers_file;
+      file_commpress = await sharp(buffers_file).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+      //file_commpress = buffers_file;
     }
 
     // fs.writeFile("./temp/some.jpeg", file_commpress, function (err) {
@@ -2674,15 +2675,9 @@ export class PostContentService {
     } else if (image_orientation == 8) {
       file_commpress = await sharp(buffers_file).rotate(270).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
     } else {
-      file_commpress = buffers_file;
+      file_commpress = await sharp(buffers_file).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+      //file_commpress = buffers_file;
     }
-
-    // fs.writeFile("./temp/some.jpeg", file_commpress, function (err) {
-    //   if (err) {
-    //     return console.log(err);
-    //   }
-    //   console.log("The file was saved!");
-    // });
     return file_commpress;
   }
 
@@ -2737,8 +2732,11 @@ export class PostContentService {
       file_commpress = await sharp(buffers_file).resize(480, 480).toBuffer();
     } else if (image_orientation == 6) {
       file_commpress = await sharp(buffers_file).rotate(90).resize(480, 480).toBuffer();
+    } else if (image_orientation == 8) {
+      file_commpress = await sharp(buffers_file).rotate(270).resize(480, 480).toBuffer();
     } else {
-      file_commpress = buffers_file;
+      file_commpress = await sharp(buffers_file).resize(480, 480).toBuffer();
+      //file_commpress = buffers_file;
     }
     return file_commpress;
   }
@@ -2794,8 +2792,11 @@ export class PostContentService {
       file_commpress = await sharp(buffers_file).resize(480, 480).toBuffer();
     } else if (image_orientation == 6) {
       file_commpress = await sharp(buffers_file).rotate(90).resize(480, 480).toBuffer();
+    } else if (image_orientation == 8) {
+      file_commpress = await sharp(buffers_file).rotate(270).resize(480, 480).toBuffer();
     } else {
-      file_commpress = buffers_file;
+      file_commpress = await sharp(buffers_file).resize(480, 480).toBuffer();
+      //file_commpress = buffers_file;
     }
     return file_commpress;
   }
