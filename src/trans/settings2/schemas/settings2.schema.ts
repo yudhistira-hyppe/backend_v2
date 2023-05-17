@@ -2,15 +2,15 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { distinctUntilChanged } from 'rxjs';
 
-export type SettingsDocument = SettingsBoolean & Document;
+export type SettingsDocument = SettingsMixed & Document;
 @Schema({ collection:'settings' })
-export class SettingsBoolean {
+export class SettingsMixed {
     //@Prop({ type: mongoose.Schema.Types.ObjectId })
     _id: mongoose.Schema.Types.ObjectId
     @Prop()
     jenis: string
     @Prop()
-    value: boolean
+    value: mongoose.Schema.Types.Mixed
     @Prop()
     jenisdata: string
     @Prop()
@@ -28,4 +28,4 @@ export class SettingsBoolean {
 
 }
 
-export const Settings2Schema = SchemaFactory.createForClass(SettingsBoolean);
+export const Settings2Schema = SchemaFactory.createForClass(SettingsMixed);

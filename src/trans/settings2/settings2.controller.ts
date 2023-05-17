@@ -1,19 +1,26 @@
 import { Settings2Service } from './settings2.service';
 import { Body, Controller, Delete, Get, Param, Post, Put, Res, Request, UseGuards, HttpStatus, Req, BadRequestException } from '@nestjs/common';
 import { CreateSettings2Dto } from './dto/create-settings2.dto';
-import { SettingsBoolean } from './schemas/settings2.schema';
+import { SettingsMixed } from './schemas/settings2.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Max } from 'class-validator';
 
-@Controller('api/settings/boolean')
+@Controller('api/settings2')
 export class Settings2Controller {
   constructor(private readonly settings2Service: Settings2Service) {}
 
   // @UseGuards(JwtAuthGuard)
   // @Get()
-  // async findAll(): Promise<SettingsBoolean[]> {
+  // async findAll(): Promise<SettingsMixed[]> {
   //     return this.settings2Service.findAll();
   // }
+
+  //to be continued. get data with mixed ?
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async findOne(@Param('id') id: string): Promise<SettingsMixed> {
+      return this.settings2Service.findOne(id);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post()
