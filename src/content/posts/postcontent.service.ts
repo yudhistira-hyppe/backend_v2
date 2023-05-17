@@ -2675,8 +2675,8 @@ export class PostContentService {
     } else if (image_orientation == 8) {
       file_commpress = await sharp(buffers_file).rotate(270).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
     } else {
-      file_commpress = await sharp(buffers_file).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
-      //file_commpress = buffers_file;
+      //file_commpress = await sharp(buffers_file).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+      file_commpress = buffers_file;
     }
     return file_commpress;
   }
@@ -2735,8 +2735,8 @@ export class PostContentService {
     } else if (image_orientation == 8) {
       file_commpress = await sharp(buffers_file).rotate(270).resize(480, 480).toBuffer();
     } else {
-      file_commpress = await sharp(buffers_file).resize(480, 480).toBuffer();
-      //file_commpress = buffers_file;
+      //file_commpress = await sharp(buffers_file).resize(480, 480).toBuffer();
+      file_commpress = buffers_file;
     }
     return file_commpress;
   }
@@ -2795,8 +2795,8 @@ export class PostContentService {
     } else if (image_orientation == 8) {
       file_commpress = await sharp(buffers_file).rotate(270).resize(480, 480).toBuffer();
     } else {
-      file_commpress = await sharp(buffers_file).resize(480, 480).toBuffer();
-      //file_commpress = buffers_file;
+      //file_commpress = await sharp(buffers_file).resize(480, 480).toBuffer();
+      file_commpress = buffers_file;
     }
     return file_commpress;
   }
