@@ -9,7 +9,10 @@ export class Settings {
     _id: mongoose.Schema.Types.ObjectId
     @Prop()
     jenis: string
-
+    @Prop()
+    jenisdata: string
+    @Prop()
+    typedata: string
     @Prop()
     value: number
     @Prop()

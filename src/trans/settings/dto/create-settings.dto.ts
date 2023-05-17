@@ -5,6 +5,8 @@ export class CreateSettingsDto {
     readonly jenis: string;
     readonly value: number;
     readonly remark: string;
+    readonly typedata: string;
+    readonly jenisdata: string;
     readonly Max: number;
     readonly Min: number;
     readonly sortObject: {}
