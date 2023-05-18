@@ -2494,7 +2494,7 @@ export class PostsController {
     var tempdata = null;
 
     try {
-      tempdata = await this.userauthsService.getRecentStory(email, page, limit);
+      tempdata = await this.PostsService.getRecentStory(email, page, limit);
     } catch (e) {
       tempdata = null;
     }
@@ -2697,8 +2697,8 @@ export class PostsController {
     console.log(Mediapicts_.length);
     this.postContentService.runMigrationPict(Mediapicts_);
     return {
-      status:202,
-      messages:"RUN MIGRATION PICT"
+      status: 202,
+      messages: "RUN MIGRATION PICT"
     }
   }
 
