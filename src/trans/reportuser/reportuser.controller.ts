@@ -540,11 +540,11 @@ export class ReportuserController {
 
                 }
                 this.postsService.update(postID, createPostsDto);
-                await this.sendReportAppealFCM(name, event, tipe, postID);
-
-
+                this.sendReportAppealFCM(name, event, tipe, postID);
                 var data = request_json;
+
                 return { response_code: 202, data, messages };
+
 
                 // }
 
