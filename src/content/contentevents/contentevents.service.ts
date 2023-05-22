@@ -4157,31 +4157,50 @@ export class ContenteventsService {
     return query;
   }
 
-  async checkFriendListdata(email1: string, email2: string)
-  {
+  async checkFriendListdata(email1: string, email2: string) {
     var query = await this.ContenteventsModel.aggregate([
+      {
+        "$match":
         {
-          "$match":
-          {
-            "$and" : 
+          "$and":
             [
               {
-                  "eventType" : "FOLLOWER"
+                "eventType": "FOLLOWER"
               },
               {
-                  "email":email1
+                "email": email1
               },
               {
-                  "receiverParty" : email2
+                "receiverParty": email2
               },
               {
-                  "active" : true
+                "active": true
               },
             ]
-          }
         }
+      }
     ]);
 
     return query;
+  }
+
+  async updatesalelike(postid: string) {
+    let data = await this.ContenteventsModel.updateMany({ "postID": postid, "eventType": "LIKE", "event": "DONE", },
+      {
+        $set: {
+          "active": false
+        }
+      });
+    return data;
+  }
+
+  async updatesaleview(postid: string) {
+    let data = await this.ContenteventsModel.updateMany({ "postID": postid, "eventType": "VIEW", "event": "DONE", },
+      {
+        $set: {
+          "active": false
+        }
+      });
+    return data;
   }
 }
