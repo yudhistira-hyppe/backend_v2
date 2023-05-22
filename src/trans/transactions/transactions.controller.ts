@@ -796,7 +796,7 @@ export class TransactionsController {
                             CreateTransactionsDto.postid = postidTRvoucer.toString();
                             CreateTransactionsDto.response = datareqva;
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
-                            await this.utilsService.sendFcmWebMode(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", no, "TRANSACTION");
+                            this.notifbuyvoucher(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, no);
                             //var lengArrDetail = arrayDetailvc.length;
 
                             // for (var i = 0; i < lengArrDetail; i++) {
@@ -961,7 +961,7 @@ export class TransactionsController {
                             CreateTransactionsDto.postid = postidTRvoucer;
                             CreateTransactionsDto.response = datareqva;
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
-                            await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", no, "TRANSACTION");
+                            this.notifbuyvoucher(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, no);
                             // var lengArrDetail = arrayDetailvc.length;
 
                             // for (var i = 0; i < lengArrDetail; i++) {
@@ -10272,8 +10272,10 @@ export class TransactionsController {
 
     async notifbuy2(emailbuy: string, titleinsukses: string, titleensukses: string, bodyinsukses: string, bodyensukses: string, eventType: string, event: string, postidTR: string, no: string) {
         await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postidTR, "TRANSACTION", no, "TRANSACTION");
+    }
 
-
+    async notifbuyvoucher(emailbuy: string, titleinsukses: string, titleensukses: string, bodyinsukses: string, bodyensukses: string, eventType: string, event: string, no: string) {
+        await this.utilsService.sendFcmWebMode(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", no, "TRANSACTION");
     }
 }
 
