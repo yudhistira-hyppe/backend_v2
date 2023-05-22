@@ -4,9 +4,12 @@ import { BanksController } from './banks.controller';
 import { BanksService } from './banks.service';
 import { ConfigModule } from '@nestjs/config';
 import { Banks, BanksSchema } from './schemas/banks.schema';
+import { OssModule } from 'src/stream/oss/oss.module';
+
 @Module({
     imports: [
         ConfigModule.forRoot(),
+        OssModule,
         MongooseModule.forFeature([{ name: Banks.name, schema: BanksSchema }], 'SERVER_FULL')
     ],
     controllers: [BanksController],

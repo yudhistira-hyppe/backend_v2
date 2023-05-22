@@ -24,5 +24,33 @@ export class BanksService {
         return this.settingsModel.findOne({ bankcode: bankcode }).exec();
     }
 
+    async create(CreateBanksDto: CreateBanksDto): Promise<Banks> {
+        const results = await this.settingsModel.create(
+            CreateBanksDto,
+        );
+        return results;
+    }
 
+    async update(id:string, CreateBanks: CreateBanksDto){
+        return await this.settingsModel.updateOne(
+            {
+                _id:id
+            },
+            {
+                "$set":
+                {
+                  "bankcode":CreateBanks.bankcode,
+                  "bankname":CreateBanks.bankname,
+                  "bankIcon":CreateBanks.bankIcon,
+                  "urlbankIcon":CreateBanks.urlbankIcon,
+                  "urlEbanking":CreateBanks.urlEbanking,
+                  "atm":CreateBanks.atm,
+                  "internetBanking":CreateBanks.internetBanking,
+                  "mobileBanking":CreateBanks.mobileBanking,
+                }
+            },
+        )
+
+        // return CreateBanks;
+    }
 }
