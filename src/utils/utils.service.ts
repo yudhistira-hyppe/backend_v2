@@ -1532,7 +1532,9 @@ export class UtilsService {
               const interests = await this.interestsRepoService.findOne(
                 interests_json.$id.toString(),
               );
-              interests_array[i] = interests._id;
+              if (interests._id != undefined) {
+                interests_array[i] = interests._id;
+              }
             }
           }
         }
