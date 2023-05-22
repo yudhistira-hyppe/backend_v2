@@ -4951,7 +4951,7 @@ export class PostContentService {
           }
         }
       } catch (e) {
-
+        console.log(e.toString());
       }
     }
     tx.ImageInfo = vl;

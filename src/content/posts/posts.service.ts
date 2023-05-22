@@ -31,10 +31,13 @@ import { InjectQueue, Process, Processor } from '@nestjs/bull';
 import { SeaweedfsService } from '../../stream/seaweedfs/seaweedfs.service';
 import { SettingsService } from '../../trans/settings/settings.service';
 import * as fs from 'fs';
+import * as https from "https";
+import * as http from "http"; 
 
 import { Queue, Job } from 'bull';
 import { DisqusService } from '../disqus/disqus.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
+import { get } from 'https';
 
 
 @Injectable()
@@ -16314,6 +16317,15 @@ export class PostsService {
     var data = await this.seaweedfsService.read("/" + mediaFile);
     return data;
   }
+
+  async urlToBuffer(url: string): Promise<any> {
+    const httpsAgent = new https.Agent({
+      rejectUnauthorized: false,
+    });
+    const response = await axios.get(url, { httpsAgent,responseType: 'arraybuffer' })
+    const buffer = Buffer.from(response.data, "utf-8")
+    return buffer;
+}
 
   async updateCommentMin(email: string, postID: string) {
     this.PostsModel.updateOne(
