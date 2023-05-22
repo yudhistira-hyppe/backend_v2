@@ -16322,6 +16322,7 @@ export class PostsService {
     const httpsAgent = new https.Agent({
       rejectUnauthorized: false,
     });
+    axios.defaults.timeout = 300000;
     const response = await axios.get(url, { httpsAgent,responseType: 'arraybuffer' })
     const buffer = Buffer.from(response.data, "utf-8")
     return buffer;
