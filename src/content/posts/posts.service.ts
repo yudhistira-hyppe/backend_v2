@@ -44600,6 +44600,16 @@ export class PostsService {
 
     return query;
   }
+
+  async updateeventlike(postid: string) {
+    let data = await this.contentEventService.updatesalelike(postid)
+    return data;
+  }
+
+  async updateeventview(postid: string) {
+    let data = await this.contentEventService.updatesaleview(postid);
+    return data;
+  }
 }
 
 

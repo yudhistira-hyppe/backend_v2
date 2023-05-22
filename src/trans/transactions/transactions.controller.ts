@@ -423,7 +423,7 @@ export class TransactionsController {
                                 CreateTransactionsDto.response = datareqva;
                                 let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
-                                await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postIds, "TRANSACTION", no, "TRANSACTION");
+                                this.notifbuy(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postIds, no);
                                 await this.transactionsService.updatestatuscancel(idtransaction);
 
 
@@ -568,7 +568,7 @@ export class TransactionsController {
                             CreateTransactionsDto.postid = postidTR;
                             CreateTransactionsDto.response = datareqva;
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
-                            await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postidTR, "TRANSACTION", no, "TRANSACTION");
+                            this.notifbuy2(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postidTR, no);
 
                             var data = {
                                 "noinvoice": datatr.noinvoice,
@@ -1241,8 +1241,8 @@ export class TransactionsController {
 
 
                         await this.transactionsService.updateone(idtransaction, idbalance, payload);
-                        await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
-                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsuksesbeli, titleensuksesbeli, bodyinsuksesbeli, bodyensuksesbeli, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
+                        this.notifseller(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postid, noinvoice);
+                        this.notifbuyer(emailbuyer.toString(), titleinsuksesbeli, titleensuksesbeli, bodyinsuksesbeli, bodyensuksesbeli, eventType, event, postid, noinvoice);
 
                         await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy, timedate);
                         this.postsService.noneActiveAllDiscus(postid, idtransaction);
@@ -1295,7 +1295,7 @@ export class TransactionsController {
                             }
                         }
                         if (salelike == false) {
-                            await this.postsService.updatesalelike(postid);
+                            this.updateslike(postid);
 
                         } else {
                             var totallike = like + likeinsig;
@@ -1305,7 +1305,7 @@ export class TransactionsController {
                         }
 
                         if (saleview == false) {
-                            await this.postsService.updatesaleview(postid);
+                            this.updatesview(postid)
                         } else {
                             var totalview = view + viewinsigh;
                             await this.insightsService.updatesaleview(idinsight, totalview);
@@ -10245,6 +10245,35 @@ export class TransactionsController {
     }
 
 
+    async updateslike(postid: string) {
+        await this.postsService.updatesalelike(postid);
+        await this.postsService.updateeventlike(postid);
+    }
 
+    async updatesview(postid: string) {
+        await this.postsService.updatesaleview(postid);
+        await this.postsService.updateeventview(postid);
+    }
+
+    async notifseller(emailseller: string, titleinsukses: string, titleensukses: string, bodyinsukses: string, bodyensukses: string, eventType: string, event: string, postid: string, noinvoice: string) {
+        await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
+
+    }
+
+    async notifbuyer(emailbuyer: string, titleinsuksesbeli: string, titleensuksesbeli: string, bodyinsuksesbeli: string, bodyensuksesbeli: string, eventType: string, event: string, postid: string, noinvoice: string) {
+        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsuksesbeli, titleensuksesbeli, bodyinsuksesbeli, bodyensuksesbeli, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
+    }
+
+    async notifbuy(emailbuy: string, titleinsukses: string, titleensukses: string, bodyinsukses: string, bodyensukses: string, eventType: string, event: string, postIds: string, no: string) {
+        await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postIds, "TRANSACTION", no, "TRANSACTION");
+
+
+    }
+
+    async notifbuy2(emailbuy: string, titleinsukses: string, titleensukses: string, bodyinsukses: string, bodyensukses: string, eventType: string, event: string, postidTR: string, no: string) {
+        await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postidTR, "TRANSACTION", no, "TRANSACTION");
+
+
+    }
 }
 
