@@ -99,7 +99,7 @@ export class BanksController {
         var getdata = getresult._id.toString();
         var path = "images/icon_bank/" + getdata + "." + insertfile.originalname.split(".")[1];
         var result = await this.OssServices.uploadFile(insertfile, path);
-        CreateBanksDto.urlbankIcon = result.url;
+        CreateBanksDto.bankIcon = result.url;
         var id = getresult._id;
         var converttostring = id.toString();
         await this.banksService.update(converttostring, CreateBanksDto);
@@ -134,7 +134,7 @@ export class BanksController {
         var insertfile = files.icon_bank[0];
         var path = "images/icon_bank/" + id + "." + insertfile.originalname.split(".")[1];
         var result = await this.OssServices.uploadFile(insertfile, path);
-        CreateBanksDto.urlbankIcon = result.url;
+        CreateBanksDto.bankIcon = result.url;
       }
 
     //   console.log(CreateBanksDto);
