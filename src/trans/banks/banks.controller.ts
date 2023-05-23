@@ -24,6 +24,38 @@ export class BanksController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Post('api/banks/list/all')
+    async findAll2(@Req() request: Request) {
+        const messages = {
+            "info": ["The process successful"],
+        };
+        var bankname = null;
+        var page = null;
+        var limit = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["bankname"] !== undefined) {
+          bankname = request_json["bankname"];
+        }
+
+        if (request_json["page"] !== undefined) {
+          page = request_json["page"];
+        } else {
+          throw new BadRequestException("Unabled to proceed. page field required");
+        }
+
+        if (request_json["limit"] !== undefined) {
+          limit = request_json["limit"];
+        } else {
+          throw new BadRequestException("Unabled to proceed. limit field is required");
+        }
+
+        let data = await this.banksService.listingAll(bankname, page, limit);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post('api/banks/search')
     async findbank(@Req() request: Request) {
         var request_json = JSON.parse(JSON.stringify(request.body));
