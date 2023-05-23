@@ -1222,6 +1222,8 @@ export class AdsService {
 
 
     async findAds(email: string, nameType: string) {
+        console.log(email);
+        console.log(nameType);
         // var query = await this.adsModel.aggregate([
         //     {
         //         $set:
@@ -2363,7 +2365,7 @@ export class AdsService {
                                         {
                                             $or: [
                                                 {
-                                                    "liveTypeuserads": false
+                                                    " 	ads": false
                                                 },
 
                                             ]
@@ -2490,6 +2492,7 @@ export class AdsService {
                                         $ne: new Object("6214438e602c354635ed7876")
                                     }
                                 },
+
                             ]
                         },
                         {
@@ -2537,13 +2540,12 @@ export class AdsService {
                                 },
 
                             ]
-                        },
-
-                        ]
+                        },]
                     }
                 },
                 {
                     $project: {
+                        sekarang: 1,
                         isValid: 1,
                         userBasic: 1,
                         email: "$email",
@@ -2574,7 +2576,6 @@ export class AdsService {
                             tayang: "$tayang",
                             ageStart: "$startAge",
                             ageEnd: "$endAge",
-                            skipTime: "$skipTime",
                             placingID: "$placingID",
                             liveTypeAds: "$liveTypeAds",
                             adsUserId: "$userID",
@@ -2600,7 +2601,7 @@ export class AdsService {
                             },
                             interestID: "$interestID",
                             gender: "$gender",
-                            liveAt: "$liveAt",
+                            liveAt: "$liveTypeAds",
                             liveTypeuserads: "$liveTypeAds",
                             typeAdsID: "$typeAdsID",
                             kelamin:
@@ -2752,6 +2753,7 @@ export class AdsService {
                 },
                 {
                     $project: {
+                        sekarang: 1,
                         viewed: "$viewed",
                         adsId: "$ads._id",
                         userID: "$userBasic._id",
@@ -2760,7 +2762,6 @@ export class AdsService {
                         liveTypeAds: "$ads.liveTypeAds",
                         nameType: "$types.nameType",
                         timestamps: "$ads.timestamps",
-                        skipTime: "$ads.skipTime",
                         typeAdsID: "$ads.typeAdsID",
                         adsUserId: "$ads.adsUserId",
                         placingID: "$ads.placingID",
@@ -2837,12 +2838,15 @@ export class AdsService {
                                 },
                                 then: 1,
                                 else: 0,
+
                             }
                         },
+
                     }
                 },
                 {
                     $project: {
+                        sekarang: 1,
                         viewed: 1,
                         placingID: 1,
                         placingName: 1,
@@ -2850,7 +2854,6 @@ export class AdsService {
                         adsId: 1,
                         userID: 1,
                         liveAt: 1,
-                        skipTime: 1,
                         liveTypeuserads: 1,
                         nameType: 1,
                         createdAt: 1,
@@ -3278,6 +3281,7 @@ export class AdsService {
                                 "default": 2
                             }
                         },
+
                     }
                 },
                 {
@@ -3288,6 +3292,7 @@ export class AdsService {
                                 $and: [
                                     {
                                         "nameType": nameType,
+
                                     },
                                     {
                                         liveTypeAds: true
@@ -3298,6 +3303,7 @@ export class AdsService {
                                 $and: [
                                     {
                                         "nameType": nameType,
+
                                     },
                                     {
                                         liveTypeAds: false
@@ -3307,8 +3313,10 @@ export class AdsService {
                                             $lt: ["$viewed", 1]
                                         }
                                     },
+
                                 ]
                             },
+
                         ]
                     }
                 },
@@ -3324,7 +3332,7 @@ export class AdsService {
                     $skip: 0
                 },
                 {
-                    $limit: 1
+                    $limit: 5
                 },
 
             ]
@@ -3850,9 +3858,8 @@ export class AdsService {
 
     async adsdatabyid(id: Types.ObjectId) {
 
-        const query = await this.adsModel.aggregate([
-
-
+        const query = await this.adsModel.aggregate(
+        [
             {
                 $match: {
                     _id: id,
@@ -4076,7 +4083,8 @@ export class AdsService {
 
                 }
             },
-        ]);
+        ]
+        );
         return query;
     }
 
