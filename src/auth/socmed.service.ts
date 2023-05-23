@@ -505,6 +505,7 @@ export class SocmedService {
             refreshToken: datajwtrefreshtoken_data.refresh_token_id
           },
           version: vesion,
+          version_ios : (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(),
           messages: {
             nextFlow: [
               "$.event: next should UPDATE_BIO",
@@ -1465,6 +1466,7 @@ export class SocmedService {
             uuid: uuid
           },
           version: vesion,
+          version_ios: (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(),
           messages: {
             nextFlow: [
               "$.event: next should UPDATE_BIO",
