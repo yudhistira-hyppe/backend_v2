@@ -6,6 +6,7 @@ export class CreateBanksDto {
     readonly bankname: string;
     readonly bankIcon: string;
     readonly urlEbanking: string;
+    urlbankIcon: string;
     readonly atm: string;
     readonly internetBanking: string;
     readonly mobileBanking: string;

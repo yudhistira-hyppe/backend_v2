@@ -15,6 +15,8 @@ export class Banks {
     @Prop()
     bankIcon: string
     @Prop()
+    urlbankIcon: string
+    @Prop()
     urlEbanking: string
     @Prop()
     atm: string
