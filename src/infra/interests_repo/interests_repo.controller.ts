@@ -45,8 +45,7 @@ export class InterestsRepoController {
       else
       {
         var insertfile = files.icon_file[0];
-        var lowercase = insertdata.interestName.toLocaleLowerCase();
-        var path = "images/icon_interest/" + lowercase + "." + insertfile.originalname.split(".")[1];
+        var path = "images/icon_interest/" + insertdata._id + "." + insertfile.originalname.split(".")[1];
         var result = await this.OssServices.uploadFile(insertfile, path);
         insertdata.icon = result.url;
       }
@@ -146,8 +145,8 @@ export class InterestsRepoController {
       if(files.icon_file != undefined)
       {
         var insertfile = files.icon_file[0];
-        var lowercase = updatedata.interestName.toLocaleLowerCase();
-        var path = "images/icon_interest/" + lowercase + "." + insertfile.originalname.split(".")[1];
+        var convertstring = repoID.toString();
+        var path = "images/icon_interest/" + convertstring + "." + insertfile.originalname.split(".")[1];
         var result = await this.OssServices.uploadFile(insertfile, path);
         updatedata.icon = result.url;
       }

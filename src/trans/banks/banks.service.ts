@@ -16,6 +16,46 @@ export class BanksService {
         return this.settingsModel.find().exec();
     }
 
+    async listingAll(bankname: string, page:number, limit:number): Promise<any> {
+        var pipeline = [];
+
+        if(bankname != undefined && bankname != null)
+        {
+            pipeline.push(
+                {
+                    "$match":
+                    {
+                        bankname:
+                        {
+                            "$regex":bankname,
+                            "$options":"i"
+                        },
+                    },
+                }
+            );
+        }
+
+        if (page > 0) {
+            pipeline.push({ $skip: (page * limit) });
+        }
+
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
+        }
+
+        let query = null;
+        if(pipeline.length == 0)
+        {
+            query = this.settingsModel.find().exec();
+        }
+        else
+        {
+            query = this.settingsModel.aggregate(pipeline);
+        }
+
+        return query;
+    }
+
     async findOne(id: string): Promise<Banks> {
         return this.settingsModel.findOne({ _id: id }).exec();
     }
@@ -24,5 +64,32 @@ export class BanksService {
         return this.settingsModel.findOne({ bankcode: bankcode }).exec();
     }
 
+    async create(CreateBanksDto: CreateBanksDto): Promise<Banks> {
+        const results = await this.settingsModel.create(
+            CreateBanksDto,
+        );
+        return results;
+    }
 
+    async update(id:string, CreateBanks: CreateBanksDto){
+        return await this.settingsModel.updateOne(
+            {
+                _id:id
+            },
+            {
+                "$set":
+                {
+                  "bankcode":CreateBanks.bankcode,
+                  "bankname":CreateBanks.bankname,
+                  "bankIcon":CreateBanks.bankIcon,
+                  "urlEbanking":CreateBanks.urlEbanking,
+                  "atm":CreateBanks.atm,
+                  "internetBanking":CreateBanks.internetBanking,
+                  "mobileBanking":CreateBanks.mobileBanking,
+                }
+            },
+        )
+
+        // return CreateBanks;
+    }
 }
