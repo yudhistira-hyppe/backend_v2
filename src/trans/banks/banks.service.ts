@@ -82,7 +82,6 @@ export class BanksService {
                   "bankcode":CreateBanks.bankcode,
                   "bankname":CreateBanks.bankname,
                   "bankIcon":CreateBanks.bankIcon,
-                  "urlbankIcon":CreateBanks.urlbankIcon,
                   "urlEbanking":CreateBanks.urlEbanking,
                   "atm":CreateBanks.atm,
                   "internetBanking":CreateBanks.internetBanking,
