@@ -2672,11 +2672,11 @@ export class PostContentService {
       });
     } else {
       console.log("heif", "false");
-      file_resize = file.buffer;
+      file_resize = file;
     }
 
     //Convert Image
-    const buffers_file = await webp.buffer2webpbuffer(file_resize, format, "-q 70", this.configService.get("PATH_UPLOAD"));
+    const buffers_file = await webp.buffer2webpbuffer(file_resize.buffer, format, "-q 70", this.configService.get("PATH_UPLOAD"));
     var file_commpress = buffers_file;
 
     //Convert Image Orientation
