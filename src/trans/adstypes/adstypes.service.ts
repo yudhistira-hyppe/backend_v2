@@ -75,4 +75,26 @@ export class AdstypesService {
         return data;
     }
 
+    async getAll(page:number, limit:number)
+    {
+        var pipeline = [];
+
+        if(page > 0)
+        {
+            pipeline.push({
+                "$skip":limit * page
+            });
+        }
+
+        if(limit > 0)
+        {
+            pipeline.push({   
+                "$limit":limit
+            });
+        }
+
+        var query = await this.adstypesModel.aggregate(pipeline);
+        return query;
+    }
+
 }
