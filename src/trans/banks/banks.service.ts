@@ -16,6 +16,46 @@ export class BanksService {
         return this.settingsModel.find().exec();
     }
 
+    async listingAll(bankname: string, page:number, limit:number): Promise<any> {
+        var pipeline = [];
+
+        if(bankname != undefined && bankname != null)
+        {
+            pipeline.push(
+                {
+                    "$match":
+                    {
+                        bankname:
+                        {
+                            "$regex":bankname,
+                            "$options":"i"
+                        },
+                    },
+                }
+            );
+        }
+
+        if (page > 0) {
+            pipeline.push({ $skip: (page * limit) });
+        }
+
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
+        }
+
+        let query = null;
+        if(pipeline.length == 0)
+        {
+            query = this.settingsModel.find().exec();
+        }
+        else
+        {
+            query = this.settingsModel.aggregate(pipeline);
+        }
+
+        return query;
+    }
+
     async findOne(id: string): Promise<Banks> {
         return this.settingsModel.findOne({ _id: id }).exec();
     }

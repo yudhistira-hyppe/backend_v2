@@ -24,6 +24,38 @@ export class BanksController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Post('api/banks/list/all')
+    async findAll2(@Req() request: Request) {
+        const messages = {
+            "info": ["The process successful"],
+        };
+        var bankname = null;
+        var page = null;
+        var limit = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["bankname"] !== undefined) {
+          bankname = request_json["bankname"];
+        }
+
+        if (request_json["page"] !== undefined) {
+          page = request_json["page"];
+        } else {
+          throw new BadRequestException("Unabled to proceed. page field required");
+        }
+
+        if (request_json["limit"] !== undefined) {
+          limit = request_json["limit"];
+        } else {
+          throw new BadRequestException("Unabled to proceed. limit field is required");
+        }
+
+        let data = await this.banksService.listingAll(bankname, page, limit);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post('api/banks/search')
     async findbank(@Req() request: Request) {
         var request_json = JSON.parse(JSON.stringify(request.body));
@@ -67,7 +99,7 @@ export class BanksController {
         var getdata = getresult._id.toString();
         var path = "images/icon_bank/" + getdata + "." + insertfile.originalname.split(".")[1];
         var result = await this.OssServices.uploadFile(insertfile, path);
-        CreateBanksDto.urlbankIcon = result.url;
+        CreateBanksDto.bankIcon = result.url;
         var id = getresult._id;
         var converttostring = id.toString();
         await this.banksService.update(converttostring, CreateBanksDto);
@@ -102,7 +134,7 @@ export class BanksController {
         var insertfile = files.icon_bank[0];
         var path = "images/icon_bank/" + id + "." + insertfile.originalname.split(".")[1];
         var result = await this.OssServices.uploadFile(insertfile, path);
-        CreateBanksDto.urlbankIcon = result.url;
+        CreateBanksDto.bankIcon = result.url;
       }
 
     //   console.log(CreateBanksDto);
