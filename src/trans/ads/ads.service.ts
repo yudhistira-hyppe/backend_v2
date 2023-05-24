@@ -2410,14 +2410,14 @@ export class AdsService {
                                         {
                                             "isActive": true
                                         },
-                                        {
-                                            $or: [
-                                                {
-                                                    "liveTypeuserads": true
-                                                },
-
-                                            ]
-                                        }
+                                        //{
+                                        //    $or: [
+                                        //        {
+                                        //            "liveTypeuserads": true
+                                        //        },
+                                        //        
+                                        //    ]
+                                        //}
                                     ]
                                 },
 
@@ -2489,7 +2489,7 @@ export class AdsService {
                                 {
                                     "userID":
                                     {
-                                        $ne: new Object("6214438e602c354635ed7876")
+                                        $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                     }
                                 },
 
@@ -2536,7 +2536,7 @@ export class AdsService {
                                     }
                                 },
                                 {
-                                    "userID": new Object("6214438e602c354635ed7876")
+                                    "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                 },
 
                             ]
@@ -2549,6 +2549,7 @@ export class AdsService {
                         isValid: 1,
                         userBasic: 1,
                         email: "$email",
+                        test: "$adsUser2.adsID",
                         viewed:
                         {
                             $cond: {
@@ -2601,7 +2602,7 @@ export class AdsService {
                             },
                             interestID: "$interestID",
                             gender: "$gender",
-                            liveAt: "$liveTypeAds",
+                            liveAt: "$liveAt",
                             liveTypeuserads: "$liveTypeAds",
                             typeAdsID: "$typeAdsID",
                             kelamin:
@@ -2753,11 +2754,12 @@ export class AdsService {
                 },
                 {
                     $project: {
+                        test: 1,
                         sekarang: 1,
                         viewed: "$viewed",
                         adsId: "$ads._id",
                         userID: "$userBasic._id",
-                        liveAt: "$ads.liveAt",
+                        liveAt: "$liveAt",
                         description: "$ads.description",
                         liveTypeAds: "$ads.liveTypeAds",
                         nameType: "$types.nameType",
@@ -2846,6 +2848,7 @@ export class AdsService {
                 },
                 {
                     $project: {
+                        test: 1,
                         sekarang: 1,
                         viewed: 1,
                         placingID: 1,
