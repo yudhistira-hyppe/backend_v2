@@ -1042,18 +1042,22 @@ export class PostsController {
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
     var arrtag = [];
 
-    if (body.tags !== undefined && body.tags !== "") {
-      var tag = body.tags;
-      var splittag = tag.split(',');
-      for (let x = 0; x < splittag.length; x++) {
+    var cekarray = Array.isArray(body.tags);
+    console.log(cekarray)
 
-        var tagreq = splittag[x].replace(/"/g, "");
-        arrtag.push(tagreq)
+    if (cekarray == false) {
+      if (body.tags !== undefined && body.tags !== "") {
+        var tag = body.tags;
+        var splittag = tag.split(',');
+        for (let x = 0; x < splittag.length; x++) {
 
+          var tagreq = splittag[x].replace(/"/g, "");
+          arrtag.push(tagreq)
+
+        }
+        body.tags = arrtag;
       }
-      body.tags = arrtag;
     }
-
 
     var data = await this.postContentService.createNewPostV4(file, body, headers);
     var postID = data.data.postID;
@@ -2065,7 +2069,7 @@ export class PostsController {
           } else {
             console.log("NON OSS");
             var thum_data = "";
-            if (dataMedia[0].datacontent[0].apsara){
+            if (dataMedia[0].datacontent[0].apsara) {
               if (dataMedia[0].datacontent[0].apsaraId != undefined) {
                 var resultpictapsara = await this.postContentService.getVideoApsara([dataMedia[0].datacontent[0].apsaraId.toString()]);
                 var UrlThumnail = resultpictapsara.VideoList[0].CoverURL;
@@ -2078,7 +2082,7 @@ export class PostsController {
                 } else {
                   response.send(null);
                 }
-              }else{
+              } else {
                 response.send(null);
               }
             } else {
