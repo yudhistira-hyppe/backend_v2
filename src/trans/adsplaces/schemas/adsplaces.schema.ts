@@ -12,7 +12,8 @@ export class Adsplaces {
     @Prop()
     descPlace: String
 
-
+    @Prop({ type: Object })
+    adsType: { oid: String; }
 }
 
 export const AdsplacesSchema = SchemaFactory.createForClass(Adsplaces);
