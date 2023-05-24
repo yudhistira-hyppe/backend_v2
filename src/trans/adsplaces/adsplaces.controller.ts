@@ -81,6 +81,41 @@ export class AdsplacesController {
     async findAll(): Promise<Adsplaces[]> {
         return this.adsplacesService.findAll();
     }
+
+    //response API adsplace join dengan adstype
+    @UseGuards(JwtAuthGuard)
+    @Post('listing')
+    async detailAll(@Request() request) {
+        var page = null;
+        var limit = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if (request_json["page"] !== undefined) {
+            page = Number(request_json["page"]);
+        } else {
+            throw new BadRequestException("Unabled to proceed, page field is required");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = Number(request_json["limit"]);
+        } else {
+            throw new BadRequestException("Unabled to proceed, limit field is required");
+        }
+
+        var data = await this.adsplacesService.getAll(page, limit);
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        return {
+            response_code: 202,
+            data:data,
+            messages: messages,
+        };
+    }
+
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     async findOne(@Param('id') id: string): Promise<Adsplaces> {
