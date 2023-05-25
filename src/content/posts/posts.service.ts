@@ -32,7 +32,7 @@ import { SeaweedfsService } from '../../stream/seaweedfs/seaweedfs.service';
 import { SettingsService } from '../../trans/settings/settings.service';
 import * as fs from 'fs';
 import * as https from "https";
-import * as http from "http"; 
+import * as http from "http";
 
 import { Queue, Job } from 'bull';
 import { DisqusService } from '../disqus/disqus.service';
@@ -16323,10 +16323,10 @@ export class PostsService {
       rejectUnauthorized: false,
     });
     axios.defaults.timeout = 300000;
-    const response = await axios.get(url, { httpsAgent,responseType: 'arraybuffer' })
+    const response = await axios.get(url, { httpsAgent, responseType: 'arraybuffer' })
     const buffer = Buffer.from(response.data, "utf-8")
     return buffer;
-}
+  }
 
   async updateCommentMin(email: string, postID: string) {
     this.PostsModel.updateOne(
@@ -40167,7 +40167,7 @@ export class PostsService {
                     $filter: {
                       input: "$viewer",
                       cond: {
-                        $eq: ["$$this", email]
+                        $eq: ["$email", email]
                       }
                     }
                   }
@@ -41496,7 +41496,7 @@ export class PostsService {
                         $filter: {
                           input: "$viewer",
                           cond: {
-                            $eq: ["$$this", email]
+                            $eq: ["$email", email]
                           }
                         }
                       }
@@ -42819,7 +42819,7 @@ export class PostsService {
                         $filter: {
                           input: "$viewer",
                           cond: {
-                            $eq: ["$$this", email]
+                            $eq: ["$email", email]
                           }
                         }
                       }
