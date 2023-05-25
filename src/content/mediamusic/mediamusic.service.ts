@@ -739,6 +739,23 @@ export class MediamusicService {
       });
   }
 
+  async deleteMusicAll(_id_data: [Object]) {
+    try {
+      this.MediamusicModel.updateMany(
+        { _id: { $in: _id_data } },
+        { $set: { isActive: false, isDelete: true } }, function (err, docs) {
+          if (err) {
+            console.log(err)
+          }
+          else {
+            console.log("Updated Docs : ", docs);
+          }
+        });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   async statusMusic(_id_data: [Object], status: boolean) {
     try {
       this.MediamusicModel.updateMany(
