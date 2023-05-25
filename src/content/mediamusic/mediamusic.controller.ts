@@ -320,9 +320,9 @@ export class MediamusicController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/music/delete')
+  @Post('api/music/one/delete')
   @HttpCode(HttpStatus.ACCEPTED)
-  async deleteMusicPost(@Headers() headers, @Body() body) {
+  async deleteMusicPostone(@Headers() headers, @Body() body) {
     if (headers['x-auth-user'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
@@ -344,6 +344,51 @@ export class MediamusicController {
       messages: {
         info: [
           "Delete music succesfully"
+        ]
+      }
+    }
+    return Response;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/music/delete')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async deleteMusicPost(@Headers() headers, @Body() body) {
+    if (headers['x-auth-user'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+    if (body._id == undefined) {
+      await this.errorHandler.generateBadRequestException(
+        'Unabled to proceed param _id is required',
+      );
+    }
+    await this.mediamusicService.deleteMusic(body._id);
+    var Response = {
+      response_code: 202,
+      messages: {
+        info: [
+          "Delete music succesfully"
+        ]
+      }
+    }
+
+    var allId = body._id;
+    var dataId = allId.map(function (value) {
+      return new mongoose.Types.ObjectId(value);
+    });
+    await this.mediamusicService.deleteMusicAll(dataId);
+    var Response = {
+      response_code: 202,
+      messages: {
+        info: [
+          "Update music succesfully"
         ]
       }
     }

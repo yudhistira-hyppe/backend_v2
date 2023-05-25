@@ -300,6 +300,7 @@ export class AdsUserCompareController {
             if (await this.utilsService.ceckData(dataPlace)) {
                 data_response['adsPlace'] = dataPlace.namePlace;
             }
+            console.log("skipTime", data_ads[0].skipTime);
             data_response['adsType'] = (await this.adstypesService.findOne(data_ads[0].typeAdsID.toString())).nameType;
             data_response['adsSkip'] = (data_ads[0].skipTime != undefined) ? data_ads[0].skipTime : (await this.adstypesService.findOne(data_ads[0].typeAdsID.toString())).AdsSkip;
             data_response['mediaType'] = data_ads[0].type;

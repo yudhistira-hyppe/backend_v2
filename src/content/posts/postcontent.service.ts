@@ -2662,8 +2662,21 @@ export class PostContentService {
       }
     }
 
+    var file_resize = null;
+    if (image_format == "heif") {
+      console.log("heif", "true");
+      file_resize = await convert({
+        buffer: file.buffer,
+        format: 'JPEG',
+        quality: 1
+      });
+    } else {
+      console.log("heif", "false");
+      file_resize = file;
+    }
+
     //Convert Image
-    const buffers_file = await webp.buffer2webpbuffer(file.buffer, format, "-q 70", this.configService.get("PATH_UPLOAD"));
+    const buffers_file = await webp.buffer2webpbuffer(file_resize.buffer, format, "-q 70", this.configService.get("PATH_UPLOAD"));
     var file_commpress = buffers_file;
 
     //Convert Image Orientation
@@ -2782,8 +2795,21 @@ export class PostContentService {
       }
     }
 
+    var file_resize = null;
+    if (image_format == "heif") {
+      console.log("heif", "true");
+      file_resize = await convert({
+        buffer: file.buffer,
+        format: 'JPEG',
+        quality: 1
+      });
+    } else {
+      console.log("heif", "false");
+      file_resize = file;
+    }
+
     //Convert Image
-    const buffers_file = await webp.buffer2webpbuffer(file.buffer, format, "-q 70", "./temp/");
+    const buffers_file = await webp.buffer2webpbuffer(file_resize.buffer, format, "-q 70", "./temp/");
     var file_commpress = buffers_file;
 
     //Convert Image Orientation
