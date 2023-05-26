@@ -14241,6 +14241,7 @@ export class AdsService {
                                     totalCredit: 1,
                                     timeStart: 1,
                                     timeEnd: 1,
+                                    skipTime:1,
                                     namePlace:
                                     {
                                         "$arrayElemAt":
@@ -14489,6 +14490,7 @@ export class AdsService {
                                     timeEnd: 1,
                                     namePlace: 1,
                                     nameType: 1,
+                                    skipTime:1,
                                     idApsara: 1,
                                     apsara:
                                     {
@@ -20372,6 +20374,13 @@ export class AdsService {
                         "$arrayElemAt":
                             [
                                 "$detail.duration", 0
+                            ]
+                    },
+                    skipTime:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.skipTime", 0
                             ]
                     },
                     fullName:
