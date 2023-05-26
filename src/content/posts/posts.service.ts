@@ -40159,12 +40159,15 @@ export class PostsService {
             viewerCount: {
               $cond: {
                 if: {
+                  $filter: {
+                    input: "$viewer",
+                    cond: {
+                      $eq: ["$$this", email]
+                    }
 
-                  $ifNull: ['$viewer', []]
+                  }
                 },
-                then: 0,
-
-                else: {
+                then: {
                   $size: {
                     $filter: {
                       input: "$viewer",
@@ -40174,6 +40177,7 @@ export class PostsService {
                     }
                   }
                 },
+                else: 0
               }
             }
           }
@@ -40340,10 +40344,11 @@ export class PostsService {
         },
         {
           $sort: {
-            viewerCount: 1,
+
             selfContents: - 1,
             "isBoost": - 1,
-            "createdAt": - 1
+            "createdAt": - 1,
+            viewerCount: 1,
           }
         },
         {
@@ -41482,11 +41487,16 @@ export class PostsService {
             viewerCount: {
               $cond: {
                 if: {
-                  $ifNull: ['$viewer', []]
-                },
-                then: 0,
+                  $filter: {
+                    input: "$viewer",
+                    cond: {
+                      $eq: ["$$this", email]
+                    }
 
-                else: {
+                  }
+                },
+                then:
+                {
                   $cond: {
                     if: {
                       $gt: ["$isBoost", 3]
@@ -41505,6 +41515,7 @@ export class PostsService {
                     },
                   },
                 },
+                else: 0
               }
             }
           }
@@ -41661,10 +41672,11 @@ export class PostsService {
         },
         {
           $sort: {
-            viewerCount: 1,
+
             selfContents: -1,
             "isBoost": - 1,
-            "createdAt": - 1
+            "createdAt": - 1,
+            viewerCount: 1,
           }
         },
         {
@@ -42805,12 +42817,16 @@ export class PostsService {
             viewerCount: {
               $cond: {
                 if: {
-                  // $isArray: "$viewer"
-                  $ifNull: ['$viewer', []]
-                },
-                then: 0,
+                  $filter: {
+                    input: "$viewer",
+                    cond: {
+                      $eq: ["$$this", email]
+                    }
 
-                else: {
+                  }
+                },
+                then:
+                {
                   $cond: {
                     if: {
                       $gt: ["$isBoost", 3]
@@ -42829,6 +42845,7 @@ export class PostsService {
                     },
                   },
                 },
+                else: 0
               }
             }
           }
