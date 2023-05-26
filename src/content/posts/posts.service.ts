@@ -40154,13 +40154,21 @@ export class PostsService {
 
           }
         },
+
+        {
+          $set: {
+            kosong: {
+              $ifNull: ['$viewer', "kancut"]
+            }
+          }
+        },
         {
           $set: {
             viewerCount: {
               $cond: {
                 if: {
-
-                  $ifNull: ['$viewer', []]
+                  $eq: ['$kosong', "kancut"]
+                  //$ifNull: ['$viewer', []]
                 },
                 then: 0,
 
@@ -41479,10 +41487,18 @@ export class PostsService {
         },
         {
           $set: {
+            kosong: {
+              $ifNull: ['$viewer', "kancut"]
+            }
+          }
+        },
+        {
+          $set: {
             viewerCount: {
               $cond: {
                 if: {
-                  $ifNull: ['$viewer', []]
+                  $eq: ['$kosong', "kancut"]
+                  //$ifNull: ['$viewer', []]
                 },
                 then: 0,
 
@@ -42802,11 +42818,18 @@ export class PostsService {
         },
         {
           $set: {
+            kosong: {
+              $ifNull: ['$viewer', "kancut"]
+            }
+          }
+        },
+        {
+          $set: {
             viewerCount: {
               $cond: {
                 if: {
-                  // $isArray: "$viewer"
-                  $ifNull: ['$viewer', []]
+                  $eq: ['$kosong', "kancut"]
+                  //$ifNull: ['$viewer', []]
                 },
                 then: 0,
 
