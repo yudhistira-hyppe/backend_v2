@@ -40159,15 +40159,10 @@ export class PostsService {
             viewerCount: {
               $cond: {
                 if: {
-                  $filter: {
-                    input: "$viewer",
-                    cond: {
-                      $eq: ["$$this", email]
-                    }
-
-                  }
+                  $isArray: "$viewer"
                 },
-                then: {
+                then:
+                {
                   $size: {
                     $filter: {
                       input: "$viewer",
@@ -40344,11 +40339,10 @@ export class PostsService {
         },
         {
           $sort: {
-
+            viewerCount: 1,
             selfContents: - 1,
             "isBoost": - 1,
-            "createdAt": - 1,
-            viewerCount: 1,
+            "createdAt": - 1
           }
         },
         {
@@ -41487,13 +41481,7 @@ export class PostsService {
             viewerCount: {
               $cond: {
                 if: {
-                  $filter: {
-                    input: "$viewer",
-                    cond: {
-                      $eq: ["$$this", email]
-                    }
-
-                  }
+                  $isArray: "$viewer"
                 },
                 then:
                 {
@@ -41672,11 +41660,10 @@ export class PostsService {
         },
         {
           $sort: {
-
+            viewerCount: 1,
             selfContents: -1,
             "isBoost": - 1,
-            "createdAt": - 1,
-            viewerCount: 1,
+            "createdAt": - 1
           }
         },
         {
@@ -42817,13 +42804,7 @@ export class PostsService {
             viewerCount: {
               $cond: {
                 if: {
-                  $filter: {
-                    input: "$viewer",
-                    cond: {
-                      $eq: ["$$this", email]
-                    }
-
-                  }
+                  $isArray: "$viewer"
                 },
                 then:
                 {
