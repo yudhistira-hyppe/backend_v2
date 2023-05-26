@@ -40159,20 +40159,21 @@ export class PostsService {
             viewerCount: {
               $cond: {
                 if: {
-                  $isArray: "$viewer"
+
+                  $ifNull: ['$viewer', []]
                 },
-                then:
-                {
+                then: 0,
+
+                else: {
                   $size: {
                     $filter: {
                       input: "$viewer",
                       cond: {
-                        $eq: ["$email", email]
+                        $eq: ["$$this", email]
                       }
                     }
                   }
                 },
-                else: 0
               }
             }
           }
@@ -41481,10 +41482,11 @@ export class PostsService {
             viewerCount: {
               $cond: {
                 if: {
-                  $isArray: "$viewer"
+                  $ifNull: ['$viewer', []]
                 },
-                then:
-                {
+                then: 0,
+
+                else: {
                   $cond: {
                     if: {
                       $gt: ["$isBoost", 3]
@@ -41496,14 +41498,13 @@ export class PostsService {
                         $filter: {
                           input: "$viewer",
                           cond: {
-                            $eq: ["$email", email]
+                            $eq: ["$$this", email]
                           }
                         }
                       }
                     },
                   },
                 },
-                else: 0
               }
             }
           }
@@ -42804,10 +42805,12 @@ export class PostsService {
             viewerCount: {
               $cond: {
                 if: {
-                  $isArray: "$viewer"
+                  // $isArray: "$viewer"
+                  $ifNull: ['$viewer', []]
                 },
-                then:
-                {
+                then: 0,
+
+                else: {
                   $cond: {
                     if: {
                       $gt: ["$isBoost", 3]
@@ -42819,14 +42822,13 @@ export class PostsService {
                         $filter: {
                           input: "$viewer",
                           cond: {
-                            $eq: ["$email", email]
+                            $eq: ["$$this", email]
                           }
                         }
                       }
                     },
                   },
                 },
-                else: 0
               }
             }
           }
