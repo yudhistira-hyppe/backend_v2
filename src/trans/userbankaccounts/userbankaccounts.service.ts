@@ -57,37 +57,37 @@ export class UserbankaccountsService {
                     bankIcon: "$databank.bankIcon"
                 }
             },
-            {
-                $addFields: {
+            // // {
+            // //     $addFields: {
 
-                    stinquiry: {
-                        $cmp: ["$statusInquiry", 0]
-                    }
-                },
+            // //         stinquiry: {
+            // //             $cmp: ["$statusInquiry", 0]
+            // //         }
+            // //     },
 
-            },
-            {
-                $project: {
-                    userId: 1,
-                    noRek: 1,
-                    nama: 1,
-                    statusInquiry: {
-                        $cond: {
-                            if: {
-                                $eq: ["$stinquiry", - 1]
-                            },
-                            then: false,
-                            else: "$statusInquiry"
-                        }
-                    },
-                    active: 1,
-                    bankId: 1,
-                    bankcode: 1,
-                    bankname: 1,
-                    urlEbanking: 1,
-                    bankIcon: 1
-                }
-            },
+            // // },
+            // {
+            //     $project: {
+            //         userId: 1,
+            //         noRek: 1,
+            //         nama: 1,
+            //         // statusInquiry: {
+            //         //     $cond: {
+            //         //         if: {
+            //         //             $eq: ["$stinquiry", - 1]
+            //         //         },
+            //         //         then: false,
+            //         //         else: "$statusInquiry"
+            //         //     }
+            //         // },
+            //         active: 1,
+            //         bankId: 1,
+            //         bankcode: 1,
+            //         bankname: 1,
+            //         urlEbanking: 1,
+            //         bankIcon: 1
+            //     }
+            // },
             {
                 $match: {
                     userId: iduser,
