@@ -102,6 +102,8 @@ import { AssetsFilterModule } from './assets/filter/assets-filter.module';
 import { AdsLandingModule } from './content/posts/adslanding/adslanding.module';
 import { OssModule } from './stream/oss/oss.module';
 import { Settings2Module } from './trans/settings2/settings2.module';
+import { JenischallengeModule } from './trans/jenischallenge/jenischallenge.module';
+import { BadgeModule } from './trans/badge/badge.module';
 @Module({
   imports: [
     OssModule,
@@ -225,7 +227,9 @@ import { Settings2Module } from './trans/settings2/settings2.module';
     AdrolesModule,
     AuthModule,
     SocketModule,
-    Settings2Module
+    Settings2Module,
+    JenischallengeModule,
+    BadgeModule
   ], providers: [],
 })
 export class AppModule { }
