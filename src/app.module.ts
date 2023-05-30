@@ -104,6 +104,7 @@ import { OssModule } from './stream/oss/oss.module';
 import { Settings2Module } from './trans/settings2/settings2.module';
 import { JenischallengeModule } from './trans/jenischallenge/jenischallenge.module';
 import { BadgeModule } from './trans/badge/badge.module';
+import { ChallengeModule } from './trans/challenge/challenge.module';
 @Module({
   imports: [
     OssModule,
@@ -229,7 +230,8 @@ import { BadgeModule } from './trans/badge/badge.module';
     SocketModule,
     Settings2Module,
     JenischallengeModule,
-    BadgeModule
+    BadgeModule,
+    ChallengeModule
   ], providers: [],
 })
 export class AppModule { }
