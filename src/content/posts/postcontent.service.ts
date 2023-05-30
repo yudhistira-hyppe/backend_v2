@@ -6282,7 +6282,7 @@ export class PostContentService {
 
     for (var i = 0; i < Mediapicts_.length; i++) {
       var dateCurrent = await this.utilService.getDateTime();
-      console.log("------------------------------ START INDEX NUMBER " + i +" ------------------------------");
+      console.log("------------------------------ START MIGRATION PICT INDEX NUMBER " + i +" ------------------------------");
       console.log("------------------------------ CURRENT DATE " + dateCurrent + " ------------------------------");
       console.log("------------------------------ CURRENT DATE " + dateCurrent.getTime() + " ------------------------------");
       console.log("------------------------------ POST ID " + Mediapicts_[i].postID.toString() + " ------------------------------");
@@ -6308,7 +6308,7 @@ export class PostContentService {
             var postType = "pict";
             var format = "jpg";
             await this.prossesMigrationPict(image, _id, postID, userId, postType, format);
-            console.log("------------------------------ END INDEX NUMBER " + i + " ------------------------------");
+            console.log("------------------------------ END MIGRATION PICT INDEX NUMBER " + i + " ------------------------------");
           } else {
             await this.updateDataMigrationPictLogs(Mediapicts_[i]._id.toString(), "FAILED", "DATA USER NULL");
           }
@@ -6334,7 +6334,7 @@ export class PostContentService {
     console.log("------------------------------ DATA LENGTH " + Mediavideos_.length + " ------------------------------");
     for (var i = 0; i < Mediavideos_.length; i++) {
       var dateCurrent = await this.utilService.getDateTime();
-      console.log("------------------------------ START INDEX NUMBER " + i + " ------------------------------");
+      console.log("------------------------------ START MIGRATION VID INDEX NUMBER " + i + " ------------------------------");
       console.log("------------------------------ CURRENT DATE " + dateCurrent + " ------------------------------");
       console.log("------------------------------ CURRENT DATE " + dateCurrent.getTime() + " ------------------------------");
       console.log("------------------------------ POST ID " + Mediavideos_[i].postID.toString() + " ------------------------------");
@@ -6352,7 +6352,7 @@ export class PostContentService {
         var originalName = (Mediavideos_[i].originalName != undefined) ? Mediavideos_[i].originalName.toString() : postID + "." + mime;
         console.log("PROCCESS MIGRATION");
         await this.prossesMigrationVid(video, _id, postID, originalName);
-        console.log("------------------------------ END INDEX NUMBER " + i + " ------------------------------");
+        console.log("------------------------------ END MIGRATION VID INDEX NUMBER " + i + " ------------------------------");
       } else {
         console.error("ERROR ", "VIDEO NULL");
         await this.updateDataMigrationVidLogs(Mediavideos_[i]._id.toString(), "FAILED", "VIDEO NULL");
@@ -6373,7 +6373,7 @@ export class PostContentService {
     console.log("------------------------------ DATA LENGTH " + Mediadiaries_.length + " ------------------------------");
     for (var i = 0; i < Mediadiaries_.length; i++) {
       var dateCurrent = await this.utilService.getDateTime();
-      console.log("------------------------------ START INDEX NUMBER " + i + " ------------------------------");
+      console.log("------------------------------ START MIGRATION DIARIES INDEX NUMBER " + i + " ------------------------------");
       console.log("------------------------------ CURRENT DATE " + dateCurrent + " ------------------------------");
       console.log("------------------------------ CURRENT DATE " + dateCurrent.getTime() + " ------------------------------");
       console.log("------------------------------ POST ID " + Mediadiaries_[i].postID.toString() + " ------------------------------");
@@ -6391,7 +6391,7 @@ export class PostContentService {
         var originalName = (Mediadiaries_[i].originalName != undefined) ? Mediadiaries_[i].originalName.toString() : postID + "." + mime;
         console.log("PROCCESS MIGRATION");
         await this.prossesMigrationDiary(video, _id, postID, originalName);
-        console.log("------------------------------ END INDEX NUMBER " + i + " ------------------------------");
+        console.log("------------------------------ END MIGRATION DIARIES INDEX NUMBER " + i + " ------------------------------");
       } else {
         console.error("ERROR ", "VIDEO NULL");
         await this.updateDataMigrationDiaryLogs(Mediadiaries_[i]._id.toString(), "FAILED", "VIDEO NULL");
@@ -6549,5 +6549,23 @@ export class PostContentService {
     med.statusMigration = statusMigration_;
     med.descMigration = descMigration_;
     await this.diaryService.updatebyId(_id, med);
+  }
+
+  async cronJobSeaweedPictStart() {
+    var Mediapicts_ = await this.getDataMediapictSeaweed();
+    console.log(Mediapicts_.length);
+    this.runMigrationPict(Mediapicts_);
+  }
+
+  async cronJobSeaweedVidStart() {
+    var Mediavid_ = await this.getDataMediavidSeaweed();
+    console.log(Mediavid_.length);
+    this.runMigrationVid(Mediavid_);
+  }
+
+  async cronJobSeaweedDiariesStart() {
+    var Mediadiaries_ = await this.getDataMediadiariesSeaweed();
+    console.log(Mediadiaries_.length);
+    this.runMigrationDiary(Mediadiaries_);
   }
 }

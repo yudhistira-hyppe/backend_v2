@@ -104,8 +104,11 @@ import { OssModule } from './stream/oss/oss.module';
 import { Settings2Module } from './trans/settings2/settings2.module';
 import { JenischallengeModule } from './trans/jenischallenge/jenischallenge.module';
 import { BadgeModule } from './trans/badge/badge.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TaskModule } from './schedule/task/task.module';
 @Module({
   imports: [
+    TaskModule,
     OssModule,
     AssetsFilterModule,
     DeepArModule,
@@ -115,6 +118,7 @@ import { BadgeModule } from './trans/badge/badge.module';
     ThemeModule,
     MoodModule,
     GenreModule,
+    ScheduleModule.forRoot(),
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
