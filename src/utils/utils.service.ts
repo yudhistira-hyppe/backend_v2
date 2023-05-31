@@ -335,6 +335,8 @@ export class UtilsService {
     var device_user = [];
     var getDate = await ((await this.getDateTime()).getTime()).toString();
 
+    data_send['title'] = title_send;
+    data_send['body'] = body_send;
     if (typeTemplate != "REACTION") {
       for (var i = 0; i < datadevice.length; i++) {
         var notification = {
