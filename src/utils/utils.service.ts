@@ -515,6 +515,9 @@ export class UtilsService {
     //SEND FCM
     var datadevice = await this.userdevicesService.findActive(receiverParty);
     var device_user = [];
+
+    data_send['title'] = title_send;
+    data_send['body'] = body_send;
     for (var i = 0; i < datadevice.length; i++) {
       this.logger.log('sendFcmCMod >>> send: title-> ' + title_send + ' body: ' + JSON.stringify(body_send));
       var notification = {
@@ -672,6 +675,9 @@ export class UtilsService {
             tag: "background"
           },
           data: {
+
+            title: titlein,
+            body: bodyin,
             postID: pid,
             postType: postType
           }
@@ -686,6 +692,8 @@ export class UtilsService {
             tag: "background"
           },
           data: {
+            title: titleen,
+            body: bodyen,
             postID: pid,
             postType: postType
           }
@@ -699,6 +707,8 @@ export class UtilsService {
             tag: "background"
           },
           data: {
+            title: titlein,
+            body: bodyin,
             postID: pid,
             postType: postType
           }
@@ -870,6 +880,8 @@ export class UtilsService {
             tag: "background"
           },
           data: {
+            title: titlein,
+            body: bodyin,
             postID: pid,
             postType: postType
           }
@@ -884,6 +896,8 @@ export class UtilsService {
             tag: "background"
           },
           data: {
+            title: titleen,
+            body: bodyen,
             postID: pid,
             postType: postType
           }
@@ -897,6 +911,8 @@ export class UtilsService {
             tag: "background"
           },
           data: {
+            title: titlein,
+            body: bodyin,
             postID: pid,
             postType: postType
           }
