@@ -340,11 +340,11 @@ export class UtilsService {
     if (typeTemplate != "REACTION") {
       for (var i = 0; i < datadevice.length; i++) {
         var notification = {
-          notification: {
-            title: title_send,
-            body: body_send,
-            tag: await this.makeid(7)
-          },
+          // notification: {
+          //   title: title_send,
+          //   body: body_send,
+          //   tag: await this.makeid(7)
+          // },
           data: data_send,
         }
         await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
@@ -521,10 +521,10 @@ export class UtilsService {
     for (var i = 0; i < datadevice.length; i++) {
       this.logger.log('sendFcmCMod >>> send: title-> ' + title_send + ' body: ' + JSON.stringify(body_send));
       var notification = {
-        notification: {
-          title: title_send,
-          body: body_send,
-        },
+        // notification: {
+        //   title: title_send,
+        //   body: body_send,
+        // },
         data: data_send,
       }
       await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
@@ -669,11 +669,11 @@ export class UtilsService {
 
         payload = {
 
-          notification: {
-            title: titlein,
-            body: bodyin,
-            tag: "background"
-          },
+          // notification: {
+          //   title: titlein,
+          //   body: bodyin,
+          //   tag: "background"
+          // },
           data: {
 
             title: titlein,
@@ -686,11 +686,11 @@ export class UtilsService {
       else if (langIso === "en") {
         payload = {
 
-          notification: {
-            title: titleen,
-            body: bodyen,
-            tag: "background"
-          },
+          // notification: {
+          //   title: titleen,
+          //   body: bodyen,
+          //   tag: "background"
+          // },
           data: {
             title: titleen,
             body: bodyen,
@@ -701,11 +701,11 @@ export class UtilsService {
       } else {
         payload = {
 
-          notification: {
-            title: titlein,
-            body: bodyin,
-            tag: "background"
-          },
+          // notification: {
+          //   title: titlein,
+          //   body: bodyin,
+          //   tag: "background"
+          // },
           data: {
             title: titlein,
             body: bodyin,
@@ -874,11 +874,11 @@ export class UtilsService {
 
         payload = {
 
-          notification: {
-            title: titlein,
-            body: bodyin,
-            tag: "background"
-          },
+          // notification: {
+          //   title: titlein,
+          //   body: bodyin,
+          //   tag: "background"
+          // },
           data: {
             title: titlein,
             body: bodyin,
@@ -890,11 +890,11 @@ export class UtilsService {
       else if (langIso === "en") {
         payload = {
 
-          notification: {
-            title: titleen,
-            body: bodyen,
-            tag: "background"
-          },
+          // notification: {
+          //   title: titleen,
+          //   body: bodyen,
+          //   tag: "background"
+          // },
           data: {
             title: titleen,
             body: bodyen,
@@ -905,11 +905,11 @@ export class UtilsService {
       } else {
         payload = {
 
-          notification: {
-            title: titlein,
-            body: bodyin,
-            tag: "background"
-          },
+          // notification: {
+          //   title: titlein,
+          //   body: bodyin,
+          //   tag: "background"
+          // },
           data: {
             title: titlein,
             body: bodyin,
