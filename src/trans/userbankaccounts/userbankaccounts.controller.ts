@@ -115,14 +115,18 @@ export class UserbankaccountsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-
+        var proofPict_json = null;
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
         var ubasic = await this.userbasicsService.findOne(email);
 
         var iduser = ubasic._id;
-        var proofPict_json = JSON.parse(JSON.stringify(ubasic.proofPict));
+        try {
+            proofPict_json = JSON.parse(JSON.stringify(ubasic.proofPict));
+        } catch (e) {
+            throw new BadRequestException("Maaf Silahkan lakukan KYC dahulu !");
+        }
         var id_mediaproofpicts = proofPict_json.$id;
         try {
             datamediaprof = await this.mediaproofpictsService.findOne(id_mediaproofpicts);
