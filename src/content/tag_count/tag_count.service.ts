@@ -2548,6 +2548,15 @@ export class TagCountService {
                                     }
                                 },
                                 {
+                                    $sort: {
+                                        isApsara: - 1,
+                                        scorePict: - 1,
+                                        comments: - 1,
+                                        likes: - 1,
+                                        createdAt: - 1
+                                    }
+                                },
+                                {
                                     $skip: skip
                                 },
                                 {
@@ -3098,15 +3107,7 @@ export class TagCountService {
                                         "tags": 1
                                     }
                                 },
-                                {
-                                    $sort: {
-                                        isApsara: - 1,
-                                        scorePict: - 1,
-                                        comments: - 1,
-                                        likes: - 1,
-                                        createdAt: - 1
-                                    }
-                                },
+
 
 
                             ],
@@ -3286,6 +3287,15 @@ export class TagCountService {
                                     }
                                 },
                                 {
+                                    $sort: {
+                                        isApsara: - 1,
+                                        scorePict: - 1,
+                                        comments: - 1,
+                                        likes: - 1,
+                                        createdAt: - 1
+                                    }
+                                },
+                                {
                                     $skip: skip
                                 },
                                 {
@@ -3836,16 +3846,6 @@ export class TagCountService {
                                         "tags": 1
                                     }
                                 },
-                                {
-                                    $sort: {
-                                        isApsara: -1,
-                                        scorePict: - 1,
-                                        comments: - 1,
-                                        likes: - 1,
-                                        createdAt: -1
-                                    }
-                                },
-
 
                             ],
                     },
@@ -4023,6 +4023,15 @@ export class TagCountService {
                                     }
                                 },
                                 {
+                                    $sort: {
+                                        isApsara: - 1,
+                                        scorePict: - 1,
+                                        comments: - 1,
+                                        likes: - 1,
+                                        createdAt: - 1
+                                    }
+                                },
+                                {
                                     $skip: skip
                                 },
                                 {
@@ -4573,15 +4582,7 @@ export class TagCountService {
                                         "tags": 1
                                     }
                                 },
-                                {
-                                    $sort: {
-                                        isApsara: -1,
-                                        scorePict: - 1,
-                                        comments: - 1,
-                                        likes: - 1,
-                                        createdAt: -1
-                                    }
-                                },
+
 
 
                             ],
@@ -4763,6 +4764,15 @@ export class TagCountService {
                                     }
                                 },
                                 {
+                                    $sort: {
+                                        isApsara: -1,
+                                        scorePict: - 1,
+                                        comments: - 1,
+                                        likes: - 1,
+                                        createdAt: -1
+                                    }
+                                },
+                                {
                                     $skip: skip
                                 },
                                 {
@@ -5313,15 +5323,7 @@ export class TagCountService {
                                         "tags": 1
                                     }
                                 },
-                                {
-                                    $sort: {
-                                        isApsara: - 1,
-                                        scorePict: - 1,
-                                        comments: - 1,
-                                        likes: - 1,
-                                        createdAt: - 1
-                                    }
-                                },
+
 
 
                             ],
@@ -5480,6 +5482,15 @@ export class TagCountService {
                                     }
                                 },
                                 {
+                                    $sort: {
+                                        isApsara: -1,
+                                        scorePict: - 1,
+                                        comments: - 1,
+                                        likes: - 1,
+                                        createdAt: -1
+                                    }
+                                },
+                                {
                                     $skip: skip
                                 },
                                 {
@@ -6028,15 +6039,6 @@ export class TagCountService {
                                         "contentModerationResponse": 1,
                                         "reportedUser": 1,
                                         "tags": 1
-                                    }
-                                },
-                                {
-                                    $sort: {
-                                        isApsara: -1,
-                                        scorePict: - 1,
-                                        comments: - 1,
-                                        likes: - 1,
-                                        createdAt: -1
                                     }
                                 },
 
@@ -6220,6 +6222,15 @@ export class TagCountService {
                                     }
                                 },
                                 {
+                                    $sort: {
+                                        isApsara: -1,
+                                        scorePict: - 1,
+                                        comments: - 1,
+                                        likes: - 1,
+                                        createdAt: -1
+                                    }
+                                },
+                                {
                                     $skip: skip
                                 },
                                 {
@@ -6770,15 +6781,7 @@ export class TagCountService {
                                         "tags": 1
                                     }
                                 },
-                                {
-                                    $sort: {
-                                        isApsara: - 1,
-                                        scorePict: - 1,
-                                        comments: - 1,
-                                        likes: - 1,
-                                        createdAt: - 1
-                                    }
-                                },
+
 
 
                             ],
@@ -6937,6 +6940,15 @@ export class TagCountService {
                                     }
                                 },
                                 {
+                                    $sort: {
+                                        isApsara: -1,
+                                        scorePict: - 1,
+                                        comments: - 1,
+                                        likes: - 1,
+                                        createdAt: -1
+                                    }
+                                },
+                                {
                                     $skip: skip
                                 },
                                 {
@@ -7487,16 +7499,6 @@ export class TagCountService {
                                         "tags": 1
                                     }
                                 },
-                                {
-                                    $sort: {
-                                        isApsara: -1,
-                                        scorePict: - 1,
-                                        comments: - 1,
-                                        likes: - 1,
-                                        createdAt: -1
-                                    }
-                                },
-
 
                             ],
                         "diary":
@@ -7654,6 +7656,15 @@ export class TagCountService {
                                     }
                                 },
                                 {
+                                    $sort: {
+                                        isApsara: -1,
+                                        scorePict: - 1,
+                                        comments: - 1,
+                                        likes: - 1,
+                                        createdAt: -1
+                                    }
+                                },
+                                {
                                     $skip: skip
                                 },
                                 {
@@ -8204,15 +8215,7 @@ export class TagCountService {
                                         "tags": 1
                                     }
                                 },
-                                {
-                                    $sort: {
-                                        isApsara: -1,
-                                        scorePict: - 1,
-                                        comments: - 1,
-                                        likes: - 1,
-                                        createdAt: -1
-                                    }
-                                },
+
 
 
                             ],
@@ -8393,6 +8396,15 @@ export class TagCountService {
                                     }
                                 },
                                 {
+                                    $sort: {
+                                        isApsara: -1,
+                                        scorePict: - 1,
+                                        comments: - 1,
+                                        likes: - 1,
+                                        createdAt: -1
+                                    }
+                                },
+                                {
                                     $skip: skip
                                 },
                                 {
@@ -8943,15 +8955,7 @@ export class TagCountService {
                                         "tags": 1
                                     }
                                 },
-                                {
-                                    $sort: {
-                                        isApsara: -1,
-                                        scorePict: - 1,
-                                        comments: - 1,
-                                        likes: - 1,
-                                        createdAt: -1
-                                    }
-                                },
+
 
 
                             ],
@@ -9110,6 +9114,15 @@ export class TagCountService {
                                     }
                                 },
                                 {
+                                    $sort: {
+                                        isApsara: -1,
+                                        scorePict: - 1,
+                                        comments: - 1,
+                                        likes: - 1,
+                                        createdAt: -1
+                                    }
+                                },
+                                {
                                     $skip: skip
                                 },
                                 {
@@ -9658,15 +9671,6 @@ export class TagCountService {
                                         "contentModerationResponse": 1,
                                         "reportedUser": 1,
                                         "tags": 1
-                                    }
-                                },
-                                {
-                                    $sort: {
-                                        isApsara: -1,
-                                        scorePict: - 1,
-                                        comments: - 1,
-                                        likes: - 1,
-                                        createdAt: -1
                                     }
                                 },
 
@@ -9850,6 +9854,15 @@ export class TagCountService {
                                     }
                                 },
                                 {
+                                    $sort: {
+                                        isApsara: -1,
+                                        scorePict: - 1,
+                                        comments: - 1,
+                                        likes: - 1,
+                                        createdAt: -1
+                                    }
+                                },
+                                {
                                     $skip: skip
                                 },
                                 {
@@ -10400,16 +10413,6 @@ export class TagCountService {
                                         "tags": 1
                                     }
                                 },
-                                {
-                                    $sort: {
-                                        isApsara: - 1,
-                                        scorePict: - 1,
-                                        comments: - 1,
-                                        likes: - 1,
-                                        createdAt: - 1
-                                    }
-                                },
-
 
                             ],
                         "vid":
@@ -10567,6 +10570,15 @@ export class TagCountService {
                                     }
                                 },
                                 {
+                                    $sort: {
+                                        isApsara: -1,
+                                        scorePict: - 1,
+                                        comments: - 1,
+                                        likes: - 1,
+                                        createdAt: -1
+                                    }
+                                },
+                                {
                                     $skip: skip
                                 },
                                 {
@@ -11117,15 +11129,7 @@ export class TagCountService {
                                         "tags": 1
                                     }
                                 },
-                                {
-                                    $sort: {
-                                        isApsara: -1,
-                                        scorePict: - 1,
-                                        comments: - 1,
-                                        likes: - 1,
-                                        createdAt: -1
-                                    }
-                                },
+
 
 
                             ],
