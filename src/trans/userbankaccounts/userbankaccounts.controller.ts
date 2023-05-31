@@ -170,8 +170,10 @@ export class UserbankaccountsController {
                     CreateUserbankaccountsDto.createdAt = dt.toISOString();
                     CreateUserbankaccountsDto.updatedAt = dt.toISOString();
                     CreateUserbankaccountsDto.active = true;
+                    let data = null;
 
-                    let data = await this.userbankaccountsService.create(CreateUserbankaccountsDto);
+                    data = await this.userbankaccountsService.create(CreateUserbankaccountsDto);
+
                     return res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
