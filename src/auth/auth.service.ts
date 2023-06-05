@@ -8638,24 +8638,33 @@ export class AuthService {
 
           await this.userchallengesService.updateUserchallenge(iduserchall.toString(), poinReferal);
 
-          var datauschall = await this.userchallengesService.datauserchall();
+          // var datauschall = await this.userchallengesService.datauserchall();
 
-          objintr = { "$ref": nametable, "$id": idref, "$db": namedb };
-          await this.userchallengesService.updateActionChallenge(iduserchall.toString(), objintr);
+          // objintr = { "$ref": nametable, "$id": idref, "$db": namedb };
+          // await this.userchallengesService.updateActionChallenge(iduserchall.toString(), objintr);
+
+          var detail = await this.userchallengesService.findOne(iduserchall.toString());
+          var activity = detail.activity;
+          objintr = { "$ref": nametable, "$id": idref, "$db": namedb }
+          console.log(objintr)
+          activity.push(objintr)
+          await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+        }
+
+        var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenge);
+
+        if (datauschall.length > 0) {
+          for (let x = 0; x < datauschall.length; x++) {
+            let iducall = datauschall[x]._id;
+            let rank = x + 1;
+            await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+
+          }
         }
 
       }
 
-      var datauschall = await this.userchallengesService.datauserchall();
 
-      if (datauschall.length > 0) {
-        for (let x = 0; x < datauschall.length; x++) {
-          let iducall = datauschall[x]._id;
-          let rank = x + 1;
-          await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-
-        }
-      }
     }
 
   }

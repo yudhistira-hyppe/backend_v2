@@ -87,9 +87,26 @@ export class UserchallengesService {
         return query;
     }
 
+    async datauserchallbyidchall(idchall: string) {
+        var query = await this.UserchallengesModel.aggregate([
+
+            {
+                $match: {
+                    "isActive": true,
+                    "idChallenge": new Types.ObjectId(idchall),
+                }
+            },
+            {
+
+                $sort: { score: -1, createdAt: -1 }
+            }
+        ]);
+        return query;
+    }
+
     async updateRangking(id: string, rangking: number, updatedAt: string) {
         let data = await this.UserchallengesModel.updateOne({ "_id": new Types.ObjectId(id) },
-            { $set: { "rangking": rangking, "updatedAt": updatedAt, } });
+            { $set: { "ranking": rangking, "updatedAt": updatedAt, } });
         return data;
     }
 
