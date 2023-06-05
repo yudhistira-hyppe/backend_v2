@@ -1,26 +1,95 @@
 import { Injectable } from '@nestjs/common';
-import { CreateChallengeDto } from './dto/create-challenge.dto';
-import { Challenge } from './schemas/challenge.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
+import { Challenge, challengeDocument } from './schemas/challenge.schema';
 
 @Injectable()
 export class ChallengeService {
-  create(createChallenge: CreateChallengeDto) {
-    return 'This action adds a new challenge';
+  constructor(
+    @InjectModel(Challenge.name, 'SERVER_FULL')
+    private readonly ChallengeModel: Model<challengeDocument>,
+  ) { }
+
+  async create(Challenge_: Challenge): Promise<Challenge> {
+    const _Challenge_ = await this.ChallengeModel.create(Challenge_);
+    return _Challenge_;
   }
 
-  findAll() {
-    return `This action returns all challenge`;
+  async findOne(id: string): Promise<Challenge> {
+    return this.ChallengeModel.findOne({ _id: new Types.ObjectId(id) }).exec();
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} challenge`;
+  async find(): Promise<Challenge[]> {
+    return this.ChallengeModel.find().exec();
   }
 
-  update(id: string, createChallenge: CreateChallengeDto) {
-    return `This action updates a #${id} challenge`;
+  async update(id: string, Challenge_: Challenge): Promise<Challenge> {
+    let data = await this.ChallengeModel.findByIdAndUpdate(id, Challenge_, { new: true });
+    if (!data) {
+      throw new Error('Data is not found!');
+    }
+    return data;
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} challenge`;
+  async delete(id: string) {
+    const data = await this.ChallengeModel.findByIdAndRemove({ _id: new Types.ObjectId(id) }).exec();
+    return data;
+  }
+  async challengeReferal() {
+    var query = await this.ChallengeModel.aggregate([
+
+
+      {
+        $project: {
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "endChallenge": 1,
+          "startChallenge": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "Aktivitas": {
+            $arrayElemAt: ['$metrik.Aktivitas', 0]
+          },
+          "Interaksi": {
+            $arrayElemAt: ['$metrik.Interaksi', 0]
+          },
+          "AktivitasAkun": {
+            $arrayElemAt: ['$metrik.AktivitasAkun', 0]
+          },
+
+        }
+      },
+      {
+        $project: {
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "endChallenge": 1,
+          "startChallenge": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "Aktivitas": 1,
+          "Interaksi": 1,
+          "poinReferal": {
+            $arrayElemAt: ['$AktivitasAkun.Referal', 0]
+          },
+          "poinFollow": {
+            $arrayElemAt: ['$AktivitasAkun.Ikuti', 0]
+          },
+
+        }
+      },
+      {
+        $match: { "poinReferal": { $ne: null } }
+      }
+    ]);
+    return query;
   }
 }

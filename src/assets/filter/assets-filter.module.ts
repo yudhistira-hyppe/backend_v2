@@ -9,6 +9,7 @@ import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
 
 @Module({
     imports: [
+
         UserbasicsModule,
         UtilsModule,
         ConfigModule.forRoot(),

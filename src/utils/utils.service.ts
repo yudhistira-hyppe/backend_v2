@@ -34,6 +34,7 @@ import { Banks } from '../trans/banks/schemas/banks.schema';
 import { DeepArService } from '../trans/deepar/deepar.service';
 import { UserscoresService } from '../trans/userscores/userscores.service';
 import { UserscoresDto } from 'src/trans/userscores/dto/create-userscores.dto';
+
 import mongoose, { Types } from 'mongoose';
 
 const cheerio = require('cheerio');
@@ -72,7 +73,8 @@ export class UtilsService {
     private userdevicesService: UserdevicesService,
     private notificationsService: NotificationsService,
     private deepArService: DeepArService,
-    private userscoresService: UserscoresService
+    private userscoresService: UserscoresService,
+
   ) { }
 
   async sendEmail(
@@ -100,7 +102,7 @@ export class UtilsService {
     return sendEmail_;
   }
 
-  async getImageMode(width: number, height: number){
+  async getImageMode(width: number, height: number) {
     var mode = "LANDSCAPE";
     if (width > height) {
       mode = "LANDSCAPE";
@@ -113,18 +115,18 @@ export class UtilsService {
   }
 
   public getRatio(width: number, height: number) {
-    var ratio = width/height;
+    var ratio = width / height;
     return ratio;
   }
 
   async getHeight(width: number, height: number, new_width: number) {
-		var ratio = await this.getRatio(width, height);
+    var ratio = await this.getRatio(width, height);
     var new_height = Number(new_width / ratio);
     return new_height;
   }
 
   async getWidth(width: number, height: number, new_height: number) {
-		var ratio = this.getRatio(width, height);
+    var ratio = this.getRatio(width, height);
     var new_width = Number(new_height * ratio);
     return new_width;
   }
@@ -1532,7 +1534,7 @@ export class UtilsService {
               const interests = await this.interestsRepoService.findOne(
                 interests_json.$id.toString(),
               );
-              if (interests!=null){
+              if (interests != null) {
                 if (interests._id != undefined) {
                   interests_array[i] = interests._id;
                 }
@@ -1873,5 +1875,7 @@ export class UtilsService {
 
 
   }
+
+
 }
 

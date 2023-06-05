@@ -1,0 +1,28 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Double } from 'mongodb';
+import mongoose, { Document } from 'mongoose';
+
+export type UserchallengesDocument = Userchallenges & Document;
+
+@Schema({ collection: 'userChallenge' })
+export class Userchallenges {
+
+    _id: mongoose.Types.ObjectId;
+    @Prop({ type: mongoose.Schema.Types.ObjectId })
+    idChallenge: mongoose.Types.ObjectId;
+    @Prop({ type: mongoose.Schema.Types.ObjectId })
+    idUser: mongoose.Types.ObjectId;
+    @Prop()
+    createdAt: String;
+    @Prop()
+    updatedAt: String;
+    @Prop()
+    isActive: boolean;
+    @Prop()
+    ranking: number;
+    @Prop()
+    score: number;
+    @Prop()
+    activity: any[];
+}
+export const UserchallengesSchema = SchemaFactory.createForClass(Userchallenges);

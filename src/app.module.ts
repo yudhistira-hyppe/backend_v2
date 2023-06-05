@@ -52,7 +52,7 @@ import { GetusercontentsModule } from './trans/getusercontents/getusercontents.m
 import { CommentModule } from './trans/getusercontents/comment/comment.module';
 import { FaqsModule } from './trans/faqs/faqs.module';
 import { AnnouncementsModule } from './trans/announcements/announcements.module';
-import { UtilsModule } from './utils/utils.module';
+//import { UtilsModule } from './utils/utils.module';
 import { TransactionsModule } from './trans/transactions/transactions.module';
 import { AccountbalancesModule } from './trans/accountbalances/accountbalances.module';
 import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents/getcontentevents.module';
@@ -104,7 +104,7 @@ import { OssModule } from './stream/oss/oss.module';
 import { Settings2Module } from './trans/settings2/settings2.module';
 import { JenischallengeModule } from './trans/jenischallenge/jenischallenge.module';
 import { BadgeModule } from './trans/badge/badge.module';
-import { ChallengeModule } from './trans/challenge/challenge.module';
+//import { ChallengeModule } from './trans/challenge/challenge.module';
 @Module({
   imports: [
     OssModule,
@@ -231,7 +231,7 @@ import { ChallengeModule } from './trans/challenge/challenge.module';
     Settings2Module,
     JenischallengeModule,
     BadgeModule,
-    ChallengeModule
+    //  ChallengeModule
   ], providers: [],
 })
 export class AppModule { }
