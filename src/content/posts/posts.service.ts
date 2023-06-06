@@ -44638,7 +44638,7 @@ export class PostsService {
 
   async finddatasearchcontenNew2(key: string, email: string, skip: number, limit: number, pict: any, vid: any, diary: any, user: any, tag: any) {
 
-
+    var obj = null;
     var pipeline = [];
 
     pipeline.push({
@@ -44649,6 +44649,7 @@ export class PostsService {
       {
         $limit: 1
       },);
+
 
     if (pict === true && vid === false && diary === false && user === true && tag === false) {
       pipeline.push(
@@ -45193,6 +45194,7 @@ export class PostsService {
                           "reportedUserCount": 1,
                           "contentModerationResponse": 1,
                           "reportedUser": 1,
+                          "tags": 1
 
                         }
                       },
@@ -45356,6 +45358,7 @@ export class PostsService {
                     "reportedUserCount": "$pict.reportedUserCount",
                     "contentModerationResponse": "$pict.contentModerationResponse",
                     "reportedUser": "$pict.reportedUser",
+                    "tags": "$pict.tags",
 
                   }
                 },
@@ -45901,7 +45904,7 @@ export class PostsService {
                     "reportedUserCount": 1,
                     "contentModerationResponse": 1,
                     "reportedUser": 1,
-
+                    "tags": "$pict.tags",
                   }
                 },
                 {
