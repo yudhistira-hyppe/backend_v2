@@ -8452,7 +8452,7 @@ export class AuthService {
           CreateReferralDto_._class = "io.melody.core.domain.Referral";
           var insertdata = await this.referralService.create(CreateReferralDto_);
           var idref = insertdata._id;
-          this.userChallenge(iduser.toString(), idref.toString(), "prodAllDev", "referral");
+          this.userChallenge(iduser.toString(), idref.toString(), "referral");
 
 
           var _id_1 = (await this.utilsService.generateId());
@@ -8576,12 +8576,12 @@ export class AuthService {
       }
     }
   }
-  async userChallenge(iduser: string, idref: string, namedb: string, nametable: string) {
+  async userChallenge(iduser: string, idref: string, nametable: string) {
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
 
     var dt = new Date(Date.now());
-    dt.setHours(dt.getHours() + 7);
+    dt.setHours(dt.getHours() + 7); // timestamp
     dt = new Date(dt);
 
     var strdate = dt.toISOString();
@@ -8621,26 +8621,43 @@ export class AuthService {
           Userchallenges_.score = poinReferal;
           Userchallenges_.createdAt = timedate;
           Userchallenges_.updatedAt = timedate;
+
           var datainsert = await this.userchallengesService.create(Userchallenges_);
           console.log(datainsert);
           var iduschall = datainsert._id;
 
           var detail = await this.userchallengesService.findOne(iduschall.toString());
           var activity = detail.activity;
-          objintr = { "$ref": nametable, "$id": idref, "$db": namedb }
+          objintr = { "type": nametable, "id": idref }
           console.log(objintr)
           activity.push(objintr)
+
+          var objhis = {
+            score: Userchallenges_.score,
+            ranking: Userchallenges_.ranking,
+            updatedAt: timedate
+          };
+
+          await this.userchallengesService.updateHistory(iduschall.toString(), objhis);
           await this.userchallengesService.updateActivity(iduschall.toString(), activity, timedate);
         }
         else {
-
           var iduserchall = datauserchall[0]._id;
 
+          var obj = {};
+
+          obj = {
+            "updatedAt": datauserchall[0].updatedAt,
+            "score": datauserchall[0].score,
+            "ranking": datauserchall[0].ranking,
+          }
+
+          await this.userchallengesService.updateHistory(iduserchall.toString(), obj);
           await this.userchallengesService.updateUserchallenge(iduserchall.toString(), poinReferal);
 
           var detail = await this.userchallengesService.findOne(iduserchall.toString());
           var activity = detail.activity;
-          objintr = { "$ref": nametable, "$id": idref, "$db": namedb }
+          objintr = { "type": nametable, "id": idref }
           console.log(objintr)
           activity.push(objintr)
           await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
