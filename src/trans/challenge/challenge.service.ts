@@ -175,6 +175,44 @@ export class ChallengeService {
       },
     );
 
+    if(menuChallenge != null && menuChallenge != undefined)
+    {
+      if(menuChallenge == 'DRAFT')
+      {
+        pipeline.push(
+          {
+            "$match":
+            {
+              "$expr":
+              {
+                "$eq":
+                [
+                  "$statusChallenge", menuChallenge
+                ]
+              }
+            }
+          }
+        );
+      }
+      else
+      {
+        pipeline.push(
+          {
+            "$match":
+            {
+              "$expr":
+              {
+                "$eq":
+                [
+                  "$jenisChallenge_fk", menuChallenge
+                ]
+              }
+            }
+          }
+        );
+      }
+    }
+
     if (page > 0) {
       pipeline.push({
         "$skip": limit * page
