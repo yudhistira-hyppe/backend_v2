@@ -17,14 +17,12 @@ export class ChallengeController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    @UseInterceptors(FileFieldsInterceptor([{ name: 'bannerBoard', maxCount: 1 }, { name: 'bannerSearch', maxCount:1 }, { name: 'popUpnotif', maxCount:1 }, { name: 'profile_juara', maxCount:3 }, { name: 'general_juara', maxCount:3 }]))
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'bannerBoard', maxCount: 1 }, { name: 'bannerSearch', maxCount:1 }, { name: 'popUpnotif', maxCount:1 }]))
     async create(
       @UploadedFiles() files: { 
         bannerBoard?: Express.Multer.File[]
         bannerSearch?: Express.Multer.File[]
         popUpnotif?: Express.Multer.File[]      
-        profile_juara?: Express.Multer.File[]      
-        general_juara?: Express.Multer.File[]      
       },
       @Req() request: Request,
       @Res() res,
@@ -46,22 +44,6 @@ export class ChallengeController {
         throw new BadRequestException("Unabled to proceed. pop up notification image is required");
       }
   
-      // if(request_json['ketentuanhadiah_tampilbadge'] == true)
-      if(request_json['ketentuanhadiah_tampilbadge'] == 'true' || request_json['ketentuanhadiah_tampilbadge'] == true)
-      {
-        var dataarray = files.profile_juara;
-        if(dataarray.length != 3)
-        {
-          throw new BadRequestException("Unabled to proceed. upload profile badge 3 times");
-        }
-  
-        var dataarray = files.general_juara;
-        if(dataarray.length != 3)
-        {
-          throw new BadRequestException("Unabled to proceed. upload general badge 3 times");
-        }
-      }
-  
       var mongoose = require('mongoose');
       var insertdata = new CreateChallengeDto();
       insertdata._id = new mongoose.Types.ObjectId();
@@ -78,7 +60,7 @@ export class ChallengeController {
       insertdata.durasi = request_json['durasi'];
       insertdata.tampilStatusPengguna = request_json['tampilStatusPengguna'];
       insertdata.objectChallenge = request_json['objectChallenge'].toString().toLowerCase();
-      insertdata.statusChallenge = 'DRAFT';
+      insertdata.statusChallenge = request_json['statusChallenge'];
     
       var arraymetrik = [];
       let setmetrik = {};
@@ -309,22 +291,18 @@ export class ChallengeController {
         setketentuanhadiah['maxSize'] = Number(request_json['ketentuanhadiah_maxSize']);
         setketentuanhadiah['minSize'] = Number(request_json['ketentuanhadiah_minSize']);
         setketentuanhadiah['formatFile'] = request_json['ketentuanhadiah_formatFile'];
-        var listjuara = {};
-        for(var i = 0; i < 3; i++)
+        var listjuara = request_json['listbadge'];
+        var konversilistjuara = listjuara.toString().split(",");
+        var mongoose = require('mongoose');
+        var setjuara = {};
+        for(var i = 0; i < konversilistjuara.length; i++)
         {
-          var insertbadge = {};
           var tambahsatu = i + 1;
-          insertbadge['name'] = 'Badge juara' + tambahsatu.toString();
           var settype = 'juara' + tambahsatu.toString();
-          insertbadge['type'] = settype;
-          var insertgeneral = [files.general_juara[i]];
-          var insertprofile = [files.profile_juara[i]];
-          var resultbadge = await this.badge.create(insertgeneral, insertprofile, insertbadge);
-          var convertid = mongoose.Types.ObjectId(resultbadge._id);
-          // var convertid = settype;
-          listjuara[settype] = convertid;
+          var convertid = new mongoose.Types.ObjectId(konversilistjuara[i].toString());
+          setjuara[settype] = convertid;
         }
-        setketentuanhadiah['badge'] = [listjuara];
+        setketentuanhadiah['badge'] = [setjuara];
       }
       else
       {
