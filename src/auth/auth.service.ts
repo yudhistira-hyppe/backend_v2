@@ -8621,6 +8621,9 @@ export class AuthService {
           Userchallenges_.score = poinReferal;
           Userchallenges_.createdAt = timedate;
           Userchallenges_.updatedAt = timedate;
+          var history = [];
+          history.push(Userchallenges_)
+          Userchallenges_.history = history;
           var datainsert = await this.userchallengesService.create(Userchallenges_);
           console.log(datainsert);
           var iduschall = datainsert._id;
@@ -8633,9 +8636,23 @@ export class AuthService {
           await this.userchallengesService.updateActivity(iduschall.toString(), activity, timedate);
         }
         else {
-
           var iduserchall = datauserchall[0]._id;
 
+          var obj = {};
+
+          obj = {
+            "_id": iduserchall,
+            "idChallenge": datauserchall[0].idChallenge,
+            "idUser": datauserchall[0].idUser,
+            "createdAt": datauserchall[0].createdAt,
+            "updatedAt": datauserchall[0].updatedAt,
+            "isActive": datauserchall[0].isActive,
+            "score": datauserchall[0].score,
+            "activity": datauserchall[0].activity,
+            "ranking": datauserchall[0].ranking,
+          }
+
+          await this.userchallengesService.updateHistory(iduserchall.toString(), obj);
           await this.userchallengesService.updateUserchallenge(iduserchall.toString(), poinReferal);
 
           var detail = await this.userchallengesService.findOne(iduserchall.toString());

@@ -24,5 +24,7 @@ export class Userchallenges {
     score: number;
     @Prop()
     activity: any[];
+    @Prop()
+    history: any[];
 }
 export const UserchallengesSchema = SchemaFactory.createForClass(Userchallenges);
