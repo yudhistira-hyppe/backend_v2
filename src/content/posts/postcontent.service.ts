@@ -4040,13 +4040,16 @@ export class PostContentService {
         var discus = await this.disqusService.findDisqusByPost(ps.postID.toString(), "COMMENT");
         if (await this.utilService.ceckData(discus)) {
           var discusLog = await this.disqusLogService.findDiscusLog_(discus[0]._id.toString());
-          if (discusLog.length > 1) {
-            pa.comment = [discusLog[0], discusLog[1]];
+          if (discusLog.length > 0) {
+            if (discusLog.length > 1) {
+              pa.comment = [discusLog[0], discusLog[1]];
+            } else {
+              pa.comment = [discusLog[0]];
+            }
           } else {
-            pa.comment = [discusLog[0]];
+            pa.comment = [];
           }
           pa.comments = discusLog.length;
-
         }else{
           pa.comment = [];
           pa.comments = 0;
