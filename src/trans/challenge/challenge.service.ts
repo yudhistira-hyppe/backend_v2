@@ -16,7 +16,7 @@ export class ChallengeService {
     return _Challenge_;
   }
 
-  async findAll(namachallenge: string, startdate: string, enddate: string, objectchallenge: any[], statuschallenge: any[], caragabung: any[], page: number, limit: number) {
+  async findAll(namachallenge: string, menuChallenge: string, startdate: string, enddate: string, objectchallenge: any[], statuschallenge: any[], caragabung: any[], ascending: boolean, page: number, limit: number) {
     var pipeline = [];
 
     pipeline.push(
@@ -146,6 +146,15 @@ export class ChallengeService {
 
     pipeline.push(
       {
+        $lookup:
+        {
+          from: "jenisChallenge",
+          localField: "jenisChallenge",
+          foreignField: "_id",
+          as: "jenisChallenge_fk"
+        }
+      },
+      {
         "$project":
         {
           _id: 1,
@@ -177,6 +186,25 @@ export class ChallengeService {
         "$limit": limit
       });
     }
+
+    if (ascending != null) {
+      var setascending = null;
+      if (ascending == true) {
+        setascending = 1;
+      }
+      else {
+        setascending = -1;
+      }
+
+      pipeline.push({
+        "$sort":
+        {
+          "createdAt": setascending
+        }
+      });
+    }
+
+    // console.log(JSON.stringify(pipeline));
 
     var query = await this.ChallengeModel.aggregate(pipeline);
     return query;
