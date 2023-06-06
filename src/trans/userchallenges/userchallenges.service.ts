@@ -115,4 +115,9 @@ export class UserchallengesService {
             { $set: { "activity": activity, "updatedAt": updatedAt, } });
         return data;
     }
+
+    async updateHistory(id: string, data: {}) {
+        let result = await this.UserchallengesModel.updateOne({ _id: new Types.ObjectId(id) }, { $push: { history: data } }).exec();
+        return result;
+    }
 }
