@@ -435,38 +435,52 @@ export class ChallengeController {
     @UseGuards(JwtAuthGuard)
     @Post('listing')
     async findAll(@Req() request: Request) {
-      var page = null;
-      var limit = null;
-      var namachallenge = null;
+      var menuChallenge = null;
+      var nameChallenge = null;
       var startdate = null;
       var enddate = null;
-      var objectchallenge = null;
-      var statuschallenge = null;
-      var caragabung = null;
+      var objectChallenge = null;
+      var caraGabung = null;
+      var statusChallenge = null;
+      var ascending = null;
+      var page = null;
+      var limit = null;
   
       var request_json = JSON.parse(JSON.stringify(request.body));
   
-      if (request_json["namechallenge"] !== undefined) {
-        namachallenge = request_json["namechallenge"];
+      if (request_json["nameChallenge"] !== undefined) {
+        nameChallenge = request_json["nameChallenge"];
+      }
+
+      if (request_json["menuChallenge"] !== undefined) {
+        menuChallenge = request_json["menuChallenge"];
+      } else {
+        throw new BadRequestException("Unabled to proceed, menu challenge field is required");
       }
   
-      if (request_json["startdate"] !== undefined && request_json["enddate"] !== undefined) {
-        startdate = request_json["startdate"];
-        enddate = request_json["enddate"];
+      if (request_json["startcreatedatdate"] !== undefined && request_json["endcreatedatdate"] !== undefined) {
+        startdate = request_json["startcreatedatdate"];
+        enddate = request_json["endcreatedatdate"];
       }
   
-      if (request_json["objectchallenge"] !== undefined) {
-        objectchallenge = request_json["objectchallenge"];
+      if (request_json["objectChallenge"] !== undefined) {
+        objectChallenge = request_json["objectChallenge"];
       }
   
-      if (request_json["statuschallenge"] !== undefined) {
-        statuschallenge = request_json["statuschallenge"];
+      if (request_json["statusChallenge"] !== undefined) {
+        statusChallenge = request_json["statusChallenge"];
       }
       
-      if (request_json["caragabung"] !== undefined) {
-        caragabung = request_json["caragabung"];
+      if (request_json["caraGabung"] !== undefined) {
+        caraGabung = request_json["caraGabung"];
       }
   
+      if (request_json["ascending"] !== undefined) {
+        ascending = request_json["ascending"];
+      } else {
+        throw new BadRequestException("Unabled to proceed, sort ascending field is required");
+      }
+
       if (request_json["page"] !== undefined) {
         page = Number(request_json["page"]);
       } else {
@@ -479,7 +493,8 @@ export class ChallengeController {
           throw new BadRequestException("Unabled to proceed, limit field is required");
       }
   
-      var data = await this.challengeService.findAll(namachallenge, startdate, enddate, objectchallenge, statuschallenge, caragabung, page, limit);
+      var data = await this.challengeService.findAll(nameChallenge, menuChallenge, startdate, enddate, objectChallenge, statusChallenge, caraGabung, ascending, page, limit);
+      var totaldata = await this.challengeService.findAll(nameChallenge, menuChallenge, startdate, enddate, objectChallenge, statusChallenge, caraGabung, null, null, null);
       
       const messages = {
         "info": ["The process successful"],
@@ -488,6 +503,7 @@ export class ChallengeController {
       return {
           response_code: 202,
           data:data,
+          total:totaldata.length,
           messages: messages,
       };
     }

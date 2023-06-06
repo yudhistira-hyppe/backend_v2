@@ -16,7 +16,7 @@ export class ChallengeService {
     return _Challenge_;
   }
 
-  async findAll(namachallenge:string, startdate:string, enddate:string, objectchallenge:any[], statuschallenge:any[], caragabung:any[], page:number, limit:number) {
+  async findAll(namachallenge:string, menuChallenge:string, startdate:string, enddate:string, objectchallenge:any[], statuschallenge:any[], caragabung:any[], ascending:boolean, page:number, limit:number) {
     var pipeline = [];
 
     pipeline.push(
@@ -86,14 +86,13 @@ export class ChallengeService {
 
     if(objectchallenge != null && objectchallenge != undefined)
     {
-      var konversiobject = objectchallenge.toString().split(",");
       firstmatch.push(
         {
           "$expr":
           {
             "$in":
             [
-              "$objectChallenge", konversiobject
+              "$objectChallenge", objectchallenge
             ]
           }
         }
@@ -102,7 +101,6 @@ export class ChallengeService {
 
     if(caragabung != null && caragabung != undefined)
     {
-      var konversigabung = caragabung.toString().split(",");
       firstmatch.push(
         {
           "$expr":
@@ -115,26 +113,10 @@ export class ChallengeService {
                           "$peserta.caraGabung", 0
                       ]
                   },
-                  konversigabung
+                  caragabung
               ]
           }
         },
-      );
-    }
-
-    if(statuschallenge != null && statuschallenge != undefined)
-    {
-      var konversistatus = statuschallenge.toString().split(",");
-      firstmatch.push(
-        {
-          "$expr":
-          {
-            "$in":
-            [
-              "$statusChallenge", konversistatus
-            ]
-          }
-        }
       );
     }
 
@@ -152,16 +134,69 @@ export class ChallengeService {
 
     pipeline.push(
       {
+        $lookup:
+        {
+          from: "jenisChallenge",
+          localField: "jenisChallenge",
+          foreignField: "_id",
+          as: "jenisChallenge_fk"
+        }
+      },
+      {
         "$project":
         {
           _id:1,
           nameChallenge:1,
+          jenisChallenge_fk:
+          {
+              "$arrayElemAt":
+              [
+                  "$jenisChallenge_fk.name", 0
+              ]
+          },
           caragabung:
           {
               "$arrayElemAt":
               [
                   "$peserta.caraGabung", 0
               ]
+          },
+          statuscurrentChallenge:
+          {
+              "$switch":
+              {
+                  branches:
+                  [
+                      {
+                          case:
+                          {
+                              "$and":
+                              [
+                                  {
+                                      "$gte": ["$timenow", "$startChallenge"]
+                                  },
+                                  {
+                                      "$lte": ["$timenow", "$endChallenge"]
+                                  },
+                              ]
+                          },
+                          then: "sedang berjalan"
+                      },
+                      {
+                          case:
+                          {
+                              "$and":
+                              [
+                                  {
+                                      "$gt": ["$timenow", "$endChallenge"]
+                                  },
+                              ]
+                          },
+                          then: "selesai"
+                      },
+                  ],
+                  default:"akan datang"
+              }
           },
           statusChallenge:1,
           objectChallenge:1,
@@ -171,6 +206,63 @@ export class ChallengeService {
         }
       },
     );
+
+    if(menuChallenge != null && menuChallenge != undefined)
+    {
+      if(menuChallenge == 'DRAFT')
+      {
+        pipeline.push(
+          {
+            "$match":
+            {
+              "$expr":
+              {
+                "$eq":
+                [
+                  "$statusChallenge", menuChallenge
+                ]
+              }
+            }
+          }
+        );
+      }
+      else
+      {
+        pipeline.push(
+          {
+            "$match":
+            {
+              "$expr":
+              {
+                "$eq":
+                [
+                  "$jenisChallenge_fk", menuChallenge
+                ]
+              }
+            }
+          }
+        );
+      }
+    }
+
+    if(statuschallenge != null && statuschallenge != undefined)
+    {
+      var konversistatus = statuschallenge.toString().split(",");
+      pipeline.push(
+        {
+          "$match":
+          {
+            "$expr":
+            {
+              "$in":
+              [
+                "$statuscurrentChallenge", konversistatus
+              ]
+            }
+          }
+        }
+      );
+    }
 
     if(page > 0)
     {
@@ -185,6 +277,28 @@ export class ChallengeService {
           "$limit":limit
       });
     }
+
+    if(ascending != null)
+    {
+      var setascending = null;
+      if(ascending == true)
+      {
+        setascending = 1;
+      }
+      else
+      {
+        setascending = -1;
+      }
+
+      pipeline.push({
+        "$sort":
+        {
+          "createdAt":setascending
+        }
+      });
+    }
+
+    // console.log(JSON.stringify(pipeline));
 
     var query = await this.ChallengeModel.aggregate(pipeline);
     return query;
