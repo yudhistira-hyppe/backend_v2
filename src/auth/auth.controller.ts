@@ -62,6 +62,7 @@ import { UserbankaccountsService } from '../trans/userbankaccounts/userbankaccou
 import { OssService } from '../stream/oss/oss.service';
 import { CreateMediaprofilepictsDto } from 'src/content/mediaprofilepicts/dto/create-mediaprofilepicts.dto';
 import { FriendListService } from 'src/content/friend_list/friend_list.service';
+
 const sharp = require('sharp');
 const convert = require('heic-convert');
 
@@ -93,6 +94,7 @@ export class AuthController {
     private userbankaccountsService: UserbankaccountsService,
     private userticketdetailsService: UserticketdetailsService,
     private friendListService: FriendListService,
+
   ) { }
 
   // @UseGuards(LocalAuthGuard)
@@ -1413,6 +1415,12 @@ export class AuthController {
   @HttpCode(HttpStatus.ACCEPTED)
   async referral(@Req() request: any, @Headers() headers) {
     return await this.authService.referral(request, headers);
+  }
+
+  @Post('api/user/referral/v2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async referral2(@Req() request: any, @Headers() headers) {
+    return await this.authService.referral2(request, headers);
   }
 
   @Post('api/user/referral-qrcode')
@@ -4708,4 +4716,6 @@ export class AuthController {
       }
     };
   }
+
+
 }

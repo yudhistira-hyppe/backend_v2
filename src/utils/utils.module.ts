@@ -34,8 +34,10 @@ import { TemplatesRepoModule } from '../infra/templates_repo/templates_repo.modu
 import { BanksModule } from '../trans/banks/banks.module';
 import { DeepArModule } from '../trans/deepar/deepar.module';
 import { UserscoresModule } from '../trans/userscores/userscores.module';
+
 @Module({
   imports: [
+
     UserscoresModule,
     DeepArModule,
     BanksModule,

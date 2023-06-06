@@ -38,7 +38,9 @@ import { CreateUserbasicnewDto } from '../trans/newuserbasic/dto/create-userbasi
 import { PostsService } from '../content/posts/posts.service';
 import { Response } from 'express';
 import { TemplatesRepo } from 'src/infra/templates_repo/schemas/templatesrepo.schema';
-
+import { ChallengeService } from '../trans/challenge/challenge.service';
+import { UserchallengesService } from '../trans/userchallenges/userchallenges.service';
+import { Userchallenges } from '../trans/userchallenges/schemas/userchallenges.schema';
 
 @Injectable()
 export class AuthService {
@@ -68,6 +70,8 @@ export class AuthService {
     private adsUserCompareService: AdsUserCompareService,
     private contenteventsService: ContenteventsService,
     private postsService: PostsService,
+    private challengeService: ChallengeService,
+    private userchallengesService: UserchallengesService
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -5275,6 +5279,8 @@ export class AuthService {
           CreateReferralDto_._class = "io.melody.core.domain.Referral";
           await this.referralService.create(CreateReferralDto_);
 
+
+
           var _id_1 = (await this.utilsService.generateId());
           var _id_2 = (await this.utilsService.generateId());
           var _id_3 = (await this.utilsService.generateId());
@@ -8327,4 +8333,334 @@ export class AuthService {
 
   }
 
+  async referral2(req: any, head: any): Promise<any> {
+    var user_email_parent = null;
+    var user_username_parent = null;
+    var user_imei_children = null;
+    var user_email_children = null;
+    var email_ceck = false;
+    var iduser = null;
+    var current_date = await this.utilsService.getDateTimeString();
+
+    if (head['x-auth-user'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, required param email header',
+      );
+    } else {
+      user_email_children = head['x-auth-user'];
+    }
+
+    if (req.body.imei == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, required param imei',
+      );
+    } else {
+      user_imei_children = req.body.imei;
+    }
+
+    if (req.body.email == undefined) {
+      if (req.body.username != undefined) {
+        email_ceck = true;
+        user_username_parent = req.body.username;
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, required param email or username',
+        );
+      }
+    } else {
+      email_ceck = false;
+      user_email_parent = req.body.email;
+    }
+
+    //Ceck User Userbasics
+    const datauserbasicsService = await this.userbasicsService.findOne(
+      req.body.email,
+    );
+
+    if (datauserbasicsService !== null) {
+      iduser = datauserbasicsService._id;
+    }
+
+    var datauserauthService_parent = null;
+    var datauserauthService_children = null;
+
+    var useLanguage = await this.utilsService.getUserlanguages(head['x-auth-user']);
+    var errorMessages = "";
+    //Ceck User auth child
+    datauserauthService_children = await this.userauthsService.findOneemail(user_email_children);
+    if (!(await this.utilsService.ceckData(datauserauthService_children))) {
+      if (useLanguage == "id") {
+        errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
+      } else if (useLanguage == "en") {
+        errorMessages = "User not found, please check the username again";
+      } else {
+        errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
+      }
+      await this.errorHandler.generateNotAcceptableException(
+        errorMessages,
+      );
+    }
+
+    if (email_ceck) {
+      //Ceck User auth parent
+      datauserauthService_parent = await this.userauthsService.findOneUsername(user_username_parent);
+      if (await this.utilsService.ceckData(datauserauthService_parent)) {
+        user_email_parent = datauserauthService_parent.email;
+      } else {
+        if (useLanguage == "id") {
+          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
+        } else if (useLanguage == "en") {
+          errorMessages = "User not found, please check the username again";
+        } else {
+          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
+        }
+        await this.errorHandler.generateNotAcceptableException(
+          errorMessages,
+        );
+      }
+    } else {
+      //Ceck User auth parent
+      datauserauthService_parent = await this.userauthsService.findOneemail(user_email_parent);
+      if (!(await this.utilsService.ceckData(datauserauthService_parent))) {
+        if (useLanguage == "id") {
+          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
+        } else if (useLanguage == "en") {
+          errorMessages = "User not found, please check the username again";
+        } else {
+          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
+        }
+        await this.errorHandler.generateNotAcceptableException(
+          errorMessages,
+        );
+      }
+    }
+
+    if (user_email_parent != "" && user_imei_children != "") {
+      var data_refferal = await this.referralService.findOneInChildParent(user_email_children, user_email_parent);
+      if (!(await this.utilsService.ceckData(data_refferal))) {
+        var data_imei = await this.referralService.findOneInIme(user_imei_children);
+        if (!(await this.utilsService.ceckData(data_imei))) {
+          var CreateReferralDto_ = new CreateReferralDto();
+          CreateReferralDto_._id = (await this.utilsService.generateId())
+          CreateReferralDto_.parent = user_email_parent;
+          CreateReferralDto_.children = user_email_children;
+          CreateReferralDto_.active = true;
+          CreateReferralDto_.verified = true;
+          CreateReferralDto_.createdAt = current_date;
+          CreateReferralDto_.updatedAt = current_date;
+          CreateReferralDto_.imei = user_imei_children;
+          CreateReferralDto_._class = "io.melody.core.domain.Referral";
+          var insertdata = await this.referralService.create(CreateReferralDto_);
+          var idref = insertdata._id;
+          this.userChallenge(iduser.toString(), idref.toString(), "prodAllDev", "referral");
+
+
+          var _id_1 = (await this.utilsService.generateId());
+          var _id_2 = (await this.utilsService.generateId());
+          var _id_3 = (await this.utilsService.generateId());
+          var _id_4 = (await this.utilsService.generateId());
+
+          // var CreateContenteventsDto1 = new CreateContenteventsDto();
+          // CreateContenteventsDto1._id = _id_1
+          // CreateContenteventsDto1.contentEventID = (await this.utilsService.generateId())
+          // CreateContenteventsDto1.email = LoginRequest_.referral
+          // CreateContenteventsDto1.eventType = "FOLLOWER"
+          // CreateContenteventsDto1.active = true
+          // CreateContenteventsDto1.event = "REQUEST"
+          // CreateContenteventsDto1.createdAt = current_date
+          // CreateContenteventsDto1.updatedAt = current_date
+          // CreateContenteventsDto1.sequenceNumber = 0
+          // CreateContenteventsDto1.flowIsDone = true
+          // CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
+          // CreateContenteventsDto1.senderParty = LoginRequest_.email
+          // CreateContenteventsDto1.transitions = [{
+          //   $ref: 'contentevents',
+          //   $id: Object(_id_2),
+          //   $db: 'hyppe_trans_db',
+          // }]
+
+          var CreateContenteventsDto2 = new CreateContenteventsDto();
+          CreateContenteventsDto2._id = _id_2
+          CreateContenteventsDto2.contentEventID = (await this.utilsService.generateId())
+          CreateContenteventsDto2.email = user_email_parent
+          CreateContenteventsDto2.eventType = "FOLLOWER"
+          CreateContenteventsDto2.active = true
+          CreateContenteventsDto2.event = "ACCEPT"
+          CreateContenteventsDto2.createdAt = current_date
+          CreateContenteventsDto2.updatedAt = current_date
+          CreateContenteventsDto2.sequenceNumber = 1
+          CreateContenteventsDto2.flowIsDone = true
+          CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+          CreateContenteventsDto2.receiverParty = user_email_children
+          CreateContenteventsDto2.parentContentEventID = _id_1
+
+          // var CreateContenteventsDto3 = new CreateContenteventsDto();
+          // CreateContenteventsDto3._id = _id_3
+          // CreateContenteventsDto3.contentEventID = (await this.utilsService.generateId())
+          // CreateContenteventsDto3.email = LoginRequest_.email
+          // CreateContenteventsDto3.eventType = "FOLLOWING"
+          // CreateContenteventsDto3.active = true
+          // CreateContenteventsDto3.event = "INITIAL"
+          // CreateContenteventsDto3.createdAt = current_date
+          // CreateContenteventsDto3.updatedAt = current_date
+          // CreateContenteventsDto3.sequenceNumber = 0
+          // CreateContenteventsDto3.flowIsDone = true
+          // CreateContenteventsDto3._class = "io.melody.hyppe.content.domain.ContentEvent"
+          // CreateContenteventsDto3.receiverParty = LoginRequest_.referral
+          // CreateContenteventsDto3.transitions = [{
+          //   $ref: 'contentevents',
+          //   $id: Object(_id_4),
+          //   $db: 'hyppe_trans_db',
+          // }]
+
+          var CreateContenteventsDto4 = new CreateContenteventsDto();
+          CreateContenteventsDto4._id = _id_4
+          CreateContenteventsDto4.contentEventID = (await this.utilsService.generateId())
+          CreateContenteventsDto4.email = user_email_children
+          CreateContenteventsDto4.eventType = "FOLLOWING"
+          CreateContenteventsDto4.active = true
+          CreateContenteventsDto4.event = "ACCEPT"
+          CreateContenteventsDto4.createdAt = current_date
+          CreateContenteventsDto4.updatedAt = current_date
+          CreateContenteventsDto4.sequenceNumber = 1
+          CreateContenteventsDto4.flowIsDone = true
+          CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
+          CreateContenteventsDto4.senderParty = user_email_parent
+          CreateContenteventsDto4.parentContentEventID = _id_3
+
+          //await this.contenteventsService.create(CreateContenteventsDto1);
+          await this.contenteventsService.create(CreateContenteventsDto2);
+          //await this.contenteventsService.create(CreateContenteventsDto3);
+          await this.contenteventsService.create(CreateContenteventsDto4);
+          await this.insightsService.updateFollower(user_email_parent);
+          await this.insightsService.updateFollowing(user_email_children);
+
+          if (useLanguage == "id") {
+            errorMessages = "Selamat kode referral berhasil digunakan";
+          } else if (useLanguage == "en") {
+            errorMessages = "Congratulation referral applied successfully";
+          } else {
+            errorMessages = "Selamat kode referral berhasil digunakan";
+          }
+          return {
+            "response_code": 202,
+            "messages": {
+              "info": [
+                errorMessages
+              ]
+            }
+          };
+        } else {
+          if (useLanguage == "id") {
+            errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
+          } else if (useLanguage == "en") {
+            errorMessages = "Referral Failed, Your device has been registered, please use another device";
+          } else {
+            errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
+          }
+          await this.errorHandler.generateNotAcceptableException(
+            errorMessages,
+          );
+        }
+      } else {
+        if (useLanguage == "id") {
+          errorMessages = "Referral Tidak Berhasil, Username telah terdaftar sebagai referral kamu, silahkan ganti dengan username lainnya";
+        } else if (useLanguage == "en") {
+          errorMessages = "Referral Failed, Username has been registered, please use another username";
+        } else {
+          errorMessages = "Referral Tidak Berhasil, Username telah terdaftar sebagai referral kamu, silahkan ganti dengan username lainnya";
+        }
+        await this.errorHandler.generateNotAcceptableException(
+          errorMessages,
+        );
+      }
+    }
+  }
+  async userChallenge(iduser: string, idref: string, namedb: string, nametable: string) {
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+    var lengchal = null;
+    var datauserchall = null;
+    var datachallenge = null;
+    var arrdata = [];
+    var objintr = {};
+    try {
+      datachallenge = await this.challengeService.challengeReferal();
+    } catch (e) {
+      datachallenge = null;
+
+    }
+
+    if (datachallenge !== null && datachallenge.length > 0) {
+      lengchal = datachallenge.length;
+
+      for (let i = 0; i < lengchal; i++) {
+        var idChallenge = datachallenge[i]._id.toString();
+        var poinReferal = datachallenge[i].poinReferal;
+        try {
+          datauserchall = await this.userchallengesService.userChallengebyIdChall(iduser, idChallenge);
+        } catch (e) {
+          datauserchall = null;
+        }
+
+        if (datauserchall.length == 0) {
+
+          var Userchallenges_ = new Userchallenges();
+          Userchallenges_.idUser = mongoose.Types.ObjectId(iduser);
+          Userchallenges_.idChallenge = mongoose.Types.ObjectId(idChallenge);
+          Userchallenges_.isActive = true;
+          Userchallenges_.score = poinReferal;
+          Userchallenges_.createdAt = timedate;
+          Userchallenges_.updatedAt = timedate;
+          var datainsert = await this.userchallengesService.create(Userchallenges_);
+          console.log(datainsert);
+          var iduschall = datainsert._id;
+
+          var detail = await this.userchallengesService.findOne(iduschall.toString());
+          var activity = detail.activity;
+          objintr = { "$ref": nametable, "$id": idref, "$db": namedb }
+          console.log(objintr)
+          activity.push(objintr)
+          await this.userchallengesService.updateActivity(iduschall.toString(), activity, timedate);
+        }
+        else {
+
+          var iduserchall = datauserchall[0]._id;
+
+          await this.userchallengesService.updateUserchallenge(iduserchall.toString(), poinReferal);
+
+          var detail = await this.userchallengesService.findOne(iduserchall.toString());
+          var activity = detail.activity;
+          objintr = { "$ref": nametable, "$id": idref, "$db": namedb }
+          console.log(objintr)
+          activity.push(objintr)
+          await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+        }
+
+        var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenge);
+
+        if (datauschall.length > 0) {
+          for (let x = 0; x < datauschall.length; x++) {
+            let iducall = datauschall[x]._id;
+            let rank = x + 1;
+            await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+
+          }
+        }
+
+      }
+
+
+    }
+
+  }
 }

@@ -37,8 +37,12 @@ import { UserticketdetailsModule } from '../trans/usertickets/userticketdetails/
 import { OssModule } from '../stream/oss/oss.module';
 import { UserbankaccountsModule } from '../trans/userbankaccounts/userbankaccounts.module';
 import { FriendListModule } from 'src/content/friend_list/friend_list.module';
+import { ChallengeModule } from '../trans/challenge/challenge.module';
+import { UserchallengesModule } from '../trans/userchallenges/userchallenges.module';
 @Module({
   imports: [
+    ChallengeModule,
+    UserchallengesModule,
     UserbankaccountsModule,
     OssModule,
     GroupModule,
