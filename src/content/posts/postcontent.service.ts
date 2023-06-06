@@ -4040,12 +4040,25 @@ export class PostContentService {
         var discus = await this.disqusService.findDisqusByPost(ps.postID.toString(), "COMMENT");
         if (await this.utilService.ceckData(discus)) {
           var discusLog = await this.disqusLogService.findDiscusLog_(discus[0]._id.toString());
+          var dataComment = [];
           if (discusLog.length > 0) {
-            if (discusLog.length > 1) {
-              pa.comment = [discusLog[0], discusLog[1]];
-            } else {
-              pa.comment = [discusLog[0]];
-            }
+            for (var t = 0; t < discusLog.length; t++) {
+              console.log("🚀 ~ file: postcontent.service.ts:4046 ~ loadPostData ~ discusLog.length:", discusLog.length)
+              if (i == 2) {
+                break;
+              }
+              var dataComment_ = discusLog[t];
+              console.log("🚀 ~ file: postcontent.service.ts:4050 ~ loadPostData ~ discusLog[t]:", discusLog[t])
+              var senderCommentEmail = dataComment_.sender.toString();
+              var senderComment = await this.userAuthService.findOne(senderCommentEmail);
+              var json = JSON.parse(JSON.stringify(dataComment_));
+              json['userComment'] = {
+                _id: senderComment._id.toString(),
+                username: senderComment.username.toString(),
+              }
+              dataComment.push(json);
+            } 
+            pa.comment = dataComment;
           } else {
             pa.comment = [];
           }
