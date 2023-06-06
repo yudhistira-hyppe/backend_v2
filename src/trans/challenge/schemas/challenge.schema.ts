@@ -37,6 +37,9 @@ export class Challenge {
     @Prop()
     objectChallenge: string;
 
+    @Prop()
+    statusChallenge: string;
+
     @Prop([{ type: Object }])
     metrik: any[];
 

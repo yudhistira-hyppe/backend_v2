@@ -10,12 +10,9 @@ export class CreateChallengeDto {
     endChallenge: string;
     tampilStatusPengguna: boolean;
     objectChallenge: string;
+    statusChallenge: string;
     metrik: any[];
-    tipeAkun: any[];
-    rentangUmur: any[];
-    jenisKelamin: any[];
-    lokasiPengguna: any[];
-    caraGabung: string;
+    peserta: any[];
     leaderBoard: any[];
     ketentuanHadiah: any[];
     hadiahPemenang: any[];

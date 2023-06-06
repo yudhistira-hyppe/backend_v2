@@ -11,6 +11,82 @@ export class BadgeController {
   constructor(private readonly badgeService: BadgeService,
     private readonly ossservices : OssService) {}
 
+  // @UseGuards(JwtAuthGuard)
+  // @Post()
+  // @UseInterceptors(FileFieldsInterceptor([{ name: 'badge_profile', maxCount: 1 }, { name: 'badge_general', maxCount:1 }]))
+  // async create(
+  //   @UploadedFiles() files: { 
+  //     badge_profile?: Express.Multer.File[]
+  //     badge_general?: Express.Multer.File[]
+  //   },
+  //   @Body() request,
+  //   @Res() res,
+  // ) {
+
+  //   var mongoose = require('mongoose');
+  //   var dt = new Date(Date.now());
+  //   dt.setHours(dt.getHours() + 7); // timestamp
+  //   var hasilconvert = dt.toISOString().split("T");
+  //   var convert = hasilconvert[0] + " " + hasilconvert[1].split(".")[0];
+
+  //   var insertdata = new CreateBadgeDto();
+  //   var tempid = new mongoose.Types.ObjectId();
+  //   insertdata._id = tempid;
+  //   insertdata.createdAt = convert;
+  //   insertdata.name = request.name;
+  //   var stringdata = request.type;
+  //   insertdata.type = stringdata.toUpperCase();
+
+  //   if(files.badge_general == undefined)
+  //   {
+  //     throw new BadRequestException("Unabled to proceed. badge general is required");
+  //   }
+
+  //   if(files.badge_profile == undefined)
+  //   {
+  //     throw new BadRequestException("Unabled to proceed. badge profile is required");
+  //   }
+
+  //   const messages = {
+  //     "info": ["The process successful"],
+  //   };
+
+  //   const messagesEror = {
+  //     "info": ["Todo is not found!"],
+  //   };
+
+  //   try
+  //   {
+  //     await this.badgeService.create(insertdata);
+
+  //     //upload badge general
+  //     var insertfile = files.badge_general[0];
+  //     var path = "images/badge/" + tempid + "_general_" + "." + insertfile.originalname.split(".")[1];
+  //     var result = await this.ossservices.uploadFile(insertfile, path);
+  //     insertdata.badgeOther = result.url;
+
+  //     //upload badge profile
+  //     var insertfile = files.badge_profile[0];
+  //     var path = "images/badge/" + tempid + "_profile_" + "." + insertfile.originalname.split(".")[1];
+  //     var result = await this.ossservices.uploadFile(insertfile, path);
+  //     insertdata.badgeProfile = result.url;
+
+  //     await this.badgeService.update(tempid, insertdata);
+
+  //     return res.status(HttpStatus.OK).json({
+  //         response_code: 202,
+  //         "data": insertdata,
+  //         "message": messages
+  //     });
+  //   }
+  //   catch(e)
+  //   {
+  //     return res.status(HttpStatus.BAD_REQUEST).json({
+  //       "message": messagesEror
+  //     });
+  //   }
+  // }
+
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(FileFieldsInterceptor([{ name: 'badge_profile', maxCount: 1 }, { name: 'badge_general', maxCount:1 }]))
@@ -23,30 +99,6 @@ export class BadgeController {
     @Res() res,
   ) {
 
-    var mongoose = require('mongoose');
-    var dt = new Date(Date.now());
-    dt.setHours(dt.getHours() + 7); // timestamp
-    var hasilconvert = dt.toISOString().split("T");
-    var convert = hasilconvert[0] + " " + hasilconvert[1].split(".")[0];
-
-    var insertdata = new CreateBadgeDto();
-    var tempid = new mongoose.Types.ObjectId();
-    insertdata._id = tempid;
-    insertdata.createdAt = convert;
-    insertdata.name = request.name;
-    var stringdata = request.type;
-    insertdata.type = stringdata.toUpperCase();
-
-    if(files.badge_general == undefined)
-    {
-      throw new BadRequestException("Unabled to proceed. badge general is required");
-    }
-
-    if(files.badge_profile == undefined)
-    {
-      throw new BadRequestException("Unabled to proceed. badge profile is required");
-    }
-
     const messages = {
       "info": ["The process successful"],
     };
@@ -57,25 +109,10 @@ export class BadgeController {
 
     try
     {
-      await this.badgeService.create(insertdata);
-
-      //upload badge general
-      var insertfile = files.badge_general[0];
-      var path = "images/badge/" + tempid + "_general_" + "." + insertfile.originalname.split(".")[1];
-      var result = await this.ossservices.uploadFile(insertfile, path);
-      insertdata.badgeOther = result.url;
-
-      //upload badge profile
-      var insertfile = files.badge_profile[0];
-      var path = "images/badge/" + tempid + "_profile_" + "." + insertfile.originalname.split(".")[1];
-      var result = await this.ossservices.uploadFile(insertfile, path);
-      insertdata.badgeProfile = result.url;
-
-      await this.badgeService.update(tempid, insertdata);
-
+      var data = await this.badgeService.create(files.badge_general, files.badge_profile, request);
       return res.status(HttpStatus.OK).json({
           response_code: 202,
-          "data": insertdata,
+          "data": data,
           "message": messages
       });
     }
@@ -166,17 +203,6 @@ export class BadgeController {
     @Body() request,
     @Res() res,
   ) {
-    var mongoose = require('mongoose');
-    // var dt = new Date(Date.now());
-    // dt.setHours(dt.getHours() + 7); // timestamp
-    // var hasilconvert = dt.toISOString().split("T");
-    // var convert = hasilconvert[0] + " " + hasilconvert[1].split(".")[0];
-
-    var updatedata = new CreateBadgeDto();
-    // updatedata.createdAt = convert;
-    updatedata.name = request.name;
-    var stringdata = request.type;
-    updatedata.type = stringdata.toUpperCase();
 
     const messages = {
       "info": ["The process successful"],
@@ -188,29 +214,11 @@ export class BadgeController {
 
     try
     {
-      if(files.badge_general != undefined)
-      {
-        //upload badge general
-        var insertfile = files.badge_general[0];
-        var path = "images/badge/" + id + "_general_" + "." + insertfile.originalname.split(".")[1];
-        var result = await this.ossservices.uploadFile(insertfile, path);
-        updatedata.badgeOther = result.url;
-      }
-
-      if(files.badge_profile != undefined)
-      {
-        //upload badge profile
-        var insertfile = files.badge_profile[0];
-        var path = "images/badge/" + id + "_profile_" + "." + insertfile.originalname.split(".")[1];
-        var result = await this.ossservices.uploadFile(insertfile, path);
-        updatedata.badgeProfile = result.url;
-      }
-
-      await this.badgeService.update(id, updatedata);
+      var data = await this.badgeService.update(id, files.badge_general, files.badge_profile, request);
 
       return res.status(HttpStatus.OK).json({
           response_code: 202,
-          "data": updatedata,
+          "data": data,
           "message": messages
       });
     }
