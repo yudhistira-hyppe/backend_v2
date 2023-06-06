@@ -337,14 +337,16 @@ export class UtilsService {
     var device_user = [];
     var getDate = await ((await this.getDateTime()).getTime()).toString();
 
+    data_send['title'] = title_send;
+    data_send['body'] = body_send;
     if (typeTemplate != "REACTION") {
       for (var i = 0; i < datadevice.length; i++) {
         var notification = {
-          notification: {
-            title: title_send,
-            body: body_send,
-            tag: await this.makeid(7)
-          },
+          // notification: {
+          //   title: title_send,
+          //   body: body_send,
+          //   tag: await this.makeid(7)
+          // },
           data: data_send,
         }
         await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
@@ -515,13 +517,16 @@ export class UtilsService {
     //SEND FCM
     var datadevice = await this.userdevicesService.findActive(receiverParty);
     var device_user = [];
+
+    data_send['title'] = title_send;
+    data_send['body'] = body_send;
     for (var i = 0; i < datadevice.length; i++) {
       this.logger.log('sendFcmCMod >>> send: title-> ' + title_send + ' body: ' + JSON.stringify(body_send));
       var notification = {
-        notification: {
-          title: title_send,
-          body: body_send,
-        },
+        // notification: {
+        //   title: title_send,
+        //   body: body_send,
+        // },
         data: data_send,
       }
       await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
@@ -666,12 +671,15 @@ export class UtilsService {
 
         payload = {
 
-          notification: {
+          // notification: {
+          //   title: titlein,
+          //   body: bodyin,
+          //   tag: "background"
+          // },
+          data: {
+
             title: titlein,
             body: bodyin,
-            tag: "background"
-          },
-          data: {
             postID: pid,
             postType: postType
           }
@@ -680,12 +688,14 @@ export class UtilsService {
       else if (langIso === "en") {
         payload = {
 
-          notification: {
+          // notification: {
+          //   title: titleen,
+          //   body: bodyen,
+          //   tag: "background"
+          // },
+          data: {
             title: titleen,
             body: bodyen,
-            tag: "background"
-          },
-          data: {
             postID: pid,
             postType: postType
           }
@@ -693,12 +703,14 @@ export class UtilsService {
       } else {
         payload = {
 
-          notification: {
+          // notification: {
+          //   title: titlein,
+          //   body: bodyin,
+          //   tag: "background"
+          // },
+          data: {
             title: titlein,
             body: bodyin,
-            tag: "background"
-          },
-          data: {
             postID: pid,
             postType: postType
           }
@@ -864,12 +876,14 @@ export class UtilsService {
 
         payload = {
 
-          notification: {
+          // notification: {
+          //   title: titlein,
+          //   body: bodyin,
+          //   tag: "background"
+          // },
+          data: {
             title: titlein,
             body: bodyin,
-            tag: "background"
-          },
-          data: {
             postID: pid,
             postType: postType
           }
@@ -878,12 +892,14 @@ export class UtilsService {
       else if (langIso === "en") {
         payload = {
 
-          notification: {
+          // notification: {
+          //   title: titleen,
+          //   body: bodyen,
+          //   tag: "background"
+          // },
+          data: {
             title: titleen,
             body: bodyen,
-            tag: "background"
-          },
-          data: {
             postID: pid,
             postType: postType
           }
@@ -891,12 +907,14 @@ export class UtilsService {
       } else {
         payload = {
 
-          notification: {
+          // notification: {
+          //   title: titlein,
+          //   body: bodyin,
+          //   tag: "background"
+          // },
+          data: {
             title: titlein,
             body: bodyin,
-            tag: "background"
-          },
-          data: {
             postID: pid,
             postType: postType
           }
