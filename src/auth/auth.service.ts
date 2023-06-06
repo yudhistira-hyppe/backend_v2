@@ -8452,7 +8452,7 @@ export class AuthService {
           CreateReferralDto_._class = "io.melody.core.domain.Referral";
           var insertdata = await this.referralService.create(CreateReferralDto_);
           var idref = insertdata._id;
-          this.userChallenge(iduser.toString(), idref.toString(), "prodAllDev", "referral");
+          this.userChallenge(iduser.toString(), idref.toString(), "referral");
 
 
           var _id_1 = (await this.utilsService.generateId());
@@ -8576,7 +8576,7 @@ export class AuthService {
       }
     }
   }
-  async userChallenge(iduser: string, idref: string, namedb: string, nametable: string) {
+  async userChallenge(iduser: string, idref: string, nametable: string) {
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
 
@@ -8628,7 +8628,7 @@ export class AuthService {
 
           var detail = await this.userchallengesService.findOne(iduschall.toString());
           var activity = detail.activity;
-          objintr = { "$ref": nametable, "$id": idref, "$db": namedb }
+          objintr = { "type": nametable, "id": idref }
           console.log(objintr)
           activity.push(objintr)
 
@@ -8657,7 +8657,7 @@ export class AuthService {
 
           var detail = await this.userchallengesService.findOne(iduserchall.toString());
           var activity = detail.activity;
-          objintr = { "$ref": nametable, "$id": idref, "$db": namedb }
+          objintr = { "type": nametable, "id": idref }
           console.log(objintr)
           activity.push(objintr)
           await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
