@@ -48,6 +48,8 @@ import { MediamusicService } from '../mediamusic/mediamusic.service';
 import { Readable, PassThrough } from "stream";
 import ffmpeg from "fluent-ffmpeg";
 import { OssContentPictService } from './osscontentpict.service';
+import { DisqusService } from '../disqus/disqus.service';
+import { DisquslogsService } from '../disquslogs/disquslogs.service';
 
 const webp = require('webp-converter');
 const sharp = require('sharp');
@@ -86,6 +88,8 @@ export class PostContentService {
     private errorHandler: ErrorHandler,
     private mediamusicService: MediamusicService,
     private ossContentPictService: OssContentPictService,
+    private disqusService: DisqusService,
+    private disqusLogService: DisquslogsService,
   ) { }
 
   async uploadVideo(file: Express.Multer.File, postID: string) {
@@ -4030,6 +4034,23 @@ export class PostContentService {
         pa.updatedAt = String(ps.updatedAt);
         pa.description = String(ps.description);
         pa.email = String(ps.email);
+
+
+        //SET DISCUS/COMMENT
+        var discus = await this.disqusService.findDisqusByPost(ps.postID.toString(), "COMMENT");
+        if (await this.utilService.ceckData(discus)) {
+          var discusLog = await this.disqusLogService.findDiscusLog_(discus[0]._id.toString());
+          if (discusLog.length > 1) {
+            pa.comment = [discusLog[0], discusLog[1]];
+          } else {
+            pa.comment = [discusLog[0]];
+          }
+          pa.comments = discusLog.length;
+
+        }else{
+          pa.comment = [];
+          pa.comments = 0;
+        }
 
         //SET DATA BOOST
         var boostedRes = [];

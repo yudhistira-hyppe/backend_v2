@@ -156,6 +156,8 @@ export class PostData {
     reportedStatus: string;
     reportedUserCount: number;
     viewer: any[];
+    comment: any[];
+    comments: number;
 
 
 }
