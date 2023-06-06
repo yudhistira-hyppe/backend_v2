@@ -8621,8 +8621,6 @@ export class AuthService {
           Userchallenges_.score = poinReferal;
           Userchallenges_.createdAt = timedate;
           Userchallenges_.updatedAt = timedate;
-          var history = [];
-
 
           var datainsert = await this.userchallengesService.create(Userchallenges_);
           console.log(datainsert);
