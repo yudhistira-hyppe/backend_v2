@@ -8581,7 +8581,7 @@ export class AuthService {
     var ObjectId = require('mongodb').ObjectId;
 
     var dt = new Date(Date.now());
-    dt.setHours(dt.getHours() + 7); // timestamp
+    dt.setHours(dt.getHours() + 7);
     dt = new Date(dt);
 
     var strdate = dt.toISOString();
