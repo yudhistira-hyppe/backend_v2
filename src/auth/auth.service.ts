@@ -8638,11 +8638,6 @@ export class AuthService {
 
           await this.userchallengesService.updateUserchallenge(iduserchall.toString(), poinReferal);
 
-          // var datauschall = await this.userchallengesService.datauserchall();
-
-          // objintr = { "$ref": nametable, "$id": idref, "$db": namedb };
-          // await this.userchallengesService.updateActionChallenge(iduserchall.toString(), objintr);
-
           var detail = await this.userchallengesService.findOne(iduserchall.toString());
           var activity = detail.activity;
           objintr = { "$ref": nametable, "$id": idref, "$db": namedb }
