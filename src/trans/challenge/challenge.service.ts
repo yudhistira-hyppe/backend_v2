@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { Challenge, challengeDocument } from './schemas/challenge.schema';
-import { CreateChallengeDto } from './dto/create-challenge.dto'; 
+import { CreateChallengeDto } from './dto/create-challenge.dto';
 
 @Injectable()
 export class ChallengeService {
@@ -16,45 +16,43 @@ export class ChallengeService {
     return _Challenge_;
   }
 
-  async findAll(namachallenge:string, startdate:string, enddate:string, objectchallenge:any[], statuschallenge:any[], caragabung:any[], page:number, limit:number) {
+  async findAll(namachallenge: string, startdate: string, enddate: string, objectchallenge: any[], statuschallenge: any[], caragabung: any[], page: number, limit: number) {
     var pipeline = [];
 
     pipeline.push(
       {
         $set: {
-            "timenow": 
-            {
-                "$dateToString": {
-                    "format": "%Y-%m-%d %H:%M:%S",
-                    "date": {
-                        $add: [new Date(), - 61200000] // 1 hari 61200000
-                    }
-                }
+          "timenow":
+          {
+            "$dateToString": {
+              "format": "%Y-%m-%d %H:%M:%S",
+              "date": {
+                $add: [new Date(), - 61200000] // 1 hari 61200000
+              }
             }
+          }
         }
       }
     );
 
     var firstmatch = [];
 
-    if(namachallenge != null && namachallenge != undefined)
-    {
+    if (namachallenge != null && namachallenge != undefined) {
       firstmatch.push(
         {
           nameChallenge:
           {
-              "$regex":namachallenge,
-              "$options":"i"
+            "$regex": namachallenge,
+            "$options": "i"
           }
         },
       );
     }
 
-    if(startdate != null && startdate != undefined)
-    {
+    if (startdate != null && startdate != undefined) {
       try {
         var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-  
+
         var dateend = currentdate.toISOString();
       } catch (e) {
         dateend = "";
@@ -64,87 +62,83 @@ export class ChallengeService {
         {
           "$expr":
           {
-              "$gte":
+            "$gte":
               [
-                  "$createdAt",
-                  startdate
+                "$createdAt",
+                startdate
               ]
           }
         },
         {
           "$expr":
           {
-              "$lte":
+            "$lte":
               [
-                  "$createdAt",
-                  dateend
+                "$createdAt",
+                dateend
               ]
           }
         }
       );
     }
 
-    if(objectchallenge != null && objectchallenge != undefined)
-    {
+    if (objectchallenge != null && objectchallenge != undefined) {
       var konversiobject = objectchallenge.toString().split(",");
       firstmatch.push(
         {
           "$expr":
           {
             "$in":
-            [
-              "$objectChallenge", konversiobject
-            ]
+              [
+                "$objectChallenge", konversiobject
+              ]
           }
         }
       );
     }
 
-    if(caragabung != null && caragabung != undefined)
-    {
+    if (caragabung != null && caragabung != undefined) {
       var konversigabung = caragabung.toString().split(",");
       firstmatch.push(
         {
           "$expr":
           {
-              "$in":
+            "$in":
               [
-                  {
-                      "$arrayElemAt":
-                      [
-                          "$peserta.caraGabung", 0
-                      ]
-                  },
-                  konversigabung
+                {
+                  "$arrayElemAt":
+                    [
+                      "$peserta.caraGabung", 0
+                    ]
+                },
+                konversigabung
               ]
           }
         },
       );
     }
 
-    if(statuschallenge != null && statuschallenge != undefined)
-    {
+    if (statuschallenge != null && statuschallenge != undefined) {
       var konversistatus = statuschallenge.toString().split(",");
       firstmatch.push(
         {
           "$expr":
           {
             "$in":
-            [
-              "$statusChallenge", konversistatus
-            ]
+              [
+                "$statusChallenge", konversistatus
+              ]
           }
         }
       );
     }
 
-    if(firstmatch.length != 0)
-    {
+    if (firstmatch.length != 0) {
       pipeline.push(
         {
           "$match":
           {
-            "$and":firstmatch
+            "$and": firstmatch
           }
         }
       );
@@ -154,35 +148,33 @@ export class ChallengeService {
       {
         "$project":
         {
-          _id:1,
-          nameChallenge:1,
+          _id: 1,
+          nameChallenge: 1,
           caragabung:
           {
-              "$arrayElemAt":
+            "$arrayElemAt":
               [
-                  "$peserta.caraGabung", 0
+                "$peserta.caraGabung", 0
               ]
           },
-          statusChallenge:1,
-          objectChallenge:1,
-          startChallenge:1,
-          endChallenge:1,
-          createdAt:1
+          statusChallenge: 1,
+          objectChallenge: 1,
+          startChallenge: 1,
+          endChallenge: 1,
+          createdAt: 1
         }
       },
     );
 
-    if(page > 0)
-    {
+    if (page > 0) {
       pipeline.push({
-          "$skip":limit * page
+        "$skip": limit * page
       });
     }
 
-    if(limit > 0)
-    {
-      pipeline.push({   
-          "$limit":limit
+    if (limit > 0) {
+      pipeline.push({
+        "$limit": limit
       });
     }
 
@@ -263,6 +255,64 @@ export class ChallengeService {
       },
       {
         $match: { "poinReferal": { $ne: null } }
+      }
+    ]);
+    return query;
+  }
+
+  async challengeFollow() {
+    var query = await this.ChallengeModel.aggregate([
+
+
+      {
+        $project: {
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "endChallenge": 1,
+          "startChallenge": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "Aktivitas": {
+            $arrayElemAt: ['$metrik.Aktivitas', 0]
+          },
+          "Interaksi": {
+            $arrayElemAt: ['$metrik.Interaksi', 0]
+          },
+          "AktivitasAkun": {
+            $arrayElemAt: ['$metrik.AktivitasAkun', 0]
+          },
+
+        }
+      },
+      {
+        $project: {
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "endChallenge": 1,
+          "startChallenge": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "Aktivitas": 1,
+          "Interaksi": 1,
+          "poinReferal": {
+            $arrayElemAt: ['$AktivitasAkun.Referal', 0]
+          },
+          "poinFollow": {
+            $arrayElemAt: ['$AktivitasAkun.Ikuti', 0]
+          },
+
+        }
+      },
+      {
+        $match: { "poinFollow": { $ne: null } }
       }
     ]);
     return query;
