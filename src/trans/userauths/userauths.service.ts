@@ -82,6 +82,10 @@ export class UserauthsService {
     return await this.userauthModel.findOne({ email: email }).exec();
   }
 
+  async getUsername(email: String): Promise<Userauth> {
+    return await this.userauthModel.findOne({ email: email }).exec();
+  }
+
   async updatebyId(id: string, data: Object) {
     console.log(id);
     this.userauthModel.updateOne(
