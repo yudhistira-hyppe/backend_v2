@@ -28,6 +28,10 @@ export class UserauthsService {
     return this.userauthModel.findOne({ username: username, isEmailVerified: true, isEnabled: true }).exec();
   }
 
+  async findOneUsername_(username: String): Promise<Userauth> {
+    return this.userauthModel.findOne({ username: { '$regex': username, $options: 'i' }, isEmailVerified: true, isEnabled: true }).exec();
+  }
+
   async findOneemail(email: String): Promise<Userauth> {
     return this.userauthModel.findOne({ email: email, isEmailVerified: true, isEnabled: true }).exec();
   }
