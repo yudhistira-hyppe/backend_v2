@@ -118,21 +118,6 @@ export class ChallengeService {
       );
     }
 
-    if (statuschallenge != null && statuschallenge != undefined) {
-      var konversistatus = statuschallenge.toString().split(",");
-      firstmatch.push(
-        {
-          "$expr":
-          {
-            "$in":
-              [
-                "$statusChallenge", konversistatus
-              ]
-          }
-        }
-      );
-    }
-
     if (firstmatch.length != 0) {
       pipeline.push(
         {
@@ -165,6 +150,43 @@ export class ChallengeService {
               [
                 "$peserta.caraGabung", 0
               ]
+          },
+          statuscurrentChallenge:
+          {
+              "$switch":
+              {
+                  branches:
+                  [
+                      {
+                          case:
+                          {
+                              "$and":
+                              [
+                                  {
+                                      "$gte": ["$timenow", "$startChallenge"]
+                                  },
+                                  {
+                                      "$lte": ["$timenow", "$endChallenge"]
+                                  },
+                              ]
+                          },
+                          then: "sedang berjalan"
+                      },
+                      {
+                          case:
+                          {
+                              "$and":
+                              [
+                                  {
+                                      "$gt": ["$timenow", "$endChallenge"]
+                                  },
+                              ]
+                          },
+                          then: "selesai"
+                      },
+                  ],
+                  default:"akan datang"
+              }
           },
           statusChallenge: 1,
           objectChallenge: 1,
@@ -211,6 +233,25 @@ export class ChallengeService {
           }
         );
       }
+    }
+	
+	if(statuschallenge != null && statuschallenge != undefined)
+    {
+      var konversistatus = statuschallenge.toString().split(",");
+      pipeline.push(
+        {
+          "$match":
+          {
+            "$expr":
+            {
+              "$in":
+              [
+                "$statuscurrentChallenge", konversistatus
+              ]
+            }
+          }
+        }
+      );
     }
 
     if (page > 0) {
