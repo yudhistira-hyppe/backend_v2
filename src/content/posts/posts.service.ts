@@ -17216,8 +17216,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -17992,8 +17997,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -18761,8 +18771,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -19526,8 +19541,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -20609,8 +20629,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -21689,8 +21714,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -22763,8 +22793,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -24151,8 +24186,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -25690,14 +25730,20 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key, $options: 'i'
+                            $regex: key,
+                            $options: 'i'
                           }
                         }
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -30001,8 +30047,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -30871,8 +30922,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -32047,8 +32103,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -34251,8 +34312,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -44676,8 +44742,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -45966,8 +46037,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -47248,8 +47324,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -48526,8 +48607,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -50635,8 +50721,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -52740,8 +52831,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -54841,8 +54937,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -57768,8 +57869,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -60844,14 +60950,20 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key, $options: 'i'
+                            $regex: key,
+                            $options: 'i'
                           }
                         }
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -70280,8 +70392,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -71661,8 +71778,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -73862,8 +73984,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
@@ -78632,8 +78759,13 @@ export class PostsService {
                       },
                       {
                         $set: {
+                          kampretos: { $toLower: "$username" }
+                        }
+                      },
+                      {
+                        $set: {
                           score: {
-                            $indexOfCP: ["$username", key]
+                            $indexOfCP: ["$kampretos", key]
                           }
                         }
                       },
