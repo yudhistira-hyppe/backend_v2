@@ -3962,7 +3962,11 @@ export class PostContentService {
     let skip = this.paging(page, row);
     query.skip(skip);
     query.limit(row);
-    query.sort({ 'postType': 1, 'createdAt': -1 });
+    if (body.postType == "story") {
+      query.sort({ 'postType': 1, 'createdAt': 1 });
+    } else {
+      query.sort({ 'postType': 1, 'createdAt': -1 });
+    }
     let res = await query.exec();
     return res;
   }
