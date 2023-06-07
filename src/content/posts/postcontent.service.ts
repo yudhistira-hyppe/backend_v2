@@ -4433,17 +4433,17 @@ export class PostContentService {
 
               //isview
               pa.isViewed = false;
-              if (story.viewers != undefined && story.viewers.length > 0) {
-                for (let i = 0; i < story.viewers.length; i++) {
-                  let drt = story.viewers[i];
-                  let drns = drt.namespace;
-                  if (drns == 'userbasics') {
-                    let vw = await this.userService.findbyid(drns.oid);
-                    if (vw != undefined && vw.email == iam.email) {
+              if (ps.viewer != undefined && ps.viewer.length > 0) {
+                for (let i = 0; i < ps.viewer.length; i++) {
+                  let drt = ps.viewer[i];
+                  //let drns = drt.namespace;
+                  //if (drns == 'userbasics') {
+                  //let vw = await this.userService.findbyid(drns.oid);
+                  if (drt == iam.email) {
                       pa.isViewed = true;
                       break;
                     }
-                  }
+                  //}
                 }
               }
             }
