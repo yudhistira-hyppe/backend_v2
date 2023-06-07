@@ -3943,6 +3943,9 @@ export class PostContentService {
     }
     if (body.postType != undefined) {
       query.where('postType', body.postType);
+      if (body.postType == "story") {
+        query.where('expiration').gte(this.utilService.now());
+      }
     } else {
       query.where('postType').ne('advertise');
     }
