@@ -2745,4 +2745,16 @@ export class PostsController {
       messages: "RUN MIGRATION DIARRY"
     }
   }
+
+  @Post('api/posts/vid/seaweed/migration/one')
+  async mediavidSeaweedMigrationOne(@Body('postID') postID: string): Promise<any> {
+    var Mediavid_ = await this.postContentService.getDataMediavidSeaweedOne(postID);
+    console.log(Mediavid_.length);
+    console.log(postID);
+    this.postContentService.runMigrationVid(Mediavid_);
+    return {
+      status: 202,
+      messages: "RUN MIGRATION VID POSTID " + postID
+    }
+  }
 }
