@@ -184,7 +184,7 @@ export class ChallengeController {
       var datatipeAkun = request_json['tipeAkun'];
       var konversitipeAkun = datatipeAkun.toString().split(",");
       var settipeAkun = {};
-      var listarraytipe = ["Terverifikasi","TidakTerverifikasi"];
+      var listarraytipe = ["TERVERIFIKASI","TIDAKTERVERIFIKASI"];
       
       for(var i = 0; i < listarraytipe.length; i++)
       {
@@ -200,7 +200,7 @@ export class ChallengeController {
       }
   
       setpesertafield["tipeAkun"] = [settipeAkun];
-      setpesertafield["caraGabung"] = request_json['caraGabung'];
+      setpesertafield["caraGabung"] = request_json['caraGabung'].toUpperCase();
   
       var datajeniskelamin = request_json['jenis_kelamin'];
       var konversikelamin = datajeniskelamin.toString();
@@ -212,15 +212,15 @@ export class ChallengeController {
         tempkelamindata = konversikelamin[i];
         if(tempkelamindata == 'L')
         {
-          setjeniskelamin['Laki-laki'] = 'YES';
+          setjeniskelamin['LAKI-LAKI'] = 'YES';
         }
         else if(tempkelamindata == 'P')
         {
-          setjeniskelamin['Perempuan'] = 'YES';
+          setjeniskelamin['PEREMPUAN'] = 'YES';
         }
         else if(tempkelamindata == 'O')
         {
-          setjeniskelamin['Lainnya'] = 'YES';
+          setjeniskelamin['LAINNYA'] = 'YES';
         }
       }
   
@@ -516,8 +516,6 @@ export class ChallengeController {
 
       if (request_json["menuChallenge"] !== undefined) {
         menuChallenge = request_json["menuChallenge"];
-      } else {
-        throw new BadRequestException("Unabled to proceed, menu challenge field is required");
       }
   
       if (request_json["startcreatedatdate"] !== undefined && request_json["endcreatedatdate"] !== undefined) {

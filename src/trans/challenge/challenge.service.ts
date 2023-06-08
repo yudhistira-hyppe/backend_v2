@@ -170,7 +170,7 @@ export class ChallengeService {
                                   },
                               ]
                           },
-                          then: "sedang berjalan"
+                          then: "SEDANG BERJALAN"
                       },
                       {
                           case:
@@ -182,10 +182,10 @@ export class ChallengeService {
                                   },
                               ]
                           },
-                          then: "selesai"
+                          then: "SELESAI"
                       },
                   ],
-                  default:"akan datang"
+                  default:"AKAN DATANG"
               }
           },
           bannerLeaderboard:
