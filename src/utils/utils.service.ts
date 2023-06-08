@@ -740,7 +740,7 @@ export class UtilsService {
       createNotificationsDto.event = event;
       createNotificationsDto.mate = emailuserbasic;
       createNotificationsDto.devices = arraydevice;
-      createNotificationsDto.title = payload.notification.title;
+      createNotificationsDto.title = payload.data.title;
       createNotificationsDto.body = bodyen;
       createNotificationsDto.bodyId = bodyin;
       createNotificationsDto.active = true;
@@ -944,7 +944,7 @@ export class UtilsService {
       createNotificationsDto.event = event;
       createNotificationsDto.mate = emailuserbasic;
       createNotificationsDto.devices = arraydevice;
-      createNotificationsDto.title = payload.notification.title;
+      createNotificationsDto.title = payload.data.title;
       createNotificationsDto.body = bodyen;
       createNotificationsDto.bodyId = bodyin;
       createNotificationsDto.active = true;
