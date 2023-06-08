@@ -47190,7 +47190,7 @@ export class PostsService {
                 {
                   $project: {
 
-                    "scorePict": 1,
+                    "scoreVid": 1,
                     "boosted": 1,
                     "reportedStatus": 1,
                     "_id": 1,
@@ -50585,7 +50585,7 @@ export class PostsService {
                 {
                   $project: {
 
-                    "scorePict": 1,
+                    "scoreVid": 1,
                     "boosted": 1,
                     "reportedStatus": 1,
                     "_id": 1,
@@ -53984,7 +53984,7 @@ export class PostsService {
                 {
                   $project: {
 
-                    "scorePict": 1,
+                    "scoreVid": 1,
                     "boosted": 1,
                     "reportedStatus": 1,
                     "_id": 1,
@@ -56915,7 +56915,7 @@ export class PostsService {
                 {
                   $project: {
 
-                    "scorePict": 1,
+                    "scoreVid": 1,
                     "boosted": 1,
                     "reportedStatus": 1,
                     "_id": 1,
@@ -59049,7 +59049,7 @@ export class PostsService {
                 {
                   $project: {
 
-                    "scorePict": 1,
+                    "scoreVid": 1,
                     "boosted": 1,
                     "reportedStatus": 1,
                     "_id": 1,
@@ -63158,7 +63158,7 @@ export class PostsService {
                 {
                   $project: {
 
-                    "scorePict": 1,
+                    "scoreVid": 1,
                     "boosted": 1,
                     "reportedStatus": 1,
                     "_id": 1,
@@ -65848,7 +65848,7 @@ export class PostsService {
                 {
                   $project: {
 
-                    "scorePict": 1,
+                    "scoreVid": 1,
                     "boosted": 1,
                     "reportedStatus": 1,
                     "_id": 1,
@@ -67604,7 +67604,7 @@ export class PostsService {
                 {
                   $project: {
 
-                    "scorePict": 1,
+                    "scoreVid": 1,
                     "boosted": 1,
                     "reportedStatus": 1,
                     "_id": 1,
@@ -73755,7 +73755,7 @@ export class PostsService {
                 {
                   $project: {
 
-                    "scorePict": 1,
+                    "scoreVid": 1,
                     "boosted": 1,
                     "reportedStatus": 1,
                     "_id": 1,
@@ -75137,7 +75137,7 @@ export class PostsService {
                 {
                   $project: {
 
-                    "scorePict": 1,
+                    "scoreVid": 1,
                     "boosted": 1,
                     "reportedStatus": 1,
                     "_id": 1,
@@ -77722,7 +77722,7 @@ export class PostsService {
                 {
                   $project: {
 
-                    "scorePict": 1,
+                    "scoreVid": 1,
                     "boosted": 1,
                     "reportedStatus": 1,
                     "_id": 1,
@@ -80736,7 +80736,7 @@ export class PostsService {
                 {
                   $project: {
 
-                    "scorePict": 1,
+                    "scoreVid": 1,
                     "boosted": 1,
                     "reportedStatus": 1,
                     "_id": 1,
@@ -83322,7 +83322,7 @@ export class PostsService {
                 {
                   $project: {
 
-                    "scorePict": 1,
+                    "scoreVid": 1,
                     "boosted": 1,
                     "reportedStatus": 1,
                     "_id": 1,
