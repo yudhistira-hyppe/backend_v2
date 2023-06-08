@@ -158,6 +158,7 @@ export class PostData {
     viewer: any[];
     comment: any[];
     comments: number;
+    following: boolean;
 
 
 }
