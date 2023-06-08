@@ -4062,13 +4062,13 @@ export class PostContentService {
           var discusLog = await this.disqusLogService.findDiscusLog_(discus[0]._id.toString());
           var dataComment = [];
           if (discusLog.length > 0) {
-            for (var t = 0; t < discusLog.length; t++) {
+            for (var g = 0; g < discusLog.length; g++) {
               console.log("🚀 ~ file: postcontent.service.ts:4046 ~ loadPostData ~ discusLog.length:", discusLog.length)
-              if (i == 2) {
+              if (g == 2) {
                 break;
               }
-              var dataComment_ = discusLog[t];
-              console.log("🚀 ~ file: postcontent.service.ts:4050 ~ loadPostData ~ discusLog[t]:", discusLog[t])
+              var dataComment_ = discusLog[g];
+              console.log("🚀 ~ file: postcontent.service.ts:4050 ~ loadPostData ~ discusLog[t]:", discusLog[g])
               var senderCommentEmail = dataComment_.sender.toString();
               var senderComment = await this.userAuthService.findOne(senderCommentEmail);
               var json = JSON.parse(JSON.stringify(dataComment_));
