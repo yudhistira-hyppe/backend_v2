@@ -40325,7 +40325,7 @@ export class PostsService {
             "views": "$views",
             "shares": "$shares",
             "comments": "$comments",
-
+            "category": "$category"
           },
 
         },
@@ -41750,7 +41750,7 @@ export class PostsService {
             "views": "$views",
             "shares": "$shares",
             "comments": "$comments",
-
+            "category": "$category"
           },
 
         },
@@ -43167,7 +43167,7 @@ export class PostsService {
             "views": "$views",
             "shares": "$shares",
             "comments": "$comments",
-
+            "category": "$category"
           },
 
         },
