@@ -4059,6 +4059,7 @@ export class PostContentService {
         //SET DISCUS/COMMENT
         var discus = await this.disqusService.findDisqusByPost(ps.postID.toString(), "COMMENT");
         if (await this.utilService.ceckData(discus)) {
+          var discusLogCount = await this.disqusLogService.findDiscusLog_All(discus[0]._id.toString());
           var discusLog = await this.disqusLogService.findDiscusLog_(discus[0]._id.toString());
           var dataComment = [];
           if (discusLog.length > 0) {
@@ -4082,7 +4083,7 @@ export class PostContentService {
           } else {
             pa.comment = [];
           }
-          pa.comments = discusLog.length;
+          pa.comments = discusLogCount.length;
         }else{
           pa.comment = [];
           pa.comments = 0;
