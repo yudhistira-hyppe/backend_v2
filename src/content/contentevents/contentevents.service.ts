@@ -1034,7 +1034,7 @@ export class ContenteventsService {
     return query;
   }
 
-  async ceckData(email: String, eventType: String, event: String, receiverParty: String, senderParty: String, postID: String): Promise<Contentevents> {
+  async ceckData(email: String, eventType: String, event: String, receiverParty: String, senderParty: String, postID: String, active?: boolean): Promise<Contentevents> {
     let query = this.ContenteventsModel.findOne();
     query.where('email', email);
     query.where('eventType', eventType);
@@ -1047,6 +1047,9 @@ export class ContenteventsService {
     }
     if (postID != "") {
       query.where('postID', postID);
+    }
+    if (active != undefined) {
+      query.where('active', active);
     }
     return query.exec();
   }

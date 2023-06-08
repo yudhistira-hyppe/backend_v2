@@ -3143,7 +3143,7 @@ export class PostContentService {
     //let postId = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
     let posts = await this.doGetUserPost(body, headers, profile);
     //let posts = await this.loadBulk(postId, page, row);
-    let pd = await this.loadPostData(posts, body, profile);
+    let pd = await this.loadPostData(posts, body, profile, profile);
     res.data = pd;
 
     var ver = await this.settingsService.findOneByJenis('AppsVersion');
@@ -3164,7 +3164,7 @@ export class PostContentService {
     let res = new PostResponseApps();
     res.response_code = 202;
     let posts = await this.doGetUserPostMy(body, headers, profile);
-    let pd = await this.loadPostData(posts, body, profile);
+    let pd = await this.loadPostData(posts, body, profile, profile);
     res.data = pd;
 
     return res;
@@ -3742,7 +3742,7 @@ export class PostContentService {
     let res = new PostResponseApps();
     res.response_code = 202;
     let posts = await this.doGetUserPostTheir(body, headers, profile);
-    let pd = await this.loadPostData(posts, body, profile_);
+    let pd = await this.loadPostData(posts, body, profile_, profile);
     res.data = pd;
 
     return res;
@@ -3991,8 +3991,19 @@ export class PostContentService {
     //return p;
   }
 
-  private async loadPostData(posts: Posts[], body: any, iam: Userbasic): Promise<PostData[]> {
+  private async loadPostData(posts: Posts[], body: any, iam: Userbasic, iam2: Userbasic): Promise<PostData[]> {
     //this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(posts));
+    var getVerified = false;
+    var getFollowing = false;
+    if (iam2.statusKyc != undefined) {
+      if (iam2.statusKyc.toString() == "verified") {
+        getVerified = true;
+      }
+    }
+    var ceck_data_FOLLOW = await this.contentEventService.ceckData(String(iam.email), "FOLLOWING", "ACCEPT", "", iam2.email, "", true);
+    if (await this.utilService.ceckData(ceck_data_FOLLOW)){
+      getFollowing = true;
+    }
     let pd = Array<PostData>();
     if (posts != undefined) {
 
@@ -4041,21 +4052,23 @@ export class PostContentService {
         pa.updatedAt = String(ps.updatedAt);
         pa.description = String(ps.description);
         pa.email = String(ps.email);
+        pa.following = getFollowing;
 
 
         //SET DISCUS/COMMENT
         var discus = await this.disqusService.findDisqusByPost(ps.postID.toString(), "COMMENT");
         if (await this.utilService.ceckData(discus)) {
+          var discusLogCount = await this.disqusLogService.findDiscusLog_All(discus[0]._id.toString());
           var discusLog = await this.disqusLogService.findDiscusLog_(discus[0]._id.toString());
           var dataComment = [];
           if (discusLog.length > 0) {
-            for (var t = 0; t < discusLog.length; t++) {
+            for (var g = 0; g < discusLog.length; g++) {
               console.log("🚀 ~ file: postcontent.service.ts:4046 ~ loadPostData ~ discusLog.length:", discusLog.length)
-              if (i == 2) {
+              if (g == 2) {
                 break;
               }
-              var dataComment_ = discusLog[t];
-              console.log("🚀 ~ file: postcontent.service.ts:4050 ~ loadPostData ~ discusLog[t]:", discusLog[t])
+              var dataComment_ = discusLog[g];
+              console.log("🚀 ~ file: postcontent.service.ts:4050 ~ loadPostData ~ discusLog[t]:", discusLog[g])
               var senderCommentEmail = dataComment_.sender.toString();
               var senderComment = await this.userAuthService.findOne(senderCommentEmail);
               var json = JSON.parse(JSON.stringify(dataComment_));
@@ -4069,7 +4082,7 @@ export class PostContentService {
           } else {
             pa.comment = [];
           }
-          pa.comments = discusLog.length;
+          pa.comments = discusLogCount.length;
         }else{
           pa.comment = [];
           pa.comments = 0;
@@ -4270,6 +4283,7 @@ export class PostContentService {
         privacy.isPostPrivate = false;
         privacy.isPrivate = false;
         privacy.isCelebrity = false;
+        privacy.isIdVerified = getVerified; 
         pa.privacy = privacy;
 
         if (body.tags != undefined) {
