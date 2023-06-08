@@ -153,40 +153,40 @@ export class ChallengeService {
           },
           statuscurrentChallenge:
           {
-              "$switch":
-              {
-                  branches:
-                  [
-                      {
-                          case:
+            "$switch":
+            {
+              branches:
+                [
+                  {
+                    case:
+                    {
+                      "$and":
+                        [
                           {
-                              "$and":
-                              [
-                                  {
-                                      "$gte": ["$timenow", "$startChallenge"]
-                                  },
-                                  {
-                                      "$lte": ["$timenow", "$endChallenge"]
-                                  },
-                              ]
+                            "$gte": ["$timenow", "$startChallenge"]
                           },
-                          then: "SEDANG BERJALAN"
-                      },
-                      {
-                          case:
                           {
-                              "$and":
-                              [
-                                  {
-                                      "$gt": ["$timenow", "$endChallenge"]
-                                  },
-                              ]
+                            "$lte": ["$timenow", "$endChallenge"]
                           },
-                          then: "SELESAI"
-                      },
-                  ],
-                  default:"AKAN DATANG"
-              }
+                        ]
+                    },
+                    then: "SEDANG BERJALAN"
+                  },
+                  {
+                    case:
+                    {
+                      "$and":
+                        [
+                          {
+                            "$gt": ["$timenow", "$endChallenge"]
+                          },
+                        ]
+                    },
+                    then: "SELESAI"
+                  },
+                ],
+              default: "AKAN DATANG"
+            }
           },
           bannerLeaderboard:
           {
@@ -204,10 +204,8 @@ export class ChallengeService {
       },
     );
 
-    if(menuChallenge != null && menuChallenge != undefined)
-    {
-      if(menuChallenge == 'DRAFT')
-      {
+    if (menuChallenge != null && menuChallenge != undefined) {
+      if (menuChallenge == 'DRAFT') {
         pipeline.push(
           {
             "$match":
@@ -215,16 +213,15 @@ export class ChallengeService {
               "$expr":
               {
                 "$eq":
-                [
-                  "$statusChallenge", menuChallenge
-                ]
+                  [
+                    "$statusChallenge", menuChallenge
+                  ]
               }
             }
           }
         );
       }
-      else
-      {
+      else {
         pipeline.push(
           {
             "$match":
@@ -232,18 +229,17 @@ export class ChallengeService {
               "$expr":
               {
                 "$eq":
-                [
-                  "$jenisChallenge_fk", menuChallenge
-                ]
+                  [
+                    "$jenisChallenge_fk", menuChallenge
+                  ]
               }
             }
           }
         );
       }
     }
-	
-	if(statuschallenge != null && statuschallenge != undefined)
-    {
+
+    if (statuschallenge != null && statuschallenge != undefined) {
       var konversistatus = statuschallenge.toString().split(",");
       pipeline.push(
         {
@@ -252,9 +248,9 @@ export class ChallengeService {
             "$expr":
             {
               "$in":
-              [
-                "$statuscurrentChallenge", konversistatus
-              ]
+                [
+                  "$statuscurrentChallenge", konversistatus
+                ]
             }
           }
         }
@@ -322,6 +318,7 @@ export class ChallengeService {
 
       {
         $project: {
+          "statusChallenge": 1,
           "nameChallenge": 1,
           "jenisChallenge": 1,
           "description": 1,
@@ -346,6 +343,7 @@ export class ChallengeService {
       },
       {
         $project: {
+          "statusChallenge": 1,
           "nameChallenge": 1,
           "jenisChallenge": 1,
           "description": 1,
@@ -368,7 +366,7 @@ export class ChallengeService {
         }
       },
       {
-        $match: { "poinReferal": { $ne: null } }
+        $match: { "poinReferal": { $ne: null }, "statusChallenge": "PUBLISH" }
       }
     ]);
     return query;
@@ -380,6 +378,7 @@ export class ChallengeService {
 
       {
         $project: {
+          "statusChallenge": 1,
           "nameChallenge": 1,
           "jenisChallenge": 1,
           "description": 1,
@@ -404,6 +403,7 @@ export class ChallengeService {
       },
       {
         $project: {
+          "statusChallenge": 1,
           "nameChallenge": 1,
           "jenisChallenge": 1,
           "description": 1,
