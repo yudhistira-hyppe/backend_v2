@@ -4052,7 +4052,6 @@ export class PostContentService {
         pa.updatedAt = String(ps.updatedAt);
         pa.description = String(ps.description);
         pa.email = String(ps.email);
-        pa.isIdVerified = getVerified; 
         pa.following = getFollowing;
 
 
@@ -4284,6 +4283,7 @@ export class PostContentService {
         privacy.isPostPrivate = false;
         privacy.isPrivate = false;
         privacy.isCelebrity = false;
+        privacy.isIdVerified = getVerified; 
         pa.privacy = privacy;
 
         if (body.tags != undefined) {

@@ -94,6 +94,7 @@ export class Avatar {
 
 export class Privacy {
     isPostPrivate: boolean;
+    isIdVerified: boolean;
     isCelebrity: boolean;
     isPrivate: boolean;
 }
