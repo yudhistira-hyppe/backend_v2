@@ -40321,6 +40321,10 @@ export class PostsService {
             "timeEnd": 1,
             "avatar": 1,
             "statusCB": 1,
+            "likes": "$likes",
+            "views": "$views",
+            "shares": "$shares",
+            "comments": "$comments",
 
           },
 
@@ -41742,6 +41746,10 @@ export class PostsService {
             "timeEnd": 1,
             "avatar": 1,
             "statusCB": 1,
+            "likes": "$likes",
+            "views": "$views",
+            "shares": "$shares",
+            "comments": "$comments",
 
           },
 
@@ -43155,6 +43163,10 @@ export class PostsService {
             "timeEnd": 1,
             "avatar": 1,
             "statusCB": 1,
+            "likes": "$likes",
+            "views": "$views",
+            "shares": "$shares",
+            "comments": "$comments",
 
           },
 
