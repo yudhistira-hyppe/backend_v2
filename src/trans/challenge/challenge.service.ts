@@ -188,6 +188,13 @@ export class ChallengeService {
                   default:"akan datang"
               }
           },
+          bannerLeaderboard:
+          {
+            "$arrayElemAt":
+              [
+                "$leaderBoard.bannerLeaderboard", 0
+              ]
+          },
           statusChallenge: 1,
           objectChallenge: 1,
           startChallenge: 1,
