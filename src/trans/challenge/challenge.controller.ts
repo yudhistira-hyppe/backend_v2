@@ -2,18 +2,23 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, UseI
 import { ChallengeService } from './challenge.service';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { Challenge } from './schemas/challenge.schema';
+import { subChallengeService } from './subChallenge.service';
+import { CreateSubChallengeDto } from './dto/create-subchallenge.dto';
+import { subChallenge } from './schemas/subchallenge.schema';
 import { OssService } from 'src/stream/oss/oss.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UtilsService } from 'src/utils/utils.service';
 import { BadgeService } from '../badge/badge.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import mongoose, { mongo } from 'mongoose';
 
 @Controller('api/challenge')
 export class ChallengeController {
   constructor(private readonly challengeService: ChallengeService,
     private readonly osservices: OssService,
     private readonly util: UtilsService,
-    private readonly badge: BadgeService) {}
+    private readonly badge: BadgeService,
+    private readonly subchallenge: subChallengeService) {}
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -47,17 +52,25 @@ export class ChallengeController {
       var mongoose = require('mongoose');
       var insertdata = new CreateChallengeDto();
       insertdata._id = new mongoose.Types.ObjectId();
-      insertdata.nameChallenge = request_json['namechallenge'];
       
-      var importlib = require('mongoose');
       insertdata.nameChallenge = request_json['nameChallenge'];
+      var importlib = require('mongoose');
       insertdata.jenisChallenge = importlib.Types.ObjectId(request_json['jenisChallenge']);
       insertdata.description = request_json['description'];
       insertdata.createdAt = await this.util.getDateTimeString();
       insertdata.updatedAt = await this.util.getDateTimeString();
       insertdata.startChallenge = request_json['startChallenge'];
       insertdata.endChallenge = request_json['endChallenge'];
-      insertdata.durasi = request_json['durasi'];
+      insertdata.durasi = Number(request_json['durasi']);
+      insertdata.jenisDurasi = request_json['jenisDurasi'];
+      insertdata.startTime = request_json['startTime'];
+      var dummytime = await this.util.getDateTimeString();
+      var convert = dummytime.split(" ")[0] + " " + request_json['startTime'];
+      var convertagain = new Date(convert);
+      convertagain.setHours(convertagain.getHours() + 7);
+      convertagain.setSeconds(convertagain.getSeconds() - 1);
+      var convertlagi = convertagain.toISOString().split("T")[1];
+      insertdata.endTime = convertlagi.split(".")[0];
       insertdata.tampilStatusPengguna = request_json['tampilStatusPengguna'];
       insertdata.objectChallenge = request_json['objectChallenge'].toString().toLowerCase();
       insertdata.statusChallenge = request_json['statusChallenge'];
@@ -415,12 +428,61 @@ export class ChallengeController {
   
       try
       {
+        var satuanhari = null;
+        if(insertdata.jenisDurasi == 'WEEK')
+        {
+          satuanhari = insertdata.durasi * 7;
+        }
+        else
+        {
+          satuanhari = insertdata.durasi;
+        }
+
+        var listtanggal = []; 
+        var temptanggal = new Date(request_json['startChallenge'].split(" ")[0] + " " + insertdata.startTime);
+        temptanggal.setHours(temptanggal.getHours() + 7);
+        var endtanggal = new Date(request_json['endChallenge'].split(" ")[0] + " " + insertdata.endTime);
+        endtanggal.setHours(endtanggal.getHours() + 7);
+        var datediff = endtanggal.getTime() - temptanggal.getTime();
+        while(datediff >= 0)
+        {
+          //untuk endtime
+          var pecahdata = temptanggal.toISOString().split("T");
+          var startdatetime = pecahdata[0] + " " + pecahdata[1].split(".")[0];
+          temptanggal.setDate(temptanggal.getDate() + satuanhari);
+          temptanggal.setSeconds(temptanggal.getSeconds() - 1);
+          
+          var pecahdata = temptanggal.toISOString().split("T");
+          var enddatetime = pecahdata[0] + " " + pecahdata[1].split(".")[0];
+          //restore time
+          temptanggal.setSeconds(temptanggal.getSeconds() + 1);
+          temptanggal = new Date(temptanggal);
+          
+          datediff = endtanggal.getTime() - temptanggal.getTime();
+          listtanggal.push([startdatetime, enddatetime]);
+        }
+
         // var resultdata = insertdata;
         var resultdata = await this.challengeService.create(insertdata);
+        
+        // var listsubchallenge = [];
+        for(var i = 0; i < listtanggal.length; i++)
+        {
+          var insertsub = new CreateSubChallengeDto();
+          var mongoose = require('mongoose');
+          insertsub._id = new mongoose.Types.ObjectId();
+          insertsub.startDatetime = listtanggal[i][0];
+          insertsub.endDatetime = listtanggal[i][1];
+          insertsub.isActive = true;
+          insertsub.challengeId = insertdata._id;
+          // listsubchallenge.push(insertsub);
+          await this.subchallenge.create(insertsub); 
+        }
         
         return res.status(HttpStatus.OK).json({
             response_code: 202,
             "data": resultdata,
+            // "listanak":listsubchallenge,
             "message": messages
         });
       }
@@ -509,14 +571,178 @@ export class ChallengeController {
     }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.challengeService.findOne(id);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() createChallenge: CreateChallengeDto) {
-  //   return this.challengeService.update(id, createChallenge);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Get('duplicate/:id')
+  async duplikatdata(@Param('id') id: string) {
+    var data = await this.challengeService.findOne(id);
+
+    var mongoose = require('mongoose');
+    var insertdata = new CreateChallengeDto();
+    insertdata._id = new mongoose.Types.ObjectId();
+    insertdata.nameChallenge = "copy_" + data.nameChallenge;
+    insertdata.jenisChallenge = data.jenisChallenge;
+    insertdata.description = data.description;
+    insertdata.createdAt = await this.util.getDateTimeString();
+    insertdata.updatedAt = await this.util.getDateTimeString();
+    insertdata.durasi = data.durasi;
+    insertdata.startChallenge = data.startChallenge;
+    insertdata.endChallenge = data.endChallenge;
+    insertdata.tampilStatusPengguna = data.tampilStatusPengguna;
+    insertdata.objectChallenge = data.objectChallenge;
+    insertdata.metrik = data.metrik;
+    insertdata.peserta = data.peserta;
+    insertdata.leaderBoard = data.leaderBoard;
+    insertdata.ketentuanHadiah = data.ketentuanHadiah;
+    insertdata.hadiahPemenang = data.hadiahPemenang;
+    insertdata.bannerSearch = data.bannerSearch;
+    insertdata.popUp = data.popUp;
+    insertdata.notifikasiPush = data.notifikasiPush;
+    insertdata.statusChallenge = 'DRAFT';
+
+    var getchild = await this.subchallenge.findChild(id);
+
+    await this.challengeService.create(insertdata);
+    for(var i = 0; i < getchild.length; i++)
+    {
+      var setnewchild = new CreateSubChallengeDto();
+      setnewchild._id = new mongoose.Types.ObjectId();
+      setnewchild.challengeId = insertdata._id;
+      setnewchild.isActive = true;
+      setnewchild.startDatetime = getchild[i].startDatetime;
+      setnewchild.endDatetime = getchild[i].endDatetime;
+
+      await this.subchallenge.create(setnewchild);
+    }
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    return {
+      response_code: 202,
+      data:insertdata,
+      messages: messages,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('update/:id')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'bannerBoard', maxCount: 1 }, { name: 'bannerSearch', maxCount:1 }, { name: 'popUpnotif', maxCount:1 }]))
+  async update(
+    @Param('id') id: string,
+    @UploadedFiles() files: { 
+      bannerBoard?: Express.Multer.File[]
+      bannerSearch?: Express.Multer.File[]
+      popUpnotif?: Express.Multer.File[]      
+    },
+    @Req() request: Request,
+    @Res() res,
+  ) {
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var getdata = await this.challengeService.findOne(id);
+    
+    if(files.bannerBoard != undefined)
+    {
+      var getoldname = getdata["leaderBoard"][0]["bannerLeaderboard"];
+      getoldname.split("/");
+      var getoriginalname = getoldname.splice(-1);
+      var insertbanner = files.bannerBoard[0];
+      var path = "images/challenge/" + id + "_bannerLeaderboard" + "." + getdata["leaderBoard"][0]["formatFile"];
+      // var path = "images/challenge/" + getoriginalname;
+      var result = await this.osservices.uploadFile(insertbanner, path);
+      // setleaderboard['bannerLeaderboard'] = result.url;
+      getdata["leaderBoard"][0]["bannerLeaderboard"] = result.url; 
+    }
+
+    if(files.bannerSearch != undefined)
+    {
+      var getoldname = getdata["bannerSearch"][0]["image"].split("/");
+      console.log(getoldname);
+      var getoriginalname = getoldname.splice(-1);
+      var insertbannersearch = files.bannerSearch[0];
+      var path = "images/challenge/" + id + "_bannerSearch" + "." + getdata["bannerSearch"][0]["formatFile"];
+      // var path = "images/challenge/" + getoriginalname;
+      var result = await this.osservices.uploadFile(insertbannersearch, path);
+      // setleaderboard['image'] = result.url;
+      getdata["bannerSearch"][0]["image"] = result.url;
+    }
+
+    if(files.popUpnotif != undefined)
+    {
+      var getoldname = getdata["popUp"][0]["image"];
+      getoldname.split("/");
+      var getoriginalname = getoldname.splice(-1);
+      var insertpopup = files.popUpnotif[0];
+      var path = "images/challenge/" + id + "_popup" + "." + getdata["popUp"][0]["formatFile"];
+      // var path = "images/challenge/" + getoriginalname;
+      var result = await this.osservices.uploadFile(insertpopup, path);
+      // setleaderboard['image'] = result.url;
+      getdata["popUp"][0]["image"] = result.url;
+    }
+
+    if(request_json['description'] != undefined)
+    {
+      getdata["description"] = request_json['description'];
+    }
+
+    if(request_json['statusChallenge'] != undefined)
+    {
+      getdata["statusChallenge"] = request_json["statusChallenge"];
+    }
+
+    getdata['updatedAt'] = await this.util.getDateTimeString();
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+
+    try
+    {
+      // var resultdata = insertdata;
+      await this.challengeService.update(id, getdata);
+      
+      return res.status(HttpStatus.OK).json({
+          response_code: 202,
+          "data": getdata,
+          "message": messages
+      });
+    }
+    catch(e)
+    {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        "message": messagesEror
+      });
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('subchallenge/disactivate/:id')
+  async setnonactive(
+    @Param('id') id: string,
+  )
+  {
+    var setupdatedata = new CreateSubChallengeDto();
+    setupdatedata.isActive = false;
+  
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    await this.subchallenge.update(id, setupdatedata);
+
+    return {
+      response_code: 202,
+      messages: messages,
+    };
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

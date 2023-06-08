@@ -32,6 +32,15 @@ export class Challenge {
     endChallenge: string;
 
     @Prop()
+    startTime: string;
+
+    @Prop()
+    endTime: string;
+
+    @Prop()
+    jenisDurasi: string;
+
+    @Prop()
     tampilStatusPengguna: boolean;
     
     @Prop()

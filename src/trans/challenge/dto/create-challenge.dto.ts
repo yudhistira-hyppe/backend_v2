@@ -8,6 +8,9 @@ export class CreateChallengeDto {
     durasi: number;
     startChallenge: string;
     endChallenge: string;
+    startTime: string;
+    endTime: string;
+    jenisDurasi: string;
     tampilStatusPengguna: boolean;
     objectChallenge: string;
     statusChallenge: string;
