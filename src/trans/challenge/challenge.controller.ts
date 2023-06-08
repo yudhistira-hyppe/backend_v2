@@ -72,7 +72,7 @@ export class ChallengeController {
       var convertlagi = convertagain.toISOString().split("T")[1];
       insertdata.endTime = convertlagi.split(".")[0];
       insertdata.tampilStatusPengguna = request_json['tampilStatusPengguna'];
-      insertdata.objectChallenge = request_json['objectChallenge'].toString().toLowerCase();
+      insertdata.objectChallenge = request_json['objectChallenge'];
       insertdata.statusChallenge = request_json['statusChallenge'];
     
       var arraymetrik = [];
