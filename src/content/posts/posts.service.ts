@@ -44495,26 +44495,112 @@ export class PostsService {
         },
         {
           $set: {
-            viewerCount: {
+            kancut: //'dodolipet'
+            {
               $cond: {
                 if: {
-                  $isArray: "$viewer"
-                },
-                then:
-                {
-                  $size: {
-                    $filter: {
-                      input: "$viewer",
-                      cond: {
-                        $eq: ["$$this", email]
-                      }
+                  //$eq: ['$dodolipet', 0]
+                  $filter: {
+                    input: "$viewer",
+                    cond: {
+                      $eq: ["$$this", email]
                     }
                   }
                 },
-                else: 0
+                then:
+                {
+                  $concatArrays: [
+                    '$viewer',
+                    [email]
+                  ]
+                },
+                else: [email]
               }
             }
           }
+        },
+        {
+          $set: {
+            mailViewer: {
+              $filter: {
+                input: "$kancut",
+                cond: {
+                  $eq: ["$$this", email]
+                }
+              }
+            },
+
+          }
+        },
+        {
+          $project: {
+            mailViewer: 1,
+            viewerCount:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$kancut"
+                },
+                then: {
+                  $subtract: [
+                    {
+                      $size: "$kancut"
+                    }, 1
+                  ]
+                },
+                else: 0
+              }
+            },
+            viewer: 1,
+            oldDate: 1,
+            selfContents: 1,
+            comment: 1,
+            "postID": 1,
+            "testDate": 1,
+            "musicId": 1,
+            "music": 1,
+            "email": 1,
+            "postType": 1,
+            "description": 1,
+            "active": 1,
+            "createdAt": 1,
+            "updatedAt": 1,
+            "expiration": 1,
+            "visibility": 1,
+            "location": 1,
+            "tags": 1,
+            "allowComments": 1,
+            "isSafe": 1,
+            "isOwned": 1,
+            "certified": 1,
+            "saleAmount": 1,
+            "saleLike": 1,
+            "saleView": 1,
+            "isShared": 1,
+            "userProfile": 1,
+            "contentMedias": 1,
+            "cats": "$cats",
+            "tagDescription": 1,
+            "metadata": 1,
+            "boostDate": 1,
+            "boostViewer": 1,
+            "boostCount": 1,
+            "contentModeration": 1,
+            "reportedStatus": 1,
+            "reportedUserCount": 1,
+            "contentModerationResponse": 1,
+            "reportedUser": 1,
+            "timeStart": 1,
+            "timeEnd": 1,
+            "avatar": 1,
+            "statusCB": 1,
+            "likes": "$likes",
+            "views": "$views",
+            "shares": "$shares",
+            "comments": "$comments",
+            "category": "$category"
+          },
+
         },
         {
           $match:
@@ -44678,10 +44764,10 @@ export class PostsService {
         },
         {
           $sort: {
-            viewerCount: 1,
             selfContents: - 1,
-            "isBoost": - 1,
-            "createdAt": - 1
+            isBoost: - 1,
+            createdAt: - 1,
+            viewerCount: 1,
           }
         },
         {
@@ -45351,6 +45437,8 @@ export class PostsService {
         },
         {
           $project: {
+            mailViewer: 1,
+            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             oldDate: 1,
@@ -45539,6 +45627,8 @@ export class PostsService {
         },
         {
           $project: {
+            mailViewer: 1,
+            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             version: "$setting.value",
@@ -45551,8 +45641,21 @@ export class PostsService {
               $ifNull: ["$isLike", false]
             },
             comment: 1,
-            intScore: {
-              $size: "$interest"
+            intScore:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$interest"
+                },
+                then: {
+                  $subtract: [
+                    {
+                      $size: "$interest"
+                    }, 1
+                  ]
+                },
+                else: 0
+              }
             },
             "verified": 1,
             "friend": 1,
@@ -45817,35 +45920,112 @@ export class PostsService {
         },
         {
           $set: {
-            viewerCount: {
+            kancut: //'dodolipet'
+            {
               $cond: {
                 if: {
-                  $isArray: "$viewer"
+                  //$eq: ['$dodolipet', 0]
+                  $filter: {
+                    input: "$viewer",
+                    cond: {
+                      $eq: ["$$this", email]
+                    }
+                  }
                 },
                 then:
                 {
-                  $cond: {
-                    if: {
-                      $gt: ["$isBoost", 3]
-                    },
-                    then: 0,
-                    else:
-                    {
-                      $size: {
-                        $filter: {
-                          input: "$viewer",
-                          cond: {
-                            $eq: ["$$this", email]
-                          }
-                        }
-                      }
-                    },
-                  },
+                  $concatArrays: [
+                    '$viewer',
+                    [email]
+                  ]
                 },
-                else: 0
+                else: [email]
               }
             }
           }
+        },
+        {
+          $set: {
+            mailViewer: {
+              $filter: {
+                input: "$kancut",
+                cond: {
+                  $eq: ["$$this", email]
+                }
+              }
+            },
+
+          }
+        },
+        {
+          $project: {
+            mailViewer: 1,
+            viewerCount:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$kancut"
+                },
+                then: {
+                  $subtract: [
+                    {
+                      $size: "$kancut"
+                    }, 1
+                  ]
+                },
+                else: 0
+              }
+            },
+            viewer: 1,
+            oldDate: 1,
+            selfContents: 1,
+            comment: 1,
+            "postID": 1,
+            "testDate": 1,
+            "musicId": 1,
+            "music": 1,
+            "email": 1,
+            "postType": 1,
+            "description": 1,
+            "active": 1,
+            "createdAt": 1,
+            "updatedAt": 1,
+            "expiration": 1,
+            "visibility": 1,
+            "location": 1,
+            "tags": 1,
+            "allowComments": 1,
+            "isSafe": 1,
+            "isOwned": 1,
+            "certified": 1,
+            "saleAmount": 1,
+            "saleLike": 1,
+            "saleView": 1,
+            "isShared": 1,
+            "userProfile": 1,
+            "contentMedias": 1,
+            "cats": "$cats",
+            "tagDescription": 1,
+            "metadata": 1,
+            "boostDate": 1,
+            "boostViewer": 1,
+            "boostCount": 1,
+            "contentModeration": 1,
+            "reportedStatus": 1,
+            "reportedUserCount": 1,
+            "contentModerationResponse": 1,
+            "reportedUser": 1,
+            "timeStart": 1,
+            "timeEnd": 1,
+            "avatar": 1,
+            "statusCB": 1,
+            "likes": "$likes",
+            "views": "$views",
+            "shares": "$shares",
+            "comments": "$comments",
+            "category": "$category"
+          },
+
         },
         {
           $match:
@@ -45999,10 +46179,10 @@ export class PostsService {
         },
         {
           $sort: {
+            selfContents: - 1,
+            isBoost: - 1,
+            createdAt: - 1,
             viewerCount: 1,
-            selfContents: -1,
-            "isBoost": - 1,
-            "createdAt": - 1
           }
         },
         {
@@ -46678,6 +46858,8 @@ export class PostsService {
         },
         {
           $project: {
+            mailViewer: 1,
+            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             oldDate: 1,
@@ -46864,6 +47046,8 @@ export class PostsService {
         },
         {
           $project: {
+            mailViewer: 1,
+            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             version: "$setting.value",
@@ -46876,8 +47060,21 @@ export class PostsService {
               $ifNull: ["$isLike", false]
             },
             comment: 1,
-            intScore: {
-              $size: "$interest"
+            intScore:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$interest"
+                },
+                then: {
+                  $subtract: [
+                    {
+                      $size: "$interest"
+                    }, 1
+                  ]
+                },
+                else: 0
+              }
             },
             "verified": 1,
             "friend": 1,
@@ -47140,35 +47337,112 @@ export class PostsService {
         },
         {
           $set: {
-            viewerCount: {
+            kancut: //'dodolipet'
+            {
               $cond: {
                 if: {
-                  $isArray: "$viewer"
+                  //$eq: ['$dodolipet', 0]
+                  $filter: {
+                    input: "$viewer",
+                    cond: {
+                      $eq: ["$$this", email]
+                    }
+                  }
                 },
                 then:
                 {
-                  $cond: {
-                    if: {
-                      $gt: ["$isBoost", 3]
-                    },
-                    then: 0,
-                    else:
-                    {
-                      $size: {
-                        $filter: {
-                          input: "$viewer",
-                          cond: {
-                            $eq: ["$$this", email]
-                          }
-                        }
-                      }
-                    },
-                  },
+                  $concatArrays: [
+                    '$viewer',
+                    [email]
+                  ]
                 },
-                else: 0
+                else: [email]
               }
             }
           }
+        },
+        {
+          $set: {
+            mailViewer: {
+              $filter: {
+                input: "$kancut",
+                cond: {
+                  $eq: ["$$this", email]
+                }
+              }
+            },
+
+          }
+        },
+        {
+          $project: {
+            mailViewer: 1,
+            viewerCount:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$kancut"
+                },
+                then: {
+                  $subtract: [
+                    {
+                      $size: "$kancut"
+                    }, 1
+                  ]
+                },
+                else: 0
+              }
+            },
+            viewer: 1,
+            oldDate: 1,
+            selfContents: 1,
+            comment: 1,
+            "postID": 1,
+            "testDate": 1,
+            "musicId": 1,
+            "music": 1,
+            "email": 1,
+            "postType": 1,
+            "description": 1,
+            "active": 1,
+            "createdAt": 1,
+            "updatedAt": 1,
+            "expiration": 1,
+            "visibility": 1,
+            "location": 1,
+            "tags": 1,
+            "allowComments": 1,
+            "isSafe": 1,
+            "isOwned": 1,
+            "certified": 1,
+            "saleAmount": 1,
+            "saleLike": 1,
+            "saleView": 1,
+            "isShared": 1,
+            "userProfile": 1,
+            "contentMedias": 1,
+            "cats": "$cats",
+            "tagDescription": 1,
+            "metadata": 1,
+            "boostDate": 1,
+            "boostViewer": 1,
+            "boostCount": 1,
+            "contentModeration": 1,
+            "reportedStatus": 1,
+            "reportedUserCount": 1,
+            "contentModerationResponse": 1,
+            "reportedUser": 1,
+            "timeStart": 1,
+            "timeEnd": 1,
+            "avatar": 1,
+            "statusCB": 1,
+            "likes": "$likes",
+            "views": "$views",
+            "shares": "$shares",
+            "comments": "$comments",
+            "category": "$category"
+          },
+
         },
         {
           $match:
@@ -47322,10 +47596,10 @@ export class PostsService {
         },
         {
           $sort: {
+            selfContents: - 1,
+            isBoost: - 1,
+            createdAt: - 1,
             viewerCount: 1,
-            selfContents: -1,
-            "isBoost": - 1,
-            "createdAt": - 1
           }
         },
         {
@@ -48001,6 +48275,8 @@ export class PostsService {
         },
         {
           $project: {
+            mailViewer: 1,
+            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             oldDate: 1,
@@ -48187,6 +48463,8 @@ export class PostsService {
         },
         {
           $project: {
+            mailViewer: 1,
+            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             version: "$setting.value",
@@ -48199,8 +48477,21 @@ export class PostsService {
               $ifNull: ["$isLike", false]
             },
             comment: 1,
-            intScore: {
-              $size: "$interest"
+            intScore:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$interest"
+                },
+                then: {
+                  $subtract: [
+                    {
+                      $size: "$interest"
+                    }, 1
+                  ]
+                },
+                else: 0
+              }
             },
             "verified": 1,
             "friend": 1,
@@ -48300,6 +48591,7 @@ export class PostsService {
     var query = await this.PostsModel.aggregate(pipeline);
     return query;
   }
+
 
   async eventLike(email: string, postid: string) {
     var query = await this.PostsModel.aggregate([

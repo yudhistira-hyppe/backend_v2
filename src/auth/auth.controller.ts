@@ -1374,6 +1374,11 @@ export class AuthController {
     return await this.authService.signup(request);
   }
 
+  @Post('api/user/signup/v2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async signupv2(@Req() request: any) {
+    return await this.authService.signup2(request);
+  }
 
   @Post('api/user/signuploop')
   @HttpCode(HttpStatus.ACCEPTED)
@@ -1416,7 +1421,11 @@ export class AuthController {
   async referral(@Req() request: any, @Headers() headers) {
     return await this.authService.referral(request, headers);
   }
-
+  // @Post('api/user/referral')
+  // @HttpCode(HttpStatus.ACCEPTED)
+  // async referral(@Req() request: any, @Headers() headers) {
+  //   return await this.authService.referral2(request, headers);
+  // }
   @Post('api/user/referral/v2')
   @HttpCode(HttpStatus.ACCEPTED)
   async referral2(@Req() request: any, @Headers() headers) {

@@ -25,6 +25,7 @@ import { ReactionsRepoService } from '../../infra/reactions_repo/reactions_repo.
 import { FriendListService } from '../friend_list/friend_list.service';
 import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
 import { NewpostsService } from '../newposts/newposts.service';
+//import { AuthService } from '../../auth/auth.service';
 
 
 @Controller()
@@ -44,6 +45,7 @@ export class ContenteventsController {
     private readonly friendListService: FriendListService,
     private readonly userbasicsService: UserbasicsService,
     private readonly NewpostsService: NewpostsService,
+    //  private readonly authService: AuthService,
     private readonly errorHandler: ErrorHandler) { }
 
   @Post('api/contentevents')
@@ -979,6 +981,7 @@ export class ContenteventsController {
           var CreateInsightsDto_receiver = new CreateInsightsDto()
           CreateInsightsDto_receiver.insightLogs = LogInsught_receiver;
           await this.insightsService.updateone(email_receiverParty, CreateInsightsDto_receiver)
+
         }
 
         try {
@@ -991,6 +994,14 @@ export class ContenteventsController {
           await this.insightsService.updateFollowing(email_user);
           this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
           //this.sendInteractiveFCM(email_user, "FOLLOWING", "", email_receiverParty);
+          // const databasic = await this.userbasicsService.findOne(
+          //   email_receiverParty
+          // );
+          // var iduser = null;
+          // if (databasic !== null) {
+          //   iduser = databasic._id;
+          //   this.challengeFollow(iduser.toString(), idevent1.toString(), "contentevents");
+          // }
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
@@ -1675,5 +1686,7 @@ export class ContenteventsController {
     }
   }
 
-
+  // async challengeFollow(iduser: string, idref: string, nametable: string) {
+  //   await this.authService.userChallengeFollow(iduser, idref, nametable);
+  // }
 }
