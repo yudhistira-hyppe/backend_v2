@@ -40,7 +40,7 @@ export class ChallengeService {
     if (namachallenge != null && namachallenge != undefined) {
       firstmatch.push(
         {
-          nameChallenge:
+          "nameChallenge":
           {
             "$regex": namachallenge,
             "$options": "i"
@@ -49,11 +49,11 @@ export class ChallengeService {
       );
     }
 
-    if (startdate != null && startdate != undefined) {
+    if (startdate != null && enddate != undefined) {
       try {
         var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
-        var dateend = currentdate.toISOString();
+        var dateend = currentdate.toISOString().split("T")[0];
       } catch (e) {
         dateend = "";
       }
