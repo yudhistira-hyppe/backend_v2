@@ -1374,11 +1374,11 @@ export class AuthController {
     return await this.authService.signup(request);
   }
 
-  // @Post('api/user/signup')
-  // @HttpCode(HttpStatus.ACCEPTED)
-  // async signup(@Req() request: any) {
-  //   return await this.authService.signup2(request);
-  // }
+  @Post('api/user/signup/v2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async signupv2(@Req() request: any) {
+    return await this.authService.signup2(request);
+  }
 
   @Post('api/user/signuploop')
   @HttpCode(HttpStatus.ACCEPTED)
