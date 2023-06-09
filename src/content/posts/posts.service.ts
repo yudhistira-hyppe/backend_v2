@@ -45867,7 +45867,7 @@ export class PostsService {
                 if: {
                   $and: [
                     {
-                      $eq: ["$email", "ilhamarahman97@gmail.com"]
+                      $eq: ["$email", email]
                     },
                     {
                       $gt: ["$createdAt", "$oldDate"]
@@ -45891,7 +45891,7 @@ export class PostsService {
                   $filter: {
                     input: "$viewer",
                     cond: {
-                      $eq: ["$$this", "ilhamarahman97@gmail.com"]
+                      $eq: ["$$this", email]
                     }
                   }
                 },
@@ -45899,10 +45899,10 @@ export class PostsService {
                 {
                   $concatArrays: [
                     '$viewer',
-                    ["ilhamarahman97@gmail.com"]
+                    [email]
                   ]
                 },
-                else: ["ilhamarahman97@gmail.com"]
+                else: [email]
               }
             }
           }
@@ -45913,7 +45913,7 @@ export class PostsService {
               $filter: {
                 input: "$kancut",
                 cond: {
-                  $eq: ["$$this", "ilhamarahman97@gmail.com"]
+                  $eq: ["$$this", email]
                 }
               }
             },
@@ -47241,7 +47241,7 @@ export class PostsService {
                 if: {
                   $and: [
                     {
-                      $eq: ["$email", "ilhamarahman97@gmail.com"]
+                      $eq: ["$email", email]
                     },
                     {
                       $gt: ["$createdAt", "$oldDate"]
@@ -47265,7 +47265,7 @@ export class PostsService {
                   $filter: {
                     input: "$viewer",
                     cond: {
-                      $eq: ["$$this", "ilhamarahman97@gmail.com"]
+                      $eq: ["$$this", email]
                     }
                   }
                 },
@@ -47273,10 +47273,10 @@ export class PostsService {
                 {
                   $concatArrays: [
                     '$viewer',
-                    ["ilhamarahman97@gmail.com"]
+                    [email]
                   ]
                 },
-                else: ["ilhamarahman97@gmail.com"]
+                else: [email]
               }
             }
           }
@@ -47287,7 +47287,7 @@ export class PostsService {
               $filter: {
                 input: "$kancut",
                 cond: {
-                  $eq: ["$$this", "ilhamarahman97@gmail.com"]
+                  $eq: ["$$this", email]
                 }
               }
             },
