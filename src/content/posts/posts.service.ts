@@ -40045,6 +40045,4279 @@ export class PostsService {
     return query;
   }
 
+  // async landingpage2(email: string, type: string, skip: number, limit: number) {
+  //   var pipeline = [];
+  //   var dataseting = null;
+  //   var sortObject = null;
+  //   var value = 0;
+
+  //   if (type == "pict") {
+  //     try {
+  //       dataseting = await this.settingsService.findOneByJenis("PictLandingPage");
+  //       sortObject = dataseting.sortObject;
+  //       value = dataseting.value;
+  //     } catch (e) {
+  //       dataseting = null;
+  //       sortObject = {};
+  //       value = 0;
+  //     }
+
+  //     pipeline.push(
+  //       {
+  //         "$unwind": {
+  //           "path": "$boosted",
+  //           "preserveNullAndEmptyArrays": true
+  //         }
+  //       },
+  //       {
+  //         "$unwind": {
+  //           "path": "$boosted.boostSession",
+  //           "preserveNullAndEmptyArrays": true
+  //         }
+  //       },
+  //       {
+  //         "$set": {
+  //           "timeStart": {
+  //             "$concat": [
+  //               {
+  //                 "$dateToString": {
+  //                   "format": "%Y-%m-%d",
+  //                   "date": new Date()
+  //                 }
+  //               },
+  //               " ",
+  //               "$boosted.boostSession.timeStart"
+  //             ]
+  //           }
+  //         }
+  //       },
+  //       {
+  //         "$set": {
+  //           "timeEnd": {
+  //             "$concat": [
+  //               {
+  //                 "$dateToString": {
+  //                   "format": "%Y-%m-%d",
+  //                   "date": new Date()
+  //                 }
+  //               },
+  //               " ",
+  //               "$boosted.boostSession.timeEnd"
+  //             ]
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           lastTime: {
+  //             "$concat": [
+  //               {
+  //                 "$dateToString": {
+  //                   "format": "%Y-%m-%d",
+  //                   "date": new Date()
+  //                 }
+  //               },
+  //               " 08:00:00"
+  //             ]
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           timeEnd:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $lt: ["$timeEnd", "$lastTime"]
+  //               },
+  //               then: {
+  //                 "$concat": [
+  //                   {
+  //                     "$dateToString": {
+  //                       "format": "%Y-%m-%d",
+  //                       "date":
+  //                       {
+  //                         $dateAdd:
+  //                         {
+  //                           startDate: new Date(),
+  //                           unit: "day",
+  //                           amount: 1
+  //                         }
+  //                       }
+  //                     }
+  //                   },
+  //                   " ",
+  //                   "$boosted.boostSession.timeEnd"
+  //                 ]
+  //               },
+  //               else: "$timeEnd"
+  //             }
+  //           },
+
+  //         },
+
+  //       },
+  //       {
+  //         $set: {
+
+  //           "testDate":
+  //           {
+  //             "$dateToString": {
+  //               "format": "%Y-%m-%d %H:%M:%S",
+  //               "date": {
+  //                 $add: [new Date(), 25200000]
+  //               }
+  //             }
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           "storyDate":
+  //           {
+  //             "$dateToString": {
+  //               "format": "%Y-%m-%d %H:%M:%S",
+  //               "date": {
+  //                 $add: [new Date(), - 61200000]
+  //               }
+  //             }
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           oldDate:
+  //           {
+  //             "$dateToString": {
+  //               "format": "%Y-%m-%d %H:%M:%S",
+  //               "date": {
+  //                 $add: [new Date(), - 30600000]
+  //                 //$add: [new Date(), - 579600000]
+  //               }
+  //             }
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           selfContents:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $and: [
+  //                   {
+  //                     $eq: ["$email", email]
+  //                   },
+  //                   {
+  //                     $gt: ["$createdAt", "$oldDate"]
+  //                   }
+  //                 ]
+  //               },
+  //               then: 1,
+  //               else: 0
+  //             }
+  //           },
+
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           kancut: //'dodolipet'
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 //$eq: ['$dodolipet', 0]
+  //                 $filter: {
+  //                   input: "$viewer",
+  //                   cond: {
+  //                     $eq: ["$$this", email]
+  //                   }
+  //                 }
+  //               },
+  //               then:
+  //               {
+  //                 $concatArrays: [
+  //                   '$viewer',
+  //                   [email]
+  //                 ]
+  //               },
+  //               else: [email]
+  //             }
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           mailViewer: {
+  //             $filter: {
+  //               input: "$kancut",
+  //               cond: {
+  //                 $eq: ["$$this", email]
+  //               }
+  //             }
+  //           },
+
+  //         }
+  //       },
+  //       {
+  //         $project: {
+  //           mailViewer: 1,
+  //           viewerCount:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $isArray: "$kancut"
+  //               },
+  //               then: {
+  //                 $subtract: [
+  //                   {
+  //                     $size: "$kancut"
+  //                   }, 1
+  //                 ]
+  //               },
+  //               else: 0
+  //             }
+  //           },
+  //           viewer: 1,
+  //           oldDate: 1,
+  //           selfContents: 1,
+  //           comment: 1,
+  //           "postID": 1,
+  //           "testDate": 1,
+  //           "musicId": 1,
+  //           "music": 1,
+  //           "email": 1,
+  //           "postType": 1,
+  //           "description": 1,
+  //           "active": 1,
+  //           "createdAt": 1,
+  //           "updatedAt": 1,
+  //           "expiration": 1,
+  //           "visibility": 1,
+  //           "location": 1,
+  //           "tags": 1,
+  //           "allowComments": 1,
+  //           "isSafe": 1,
+  //           "isOwned": 1,
+  //           "certified": 1,
+  //           "saleAmount": 1,
+  //           "saleLike": 1,
+  //           "saleView": 1,
+  //           "isShared": 1,
+  //           "userProfile": 1,
+  //           "contentMedias": 1,
+  //           "cats": "$cats",
+  //           "tagDescription": 1,
+  //           "metadata": 1,
+  //           "boostDate": 1,
+  //           "boostViewer": 1,
+  //           "boostCount": 1,
+  //           "contentModeration": 1,
+  //           "reportedStatus": 1,
+  //           "reportedUserCount": 1,
+  //           "contentModerationResponse": 1,
+  //           "reportedUser": 1,
+  //           "timeStart": 1,
+  //           "timeEnd": 1,
+  //           "avatar": 1,
+  //           "statusCB": 1,
+  //           "likes": "$likes",
+  //           "views": "$views",
+  //           "shares": "$shares",
+  //           "comments": "$comments",
+  //           "category": "$category"
+  //         },
+
+  //       },
+  //       {
+  //         $match:
+  //         {
+  //           $or: [
+  //             {
+  //               $and: [
+  //                 {
+  //                   "reportedStatus": {
+  //                     $ne: "OWNED"
+  //                   }
+  //                 },
+  //                 {
+  //                   "visibility": "PUBLIC"
+  //                 },
+  //                 {
+  //                   "active": true
+  //                 },
+  //                 {
+  //                   "postType": "pict"
+  //                 },
+  //                 //{
+  //                 //    "viewer": {
+  //                 //        $nin: [ "vuvyxi@abyssmail.com" ]
+  //                 //    }
+  //                 //},
+  //                 {
+  //                   $expr: {
+  //                     $lte: ["$boosted.boostSession.start", "$testDate",]
+  //                   }
+  //                 },
+  //                 {
+  //                   $expr: {
+  //                     $gt: ["$boosted.boostSession.end", "$testDate",]
+  //                   }
+  //                 },
+  //                 {
+  //                   $expr: {
+  //                     $lte: ["$timeStart", "$testDate",]
+  //                   }
+  //                 },
+  //                 {
+  //                   $expr: {
+  //                     $gt: ["$timeEnd", "$testDate",]
+  //                   }
+  //                 },
+  //                 {
+
+  //                   "timeStart": {
+  //                     $ne: null
+  //                   }
+  //                 },
+  //                 {
+
+  //                   "timeEnd": {
+  //                     $ne: null
+  //                   }
+  //                 },
+  //                 {
+  //                   $or: [
+  //                     {
+  //                       "reportedUser": {
+  //                         "$elemMatch": {
+  //                           "email": email,
+  //                           "active": false,
+
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       "reportedUser.email": {
+  //                         $not: {
+  //                           $regex: email
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+  //                 {
+  //                   $or: [
+  //                     {
+  //                       "boosted.boostViewer": {
+  //                         "$elemMatch": {
+  //                           "email": email,
+  //                           "isLast": true,
+  //                           "timeEnd": {
+  //                             $lte: {
+  //                               $add: [new Date(), 25200000]
+  //                             }
+  //                           }
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $and: [
+  //                         {
+  //                           "boosted.boostViewer.email": {
+  //                             $ne: email
+  //                           }
+  //                         },
+
+  //                       ]
+  //                     }
+  //                   ]
+  //                 }
+  //               ]
+  //             },
+  //             {
+  //               $and: [
+  //                 //{
+  //                 //    "viewer": {
+  //                 //        $nin: [ "vuvyxi@abyssmail.com" ]
+  //                 //    }
+  //                 //},
+  //                 {
+  //                   "reportedStatus": {
+  //                     $ne: "OWNED"
+  //                   }
+  //                 },
+  //                 {
+  //                   "visibility": "PUBLIC"
+  //                 },
+  //                 {
+  //                   "active": true
+  //                 },
+  //                 {
+  //                   "postType": "pict"
+  //                 },
+  //                 {
+  //                   "timeStart": null
+  //                 },
+  //                 {
+  //                   $or: [
+  //                     {
+  //                       "reportedUser": {
+  //                         "$elemMatch": {
+  //                           "email": email,
+  //                           "active": false,
+
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       "reportedUser.email": {
+  //                         $not: {
+  //                           $regex: email,
+
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               ]
+  //             },
+
+  //           ]
+  //         }
+  //       },
+  //       {
+  //         $sort: {
+  //           selfContents: - 1,
+  //           isBoost: - 1,
+  //           createdAt: - 1,
+  //           viewerCount: 1,
+  //         }
+  //       },
+  //       {
+  //         $skip: skip
+  //       },
+  //       {
+  //         $limit: limit
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "disquslogs",
+  //           let: {
+  //             localID: '$postID',
+
+  //           },
+  //           as: "comment",
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$postID', '$$localID']
+  //                     }
+  //                   },
+  //                   {
+  //                     "active": {
+  //                       $ne: false
+  //                     }
+  //                   },
+  //                   {
+  //                     "sequenceNumber": 0
+  //                   },
+
+  //                 ]
+  //               }
+  //             },
+  //             {
+  //               "$lookup": {
+  //                 from: "userauths",
+  //                 as: "userComment",
+  //                 let: {
+  //                   localID: '$sender'
+  //                 },
+  //                 pipeline: [
+  //                   {
+  //                     $match:
+  //                     {
+  //                       $expr: {
+  //                         $eq: ['$email', '$$localID']
+  //                       }
+  //                     }
+  //                   },
+  //                   {
+  //                     $project: {
+  //                       "username": 1
+  //                     }
+  //                   }
+  //                 ],
+
+  //               }
+  //             },
+  //             {
+  //               $unwind: {
+  //                 path: "$userComment"
+  //               }
+  //             },
+  //             {
+  //               $sort: {
+  //                 createdAt: - 1
+  //               }
+  //             },
+  //             {
+  //               $limit: 2
+  //             },
+
+  //           ]
+  //         },
+
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "friend_list",
+  //           as: "friend",
+  //           let: {
+  //             localID: '$email',
+  //             user: email
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $or: [
+  //                   {
+  //                     $and: [
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       },
+  //                       {
+  //                         "friendlist.email": email
+  //                       }
+  //                     ]
+  //                   },
+  //                   {
+  //                     $and: [
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$user']
+  //                         }
+  //                       },
+  //                       {
+  //                         "friendlist.email": '$.email'
+  //                       }
+  //                     ]
+  //                   }
+  //                 ]
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 friend:
+  //                 {
+  //                   $cond: {
+  //                     if: {
+  //                       $gt: [{
+  //                         $size: '$friendlist'
+  //                       }, 0]
+  //                     },
+  //                     then: 1,
+  //                     else: 0
+  //                   }
+  //                 },
+
+  //               }
+  //             },
+
+  //           ]
+  //         },
+
+  //       },
+  //       // {
+  //       //   "$lookup": {
+  //       //     from: "contentevents",
+  //       //     as: "follower",
+  //       //     let: {
+  //       //       localID: '$email',
+  //       //       user: email
+  //       //     },
+  //       //     pipeline: [
+  //       //       {
+  //       //         $match:
+  //       //         {
+  //       //           $and: [
+  //       //             {
+  //       //               $expr: {
+  //       //                 $eq: ['$receiverParty', '$$localID']
+  //       //               }
+  //       //             },
+  //       //             {
+  //       //               "email": email
+  //       //             },
+  //       //             {
+  //       //               "eventType": "FOLLOWER",
+
+  //       //             },
+  //       //             {
+  //       //               "event": "ACCEPT"
+  //       //             },
+  //       //             {
+  //       //               "active": true
+  //       //             },
+
+  //       //           ]
+  //       //         }
+  //       //       },
+  //       //       {
+  //       //         $project: {
+  //       //           follower:
+  //       //           {
+  //       //             $cond: {
+  //       //               if: {
+  //       //                 $gt: [{
+  //       //                   $strLenCP: "$email"
+  //       //                 }, 0]
+  //       //               },
+  //       //               then: 1,
+  //       //               else: 0
+  //       //             }
+  //       //           },
+
+  //       //         }
+  //       //       }
+  //       //     ]
+  //       //   },
+
+  //       // },
+  //       {
+  //         "$lookup": {
+  //           from: "contentevents",
+  //           as: "following",
+  //           let: {
+  //             localID: '$email',
+  //             user: email
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$senderParty', '$$localID']
+  //                     }
+  //                   },
+  //                   {
+  //                     "email": email
+  //                   },
+  //                   {
+  //                     "eventType": "FOLLOWING",
+
+  //                   },
+  //                   {
+  //                     "event": "ACCEPT"
+  //                   },
+  //                   {
+  //                     "active": true
+  //                   },
+
+  //                 ]
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 following:
+  //                 {
+  //                   $cond: {
+  //                     if: {
+  //                       $gt: [{
+  //                         $strLenCP: "$email"
+  //                       }, 0]
+  //                     },
+  //                     then: true,
+  //                     else: false
+  //                   }
+  //                 },
+
+  //               }
+  //             }
+  //           ]
+  //         },
+
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "mediapicts",
+  //           as: "media",
+  //           let: {
+  //             localID: '$postID'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $expr: {
+  //                   $eq: ['$postID', '$$localID']
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "isApsara": "$apsara",
+  //                 "apsaraId": 1,
+  //                 "apsaraThumbId": 1,
+  //                 "mediaUri": 1,
+  //                 "postID": 1,
+  //                 "mediaEndpoint": {
+  //                   "$concat": ["/pict/", "$postID"]
+  //                 },
+  //                 "mediaThumbEndpoint": {
+  //                   "$concat": ["/thumb/", "$postID"]
+  //                 },
+  //                 "mediaThumbUri": "$mediaThumb",
+  //                 "mediaType": 1,
+  //                 "uploadSource": 1,
+  //                 "mediaThumUri": 1
+  //               }
+  //             }
+  //           ],
+
+  //         },
+
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "interests_repo",
+  //           as: "cats",
+  //           let: {
+  //             localID: '$category.$id'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match: {
+
+  //                 $expr: {
+  //                   $and: [
+  //                     {
+  //                       $in: ['$_id', {
+  //                         $ifNull: ['$$localID', []]
+  //                       }]
+  //                     },
+
+  //                   ]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "interestName": 1,
+  //                 "langIso": 1,
+  //                 "icon": 1,
+  //                 "createdAt": 1,
+  //                 "updatedAt": 1
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "userbasics",
+  //           as: "userInterest",
+  //           let: {
+  //             localID: email
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match: {
+  //                 $expr: {
+  //                   $and: [
+  //                     {
+  //                       $eq: ["$email", "$$localID"]
+  //                     },
+
+  //                   ]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 userInterests: "$userInterests.$id",
+  //                 email: 1
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "userauths",
+  //           as: "userTag",
+  //           let: {
+  //             localID: '$tagPeople.$id'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $expr: {
+  //                   $in: ['$_id', {
+  //                     $ifNull: ['$$localID', []]
+  //                   }]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+
+  //                 "username": 1
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "userauths",
+  //           as: "username",
+  //           let: {
+  //             localID: '$email'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+
+
+  //                 $expr: {
+  //                   $eq: ['$email', '$$localID']
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+
+  //                 "username": 1
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "userbasics",
+  //           as: "userBasic",
+  //           let: {
+  //             localID: '$email'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $expr: {
+  //                   $eq: ['$email', '$$localID']
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "fullName": 1,
+  //                 "profilePict": 1,
+  //                 "isCelebrity": 1,
+  //                 "isIdVerified": 1,
+  //                 "isPrivate": 1,
+  //                 "isFollowPrivate": 1,
+  //                 "isPostPrivate": 1,
+
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$userBasic",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           kosong: {
+  //             $ifNull: ['$userBasic.profilePict.$id', "kancut"]
+  //           }
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "mediaprofilepicts",
+  //           as: "avatar",
+  //           let: {
+  //             localID: '$kosong'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $expr: {
+  //                   $eq: ['$mediaID', "$$localID"]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "mediaBasePath": 1,
+  //                 "mediaUri": 1,
+  //                 "originalName": 1,
+  //                 "fsSourceUri": 1,
+  //                 "fsSourceName": 1,
+  //                 "fsTargetUri": 1,
+  //                 "mediaType": 1,
+  //                 "mediaEndpoint": {
+  //                   "$concat": ["/profilepict/", "$mediaID"]
+  //                 }
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$avatar",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "mediamusic",
+  //           as: "music",
+  //           let: {
+  //             localID: '$musicId'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $expr: {
+  //                   $eq: ['$_id', '$$localID']
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "musicTitle": 1,
+  //                 "artistName": 1,
+  //                 "albumName": 1,
+  //                 "apsaraMusic": 1,
+  //                 "apsaraThumnail": 1,
+  //                 "genre": "$genre.name",
+  //                 "theme": "$theme.name",
+  //                 "mood": "$mood.name",
+
+  //               }
+  //             },
+  //             {
+  //               $unwind: {
+  //                 path: "$genre",
+  //                 preserveNullAndEmptyArrays: true
+  //               }
+  //             },
+  //             {
+  //               $unwind: {
+  //                 path: "$theme",
+  //                 preserveNullAndEmptyArrays: true
+  //               }
+  //             },
+  //             {
+  //               $unwind: {
+  //                 path: "$mood",
+  //                 preserveNullAndEmptyArrays: true
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$media",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$username",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$music",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$userInterest",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "contentevents",
+  //           as: "isLike",
+  //           let: {
+  //             picts: '$postID',
+
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$postID', '$$picts']
+  //                     }
+  //                   },
+  //                   {
+  //                     "eventType": "LIKE"
+  //                   },
+  //                   {
+  //                     "event": "DONE"
+  //                   },
+  //                   {
+  //                     "active": true
+  //                   },
+  //                   {
+  //                     "email": email,
+  //                   },
+  //                 ]
+  //               },
+  //             },
+  //             {
+  //               $set: {
+  //                 kancut: {
+  //                   $ifNull: ["email", "kosong"]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "email": 1,
+  //                 "postID": 1,
+  //                 isLiked:
+  //                 {
+  //                   $cond: {
+  //                     if: {
+  //                       $eq: ["$kancut", "kosong"]
+  //                     },
+  //                     then: false,
+  //                     else: true
+  //                   }
+  //                 },
+
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "disquslogs",
+  //           as: "countLogs",
+  //           let: {
+  //             localID: '$postID'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$postID', '$$localID']
+  //                     }
+  //                   },
+  //                   {
+  //                     "active": true,
+
+  //                   },
+
+  //                 ]
+  //               }
+  //             }
+  //           ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           mailViewer: 1,
+  //           countViewer: 1,
+  //           viewerCount: 1,
+  //           viewer: 1,
+  //           oldDate: 1,
+  //           selfContents: 1,
+  //           selfContent:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: ["$email", email]
+  //               },
+  //               then: 1,
+  //               else: 0
+  //             }
+  //           },
+  //           official:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: ["$email", "hyppers@hyppe.id"]
+  //               },
+  //               then: 1,
+  //               else: 0
+  //             }
+  //           },
+  //           musik: 1,
+  //           isLike: {
+  //             $arrayElemAt: ["$isLike.isLiked", 0]
+  //           },
+  //           comment: 1,
+  //           interest: {
+  //             $filter: {
+  //               input: "$category",
+  //               as: "stud",
+  //               cond: {
+  //                 $in: [
+  //                   "$$stud.$id",
+  //                   {
+  //                     $ifNull: ["$userInterest.userInterests", []]
+  //                   }
+  //                 ]
+  //               }
+  //             }
+  //           },
+  //           friend: {
+  //             $ifNull: [{
+  //               $arrayElemAt: ["$friend.friend", 0]
+  //             }, 0]
+  //           },
+  //           // "follower": {
+  //           //   $ifNull: [{
+  //           //     $arrayElemAt: ["$follower.follower", 0]
+  //           //   }, 0]
+  //           // },
+  //           "following": {
+  //             $ifNull: [{
+  //               $arrayElemAt: ["$following.following", 0]
+  //             }, false]
+  //           },
+  //           "musicTitle": "$music.musicTitle",
+  //           "postID": 1,
+  //           "artistName": "$music.artistName",
+  //           "albumName": "$music.albumName",
+  //           "apsaraMusic": "$music.apsaraMusic",
+  //           "apsaraThumnail": "$music.apsaraThumnail",
+  //           "genre": "$music.genre.name",
+  //           "theme": "$music.theme.name",
+  //           "mood": "$music.mood.name",
+  //           "testDate": 1,
+  //           "musicId": 1,
+  //           "music": 1,
+  //           "tagPeople": "$userTag",
+  //           "mediaType": "$media.mediaType",
+  //           "email": 1,
+  //           "postType": 1,
+  //           "description": 1,
+  //           "active": 1,
+  //           "createdAt": 1,
+  //           "updatedAt": 1,
+  //           "expiration": 1,
+  //           "visibility": 1,
+  //           "location": 1,
+  //           "tags": 1,
+  //           "allowComments": 1,
+  //           "isSafe": 1,
+  //           "isOwned": 1,
+  //           "certified": 1,
+  //           "saleAmount": 1,
+  //           "saleLike": 1,
+  //           "saleView": 1,
+  //           "isShared": 1,
+  //           "likes": "$likes",
+  //           "views": "$views",
+  //           "shares": "$shares",
+  //           "uploadSource": "$media.uploadSource",
+  //           "comments": {
+  //             $size: "$countLogs"
+  //           },
+  //           "insight":
+  //           {
+  //             "likes": "$likes",
+  //             "views": "$views",
+  //             "shares": "$shares",
+  //             "comments": "$comments",
+
+  //           }
+  //           ,
+  //           "userProfile": 1,
+  //           "contentMedias": 1,
+  //           "cats": "$cats",
+  //           "tagDescription": 1,
+  //           "metadata": 1,
+  //           "boostDate": 1,
+  //           "end": "$boosted.boostSession.end",
+  //           "start": "$boosted.boostSession.start",
+  //           "isBoost": {
+  //             $ifNull: ["$isBoost", 0]
+  //           },
+  //           "boostViewer": 1,
+  //           "boostCount": 1,
+  //           "boosted":
+  //             [{
+  //               $cond: {
+  //                 if: {
+  //                   $gt: [{
+  //                     "$dateToString": {
+  //                       "format": "%Y-%m-%d %H:%M:%S",
+  //                       "date": {
+  //                         $add: [new Date(), 25200000]
+  //                       }
+  //                     }
+  //                   }, "$boosted.boostSession.end"]
+  //                 },
+  //                 then: "$kosong",
+  //                 else: '$boosted'
+  //               }
+  //             }],
+  //           "contentModeration": 1,
+  //           "reportedStatus": 1,
+  //           "reportedUserCount": 1,
+  //           "contentModerationResponse": 1,
+  //           "reportedUser": 1,
+  //           "timeStart": 1,
+  //           "timeEnd": 1,
+  //           "isApsara": "$media.isApsara",
+  //           "apsaraId": "$media.apsaraId",
+  //           "apsaraThumbId": "$media.apsaraThumbId",
+  //           "mediaEndpoint": "$media.mediaEndpoint",
+  //           "mediaUri": "$media.mediaUri",
+  //           "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
+  //           "mediaThumbUri": "$media.mediaThumbUri",
+  //           "mediaThumUri": "$media.mediaThumUri",
+  //           "fullName": "$userBasic.fullName",
+  //           "username": "$username.username",
+  //           "avatar": 1,
+  //           "statusCB": 1,
+  //           "privacy": {
+  //             "isCelebrity": "$userBasic.isCelebrity",
+  //             "isIdVerified": "$userBasic.isIdVerified",
+  //             "isPrivate": "$userBasic.isPrivate",
+  //             "isFollowPrivate": "$userBasic.isFollowPrivate",
+  //             "isPostPrivate": "$userBasic.isPostPrivate",
+
+  //           },
+  //           "verified": "$userBasic.isIdVerified",
+  //         },
+
+  //       },
+  //       {
+  //         $lookup: {
+  //           from: "settings",
+  //           as: "setting",
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+  //               }
+  //             },
+  //           ]
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$setting"
+  //         }
+  //       },
+  //       {
+  //         $project: {
+  //           mailViewer: 1,
+  //           countViewer: 1,
+  //           viewerCount: 1,
+  //           viewer: 1,
+  //           version: "$setting.value",
+  //           oldDate: 1,
+  //           selfContents: 1,
+  //           official: 1,
+  //           selfContent: 1,
+  //           musik: 1,
+  //           isLiked: {
+  //             $ifNull: ["$isLike", false]
+  //           },
+  //           comment: 1,
+  //           intScore:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $isArray: "$interest"
+  //               },
+  //               then: {
+  //                 $subtract: [
+  //                   {
+  //                     $size: "$interest"
+  //                   }, 1
+  //                 ]
+  //               },
+  //               else: 0
+  //             }
+  //           },
+  //           "verified": 1,
+  //           "friend": 1,
+  //           // "follower": 1,
+  //           "following": 1,
+  //           "musicTitle": 1,
+  //           "postID": 1,
+  //           "artistName": 1,
+  //           "albumName": 1,
+  //           "apsaraMusic": 1,
+  //           "apsaraThumnail": 1,
+  //           "genre": 1,
+  //           "theme": 1,
+  //           "mood": 1,
+  //           "testDate": 1,
+  //           "musicId": 1,
+  //           "music": 1,
+  //           "tagPeople": 1,
+  //           "mediaType": 1,
+  //           "email": 1,
+  //           "postType": 1,
+  //           "description": 1,
+  //           "active": 1,
+  //           "createdAt": 1,
+  //           "updatedAt": 1,
+  //           "expiration": 1,
+  //           "visibility": 1,
+  //           "location": 1,
+  //           "tags": 1,
+  //           "allowComments": 1,
+  //           "isSafe": 1,
+  //           "isOwned": 1,
+  //           "certified": 1,
+  //           "saleAmount": 1,
+  //           "saleLike": 1,
+  //           "saleView": 1,
+  //           "isShared": 1,
+  //           "likes": 1,
+  //           "views": 1,
+  //           "shares": 1,
+  //           "comments": 1,
+  //           "insight": 1,
+  //           "userProfile": 1,
+  //           "contentMedias": 1,
+  //           "cats": "$cats",
+  //           "tagDescription": 1,
+  //           "metadata": 1,
+  //           "boostDate": 1,
+  //           "end": 1,
+  //           "start": 1,
+  //           "isBoost": 1,
+  //           "boostViewer": 1,
+  //           "boostCount": 1,
+  //           "uploadSource": 1,
+  //           "boosted":
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{
+  //                   $size: "$boosted.boostSession"
+  //                 }, 0]
+  //               },
+  //               else: [],
+  //               then: '$boosted'
+  //             }
+  //           },
+  //           "contentModeration": 1,
+  //           "reportedStatus": 1,
+  //           "reportedUserCount": 1,
+  //           "contentModerationResponse": 1,
+  //           "reportedUser": 1,
+  //           "timeStart": 1,
+  //           "timeEnd": 1,
+  //           "isApsara": 1,
+  //           "apsaraId": 1,
+  //           "apsaraThumbId": 1,
+  //           "mediaEndpoint": 1,
+  //           "mediaUri": 1,
+  //           "mediaThumbEndpoint": 1,
+  //           "mediaThumbUri": 1,
+  //           "fullName": 1,
+  //           "username": 1,
+  //           "avatar": 1,
+  //           "statusCB": 1,
+  //           "privacy": 1,
+  //           "mediaThumUri": 1,
+
+  //         },
+
+  //       },
+
+  //     );
+
+  //     pipeline.push(
+  //       {
+  //         $sort: sortObject
+  //       },
+  //     );
+  //   }
+  //   else if (type == "vid") {
+  //     try {
+  //       dataseting = await this.settingsService.findOneByJenis("VidLandingPage");
+  //       sortObject = dataseting.sortObject;
+  //       value = dataseting.value;
+  //     } catch (e) {
+  //       dataseting = null;
+  //       sortObject = {};
+  //       value = 0;
+  //     }
+
+  //     pipeline.push(
+  //       {
+  //         "$unwind": {
+  //           "path": "$boosted",
+  //           "preserveNullAndEmptyArrays": true
+  //         }
+  //       },
+  //       {
+  //         "$unwind": {
+  //           "path": "$boosted.boostSession",
+  //           "preserveNullAndEmptyArrays": true
+  //         }
+  //       },
+  //       {
+  //         "$set": {
+  //           "timeStart": {
+
+  //             "$concat": [
+  //               {
+  //                 "$dateToString": {
+  //                   "format": "%Y-%m-%d",
+  //                   "date": new Date()
+  //                 }
+  //               },
+  //               " ",
+  //               "$boosted.boostSession.timeStart"
+  //             ]
+  //           }
+  //         }
+  //       },
+  //       {
+  //         "$set": {
+  //           "timeEnd": {
+  //             "$concat": [
+  //               {
+  //                 "$dateToString": {
+  //                   "format": "%Y-%m-%d",
+  //                   "date": new Date()
+  //                 }
+  //               },
+  //               " ",
+  //               "$boosted.boostSession.timeEnd"
+  //             ]
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           lastTime: {
+  //             "$concat": [
+  //               {
+  //                 "$dateToString": {
+  //                   "format": "%Y-%m-%d",
+  //                   "date": new Date()
+  //                 }
+  //               },
+  //               " 08:00:00"
+  //             ]
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           timeEnd:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $lt: ["$timeEnd", "$lastTime"]
+  //               },
+  //               then: {
+  //                 "$concat": [
+  //                   {
+  //                     "$dateToString": {
+  //                       "format": "%Y-%m-%d",
+  //                       "date":
+  //                       {
+  //                         $dateAdd:
+  //                         {
+  //                           startDate: new Date(),
+  //                           unit: "day",
+  //                           amount: 1
+  //                         }
+  //                       }
+  //                     }
+  //                   },
+  //                   " ",
+  //                   "$boosted.boostSession.timeEnd"
+  //                 ]
+  //               },
+  //               else: "$timeEnd"
+  //             }
+  //           },
+  //         },
+  //       },
+  //       {
+  //         $set: {
+
+  //           "testDate":
+  //           {
+  //             "$dateToString": {
+  //               "format": "%Y-%m-%d %H:%M:%S",
+  //               "date": {
+  //                 $add: [new Date(), 25200000]
+  //               }
+  //             }
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           "storyDate":
+  //           {
+  //             "$dateToString": {
+  //               "format": "%Y-%m-%d %H:%M:%S",
+  //               "date": {
+  //                 $add: [new Date(), - 61200000]
+  //               }
+  //             }
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           oldDate:
+  //           {
+  //             "$dateToString": {
+  //               "format": "%Y-%m-%d %H:%M:%S",
+  //               "date": {
+  //                 $add: [new Date(), - value]
+  //                 //$add: [new Date(), - 579600000]
+  //               }
+  //             }
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           selfContents:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $and: [
+  //                   { $eq: ["$email", email] },
+  //                   { $gt: ["$createdAt", "$oldDate"] }
+  //                 ]
+  //               },
+  //               then: 1,
+  //               else: 0
+  //             }
+  //           },
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           kancut: //'dodolipet'
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 //$eq: ['$dodolipet', 0]
+  //                 $filter: {
+  //                   input: "$viewer",
+  //                   cond: {
+  //                     $eq: ["$$this", email]
+  //                   }
+  //                 }
+  //               },
+  //               then:
+  //               {
+  //                 $concatArrays: [
+  //                   '$viewer',
+  //                   [email]
+  //                 ]
+  //               },
+  //               else: [email]
+  //             }
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           mailViewer: {
+  //             $filter: {
+  //               input: "$kancut",
+  //               cond: {
+  //                 $eq: ["$$this", email]
+  //               }
+  //             }
+  //           },
+
+  //         }
+  //       },
+  //       {
+  //         $project: {
+  //           mailViewer: 1,
+  //           viewerCount:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $isArray: "$kancut"
+  //               },
+  //               then: {
+  //                 $subtract: [
+  //                   {
+  //                     $size: "$kancut"
+  //                   }, 1
+  //                 ]
+  //               },
+  //               else: 0
+  //             }
+  //           },
+  //           viewer: 1,
+  //           oldDate: 1,
+  //           selfContents: 1,
+  //           comment: 1,
+  //           "postID": 1,
+  //           "testDate": 1,
+  //           "musicId": 1,
+  //           "music": 1,
+  //           "email": 1,
+  //           "postType": 1,
+  //           "description": 1,
+  //           "active": 1,
+  //           "createdAt": 1,
+  //           "updatedAt": 1,
+  //           "expiration": 1,
+  //           "visibility": 1,
+  //           "location": 1,
+  //           "tags": 1,
+  //           "allowComments": 1,
+  //           "isSafe": 1,
+  //           "isOwned": 1,
+  //           "certified": 1,
+  //           "saleAmount": 1,
+  //           "saleLike": 1,
+  //           "saleView": 1,
+  //           "isShared": 1,
+  //           "userProfile": 1,
+  //           "contentMedias": 1,
+  //           "cats": "$cats",
+  //           "tagDescription": 1,
+  //           "metadata": 1,
+  //           "boostDate": 1,
+  //           "boostViewer": 1,
+  //           "boostCount": 1,
+  //           "contentModeration": 1,
+  //           "reportedStatus": 1,
+  //           "reportedUserCount": 1,
+  //           "contentModerationResponse": 1,
+  //           "reportedUser": 1,
+  //           "timeStart": 1,
+  //           "timeEnd": 1,
+  //           "avatar": 1,
+  //           "statusCB": 1,
+  //           "likes": "$likes",
+  //           "views": "$views",
+  //           "shares": "$shares",
+  //           "comments": "$comments",
+  //           "category": "$category"
+  //         },
+
+  //       },
+  //       {
+  //         $match:
+  //         {
+  //           $or: [
+  //             {
+  //               $and: [
+  //                 {
+  //                   "reportedStatus": {
+  //                     $ne: "OWNED"
+  //                   }
+  //                 },
+  //                 {
+  //                   "visibility": "PUBLIC"
+  //                 },
+  //                 {
+  //                   "active": true
+  //                 },
+  //                 {
+  //                   "postType": "vid"
+  //                 },
+  //                 {
+  //                   $expr: {
+  //                     $lte: ["$boosted.boostSession.start", "$testDate",]
+  //                   }
+  //                 },
+  //                 {
+  //                   $expr: {
+  //                     $gt: ["$boosted.boostSession.end", "$testDate",]
+  //                   }
+  //                 },
+  //                 {
+  //                   $expr: {
+  //                     $lte: ["$timeStart", "$testDate",]
+  //                   }
+  //                 },
+  //                 {
+  //                   $expr: {
+  //                     $gt: ["$timeEnd", "$testDate",]
+  //                   }
+  //                 },
+  //                 {
+
+  //                   "timeStart": {
+  //                     $ne: null
+  //                   }
+  //                 },
+  //                 {
+
+  //                   "timeEnd": {
+  //                     $ne: null
+  //                   }
+  //                 },
+  //                 {
+  //                   $or: [
+  //                     {
+  //                       "reportedUser": {
+  //                         "$elemMatch": {
+  //                           "email": email,
+  //                           "active": false,
+
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       "reportedUser.email": {
+  //                         $not: {
+  //                           $regex: email
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+  //                 {
+  //                   $or: [
+  //                     {
+  //                       "boosted.boostViewer": {
+  //                         "$elemMatch": {
+  //                           "email": email,
+  //                           "isLast": true,
+  //                           "timeEnd": {
+  //                             $lte: {
+  //                               $add: [new Date(), 25200000]
+  //                             }
+  //                           }
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $and: [
+  //                         {
+  //                           "boosted.boostViewer.email": {
+  //                             $ne: email
+  //                           }
+  //                         },
+
+  //                       ]
+  //                     }
+  //                   ]
+  //                 }
+  //               ]
+  //             },
+  //             {
+  //               $and: [
+  //                 {
+  //                   "reportedStatus": {
+  //                     $ne: "OWNED"
+  //                   }
+  //                 },
+  //                 {
+  //                   "visibility": "PUBLIC"
+  //                 },
+  //                 {
+  //                   "active": true
+  //                 },
+  //                 {
+  //                   "postType": "vid"
+  //                 },
+  //                 {
+  //                   "timeStart": null
+  //                 },
+  //                 {
+  //                   $or: [
+  //                     {
+  //                       "reportedUser": {
+  //                         "$elemMatch": {
+  //                           "email": email,
+  //                           "active": false,
+
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       "reportedUser.email": {
+  //                         $not: {
+  //                           $regex: email,
+
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               ]
+  //             },
+
+  //           ]
+  //         }
+  //       },
+  //       {
+  //         $sort: {
+  //           selfContents: - 1,
+  //           isBoost: - 1,
+  //           createdAt: - 1,
+  //           viewerCount: 1,
+  //         }
+  //       },
+  //       {
+  //         $skip: skip
+  //       },
+  //       {
+  //         $limit: limit
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "disquslogs",
+  //           let: {
+  //             localID: '$postID',
+
+  //           },
+  //           as: "comment",
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$postID', '$$localID']
+  //                     }
+  //                   },
+  //                   {
+  //                     "active": {
+  //                       $ne: false
+  //                     }
+  //                   },
+  //                   {
+  //                     "sequenceNumber": 0
+  //                   },
+
+  //                 ]
+  //               }
+  //             },
+  //             {
+  //               "$lookup": {
+  //                 from: "userauths",
+  //                 as: "userComment",
+  //                 let: {
+  //                   localID: '$sender'
+  //                 },
+  //                 pipeline: [
+  //                   {
+  //                     $match:
+  //                     {
+  //                       $expr: {
+  //                         $eq: ['$email', '$$localID']
+  //                       }
+  //                     }
+  //                   },
+  //                   {
+  //                     $project: {
+  //                       "username": 1
+  //                     }
+  //                   }
+  //                 ],
+
+  //               }
+  //             },
+  //             {
+  //               $unwind: {
+  //                 path: "$userComment"
+  //               }
+  //             },
+  //             {
+  //               $sort: {
+  //                 createdAt: - 1
+  //               }
+  //             },
+  //             {
+  //               $limit: 2
+  //             },
+
+  //           ]
+  //         },
+
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "friend_list",
+  //           as: "friend",
+  //           let: {
+  //             localID: '$email',
+  //             user: email
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $or: [
+  //                   {
+  //                     $and: [
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       },
+  //                       {
+  //                         "friendlist.email": email
+  //                       }
+  //                     ]
+  //                   },
+  //                   {
+  //                     $and: [
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$user']
+  //                         }
+  //                       },
+  //                       {
+  //                         "friendlist.email": '$.email'
+  //                       }
+  //                     ]
+  //                   }
+  //                 ]
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 friend:
+  //                 {
+  //                   $cond: {
+  //                     if: {
+  //                       $gt: [{
+  //                         $size: '$friendlist'
+  //                       }, 0]
+  //                     },
+  //                     then: 1,
+  //                     else: 0
+  //                   }
+  //                 },
+
+  //               }
+  //             },
+
+  //           ]
+  //         },
+
+  //       },
+  //       // {
+  //       //   "$lookup": {
+  //       //     from: "contentevents",
+  //       //     as: "follower",
+  //       //     let: {
+  //       //       localID: '$email',
+  //       //       user: email
+  //       //     },
+  //       //     pipeline: [
+  //       //       {
+  //       //         $match:
+  //       //         {
+  //       //           $and: [
+  //       //             {
+  //       //               $expr: {
+  //       //                 $eq: ['$receiverParty', '$$localID']
+  //       //               }
+  //       //             },
+  //       //             {
+  //       //               "email": email
+  //       //             },
+  //       //             {
+  //       //               "eventType": "FOLLOWER",
+
+  //       //             },
+  //       //             {
+  //       //               "event": "ACCEPT"
+  //       //             },
+  //       //             {
+  //       //               "active": true
+  //       //             },
+
+  //       //           ]
+  //       //         }
+  //       //       },
+  //       //       {
+  //       //         $project: {
+  //       //           follower:
+  //       //           {
+  //       //             $cond: {
+  //       //               if: {
+  //       //                 $gt: [{
+  //       //                   $strLenCP: "$email"
+  //       //                 }, 0]
+  //       //               },
+  //       //               then: 1,
+  //       //               else: 0
+  //       //             }
+  //       //           },
+
+  //       //         }
+  //       //       }
+  //       //     ]
+  //       //   },
+
+  //       // },
+  //       {
+  //         "$lookup": {
+  //           from: "contentevents",
+  //           as: "following",
+  //           let: {
+  //             localID: '$email',
+  //             user: email
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$senderParty', '$$localID']
+  //                     }
+  //                   },
+  //                   {
+  //                     "email": email
+  //                   },
+  //                   {
+  //                     "eventType": "FOLLOWING",
+
+  //                   },
+  //                   {
+  //                     "event": "ACCEPT"
+  //                   },
+  //                   {
+  //                     "active": true
+  //                   },
+
+  //                 ]
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 following:
+  //                 {
+  //                   $cond: {
+  //                     if: {
+  //                       $gt: [{
+  //                         $strLenCP: "$email"
+  //                       }, 0]
+  //                     },
+  //                     then: true,
+  //                     else: false
+  //                   }
+  //                 },
+
+  //               }
+  //             }
+  //           ]
+  //         },
+
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "mediavideos",
+  //           as: "media",
+  //           let: {
+  //             localID: '$postID'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$postID', '$$localID']
+  //                     }
+  //                   },
+  //                   {
+  //                     "apsara": true
+  //                   }
+  //                 ]
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "isApsara": "$apsara",
+  //                 "apsaraId": 1,
+  //                 "apsaraThumbId": 1,
+  //                 "mediaUri": 1,
+  //                 "postID": 1,
+  //                 "mediaEndpoint": {
+  //                   "$concat": ["/stream/", "$postID"]
+  //                 },
+  //                 "mediaThumbEndpoint": {
+  //                   "$concat": ["/thumb/", "$postID"]
+  //                 },
+  //                 "mediaThumbUri": "$mediaThumb",
+  //                 "mediaType": 1,
+
+  //               }
+  //             }
+  //           ],
+
+  //         },
+
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "interests_repo",
+  //           as: "cats",
+  //           let: {
+  //             localID: '$category.$id'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match: {
+
+  //                 $expr: {
+  //                   $and: [
+  //                     {
+  //                       $in: ['$_id', {
+  //                         $ifNull: ['$$localID', []]
+  //                       }]
+  //                     },
+
+  //                   ]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "interestName": 1,
+  //                 "langIso": 1,
+  //                 "icon": 1,
+  //                 "createdAt": 1,
+  //                 "updatedAt": 1
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "userbasics",
+  //           as: "userInterest",
+  //           let: {
+  //             localID: email
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match: {
+  //                 $expr: {
+  //                   $and: [
+  //                     {
+  //                       $eq: ["$email", "$$localID"]
+  //                     },
+
+  //                   ]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 userInterests: "$userInterests.$id",
+  //                 email: 1
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "userauths",
+  //           as: "userTag",
+  //           let: {
+  //             localID: '$tagPeople.$id'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $expr: {
+  //                   $in: ['$_id', {
+  //                     $ifNull: ['$$localID', []]
+  //                   }]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+
+  //                 "username": 1
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "userauths",
+  //           as: "username",
+  //           let: {
+  //             localID: '$email'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+
+
+  //                 $expr: {
+  //                   $eq: ['$email', '$$localID']
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+
+  //                 "username": 1
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "userbasics",
+  //           as: "userBasic",
+  //           let: {
+  //             localID: '$email'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $expr: {
+  //                   $eq: ['$email', '$$localID']
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "fullName": 1,
+  //                 "profilePict": 1,
+  //                 "isCelebrity": 1,
+  //                 "isIdVerified": 1,
+  //                 "isPrivate": 1,
+  //                 "isFollowPrivate": 1,
+  //                 "isPostPrivate": 1,
+
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$userBasic",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           kosong: {
+  //             $ifNull: ['$userBasic.profilePict.$id', "kancut"]
+  //           }
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "mediaprofilepicts",
+  //           as: "avatar",
+  //           let: {
+  //             localID: '$kosong'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $expr: {
+  //                   $eq: ['$mediaID', "$$localID"]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "mediaBasePath": 1,
+  //                 "mediaUri": 1,
+  //                 "originalName": 1,
+  //                 "fsSourceUri": 1,
+  //                 "fsSourceName": 1,
+  //                 "fsTargetUri": 1,
+  //                 "mediaType": 1,
+  //                 "mediaEndpoint": {
+  //                   "$concat": ["/profilepict/", "$mediaID"]
+  //                 }
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$avatar",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "mediamusic",
+  //           as: "music",
+  //           let: {
+  //             localID: '$musicId'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $expr: {
+  //                   $eq: ['$_id', '$$localID']
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "musicTitle": 1,
+  //                 "artistName": 1,
+  //                 "albumName": 1,
+  //                 "apsaraMusic": 1,
+  //                 "apsaraThumnail": 1,
+  //                 "genre": "$genre.name",
+  //                 "theme": "$theme.name",
+  //                 "mood": "$mood.name",
+
+  //               }
+  //             },
+  //             {
+  //               $unwind: {
+  //                 path: "$genre",
+  //                 preserveNullAndEmptyArrays: true
+  //               }
+  //             },
+  //             {
+  //               $unwind: {
+  //                 path: "$theme",
+  //                 preserveNullAndEmptyArrays: true
+  //               }
+  //             },
+  //             {
+  //               $unwind: {
+  //                 path: "$mood",
+  //                 preserveNullAndEmptyArrays: true
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$media",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$username",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$music",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$userInterest",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "contentevents",
+  //           as: "isLike",
+  //           let: {
+  //             picts: '$postID',
+
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$postID', '$$picts']
+  //                     }
+  //                   },
+  //                   {
+  //                     "eventType": "LIKE"
+  //                   },
+  //                   {
+  //                     "event": "DONE"
+  //                   },
+  //                   {
+  //                     "active": true
+  //                   },
+  //                   {
+  //                     "email": email,
+  //                   },
+  //                 ]
+  //               },
+  //             },
+  //             {
+  //               $set: {
+  //                 kancut: {
+  //                   $ifNull: ["email", "kosong"]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "email": 1,
+  //                 "postID": 1,
+  //                 isLiked:
+  //                 {
+  //                   $cond: {
+  //                     if: {
+  //                       $eq: ["$kancut", "kosong"]
+  //                     },
+  //                     then: false,
+  //                     else: true
+  //                   }
+  //                 },
+
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "disquslogs",
+  //           as: "countLogs",
+  //           let: {
+  //             localID: '$postID'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$postID', '$$localID']
+  //                     }
+  //                   },
+  //                   {
+  //                     "active": true,
+
+  //                   },
+
+  //                 ]
+  //               }
+  //             }
+  //           ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           mailViewer: 1,
+  //           countViewer: 1,
+  //           viewerCount: 1,
+  //           viewer: 1,
+  //           oldDate: 1,
+  //           selfContents: 1,
+  //           selfContent:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: ["$email", email]
+  //               },
+  //               then: 1,
+  //               else: 0
+  //             }
+  //           },
+  //           official:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: ["$email", "hyppers@hyppe.id"]
+  //               },
+  //               then: 1,
+  //               else: 0
+  //             }
+  //           },
+  //           musik: 1,
+  //           isLike: {
+  //             $arrayElemAt: ["$isLike.isLiked", 0]
+  //           },
+  //           comment: 1,
+  //           interest: {
+  //             $filter: {
+  //               input: "$category",
+  //               as: "stud",
+  //               cond: {
+  //                 $in: [
+  //                   "$$stud.$id",
+  //                   {
+  //                     $ifNull: ["$userInterest.userInterests", []]
+  //                   }
+  //                 ]
+  //               }
+  //             }
+  //           },
+  //           friend: {
+  //             $ifNull: [{
+  //               $arrayElemAt: ["$friend.friend", 0]
+  //             }, 0]
+  //           },
+  //           // "follower": {
+  //           //   $ifNull: [{
+  //           //     $arrayElemAt: ["$follower.follower", 0]
+  //           //   }, 0]
+  //           // },
+  //           "following": {
+  //             $ifNull: [{
+  //               $arrayElemAt: ["$following.following", 0]
+  //             }, false]
+  //           },
+  //           "musicTitle": "$music.musicTitle",
+  //           "postID": 1,
+  //           "artistName": "$music.artistName",
+  //           "albumName": "$music.albumName",
+  //           "apsaraMusic": "$music.apsaraMusic",
+  //           "apsaraThumnail": "$music.apsaraThumnail",
+  //           "genre": "$music.genre.name",
+  //           "theme": "$music.theme.name",
+  //           "mood": "$music.mood.name",
+  //           "testDate": 1,
+  //           "musicId": 1,
+  //           "music": 1,
+  //           "tagPeople": "$userTag",
+  //           "mediaType": "$media.mediaType",
+  //           "email": 1,
+  //           "postType": 1,
+  //           "description": 1,
+  //           "active": 1,
+  //           "createdAt": 1,
+  //           "updatedAt": 1,
+  //           "expiration": 1,
+  //           "visibility": 1,
+  //           "location": 1,
+  //           "tags": 1,
+  //           "allowComments": 1,
+  //           "isSafe": 1,
+  //           "isOwned": 1,
+  //           "certified": 1,
+  //           "saleAmount": 1,
+  //           "saleLike": 1,
+  //           "saleView": 1,
+  //           "isShared": 1,
+  //           "likes": "$likes",
+  //           "views": "$views",
+  //           "shares": "$shares",
+  //           "comments": {
+  //             $size: "$countLogs"
+  //           },
+  //           "insight":
+  //           {
+  //             "likes": "$likes",
+  //             "views": "$views",
+  //             "shares": "$shares",
+  //             "comments": "$comments",
+
+  //           }
+  //           ,
+  //           "userProfile": 1,
+  //           "contentMedias": 1,
+  //           "cats": "$cats",
+  //           "tagDescription": 1,
+  //           "metadata": 1,
+  //           "boostDate": 1,
+  //           "end": "$boosted.boostSession.end",
+  //           "start": "$boosted.boostSession.start",
+  //           "isBoost": {
+  //             $ifNull: ["$isBoost", 0]
+  //           },
+  //           "boostViewer": 1,
+  //           "boostCount": 1,
+  //           "boosted":
+  //             [{
+  //               $cond: {
+  //                 if: {
+  //                   $gt: [{
+  //                     "$dateToString": {
+  //                       "format": "%Y-%m-%d %H:%M:%S",
+  //                       "date": {
+  //                         $add: [new Date(), 25200000]
+  //                       }
+  //                     }
+  //                   }, "$boosted.boostSession.end"]
+  //                 },
+  //                 then: "$kosong",
+  //                 else: '$boosted'
+  //               }
+  //             }],
+  //           "contentModeration": 1,
+  //           "reportedStatus": 1,
+  //           "reportedUserCount": 1,
+  //           "contentModerationResponse": 1,
+  //           "reportedUser": 1,
+  //           "timeStart": 1,
+  //           "timeEnd": 1,
+  //           "isApsara": "$media.isApsara",
+  //           "apsaraId": "$media.apsaraId",
+  //           "apsaraThumbId": "$media.apsaraThumbId",
+  //           "mediaEndpoint": "$media.mediaEndpoint",
+  //           "mediaUri": "$media.mediaUri",
+  //           "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
+  //           "mediaThumbUri": "$media.mediaThumbUri",
+  //           "fullName": "$userBasic.fullName",
+  //           "username": "$username.username",
+  //           "avatar": 1,
+  //           "statusCB": 1,
+  //           "privacy": {
+  //             "isCelebrity": "$userBasic.isCelebrity",
+  //             "isIdVerified": "$userBasic.isIdVerified",
+  //             "isPrivate": "$userBasic.isPrivate",
+  //             "isFollowPrivate": "$userBasic.isFollowPrivate",
+  //             "isPostPrivate": "$userBasic.isPostPrivate",
+
+  //           },
+  //           "verified": "$userBasic.isIdVerified",
+  //         },
+
+  //       },
+  //       {
+  //         $lookup: {
+  //           from: "settings",
+  //           as: "setting",
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 "_id": new Types.ObjectId("62bbdb4ba7520000050077a7"),
+  //               }
+  //             },
+  //           ]
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$setting"
+  //         }
+  //       },
+  //       {
+  //         $project: {
+  //           mailViewer: 1,
+  //           countViewer: 1,
+  //           viewerCount: 1,
+  //           viewer: 1,
+  //           version: "$setting.value",
+  //           oldDate: 1,
+  //           selfContents: 1,
+  //           official: 1,
+  //           selfContent: 1,
+  //           musik: 1,
+  //           isLiked: {
+  //             $ifNull: ["$isLike", false]
+  //           },
+  //           comment: 1,
+  //           intScore:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $isArray: "$interest"
+  //               },
+  //               then: {
+  //                 $subtract: [
+  //                   {
+  //                     $size: "$interest"
+  //                   }, 1
+  //                 ]
+  //               },
+  //               else: 0
+  //             }
+  //           },
+  //           "verified": 1,
+  //           "friend": 1,
+  //           // "follower": 1,
+  //           "following": 1,
+  //           "musicTitle": 1,
+  //           "postID": 1,
+  //           "artistName": 1,
+  //           "albumName": 1,
+  //           "apsaraMusic": 1,
+  //           "apsaraThumnail": 1,
+  //           "genre": 1,
+  //           "theme": 1,
+  //           "mood": 1,
+  //           "testDate": 1,
+  //           "musicId": 1,
+  //           "music": 1,
+  //           "tagPeople": 1,
+  //           "mediaType": 1,
+  //           "email": 1,
+  //           "postType": 1,
+  //           "description": 1,
+  //           "active": 1,
+  //           "createdAt": 1,
+  //           "updatedAt": 1,
+  //           "expiration": 1,
+  //           "visibility": 1,
+  //           "location": 1,
+  //           "tags": 1,
+  //           "allowComments": 1,
+  //           "isSafe": 1,
+  //           "isOwned": 1,
+  //           "certified": 1,
+  //           "saleAmount": 1,
+  //           "saleLike": 1,
+  //           "saleView": 1,
+  //           "isShared": 1,
+  //           "likes": 1,
+  //           "views": 1,
+  //           "shares": 1,
+  //           "comments": 1,
+  //           "insight": 1,
+  //           "userProfile": 1,
+  //           "contentMedias": 1,
+  //           "cats": "$cats",
+  //           "tagDescription": 1,
+  //           "metadata": 1,
+  //           "boostDate": 1,
+  //           "end": 1,
+  //           "start": 1,
+  //           "isBoost": 1,
+  //           "boostViewer": 1,
+  //           "boostCount": 1,
+  //           "boosted":
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{
+  //                   $size: "$boosted.boostSession"
+  //                 }, 0]
+  //               },
+  //               else: [],
+  //               then: '$boosted'
+  //             }
+  //           },
+  //           "contentModeration": 1,
+  //           "reportedStatus": 1,
+  //           "reportedUserCount": 1,
+  //           "contentModerationResponse": 1,
+  //           "reportedUser": 1,
+  //           "timeStart": 1,
+  //           "timeEnd": 1,
+  //           "isApsara": 1,
+  //           "apsaraId": 1,
+  //           "apsaraThumbId": 1,
+  //           "mediaEndpoint": 1,
+  //           "mediaUri": 1,
+  //           "mediaThumbEndpoint": 1,
+  //           "mediaThumbUri": 1,
+  //           "fullName": 1,
+  //           "username": 1,
+  //           "avatar": 1,
+  //           "statusCB": 1,
+  //           "privacy": 1,
+
+  //         },
+
+  //       },
+
+  //     );
+
+  //     pipeline.push(
+  //       {
+  //         $sort: sortObject
+  //       },
+  //     );
+  //   }
+  //   else if (type == "diary") {
+  //     try {
+  //       dataseting = await this.settingsService.findOneByJenis("DiaryLandingPage");
+  //       sortObject = dataseting.sortObject;
+  //       value = dataseting.value;
+  //     } catch (e) {
+  //       dataseting = null;
+  //       sortObject = {};
+  //       value = 0;
+  //     }
+
+  //     pipeline.push(
+  //       {
+  //         "$unwind": {
+  //           "path": "$boosted",
+  //           "preserveNullAndEmptyArrays": true
+  //         }
+  //       },
+  //       {
+  //         "$unwind": {
+  //           "path": "$boosted.boostSession",
+  //           "preserveNullAndEmptyArrays": true
+  //         }
+  //       },
+  //       {
+  //         "$set": {
+  //           "timeStart": {
+
+  //             "$concat": [
+  //               {
+  //                 "$dateToString": {
+  //                   "format": "%Y-%m-%d",
+  //                   "date": new Date()
+  //                 }
+  //               },
+  //               " ",
+  //               "$boosted.boostSession.timeStart"
+  //             ]
+  //           }
+  //         }
+  //       },
+  //       {
+  //         "$set": {
+  //           "timeEnd": {
+  //             "$concat": [
+  //               {
+  //                 "$dateToString": {
+  //                   "format": "%Y-%m-%d",
+  //                   "date": new Date()
+  //                 }
+  //               },
+  //               " ",
+  //               "$boosted.boostSession.timeEnd"
+  //             ]
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           lastTime: {
+  //             "$concat": [
+  //               {
+  //                 "$dateToString": {
+  //                   "format": "%Y-%m-%d",
+  //                   "date": new Date()
+  //                 }
+  //               },
+  //               " 08:00:00"
+  //             ]
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           timeEnd:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $lt: ["$timeEnd", "$lastTime"]
+  //               },
+  //               then: {
+  //                 "$concat": [
+  //                   {
+  //                     "$dateToString": {
+  //                       "format": "%Y-%m-%d",
+  //                       "date":
+  //                       {
+  //                         $dateAdd:
+  //                         {
+  //                           startDate: new Date(),
+  //                           unit: "day",
+  //                           amount: 1
+  //                         }
+  //                       }
+  //                     }
+  //                   },
+  //                   " ",
+  //                   "$boosted.boostSession.timeEnd"
+  //                 ]
+  //               },
+  //               else: "$timeEnd"
+  //             }
+  //           },
+  //         },
+  //       },
+  //       {
+  //         $set: {
+
+  //           "testDate":
+  //           {
+  //             "$dateToString": {
+  //               "format": "%Y-%m-%d %H:%M:%S",
+  //               "date": {
+  //                 $add: [new Date(), 25200000]
+  //               }
+  //             }
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           "storyDate":
+  //           {
+  //             "$dateToString": {
+  //               "format": "%Y-%m-%d %H:%M:%S",
+  //               "date": {
+  //                 $add: [new Date(), - 61200000]
+  //               }
+  //             }
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           oldDate:
+  //           {
+  //             "$dateToString": {
+  //               "format": "%Y-%m-%d %H:%M:%S",
+  //               "date": {
+  //                 $add: [new Date(), - value]
+  //                 //$add: [new Date(), - 579600000]
+  //               }
+  //             }
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           selfContents:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $and: [
+  //                   { $eq: ["$email", email] },
+  //                   { $gt: ["$createdAt", "$oldDate"] }
+  //                 ]
+  //               },
+  //               then: 1,
+  //               else: 0
+  //             }
+  //           },
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           kancut: //'dodolipet'
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 //$eq: ['$dodolipet', 0]
+  //                 $filter: {
+  //                   input: "$viewer",
+  //                   cond: {
+  //                     $eq: ["$$this", email]
+  //                   }
+  //                 }
+  //               },
+  //               then:
+  //               {
+  //                 $concatArrays: [
+  //                   '$viewer',
+  //                   [email]
+  //                 ]
+  //               },
+  //               else: [email]
+  //             }
+  //           }
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           mailViewer: {
+  //             $filter: {
+  //               input: "$kancut",
+  //               cond: {
+  //                 $eq: ["$$this", email]
+  //               }
+  //             }
+  //           },
+
+  //         }
+  //       },
+  //       {
+  //         $project: {
+  //           mailViewer: 1,
+  //           viewerCount:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $isArray: "$kancut"
+  //               },
+  //               then: {
+  //                 $subtract: [
+  //                   {
+  //                     $size: "$kancut"
+  //                   }, 1
+  //                 ]
+  //               },
+  //               else: 0
+  //             }
+  //           },
+  //           viewer: 1,
+  //           oldDate: 1,
+  //           selfContents: 1,
+  //           comment: 1,
+  //           "postID": 1,
+  //           "testDate": 1,
+  //           "musicId": 1,
+  //           "music": 1,
+  //           "email": 1,
+  //           "postType": 1,
+  //           "description": 1,
+  //           "active": 1,
+  //           "createdAt": 1,
+  //           "updatedAt": 1,
+  //           "expiration": 1,
+  //           "visibility": 1,
+  //           "location": 1,
+  //           "tags": 1,
+  //           "allowComments": 1,
+  //           "isSafe": 1,
+  //           "isOwned": 1,
+  //           "certified": 1,
+  //           "saleAmount": 1,
+  //           "saleLike": 1,
+  //           "saleView": 1,
+  //           "isShared": 1,
+  //           "userProfile": 1,
+  //           "contentMedias": 1,
+  //           "cats": "$cats",
+  //           "tagDescription": 1,
+  //           "metadata": 1,
+  //           "boostDate": 1,
+  //           "boostViewer": 1,
+  //           "boostCount": 1,
+  //           "contentModeration": 1,
+  //           "reportedStatus": 1,
+  //           "reportedUserCount": 1,
+  //           "contentModerationResponse": 1,
+  //           "reportedUser": 1,
+  //           "timeStart": 1,
+  //           "timeEnd": 1,
+  //           "avatar": 1,
+  //           "statusCB": 1,
+  //           "likes": "$likes",
+  //           "views": "$views",
+  //           "shares": "$shares",
+  //           "comments": "$comments",
+  //           "category": "$category"
+  //         },
+
+  //       },
+  //       {
+  //         $match:
+  //         {
+  //           $or: [
+  //             {
+  //               $and: [
+  //                 {
+  //                   "reportedStatus": {
+  //                     $ne: "OWNED"
+  //                   }
+  //                 },
+  //                 {
+  //                   "visibility": "PUBLIC"
+  //                 },
+  //                 {
+  //                   "active": true
+  //                 },
+  //                 {
+  //                   "postType": "diary"
+  //                 },
+  //                 {
+  //                   $expr: {
+  //                     $lte: ["$boosted.boostSession.start", "$testDate",]
+  //                   }
+  //                 },
+  //                 {
+  //                   $expr: {
+  //                     $gt: ["$boosted.boostSession.end", "$testDate",]
+  //                   }
+  //                 },
+  //                 {
+  //                   $expr: {
+  //                     $lte: ["$timeStart", "$testDate",]
+  //                   }
+  //                 },
+  //                 {
+  //                   $expr: {
+  //                     $gt: ["$timeEnd", "$testDate",]
+  //                   }
+  //                 },
+  //                 {
+
+  //                   "timeStart": {
+  //                     $ne: null
+  //                   }
+  //                 },
+  //                 {
+
+  //                   "timeEnd": {
+  //                     $ne: null
+  //                   }
+  //                 },
+  //                 {
+  //                   $or: [
+  //                     {
+  //                       "reportedUser": {
+  //                         "$elemMatch": {
+  //                           "email": email,
+  //                           "active": false,
+
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       "reportedUser.email": {
+  //                         $not: {
+  //                           $regex: email
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+  //                 {
+  //                   $or: [
+  //                     {
+  //                       "boosted.boostViewer": {
+  //                         "$elemMatch": {
+  //                           "email": email,
+  //                           "isLast": true,
+  //                           "timeEnd": {
+  //                             $lte: {
+  //                               $add: [new Date(), 25200000]
+  //                             }
+  //                           }
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $and: [
+  //                         {
+  //                           "boosted.boostViewer.email": {
+  //                             $ne: email
+  //                           }
+  //                         },
+
+  //                       ]
+  //                     }
+  //                   ]
+  //                 }
+  //               ]
+  //             },
+  //             {
+  //               $and: [
+  //                 {
+  //                   "reportedStatus": {
+  //                     $ne: "OWNED"
+  //                   }
+  //                 },
+  //                 {
+  //                   "visibility": "PUBLIC"
+  //                 },
+  //                 {
+  //                   "active": true
+  //                 },
+  //                 {
+  //                   "postType": "diary"
+  //                 },
+  //                 {
+  //                   "timeStart": null
+  //                 },
+  //                 {
+  //                   $or: [
+  //                     {
+  //                       "reportedUser": {
+  //                         "$elemMatch": {
+  //                           "email": email,
+  //                           "active": false,
+
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       "reportedUser.email": {
+  //                         $not: {
+  //                           $regex: email,
+
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               ]
+  //             },
+
+  //           ]
+  //         }
+  //       },
+  //       {
+  //         $sort: {
+  //           selfContents: - 1,
+  //           isBoost: - 1,
+  //           createdAt: - 1,
+  //           viewerCount: 1,
+  //         }
+  //       },
+  //       {
+  //         $skip: skip
+  //       },
+  //       {
+  //         $limit: limit
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "disquslogs",
+  //           let: {
+  //             localID: '$postID',
+
+  //           },
+  //           as: "comment",
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$postID', '$$localID']
+  //                     }
+  //                   },
+  //                   {
+  //                     "active": {
+  //                       $ne: false
+  //                     }
+  //                   },
+  //                   {
+  //                     "sequenceNumber": 0
+  //                   },
+
+  //                 ]
+  //               }
+  //             },
+  //             {
+  //               "$lookup": {
+  //                 from: "userauths",
+  //                 as: "userComment",
+  //                 let: {
+  //                   localID: '$sender'
+  //                 },
+  //                 pipeline: [
+  //                   {
+  //                     $match:
+  //                     {
+  //                       $expr: {
+  //                         $eq: ['$email', '$$localID']
+  //                       }
+  //                     }
+  //                   },
+  //                   {
+  //                     $project: {
+  //                       "username": 1
+  //                     }
+  //                   }
+  //                 ],
+
+  //               }
+  //             },
+  //             {
+  //               $unwind: {
+  //                 path: "$userComment"
+  //               }
+  //             },
+  //             {
+  //               $sort: {
+  //                 createdAt: - 1
+  //               }
+  //             },
+  //             {
+  //               $limit: 2
+  //             },
+
+  //           ]
+  //         },
+
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "friend_list",
+  //           as: "friend",
+  //           let: {
+  //             localID: '$email',
+  //             user: email
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $or: [
+  //                   {
+  //                     $and: [
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       },
+  //                       {
+  //                         "friendlist.email": email
+  //                       }
+  //                     ]
+  //                   },
+  //                   {
+  //                     $and: [
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$user']
+  //                         }
+  //                       },
+  //                       {
+  //                         "friendlist.email": '$.email'
+  //                       }
+  //                     ]
+  //                   }
+  //                 ]
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 friend:
+  //                 {
+  //                   $cond: {
+  //                     if: {
+  //                       $gt: [{
+  //                         $size: '$friendlist'
+  //                       }, 0]
+  //                     },
+  //                     then: 1,
+  //                     else: 0
+  //                   }
+  //                 },
+
+  //               }
+  //             },
+
+  //           ]
+  //         },
+
+  //       },
+  //       // {
+  //       //   "$lookup": {
+  //       //     from: "contentevents",
+  //       //     as: "follower",
+  //       //     let: {
+  //       //       localID: '$email',
+  //       //       user: email
+  //       //     },
+  //       //     pipeline: [
+  //       //       {
+  //       //         $match:
+  //       //         {
+  //       //           $and: [
+  //       //             {
+  //       //               $expr: {
+  //       //                 $eq: ['$receiverParty', '$$localID']
+  //       //               }
+  //       //             },
+  //       //             {
+  //       //               "email": email
+  //       //             },
+  //       //             {
+  //       //               "eventType": "FOLLOWER",
+
+  //       //             },
+  //       //             {
+  //       //               "event": "ACCEPT"
+  //       //             },
+  //       //             {
+  //       //               "active": true
+  //       //             },
+
+  //       //           ]
+  //       //         }
+  //       //       },
+  //       //       {
+  //       //         $project: {
+  //       //           follower:
+  //       //           {
+  //       //             $cond: {
+  //       //               if: {
+  //       //                 $gt: [{
+  //       //                   $strLenCP: "$email"
+  //       //                 }, 0]
+  //       //               },
+  //       //               then: 1,
+  //       //               else: 0
+  //       //             }
+  //       //           },
+
+  //       //         }
+  //       //       }
+  //       //     ]
+  //       //   },
+
+  //       // },
+  //       {
+  //         "$lookup": {
+  //           from: "contentevents",
+  //           as: "following",
+  //           let: {
+  //             localID: '$email',
+  //             user: email
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$senderParty', '$$localID']
+  //                     }
+  //                   },
+  //                   {
+  //                     "email": email
+  //                   },
+  //                   {
+  //                     "eventType": "FOLLOWING",
+
+  //                   },
+  //                   {
+  //                     "event": "ACCEPT"
+  //                   },
+  //                   {
+  //                     "active": true
+  //                   },
+
+  //                 ]
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 following:
+  //                 {
+  //                   $cond: {
+  //                     if: {
+  //                       $gt: [{
+  //                         $strLenCP: "$email"
+  //                       }, 0]
+  //                     },
+  //                     then: true,
+  //                     else: false
+  //                   }
+  //                 },
+
+  //               }
+  //             }
+  //           ]
+  //         },
+
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "mediadiaries",
+  //           as: "media",
+  //           let: {
+  //             localID: '$postID'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$postID', '$$localID']
+  //                     }
+  //                   },
+  //                   {
+  //                     "apsara": true
+  //                   }
+  //                 ]
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "isApsara": "$apsara",
+  //                 "apsaraId": 1,
+  //                 "apsaraThumbId": 1,
+  //                 "mediaUri": 1,
+  //                 "postID": 1,
+  //                 "mediaEndpoint": {
+  //                   "$concat": ["/stream/", "$postID"]
+  //                 },
+  //                 "mediaThumbEndpoint": {
+  //                   "$concat": ["/thumb/", "$postID"]
+  //                 },
+  //                 "mediaThumbUri": "$mediaThumb",
+  //                 "mediaType": 1,
+
+  //               }
+  //             }
+  //           ],
+
+  //         },
+
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "interests_repo",
+  //           as: "cats",
+  //           let: {
+  //             localID: '$category.$id'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match: {
+
+  //                 $expr: {
+  //                   $and: [
+  //                     {
+  //                       $in: ['$_id', {
+  //                         $ifNull: ['$$localID', []]
+  //                       }]
+  //                     },
+
+  //                   ]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "interestName": 1,
+  //                 "langIso": 1,
+  //                 "icon": 1,
+  //                 "createdAt": 1,
+  //                 "updatedAt": 1
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "userbasics",
+  //           as: "userInterest",
+  //           let: {
+  //             localID: email
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match: {
+  //                 $expr: {
+  //                   $and: [
+  //                     {
+  //                       $eq: ["$email", "$$localID"]
+  //                     },
+
+  //                   ]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 userInterests: "$userInterests.$id",
+  //                 email: 1
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "userauths",
+  //           as: "userTag",
+  //           let: {
+  //             localID: '$tagPeople.$id'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $expr: {
+  //                   $in: ['$_id', {
+  //                     $ifNull: ['$$localID', []]
+  //                   }]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+
+  //                 "username": 1
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "userauths",
+  //           as: "username",
+  //           let: {
+  //             localID: '$email'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+
+
+  //                 $expr: {
+  //                   $eq: ['$email', '$$localID']
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+
+  //                 "username": 1
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "userbasics",
+  //           as: "userBasic",
+  //           let: {
+  //             localID: '$email'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $expr: {
+  //                   $eq: ['$email', '$$localID']
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "fullName": 1,
+  //                 "profilePict": 1,
+  //                 "isCelebrity": 1,
+  //                 "isIdVerified": 1,
+  //                 "isPrivate": 1,
+  //                 "isFollowPrivate": 1,
+  //                 "isPostPrivate": 1,
+
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$userBasic",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         $set: {
+  //           kosong: {
+  //             $ifNull: ['$userBasic.profilePict.$id', "kancut"]
+  //           }
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "mediaprofilepicts",
+  //           as: "avatar",
+  //           let: {
+  //             localID: '$kosong'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $expr: {
+  //                   $eq: ['$mediaID', "$$localID"]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "mediaBasePath": 1,
+  //                 "mediaUri": 1,
+  //                 "originalName": 1,
+  //                 "fsSourceUri": 1,
+  //                 "fsSourceName": 1,
+  //                 "fsTargetUri": 1,
+  //                 "mediaType": 1,
+  //                 "mediaEndpoint": {
+  //                   "$concat": ["/profilepict/", "$mediaID"]
+  //                 }
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$avatar",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "mediamusic",
+  //           as: "music",
+  //           let: {
+  //             localID: '$musicId'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $expr: {
+  //                   $eq: ['$_id', '$$localID']
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "musicTitle": 1,
+  //                 "artistName": 1,
+  //                 "albumName": 1,
+  //                 "apsaraMusic": 1,
+  //                 "apsaraThumnail": 1,
+  //                 "genre": "$genre.name",
+  //                 "theme": "$theme.name",
+  //                 "mood": "$mood.name",
+
+  //               }
+  //             },
+  //             {
+  //               $unwind: {
+  //                 path: "$genre",
+  //                 preserveNullAndEmptyArrays: true
+  //               }
+  //             },
+  //             {
+  //               $unwind: {
+  //                 path: "$theme",
+  //                 preserveNullAndEmptyArrays: true
+  //               }
+  //             },
+  //             {
+  //               $unwind: {
+  //                 path: "$mood",
+  //                 preserveNullAndEmptyArrays: true
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$media",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$username",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$music",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$userInterest",
+  //           preserveNullAndEmptyArrays: true
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "contentevents",
+  //           as: "isLike",
+  //           let: {
+  //             picts: '$postID',
+
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$postID', '$$picts']
+  //                     }
+  //                   },
+  //                   {
+  //                     "eventType": "LIKE"
+  //                   },
+  //                   {
+  //                     "event": "DONE"
+  //                   },
+  //                   {
+  //                     "active": true
+  //                   },
+  //                   {
+  //                     "email": email,
+  //                   },
+  //                 ]
+  //               },
+  //             },
+  //             {
+  //               $set: {
+  //                 kancut: {
+  //                   $ifNull: ["email", "kosong"]
+  //                 }
+  //               }
+  //             },
+  //             {
+  //               $project: {
+  //                 "email": 1,
+  //                 "postID": 1,
+  //                 isLiked:
+  //                 {
+  //                   $cond: {
+  //                     if: {
+  //                       $eq: ["$kancut", "kosong"]
+  //                     },
+  //                     then: false,
+  //                     else: true
+  //                   }
+  //                 },
+
+  //               }
+  //             }
+  //           ],
+
+  //         }
+  //       },
+  //       {
+  //         "$lookup": {
+  //           from: "disquslogs",
+  //           as: "countLogs",
+  //           let: {
+  //             localID: '$postID'
+  //           },
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 $and: [
+  //                   {
+  //                     $expr: {
+  //                       $eq: ['$postID', '$$localID']
+  //                     }
+  //                   },
+  //                   {
+  //                     "active": true,
+
+  //                   },
+
+  //                 ]
+  //               }
+  //             }
+  //           ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           mailViewer: 1,
+  //           countViewer: 1,
+  //           viewerCount: 1,
+  //           viewer: 1,
+  //           oldDate: 1,
+  //           selfContents: 1,
+  //           selfContent:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: ["$email", email]
+  //               },
+  //               then: 1,
+  //               else: 0
+  //             }
+  //           },
+  //           official:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: ["$email", "hyppers@hyppe.id"]
+  //               },
+  //               then: 1,
+  //               else: 0
+  //             }
+  //           },
+  //           musik: 1,
+  //           isLike: {
+  //             $arrayElemAt: ["$isLike.isLiked", 0]
+  //           },
+  //           comment: 1,
+  //           interest: {
+  //             $filter: {
+  //               input: "$category",
+  //               as: "stud",
+  //               cond: {
+  //                 $in: [
+  //                   "$$stud.$id",
+  //                   {
+  //                     $ifNull: ["$userInterest.userInterests", []]
+  //                   }
+  //                 ]
+  //               }
+  //             }
+  //           },
+  //           friend: {
+  //             $ifNull: [{
+  //               $arrayElemAt: ["$friend.friend", 0]
+  //             }, 0]
+  //           },
+  //           // "follower": {
+  //           //   $ifNull: [{
+  //           //     $arrayElemAt: ["$follower.follower", 0]
+  //           //   }, 0]
+  //           // },
+  //           "following": {
+  //             $ifNull: [{
+  //               $arrayElemAt: ["$following.following", 0]
+  //             }, false]
+  //           },
+  //           "musicTitle": "$music.musicTitle",
+  //           "postID": 1,
+  //           "artistName": "$music.artistName",
+  //           "albumName": "$music.albumName",
+  //           "apsaraMusic": "$music.apsaraMusic",
+  //           "apsaraThumnail": "$music.apsaraThumnail",
+  //           "genre": "$music.genre.name",
+  //           "theme": "$music.theme.name",
+  //           "mood": "$music.mood.name",
+  //           "testDate": 1,
+  //           "musicId": 1,
+  //           "music": 1,
+  //           "tagPeople": "$userTag",
+  //           "mediaType": "$media.mediaType",
+  //           "email": 1,
+  //           "postType": 1,
+  //           "description": 1,
+  //           "active": 1,
+  //           "createdAt": 1,
+  //           "updatedAt": 1,
+  //           "expiration": 1,
+  //           "visibility": 1,
+  //           "location": 1,
+  //           "tags": 1,
+  //           "allowComments": 1,
+  //           "isSafe": 1,
+  //           "isOwned": 1,
+  //           "certified": 1,
+  //           "saleAmount": 1,
+  //           "saleLike": 1,
+  //           "saleView": 1,
+  //           "isShared": 1,
+  //           "likes": "$likes",
+  //           "views": "$views",
+  //           "shares": "$shares",
+  //           "comments": {
+  //             $size: "$countLogs"
+  //           },
+  //           "insight":
+  //           {
+  //             "likes": "$likes",
+  //             "views": "$views",
+  //             "shares": "$shares",
+  //             "comments": "$comments",
+
+  //           }
+  //           ,
+  //           "userProfile": 1,
+  //           "contentMedias": 1,
+  //           "cats": "$cats",
+  //           "tagDescription": 1,
+  //           "metadata": 1,
+  //           "boostDate": 1,
+  //           "end": "$boosted.boostSession.end",
+  //           "start": "$boosted.boostSession.start",
+  //           "isBoost": {
+  //             $ifNull: ["$isBoost", 0]
+  //           },
+  //           "boostViewer": 1,
+  //           "boostCount": 1,
+  //           "boosted":
+  //             [{
+  //               $cond: {
+  //                 if: {
+  //                   $gt: [{
+  //                     "$dateToString": {
+  //                       "format": "%Y-%m-%d %H:%M:%S",
+  //                       "date": {
+  //                         $add: [new Date(), 25200000]
+  //                       }
+  //                     }
+  //                   }, "$boosted.boostSession.end"]
+  //                 },
+  //                 then: "$kosong",
+  //                 else: '$boosted'
+  //               }
+  //             }],
+  //           "contentModeration": 1,
+  //           "reportedStatus": 1,
+  //           "reportedUserCount": 1,
+  //           "contentModerationResponse": 1,
+  //           "reportedUser": 1,
+  //           "timeStart": 1,
+  //           "timeEnd": 1,
+  //           "isApsara": "$media.isApsara",
+  //           "apsaraId": "$media.apsaraId",
+  //           "apsaraThumbId": "$media.apsaraThumbId",
+  //           "mediaEndpoint": "$media.mediaEndpoint",
+  //           "mediaUri": "$media.mediaUri",
+  //           "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
+  //           "mediaThumbUri": "$media.mediaThumbUri",
+  //           "fullName": "$userBasic.fullName",
+  //           "username": "$username.username",
+  //           "avatar": 1,
+  //           "statusCB": 1,
+  //           "privacy": {
+  //             "isCelebrity": "$userBasic.isCelebrity",
+  //             "isIdVerified": "$userBasic.isIdVerified",
+  //             "isPrivate": "$userBasic.isPrivate",
+  //             "isFollowPrivate": "$userBasic.isFollowPrivate",
+  //             "isPostPrivate": "$userBasic.isPostPrivate",
+
+  //           },
+  //           "verified": "$userBasic.isIdVerified",
+  //         },
+
+  //       },
+  //       {
+  //         $lookup: {
+  //           from: "settings",
+  //           as: "setting",
+  //           pipeline: [
+  //             {
+  //               $match:
+  //               {
+  //                 "_id": new Types.ObjectId("62bbdb4ba7520000050077a7"),
+  //               }
+  //             },
+  //           ]
+  //         }
+  //       },
+  //       {
+  //         $unwind: {
+  //           path: "$setting"
+  //         }
+  //       },
+  //       {
+  //         $project: {
+  //           mailViewer: 1,
+  //           countViewer: 1,
+  //           viewerCount: 1,
+  //           viewer: 1,
+  //           version: "$setting.value",
+  //           oldDate: 1,
+  //           selfContents: 1,
+  //           official: 1,
+  //           selfContent: 1,
+  //           musik: 1,
+  //           isLiked: {
+  //             $ifNull: ["$isLike", false]
+  //           },
+  //           comment: 1,
+  //           intScore:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $isArray: "$interest"
+  //               },
+  //               then: {
+  //                 $subtract: [
+  //                   {
+  //                     $size: "$interest"
+  //                   }, 1
+  //                 ]
+  //               },
+  //               else: 0
+  //             }
+  //           },
+  //           "verified": 1,
+  //           "friend": 1,
+  //           // "follower": 1,
+  //           "following": 1,
+  //           "musicTitle": 1,
+  //           "postID": 1,
+  //           "artistName": 1,
+  //           "albumName": 1,
+  //           "apsaraMusic": 1,
+  //           "apsaraThumnail": 1,
+  //           "genre": 1,
+  //           "theme": 1,
+  //           "mood": 1,
+  //           "testDate": 1,
+  //           "musicId": 1,
+  //           "music": 1,
+  //           "tagPeople": 1,
+  //           "mediaType": 1,
+  //           "email": 1,
+  //           "postType": 1,
+  //           "description": 1,
+  //           "active": 1,
+  //           "createdAt": 1,
+  //           "updatedAt": 1,
+  //           "expiration": 1,
+  //           "visibility": 1,
+  //           "location": 1,
+  //           "tags": 1,
+  //           "allowComments": 1,
+  //           "isSafe": 1,
+  //           "isOwned": 1,
+  //           "certified": 1,
+  //           "saleAmount": 1,
+  //           "saleLike": 1,
+  //           "saleView": 1,
+  //           "isShared": 1,
+  //           "likes": 1,
+  //           "views": 1,
+  //           "shares": 1,
+  //           "comments": 1,
+  //           "insight": 1,
+  //           "userProfile": 1,
+  //           "contentMedias": 1,
+  //           "cats": "$cats",
+  //           "tagDescription": 1,
+  //           "metadata": 1,
+  //           "boostDate": 1,
+  //           "end": 1,
+  //           "start": 1,
+  //           "isBoost": 1,
+  //           "boostViewer": 1,
+  //           "boostCount": 1,
+  //           "boosted":
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{
+  //                   $size: "$boosted.boostSession"
+  //                 }, 0]
+  //               },
+  //               else: [],
+  //               then: '$boosted'
+  //             }
+  //           },
+  //           "contentModeration": 1,
+  //           "reportedStatus": 1,
+  //           "reportedUserCount": 1,
+  //           "contentModerationResponse": 1,
+  //           "reportedUser": 1,
+  //           "timeStart": 1,
+  //           "timeEnd": 1,
+  //           "isApsara": 1,
+  //           "apsaraId": 1,
+  //           "apsaraThumbId": 1,
+  //           "mediaEndpoint": 1,
+  //           "mediaUri": 1,
+  //           "mediaThumbEndpoint": 1,
+  //           "mediaThumbUri": 1,
+  //           "fullName": 1,
+  //           "username": 1,
+  //           "avatar": 1,
+  //           "statusCB": 1,
+  //           "privacy": 1,
+
+  //         },
+
+  //       },
+
+  //     );
+  //     pipeline.push(
+  //       {
+  //         $sort: sortObject
+  //       },
+  //     );
+  //   }
+  //   var query = await this.PostsModel.aggregate(pipeline);
+  //   return query;
+  // }
   async landingpage2(email: string, type: string, skip: number, limit: number) {
     var pipeline = [];
     var dataseting = null;
@@ -40222,112 +44495,26 @@ export class PostsService {
         },
         {
           $set: {
-            kancut: //'dodolipet'
-            {
+            viewerCount: {
               $cond: {
                 if: {
-                  //$eq: ['$dodolipet', 0]
-                  $filter: {
-                    input: "$viewer",
-                    cond: {
-                      $eq: ["$$this", email]
-                    }
-                  }
+                  $isArray: "$viewer"
                 },
                 then:
                 {
-                  $concatArrays: [
-                    '$viewer',
-                    [email]
-                  ]
-                },
-                else: [email]
-              }
-            }
-          }
-        },
-        {
-          $set: {
-            mailViewer: {
-              $filter: {
-                input: "$kancut",
-                cond: {
-                  $eq: ["$$this", email]
-                }
-              }
-            },
-
-          }
-        },
-        {
-          $project: {
-            mailViewer: 1,
-            viewerCount:
-            {
-              $cond: {
-                if: {
-                  $isArray: "$kancut"
-                },
-                then: {
-                  $subtract: [
-                    {
-                      $size: "$kancut"
-                    }, 1
-                  ]
+                  $size: {
+                    $filter: {
+                      input: "$viewer",
+                      cond: {
+                        $eq: ["$$this", email]
+                      }
+                    }
+                  }
                 },
                 else: 0
               }
-            },
-            viewer: 1,
-            oldDate: 1,
-            selfContents: 1,
-            comment: 1,
-            "postID": 1,
-            "testDate": 1,
-            "musicId": 1,
-            "music": 1,
-            "email": 1,
-            "postType": 1,
-            "description": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "expiration": 1,
-            "visibility": 1,
-            "location": 1,
-            "tags": 1,
-            "allowComments": 1,
-            "isSafe": 1,
-            "isOwned": 1,
-            "certified": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            "isShared": 1,
-            "userProfile": 1,
-            "contentMedias": 1,
-            "cats": "$cats",
-            "tagDescription": 1,
-            "metadata": 1,
-            "boostDate": 1,
-            "boostViewer": 1,
-            "boostCount": 1,
-            "contentModeration": 1,
-            "reportedStatus": 1,
-            "reportedUserCount": 1,
-            "contentModerationResponse": 1,
-            "reportedUser": 1,
-            "timeStart": 1,
-            "timeEnd": 1,
-            "avatar": 1,
-            "statusCB": 1,
-            "likes": "$likes",
-            "views": "$views",
-            "shares": "$shares",
-            "comments": "$comments",
-            "category": "$category"
-          },
-
+            }
+          }
         },
         {
           $match:
@@ -40491,10 +44678,10 @@ export class PostsService {
         },
         {
           $sort: {
-            selfContents: - 1,
-            isBoost: - 1,
-            createdAt: - 1,
             viewerCount: 1,
+            selfContents: - 1,
+            "isBoost": - 1,
+            "createdAt": - 1
           }
         },
         {
@@ -41164,8 +45351,6 @@ export class PostsService {
         },
         {
           $project: {
-            mailViewer: 1,
-            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             oldDate: 1,
@@ -41354,8 +45539,6 @@ export class PostsService {
         },
         {
           $project: {
-            mailViewer: 1,
-            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             version: "$setting.value",
@@ -41368,21 +45551,8 @@ export class PostsService {
               $ifNull: ["$isLike", false]
             },
             comment: 1,
-            intScore:
-            {
-              $cond: {
-                if: {
-                  $isArray: "$interest"
-                },
-                then: {
-                  $subtract: [
-                    {
-                      $size: "$interest"
-                    }, 1
-                  ]
-                },
-                else: 0
-              }
+            intScore: {
+              $size: "$interest"
             },
             "verified": 1,
             "friend": 1,
@@ -41647,112 +45817,35 @@ export class PostsService {
         },
         {
           $set: {
-            kancut: //'dodolipet'
-            {
+            viewerCount: {
               $cond: {
                 if: {
-                  //$eq: ['$dodolipet', 0]
-                  $filter: {
-                    input: "$viewer",
-                    cond: {
-                      $eq: ["$$this", email]
-                    }
-                  }
+                  $isArray: "$viewer"
                 },
                 then:
                 {
-                  $concatArrays: [
-                    '$viewer',
-                    [email]
-                  ]
-                },
-                else: [email]
-              }
-            }
-          }
-        },
-        {
-          $set: {
-            mailViewer: {
-              $filter: {
-                input: "$kancut",
-                cond: {
-                  $eq: ["$$this", email]
-                }
-              }
-            },
-
-          }
-        },
-        {
-          $project: {
-            mailViewer: 1,
-            viewerCount:
-            {
-              $cond: {
-                if: {
-                  $isArray: "$kancut"
-                },
-                then: {
-                  $subtract: [
+                  $cond: {
+                    if: {
+                      $gt: ["$isBoost", 3]
+                    },
+                    then: 0,
+                    else:
                     {
-                      $size: "$kancut"
-                    }, 1
-                  ]
+                      $size: {
+                        $filter: {
+                          input: "$viewer",
+                          cond: {
+                            $eq: ["$$this", email]
+                          }
+                        }
+                      }
+                    },
+                  },
                 },
                 else: 0
               }
-            },
-            viewer: 1,
-            oldDate: 1,
-            selfContents: 1,
-            comment: 1,
-            "postID": 1,
-            "testDate": 1,
-            "musicId": 1,
-            "music": 1,
-            "email": 1,
-            "postType": 1,
-            "description": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "expiration": 1,
-            "visibility": 1,
-            "location": 1,
-            "tags": 1,
-            "allowComments": 1,
-            "isSafe": 1,
-            "isOwned": 1,
-            "certified": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            "isShared": 1,
-            "userProfile": 1,
-            "contentMedias": 1,
-            "cats": "$cats",
-            "tagDescription": 1,
-            "metadata": 1,
-            "boostDate": 1,
-            "boostViewer": 1,
-            "boostCount": 1,
-            "contentModeration": 1,
-            "reportedStatus": 1,
-            "reportedUserCount": 1,
-            "contentModerationResponse": 1,
-            "reportedUser": 1,
-            "timeStart": 1,
-            "timeEnd": 1,
-            "avatar": 1,
-            "statusCB": 1,
-            "likes": "$likes",
-            "views": "$views",
-            "shares": "$shares",
-            "comments": "$comments",
-            "category": "$category"
-          },
-
+            }
+          }
         },
         {
           $match:
@@ -41906,10 +45999,10 @@ export class PostsService {
         },
         {
           $sort: {
-            selfContents: - 1,
-            isBoost: - 1,
-            createdAt: - 1,
             viewerCount: 1,
+            selfContents: -1,
+            "isBoost": - 1,
+            "createdAt": - 1
           }
         },
         {
@@ -42585,8 +46678,6 @@ export class PostsService {
         },
         {
           $project: {
-            mailViewer: 1,
-            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             oldDate: 1,
@@ -42773,8 +46864,6 @@ export class PostsService {
         },
         {
           $project: {
-            mailViewer: 1,
-            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             version: "$setting.value",
@@ -42787,21 +46876,8 @@ export class PostsService {
               $ifNull: ["$isLike", false]
             },
             comment: 1,
-            intScore:
-            {
-              $cond: {
-                if: {
-                  $isArray: "$interest"
-                },
-                then: {
-                  $subtract: [
-                    {
-                      $size: "$interest"
-                    }, 1
-                  ]
-                },
-                else: 0
-              }
+            intScore: {
+              $size: "$interest"
             },
             "verified": 1,
             "friend": 1,
@@ -43064,112 +47140,35 @@ export class PostsService {
         },
         {
           $set: {
-            kancut: //'dodolipet'
-            {
+            viewerCount: {
               $cond: {
                 if: {
-                  //$eq: ['$dodolipet', 0]
-                  $filter: {
-                    input: "$viewer",
-                    cond: {
-                      $eq: ["$$this", email]
-                    }
-                  }
+                  $isArray: "$viewer"
                 },
                 then:
                 {
-                  $concatArrays: [
-                    '$viewer',
-                    [email]
-                  ]
-                },
-                else: [email]
-              }
-            }
-          }
-        },
-        {
-          $set: {
-            mailViewer: {
-              $filter: {
-                input: "$kancut",
-                cond: {
-                  $eq: ["$$this", email]
-                }
-              }
-            },
-
-          }
-        },
-        {
-          $project: {
-            mailViewer: 1,
-            viewerCount:
-            {
-              $cond: {
-                if: {
-                  $isArray: "$kancut"
-                },
-                then: {
-                  $subtract: [
+                  $cond: {
+                    if: {
+                      $gt: ["$isBoost", 3]
+                    },
+                    then: 0,
+                    else:
                     {
-                      $size: "$kancut"
-                    }, 1
-                  ]
+                      $size: {
+                        $filter: {
+                          input: "$viewer",
+                          cond: {
+                            $eq: ["$$this", email]
+                          }
+                        }
+                      }
+                    },
+                  },
                 },
                 else: 0
               }
-            },
-            viewer: 1,
-            oldDate: 1,
-            selfContents: 1,
-            comment: 1,
-            "postID": 1,
-            "testDate": 1,
-            "musicId": 1,
-            "music": 1,
-            "email": 1,
-            "postType": 1,
-            "description": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "expiration": 1,
-            "visibility": 1,
-            "location": 1,
-            "tags": 1,
-            "allowComments": 1,
-            "isSafe": 1,
-            "isOwned": 1,
-            "certified": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            "isShared": 1,
-            "userProfile": 1,
-            "contentMedias": 1,
-            "cats": "$cats",
-            "tagDescription": 1,
-            "metadata": 1,
-            "boostDate": 1,
-            "boostViewer": 1,
-            "boostCount": 1,
-            "contentModeration": 1,
-            "reportedStatus": 1,
-            "reportedUserCount": 1,
-            "contentModerationResponse": 1,
-            "reportedUser": 1,
-            "timeStart": 1,
-            "timeEnd": 1,
-            "avatar": 1,
-            "statusCB": 1,
-            "likes": "$likes",
-            "views": "$views",
-            "shares": "$shares",
-            "comments": "$comments",
-            "category": "$category"
-          },
-
+            }
+          }
         },
         {
           $match:
@@ -43323,10 +47322,10 @@ export class PostsService {
         },
         {
           $sort: {
-            selfContents: - 1,
-            isBoost: - 1,
-            createdAt: - 1,
             viewerCount: 1,
+            selfContents: -1,
+            "isBoost": - 1,
+            "createdAt": - 1
           }
         },
         {
@@ -44002,8 +48001,6 @@ export class PostsService {
         },
         {
           $project: {
-            mailViewer: 1,
-            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             oldDate: 1,
@@ -44190,8 +48187,6 @@ export class PostsService {
         },
         {
           $project: {
-            mailViewer: 1,
-            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             version: "$setting.value",
@@ -44204,21 +48199,8 @@ export class PostsService {
               $ifNull: ["$isLike", false]
             },
             comment: 1,
-            intScore:
-            {
-              $cond: {
-                if: {
-                  $isArray: "$interest"
-                },
-                then: {
-                  $subtract: [
-                    {
-                      $size: "$interest"
-                    }, 1
-                  ]
-                },
-                else: 0
-              }
+            intScore: {
+              $size: "$interest"
             },
             "verified": 1,
             "friend": 1,
@@ -44318,7 +48300,6 @@ export class PostsService {
     var query = await this.PostsModel.aggregate(pipeline);
     return query;
   }
-
 
   async eventLike(email: string, postid: string) {
     var query = await this.PostsModel.aggregate([
