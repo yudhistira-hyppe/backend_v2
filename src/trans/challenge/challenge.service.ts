@@ -144,6 +144,13 @@ export class ChallengeService {
         {
           _id: 1,
           nameChallenge: 1,
+          jenisChallenge_fk:
+          {
+            "$arrayElemAt":
+              [
+                "$jenisChallenge_fk.name", 0
+              ]
+          },
           caragabung:
           {
             "$arrayElemAt":
@@ -214,7 +221,7 @@ export class ChallengeService {
               {
                 "$eq":
                   [
-                    "$statusChallenge", menuChallenge
+                    "$statusChallenge", 'DRAFT'
                   ]
               }
             }
@@ -226,13 +233,27 @@ export class ChallengeService {
           {
             "$match":
             {
-              "$expr":
-              {
-                "$eq":
-                  [
-                    "$jenisChallenge_fk", menuChallenge
-                  ]
-              }
+              "$and":
+              [
+                {
+                  "$expr":
+                  {
+                    "$eq":
+                      [
+                        "$jenisChallenge_fk", menuChallenge
+                      ]
+                  }
+                },
+                {
+                  "$expr":
+                  {
+                    "$ne":
+                      [
+                        "$statusChallenge", 'DRAFT'
+                      ]
+                  }
+                },
+              ]
             }
           }
         );
