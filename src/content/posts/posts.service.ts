@@ -44336,6 +44336,12 @@ export class PostsService {
       }
 
       pipeline.push(
+
+        {
+          $sort: {
+            createdAt: -1,
+          }
+        },
         {
           "$unwind": {
             "path": "$boosted",
@@ -44533,74 +44539,25 @@ export class PostsService {
           }
         },
         {
-          $project: {
-            mailViewer: 1,
+          $set: {
             viewerCount:
             {
               $cond: {
                 if: {
-                  $isArray: "$kancut"
+                  $isArray: "$mailViewer"
                 },
                 then: {
                   $subtract: [
                     {
-                      $size: "$kancut"
+                      $size: "$mailViewer"
                     }, 1
                   ]
                 },
                 else: 0
               }
             },
-            viewer: 1,
-            oldDate: 1,
-            selfContents: 1,
-            comment: 1,
-            "postID": 1,
-            "testDate": 1,
-            "musicId": 1,
-            "music": 1,
-            "email": 1,
-            "postType": 1,
-            "description": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "expiration": 1,
-            "visibility": 1,
-            "location": 1,
-            "tags": 1,
-            "allowComments": 1,
-            "isSafe": 1,
-            "isOwned": 1,
-            "certified": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            "isShared": 1,
-            "userProfile": 1,
-            "contentMedias": 1,
-            "cats": "$cats",
-            "tagDescription": 1,
-            "metadata": 1,
-            "boostDate": 1,
-            "boostViewer": 1,
-            "boostCount": 1,
-            "contentModeration": 1,
-            "reportedStatus": 1,
-            "reportedUserCount": 1,
-            "contentModerationResponse": 1,
-            "reportedUser": 1,
-            "timeStart": 1,
-            "timeEnd": 1,
-            "avatar": 1,
-            "statusCB": 1,
-            "likes": "$likes",
-            "views": "$views",
-            "shares": "$shares",
-            "comments": "$comments",
-            "category": "$category"
-          },
 
+          }
         },
         {
           $match:
@@ -44764,10 +44721,10 @@ export class PostsService {
         },
         {
           $sort: {
-            selfContents: - 1,
-            isBoost: - 1,
-            createdAt: - 1,
             viewerCount: 1,
+            selfContents: -1,
+            isBoost: -1,
+            createdAt: -1,
           }
         },
         {
@@ -45438,7 +45395,6 @@ export class PostsService {
         {
           $project: {
             mailViewer: 1,
-            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             oldDate: 1,
@@ -45628,7 +45584,6 @@ export class PostsService {
         {
           $project: {
             mailViewer: 1,
-            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             version: "$setting.value",
@@ -45647,12 +45602,9 @@ export class PostsService {
                 if: {
                   $isArray: "$interest"
                 },
-                then: {
-                  $subtract: [
-                    {
-                      $size: "$interest"
-                    }, 1
-                  ]
+                then:
+                {
+                  $size: "$interest"
                 },
                 else: 0
               }
@@ -45768,6 +45720,11 @@ export class PostsService {
 
       pipeline.push(
         {
+          $sort: {
+            createdAt: -1,
+          }
+        },
+        {
           "$unwind": {
             "path": "$boosted",
             "preserveNullAndEmptyArrays": true
@@ -45782,7 +45739,6 @@ export class PostsService {
         {
           "$set": {
             "timeStart": {
-
               "$concat": [
                 {
                   "$dateToString": {
@@ -45858,7 +45814,9 @@ export class PostsService {
                 else: "$timeEnd"
               }
             },
+
           },
+
         },
         {
           $set: {
@@ -45894,7 +45852,7 @@ export class PostsService {
               "$dateToString": {
                 "format": "%Y-%m-%d %H:%M:%S",
                 "date": {
-                  $add: [new Date(), - value]
+                  $add: [new Date(), - 30600000]
                   //$add: [new Date(), - 579600000]
                 }
               }
@@ -45908,14 +45866,19 @@ export class PostsService {
               $cond: {
                 if: {
                   $and: [
-                    { $eq: ["$email", email] },
-                    { $gt: ["$createdAt", "$oldDate"] }
+                    {
+                      $eq: ["$email", "ilhamarahman97@gmail.com"]
+                    },
+                    {
+                      $gt: ["$createdAt", "$oldDate"]
+                    }
                   ]
                 },
                 then: 1,
                 else: 0
               }
             },
+
           }
         },
         {
@@ -45928,7 +45891,7 @@ export class PostsService {
                   $filter: {
                     input: "$viewer",
                     cond: {
-                      $eq: ["$$this", email]
+                      $eq: ["$$this", "ilhamarahman97@gmail.com"]
                     }
                   }
                 },
@@ -45936,10 +45899,10 @@ export class PostsService {
                 {
                   $concatArrays: [
                     '$viewer',
-                    [email]
+                    ["ilhamarahman97@gmail.com"]
                   ]
                 },
-                else: [email]
+                else: ["ilhamarahman97@gmail.com"]
               }
             }
           }
@@ -45950,7 +45913,7 @@ export class PostsService {
               $filter: {
                 input: "$kancut",
                 cond: {
-                  $eq: ["$$this", email]
+                  $eq: ["$$this", "ilhamarahman97@gmail.com"]
                 }
               }
             },
@@ -45958,74 +45921,25 @@ export class PostsService {
           }
         },
         {
-          $project: {
-            mailViewer: 1,
+          $set: {
             viewerCount:
             {
               $cond: {
                 if: {
-                  $isArray: "$kancut"
+                  $isArray: "$mailViewer"
                 },
                 then: {
                   $subtract: [
                     {
-                      $size: "$kancut"
+                      $size: "$mailViewer"
                     }, 1
                   ]
                 },
                 else: 0
               }
             },
-            viewer: 1,
-            oldDate: 1,
-            selfContents: 1,
-            comment: 1,
-            "postID": 1,
-            "testDate": 1,
-            "musicId": 1,
-            "music": 1,
-            "email": 1,
-            "postType": 1,
-            "description": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "expiration": 1,
-            "visibility": 1,
-            "location": 1,
-            "tags": 1,
-            "allowComments": 1,
-            "isSafe": 1,
-            "isOwned": 1,
-            "certified": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            "isShared": 1,
-            "userProfile": 1,
-            "contentMedias": 1,
-            "cats": "$cats",
-            "tagDescription": 1,
-            "metadata": 1,
-            "boostDate": 1,
-            "boostViewer": 1,
-            "boostCount": 1,
-            "contentModeration": 1,
-            "reportedStatus": 1,
-            "reportedUserCount": 1,
-            "contentModerationResponse": 1,
-            "reportedUser": 1,
-            "timeStart": 1,
-            "timeEnd": 1,
-            "avatar": 1,
-            "statusCB": 1,
-            "likes": "$likes",
-            "views": "$views",
-            "shares": "$shares",
-            "comments": "$comments",
-            "category": "$category"
-          },
 
+          }
         },
         {
           $match:
@@ -46179,10 +46093,10 @@ export class PostsService {
         },
         {
           $sort: {
-            selfContents: - 1,
-            isBoost: - 1,
-            createdAt: - 1,
             viewerCount: 1,
+            selfContents: -1,
+            isBoost: -1,
+            createdAt: -1,
           }
         },
         {
@@ -46859,7 +46773,6 @@ export class PostsService {
         {
           $project: {
             mailViewer: 1,
-            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             oldDate: 1,
@@ -47047,7 +46960,6 @@ export class PostsService {
         {
           $project: {
             mailViewer: 1,
-            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             version: "$setting.value",
@@ -47066,12 +46978,9 @@ export class PostsService {
                 if: {
                   $isArray: "$interest"
                 },
-                then: {
-                  $subtract: [
-                    {
-                      $size: "$interest"
-                    }, 1
-                  ]
+                then:
+                {
+                  $size: "$interest"
                 },
                 else: 0
               }
@@ -47185,6 +47094,11 @@ export class PostsService {
 
       pipeline.push(
         {
+          $sort: {
+            createdAt: -1,
+          }
+        },
+        {
           "$unwind": {
             "path": "$boosted",
             "preserveNullAndEmptyArrays": true
@@ -47199,7 +47113,6 @@ export class PostsService {
         {
           "$set": {
             "timeStart": {
-
               "$concat": [
                 {
                   "$dateToString": {
@@ -47275,7 +47188,9 @@ export class PostsService {
                 else: "$timeEnd"
               }
             },
+
           },
+
         },
         {
           $set: {
@@ -47311,7 +47226,7 @@ export class PostsService {
               "$dateToString": {
                 "format": "%Y-%m-%d %H:%M:%S",
                 "date": {
-                  $add: [new Date(), - value]
+                  $add: [new Date(), - 30600000]
                   //$add: [new Date(), - 579600000]
                 }
               }
@@ -47325,14 +47240,19 @@ export class PostsService {
               $cond: {
                 if: {
                   $and: [
-                    { $eq: ["$email", email] },
-                    { $gt: ["$createdAt", "$oldDate"] }
+                    {
+                      $eq: ["$email", "ilhamarahman97@gmail.com"]
+                    },
+                    {
+                      $gt: ["$createdAt", "$oldDate"]
+                    }
                   ]
                 },
                 then: 1,
                 else: 0
               }
             },
+
           }
         },
         {
@@ -47345,7 +47265,7 @@ export class PostsService {
                   $filter: {
                     input: "$viewer",
                     cond: {
-                      $eq: ["$$this", email]
+                      $eq: ["$$this", "ilhamarahman97@gmail.com"]
                     }
                   }
                 },
@@ -47353,10 +47273,10 @@ export class PostsService {
                 {
                   $concatArrays: [
                     '$viewer',
-                    [email]
+                    ["ilhamarahman97@gmail.com"]
                   ]
                 },
-                else: [email]
+                else: ["ilhamarahman97@gmail.com"]
               }
             }
           }
@@ -47367,7 +47287,7 @@ export class PostsService {
               $filter: {
                 input: "$kancut",
                 cond: {
-                  $eq: ["$$this", email]
+                  $eq: ["$$this", "ilhamarahman97@gmail.com"]
                 }
               }
             },
@@ -47375,74 +47295,25 @@ export class PostsService {
           }
         },
         {
-          $project: {
-            mailViewer: 1,
+          $set: {
             viewerCount:
             {
               $cond: {
                 if: {
-                  $isArray: "$kancut"
+                  $isArray: "$mailViewer"
                 },
                 then: {
                   $subtract: [
                     {
-                      $size: "$kancut"
+                      $size: "$mailViewer"
                     }, 1
                   ]
                 },
                 else: 0
               }
             },
-            viewer: 1,
-            oldDate: 1,
-            selfContents: 1,
-            comment: 1,
-            "postID": 1,
-            "testDate": 1,
-            "musicId": 1,
-            "music": 1,
-            "email": 1,
-            "postType": 1,
-            "description": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "expiration": 1,
-            "visibility": 1,
-            "location": 1,
-            "tags": 1,
-            "allowComments": 1,
-            "isSafe": 1,
-            "isOwned": 1,
-            "certified": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            "isShared": 1,
-            "userProfile": 1,
-            "contentMedias": 1,
-            "cats": "$cats",
-            "tagDescription": 1,
-            "metadata": 1,
-            "boostDate": 1,
-            "boostViewer": 1,
-            "boostCount": 1,
-            "contentModeration": 1,
-            "reportedStatus": 1,
-            "reportedUserCount": 1,
-            "contentModerationResponse": 1,
-            "reportedUser": 1,
-            "timeStart": 1,
-            "timeEnd": 1,
-            "avatar": 1,
-            "statusCB": 1,
-            "likes": "$likes",
-            "views": "$views",
-            "shares": "$shares",
-            "comments": "$comments",
-            "category": "$category"
-          },
 
+          }
         },
         {
           $match:
@@ -47596,10 +47467,10 @@ export class PostsService {
         },
         {
           $sort: {
-            selfContents: - 1,
-            isBoost: - 1,
-            createdAt: - 1,
             viewerCount: 1,
+            selfContents: -1,
+            isBoost: -1,
+            createdAt: -1,
           }
         },
         {
@@ -48276,7 +48147,6 @@ export class PostsService {
         {
           $project: {
             mailViewer: 1,
-            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             oldDate: 1,
@@ -48464,7 +48334,6 @@ export class PostsService {
         {
           $project: {
             mailViewer: 1,
-            countViewer: 1,
             viewerCount: 1,
             viewer: 1,
             version: "$setting.value",
@@ -48483,12 +48352,9 @@ export class PostsService {
                 if: {
                   $isArray: "$interest"
                 },
-                then: {
-                  $subtract: [
-                    {
-                      $size: "$interest"
-                    }, 1
-                  ]
+                then:
+                {
+                  $size: "$interest"
                 },
                 else: 0
               }
