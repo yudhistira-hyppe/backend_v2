@@ -40491,10 +40491,10 @@ export class PostsService {
         },
         {
           $sort: {
-            viewerCount: 1,
             selfContents: - 1,
-            "isBoost": - 1,
-            "createdAt": - 1
+            isBoost: - 1,
+            createdAt: - 1,
+            viewerCount: 1,
           }
         },
         {
@@ -41906,10 +41906,10 @@ export class PostsService {
         },
         {
           $sort: {
+            selfContents: - 1,
+            isBoost: - 1,
+            createdAt: - 1,
             viewerCount: 1,
-            selfContents: -1,
-            "isBoost": - 1,
-            "createdAt": - 1
           }
         },
         {
@@ -43323,10 +43323,10 @@ export class PostsService {
         },
         {
           $sort: {
+            selfContents: - 1,
+            isBoost: - 1,
+            createdAt: - 1,
             viewerCount: 1,
-            selfContents: -1,
-            "isBoost": - 1,
-            "createdAt": - 1
           }
         },
         {
