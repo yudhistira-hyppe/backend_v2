@@ -25,7 +25,7 @@ import { ReactionsRepoService } from '../../infra/reactions_repo/reactions_repo.
 import { FriendListService } from '../friend_list/friend_list.service';
 import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
 import { NewpostsService } from '../newposts/newposts.service';
-//import { AuthService } from '../../auth/auth.service';
+
 
 
 @Controller()
@@ -45,7 +45,6 @@ export class ContenteventsController {
     private readonly friendListService: FriendListService,
     private readonly userbasicsService: UserbasicsService,
     private readonly NewpostsService: NewpostsService,
-    //  private readonly authService: AuthService,
     private readonly errorHandler: ErrorHandler) { }
 
   @Post('api/contentevents')
@@ -1686,7 +1685,5 @@ export class ContenteventsController {
     }
   }
 
-  // async challengeFollow(iduser: string, idref: string, nametable: string) {
-  //   await this.authService.userChallengeFollow(iduser, idref, nametable);
-  // }
+
 }

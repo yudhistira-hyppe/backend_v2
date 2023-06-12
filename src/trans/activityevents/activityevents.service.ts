@@ -253,7 +253,7 @@ export class ActivityeventsService {
 
   }
 
-  async filteruser(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number, descending: any) {
+  async filteruser(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number, descending: any, type: string) {
 
     var arrlokasi = [];
     var idlokasi = null;
@@ -635,11 +635,17 @@ export class ActivityeventsService {
     if (endlogin && endlogin !== undefined) {
       pipeline.push({ $match: { lastlogin: { $lte: dtlogin } } });
     }
-    if (page > 0) {
-      pipeline.push({ $skip: (page * limit) });
-    }
-    if (limit > 0) {
-      pipeline.push({ $limit: limit });
+
+    if (type != undefined && type == "ALL") {
+
+
+    } else {
+      if (page > 0) {
+        pipeline.push({ $skip: (page * limit) });
+      }
+      if (limit > 0) {
+        pipeline.push({ $limit: limit });
+      }
     }
 
     let query = await this.activityeventsModel.aggregate(pipeline);
