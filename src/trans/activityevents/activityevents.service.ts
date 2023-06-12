@@ -299,14 +299,20 @@ export class ActivityeventsService {
     var dtlogin = dateendlogin.substring(0, 10);
     var pipeline = [];
 
+    if (type != undefined && type == "ALL") {
 
-    pipeline.push(
-      {
+
+    } else {
+      pipeline.push({
         $match:
         {
           "event": "LOGIN"
         }
-      },
+      },);
+    }
+
+    pipeline.push(
+
       {
         $group: {
           _id: "$payload.email",
