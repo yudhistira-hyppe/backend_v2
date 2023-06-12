@@ -41,6 +41,7 @@ import { TemplatesRepo } from 'src/infra/templates_repo/schemas/templatesrepo.sc
 import { ChallengeService } from '../trans/challenge/challenge.service';
 import { UserchallengesService } from '../trans/userchallenges/userchallenges.service';
 import { Userchallenges } from '../trans/userchallenges/schemas/userchallenges.schema';
+import { subChallengeService } from '../trans/challenge/subChallenge.service';
 
 @Injectable()
 export class AuthService {
@@ -71,7 +72,8 @@ export class AuthService {
     private contenteventsService: ContenteventsService,
     private postsService: PostsService,
     private challengeService: ChallengeService,
-    private userchallengesService: UserchallengesService
+    private userchallengesService: UserchallengesService,
+    private subChallengeService: subChallengeService
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -9964,6 +9966,7 @@ export class AuthService {
     var datachallenge = null;
     var arrdata = [];
     var objintr = {};
+    var datasubchallenge = null;
 
 
     try {
@@ -9984,36 +9987,14 @@ export class AuthService {
           datauserchall = null;
         }
 
-        if (datauserchall.length == 0) {
-
-          var Userchallenges_ = new Userchallenges();
-          Userchallenges_.idUser = mongoose.Types.ObjectId(iduser);
-          Userchallenges_.idChallenge = mongoose.Types.ObjectId(idChallenge);
-          Userchallenges_.isActive = true;
-          Userchallenges_.score = poinReferal;
-          Userchallenges_.createdAt = timedate;
-          Userchallenges_.updatedAt = timedate;
-
-          var datainsert = await this.userchallengesService.create(Userchallenges_);
-          console.log(datainsert);
-          var iduschall = datainsert._id;
-
-          var detail = await this.userchallengesService.findOne(iduschall.toString());
-          var activity = detail.activity;
-          objintr = { "type": nametable, "id": idref }
-          console.log(objintr)
-          activity.push(objintr)
-
-          var objhis = {
-            score: Userchallenges_.score,
-            ranking: Userchallenges_.ranking,
-            updatedAt: timedate
-          };
-
-          await this.userchallengesService.updateHistory(iduschall.toString(), objhis);
-          await this.userchallengesService.updateActivity(iduschall.toString(), activity, timedate);
+        try {
+          datasubchallenge = await this.subChallengeService.findbyid(idChallenge);
+        } catch (e) {
+          datasubchallenge = null;
         }
-        else {
+
+        if (datauserchall.length > 0) {
+
           var iduserchall = datauserchall[0]._id;
 
           var obj = {};
@@ -10024,15 +10005,27 @@ export class AuthService {
             "ranking": datauserchall[0].ranking,
           }
 
-          await this.userchallengesService.updateHistory(iduserchall.toString(), obj);
-          await this.userchallengesService.updateUserchallenge(iduserchall.toString(), poinReferal);
+          if (datasubchallenge !== null && datasubchallenge.length > 0) {
+            for (let y = 0; y < datasubchallenge.length; y++) {
+              var start = new Date(datasubchallenge[y].startDatetime);
+              var end = new Date(datasubchallenge[y].endDatetime);
+              var datenow = new Date(Date.now());
 
-          var detail = await this.userchallengesService.findOne(iduserchall.toString());
-          var activity = detail.activity;
-          objintr = { "type": nametable, "id": idref }
-          console.log(objintr)
-          activity.push(objintr)
-          await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+              if (datenow >= start && datenow <= end) {
+                await this.userchallengesService.updateHistory(iduserchall.toString(), obj);
+                await this.userchallengesService.updateUserchallenge(iduserchall.toString(), poinReferal);
+                var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                var activity = detail.activity;
+                objintr = { "type": nametable, "id": idref }
+                console.log(objintr)
+                activity.push(objintr)
+                await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+
+              }
+            }
+
+          }
+
         }
 
         var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenge);
@@ -10156,5 +10149,16 @@ export class AuthService {
 
     }
 
+  }
+
+  async getDateTimeString(): Promise<string> {
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+    return timedate;
   }
 }
