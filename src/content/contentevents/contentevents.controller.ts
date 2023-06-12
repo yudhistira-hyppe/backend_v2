@@ -25,7 +25,8 @@ import { ReactionsRepoService } from '../../infra/reactions_repo/reactions_repo.
 import { FriendListService } from '../friend_list/friend_list.service';
 import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
 import { NewpostsService } from '../newposts/newposts.service';
-
+import { UserchallengesService } from 'src/trans/userchallenges/userchallenges.service';
+import { ChallengeService } from 'src/trans/challenge/challenge.service';
 
 
 @Controller()
@@ -45,6 +46,8 @@ export class ContenteventsController {
     private readonly friendListService: FriendListService,
     private readonly userbasicsService: UserbasicsService,
     private readonly NewpostsService: NewpostsService,
+    private readonly userchallengesService: UserchallengesService,
+    private readonly challengeService: ChallengeService,
     private readonly errorHandler: ErrorHandler) { }
 
   @Post('api/contentevents')
@@ -992,15 +995,15 @@ export class ContenteventsController {
           await this.insightsService.updateFollower(email_receiverParty);
           await this.insightsService.updateFollowing(email_user);
           this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
-          //this.sendInteractiveFCM(email_user, "FOLLOWING", "", email_receiverParty);
-          // const databasic = await this.userbasicsService.findOne(
-          //   email_receiverParty
-          // );
-          // var iduser = null;
-          // if (databasic !== null) {
-          //   iduser = databasic._id;
-          //   this.challengeFollow(iduser.toString(), idevent1.toString(), "contentevents");
-          // }
+          //  this.sendInteractiveFCM(email_user, "FOLLOWING", "", email_receiverParty);
+          const databasic = await this.userbasicsService.findOne(
+            email_receiverParty
+          );
+          var iduser = null;
+          if (databasic !== null) {
+            iduser = databasic._id;
+            this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
+          }
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
@@ -1685,5 +1688,95 @@ export class ContenteventsController {
     }
   }
 
+  async userChallengeFollow(iduser: string, idref: string, nametable: string, action: string) {
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
 
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+    var lengchal = null;
+    var datauserchall = null;
+    var datachallenge = null;
+    var arrdata = [];
+    var objintr = {};
+    var datasubchallenge = null;
+
+
+    try {
+      datachallenge = await this.challengeService.challengeReferal();
+    } catch (e) {
+      datachallenge = null;
+    }
+
+    if (datachallenge !== null && datachallenge.length > 0) {
+      lengchal = datachallenge.length;
+
+      for (let i = 0; i < lengchal; i++) {
+        var idChallenge = datachallenge[i]._id.toString();
+        var poinFollow = datachallenge[i].poinFollow;
+        try {
+          datauserchall = await this.userchallengesService.userChallengebyIdChall(iduser, idChallenge);
+        } catch (e) {
+          datauserchall = null;
+        }
+
+        if (datauserchall.length > 0) {
+
+
+          for (let y = 0; y < datauserchall.length; y++) {
+
+            var iduserchall = datauserchall[y]._id;
+            var idsubchallenge = datauserchall[y].idSubChallenge;
+            var idChallenges = datauserchall[y].idChallenge;
+            var start = new Date(datauserchall[y].startDatetime);
+            var end = new Date(datauserchall[y].endDatetime);
+            var datenow = new Date(Date.now());
+
+            if (datenow >= start && datenow <= end) {
+
+              var obj = {};
+
+              obj = {
+                "updatedAt": datauserchall[y].updatedAt,
+                "score": datauserchall[y].score,
+                "ranking": datauserchall[y].ranking,
+              }
+              await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+              await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poinFollow);
+              var detail = await this.userchallengesService.findOne(iduserchall.toString());
+              var activity = detail.activity;
+              objintr = { "type": nametable, "id": idref, "desc": action }
+              console.log(objintr)
+              activity.push(objintr)
+              await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+
+            }
+          }
+
+          var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
+
+          if (datauschall.length > 0) {
+            for (let x = 0; x < datauschall.length; x++) {
+              let iducall = datauschall[x]._id;
+              let rank = x + 1;
+              await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+
+            }
+          }
+        }
+
+
+
+      }
+
+
+    }
+
+  }
 }
