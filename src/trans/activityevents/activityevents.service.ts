@@ -619,7 +619,7 @@ export class ActivityeventsService {
         $match: {
           $or: [
             {
-              areaId: {
+              areasId: {
                 $in: arrlokasi
               }
             },
