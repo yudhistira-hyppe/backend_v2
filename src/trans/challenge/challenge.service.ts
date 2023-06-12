@@ -254,6 +254,15 @@ export class ChallengeService {
                       ]
                   }
                 },
+                {
+                  "$expr":
+                  {
+                    "$ne":
+                      [
+                        "$statusChallenge", 'NONACTIVE'
+                      ]
+                  }
+                },
               ]
             }
           }
