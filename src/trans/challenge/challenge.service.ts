@@ -40,7 +40,7 @@ export class ChallengeService {
     if (namachallenge != null && namachallenge != undefined) {
       firstmatch.push(
         {
-          nameChallenge:
+          "nameChallenge":
           {
             "$regex": namachallenge,
             "$options": "i"
@@ -49,11 +49,11 @@ export class ChallengeService {
       );
     }
 
-    if (startdate != null && startdate != undefined) {
+    if (startdate != null && enddate != undefined) {
       try {
         var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
-        var dateend = currentdate.toISOString();
+        var dateend = currentdate.toISOString().split("T")[0];
       } catch (e) {
         dateend = "";
       }
@@ -144,6 +144,13 @@ export class ChallengeService {
         {
           _id: 1,
           nameChallenge: 1,
+          jenisChallenge_fk:
+          {
+            "$arrayElemAt":
+              [
+                "$jenisChallenge_fk.name", 0
+              ]
+          },
           caragabung:
           {
             "$arrayElemAt":
@@ -214,7 +221,7 @@ export class ChallengeService {
               {
                 "$eq":
                   [
-                    "$statusChallenge", menuChallenge
+                    "$statusChallenge", 'DRAFT'
                   ]
               }
             }
@@ -226,13 +233,27 @@ export class ChallengeService {
           {
             "$match":
             {
-              "$expr":
-              {
-                "$eq":
-                  [
-                    "$jenisChallenge_fk", menuChallenge
-                  ]
-              }
+              "$and":
+              [
+                {
+                  "$expr":
+                  {
+                    "$eq":
+                      [
+                        "$jenisChallenge_fk", menuChallenge
+                      ]
+                  }
+                },
+                {
+                  "$expr":
+                  {
+                    "$ne":
+                      [
+                        "$statusChallenge", 'DRAFT'
+                      ]
+                  }
+                },
+              ]
             }
           }
         );
