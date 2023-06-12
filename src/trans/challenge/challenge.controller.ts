@@ -11,6 +11,8 @@ import { UtilsService } from 'src/utils/utils.service';
 import { BadgeService } from '../badge/badge.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import mongoose, { mongo } from 'mongoose';
+import { UserchallengesService } from '../userchallenges/userchallenges.service';
+import { Userchallenges } from '../userchallenges/schemas/userchallenges.schema';
 
 @Controller('api/challenge')
 export class ChallengeController {
@@ -18,7 +20,8 @@ export class ChallengeController {
     private readonly osservices: OssService,
     private readonly util: UtilsService,
     private readonly badge: BadgeService,
-    private readonly subchallenge: subChallengeService) {}
+    private readonly subchallenge: subChallengeService,
+    private readonly userchallengeSS: UserchallengesService,) {}
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -740,6 +743,84 @@ export class ChallengeController {
       response_code: 202,
       messages: messages,
     };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('listing/bannerlandingpage/:target')
+  async listingbanner(
+    @Param('target') target: string,
+  )
+  {
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    var data = await this.challengeService.findlistingBanner(target);
+
+    return {
+      response_code: 202,
+      data:data,
+      messages: messages,
+    };
+  }
+
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.challengeService.remove(id);
+  // }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('join')
+  async joinChallenge(@Res() res, @Req() request: Request) {
+      
+      var request_json = JSON.parse(JSON.stringify(request.body));
+      var getsubid = request_json['idChallenge'];
+
+      var getsubdata = await this.subchallenge.findbyid(getsubid);
+
+      var listjoin = [];
+      for(var i = 0; i < getsubdata.length; i++)
+      {
+        var getdatenow = await this.util.getDateTimeString();
+        var convertnow = new Date(getdatenow);
+
+        var getfromdb = new Date(getsubdata[i].endDatetime);
+
+        var datediff = getfromdb.getTime() - convertnow.getTime();
+        if(datediff >= 0)
+        {
+          var createdata = new Userchallenges();
+          var mongo = require('mongoose');
+          createdata._id = mongo.Types.ObjectId();
+          createdata.idChallenge = new mongo.Types.ObjectId(request_json['idChallenge']);
+          createdata.idUser = new mongo.Types.ObjectId(request_json['idUser']);
+          createdata.idSubChallenge = new mongo.Types.ObjectId(getsubdata[i]._id);
+          createdata.isActive = true;
+          createdata.startDatetime = getsubdata[i].startDatetime;
+          createdata.endDatetime = getsubdata[i].endDatetime;
+          createdata.createdAt = await this.util.getDateTimeString();
+          createdata.updatedAt = await this.util.getDateTimeString();
+          createdata.activity = [];
+          createdata.history = [];
+
+          await this.userchallengeSS.create(createdata);
+          listjoin.push(createdata);
+        }
+      }
+      
+      const messages = {
+          "info": ["The create successful"],
+      };
+
+      const messagesEror = {
+          "info": ["Todo is not found!"],
+      };
+
+      return res.status(HttpStatus.OK).json({
+          response_code: 202,
+          "data": listjoin,
+          "message": messages
+      });
   }
 
   // @Delete(':id')
