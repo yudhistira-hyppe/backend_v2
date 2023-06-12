@@ -14,6 +14,12 @@ export class Userchallenges {
     idSubChallenge: mongoose.Types.ObjectId;
     @Prop({ type: mongoose.Schema.Types.ObjectId })
     idUser: mongoose.Types.ObjectId;
+    @Prop({ type: mongoose.Schema.Types.ObjectId })
+    idSubChallenge: mongoose.Types.ObjectId;
+    @Prop()
+    startDatetime: String;
+    @Prop()
+    endDatetime: String;
     @Prop()
     createdAt: String;
     @Prop()

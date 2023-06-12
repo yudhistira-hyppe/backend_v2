@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { Challenge, challengeDocument } from './schemas/challenge.schema';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
+import { Pipeline } from 'ioredis';
 
 @Injectable()
 export class ChallengeService {
@@ -315,6 +316,102 @@ export class ChallengeService {
 
   async findOne(id: string): Promise<Challenge> {
     return this.ChallengeModel.findOne({ _id: new Types.ObjectId(id) }).exec();
+  }
+
+  async findlistingBanner(targetbanner: string): Promise<Challenge[]> {
+    var pipeline = [];
+    pipeline.push({
+      "$set": {
+        "timenow": {
+          "$dateToString": {
+            "format": "%Y-%m-%d %H:%M:%S",
+            "date": {
+              "$add": [
+                new Date(),
+                -61200000
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$match":
+      {
+        "$and":
+        [
+          {
+            "$expr":
+            {
+              "$lte":
+              [
+                "$startChallenge",
+                "$timenow"
+              ]
+            }
+          },
+          {
+            "$expr":
+            {
+              "$gte":
+              [
+                "$endChallenge",
+                "$timenow"
+              ]
+            }
+          },
+          {
+            "$expr":
+            {
+              "$eq":
+              [
+                "$statusChallenge",
+                "PUBLISH"
+              ]
+            }
+          }
+        ]
+      }
+    });
+
+    var projectdata = {
+      _id:1,
+			nameChallenge:1,
+			createdAt:1,
+			startChallenge:1,
+			endChallenge:1,
+			statusChallenge:1,
+    };
+
+    if(targetbanner == 'search')
+    {
+      projectdata['bannerLandingpage'] = {
+        "$arrayElemAt":
+        [
+          "$bannerSearch.image",
+          0
+        ]
+      }
+    }
+    else if(targetbanner == 'popup')
+    {
+      projectdata['bannerLandingpage'] = {
+        "$arrayElemAt":
+        [
+          "$popUp.image",
+          0
+        ]
+      }
+    }
+
+    pipeline.push({
+      "$project":projectdata
+    });
+
+    // console.log(JSON.stringify(pipeline));
+
+    var query = await this.ChallengeModel.aggregate(pipeline);
+    return query;
   }
 
   async find(): Promise<Challenge[]> {
