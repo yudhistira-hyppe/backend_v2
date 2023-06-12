@@ -9964,11 +9964,12 @@ export class AuthService {
     var datachallenge = null;
     var arrdata = [];
     var objintr = {};
+
+
     try {
       datachallenge = await this.challengeService.challengeReferal();
     } catch (e) {
       datachallenge = null;
-
     }
 
     if (datachallenge !== null && datachallenge.length > 0) {

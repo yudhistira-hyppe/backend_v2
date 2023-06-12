@@ -518,9 +518,9 @@ export class ChallengeController {
         menuChallenge = request_json["menuChallenge"];
       }
   
-      if (request_json["startcreatedatdate"] !== undefined && request_json["endcreatedatdate"] !== undefined) {
-        startdate = request_json["startcreatedatdate"];
-        enddate = request_json["endcreatedatdate"];
+      if (request_json["startdate"] !== undefined && request_json["enddate"] !== undefined) {
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
       }
   
       if (request_json["objectChallenge"] !== undefined) {
