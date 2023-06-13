@@ -235,35 +235,35 @@ export class ChallengeService {
             "$match":
             {
               "$and":
-              [
-                {
-                  "$expr":
+                [
                   {
-                    "$eq":
-                      [
-                        "$jenisChallenge_fk", menuChallenge
-                      ]
-                  }
-                },
-                {
-                  "$expr":
+                    "$expr":
+                    {
+                      "$eq":
+                        [
+                          "$jenisChallenge_fk", menuChallenge
+                        ]
+                    }
+                  },
                   {
-                    "$ne":
-                      [
-                        "$statusChallenge", 'DRAFT'
-                      ]
-                  }
-                },
-                {
-                  "$expr":
+                    "$expr":
+                    {
+                      "$ne":
+                        [
+                          "$statusChallenge", 'DRAFT'
+                        ]
+                    }
+                  },
                   {
-                    "$ne":
-                      [
-                        "$statusChallenge", 'NONACTIVE'
-                      ]
-                  }
-                },
-              ]
+                    "$expr":
+                    {
+                      "$ne":
+                        [
+                          "$statusChallenge", 'NONACTIVE'
+                        ]
+                    }
+                  },
+                ]
             }
           }
         );
@@ -344,77 +344,75 @@ export class ChallengeService {
         }
       }
     },
-    {
-      "$match":
       {
-        "$and":
-        [
-          {
-            "$expr":
-            {
-              "$lte":
-              [
-                "$startChallenge",
-                "$timenow"
-              ]
-            }
-          },
-          {
-            "$expr":
-            {
-              "$gte":
-              [
-                "$endChallenge",
-                "$timenow"
-              ]
-            }
-          },
-          {
-            "$expr":
-            {
-              "$eq":
-              [
-                "$statusChallenge",
-                "PUBLISH"
-              ]
-            }
-          }
-        ]
-      }
-    });
+        "$match":
+        {
+          "$and":
+            [
+              {
+                "$expr":
+                {
+                  "$lte":
+                    [
+                      "$startChallenge",
+                      "$timenow"
+                    ]
+                }
+              },
+              {
+                "$expr":
+                {
+                  "$gte":
+                    [
+                      "$endChallenge",
+                      "$timenow"
+                    ]
+                }
+              },
+              {
+                "$expr":
+                {
+                  "$eq":
+                    [
+                      "$statusChallenge",
+                      "PUBLISH"
+                    ]
+                }
+              }
+            ]
+        }
+      });
 
     var projectdata = {
-      _id:1,
-			nameChallenge:1,
-			createdAt:1,
-			startChallenge:1,
-			endChallenge:1,
-			statusChallenge:1,
+      _id: 1,
+      nameChallenge: 1,
+      createdAt: 1,
+      startChallenge: 1,
+      endChallenge: 1,
+      statusChallenge: 1,
     };
 
-    if(targetbanner == 'search')
-    {
+    if (targetbanner == 'search') {
       projectdata['bannerLandingpage'] = {
         "$arrayElemAt":
-        [
-          "$bannerSearch.image",
-          0
-        ]
+          [
+            "$bannerSearch.image",
+            0
+          ]
       }
     }
-    else if(targetbanner == 'popup')
-    {
+    else if (targetbanner == 'popup') {
       projectdata['bannerLandingpage'] = {
         "$arrayElemAt":
-        [
-          "$popUp.image",
-          0
-        ]
+          [
+            "$popUp.image",
+            0
+          ]
       }
     }
 
     pipeline.push({
-      "$project":projectdata
+      "$project": projectdata
     });
 
     // console.log(JSON.stringify(pipeline));
@@ -442,7 +440,7 @@ export class ChallengeService {
   async challengeReferal() {
     var query = await this.ChallengeModel.aggregate([
 
-
+      { $match: { "statusChallenge": "PUBLISH" } },
       {
         $project: {
           "statusChallenge": 1,
@@ -502,7 +500,7 @@ export class ChallengeService {
   async challengeFollow() {
     var query = await this.ChallengeModel.aggregate([
 
-
+      { $match: { "statusChallenge": "PUBLISH" } },
       {
         $project: {
           "statusChallenge": 1,
