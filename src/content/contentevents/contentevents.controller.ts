@@ -1780,7 +1780,7 @@ export class ContenteventsController {
 
   }
 
-  async userChallengeView(iduser: string, idref: string, nametable: string, action: string) {
+  async userChallengeView(iduser: string, idref: string, nametable: string, action: string, type: string) {
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
 
@@ -1798,7 +1798,7 @@ export class ContenteventsController {
     var arrdata = [];
     var objintr = {};
     var datasubchallenge = null;
-
+    var poin = null;
 
     try {
       datachallenge = await this.challengeService.challengeKonten();
@@ -1811,7 +1811,10 @@ export class ContenteventsController {
 
       for (let i = 0; i < lengchal; i++) {
         var idChallenge = datachallenge[i]._id.toString();
-        var poinFollow = datachallenge[i].poinFollow;
+        var poinViewVid = datachallenge[i].tonton[0].HyppeVid;
+        var poinViewDiary = datachallenge[i].tonton[0].HyppeDiary;
+        var tagar = datachallenge[i].tonton[0].tagar;
+
         try {
           datauserchall = await this.userchallengesService.userChallengebyIdChall(iduser, idChallenge);
         } catch (e) {
@@ -1839,8 +1842,14 @@ export class ContenteventsController {
                 "score": datauserchall[y].score,
                 "ranking": datauserchall[y].ranking,
               }
+
+              if (type == "vid") {
+                poin = poinViewVid;
+              } else if (type == "diary") {
+                poin = poinViewDiary;
+              }
               await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-              await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poinFollow);
+              await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
               var detail = await this.userchallengesService.findOne(iduserchall.toString());
               var activity = detail.activity;
               objintr = { "type": nametable, "id": idref, "desc": action }

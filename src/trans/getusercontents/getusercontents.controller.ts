@@ -2497,6 +2497,322 @@ export class GetusercontentsController {
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
 
+    // @Post('api/getusercontents/searchdatanew')
+    // @UseGuards(JwtAuthGuard)
+    // async contentsearchnew2(@Req() request: Request): Promise<any> {
+
+
+    //     var keys = null;
+    //     var skip = 0;
+    //     var limit = 0;
+
+    //     var email = null;
+    //     var data = null;
+    //     var datasearch = null;
+    //     var dataLike = null;
+    //     var listpict = null;
+    //     var listvid = null;
+    //     var listdiary = null;
+    //     var listuser = null;
+    //     var listtag = null;
+
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    //     if (request_json["skip"] !== undefined) {
+    //         skip = request_json["skip"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+
+    //     if (request_json["limit"] !== undefined) {
+    //         limit = request_json["limit"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+
+    //     email = request_json["email"];
+    //     keys = request_json["keys"];
+    //     listpict = request_json["listpict"];
+    //     listvid = request_json["listvid"];
+    //     listdiary = request_json["listdiary"];
+    //     listuser = request_json["listuser"];
+    //     listtag = request_json["listtag"];
+
+    //     const messages = {
+    //         "info": ["The process successful"],
+    //     };
+
+
+    //     var user = [];
+    //     var arrpict = [];
+    //     var arrvid = [];
+    //     var arrdiary = [];
+    //     var picts = [];
+
+    //     var vid = [];
+    //     var diary = [];
+    //     var tags = [];
+    //     var lengpict = null;
+    //     var lengdiary = null;
+    //     var lengvid = null;
+    //     var lenguser = null;
+    //     var datatag = null;
+    //     var apsaraId = null;
+    //     var apsaraThumbId = null;
+    //     var uploadSource = null;
+    //     try {
+    //         datasearch = await this.postsService.finddatasearchcontenNew(keys.toLowerCase(), email, skip, limit, listpict, listvid, listdiary, listuser, listtag);
+    //         user = datasearch[0].user;
+    //         tags = datasearch[0].tags;
+
+    //     } catch (e) {
+    //         datasearch = null;
+    //         user = [];
+    //         tags = [];
+    //     }
+
+    //     if (tags == undefined || tags.length == 0 || tags[0].tag == undefined) {
+    //         tags = [];
+    //     }
+
+
+    //     try {
+    //         user = datasearch[0].user;
+    //         lenguser = user.length;
+
+    //     } catch (e) {
+    //         user = [];
+    //         lenguser = 0;
+
+    //     }
+
+    //     try {
+    //         arrpict = datasearch[0].pict;
+    //         lengpict = arrpict.length;
+
+    //     } catch (e) {
+    //         arrpict = [];
+    //         lengpict = 0;
+
+    //     }
+    //     try {
+    //         arrvid = datasearch[0].vid;
+    //         lengvid = arrvid.length;
+
+    //     } catch (e) {
+    //         arrvid = [];
+    //         lengvid = 0;
+
+    //     }
+
+    //     try {
+    //         arrdiary = datasearch[0].diary;
+    //         lengdiary = arrdiary.length;
+
+    //     } catch (e) {
+    //         arrdiary = [];
+    //         lengdiary = 0;
+
+    //     }
+
+    //     if (lenguser > 0 && user[0].email !== undefined) {
+    //         user = datasearch[0].user;
+    //     } else {
+    //         user = [];
+    //     }
+
+    //     var tempdatapict = [];
+    //     // console.log(lengpict);
+    //     if (lengpict > 0) {
+
+    //         if (arrpict[0]._id !== undefined) {
+
+    //             for (let i = 0; i < lengpict; i++) {
+    //                 uploadSource = arrpict[i].uploadSource;
+    //                 try {
+    //                     apsaraId = arrpict[i].apsaraId;
+    //                 } catch (e) {
+    //                     apsaraId = "";
+    //                 }
+    //                 try {
+    //                     apsaraThumbId = arrpict[i].apsaraThumbId;
+    //                 } catch (e) {
+    //                     apsaraThumbId = "";
+    //                 }
+
+    //                 if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+    //                     tempdatapict.push(arrpict[i].apsaraThumbId);
+
+    //                 }
+    //                 else if (apsaraId !== undefined && apsaraThumbId === undefined) {
+    //                     tempdatapict.push(arrpict[i].apsaraId);
+
+    //                 }
+    //                 else if (apsaraId === undefined && apsaraThumbId !== undefined) {
+    //                     tempdatapict.push(arrpict[i].apsaraThumbId);
+
+    //                 }
+    //             }
+
+    //             // console.log(tempdatapict);
+    //             var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+    //             var gettempresultpictapsara = resultpictapsara.ImageInfo;
+    //             for (var i = 0; i < lengpict; i++) {
+    //                 //var checkpictketemu = false;
+
+    //                 uploadSource = arrpict[i].uploadSource;
+
+
+    //                 if (uploadSource == "OSS") {
+    //                     //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
+
+    //                 } else {
+
+
+    //                     if (gettempresultpictapsara.length > 0) {
+    //                         for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+    //                             if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
+    //                                 // checkpictketemu = true;
+    //                                 arrpict[i].media =
+    //                                 {
+    //                                     "ImageInfo": [gettempresultpictapsara[j]]
+    //                                 }
+
+    //                                 arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
+    //                             }
+    //                             else if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+
+    //                                 arrpict[i].media =
+    //                                 {
+    //                                     "ImageInfo": [gettempresultpictapsara[j]]
+    //                                 }
+
+    //                                 arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+
+
+
+    //                 picts.push(arrpict[i]);
+    //             }
+    //         } else {
+    //             picts = [];
+    //         }
+
+
+    //     } else {
+    //         picts = [];
+    //     }
+
+    //     var tempdatavid = [];
+    //     // console.log(lengvid);
+    //     if (lengvid > 0) {
+
+    //         if (arrvid[0]._id !== undefined) {
+
+    //             for (let i = 0; i < lengvid; i++) {
+    //                 if (arrvid[i].isApsara == true) {
+    //                     tempdatavid.push(arrvid[i].apsaraId);
+    //                 }
+    //             }
+
+    //             // console.log(tempdatavid);
+    //             var resultvidapsara = await this.postContentService.getVideoApsara(tempdatavid);
+    //             var gettempresultvidapsara = resultvidapsara.VideoList;
+    //             for (var i = 0; i < lengvid; i++) {
+    //                 var checkvidketemu = false;
+    //                 for (var j = 0; j < gettempresultvidapsara.length; j++) {
+    //                     if (gettempresultvidapsara[j].VideoId == arrvid[i].apsaraId) {
+    //                         checkvidketemu = true;
+    //                         arrvid[i].media =
+    //                         {
+    //                             "VideoList": [gettempresultvidapsara[j]]
+    //                         }
+    //                         arrvid[i].mediaThumbEndpoint = gettempresultvidapsara[j].CoverURL;
+    //                     }
+    //                 }
+
+    //                 if (checkvidketemu == false) {
+    //                     arrvid[i].apsaraId = "";
+    //                     arrvid[i].isApsara = false;
+    //                     arrvid[i].media =
+    //                     {
+    //                         "VideoList": []
+    //                     };
+    //                 }
+    //                 vid.push(arrvid[i]);
+    //             }
+    //         } else {
+    //             vid = [];
+    //         }
+
+
+    //     } else {
+    //         vid = [];
+    //     }
+
+    //     var tempdatadiary = [];
+    //     // console.log(lengdiary);
+    //     if (lengdiary > 0) {
+
+    //         if (arrdiary[0]._id !== undefined) {
+
+    //             for (let i = 0; i < lengdiary; i++) {
+    //                 if (arrdiary[i].isApsara == true) {
+    //                     tempdatadiary.push(arrdiary[i].apsaraId);
+    //                 }
+    //             }
+
+    //             // console.log(tempdatavid);
+    //             var resultdiaryapsara = await this.postContentService.getVideoApsara(tempdatadiary);
+    //             var gettempresultdiaryapsara = resultdiaryapsara.VideoList;
+    //             for (var i = 0; i < lengdiary; i++) {
+    //                 var checkdiaryketemu = false;
+    //                 for (var j = 0; j < gettempresultdiaryapsara.length; j++) {
+    //                     if (gettempresultdiaryapsara[j].VideoId == arrdiary[i].apsaraId) {
+    //                         checkdiaryketemu = true;
+    //                         arrdiary[i].media =
+    //                         {
+    //                             "VideoList": [gettempresultdiaryapsara[j]]
+    //                         }
+    //                         arrdiary[i].mediaThumbEndpoint = gettempresultdiaryapsara[j].CoverURL;
+    //                     }
+    //                 }
+
+    //                 if (checkdiaryketemu == false) {
+    //                     arrdiary[i].apsaraId = "";
+    //                     arrdiary[i].isApsara = false;
+    //                     arrdiary[i].media =
+    //                     {
+    //                         "VideoList": []
+    //                     };
+    //                 }
+    //                 diary.push(arrdiary[i]);
+    //             }
+    //         } else {
+    //             diary = [];
+    //         }
+
+
+    //     } else {
+    //         diary = [];
+    //     }
+
+    //     data = [{
+
+    //         user, picts, vid, diary, tags
+    //     }];
+
+
+    //     return { response_code: 202, data, messages };
+    // }
+
     @Post('api/getusercontents/searchdatanew')
     @UseGuards(JwtAuthGuard)
     async contentsearchnew2(@Req() request: Request): Promise<any> {
@@ -2621,6 +2937,7 @@ export class GetusercontentsController {
         }
 
         var tempdatapict = [];
+        var temporipict = [];
         // console.log(lengpict);
         if (lengpict > 0) {
 
@@ -2639,68 +2956,97 @@ export class GetusercontentsController {
                         apsaraThumbId = "";
                     }
 
-                    if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+                    if (apsaraThumbId !== undefined) {
                         tempdatapict.push(arrpict[i].apsaraThumbId);
+                        let resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                        let gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+
+                        for (let i = 0; i < lengpict; i++) {
+                            //var checkpictketemu = false;
+
+                            uploadSource = arrpict[i].uploadSource;
+
+
+                            if (uploadSource == "OSS") {
+                                //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
+
+                            } else {
+
+
+                                if (gettempresultpictapsara.length > 0) {
+                                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+                                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
+                                            // checkpictketemu = true;
+                                            arrpict[i].media =
+                                            {
+                                                "ImageInfo": [gettempresultpictapsara[j]]
+                                            }
+
+                                            arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
+                                        }
+
+                                    }
+                                }
+                            }
+
+
+
+                            picts.push(arrpict[i]);
+                        }
 
                     }
-                    else if (apsaraId !== undefined && apsaraThumbId === undefined) {
-                        tempdatapict.push(arrpict[i].apsaraId);
+                    if (apsaraId !== undefined) {
+                        temporipict.push(arrpict[i].apsaraId);
+
+                        let resultpictapsara = await this.postContentService.getImageApsara(temporipict);
+                        let gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+                        for (let i = 0; i < lengpict; i++) {
+                            //var checkpictketemu = false;
+
+                            uploadSource = arrpict[i].uploadSource;
+
+
+                            if (uploadSource == "OSS") {
+                                //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
+
+                            } else {
+
+
+                                if (gettempresultpictapsara.length > 0) {
+                                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+
+                                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+
+                                            arrpict[i].media =
+                                            {
+                                                "ImageInfo": [gettempresultpictapsara[j]]
+                                            }
+
+                                            arrpict[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+
+                                        }
+                                    }
+                                }
+                            }
+
+
+
+                            picts.push(arrpict[i]);
+                        }
 
                     }
-                    else if (apsaraId === undefined && apsaraThumbId !== undefined) {
-                        tempdatapict.push(arrpict[i].apsaraThumbId);
 
-                    }
                 }
 
                 // console.log(tempdatapict);
-                var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
-                var gettempresultpictapsara = resultpictapsara.ImageInfo;
-                for (var i = 0; i < lengpict; i++) {
-                    //var checkpictketemu = false;
 
-                    uploadSource = arrpict[i].uploadSource;
-
-
-                    if (uploadSource == "OSS") {
-                        //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
-
-                    } else {
-
-
-                        if (gettempresultpictapsara.length > 0) {
-                            for (var j = 0; j < gettempresultpictapsara.length; j++) {
-
-                                if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
-                                    // checkpictketemu = true;
-                                    arrpict[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsara[j]]
-                                    }
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-
-
-                                }
-                                else if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
-
-                                    arrpict[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsara[j]]
-                                    }
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-                                }
-                            }
-                        }
-                    }
-
-
-
-                    picts.push(arrpict[i]);
-                }
             } else {
                 picts = [];
             }
@@ -2935,6 +3281,7 @@ export class GetusercontentsController {
         }
 
         var tempdatapict = [];
+        var temporipict = [];
         // console.log(lengpict);
         if (lengpict > 0) {
 
@@ -2953,68 +3300,97 @@ export class GetusercontentsController {
                         apsaraThumbId = "";
                     }
 
-                    if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+                    if (apsaraThumbId !== undefined) {
                         tempdatapict.push(arrpict[i].apsaraThumbId);
+                        let resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                        let gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+
+                        for (let i = 0; i < lengpict; i++) {
+                            //var checkpictketemu = false;
+
+                            uploadSource = arrpict[i].uploadSource;
+
+
+                            if (uploadSource == "OSS") {
+                                //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
+
+                            } else {
+
+
+                                if (gettempresultpictapsara.length > 0) {
+                                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+                                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
+                                            // checkpictketemu = true;
+                                            arrpict[i].media =
+                                            {
+                                                "ImageInfo": [gettempresultpictapsara[j]]
+                                            }
+
+                                            arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
+                                        }
+
+                                    }
+                                }
+                            }
+
+
+
+                            picts.push(arrpict[i]);
+                        }
 
                     }
-                    else if (apsaraId !== undefined && apsaraThumbId === undefined) {
-                        tempdatapict.push(arrpict[i].apsaraId);
+                    if (apsaraId !== undefined) {
+                        temporipict.push(arrpict[i].apsaraId);
+
+                        let resultpictapsara = await this.postContentService.getImageApsara(temporipict);
+                        let gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+                        for (let i = 0; i < lengpict; i++) {
+                            //var checkpictketemu = false;
+
+                            uploadSource = arrpict[i].uploadSource;
+
+
+                            if (uploadSource == "OSS") {
+                                //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
+
+                            } else {
+
+
+                                if (gettempresultpictapsara.length > 0) {
+                                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+
+                                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+
+                                            arrpict[i].media =
+                                            {
+                                                "ImageInfo": [gettempresultpictapsara[j]]
+                                            }
+
+                                            arrpict[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+
+                                        }
+                                    }
+                                }
+                            }
+
+
+
+                            picts.push(arrpict[i]);
+                        }
 
                     }
-                    else if (apsaraId === undefined && apsaraThumbId !== undefined) {
-                        tempdatapict.push(arrpict[i].apsaraThumbId);
 
-                    }
                 }
 
                 // console.log(tempdatapict);
-                var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
-                var gettempresultpictapsara = resultpictapsara.ImageInfo;
-                for (var i = 0; i < lengpict; i++) {
-                    //var checkpictketemu = false;
 
-                    uploadSource = arrpict[i].uploadSource;
-
-
-                    if (uploadSource == "OSS") {
-                        //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
-
-                    } else {
-
-
-                        if (gettempresultpictapsara.length > 0) {
-                            for (var j = 0; j < gettempresultpictapsara.length; j++) {
-
-                                if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
-                                    // checkpictketemu = true;
-                                    arrpict[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsara[j]]
-                                    }
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-
-
-                                }
-                                else if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
-
-                                    arrpict[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsara[j]]
-                                    }
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-                                }
-                            }
-                        }
-                    }
-
-
-
-                    picts.push(arrpict[i]);
-                }
             } else {
                 picts = [];
             }
@@ -3023,7 +3399,6 @@ export class GetusercontentsController {
         } else {
             picts = [];
         }
-
         var tempdatavid = [];
         // console.log(lengvid);
         if (lengvid > 0) {
@@ -3239,22 +3614,14 @@ export class GetusercontentsController {
         }
 
         var tempdatapict = [];
-        var postID = null;
+        var temporipict = [];
         // console.log(lengpict);
         if (lengpict > 0) {
 
             if (arrpict[0]._id !== undefined) {
 
                 for (let i = 0; i < lengpict; i++) {
-                    // if (arrpict[i].isApsara == true) {
-                    //     tempdatapict.push(arrpict[i].apsaraThumbId);
-                    // }
                     uploadSource = arrpict[i].uploadSource;
-                    try {
-                        postID = arrpict[i].postID
-                    } catch (e) {
-                        postID = "";
-                    }
                     try {
                         apsaraId = arrpict[i].apsaraId;
                     } catch (e) {
@@ -3266,62 +3633,97 @@ export class GetusercontentsController {
                         apsaraThumbId = "";
                     }
 
-                    if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+                    if (apsaraThumbId !== undefined) {
                         tempdatapict.push(arrpict[i].apsaraThumbId);
+                        let resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                        let gettempresultpictapsara = resultpictapsara.ImageInfo;
 
-                    }
-                    else if (apsaraId !== undefined && apsaraThumbId === undefined) {
-                        tempdatapict.push(arrpict[i].apsaraId);
 
-                    }
-                    else if (apsaraId === undefined && apsaraThumbId !== undefined) {
-                        tempdatapict.push(arrpict[i].apsaraThumbId);
+                        for (let i = 0; i < lengpict; i++) {
+                            //var checkpictketemu = false;
 
-                    }
-                }
+                            uploadSource = arrpict[i].uploadSource;
 
-                // console.log(tempdatapict);
-                var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
-                var gettempresultpictapsara = resultpictapsara.ImageInfo;
-                for (var i = 0; i < lengpict; i++) {
-                    uploadSource = arrpict[i].uploadSource;
 
-                    if (uploadSource == "OSS") {
-                        // arrpict[i].mediaThumbEndpoint = "/thumb/" + postID;
+                            if (uploadSource == "OSS") {
+                                //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
 
-                    } else {
-                        if (gettempresultpictapsara.length > 0) {
-                            for (var j = 0; j < gettempresultpictapsara.length; j++) {
+                            } else {
 
-                                if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
-                                    // checkpictketemu = true;
-                                    arrpict[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsara[j]]
+
+                                if (gettempresultpictapsara.length > 0) {
+                                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+                                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
+                                            // checkpictketemu = true;
+                                            arrpict[i].media =
+                                            {
+                                                "ImageInfo": [gettempresultpictapsara[j]]
+                                            }
+
+                                            arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
+                                        }
+
                                     }
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-
-
-                                }
-                                else if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
-
-                                    arrpict[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsara[j]]
-                                    }
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
                                 }
                             }
+
+
+
+                            picts.push(arrpict[i]);
+                        }
+
+                    }
+                    if (apsaraId !== undefined) {
+                        temporipict.push(arrpict[i].apsaraId);
+
+                        let resultpictapsara = await this.postContentService.getImageApsara(temporipict);
+                        let gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+                        for (let i = 0; i < lengpict; i++) {
+                            //var checkpictketemu = false;
+
+                            uploadSource = arrpict[i].uploadSource;
+
+
+                            if (uploadSource == "OSS") {
+                                //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
+
+                            } else {
+
+
+                                if (gettempresultpictapsara.length > 0) {
+                                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+
+                                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+
+                                            arrpict[i].media =
+                                            {
+                                                "ImageInfo": [gettempresultpictapsara[j]]
+                                            }
+
+                                            arrpict[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+
+                                        }
+                                    }
+                                }
+                            }
+
+
+
+                            picts.push(arrpict[i]);
                         }
 
                     }
 
-                    picts.push(arrpict[i]);
                 }
+
+                // console.log(tempdatapict);
+
             } else {
                 picts = [];
             }
@@ -3547,22 +3949,14 @@ export class GetusercontentsController {
         }
 
         var tempdatapict = [];
-        var postID = null;
+        var temporipict = [];
         // console.log(lengpict);
         if (lengpict > 0) {
 
             if (arrpict[0]._id !== undefined) {
 
                 for (let i = 0; i < lengpict; i++) {
-                    // if (arrpict[i].isApsara == true) {
-                    //     tempdatapict.push(arrpict[i].apsaraThumbId);
-                    // }
                     uploadSource = arrpict[i].uploadSource;
-                    try {
-                        postID = arrpict[i].postID
-                    } catch (e) {
-                        postID = "";
-                    }
                     try {
                         apsaraId = arrpict[i].apsaraId;
                     } catch (e) {
@@ -3574,62 +3968,97 @@ export class GetusercontentsController {
                         apsaraThumbId = "";
                     }
 
-                    if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+                    if (apsaraThumbId !== undefined) {
                         tempdatapict.push(arrpict[i].apsaraThumbId);
+                        let resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                        let gettempresultpictapsara = resultpictapsara.ImageInfo;
 
-                    }
-                    else if (apsaraId !== undefined && apsaraThumbId === undefined) {
-                        tempdatapict.push(arrpict[i].apsaraId);
 
-                    }
-                    else if (apsaraId === undefined && apsaraThumbId !== undefined) {
-                        tempdatapict.push(arrpict[i].apsaraThumbId);
+                        for (let i = 0; i < lengpict; i++) {
+                            //var checkpictketemu = false;
 
-                    }
-                }
+                            uploadSource = arrpict[i].uploadSource;
 
-                // console.log(tempdatapict);
-                var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
-                var gettempresultpictapsara = resultpictapsara.ImageInfo;
-                for (var i = 0; i < lengpict; i++) {
-                    uploadSource = arrpict[i].uploadSource;
 
-                    if (uploadSource == "OSS") {
-                        // arrpict[i].mediaThumbEndpoint = "/thumb/" + postID;
+                            if (uploadSource == "OSS") {
+                                //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
 
-                    } else {
-                        if (gettempresultpictapsara.length > 0) {
-                            for (var j = 0; j < gettempresultpictapsara.length; j++) {
+                            } else {
 
-                                if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
-                                    // checkpictketemu = true;
-                                    arrpict[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsara[j]]
+
+                                if (gettempresultpictapsara.length > 0) {
+                                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+                                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
+                                            // checkpictketemu = true;
+                                            arrpict[i].media =
+                                            {
+                                                "ImageInfo": [gettempresultpictapsara[j]]
+                                            }
+
+                                            arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
+                                        }
+
                                     }
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-
-
-                                }
-                                else if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
-
-                                    arrpict[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsara[j]]
-                                    }
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
                                 }
                             }
+
+
+
+                            picts.push(arrpict[i]);
+                        }
+
+                    }
+                    if (apsaraId !== undefined) {
+                        temporipict.push(arrpict[i].apsaraId);
+
+                        let resultpictapsara = await this.postContentService.getImageApsara(temporipict);
+                        let gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+                        for (let i = 0; i < lengpict; i++) {
+                            //var checkpictketemu = false;
+
+                            uploadSource = arrpict[i].uploadSource;
+
+
+                            if (uploadSource == "OSS") {
+                                //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
+
+                            } else {
+
+
+                                if (gettempresultpictapsara.length > 0) {
+                                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+
+                                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+
+                                            arrpict[i].media =
+                                            {
+                                                "ImageInfo": [gettempresultpictapsara[j]]
+                                            }
+
+                                            arrpict[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+
+                                        }
+                                    }
+                                }
+                            }
+
+
+
+                            picts.push(arrpict[i]);
                         }
 
                     }
 
-                    picts.push(arrpict[i]);
                 }
+
+                // console.log(tempdatapict);
+
             } else {
                 picts = [];
             }
@@ -3638,7 +4067,6 @@ export class GetusercontentsController {
         } else {
             picts = [];
         }
-
         var tempdatavid = [];
         // console.log(lengvid);
         if (lengvid > 0) {
@@ -3853,26 +4281,15 @@ export class GetusercontentsController {
         } else {
             user = [];
         }
-
         var tempdatapict = [];
-        var postID = null;
+        var temporipict = [];
         // console.log(lengpict);
         if (lengpict > 0) {
 
             if (arrpict[0]._id !== undefined) {
 
                 for (let i = 0; i < lengpict; i++) {
-                    // let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
-                    // picts.push(datapicture[i])
-                    // if (arrpict[i].isApsara == true) {
-                    //     tempdatapict.push(arrpict[i].apsaraThumbId);
-                    // }
                     uploadSource = arrpict[i].uploadSource;
-                    try {
-                        postID = arrpict[i].postID
-                    } catch (e) {
-                        postID = "";
-                    }
                     try {
                         apsaraId = arrpict[i].apsaraId;
                     } catch (e) {
@@ -3884,74 +4301,97 @@ export class GetusercontentsController {
                         apsaraThumbId = "";
                     }
 
-                    if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+                    if (apsaraThumbId !== undefined) {
                         tempdatapict.push(arrpict[i].apsaraThumbId);
+                        let resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                        let gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+
+                        for (let i = 0; i < lengpict; i++) {
+                            //var checkpictketemu = false;
+
+                            uploadSource = arrpict[i].uploadSource;
+
+
+                            if (uploadSource == "OSS") {
+                                //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
+
+                            } else {
+
+
+                                if (gettempresultpictapsara.length > 0) {
+                                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+                                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
+                                            // checkpictketemu = true;
+                                            arrpict[i].media =
+                                            {
+                                                "ImageInfo": [gettempresultpictapsara[j]]
+                                            }
+
+                                            arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
+                                        }
+
+                                    }
+                                }
+                            }
+
+
+
+                            picts.push(arrpict[i]);
+                        }
 
                     }
-                    else if (apsaraId !== undefined && apsaraThumbId === undefined) {
-                        tempdatapict.push(arrpict[i].apsaraId);
+                    if (apsaraId !== undefined) {
+                        temporipict.push(arrpict[i].apsaraId);
+
+                        let resultpictapsara = await this.postContentService.getImageApsara(temporipict);
+                        let gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+                        for (let i = 0; i < lengpict; i++) {
+                            //var checkpictketemu = false;
+
+                            uploadSource = arrpict[i].uploadSource;
+
+
+                            if (uploadSource == "OSS") {
+                                //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
+
+                            } else {
+
+
+                                if (gettempresultpictapsara.length > 0) {
+                                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+
+                                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+
+                                            arrpict[i].media =
+                                            {
+                                                "ImageInfo": [gettempresultpictapsara[j]]
+                                            }
+
+                                            arrpict[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+
+                                        }
+                                    }
+                                }
+                            }
+
+
+
+                            picts.push(arrpict[i]);
+                        }
 
                     }
-                    else if (apsaraId === undefined && apsaraThumbId !== undefined) {
-                        tempdatapict.push(arrpict[i].apsaraThumbId);
 
-                    }
                 }
 
                 // console.log(tempdatapict);
-                var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
-                var gettempresultpictapsara = resultpictapsara.ImageInfo;
-                for (var i = 0; i < lengpict; i++) {
-                    // var checkpictketemu = false;
-                    // for (var j = 0; j < gettempresultpictapsara.length; j++) {
-                    //     if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
-                    //         checkpictketemu = true;
-                    //         arrpict[i].media =
-                    //         {
-                    //             "ImageInfo": [gettempresultpictapsara[j]]
-                    //         }
-                    //         arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-                    //     }
-                    // }
 
-                    uploadSource = arrpict[i].uploadSource;
-
-                    if (uploadSource == "OSS") {
-                        //arrpict[i].mediaThumbEndpoint = "/thumb/" + postID;
-
-                    }
-                    else {
-                        if (gettempresultpictapsara.length > 0) {
-                            for (var j = 0; j < gettempresultpictapsara.length; j++) {
-
-                                if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
-                                    // checkpictketemu = true;
-                                    arrpict[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsara[j]]
-                                    }
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-
-
-                                }
-                                else if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
-
-                                    arrpict[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsara[j]]
-                                    }
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-                                }
-
-                            }
-                        }
-                    }
-                    picts.push(arrpict[i]);
-                }
             } else {
                 picts = [];
             }
@@ -4176,24 +4616,14 @@ export class GetusercontentsController {
         }
 
         var tempdatapict = [];
-        var postID = null;
+        var temporipict = [];
         // console.log(lengpict);
         if (lengpict > 0) {
 
             if (arrpict[0]._id !== undefined) {
 
                 for (let i = 0; i < lengpict; i++) {
-                    // let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
-                    // picts.push(datapicture[i])
-                    // if (arrpict[i].isApsara == true) {
-                    //     tempdatapict.push(arrpict[i].apsaraThumbId);
-                    // }
                     uploadSource = arrpict[i].uploadSource;
-                    try {
-                        postID = arrpict[i].postID
-                    } catch (e) {
-                        postID = "";
-                    }
                     try {
                         apsaraId = arrpict[i].apsaraId;
                     } catch (e) {
@@ -4205,74 +4635,97 @@ export class GetusercontentsController {
                         apsaraThumbId = "";
                     }
 
-                    if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+                    if (apsaraThumbId !== undefined) {
                         tempdatapict.push(arrpict[i].apsaraThumbId);
+                        let resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                        let gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+
+                        for (let i = 0; i < lengpict; i++) {
+                            //var checkpictketemu = false;
+
+                            uploadSource = arrpict[i].uploadSource;
+
+
+                            if (uploadSource == "OSS") {
+                                //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
+
+                            } else {
+
+
+                                if (gettempresultpictapsara.length > 0) {
+                                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+                                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
+                                            // checkpictketemu = true;
+                                            arrpict[i].media =
+                                            {
+                                                "ImageInfo": [gettempresultpictapsara[j]]
+                                            }
+
+                                            arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
+                                        }
+
+                                    }
+                                }
+                            }
+
+
+
+                            picts.push(arrpict[i]);
+                        }
 
                     }
-                    else if (apsaraId !== undefined && apsaraThumbId === undefined) {
-                        tempdatapict.push(arrpict[i].apsaraId);
+                    if (apsaraId !== undefined) {
+                        temporipict.push(arrpict[i].apsaraId);
+
+                        let resultpictapsara = await this.postContentService.getImageApsara(temporipict);
+                        let gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+                        for (let i = 0; i < lengpict; i++) {
+                            //var checkpictketemu = false;
+
+                            uploadSource = arrpict[i].uploadSource;
+
+
+                            if (uploadSource == "OSS") {
+                                //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
+
+                            } else {
+
+
+                                if (gettempresultpictapsara.length > 0) {
+                                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+
+                                        if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
+
+                                            arrpict[i].media =
+                                            {
+                                                "ImageInfo": [gettempresultpictapsara[j]]
+                                            }
+
+                                            arrpict[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+
+                                        }
+                                    }
+                                }
+                            }
+
+
+
+                            picts.push(arrpict[i]);
+                        }
 
                     }
-                    else if (apsaraId === undefined && apsaraThumbId !== undefined) {
-                        tempdatapict.push(arrpict[i].apsaraThumbId);
 
-                    }
                 }
 
                 // console.log(tempdatapict);
-                var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
-                var gettempresultpictapsara = resultpictapsara.ImageInfo;
-                for (var i = 0; i < lengpict; i++) {
-                    // var checkpictketemu = false;
-                    // for (var j = 0; j < gettempresultpictapsara.length; j++) {
-                    //     if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
-                    //         checkpictketemu = true;
-                    //         arrpict[i].media =
-                    //         {
-                    //             "ImageInfo": [gettempresultpictapsara[j]]
-                    //         }
-                    //         arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-                    //     }
-                    // }
 
-                    uploadSource = arrpict[i].uploadSource;
-
-                    if (uploadSource == "OSS") {
-                        //arrpict[i].mediaThumbEndpoint = "/thumb/" + postID;
-
-                    }
-                    else {
-                        if (gettempresultpictapsara.length > 0) {
-                            for (var j = 0; j < gettempresultpictapsara.length; j++) {
-
-                                if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
-                                    // checkpictketemu = true;
-                                    arrpict[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsara[j]]
-                                    }
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-
-
-                                }
-                                else if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraId) {
-
-                                    arrpict[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsara[j]]
-                                    }
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-                                }
-
-                            }
-                        }
-                    }
-                    picts.push(arrpict[i]);
-                }
             } else {
                 picts = [];
             }
@@ -4630,6 +5083,297 @@ export class GetusercontentsController {
         return { response_code: 202, data: picts, version: version.toString(), version_ios: (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(), messages };
     }
 
+    // @Post('api/getusercontents/landingpage')
+    // @UseGuards(JwtAuthGuard)
+    // async contentlandingpage(@Req() request: Request): Promise<any> {
 
+    //     var skip = 0;
+    //     var limit = 0;
+    //     var type = null;
+    //     var email = null;
+    //     var data = null;
+    //     var datasearch = null;
+    //     var emailreceiver = null;
+
+
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    //     if (request_json["skip"] !== undefined) {
+    //         skip = request_json["skip"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+
+    //     if (request_json["limit"] !== undefined) {
+    //         limit = request_json["limit"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+    //     if (request_json["type"] !== undefined) {
+    //         type = request_json["type"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+    //     if (request_json["type"] !== undefined) {
+    //         email = request_json["email"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+
+    //     const messages = {
+    //         "info": ["The process successful"],
+    //     };
+
+    //     var picts = [];
+    //     var lengpict = null;
+
+
+    //     try {
+    //         // data = await this.postsService.landingpage(email, type, skip, limit);
+    //         data = await this.postsService.landingpage2(email, type, skip, limit);
+    //         lengpict = data.length;
+
+    //     } catch (e) {
+    //         data = null;
+    //         lengpict = 0;
+
+    //     }
+
+    //     var tempdatapict = [];
+    //     var temporipict = [];
+
+    //     var boosted = null;
+    //     var boostCount = null;
+    //     var version = null;
+    //     var uploadSource = null;
+    //     var apsaraId = null;
+    //     var apsaraThumbId = null;
+    //     var postType = null;
+    //     // console.log(lengpict);
+    //     if (lengpict > 0) {
+    //         var resultpictapsara = null;
+    //         version = data[0].version;
+    //         // console.log(tempdatapict);
+    //         if (type == "pict") {
+
+    //             for (let i = 0; i < lengpict; i++) {
+
+    //                 uploadSource = data[i].uploadSource;
+    //                 try {
+    //                     apsaraId = data[i].apsaraId;
+    //                 } catch (e) {
+    //                     apsaraId = "";
+    //                 }
+    //                 try {
+    //                     apsaraThumbId = data[i].apsaraThumbId;
+    //                 } catch (e) {
+    //                     apsaraThumbId = "";
+    //                 }
+
+    //                 if (apsaraThumbId !== undefined) {
+    //                     tempdatapict.push(data[i].apsaraThumbId);
+    //                     resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+    //                     let gettempresultpictapsara = resultpictapsara.ImageInfo;
+    //                     for (let i = 0; i < lengpict; i++) {
+    //                         emailreceiver = data[i].email;
+    //                         boosted = data[i].boosted;
+    //                         boostCount = data[i].boostCount;
+    //                         var checkpictketemu = false;
+    //                         uploadSource = data[i].uploadSource;
+
+
+    //                         if (uploadSource == "OSS") {
+    //                             data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
+
+    //                         } else {
+
+    //                             for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+    //                                 if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
+    //                                     // checkpictketemu = true;
+    //                                     data[i].media =
+    //                                     {
+    //                                         "ImageInfo": [gettempresultpictapsara[j]]
+    //                                     }
+
+    //                                     data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
+    //                                 }
+    //                             }
+    //                         }
+
+
+
+
+    //                         if (boosted !== null || boosted.length > 0) {
+    //                             console.log("boosted: " + data[i].postID);
+    //                             this.postsService.updateBoostViewer(data[i].postID, email);
+    //                             //pd.boostJangkauan = this.countBoosted(obj, email);
+    //                             if (boosted.length > 0) {
+    //                                 if (boosted[0] != undefined) {
+    //                                     boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
+    //                                     boosted = boosted;
+    //                                     await this.postsService.updateBoostCount(data[i].postID, boostCount + 1);
+    //                                 } else {
+    //                                     boostCount = 0;
+    //                                     boosted = [];
+    //                                 }
+    //                             } else {
+    //                                 boostCount = 0;
+    //                                 boosted = [];
+    //                             }
+    //                         } else {
+    //                             boostCount = 0;
+    //                             boosted = [];
+    //                         }
+    //                         this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
+
+    //                         picts.push(data[i]);
+    //                     }
+    //                 }
+    //                 if (apsaraId !== undefined) {
+    //                     temporipict.push(data[i].apsaraId);
+
+    //                     resultpictapsara = await this.postContentService.getImageApsara(temporipict);
+    //                     let gettempresultpictapsara = resultpictapsara.ImageInfo;
+    //                     for (let i = 0; i < lengpict; i++) {
+    //                         emailreceiver = data[i].email;
+    //                         boosted = data[i].boosted;
+    //                         boostCount = data[i].boostCount;
+    //                         var checkpictketemu = false;
+    //                         uploadSource = data[i].uploadSource;
+
+
+    //                         if (uploadSource == "OSS") {
+    //                             data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
+
+    //                         } else {
+
+    //                             for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+
+    //                                 if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+    //                                     checkpictketemu = true;
+    //                                     data[i].media =
+    //                                     {
+    //                                         "ImageInfo": [gettempresultpictapsara[j]]
+    //                                     }
+
+    //                                     data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+
+    //                                 }
+    //                             }
+    //                         }
+
+
+
+
+    //                         if (boosted !== null || boosted.length > 0) {
+    //                             console.log("boosted: " + data[i].postID);
+    //                             this.postsService.updateBoostViewer(data[i].postID, email);
+    //                             //pd.boostJangkauan = this.countBoosted(obj, email);
+    //                             if (boosted.length > 0) {
+    //                                 if (boosted[0] != undefined) {
+    //                                     boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
+    //                                     boosted = boosted;
+    //                                     await this.postsService.updateBoostCount(data[i].postID, boostCount + 1);
+    //                                 } else {
+    //                                     boostCount = 0;
+    //                                     boosted = [];
+    //                                 }
+    //                             } else {
+    //                                 boostCount = 0;
+    //                                 boosted = [];
+    //                             }
+    //                         } else {
+    //                             boostCount = 0;
+    //                             boosted = [];
+    //                         }
+    //                         this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
+
+    //                         picts.push(data[i]);
+    //                     }
+
+    //                 }
+
+    //             }
+
+
+    //         } else {
+    //             for (let i = 0; i < lengpict; i++) {
+    //                 //ini buat produksion
+    //                 // postType = data[i].postType;
+    //                 // if (postType === "diary") {
+    //                 //     data[i].saleAmount = 0;
+    //                 // }
+
+    //                 if (data[i].isApsara == true) {
+    //                     tempdatapict.push(data[i].apsaraId);
+    //                 }
+    //             }
+    //             resultpictapsara = await this.postContentService.getVideoApsara(tempdatapict);
+    //             let gettempresultpictapsara = resultpictapsara.VideoList;
+    //             for (let i = 0; i < lengpict; i++) {
+    //                 emailreceiver = data[i].email;
+    //                 boostCount = data[i].boostCount;
+    //                 boosted = data[i].boosted;
+    //                 var checkpictketemu = false;
+    //                 for (var j = 0; j < gettempresultpictapsara.length; j++) {
+    //                     if (gettempresultpictapsara[j].VideoId == data[i].apsaraId) {
+    //                         checkpictketemu = true;
+    //                         data[i].media =
+    //                         {
+    //                             "VideoList": [gettempresultpictapsara[j]]
+    //                         }
+
+    //                         data[i].mediaThumbEndpoint = gettempresultpictapsara[j].CoverURL;
+    //                     }
+    //                 }
+
+    //                 if (checkpictketemu == false) {
+    //                     data[i].apsaraId = "";
+    //                     data[i].isApsara = false;
+    //                     data[i].media =
+    //                     {
+    //                         "VideoList": []
+    //                     };
+    //                 }
+    //                 if (boosted !== null || boosted.length > 0) {
+    //                     console.log("boosted: " + data[i].postID);
+    //                     this.postsService.updateBoostViewer(data[i].postID, email);
+    //                     //pd.boostJangkauan = this.countBoosted(obj, email);
+    //                     if (boosted.length > 0) {
+    //                         if (boosted[0] != undefined) {
+    //                             boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
+    //                             boosted = boosted;
+
+    //                             await this.postsService.updateBoostCount(data[i].postID, boostCount + 1);
+    //                         } else {
+    //                             boostCount = 0;
+    //                             boosted = [];
+    //                         }
+    //                     } else {
+    //                         boostCount = 0;
+    //                         boosted = [];
+    //                     }
+    //                 } else {
+    //                     boostCount = 0;
+    //                     boosted = [];
+    //                 }
+    //                 this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
+
+
+    //                 picts.push(data[i]);
+    //             }
+    //         }
+    //     } else {
+    //         picts = [];
+    //         version = "";
+    //     }
+
+
+    //     return { response_code: 202, data: picts, version: version.toString(), version_ios: (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(), messages };
+    // }
 
 }
