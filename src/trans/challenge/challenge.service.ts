@@ -491,7 +491,7 @@ export class ChallengeService {
         }
       },
       {
-        $match: { "poinReferal": { $ne: null }, "statusChallenge": "PUBLISH" }
+        $match: { "poinReferal": { $ne: null } }
       }
     ]);
     return query;
