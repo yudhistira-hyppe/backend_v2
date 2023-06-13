@@ -17,10 +17,14 @@ import { ReactionsRepoModule } from '../../infra/reactions_repo/reactions_repo.m
 import { FriendListModule } from '../friend_list/friend_list.module';
 import { UserbasicsModule } from 'src/trans/userbasics/userbasics.module';
 import { NewpostsModule } from '../newposts/newposts.module';
-//import { AuthModule } from '../../auth/auth.module';
+import { UserchallengesModule } from 'src/trans/userchallenges/userchallenges.module';
+import { ChallengeModule } from 'src/trans/challenge/challenge.module';
+
+
 @Module({
     imports: [
-        // AuthModule,
+        UserchallengesModule,
+        ChallengeModule,
         NewpostsModule,
         ReactionsRepoModule,
         DisqusContentEventModule,

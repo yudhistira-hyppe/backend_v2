@@ -35,11 +35,11 @@ export class UserchallengesService {
         let result = await this.UserchallengesModel.updateOne({ _id: new Types.ObjectId(id) }, { $push: { activity: data } }).exec();
         return result;
     }
-    async updateUserchallenge(id: string, score: number) {
+    async updateUserchallenge(id: string, idSubChallenge: string, score: number) {
         this.UserchallengesModel.updateOne(
             {
 
-                _id: new Types.ObjectId(id),
+                _id: new Types.ObjectId(id), idSubChallenge: idSubChallenge
             },
             { $inc: { score: score } },
             function (err, docs) {
@@ -87,13 +87,15 @@ export class UserchallengesService {
         return query;
     }
 
-    async datauserchallbyidchall(idchall: string) {
+    async datauserchallbyidchall(idchall: string, idSubChallenge: string) {
         var query = await this.UserchallengesModel.aggregate([
 
             {
                 $match: {
                     "isActive": true,
                     "idChallenge": new Types.ObjectId(idchall),
+                    "idSubChallenge": new Types.ObjectId(idSubChallenge),
+
                 }
             },
             {
@@ -116,8 +118,8 @@ export class UserchallengesService {
         return data;
     }
 
-    async updateHistory(id: string, data: {}) {
-        let result = await this.UserchallengesModel.updateOne({ _id: new Types.ObjectId(id) }, { $push: { history: data } }).exec();
+    async updateHistory(id: string, idSubChallenge: string, data: {}) {
+        let result = await this.UserchallengesModel.updateOne({ _id: new Types.ObjectId(id), idSubChallenge: new Types.ObjectId(idSubChallenge) }, { $push: { history: data } }).exec();
         return result;
     }
 }
