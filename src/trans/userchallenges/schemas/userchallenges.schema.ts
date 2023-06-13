@@ -11,7 +11,13 @@ export class Userchallenges {
     @Prop({ type: mongoose.Schema.Types.ObjectId })
     idChallenge: mongoose.Types.ObjectId;
     @Prop({ type: mongoose.Schema.Types.ObjectId })
+    idSubChallenge: mongoose.Types.ObjectId;
+    @Prop({ type: mongoose.Schema.Types.ObjectId })
     idUser: mongoose.Types.ObjectId;
+    @Prop()
+    startDatetime: String;
+    @Prop()
+    endDatetime: String;
     @Prop()
     createdAt: String;
     @Prop()
@@ -26,5 +32,6 @@ export class Userchallenges {
     activity: any[];
     @Prop()
     history: any[];
+
 }
 export const UserchallengesSchema = SchemaFactory.createForClass(Userchallenges);

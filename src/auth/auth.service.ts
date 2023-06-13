@@ -8452,7 +8452,7 @@ export class AuthService {
           CreateReferralDto_._class = "io.melody.core.domain.Referral";
           var insertdata = await this.referralService.create(CreateReferralDto_);
           var idref = insertdata._id;
-          this.userChallenge(iduser.toString(), idref.toString(), "referral");
+          this.userChallenge(iduser.toString(), idref.toString(), "referral", "REFERAL");
 
 
           var _id_1 = (await this.utilsService.generateId());
@@ -9219,7 +9219,7 @@ export class AuthService {
 
                         if (databasic !== null) {
                           var idref = insertdata._id;
-                          this.userChallenge(databasic._id.toString(), idref.toString(), "referral");
+                          this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
                         }
 
                         var _id_1 = (await this.utilsService.generateId());
@@ -9947,7 +9947,7 @@ export class AuthService {
       }
     }
   }
-  async userChallenge(iduser: string, idref: string, nametable: string) {
+  async userChallenge(iduser: string, idref: string, nametable: string, action: string) {
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
 
@@ -9964,6 +9964,7 @@ export class AuthService {
     var datachallenge = null;
     var arrdata = [];
     var objintr = {};
+    var datasubchallenge = null;
 
 
     try {
@@ -9984,67 +9985,52 @@ export class AuthService {
           datauserchall = null;
         }
 
-        if (datauserchall.length == 0) {
+        if (datauserchall.length > 0) {
 
-          var Userchallenges_ = new Userchallenges();
-          Userchallenges_.idUser = mongoose.Types.ObjectId(iduser);
-          Userchallenges_.idChallenge = mongoose.Types.ObjectId(idChallenge);
-          Userchallenges_.isActive = true;
-          Userchallenges_.score = poinReferal;
-          Userchallenges_.createdAt = timedate;
-          Userchallenges_.updatedAt = timedate;
 
-          var datainsert = await this.userchallengesService.create(Userchallenges_);
-          console.log(datainsert);
-          var iduschall = datainsert._id;
+          for (let y = 0; y < datauserchall.length; y++) {
 
-          var detail = await this.userchallengesService.findOne(iduschall.toString());
-          var activity = detail.activity;
-          objintr = { "type": nametable, "id": idref }
-          console.log(objintr)
-          activity.push(objintr)
+            var iduserchall = datauserchall[y]._id;
+            var idsubchallenge = datauserchall[y].idSubChallenge;
+            var idChallenges = datauserchall[y].idChallenge;
+            var start = new Date(datauserchall[y].startDatetime);
+            var end = new Date(datauserchall[y].endDatetime);
+            var datenow = new Date(Date.now());
 
-          var objhis = {
-            score: Userchallenges_.score,
-            ranking: Userchallenges_.ranking,
-            updatedAt: timedate
-          };
+            if (datenow >= start && datenow <= end) {
 
-          await this.userchallengesService.updateHistory(iduschall.toString(), objhis);
-          await this.userchallengesService.updateActivity(iduschall.toString(), activity, timedate);
-        }
-        else {
-          var iduserchall = datauserchall[0]._id;
+              var obj = {};
 
-          var obj = {};
+              obj = {
+                "updatedAt": datauserchall[y].updatedAt,
+                "score": datauserchall[y].score,
+                "ranking": datauserchall[y].ranking,
+              }
+              await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+              await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poinReferal);
+              var detail = await this.userchallengesService.findOne(iduserchall.toString());
+              var activity = detail.activity;
+              objintr = { "type": nametable, "id": idref, "desc": action }
+              console.log(objintr)
+              activity.push(objintr)
+              await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
 
-          obj = {
-            "updatedAt": datauserchall[0].updatedAt,
-            "score": datauserchall[0].score,
-            "ranking": datauserchall[0].ranking,
+            }
           }
 
-          await this.userchallengesService.updateHistory(iduserchall.toString(), obj);
-          await this.userchallengesService.updateUserchallenge(iduserchall.toString(), poinReferal);
+          var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
-          var detail = await this.userchallengesService.findOne(iduserchall.toString());
-          var activity = detail.activity;
-          objintr = { "type": nametable, "id": idref }
-          console.log(objintr)
-          activity.push(objintr)
-          await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
-        }
+          if (datauschall.length > 0) {
+            for (let x = 0; x < datauschall.length; x++) {
+              let iducall = datauschall[x]._id;
+              let rank = x + 1;
+              await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
 
-        var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenge);
-
-        if (datauschall.length > 0) {
-          for (let x = 0; x < datauschall.length; x++) {
-            let iducall = datauschall[x]._id;
-            let rank = x + 1;
-            await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-
+            }
           }
         }
+
+
 
       }
 
@@ -10053,108 +10039,14 @@ export class AuthService {
 
   }
 
-  async userChallengeFollow(iduser: string, idref: string, nametable: string) {
-    const mongoose = require('mongoose');
-    var ObjectId = require('mongodb').ObjectId;
-
+  async getDateTimeString(): Promise<string> {
     var dt = new Date(Date.now());
     dt.setHours(dt.getHours() + 7); // timestamp
     dt = new Date(dt);
-
     var strdate = dt.toISOString();
     var repdate = strdate.replace('T', ' ');
     var splitdate = repdate.split('.');
     var timedate = splitdate[0];
-    var lengchal = null;
-    var datauserchall = null;
-    var datachallenge = null;
-    var arrdata = [];
-    var objintr = {};
-    try {
-      datachallenge = await this.challengeService.challengeFollow();
-    } catch (e) {
-      datachallenge = null;
-
-    }
-
-    if (datachallenge !== null && datachallenge.length > 0) {
-      lengchal = datachallenge.length;
-
-      for (let i = 0; i < lengchal; i++) {
-        var idChallenge = datachallenge[i]._id.toString();
-        var poinFollow = datachallenge[i].poinFollow;
-        try {
-          datauserchall = await this.userchallengesService.userChallengebyIdChall(iduser, idChallenge);
-        } catch (e) {
-          datauserchall = null;
-        }
-
-        if (datauserchall.length == 0) {
-
-          var Userchallenges_ = new Userchallenges();
-          Userchallenges_.idUser = mongoose.Types.ObjectId(iduser);
-          Userchallenges_.idChallenge = mongoose.Types.ObjectId(idChallenge);
-          Userchallenges_.isActive = true;
-          Userchallenges_.score = poinFollow;
-          Userchallenges_.createdAt = timedate;
-          Userchallenges_.updatedAt = timedate;
-
-          var datainsert = await this.userchallengesService.create(Userchallenges_);
-          console.log(datainsert);
-          var iduschall = datainsert._id;
-
-          var detail = await this.userchallengesService.findOne(iduschall.toString());
-          var activity = detail.activity;
-          objintr = { "type": nametable, "id": idref }
-          console.log(objintr)
-          activity.push(objintr)
-
-          var objhis = {
-            score: Userchallenges_.score,
-            ranking: Userchallenges_.ranking,
-            updatedAt: timedate
-          };
-
-          await this.userchallengesService.updateHistory(iduschall.toString(), objhis);
-          await this.userchallengesService.updateActivity(iduschall.toString(), activity, timedate);
-        }
-        else {
-          var iduserchall = datauserchall[0]._id;
-
-          var obj = {};
-
-          obj = {
-            "updatedAt": datauserchall[0].updatedAt,
-            "score": datauserchall[0].score,
-            "ranking": datauserchall[0].ranking,
-          }
-
-          await this.userchallengesService.updateHistory(iduserchall.toString(), obj);
-          await this.userchallengesService.updateUserchallenge(iduserchall.toString(), poinFollow);
-
-          var detail = await this.userchallengesService.findOne(iduserchall.toString());
-          var activity = detail.activity;
-          objintr = { "type": nametable, "id": idref }
-          console.log(objintr)
-          activity.push(objintr)
-          await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
-        }
-
-        var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenge);
-
-        if (datauschall.length > 0) {
-          for (let x = 0; x < datauschall.length; x++) {
-            let iducall = datauschall[x]._id;
-            let rank = x + 1;
-            await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-
-          }
-        }
-
-      }
-
-
-    }
-
+    return timedate;
   }
 }
