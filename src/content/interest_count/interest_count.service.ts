@@ -179,6 +179,7 @@ export class InterestCountService {
         return query;
     }
 
+
     async detailinterestcontenNew(key: string, email: string, skip: number, limit: number, pict: any, vid: any, diary: any) {
 
 
@@ -358,7 +359,7 @@ export class InterestCountService {
                                                     "apsaraId": 1,
                                                     "apsaraThumbId": 1,
                                                     "mediaEndpoint": {
-                                                        "$concat": ["/stream/", "$postID"]
+                                                        "$concat": ["/pict/", "$postID"]
                                                     },
                                                     "mediaUri": 1,
                                                     "mediaThumbEndpoint": {
@@ -918,7 +919,7 @@ export class InterestCountService {
                                                     "apsaraId": 1,
                                                     "apsaraThumbId": 1,
                                                     "mediaEndpoint": {
-                                                        "$concat": ["/stream/", "$postID"]
+                                                        "$concat": ["/pict/", "$postID"]
                                                     },
                                                     "mediaUri": 1,
                                                     "mediaThumbEndpoint": {
@@ -1268,7 +1269,7 @@ export class InterestCountService {
                                                     "apsaraId": 1,
                                                     "apsaraThumbId": 1,
                                                     "mediaEndpoint": {
-                                                        "$concat": ["/stream/", "$postID"]
+                                                        "$concat": ["/pict/", "$postID"]
                                                     },
                                                     "mediaUri": 1,
                                                     "mediaThumbEndpoint": {
@@ -1963,7 +1964,7 @@ export class InterestCountService {
                                                     "apsaraId": 1,
                                                     "apsaraThumbId": 1,
                                                     "mediaEndpoint": {
-                                                        "$concat": ["/stream/", "$postID"]
+                                                        "$concat": ["/pict/", "$postID"]
                                                     },
                                                     "mediaUri": 1,
                                                     "mediaThumbEndpoint": {
@@ -2607,7 +2608,7 @@ export class InterestCountService {
                                                     "apsaraId": 1,
                                                     "apsaraThumbId": 1,
                                                     "mediaEndpoint": {
-                                                        "$concat": ["/stream/", "$postID"]
+                                                        "$concat": ["/pict/", "$postID"]
                                                     },
                                                     "mediaUri": 1,
                                                     "mediaThumbEndpoint": {
@@ -4837,7 +4838,7 @@ export class InterestCountService {
                                                     "apsaraId": 1,
                                                     "apsaraThumbId": 1,
                                                     "mediaEndpoint": {
-                                                        "$concat": ["/stream/", "$postID"]
+                                                        "$concat": ["/pict/", "$postID"]
                                                     },
                                                     "mediaUri": 1,
                                                     "mediaThumbEndpoint": {
@@ -6256,8 +6257,6 @@ export class InterestCountService {
                                     }
                                 }
                             ],
-                        //pict
-                        //pict
                         "pict":
                             [
 
@@ -6299,7 +6298,7 @@ export class InterestCountService {
                                                     "apsaraId": 1,
                                                     "apsaraThumbId": 1,
                                                     "mediaEndpoint": {
-                                                        "$concat": ["/stream/", "$postID"]
+                                                        "$concat": ["/pict/", "$postID"]
                                                     },
                                                     "mediaUri": 1,
                                                     "mediaThumbEndpoint": {
@@ -6973,6 +6972,8 @@ export class InterestCountService {
                                         "tags": 1
                                     }
                                 },
+
+
 
                             ],
                         "vid":
@@ -9218,7 +9219,7 @@ export class InterestCountService {
                                                     "apsaraId": 1,
                                                     "apsaraThumbId": 1,
                                                     "mediaEndpoint": {
-                                                        "$concat": ["/stream/", "$postID"]
+                                                        "$concat": ["/pict/", "$postID"]
                                                     },
                                                     "mediaUri": 1,
                                                     "mediaThumbEndpoint": {
@@ -9892,6 +9893,7 @@ export class InterestCountService {
                                         "tags": 1
                                     }
                                 },
+
 
 
                             ],
