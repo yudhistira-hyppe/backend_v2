@@ -2866,7 +2866,7 @@ export class AdsService {
                         minat: 1,
                         lapak: 1,
                         umur: 1,
-                        testDate: 1, 
+                        testDate: 1,
                         skipTime: 1,
                         tayang: 1,
                         adsUserId: 1,
@@ -3865,231 +3865,231 @@ export class AdsService {
     async adsdatabyid(id: Types.ObjectId) {
 
         const query = await this.adsModel.aggregate(
-        [
-            {
-                $match: {
-                    _id: id,
+            [
+                {
+                    $match: {
+                        _id: id,
 
-                }
-            }, {
-                $lookup: {
-                    from: "userbasics",
-                    localField: "userID",
-                    foreignField: "_id",
-                    as: "userbasics_data"
-                }
-            }, {
-                $lookup: {
-                    from: 'mediavideosads',
-                    localField: 'mediaAds',
-                    foreignField: '_id',
-                    as: 'mediavideos_data',
+                    }
+                }, {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "userID",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                }, {
+                    $lookup: {
+                        from: 'mediavideosads',
+                        localField: 'mediaAds',
+                        foreignField: '_id',
+                        as: 'mediavideos_data',
 
+                    },
+
+                }, {
+                    $lookup: {
+                        from: 'mediaimageads',
+                        localField: 'mediaAds',
+                        foreignField: '_id',
+                        as: 'mediaimages_data',
+
+                    },
+
+                }, {
+                    $project: {
+                        mediavideos: {
+                            $arrayElemAt: ['$mediavideos_data', 0]
+                        },
+                        mediaimages: {
+                            $arrayElemAt: ['$mediaimages_data', 0]
+                        },
+                        user: {
+                            $arrayElemAt: ['$userbasics_data', 0]
+                        },
+                        timestamp: '$timestamp',
+                        expiredAt: '$expiredAt',
+                        gender: '$gender',
+                        liveAt: '$liveAt',
+                        name: '$name',
+                        objectifitas: '$objectifitas',
+                        status: '$status',
+                        totalClick: '$totalClick',
+                        totalUsedCredit: '$totalUsedCredit',
+                        totalView: '$totalView',
+                        urlLink: '$urlLink',
+                        isActive: '$isActive',
+                        type: "$type",
+
+                    }
+                }, {
+                    $addFields: {
+
+
+                        concatmediapict: '/mediaadsfile',
+                        media_pict: {
+                            $replaceOne: {
+                                input: "$mediaimages.mediaUri",
+                                find: "_0001.jpeg",
+                                replacement: ""
+                            }
+                        },
+
+                        concatmediavideo: '/mediaadsfile/vid/',
+                        concatthumbvideo: '/mediaadsfile/thumb',
+                        media_video: '$mediavideos.mediaUri'
+                    },
+
+                }, {
+                    $project: {
+
+                        mediaBasePath: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        'case': {
+                                            '$eq': ['$type', 'image']
+                                        },
+                                        'then': '$mediaimages.mediaBasePath'
+                                    },
+                                    {
+                                        'case': {
+                                            '$eq': ['$type', 'video']
+                                        },
+                                        'then': '$mediavideos.mediaBasePath'
+                                    },
+
+                                ],
+                                default: ''
+                            }
+                        },
+                        mediaUri: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        'case': {
+                                            '$eq': ['$type', 'image']
+                                        },
+                                        'then': '$mediaimages.mediaUri'
+                                    },
+                                    {
+                                        'case': {
+                                            '$eq': ['$type', 'video']
+                                        },
+                                        'then': '$mediavideos.mediaUri'
+                                    },
+
+                                ],
+                                default: ''
+                            }
+                        },
+                        mediaType: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        'case': {
+                                            '$eq': ['$type', 'image']
+                                        },
+                                        'then': '$mediaimages.mediaType'
+                                    },
+                                    {
+                                        'case': {
+                                            '$eq': ['$type', 'video']
+                                        },
+                                        'then': '$mediavideos.mediaType'
+                                    },
+
+                                ],
+                                default: ''
+                            }
+                        },
+                        mediaThumbUri: {
+                            $switch: {
+                                branches: [
+
+                                    {
+                                        'case': {
+                                            '$eq': ['$type', 'image']
+                                        },
+                                        'then': '$mediaimages.mediaThumb'
+                                    },
+                                    {
+                                        'case': {
+                                            '$eq': ['$type', 'video']
+                                        },
+                                        'then': '$mediavideos.mediaThumb'
+                                    },
+                                ],
+                                default: ''
+                            }
+                        },
+                        mediaThumbEndpoint: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        'case': {
+                                            '$eq': ['$type', 'image']
+                                        },
+                                        'then': '$mediaimages.mediaThumb'
+                                    },
+
+                                    {
+                                        'case': {
+                                            '$eq': ['$type', 'video']
+                                        },
+                                        'then': {
+                                            $concat: ["$concatthumbvideo", "/", "$media_video"]
+                                        },
+
+                                    }
+                                ],
+                                default: ''
+                            }
+                        },
+                        mediaEndpoint: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        'case': {
+                                            '$eq': ['$type', 'image']
+                                        },
+                                        'then': {
+                                            $concat: ["$concatmediapict", "/", "$media_pict"]
+                                        },
+
+                                    },
+
+                                    {
+                                        'case': {
+                                            '$eq': ['$type', 'video']
+                                        },
+                                        'then': {
+                                            $concat: ["$concatmediavideo", "/", "$media_video"]
+                                        },
+
+                                    }
+                                ],
+                                default: ''
+                            }
+                        },
+                        fullName: '$user.fullName',
+                        email: '$user.email',
+                        timestamp: '$timestamp',
+                        expiredAt: '$expiredAt',
+                        gender: '$gender',
+                        liveAt: '$liveAt',
+                        name: '$name',
+                        objectifitas: '$objectifitas',
+                        status: '$status',
+                        totalClick: '$totalClick',
+                        totalUsedCredit: '$totalUsedCredit',
+                        totalView: '$totalView',
+                        urlLink: '$urlLink',
+                        isActive: '$isActive',
+
+                    }
                 },
-
-            }, {
-                $lookup: {
-                    from: 'mediaimageads',
-                    localField: 'mediaAds',
-                    foreignField: '_id',
-                    as: 'mediaimages_data',
-
-                },
-
-            }, {
-                $project: {
-                    mediavideos: {
-                        $arrayElemAt: ['$mediavideos_data', 0]
-                    },
-                    mediaimages: {
-                        $arrayElemAt: ['$mediaimages_data', 0]
-                    },
-                    user: {
-                        $arrayElemAt: ['$userbasics_data', 0]
-                    },
-                    timestamp: '$timestamp',
-                    expiredAt: '$expiredAt',
-                    gender: '$gender',
-                    liveAt: '$liveAt',
-                    name: '$name',
-                    objectifitas: '$objectifitas',
-                    status: '$status',
-                    totalClick: '$totalClick',
-                    totalUsedCredit: '$totalUsedCredit',
-                    totalView: '$totalView',
-                    urlLink: '$urlLink',
-                    isActive: '$isActive',
-                    type: "$type",
-
-                }
-            }, {
-                $addFields: {
-
-
-                    concatmediapict: '/mediaadsfile',
-                    media_pict: {
-                        $replaceOne: {
-                            input: "$mediaimages.mediaUri",
-                            find: "_0001.jpeg",
-                            replacement: ""
-                        }
-                    },
-
-                    concatmediavideo: '/mediaadsfile/vid/',
-                    concatthumbvideo: '/mediaadsfile/thumb',
-                    media_video: '$mediavideos.mediaUri'
-                },
-
-            }, {
-                $project: {
-
-                    mediaBasePath: {
-                        $switch: {
-                            branches: [
-                                {
-                                    'case': {
-                                        '$eq': ['$type', 'image']
-                                    },
-                                    'then': '$mediaimages.mediaBasePath'
-                                },
-                                {
-                                    'case': {
-                                        '$eq': ['$type', 'video']
-                                    },
-                                    'then': '$mediavideos.mediaBasePath'
-                                },
-
-                            ],
-                            default: ''
-                        }
-                    },
-                    mediaUri: {
-                        $switch: {
-                            branches: [
-                                {
-                                    'case': {
-                                        '$eq': ['$type', 'image']
-                                    },
-                                    'then': '$mediaimages.mediaUri'
-                                },
-                                {
-                                    'case': {
-                                        '$eq': ['$type', 'video']
-                                    },
-                                    'then': '$mediavideos.mediaUri'
-                                },
-
-                            ],
-                            default: ''
-                        }
-                    },
-                    mediaType: {
-                        $switch: {
-                            branches: [
-                                {
-                                    'case': {
-                                        '$eq': ['$type', 'image']
-                                    },
-                                    'then': '$mediaimages.mediaType'
-                                },
-                                {
-                                    'case': {
-                                        '$eq': ['$type', 'video']
-                                    },
-                                    'then': '$mediavideos.mediaType'
-                                },
-
-                            ],
-                            default: ''
-                        }
-                    },
-                    mediaThumbUri: {
-                        $switch: {
-                            branches: [
-
-                                {
-                                    'case': {
-                                        '$eq': ['$type', 'image']
-                                    },
-                                    'then': '$mediaimages.mediaThumb'
-                                },
-                                {
-                                    'case': {
-                                        '$eq': ['$type', 'video']
-                                    },
-                                    'then': '$mediavideos.mediaThumb'
-                                },
-                            ],
-                            default: ''
-                        }
-                    },
-                    mediaThumbEndpoint: {
-                        $switch: {
-                            branches: [
-                                {
-                                    'case': {
-                                        '$eq': ['$type', 'image']
-                                    },
-                                    'then': '$mediaimages.mediaThumb'
-                                },
-
-                                {
-                                    'case': {
-                                        '$eq': ['$type', 'video']
-                                    },
-                                    'then': {
-                                        $concat: ["$concatthumbvideo", "/", "$media_video"]
-                                    },
-
-                                }
-                            ],
-                            default: ''
-                        }
-                    },
-                    mediaEndpoint: {
-                        $switch: {
-                            branches: [
-                                {
-                                    'case': {
-                                        '$eq': ['$type', 'image']
-                                    },
-                                    'then': {
-                                        $concat: ["$concatmediapict", "/", "$media_pict"]
-                                    },
-
-                                },
-
-                                {
-                                    'case': {
-                                        '$eq': ['$type', 'video']
-                                    },
-                                    'then': {
-                                        $concat: ["$concatmediavideo", "/", "$media_video"]
-                                    },
-
-                                }
-                            ],
-                            default: ''
-                        }
-                    },
-                    fullName: '$user.fullName',
-                    email: '$user.email',
-                    timestamp: '$timestamp',
-                    expiredAt: '$expiredAt',
-                    gender: '$gender',
-                    liveAt: '$liveAt',
-                    name: '$name',
-                    objectifitas: '$objectifitas',
-                    status: '$status',
-                    totalClick: '$totalClick',
-                    totalUsedCredit: '$totalUsedCredit',
-                    totalView: '$totalView',
-                    urlLink: '$urlLink',
-                    isActive: '$isActive',
-
-                }
-            },
-        ]
+            ]
         );
         return query;
     }
@@ -14241,7 +14241,7 @@ export class AdsService {
                                     totalCredit: 1,
                                     timeStart: 1,
                                     timeEnd: 1,
-                                    skipTime:1,
+                                    skipTime: 1,
                                     namePlace:
                                     {
                                         "$arrayElemAt":
@@ -14490,7 +14490,7 @@ export class AdsService {
                                     timeEnd: 1,
                                     namePlace: 1,
                                     nameType: 1,
-                                    skipTime:1,
+                                    skipTime: 1,
                                     idApsara: 1,
                                     apsara:
                                     {

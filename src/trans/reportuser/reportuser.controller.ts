@@ -1239,6 +1239,7 @@ export class ReportuserController {
         var data = [];
         var query = null;
         var totalReport = null;
+        var reportuser = null;
 
         var reportedUserCount = null;
         if (type === "content") {
@@ -1272,13 +1273,7 @@ export class ReportuserController {
             if (lengUser > 0) {
                 email = query[0].email;
                 tagPeople = query[0].tagPeople;
-                try {
-                    reportedUserCount = query[0].reportedUserCount;
-                    totalReport = reportedUserCount;
-                } catch (e) {
-                    reportedUserCount = 0;
-                    totalReport = 0;
-                }
+
 
                 if (tagPeople !== undefined) {
 
@@ -1465,6 +1460,26 @@ export class ReportuserController {
                 dataSum.push(objcoun);
             }
 
+            try {
+                reportuser = query[0].reportedUser;
+                lengreportuser = reportuser.length;
+            } catch (e) {
+                reportuser = null;
+                lengreportuser = 0;
+            }
+
+            if (lengreportuser > 0) {
+                for (let x = 0; x < lengreportuser; x++) {
+                    if (reportuser[x].active == false) {
+                        lengreportuser = lengreportuser - x;
+                        totalReport = lengreportuser - 1;
+                    } else {
+                        totalReport = lengreportuser;
+                    }
+                }
+
+            }
+
             return { response_code: 202, totalReport, dataSum, data, messages };
         }
         else if (type === "ads") {
@@ -1486,6 +1501,7 @@ export class ReportuserController {
             var dtcountclick = null;
             var tView = null;
             var tClick = null;
+            var lengreportuser = null;
 
 
 
@@ -1507,11 +1523,23 @@ export class ReportuserController {
                 }
 
                 try {
-                    reportedUserCount = query[0].reportedUserCount;
-                    totalReport = reportedUserCount;
+                    reportuser = query[0].reportedUser;
+                    lengreportuser = reportuser.length;
                 } catch (e) {
-                    reportedUserCount = 0;
-                    totalReport = 0;
+                    reportuser = null;
+                    lengreportuser = 0;
+                }
+
+                if (lengreportuser > 0) {
+                    for (let x = 0; x < lengreportuser; x++) {
+                        if (reportuser[x].active == false) {
+                            lengreportuser = lengreportuser - x;
+                            totalReport = lengreportuser - 1;
+                        } else {
+                            totalReport = lengreportuser;
+                        }
+                    }
+
                 }
 
                 try {
@@ -1761,8 +1789,6 @@ export class ReportuserController {
                             "avatar": mediaprofilepicts_res,
 
                         }
-
-
 
                         arrRepuser.push(objrepuser);
 
