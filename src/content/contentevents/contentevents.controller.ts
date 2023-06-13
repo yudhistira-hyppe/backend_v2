@@ -1709,7 +1709,7 @@ export class ContenteventsController {
 
 
     try {
-      datachallenge = await this.challengeService.challengeReferal();
+      datachallenge = await this.challengeService.challengeFollow();
     } catch (e) {
       datachallenge = null;
     }

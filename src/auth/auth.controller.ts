@@ -1421,11 +1421,7 @@ export class AuthController {
   async referral(@Req() request: any, @Headers() headers) {
     return await this.authService.referral(request, headers);
   }
-  // @Post('api/user/referral')
-  // @HttpCode(HttpStatus.ACCEPTED)
-  // async referral(@Req() request: any, @Headers() headers) {
-  //   return await this.authService.referral2(request, headers);
-  // }
+
   @Post('api/user/referral/v2')
   @HttpCode(HttpStatus.ACCEPTED)
   async referral2(@Req() request: any, @Headers() headers) {
