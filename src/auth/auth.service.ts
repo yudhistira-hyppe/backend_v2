@@ -41,6 +41,7 @@ import { TemplatesRepo } from 'src/infra/templates_repo/schemas/templatesrepo.sc
 import { ChallengeService } from '../trans/challenge/challenge.service';
 import { UserchallengesService } from '../trans/userchallenges/userchallenges.service';
 import { Userchallenges } from '../trans/userchallenges/schemas/userchallenges.schema';
+import { subChallengeService } from '../trans/challenge/subChallenge.service';
 
 @Injectable()
 export class AuthService {
@@ -71,7 +72,8 @@ export class AuthService {
     private contenteventsService: ContenteventsService,
     private postsService: PostsService,
     private challengeService: ChallengeService,
-    private userchallengesService: UserchallengesService
+    private userchallengesService: UserchallengesService,
+    private subChallengeService: subChallengeService
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {

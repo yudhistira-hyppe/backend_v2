@@ -9,6 +9,9 @@ import { OssModule } from 'src/stream/oss/oss.module';
 import { UtilsModule } from 'src/utils/utils.module';
 import { BadgeModule } from '../badge/badge.module';
 import { subChallenge, subChallengeSchema } from './schemas/subchallenge.schema';
+import { Userchallenges, UserchallengesSchema } from '../userchallenges/schemas/userchallenges.schema';
+import { UserchallengesModule } from '../userchallenges/userchallenges.module';
+import { UserchallengesService } from '../userchallenges/userchallenges.service';
 
 @Module({
   imports:[
@@ -16,10 +19,15 @@ import { subChallenge, subChallengeSchema } from './schemas/subchallenge.schema'
     OssModule,
     UtilsModule,
     BadgeModule,
-    MongooseModule.forFeature([{ name: Challenge.name, schema: ChallengeSchema }, { name: subChallenge.name, schema: subChallengeSchema }], 'SERVER_FULL')
+    UserchallengesModule,
+    MongooseModule.forFeature([
+      { name: Challenge.name, schema: ChallengeSchema }, 
+      { name: subChallenge.name, schema: subChallengeSchema },
+      { name: Userchallenges.name, schema: UserchallengesSchema }
+    ], 'SERVER_FULL')
   ],
   controllers: [ChallengeController],
-  providers: [ChallengeService, subChallengeService],
+  providers: [ChallengeService, subChallengeService, UserchallengesService],
   exports: [ChallengeService, subChallengeService],
 })
 export class ChallengeModule {}

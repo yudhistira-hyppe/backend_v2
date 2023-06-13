@@ -40,4 +40,18 @@ export class subChallengeService {
     const data = await this.subChallengeModel.findByIdAndRemove({ _id: new Types.ObjectId(id) }).exec();
     return data;
   }
+
+  async findbyid(id: string) {
+    var query = await this.subChallengeModel.aggregate([
+      {
+
+        $match: {
+
+          challengeId: new Types.ObjectId(id)
+        }
+      }
+
+    ]);
+    return query;
+  }
 }
