@@ -9999,7 +9999,7 @@ export class AuthService {
             var end = new Date(datauserchall[y].endDatetime);
             var datenow = new Date(Date.now());
 
-            if (datenow >= start && datenow <= end) {
+            if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
 
               var obj = {};
 
@@ -10016,20 +10016,27 @@ export class AuthService {
               console.log(objintr)
               activity.push(objintr)
               await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+              var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
+              if (datauschall.length > 0) {
+                for (let x = 0; x < datauschall.length; x++) {
+
+                  let iducall = datauschall[x]._id;
+                  let start = new Date(datauschall[x].startDatetime);
+                  let end = new Date(datauschall[x].endDatetime);
+                  let datenow = new Date(Date.now());
+                  let idChallenges2 = datauschall[x].idChallenge;
+                  let rank = x + 1;
+
+                  if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                    await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                  }
+
+                }
+              }
             }
           }
 
-          var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
-
-          if (datauschall.length > 0) {
-            for (let x = 0; x < datauschall.length; x++) {
-              let iducall = datauschall[x]._id;
-              let rank = x + 1;
-              await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-
-            }
-          }
         }
 
 
