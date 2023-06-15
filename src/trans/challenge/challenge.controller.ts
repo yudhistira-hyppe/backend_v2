@@ -289,9 +289,9 @@ export class ChallengeController {
       var ektensileaderboard = request_json['leaderboard_formatFile'];
       var insertbanner = files.bannerBoard[0];
       var path = "images/challenge/" + insertdata._id + "_bannerLeaderboard" + "." + ektensileaderboard;
-      // var result = await this.osservices.uploadFile(insertbanner, path);
-      // setleaderboard['bannerLeaderboard'] = result.url;
-      setleaderboard['bannerLeaderboard'] = path;
+      var result = await this.osservices.uploadFile(insertbanner, path);
+      setleaderboard['bannerLeaderboard'] = result.url;
+      // setleaderboard['bannerLeaderboard'] = path;
   
       insertdata.leaderBoard = [setleaderboard];
   
