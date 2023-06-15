@@ -9,5 +9,6 @@ export class CreateSettingsDto {
     readonly jenisdata: string;
     readonly Max: number;
     readonly Min: number;
+    isActive:boolean;
     readonly sortObject: {}
 }

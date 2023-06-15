@@ -21,6 +21,8 @@ export class Settings {
     Max: number
     @Prop()
     Min: number
+    @Prop()
+    isActive:boolean
 
     @Prop({ type: Object })
     sortObject: {}

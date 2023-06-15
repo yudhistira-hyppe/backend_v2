@@ -10,6 +10,7 @@ export class CreateBanksDto {
     readonly atm: string;
     readonly internetBanking: string;
     readonly mobileBanking: string;
+    isActive : boolean;
 
 
 }

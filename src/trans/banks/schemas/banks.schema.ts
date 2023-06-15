@@ -22,6 +22,8 @@ export class Banks {
     internetBanking: string
     @Prop()
     mobileBanking: string
+    @Prop()
+    isActive: boolean
 
 
 
