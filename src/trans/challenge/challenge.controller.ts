@@ -281,7 +281,7 @@ export class ChallengeController {
       var setleaderboard = {};
       setleaderboard['tampilBadge'] = request_json['leaderboard_tampilbadge_dileaderboard'];
       setleaderboard['Height'] = Number(request_json['leaderboard_Height']);
-      setleaderboard['Weight'] = Number(request_json['leaderboard_Weight']);
+      setleaderboard['Width'] = Number(request_json['leaderboard_Width']);
       setleaderboard['maxSize'] = Number(request_json['leaderboard_maxSize']);
       setleaderboard['minSize'] = Number(request_json['leaderboard_minSize']);
       setleaderboard['warnaBackground'] = request_json['leaderboard_warnaBackground'];
@@ -301,7 +301,7 @@ export class ChallengeController {
       {
         setketentuanhadiah['badgePemenang'] = true;
         setketentuanhadiah['Height'] = Number(request_json['ketentuanhadiah_Height']);
-        setketentuanhadiah['Weight'] = Number(request_json['ketentuanhadiah_Weight']);
+        setketentuanhadiah['Width'] = Number(request_json['ketentuanhadiah_Width']);
         setketentuanhadiah['maxSize'] = Number(request_json['ketentuanhadiah_maxSize']);
         setketentuanhadiah['minSize'] = Number(request_json['ketentuanhadiah_minSize']);
         setketentuanhadiah['formatFile'] = request_json['ketentuanhadiah_formatFile'];
@@ -342,7 +342,7 @@ export class ChallengeController {
       {
         setketentuanhadiah['badgePemenang'] = false;
         setketentuanhadiah['Height'] = null;
-        setketentuanhadiah['Weight'] = null;
+        setketentuanhadiah['Width'] = null;
         setketentuanhadiah['maxSize'] = null;
         setketentuanhadiah['minSize'] = null;
         setketentuanhadiah['formatFile'] = null;
@@ -353,7 +353,7 @@ export class ChallengeController {
   
       var setbannersearch = {};
       setbannersearch['Height'] = Number(request_json['bannersearch_Height']);
-      setbannersearch['Weight'] = Number(request_json['bannersearch_Weight']);
+      setbannersearch['Width'] = Number(request_json['bannersearch_Width']);
       setbannersearch['maxSize'] = Number(request_json['bannersearch_maxSize']);
       setbannersearch['minSize'] = Number(request_json['bannersearch_minSize']);
       setbannersearch['formatFile'] = request_json['bannersearch_formatFile'];
@@ -368,7 +368,7 @@ export class ChallengeController {
   
       var setpopup = {};
       setpopup['Height'] = Number(request_json['popup_Height']);
-      setpopup['Weight'] = Number(request_json['popup_Weight']);
+      setpopup['Width'] = Number(request_json['popup_Width']);
       setpopup['maxSize'] = Number(request_json['popup_maxSize']);
       setpopup['minSize'] = Number(request_json['popup_minSize']);
       setpopup['formatFile'] = request_json['popup_formatFile'];

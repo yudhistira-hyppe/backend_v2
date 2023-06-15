@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateSettingsDto } from './dto/create-settings.dto';
 import { Settings, SettingsDocument } from './schemas/settings.schema';
+import { pipe } from 'rxjs';
 
 @Injectable()
 export class SettingsService {
@@ -12,7 +13,19 @@ export class SettingsService {
     ) { }
 
     async findAll(): Promise<Settings[]> {
-        return this.settingsModel.find().exec();
+        // return this.settingsModel.find().exec();
+
+        var pipeline = [];
+        pipeline.push(
+            {
+                "$match":
+                {
+                    isActive:true
+                }
+            }
+        )
+
+        return this.settingsModel.aggregate(pipeline).exec();
     }
 
     async findOne(id: string): Promise<Settings> {

@@ -9,5 +9,6 @@ export class CreateSettings2Dto {
     remark: string;
     Max: number;
     Min: number;
+    isActive:boolean;
     sortObject: {}
 }

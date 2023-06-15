@@ -188,4 +188,12 @@ export class Settings2Controller {
           });
       }
   }
+
+  @Get('delete/:id')
+  async softdelete(@Param('id') id: string) {
+      var updatedata = new CreateSettings2Dto();
+      updatedata.isActive = false;
+
+      return this.settings2Service.update(id, updatedata);
+  }
 }
