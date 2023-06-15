@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo } from 'mongoose';
 import { badge, badgeDocument } from './schemas/badge.schema';
 import { OssService } from 'src/stream/oss/oss.service';
+import { first } from 'rxjs';
 
 @Injectable()
 export class BadgeService {
@@ -61,33 +62,53 @@ export class BadgeService {
     return data;
   }
 
-  async detailAll(search: string, page:number, limit:number)
+  async detailAll(search: string, listjuara: any[], page:number, limit:number)
   {
     var pipeline = [];
+    var firstmatch = [];
 
     if(search != null && search != undefined)
+    {
+      firstmatch.push(
+        {
+          "name":
+          {
+            "$regex":search,
+            "$options":"i"
+          }
+        }
+      );
+    }
+
+    if(listjuara != null && listjuara != undefined)
+    {
+      var convertlistjuara = [];
+      for(var i = 0; i < listjuara.length; i++)
+      {
+        var setstringjuara = 'JUARA' + listjuara[i].toString();
+        convertlistjuara.push(setstringjuara);
+      }
+
+      firstmatch.push(
+        {
+          "$expr":
+          {
+            "$in":
+              [
+                "$type", convertlistjuara
+              ]
+          }
+        }
+      );
+    }
+
+    if(firstmatch.length != 0)
     {
       pipeline.push(
         {
           "$match":
           {
-            "$or":
-            [
-              {
-                "name":
-                {
-                  "$regex":search,
-                  "$options":"i"
-                }
-              },
-              {
-                "type":
-                {
-                  "$regex":search,
-                  "$options":"i"
-                }
-              },
-            ]
+            "$and":firstmatch
           }
         }
       );

@@ -17,6 +17,9 @@ export class subChallenge {
     endDatetime: string;
 
     @Prop()
+    session: number;
+
+    @Prop()
     isActive: boolean;
 }
 

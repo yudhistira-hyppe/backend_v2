@@ -146,11 +146,18 @@ export class BadgeController {
     var page = null;
     var limit = null;
     var search = null;
+    var listjuara = null;
 
     var request_json = JSON.parse(JSON.stringify(request.body));
 
+    
     if (request_json["search"] !== undefined) {
       search = request_json["search"];
+    }
+    
+    if(request_json["listjuara"] !== undefined)
+    {
+      listjuara = request_json["listjuara"];
     }
 
     if (request_json["page"] !== undefined) {
@@ -165,7 +172,7 @@ export class BadgeController {
         throw new BadRequestException("Unabled to proceed, limit field is required");
     }
 
-    var data = await this.badgeService.detailAll(search, page, limit);
+    var data = await this.badgeService.detailAll(search, listjuara, page, limit);
     const messages = {
       "info": ["The process successful"],
     };
