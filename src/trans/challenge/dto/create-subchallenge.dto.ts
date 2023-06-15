@@ -3,5 +3,6 @@ export class CreateSubChallengeDto {
     challengeId: { oid: String; };
     startDatetime: string;
     endDatetime: string;
+    session: number;
     isActive: boolean;
 }
