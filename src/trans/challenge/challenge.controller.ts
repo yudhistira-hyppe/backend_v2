@@ -154,36 +154,44 @@ export class ChallengeController {
         if (request_json["konten_hyppediary_viewpost"] == undefined && request_json["konten_hyppediary_viewpost"] == null) {
           request_json['konten_hyppediary_viewpost'] = 0;
         }
-  
+
+        var setinteraksikonten = {
+          "tagar": request_json['konten_tagar'],
+          "suka": [
+            {
+              "HyppeVid":Number(request_json['konten_hyppevid_likepost']),
+              "HyppePic":Number(request_json['konten_hyppepic_likepost']),
+              "HyppeDiary":Number(request_json['konten_hyppediary_likepost'])
+            }
+          ],
+          "tonton": [
+            {
+              "HyppeVid":Number(request_json['konten_hyppevid_viewpost']),
+              "HyppeDiary":Number(request_json['konten_hyppediary_viewpost'])
+            }
+          ],
+        }
+
+        if(insertdata.objectChallenge == 'KONTEN')
+        {
+          setinteraksikonten['buatKonten'] = [];
+        }
+        else
+        {
+          setinteraksikonten['buatKonten'] = [
+            {
+              "HyppeVid":Number(request_json['konten_hyppevid_createpost']),
+              "HyppePic":Number(request_json['konten_hyppepic_createpost']),
+              "HyppeDiary":Number(request_json['konten_hyppediary_createpost'])
+            }
+          ];
+        }
+        
         setmetrik = {
           "Aktivitas": false,
           "Interaksi": true,
           "AktivitasAkun": [ ],
-          "InteraksiKonten": [
-            {
-              "tagar": request_json['konten_tagar'],
-              "buatKonten": [
-                {
-                  "HyppeVid":Number(request_json['konten_hyppevid_createpost']),
-                  "HyppePic":Number(request_json['konten_hyppepic_createpost']),
-                  "HyppeDiary":Number(request_json['konten_hyppediary_createpost'])
-                }
-              ],
-              "suka": [
-                {
-                  "HyppeVid":Number(request_json['konten_hyppevid_likepost']),
-                  "HyppePic":Number(request_json['konten_hyppepic_likepost']),
-                  "HyppeDiary":Number(request_json['konten_hyppediary_likepost'])
-                }
-              ],
-              "tonton": [
-                {
-                  "HyppeVid":Number(request_json['konten_hyppevid_viewpost']),
-                  "HyppeDiary":Number(request_json['konten_hyppediary_viewpost'])
-                }
-              ],
-            }
-          ]
+          "InteraksiKonten": setinteraksikonten
         }
       }
   
@@ -193,23 +201,20 @@ export class ChallengeController {
       var setpesertafield = {};
       var datatipeAkun = request_json['tipeAkun'];
       var konversitipeAkun = datatipeAkun.toString().split(",");
-      var settipeAkun = {};
-      var listarraytipe = ["TERVERIFIKASI","TIDAKTERVERIFIKASI"];
       
-      for(var i = 0; i < listarraytipe.length; i++)
+      if(konversitipeAkun.length == 2)
       {
-        var checkresulttipe = konversitipeAkun.includes(listarraytipe[i]);
-        if(checkresulttipe == true)
-        {
-          settipeAkun[listarraytipe[i]] = "YES";
-        }
-        else
-        {
-          settipeAkun[listarraytipe[i]] = "NO";
-        }
+        setpesertafield["tipeAkunTerverikasi"] = 'ALL';
       }
-  
-      setpesertafield["tipeAkun"] = [settipeAkun];
+      else if(konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TERVERIFIKASI')
+      {
+        setpesertafield["tipeAkunTerverikasi"] = 'YES';
+      }
+      else if(konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TIDAKTERVERIFIKASI')
+      {
+        setpesertafield["tipeAkunTerverikasi"] = 'NO';
+      }
+
       setpesertafield["caraGabung"] = request_json['caraGabung'].toUpperCase();
   
       var datajeniskelamin = request_json['jenis_kelamin'];
@@ -217,21 +222,22 @@ export class ChallengeController {
       konversikelamin.split(",");
       var tempkelamindata = null;
       var setjeniskelamin = {};
-      for(var i = 0; i < konversikelamin.length; i++)
+      var listkelamin = new Map();
+      listkelamin.set('L' ,'LAKI-LAKI');
+      listkelamin.set('P' ,'PEREMPUAN');
+      listkelamin.set('O' ,'OTHER');
+
+      for (let [key, value] of listkelamin) 
       {
-        tempkelamindata = konversikelamin[i];
-        if(tempkelamindata == 'L')
-        {
-          setjeniskelamin['LAKI-LAKI'] = 'YES';
-        }
-        else if(tempkelamindata == 'P')
-        {
-          setjeniskelamin['PEREMPUAN'] = 'YES';
-        }
-        else if(tempkelamindata == 'O')
-        {
-          setjeniskelamin['LAINNYA'] = 'YES';
-        }
+          var searchkelamin = konversikelamin.includes(key);
+          if(searchkelamin == true)
+          {
+            setjeniskelamin[value] = 'YES';
+          }
+          else
+          {
+            setjeniskelamin[value] = 'NO';
+          }
       }
   
       setpesertafield["jenisKelamin"] = [setjeniskelamin];
@@ -458,11 +464,11 @@ export class ChallengeController {
   
       try
       {
-        // var resultdata = insertdata;
-        var resultdata = await this.challengeService.create(insertdata);
+        await this.challengeService.create(insertdata);
 
         var checkpartisipan = request_json['list_partisipan_challenge'];
-        if(checkpartisipan != undefined && checkpartisipan != null)
+        var checkjoinchallenge = request_json['caraGabung']; 
+        if(checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined)
         {
           this.insertchildofchallenge(insertdata, request_json['list_partisipan_challenge']);
         }
@@ -475,7 +481,7 @@ export class ChallengeController {
         
         return res.status(HttpStatus.OK).json({
             response_code: 202,
-            "data": resultdata,
+            "data": insertdata,
             "message": messages
         });
       }
@@ -723,16 +729,21 @@ export class ChallengeController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('listing/bannerlandingpage/:target')
+  @Post('listing/bannerlandingpage')
   async listingbanner(
-    @Param('target') target: string,
+    @Req() request: Request
   )
   {
+    var targetbanner = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+    targetbanner = request_json['target'];
+
     const messages = {
       "info": ["The process successful"],
     };
 
-    var data = await this.challengeService.findlistingBanner(target);
+    var data = await this.challengeService.findlistingBanner(targetbanner);
 
     return {
       response_code: 202,
@@ -863,6 +874,7 @@ export class ChallengeController {
       insertsub.endDatetime = listtanggal[i][1];
       insertsub.isActive = true;
       insertsub.challengeId = parentdata._id;
+      insertsub.session = i + 1;
       await this.subchallenge.create(insertsub); 
 
       // console.log(insertsub);
@@ -881,8 +893,6 @@ export class ChallengeController {
             insertuserchallenge.startDatetime = insertsub.startDatetime;
             insertuserchallenge.endDatetime = insertsub.endDatetime;
             insertuserchallenge.isActive = true;
-            insertuserchallenge.ranking = 0;
-            insertuserchallenge.score = 0;
             insertuserchallenge.createdAt = await this.util.getDateTimeString();
             insertuserchallenge.updatedAt = await this.util.getDateTimeString();
             insertuserchallenge.activity = [];
@@ -897,6 +907,6 @@ export class ChallengeController {
       listsubchallenge.push([insertsub, checkpartisipan]);
     }
 
-    // console.log(listsubchallenge);
+    // console.log(JSON.stringify(listsubchallenge));
   }
 }
