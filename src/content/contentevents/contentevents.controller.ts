@@ -1227,15 +1227,6 @@ export class ContenteventsController {
             let idevent1 = ceck_data_DONE._id;
             let event1 = ceck_data_DONE.eventType.toString();
             await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
-
-            const databasic = await this.userbasicsService.findOne(
-              email_receiverParty
-            );
-            var iduser = null;
-            if (databasic !== null) {
-              iduser = databasic._id;
-              this.userChallengeLike(iduser.toString(), idevent1.toString(), "contentevents", "LIKE", request.body.postID);
-            }
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, ' +
@@ -1253,14 +1244,6 @@ export class ContenteventsController {
             let event1 = ceck_data_DONE.eventType.toString();
             await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
 
-            const databasic = await this.userbasicsService.findOne(
-              email_receiverParty
-            );
-            var iduser = null;
-            if (databasic !== null) {
-              iduser = databasic._id;
-              this.userChallengeLike(iduser.toString(), idevent1.toString(), "contentevents", "LIKE", request.body.postID);
-            }
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, ' +
