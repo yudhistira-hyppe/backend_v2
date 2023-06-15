@@ -279,40 +279,25 @@ export class ChallengeController {
       insertdata.peserta = [setpesertafield];
   
       var setleaderboard = {};
-      // if(request_json['leaderboard_tampil'] == true)
-      if(request_json['leaderboard_tampil'] == 'true' || request_json['leaderboard_tampil'] == true)
-      {
-        setleaderboard['tampilBadge'] = true;
-        setleaderboard['Height'] = Number(request_json['leaderboard_Height']);
-        setleaderboard['Weight'] = Number(request_json['leaderboard_Weight']);
-        setleaderboard['maxSize'] = Number(request_json['leaderboard_maxSize']);
-        setleaderboard['minSize'] = Number(request_json['leaderboard_minSize']);
-        setleaderboard['warnaBackground'] = request_json['leaderboard_warnaBackground'];
-        setleaderboard['formatFile'] = request_json['leaderboard_formatFile'];
-        var ektensileaderboard = request_json['leaderboard_formatFile'];
-        var insertbanner = files.bannerBoard[0];
-        var path = "images/challenge/" + insertdata._id + "_bannerLeaderboard" + "." + ektensileaderboard;
-        var result = await this.osservices.uploadFile(insertbanner, path);
-        setleaderboard['bannerLeaderboard'] = result.url;
-        // setleaderboard['bannerLeaderboard'] = path;
-      }
-      else
-      {
-        setleaderboard['tampilBadge'] = false;
-        setleaderboard['Height'] = null;
-        setleaderboard['Weight'] = null;
-        setleaderboard['maxSize'] = null;
-        setleaderboard['minSize'] = null;
-        setleaderboard['formatFile'] = null;
-        setleaderboard['warnaBackground'] = null;
-        setleaderboard['bannerLeaderboard'] = null;
-      }
+      setleaderboard['tampilBadge'] = request_json['leaderboard_tampilbadge_dileaderboard'];
+      setleaderboard['Height'] = Number(request_json['leaderboard_Height']);
+      setleaderboard['Weight'] = Number(request_json['leaderboard_Weight']);
+      setleaderboard['maxSize'] = Number(request_json['leaderboard_maxSize']);
+      setleaderboard['minSize'] = Number(request_json['leaderboard_minSize']);
+      setleaderboard['warnaBackground'] = request_json['leaderboard_warnaBackground'];
+      setleaderboard['formatFile'] = request_json['leaderboard_formatFile'];
+      var ektensileaderboard = request_json['leaderboard_formatFile'];
+      var insertbanner = files.bannerBoard[0];
+      var path = "images/challenge/" + insertdata._id + "_bannerLeaderboard" + "." + ektensileaderboard;
+      // var result = await this.osservices.uploadFile(insertbanner, path);
+      // setleaderboard['bannerLeaderboard'] = result.url;
+      setleaderboard['bannerLeaderboard'] = path;
   
       insertdata.leaderBoard = [setleaderboard];
   
       var setketentuanhadiah = {};
-      // if(request_json['ketentuanhadiah.tampilbadge'] == true)
-      if(request_json['ketentuanhadiah_tampilbadge'] == 'true' || request_json['ketentuanhadiah.tampilbadge'] == true)
+      // if(request_json['ketentuanhadiah_tampilbadge'] == true)
+      if(request_json['ketentuanhadiah_tampilbadge'] == 'true' || request_json['ketentuanhadiah_tampilbadge'] == true)
       {
         setketentuanhadiah['badgePemenang'] = true;
         setketentuanhadiah['Height'] = Number(request_json['ketentuanhadiah_Height']);
@@ -396,7 +381,7 @@ export class ChallengeController {
       
       insertdata.popUp = [setpopup];
   
-      if(request_json['hadiah_currency'] != null && request_json['hadiah_currency'] != undefined)
+      if(request_json['hadiah_set_hadiahpemenang'] == 'true' || request_json['hadiah_set_hadiahpemenang'] == true)
       {
         var sethadiah = {};
   
