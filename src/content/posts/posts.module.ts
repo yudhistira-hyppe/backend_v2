@@ -42,10 +42,13 @@ import { TagCountModule } from '../tag_count/tag_count.module';
 import { InterestCountModule } from '../interest_count/interest_count.module';
 import { InterestdayModule } from '../interestday/interestday.module';
 import { OssContentPictService } from './osscontentpict.service';
-
+import { UserchallengesModule } from 'src/trans/userchallenges/userchallenges.module';
+import { ChallengeModule } from 'src/trans/challenge/challenge.module';
 @Module({
 
     imports: [
+        UserchallengesModule,
+        ChallengeModule,
         InterestCountModule,
         InterestdayModule,
         AdsLandingModule,
