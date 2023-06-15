@@ -1067,16 +1067,16 @@ export class PostsController {
     var data = await this.postContentService.createNewPostV4(file, body, headers);
     var postID = data.data.postID;
 
-    var email = data.data.email;
+    // var email = data.data.email;
 
-    const databasic = await this.userbasicsService.findOne(
-      email
-    );
-    var iduser = null;
-    if (databasic !== null) {
-      iduser = databasic._id;
-      this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
-    }
+    // const databasic = await this.userbasicsService.findOne(
+    //   email
+    // );
+    // var iduser = null;
+    // if (databasic !== null) {
+    //   iduser = databasic._id;
+    //   this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+    // }
 
     //Tags
 
