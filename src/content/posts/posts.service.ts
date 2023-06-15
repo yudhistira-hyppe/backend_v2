@@ -48718,6 +48718,16 @@ export class PostsService {
         }
       },
       {
+        $lookup: {
+          from: 'mediamusic',
+          localField: 'musicId',
+          foreignField: '_id',
+          as: 'music',
+
+        },
+
+      },
+      {
         "$lookup": {
           from: "mediastories",
           as: "media",
