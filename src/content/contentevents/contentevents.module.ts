@@ -19,10 +19,11 @@ import { UserbasicsModule } from 'src/trans/userbasics/userbasics.module';
 import { NewpostsModule } from '../newposts/newposts.module';
 import { UserchallengesModule } from 'src/trans/userchallenges/userchallenges.module';
 import { ChallengeModule } from 'src/trans/challenge/challenge.module';
-
+import { TagCountModule } from 'src/content/tag_count/tag_count.module';
 
 @Module({
     imports: [
+        TagCountModule,
         UserchallengesModule,
         ChallengeModule,
         NewpostsModule,
