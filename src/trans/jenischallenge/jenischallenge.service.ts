@@ -3,7 +3,7 @@ import { CreateJenischallengeDto } from './dto/create-jenischallenge.dto';
 import { Model, mongo } from 'mongoose';
 import { jenisChallenge, jenisChallengeDocument } from './schemas/jenischallenge.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { pipe } from 'rxjs';
+import { first, pipe } from 'rxjs';
 
 @Injectable()
 export class JenischallengeService {
@@ -49,34 +49,35 @@ export class JenischallengeService {
   async detailAll(search:string, page:number, limit:number)
   {
     var pipeline = [];
+    var firstmatch = [];
 
     if(search != null && search != undefined)
     {
-      pipeline.push(
+      firstmatch.push(
         {
-          "$match":
+          "name":
           {
-            "$or":
-            [
-              {
-                "name":
-                {
-                  "$regex":search,
-                  "$options":"i"
-                }
-              },
-              {
-                "description":
-                {
-                  "$regex":search,
-                  "$options":"i"
-                }
-              },
-            ]
+            "$regex":search,
+            "$options":"i"
           }
         }
       );
     }
+
+    firstmatch.push(
+      {
+        isActive:true
+      }
+    );
+
+    pipeline.push(
+      {
+        "$match":
+        {
+          "$and":firstmatch
+        }
+      }
+    );
 
     if(page > 0)
     {

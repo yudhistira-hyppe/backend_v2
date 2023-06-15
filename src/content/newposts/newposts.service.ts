@@ -15,6 +15,7 @@ export class NewpostsService {
         return await this.NewpostsModel.updateOne({ postID: postid }, { $push: { viewer: email } }).exec();
     }
 
+
     // async challengeFollow(iduser: string, idref: string, nametable: string) {
     //     await this.authService.userChallengeFollow(iduser, idref, nametable);
     // }
