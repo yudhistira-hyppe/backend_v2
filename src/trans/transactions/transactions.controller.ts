@@ -6319,7 +6319,8 @@ export class TransactionsController {
                     "email": userdata[0].email,
                     "namapenjual": namapenjual,
                     "emailpenjual": emailpenjual,
-                    "detailTransaction": arraydetail
+                    "detailTransaction": arraydetail,
+                    "iconVoucher": databuy[0].setting[0].value
 
                 };
 
