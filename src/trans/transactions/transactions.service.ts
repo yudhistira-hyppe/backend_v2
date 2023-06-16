@@ -4461,6 +4461,20 @@ export class TransactionsService {
                 }
             },
             {
+                $lookup: {
+                    from: "settings",
+                    as: "setting",
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                "_id": new Types.ObjectId("648ae670766c00007d004a82")
+                            }
+                        },
+                    ]
+                }
+            },
+            {
                 $match: {
                     _id: id,
                     type: type,
