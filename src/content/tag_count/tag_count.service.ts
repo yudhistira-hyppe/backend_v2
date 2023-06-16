@@ -90,6 +90,12 @@ export class TagCountService {
                             $match:
                             {
                                 $and: [
+
+                                    {
+                                        $text: {
+                                            $search: key
+                                        }
+                                    },
                                     {
                                         $expr: {
                                             $in: ['$postID', '$$localID']
@@ -147,7 +153,6 @@ export class TagCountService {
                                 },
                                 "comments": "$comments",
                                 "likes": "$likes",
-                                "scorePict": 1,
                                 "_id": 1,
                                 "postID": 1,
                                 "createdAt": 1,
@@ -164,7 +169,9 @@ export class TagCountService {
                                 "allowComments": 1,
                                 "saleAmount": 1,
                                 "isLiked": 1,
-
+                                "scorePict": {
+                                    $meta: "textScore"
+                                }
                             }
                         }
                     ],
@@ -2284,6 +2291,12 @@ export class TagCountService {
                             $match:
                             {
                                 $and: [
+
+                                    {
+                                        $text: {
+                                            $search: key
+                                        }
+                                    },
                                     {
                                         $expr: {
                                             $in: ['$postID', '$$localID']
@@ -2341,8 +2354,6 @@ export class TagCountService {
                                 },
                                 "comments": "$comments",
                                 "likes": "$likes",
-                                "views": "$views",
-                                "scorePict": 1,
                                 "_id": 1,
                                 "postID": 1,
                                 "createdAt": 1,
@@ -2359,17 +2370,11 @@ export class TagCountService {
                                 "allowComments": 1,
                                 "saleAmount": 1,
                                 "isLiked": 1,
-                                "viewer": 1,
-                                "category": 1,
-                                "musicId": 1,
-                                "contentModeration": 1,
-                                "reportedUserCount": 1,
-                                "contentModerationResponse": 1,
-                                "reportedUser": 1,
-                                "tags": 1
+                                "scorePict": {
+                                    $meta: "textScore"
+                                }
                             }
-                        },
-
+                        }
                     ],
                     as: "posted"
                 },
