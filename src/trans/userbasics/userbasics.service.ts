@@ -877,7 +877,7 @@ export class UserbasicsService {
     return query;
   }
 
-  async transaksiHistory(email: string, skip: number, limit: number, startdate: string, enddate: string, sell: any, buy: any, withdrawal: any, rewards: any, boost: any) {
+  async transaksiHistory(email: string, skip: number, limit: number, startdate: string, enddate: string, sell: any, buy: any, withdrawal: any, rewards: any, boost: any, voucher: any) {
 
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -1558,6 +1558,20 @@ export class UserbasicsService {
               }
             },
             {
+              $lookup: {
+                from: "settings",
+                as: "setting",
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      "_id": new Types.ObjectId("648ae670766c00007d004a82")
+                    }
+                  },
+                ]
+              }
+            },
+            {
               $project: {
                 "transaction": [{
                   //"video": 1,
@@ -1574,6 +1588,7 @@ export class UserbasicsService {
                   "expiredtimeva": "$buy-sell.expiredtimeva",
                   "bank": "$buy-sell.bank",
                   "amount": "$buy-sell.amount",
+                  "iconVoucher": { $arrayElemAt: ['$setting.value', 0] },
                   "totalamount":
                   {
                     $cond: {
@@ -2315,67 +2330,130 @@ export class UserbasicsService {
           "apsara": '$tester.apsara',
           "debetKredit": '$tester.debetKredit',
           "timestart": "$tester.timestart",
-
+          "iconVoucher": "$tester.iconVoucher",
         }
       },
     );
 
-    if (sell === true && buy === false && withdrawal === false && rewards === false && boost === false) {
-      pipeline.push({ $match: { "type": "Sell", "jenis": { $ne: "BOOST_CONTENT" } } },);
+    if (sell === true && buy === false && withdrawal === false && rewards === false && boost === false && voucher === false) {
+      pipeline.push({ $match: { "type": "Sell", "jenis": "CONTENT" } },);
     }
-    else if (sell === false && buy === true && withdrawal === false && rewards === false && boost === false) {
-      pipeline.push({ $match: { "type": "Buy", "jenis": { $ne: "BOOST_CONTENT" } } });
+    else if (sell === false && buy === true && withdrawal === false && rewards === false && boost === false && voucher === false) {
+      pipeline.push({ $match: { "type": "Buy", "jenis": "CONTENT" } });
     }
-    else if (sell === false && buy === false && withdrawal === true && rewards === false && boost === false) {
+    else if (sell === false && buy === false && withdrawal === true && rewards === false && boost === false && voucher === false) {
       pipeline.push({ $match: { "type": "Withdraws" } });
     }
-    else if (sell === false && buy === false && withdrawal === false && rewards === true && boost === false) {
+    else if (sell === false && buy === false && withdrawal === false && rewards === true && boost === false && voucher === false) {
       pipeline.push({ $match: { "type": "Rewards" } });
     }
-    else if (sell === false && buy === false && withdrawal === false && rewards === false && boost === true) {
+    else if (sell === false && buy === false && withdrawal === false && rewards === false && boost === true && voucher === false) {
       pipeline.push({ $match: { "type": "Buy", "jenis": "BOOST_CONTENT" } });
     }
-    else if (sell === true && buy === true && withdrawal === false && rewards === false && boost === false) {
-      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Buy", "jenis": { $ne: "BOOST_CONTENT" } }] } },);
+    else if (sell === true && buy === true && withdrawal === false && rewards === false && boost === false && voucher === false) {
+
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": "CONTENT" }, { "type": "Buy", "jenis": "CONTENT" }] } },);
     }
-    else if (sell === true && buy === false && withdrawal === true && rewards === false && boost === false) {
-      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Withdraws" }] } },);
+
+    else if (sell === true && buy === false && withdrawal === true && rewards === false && boost === false && voucher === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": "CONTENT" }, { "type": "Withdraws" }] } },);
     }
-    else if (sell === true && buy === false && withdrawal === false && rewards === true && boost === false) {
-      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Rewards" }] } },);
+
+    else if (sell === true && buy === false && withdrawal === false && rewards === true && boost === false && voucher === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": "CONTENT" }, { "type": "Rewards" }] } },);
     }
-    else if (sell === true && buy === false && withdrawal === false && rewards === false && boost === true) {
+    else if (sell === true && buy === false && withdrawal === false && rewards === false && boost === true && voucher === false) {
       pipeline.push({ $match: { $or: [{ "type": "Sell" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
     }
 
-    else if (sell === false && buy === true && withdrawal === true && rewards === false && boost === false) {
-      pipeline.push({ $match: { $or: [{ "type": "Buy", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Withdraws" }] } },);
+    else if (sell === false && buy === true && withdrawal === true && rewards === false && boost === false && voucher === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Buy", "jenis": "CONTENT" }, { "type": "Withdraws" }] } },);
     }
-    else if (sell === false && buy === true && withdrawal === false && rewards === true && boost === false) {
-      pipeline.push({ $match: { $or: [{ "type": "Buy", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Rewards" }] } },);
-    }
-    else if (sell === false && buy === true && withdrawal === false && rewards === false && boost === true) {
-      pipeline.push({ $match: { $or: [{ "type": "Buy" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
-    }
-    else if (sell === false && buy === false && withdrawal === true && rewards === true && boost === false) {
-      pipeline.push({ $match: { $or: [{ "type": "Withdraws" }, { "type": "Rewards" }] } },);
-    }
-    else if (sell === false && buy === false && withdrawal === true && rewards === false && boost === true) {
-      pipeline.push({ $match: { $or: [{ "type": "Withdraws" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
-    }
-    else if (sell === false && buy === false && withdrawal === false && rewards === true && boost === true) {
-      pipeline.push({ $match: { $or: [{ "type": "Rewards" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
-    }
-    else if (sell === true && buy === true && withdrawal === true && rewards === false && boost === false) {
-      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Buy", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Withdraws" }] } },);
-    }
-    else if (sell === true && buy === true && withdrawal === true && rewards === true && boost === false) {
-      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Buy", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Withdraws" }, { "type": "Rewards" }] } },);
-    }
-    else if (sell === true && buy === true && withdrawal === true && rewards === true && boost === true) {
-      pipeline.push({ $match: { $or: [{ "type": "Sell" }, { "type": "Buy" }, { "type": "Withdraws" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
+    else if (sell === false && buy === true && withdrawal === false && rewards === true && boost === false && voucher === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Buy", "jenis": "CONTENT" }, { "type": "Rewards" }] } },);
     }
 
+    else if (sell === false && buy === true && withdrawal === false && rewards === false && boost === true && voucher === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Buy", "jenis": "CONTENT" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
+    }
+    else if (sell === false && buy === false && withdrawal === true && rewards === true && boost === false && voucher === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Withdraws" }, { "type": "Rewards" }] } },);
+    }
+
+    else if (sell === false && buy === false && withdrawal === true && rewards === false && boost === true && voucher === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Withdraws" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
+    }
+    else if (sell === false && buy === false && withdrawal === false && rewards === true && boost === true && voucher === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Rewards" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
+    }
+
+    else if (sell === true && buy === true && withdrawal === true && rewards === false && boost === false && voucher === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": "CONTENT" }, { "type": "Buy", "jenis": "CONTENT" }, { "type": "Withdraws" }] } },);
+    }
+    else if (sell === true && buy === true && withdrawal === true && rewards === true && boost === false && voucher === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": "CONTENT" }, { "type": "Buy", "jenis": "CONTENT" }, { "type": "Withdraws" }, { "type": "Rewards" }] } },);
+    }
+    else if (sell === true && buy === true && withdrawal === true && rewards === true && boost === true && voucher === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": "CONTENT" }, { "type": "Buy", "jenis": "CONTENT" }, { "type": "Withdraws" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
+    }
+    else if (sell === false && buy === false && withdrawal === false && rewards === false && boost === false && voucher === true) {
+      pipeline.push({ $match: { "jenis": "VOUCHER" } },);
+    }
+    else if (sell === true && buy === false && withdrawal === false && rewards === false && boost === false && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": "CONTENT" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === false && buy === true && withdrawal === false && rewards === false && boost === false && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Buy", "jenis": "CONTENT" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === false && buy === false && withdrawal === true && rewards === false && boost === false && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Withdraws" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === false && buy === false && withdrawal === false && rewards === true && boost === false && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Rewards" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === false && buy === false && withdrawal === false && rewards === false && boost === true && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Buy", "jenis": "BOOST_CONTENT" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === true && buy === true && withdrawal === false && rewards === false && boost === false && voucher === true) {
+
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": "CONTENT" }, { "type": "Buy", "jenis": "CONTENT" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === true && buy === false && withdrawal === true && rewards === false && boost === false && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": "CONTENT" }, { "type": "Withdraws" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === true && buy === false && withdrawal === false && rewards === true && boost === false && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": "CONTENT" }, { "type": "Rewards" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === true && buy === false && withdrawal === false && rewards === false && boost === true && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === false && buy === true && withdrawal === true && rewards === false && boost === false && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Buy", "jenis": "CONTENT" }, { "type": "Withdraws" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === false && buy === true && withdrawal === false && rewards === true && boost === false && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Buy", "jenis": "CONTENT" }, { "type": "Rewards" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === false && buy === true && withdrawal === false && rewards === false && boost === true && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Buy", "jenis": "CONTENT" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === false && buy === false && withdrawal === true && rewards === true && boost === false && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Withdraws" }, { "type": "Rewards" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === false && buy === false && withdrawal === true && rewards === false && boost === true && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Withdraws" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === false && buy === false && withdrawal === false && rewards === true && boost === true && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Rewards" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === true && buy === true && withdrawal === true && rewards === false && boost === false && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": "CONTENT" }, { "type": "Buy", "jenis": "CONTENT" }, { "type": "Withdraws" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === true && buy === true && withdrawal === true && rewards === true && boost === false && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": "CONTENT" }, { "type": "Buy", "jenis": "CONTENT" }, { "type": "Withdraws" }, { "type": "Rewards" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
+    else if (sell === true && buy === true && withdrawal === true && rewards === true && boost === true && voucher === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": "CONTENT" }, { "type": "Buy", "jenis": "CONTENT" }, { "type": "Withdraws" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }, { "type": "Buy", "jenis": "VOUCHER" }] } },);
+    }
 
     if (startdate && startdate !== undefined) {
 

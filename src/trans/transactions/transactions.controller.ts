@@ -8192,6 +8192,7 @@ export class TransactionsController {
         var withdrawal = null;
         var boost = null;
         var rewards = null;
+        var voucher = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
@@ -8211,7 +8212,7 @@ export class TransactionsController {
         withdrawal = request_json["withdrawal"];
         boost = request_json["boost"];
         rewards = request_json["rewards"];
-
+        voucher = request_json["voucher"];
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
@@ -8234,7 +8235,7 @@ export class TransactionsController {
 
 
         try {
-            query = await this.userbasicsService.transaksiHistory(email, skip, limit, startdate, enddate, sell, buy, withdrawal, rewards, boost);
+            query = await this.userbasicsService.transaksiHistory(email, skip, limit, startdate, enddate, sell, buy, withdrawal, rewards, boost, voucher);
         } catch (e) {
             query = [];
         }
@@ -8249,11 +8250,13 @@ export class TransactionsController {
         var idapsaradefine = null;
         var apsaradefine = null;
         var arrdata = [];
+        var iconvoucher = null;
         console.log(query);
         //push ke data
         var listdata = [];
         var tempresult = null;
         var tempdata = null;
+        var jenis = null;
         for (var i = 0; i < query.length; i++) {
             tempdata = query[i];
             if (tempdata.apsara == true) {
@@ -8269,12 +8272,34 @@ export class TransactionsController {
         // console.log(resultdata.ImageInfo[0]);
         tempresult = apsaraimagedata.ImageInfo;
         for (var i = 0; i < query.length; i++) {
+
+            jenis = query[i].jenis;
+
+            try {
+                iconvoucher = query[i].iconVoucher;
+            } catch (e) {
+                iconvoucher = "";
+            }
+
             for (var j = 0; j < tempresult.length; j++) {
                 if (tempresult[j].ImageId == query[i].apsaraId) {
-                    query[i].media =
-                    {
-                        "ImageInfo": [tempresult[j]]
+
+                    if (jenis == "VOUCHER") {
+                        query[i].description = "buy VOUCHER";
+                        query[i].media =
+                        {
+                            "ImageInfo": [{
+
+                                URL: iconvoucher
+                            }]
+                        }
+                    } else {
+                        query[i].media =
+                        {
+                            "ImageInfo": [tempresult[j]]
+                        }
                     }
+
                     query[i].mediaThumbEndpoint = tempresult[j].URL;
                 }
                 else if (query[i].apsara == false && (query[i].mediaType == "image" || query[i].mediaType == "images")) {
@@ -8291,12 +8316,33 @@ export class TransactionsController {
         // console.log(resultdata.ImageInfo[0]);
         tempresult = apsaravideodata.VideoList;
         for (var i = 0; i < query.length; i++) {
+
+            jenis = query[i].jenis;
+
+            try {
+                iconvoucher = query[i].iconVoucher;
+            } catch (e) {
+                iconvoucher = "";
+            }
             for (var j = 0; j < tempresult.length; j++) {
                 if (tempresult[j].VideoId == query[i].apsaraId) {
-                    query[i].media =
-                    {
-                        "VideoList": [tempresult[j]]
+
+                    if (jenis == "VOUCHER") {
+                        query[i].description = "buy VOUCHER";
+                        query[i].media =
+                        {
+                            "ImageInfo": [{
+
+                                URL: iconvoucher
+                            }]
+                        }
+                    } else {
+                        query[i].media =
+                        {
+                            "VideoList": [tempresult[j]]
+                        }
                     }
+
                     query[i].mediaThumbEndpoint = tempresult[j].CoverURL;
                 }
                 else if (query[i].apsara == false && query[i].mediaType == "video") {
