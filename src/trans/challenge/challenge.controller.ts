@@ -119,10 +119,6 @@ export class ChallengeController {
       }
       else
       {
-        if (request_json["konten_tagar"] == undefined) {
-          request_json['konten_tagar'] = null;
-        }
-  
         if (request_json["konten_hyppevid_createpost"] == undefined && request_json["konten_hyppevid_createpost"] == null) {
           request_json['konten_hyppevid_createpost'] = 0;
         }
@@ -156,7 +152,6 @@ export class ChallengeController {
         }
 
         var setinteraksikonten = {
-          "tagar": request_json['konten_tagar'],
           "suka": [
             {
               "HyppeVid":Number(request_json['konten_hyppevid_likepost']),
@@ -185,6 +180,10 @@ export class ChallengeController {
               "HyppeDiary":Number(request_json['konten_hyppediary_createpost'])
             }
           ];
+        }
+
+        if (request_json["konten_tagar"] != null && request_json["konten_tagar"] != undefined) {
+          setinteraksikonten['tagar'] = request_json['konten_tagar'];
         }
         
         setmetrik = {
@@ -289,9 +288,9 @@ export class ChallengeController {
       var ektensileaderboard = request_json['leaderboard_formatFile'];
       var insertbanner = files.bannerBoard[0];
       var path = "images/challenge/" + insertdata._id + "_bannerLeaderboard" + "." + ektensileaderboard;
-      var result = await this.osservices.uploadFile(insertbanner, path);
-      setleaderboard['bannerLeaderboard'] = result.url;
-      // setleaderboard['bannerLeaderboard'] = path;
+      // var result = await this.osservices.uploadFile(insertbanner, path);
+      // setleaderboard['bannerLeaderboard'] = result.url;
+      setleaderboard['bannerLeaderboard'] = path;
   
       insertdata.leaderBoard = [setleaderboard];
   
@@ -360,9 +359,9 @@ export class ChallengeController {
       var ektensisearch = request_json['bannersearch_formatFile'];
       var insertsearch = files.bannerSearch[0];
       var path = "images/challenge/" + insertdata._id + "_bannerSearch" + "." + ektensisearch;
-      var result = await this.osservices.uploadFile(insertsearch, path);
-      setbannersearch['image'] = result.url;
-      // setbannersearch['image'] = path;
+      // var result = await this.osservices.uploadFile(insertsearch, path);
+      // setbannersearch['image'] = result.url;
+      setbannersearch['image'] = path;
       
       insertdata.bannerSearch = [setbannersearch];
   
@@ -375,9 +374,9 @@ export class ChallengeController {
       var ektensipopup = request_json['popup_formatFile'];
       var insertpopup = files.popUpnotif[0];
       var path = "images/challenge/" + insertdata._id + "_popup" + "." + ektensipopup;
-      var result = await this.osservices.uploadFile(insertpopup, path);
-      setpopup['image'] = result.url;
-      // setpopup['image'] = path;
+      // var result = await this.osservices.uploadFile(insertpopup, path);
+      // setpopup['image'] = result.url;
+      setpopup['image'] = path;
       
       insertdata.popUp = [setpopup];
   
@@ -449,7 +448,7 @@ export class ChallengeController {
   
       try
       {
-        await this.challengeService.create(insertdata);
+        // await this.challengeService.create(insertdata);
 
         var checkpartisipan = request_json['list_partisipan_challenge'];
         var checkjoinchallenge = request_json['caraGabung']; 
@@ -860,7 +859,7 @@ export class ChallengeController {
       insertsub.isActive = true;
       insertsub.challengeId = parentdata._id;
       insertsub.session = i + 1;
-      await this.subchallenge.create(insertsub); 
+      // await this.subchallenge.create(insertsub); 
 
       // console.log(insertsub);
       // console.log(getuserpartisipan);
@@ -883,7 +882,7 @@ export class ChallengeController {
             insertuserchallenge.activity = [];
             insertuserchallenge.history = [];
 
-            await this.userchallengeSS.create(insertuserchallenge);
+            // await this.userchallengeSS.create(insertuserchallenge);
 
             checkpartisipan.push(insertuserchallenge);
         }
