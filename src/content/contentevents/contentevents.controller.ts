@@ -1839,7 +1839,10 @@ export class ContenteventsController {
     var datasubchallenge = null;
     var poin = null;
     var datatag = null;
-
+    var poinViewVid = null;
+    var poinViewDiary = null;
+    var poinPict = null;
+    var tagar = null;
     try {
       datachallenge = await this.challengeService.challengeKonten();
     } catch (e) {
@@ -1851,10 +1854,23 @@ export class ContenteventsController {
 
       for (let i = 0; i < lengchal; i++) {
         var idChallenge = datachallenge[i]._id.toString();
-        var poinViewVid = datachallenge[i].tonton[0].HyppeVid;
-        var poinViewDiary = datachallenge[i].tonton[0].HyppeDiary;
-        var tagar = datachallenge[i].tagar;
+        try {
+          poinViewVid = datachallenge[i].buatKonten[0].HyppeVid;
+        } catch (e) {
+          poinViewVid = 0;
+        }
 
+        try {
+          poinViewDiary = datachallenge[i].buatKonten[0].HyppeDiary;
+        } catch (e) {
+          poinViewDiary = 0;
+        }
+
+        try {
+          tagar = datachallenge[i].tagar;
+        } catch (e) {
+          tagar = "";
+        }
         if (tagar != undefined && tagar != "") {
 
           try {
@@ -2040,7 +2056,10 @@ export class ContenteventsController {
     var datasubchallenge = null;
     var poin = null;
     var datatag = null;
-
+    var poinViewVid = null;
+    var poinViewDiary = null;
+    var poinPict = null;
+    var tagar = null;
     try {
       datachallenge = await this.challengeService.challengeKonten();
     } catch (e) {
@@ -2052,10 +2071,28 @@ export class ContenteventsController {
 
       for (let i = 0; i < lengchal; i++) {
         var idChallenge = datachallenge[i]._id.toString();
-        var poinViewVid = datachallenge[i].suka[0].HyppeVid;
-        var poinViewDiary = datachallenge[i].suka[0].HyppeDiary;
-        var poinPict = datachallenge[i].suka[0].HyppePic;
-        var tagar = datachallenge[i].tagar;
+        try {
+          poinViewVid = datachallenge[i].buatKonten[0].HyppeVid;
+        } catch (e) {
+          poinViewVid = 0;
+        }
+
+        try {
+          poinViewDiary = datachallenge[i].buatKonten[0].HyppeDiary;
+        } catch (e) {
+          poinViewDiary = 0;
+        }
+        try {
+          poinPict = datachallenge[i].buatKonten[0].HyppePic;
+        } catch (e) {
+          poinPict = 0;
+        }
+
+        try {
+          tagar = datachallenge[i].tagar;
+        } catch (e) {
+          tagar = "";
+        }
 
         if (tagar != undefined && tagar != "") {
 

@@ -1067,16 +1067,16 @@ export class PostsController {
     var data = await this.postContentService.createNewPostV4(file, body, headers);
     var postID = data.data.postID;
 
-    // var email = data.data.email;
+    var email = data.data.email;
 
-    // const databasic = await this.userbasicsService.findOne(
-    //   email
-    // );
-    // var iduser = null;
-    // if (databasic !== null) {
-    //   iduser = databasic._id;
-    //   this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
-    // }
+    const databasic = await this.userbasicsService.findOne(
+      email
+    );
+    var iduser = null;
+    if (databasic !== null) {
+      iduser = databasic._id;
+      this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+    }
 
     //Tags
 
@@ -2795,7 +2795,10 @@ export class PostsController {
     var datasubchallenge = null;
     var poin = null;
     var datatag = null;
-
+    var poinViewVid = null;
+    var poinViewDiary = null;
+    var poinPict = null;
+    var tagar = null;
     try {
       datachallenge = await this.challengeService.challengeKonten();
     } catch (e) {
@@ -2807,10 +2810,28 @@ export class PostsController {
 
       for (let i = 0; i < lengchal; i++) {
         var idChallenge = datachallenge[i]._id.toString();
-        var poinViewVid = datachallenge[i].buatKonten[0].HyppeVid;
-        var poinViewDiary = datachallenge[i].buatKonten[0].HyppeDiary;
-        var poinPict = datachallenge[i].buatKonten[0].HyppePic;
-        var tagar = datachallenge[i].tagar;
+        try {
+          poinViewVid = datachallenge[i].buatKonten[0].HyppeVid;
+        } catch (e) {
+          poinViewVid = 0;
+        }
+
+        try {
+          poinViewDiary = datachallenge[i].buatKonten[0].HyppeDiary;
+        } catch (e) {
+          poinViewDiary = 0;
+        }
+        try {
+          poinPict = datachallenge[i].buatKonten[0].HyppePic;
+        } catch (e) {
+          poinPict = 0;
+        }
+
+        try {
+          tagar = datachallenge[i].tagar;
+        } catch (e) {
+          tagar = "";
+        }
 
         if (tagar != undefined && tagar != "") {
 
