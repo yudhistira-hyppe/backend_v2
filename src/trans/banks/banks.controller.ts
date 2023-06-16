@@ -162,4 +162,24 @@ export class BanksController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get('api/banks/delete/:id')
+    async softdelete(
+        @Param('id') id: string,
+    ) {
+      var updatedata = new CreateBanksDto();
+      updatedata.isActive = false;
+
+      await this.banksService.deletedata(id);
+
+      const messages = {
+          "info": ["The process successful"],
+      };
+
+      return {
+          response_code: 202,
+          messages: messages,
+      };
+    }
+
 }

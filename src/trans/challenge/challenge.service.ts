@@ -145,6 +145,7 @@ export class ChallengeService {
         {
           _id: 1,
           nameChallenge: 1,
+          jenisChallenge:1,
           jenisChallenge_fk:
           {
             "$arrayElemAt":
@@ -230,6 +231,8 @@ export class ChallengeService {
         );
       }
       else {
+        var mongo = require('mongoose');
+        var convertid = mongo.Types.ObjectId(menuChallenge);
         pipeline.push(
           {
             "$match":
@@ -241,7 +244,7 @@ export class ChallengeService {
                     {
                       "$eq":
                         [
-                          "$jenisChallenge_fk", menuChallenge
+                          "$jenisChallenge", convertid
                         ]
                     }
                   },
