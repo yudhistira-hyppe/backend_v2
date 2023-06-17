@@ -2707,12 +2707,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -3451,12 +3454,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -4193,12 +4199,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -4937,12 +4946,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -5655,12 +5667,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -6397,12 +6412,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -7115,12 +7133,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -7857,12 +7878,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -8574,12 +8598,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -10036,12 +10063,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -10753,12 +10783,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
