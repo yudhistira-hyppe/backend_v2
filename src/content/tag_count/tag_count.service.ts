@@ -2532,12 +2532,17 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                },
+                                                false
+                                            ]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -3271,12 +3276,17 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                },
+                                                false
+                                            ]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -4007,12 +4017,17 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                },
+                                                false
+                                            ]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -4748,12 +4763,17 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                },
+                                                false
+                                            ]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -5466,12 +5486,17 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                },
+                                                false
+                                            ]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -6206,12 +6231,17 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                },
+                                                false
+                                            ]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -6924,12 +6954,17 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                },
+                                                false
+                                            ]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -7640,12 +7675,17 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                },
+                                                false
+                                            ]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -8380,12 +8420,17 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                },
+                                                false
+                                            ]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -9098,12 +9143,17 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                },
+                                                false
+                                            ]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -9838,12 +9888,17 @@ export class TagCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                },
+                                                false
+                                            ]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -10545,23 +10600,19 @@ export class TagCountService {
                                         {
                                             $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                                         },
-                                        "apsaraId":
-                                        {
-                                            $arrayElemAt: ['$media.apsaraId', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
-                                        },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                },
+                                                false
+                                            ]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -11151,7 +11202,6 @@ export class TagCountService {
         const query = await this.tagcountModel.aggregate(pipeline);
         return query;
     }
-
     async listag(tag: string) {
         var pipeline = [];
         pipeline.push(

@@ -179,6 +179,7 @@ export class InterestCountService {
         return query;
     }
 
+
     async detailinterestcontenNew(key: string, email: string, skip: number, limit: number, pict: any, vid: any, diary: any) {
 
 
@@ -2706,12 +2707,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -3450,12 +3454,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -4192,12 +4199,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -4936,12 +4946,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -5654,12 +5667,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -6396,12 +6412,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -7114,12 +7133,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -7856,12 +7878,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -8573,12 +8598,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -10035,12 +10063,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -10752,12 +10783,15 @@ export class InterestCountService {
                                         },
                                         "isApsara":
                                         {
-                                            $arrayElemAt: ['$media.apsara', {
-                                                "$indexOfArray": [
-                                                    "$media.postID",
-                                                    "$pict.postID"
-                                                ]
-                                            }]
+                                            $ifNull: [
+                                                {
+                                                    $arrayElemAt: ['$media.apsara', {
+                                                        "$indexOfArray": [
+                                                            "$media.postID",
+                                                            "$pict.postID"
+                                                        ]
+                                                    }]
+                                                }, false]
                                         },
                                         "apsaraThumbId": {
                                             $arrayElemAt: ['$media.apsaraThumbId', 0]
@@ -11347,5 +11381,4 @@ export class InterestCountService {
         const query = await this.interestCountModel.aggregate(pipeline);
         return query;
     }
-
 }
