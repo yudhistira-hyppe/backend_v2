@@ -398,7 +398,7 @@ export class ChallengeController {
           }
 
           sethadiah = {
-              "typeHadiah":"ranking",
+              "typeHadiah":"RANKING",
               "ranking":[settemphadiah]
           };
         }
@@ -408,7 +408,7 @@ export class ChallengeController {
           settemphadiah['pointPriceMax'] = request_json['point_price_max'];
 
           sethadiah = {
-              "typeHadiah":"point",
+              "typeHadiah":"POINT",
               "point":[settemphadiah]
           };
         }
