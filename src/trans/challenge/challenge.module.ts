@@ -12,6 +12,8 @@ import { subChallenge, subChallengeSchema } from './schemas/subchallenge.schema'
 import { Userchallenges, UserchallengesSchema } from '../userchallenges/schemas/userchallenges.schema';
 import { UserchallengesModule } from '../userchallenges/userchallenges.module';
 import { UserchallengesService } from '../userchallenges/userchallenges.service';
+import { UserbasicsModule } from '../userbasics/userbasics.module';
+import { UserbasicsService } from '../userbasics/userbasics.service';
 
 @Module({
   imports:[
@@ -20,6 +22,7 @@ import { UserchallengesService } from '../userchallenges/userchallenges.service'
     UtilsModule,
     BadgeModule,
     UserchallengesModule,
+    UserbasicsModule,
     MongooseModule.forFeature([
       { name: Challenge.name, schema: ChallengeSchema }, 
       { name: subChallenge.name, schema: subChallengeSchema },

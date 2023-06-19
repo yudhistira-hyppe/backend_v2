@@ -14,6 +14,7 @@ import mongoose, { mongo } from 'mongoose';
 import { UserchallengesService } from '../userchallenges/userchallenges.service';
 import { Userchallenges } from '../userchallenges/schemas/userchallenges.schema';
 import { CreateBadgeDto } from '../badge/dto/create-badge.dto';
+import { UserbasicsService } from '../userbasics/userbasics.service';
 
 @Controller('api/challenge')
 export class ChallengeController {
@@ -22,7 +23,8 @@ export class ChallengeController {
     private readonly util: UtilsService,
     private readonly badge: BadgeService,
     private readonly subchallenge: subChallengeService,
-    private readonly userchallengeSS: UserchallengesService,) {}
+    private readonly userchallengeSS: UserchallengesService,
+    private readonly userbasicsSS : UserbasicsService) {}
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -752,6 +754,18 @@ export class ChallengeController {
   // }
 
   @UseGuards(JwtAuthGuard)
+  @Get('userchallenge/checkuserstatus')
+  async checkuserstatus(
+    @Res() res, @Req() request: Request
+  )
+  {
+      var email = null;
+
+      var request_json = JSON.parse(JSON.stringify(request.body));
+      email = request_json['email']; 
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('join')
   async joinChallenge(@Res() res, @Req() request: Request) {
       
@@ -851,11 +865,14 @@ export class ChallengeController {
       listtanggal.push([startdatetime, enddatetime]);
     }
 
-    var challengeviainvite = false;
+    var getuserpartisipan = null;
     if(partisipan != null && partisipan != undefined)
     {
-      var getuserpartisipan = partisipan.toString().split(",");
-      challengeviainvite = true;
+      getuserpartisipan = partisipan.toString().split(",");
+    }
+    else
+    {
+      getuserpartisipan = await this.userbasicsSS.findAll();
     }
 
     var listsubchallenge = [];
@@ -875,27 +892,24 @@ export class ChallengeController {
       // console.log(getuserpartisipan);
 
       var checkpartisipan = [];
-      if(challengeviainvite == true)
+      for(var j = 0; j < getuserpartisipan.length; j++)
       {
-        for(var j = 0; j < getuserpartisipan.length; j++)
-        {
-            var insertuserchallenge = new Userchallenges();
-            insertuserchallenge._id = new mongoose.Types.ObjectId();
-            insertuserchallenge.idChallenge = new mongoose.Types.ObjectId(parentdata._id);
-            insertuserchallenge.idUser = new mongoose.Types.ObjectId(getuserpartisipan[j]);
-            insertuserchallenge.idSubChallenge = new mongoose.Types.ObjectId(insertsub._id);
-            insertuserchallenge.startDatetime = insertsub.startDatetime;
-            insertuserchallenge.endDatetime = insertsub.endDatetime;
-            insertuserchallenge.isActive = true;
-            insertuserchallenge.createdAt = await this.util.getDateTimeString();
-            insertuserchallenge.updatedAt = await this.util.getDateTimeString();
-            insertuserchallenge.activity = [];
-            insertuserchallenge.history = [];
+          var insertuserchallenge = new Userchallenges();
+          insertuserchallenge._id = new mongoose.Types.ObjectId();
+          insertuserchallenge.idChallenge = new mongoose.Types.ObjectId(parentdata._id);
+          insertuserchallenge.idUser = new mongoose.Types.ObjectId(getuserpartisipan[j]);
+          insertuserchallenge.idSubChallenge = new mongoose.Types.ObjectId(insertsub._id);
+          insertuserchallenge.startDatetime = insertsub.startDatetime;
+          insertuserchallenge.endDatetime = insertsub.endDatetime;
+          insertuserchallenge.isActive = true;
+          insertuserchallenge.createdAt = await this.util.getDateTimeString();
+          insertuserchallenge.updatedAt = await this.util.getDateTimeString();
+          insertuserchallenge.activity = [];
+          insertuserchallenge.history = [];
 
-            await this.userchallengeSS.create(insertuserchallenge);
+          await this.userchallengeSS.create(insertuserchallenge);
 
-            checkpartisipan.push(insertuserchallenge);
-        }
+          checkpartisipan.push(insertuserchallenge);
       }
 
       listsubchallenge.push([insertsub, checkpartisipan]);
