@@ -327,6 +327,7 @@ export class ChallengeController {
             
             var resultbadge = await this.badge.create(getbadgegeneral, getbadgeprofile, insertnewbadge);
             var getbadgeid = resultbadge._id;
+            // var getbadgeid = insertnewbadge.name;
             convertid = new mongoose.Types.ObjectId(getbadgeid.toString());
           }
           else
@@ -383,15 +384,33 @@ export class ChallengeController {
       if(request_json['hadiah_set_hadiahpemenang'] == 'true' || request_json['hadiah_set_hadiahpemenang'] == true)
       {
         var sethadiah = {};
-  
-        sethadiah["currency"] = request_json['hadiah_currency'].toUpperCase();
-        var getlistjuara = request_json['hadiah_juara'];
-        var konversijuara = getlistjuara.toString().split(",");
-        for(var i = 0; i < konversijuara.length; i++)
+        var settemphadiah = {};
+        if(request_json['hadiah_jenispemenang'] == 'ranking')
         {
-          var temploop = i + 1;
-          var stringnama = 'juara' + temploop.toString();
-          sethadiah[stringnama] = Number(konversijuara[i]);
+          settemphadiah["currency"] = request_json['hadiah_currency'].toUpperCase();
+          var getlistjuara = request_json['hadiah_juara'];
+          var konversijuara = getlistjuara.toString().split(",");
+          for(var i = 0; i < konversijuara.length; i++)
+          {
+            var temploop = i + 1;
+            var stringnama = 'juara' + temploop.toString();
+            settemphadiah[stringnama] = Number(konversijuara[i]);
+          }
+
+          sethadiah = {
+              "typeHadiah":"RANKING",
+              "ranking":[settemphadiah]
+          };
+        }
+        else
+        {
+          settemphadiah['pointPrice'] = request_json['point_price'];
+          settemphadiah['pointPriceMax'] = request_json['point_price_max'];
+
+          sethadiah = {
+              "typeHadiah":"POINT",
+              "point":[settemphadiah]
+          };
         }
   
         insertdata.hadiahPemenang = [sethadiah];
@@ -615,9 +634,6 @@ export class ChallengeController {
     
     if(files.bannerBoard != undefined)
     {
-      var getoldname = getdata["leaderBoard"][0]["bannerLeaderboard"];
-      getoldname.split("/");
-      var getoriginalname = getoldname.splice(-1);
       var insertbanner = files.bannerBoard[0];
       var path = "images/challenge/" + id + "_bannerLeaderboard" + "." + getdata["leaderBoard"][0]["formatFile"];
       // var path = "images/challenge/" + getoriginalname;
@@ -628,9 +644,6 @@ export class ChallengeController {
 
     if(files.bannerSearch != undefined)
     {
-      var getoldname = getdata["bannerSearch"][0]["image"].split("/");
-      console.log(getoldname);
-      var getoriginalname = getoldname.splice(-1);
       var insertbannersearch = files.bannerSearch[0];
       var path = "images/challenge/" + id + "_bannerSearch" + "." + getdata["bannerSearch"][0]["formatFile"];
       // var path = "images/challenge/" + getoriginalname;
@@ -641,9 +654,6 @@ export class ChallengeController {
 
     if(files.popUpnotif != undefined)
     {
-      var getoldname = getdata["popUp"][0]["image"];
-      getoldname.split("/");
-      var getoriginalname = getoldname.splice(-1);
       var insertpopup = files.popUpnotif[0];
       var path = "images/challenge/" + id + "_popup" + "." + getdata["popUp"][0]["formatFile"];
       // var path = "images/challenge/" + getoriginalname;
@@ -749,7 +759,7 @@ export class ChallengeController {
       var getsubid = request_json['idChallenge'];
 
       var getsubdata = await this.subchallenge.findbyid(getsubid);
-
+      
       var listjoin = [];
       for(var i = 0; i < getsubdata.length; i++)
       {
