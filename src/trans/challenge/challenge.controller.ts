@@ -387,7 +387,7 @@ export class ChallengeController {
       {
         var sethadiah = {};
         var settemphadiah = {};
-        if(request_json['hadiah_jenispemenang'] == 'ranking')
+        if(request_json['hadiah_jenispemenang'] == 'RANKING')
         {
           settemphadiah["currency"] = request_json['hadiah_currency'].toUpperCase();
           var getlistjuara = request_json['hadiah_juara'];
