@@ -217,11 +217,11 @@ export class InterestCountService {
                             {
                                 $and: [
 
-                                    {
-                                        $text: {
-                                            $search: key
-                                        }
-                                    },
+                                    // {
+                                    //     $text: {
+                                    //         $search: key
+                                    //     }
+                                    // },
                                     {
                                         $expr: {
                                             $in: ['$postID', '$$localID']
@@ -295,9 +295,9 @@ export class InterestCountService {
                                 "allowComments": 1,
                                 "saleAmount": 1,
                                 "isLiked": 1,
-                                "scorePict": {
-                                    $meta: "textScore"
-                                }
+                                // "scorePict": {
+                                //     $meta: "textScore"
+                                // }
                             }
                         }
                     ],
@@ -2464,11 +2464,11 @@ export class InterestCountService {
                             {
                                 $and: [
 
-                                    {
-                                        $text: {
-                                            $search: key
-                                        }
-                                    },
+                                    // {
+                                    //     $text: {
+                                    //         $search: key
+                                    //     }
+                                    // },
                                     {
                                         $expr: {
                                             $in: ['$postID', '$$localID']
@@ -2542,9 +2542,9 @@ export class InterestCountService {
                                 "allowComments": 1,
                                 "saleAmount": 1,
                                 "isLiked": 1,
-                                "scorePict": {
-                                    $meta: "textScore"
-                                }
+                                // "scorePict": {
+                                //     $meta: "textScore"
+                                // }
                             }
                         }
                     ],
