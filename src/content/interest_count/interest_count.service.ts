@@ -219,7 +219,7 @@ export class InterestCountService {
 
                                     // {
                                     //     $text: {
-                                    //         $search: new Types.ObjectId(key)
+                                    //         $search: key
                                     //     }
                                     // },
                                     {

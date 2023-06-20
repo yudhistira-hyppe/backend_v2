@@ -14,6 +14,7 @@ import mongoose, { mongo } from 'mongoose';
 import { UserchallengesService } from '../userchallenges/userchallenges.service';
 import { Userchallenges } from '../userchallenges/schemas/userchallenges.schema';
 import { CreateBadgeDto } from '../badge/dto/create-badge.dto';
+import { UserbasicsService } from '../userbasics/userbasics.service';
 
 @Controller('api/challenge')
 export class ChallengeController {
@@ -22,7 +23,8 @@ export class ChallengeController {
     private readonly util: UtilsService,
     private readonly badge: BadgeService,
     private readonly subchallenge: subChallengeService,
-    private readonly userchallengeSS: UserchallengesService,) {}
+    private readonly userchallengeSS: UserchallengesService,
+    private readonly userbasicsSS : UserbasicsService) {}
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -327,6 +329,7 @@ export class ChallengeController {
             
             var resultbadge = await this.badge.create(getbadgegeneral, getbadgeprofile, insertnewbadge);
             var getbadgeid = resultbadge._id;
+            // var getbadgeid = insertnewbadge.name;
             convertid = new mongoose.Types.ObjectId(getbadgeid.toString());
           }
           else
@@ -383,15 +386,33 @@ export class ChallengeController {
       if(request_json['hadiah_set_hadiahpemenang'] == 'true' || request_json['hadiah_set_hadiahpemenang'] == true)
       {
         var sethadiah = {};
-  
-        sethadiah["currency"] = request_json['hadiah_currency'].toUpperCase();
-        var getlistjuara = request_json['hadiah_juara'];
-        var konversijuara = getlistjuara.toString().split(",");
-        for(var i = 0; i < konversijuara.length; i++)
+        var settemphadiah = {};
+        if(request_json['hadiah_jenispemenang'] == 'ranking')
         {
-          var temploop = i + 1;
-          var stringnama = 'juara' + temploop.toString();
-          sethadiah[stringnama] = Number(konversijuara[i]);
+          settemphadiah["currency"] = request_json['hadiah_currency'].toUpperCase();
+          var getlistjuara = request_json['hadiah_juara'];
+          var konversijuara = getlistjuara.toString().split(",");
+          for(var i = 0; i < konversijuara.length; i++)
+          {
+            var temploop = i + 1;
+            var stringnama = 'juara' + temploop.toString();
+            settemphadiah[stringnama] = Number(konversijuara[i]);
+          }
+
+          sethadiah = {
+              "typeHadiah":"RANKING",
+              "ranking":[settemphadiah]
+          };
+        }
+        else
+        {
+          settemphadiah['pointPrice'] = request_json['point_price'];
+          settemphadiah['pointPriceMax'] = request_json['point_price_max'];
+
+          sethadiah = {
+              "typeHadiah":"POINT",
+              "point":[settemphadiah]
+          };
         }
   
         insertdata.hadiahPemenang = [sethadiah];
@@ -615,9 +636,6 @@ export class ChallengeController {
     
     if(files.bannerBoard != undefined)
     {
-      var getoldname = getdata["leaderBoard"][0]["bannerLeaderboard"];
-      getoldname.split("/");
-      var getoriginalname = getoldname.splice(-1);
       var insertbanner = files.bannerBoard[0];
       var path = "images/challenge/" + id + "_bannerLeaderboard" + "." + getdata["leaderBoard"][0]["formatFile"];
       // var path = "images/challenge/" + getoriginalname;
@@ -628,9 +646,6 @@ export class ChallengeController {
 
     if(files.bannerSearch != undefined)
     {
-      var getoldname = getdata["bannerSearch"][0]["image"].split("/");
-      console.log(getoldname);
-      var getoriginalname = getoldname.splice(-1);
       var insertbannersearch = files.bannerSearch[0];
       var path = "images/challenge/" + id + "_bannerSearch" + "." + getdata["bannerSearch"][0]["formatFile"];
       // var path = "images/challenge/" + getoriginalname;
@@ -641,9 +656,6 @@ export class ChallengeController {
 
     if(files.popUpnotif != undefined)
     {
-      var getoldname = getdata["popUp"][0]["image"];
-      getoldname.split("/");
-      var getoriginalname = getoldname.splice(-1);
       var insertpopup = files.popUpnotif[0];
       var path = "images/challenge/" + id + "_popup" + "." + getdata["popUp"][0]["formatFile"];
       // var path = "images/challenge/" + getoriginalname;
@@ -742,6 +754,18 @@ export class ChallengeController {
   // }
 
   @UseGuards(JwtAuthGuard)
+  @Get('userchallenge/checkuserstatus')
+  async checkuserstatus(
+    @Res() res, @Req() request: Request
+  )
+  {
+      var email = null;
+
+      var request_json = JSON.parse(JSON.stringify(request.body));
+      email = request_json['email']; 
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('join')
   async joinChallenge(@Res() res, @Req() request: Request) {
       
@@ -749,7 +773,7 @@ export class ChallengeController {
       var getsubid = request_json['idChallenge'];
 
       var getsubdata = await this.subchallenge.findbyid(getsubid);
-
+      
       var listjoin = [];
       for(var i = 0; i < getsubdata.length; i++)
       {
@@ -841,11 +865,14 @@ export class ChallengeController {
       listtanggal.push([startdatetime, enddatetime]);
     }
 
-    var challengeviainvite = false;
+    var getuserpartisipan = null;
     if(partisipan != null && partisipan != undefined)
     {
-      var getuserpartisipan = partisipan.toString().split(",");
-      challengeviainvite = true;
+      getuserpartisipan = partisipan.toString().split(",");
+    }
+    else
+    {
+      getuserpartisipan = await this.userbasicsSS.findAll();
     }
 
     var listsubchallenge = [];
@@ -865,27 +892,24 @@ export class ChallengeController {
       // console.log(getuserpartisipan);
 
       var checkpartisipan = [];
-      if(challengeviainvite == true)
+      for(var j = 0; j < getuserpartisipan.length; j++)
       {
-        for(var j = 0; j < getuserpartisipan.length; j++)
-        {
-            var insertuserchallenge = new Userchallenges();
-            insertuserchallenge._id = new mongoose.Types.ObjectId();
-            insertuserchallenge.idChallenge = new mongoose.Types.ObjectId(parentdata._id);
-            insertuserchallenge.idUser = new mongoose.Types.ObjectId(getuserpartisipan[j]);
-            insertuserchallenge.idSubChallenge = new mongoose.Types.ObjectId(insertsub._id);
-            insertuserchallenge.startDatetime = insertsub.startDatetime;
-            insertuserchallenge.endDatetime = insertsub.endDatetime;
-            insertuserchallenge.isActive = true;
-            insertuserchallenge.createdAt = await this.util.getDateTimeString();
-            insertuserchallenge.updatedAt = await this.util.getDateTimeString();
-            insertuserchallenge.activity = [];
-            insertuserchallenge.history = [];
+          var insertuserchallenge = new Userchallenges();
+          insertuserchallenge._id = new mongoose.Types.ObjectId();
+          insertuserchallenge.idChallenge = new mongoose.Types.ObjectId(parentdata._id);
+          insertuserchallenge.idUser = new mongoose.Types.ObjectId(getuserpartisipan[j]);
+          insertuserchallenge.idSubChallenge = new mongoose.Types.ObjectId(insertsub._id);
+          insertuserchallenge.startDatetime = insertsub.startDatetime;
+          insertuserchallenge.endDatetime = insertsub.endDatetime;
+          insertuserchallenge.isActive = true;
+          insertuserchallenge.createdAt = await this.util.getDateTimeString();
+          insertuserchallenge.updatedAt = await this.util.getDateTimeString();
+          insertuserchallenge.activity = [];
+          insertuserchallenge.history = [];
 
-            await this.userchallengeSS.create(insertuserchallenge);
+          await this.userchallengeSS.create(insertuserchallenge);
 
-            checkpartisipan.push(insertuserchallenge);
-        }
+          checkpartisipan.push(insertuserchallenge);
       }
 
       listsubchallenge.push([insertsub, checkpartisipan]);
