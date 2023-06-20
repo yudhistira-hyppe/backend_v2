@@ -1028,7 +1028,7 @@ export class ChallengeService {
         }
     ]);
 
-    return query;
+    return query[0];
   }
 
   async findlistingBanner(targetbanner: string): Promise<Challenge[]> {
