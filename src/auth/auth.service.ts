@@ -9987,7 +9987,7 @@ export class AuthService {
           datauserchall = null;
         }
 
-        if (datauserchall.length > 0) {
+        if (datauserchall !== null && datauserchall.length > 0) {
 
 
           for (let y = 0; y < datauserchall.length; y++) {

@@ -14,23 +14,25 @@ import { UserchallengesModule } from '../userchallenges/userchallenges.module';
 import { UserchallengesService } from '../userchallenges/userchallenges.service';
 import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { UserbasicsService } from '../userbasics/userbasics.service';
-
+import { notifChallenge, notifChallengeSchema } from './schemas/notifChallenge.schema';
+import { notifChallengeService } from './notifChallenge.service';
 @Module({
-  imports:[
-    ConfigModule.forRoot(), 
+  imports: [
+    ConfigModule.forRoot(),
     OssModule,
     UtilsModule,
     BadgeModule,
     UserchallengesModule,
     UserbasicsModule,
     MongooseModule.forFeature([
-      { name: Challenge.name, schema: ChallengeSchema }, 
+      { name: Challenge.name, schema: ChallengeSchema },
       { name: subChallenge.name, schema: subChallengeSchema },
+      { name: notifChallenge.name, schema: notifChallengeSchema },
       { name: Userchallenges.name, schema: UserchallengesSchema }
     ], 'SERVER_FULL')
   ],
   controllers: [ChallengeController],
-  providers: [ChallengeService, subChallengeService, UserchallengesService],
-  exports: [ChallengeService, subChallengeService],
+  providers: [ChallengeService, subChallengeService, UserchallengesService, notifChallengeService],
+  exports: [ChallengeService, subChallengeService, notifChallengeService],
 })
-export class ChallengeModule {}
+export class ChallengeModule { }

@@ -145,7 +145,7 @@ export class ChallengeService {
         {
           _id: 1,
           nameChallenge: 1,
-          jenisChallenge:1,
+          jenisChallenge: 1,
           jenisChallenge_fk:
           {
             "$arrayElemAt":
@@ -649,6 +649,65 @@ export class ChallengeService {
           },
         }
       },);
+    var query = await this.ChallengeModel.aggregate(pipeline);
+    return query;
+  }
+
+  async listChallenge(id: string) {
+    var pipeline = [];
+    pipeline.push({
+      $match: {
+        _id: new Types.ObjectId(id)
+      }
+    },
+      {
+        $lookup: {
+          from: 'subChallenge',
+          localField: '_id',
+          foreignField: 'challengeId',
+          as: 'subChallenge_data',
+
+        },
+
+      },
+      {
+        $unwind: {
+          path: '$subChallenge_data',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $project: {
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "startChallenge": 1,
+          "endChallenge": 1,
+          "startTime": 1,
+          "endTime": 1,
+          "jenisDurasi": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "statusChallenge": 1,
+          "metrik": 1,
+          "peserta": 1,
+          "leaderBoard": 1,
+          "ketentuanHadiah": 1,
+          "hadiahPemenang": 1,
+          "bannerSearch": 1,
+          "popUp": 1,
+          "notifikasiPush": 1,
+          "subChallengeID": '$subChallenge_data._id',
+          "startDatetime": '$subChallenge_data.startDatetime',
+          "endDatetime": '$subChallenge_data.endDatetime',
+          "isActive": '$subChallenge_data.isActive',
+          "session": '$subChallenge_data.session',
+
+        }
+      });
     var query = await this.ChallengeModel.aggregate(pipeline);
     return query;
   }
