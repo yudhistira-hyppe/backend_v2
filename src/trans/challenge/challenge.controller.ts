@@ -377,9 +377,9 @@ export class ChallengeController {
       var ektensipopup = request_json['popup_formatFile'];
       var insertpopup = files.popUpnotif[0];
       var path = "images/challenge/" + insertdata._id + "_popup" + "." + ektensipopup;
-      // var result = await this.osservices.uploadFile(insertpopup, path);
-      // setpopup['image'] = result.url;
-      setpopup['image'] = path;
+      var result = await this.osservices.uploadFile(insertpopup, path);
+      setpopup['image'] = result.url;
+      // setpopup['image'] = path;
       
       insertdata.popUp = [setpopup];
   
