@@ -7,2502 +7,2504 @@ import { Pipeline } from 'ioredis';
 
 @Injectable()
 export class ChallengeService {
-    constructor(
-        @InjectModel(Challenge.name, 'SERVER_FULL')
-        private readonly ChallengeModel: Model<challengeDocument>,
-    ) { }
+  constructor(
+    @InjectModel(Challenge.name, 'SERVER_FULL')
+    private readonly ChallengeModel: Model<challengeDocument>,
+  ) { }
 
-    async create(Challenge_: CreateChallengeDto) {
-        const _Challenge_ = await this.ChallengeModel.create(Challenge_);
-        return _Challenge_;
+  async create(Challenge_: CreateChallengeDto) {
+    const _Challenge_ = await this.ChallengeModel.create(Challenge_);
+    return _Challenge_;
+  }
+
+  async findAll(namachallenge: string, menuChallenge: string, startdate: string, enddate: string, objectchallenge: any[], statuschallenge: any[], caragabung: any[], ascending: boolean, page: number, limit: number) {
+    var pipeline = [];
+
+    pipeline.push(
+      {
+        $set: {
+          "timenow":
+          {
+            "$dateToString": {
+              "format": "%Y-%m-%d %H:%M:%S",
+              "date": {
+                $add: [new Date(), - 61200000] // 1 hari 61200000
+              }
+            }
+          }
+        }
+      }
+    );
+
+    var firstmatch = [];
+
+    if (namachallenge != null && namachallenge != undefined) {
+      firstmatch.push(
+        {
+          "nameChallenge":
+          {
+            "$regex": namachallenge,
+            "$options": "i"
+          }
+        },
+      );
     }
 
-    async findAll(namachallenge: string, menuChallenge: string, startdate: string, enddate: string, objectchallenge: any[], statuschallenge: any[], caragabung: any[], ascending: boolean, page: number, limit: number) {
-        var pipeline = [];
+    if (startdate != null && enddate != undefined) {
+      try {
+        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
-        pipeline.push(
+        var dateend = currentdate.toISOString().split("T")[0];
+      } catch (e) {
+        dateend = "";
+      }
+
+      firstmatch.push(
+        {
+          "$expr":
+          {
+            "$gte":
+              [
+                "$createdAt",
+                startdate
+              ]
+          }
+        },
+        {
+          "$expr":
+          {
+            "$lte":
+              [
+                "$createdAt",
+                dateend
+              ]
+          }
+        }
+      );
+    }
+
+    if (objectchallenge != null && objectchallenge != undefined) {
+      var konversiobject = objectchallenge.toString().split(",");
+      firstmatch.push(
+        {
+          "$expr":
+          {
+            "$in":
+              [
+                "$objectChallenge", konversiobject
+              ]
+          }
+        }
+      );
+    }
+
+    if (caragabung != null && caragabung != undefined) {
+      var konversigabung = caragabung.toString().split(",");
+      firstmatch.push(
+        {
+          "$expr":
+          {
+            "$in":
+              [
+                {
+                  "$arrayElemAt":
+                    [
+                      "$peserta.caraGabung", 0
+                    ]
+                },
+                konversigabung
+              ]
+          }
+        },
+      );
+    }
+
+    if (firstmatch.length != 0) {
+      pipeline.push(
+        {
+          "$match":
+          {
+            "$and": firstmatch
+          }
+        }
+      );
+    }
+
+    pipeline.push(
+      {
+        $lookup:
+        {
+          from: "jenisChallenge",
+          localField: "jenisChallenge",
+          foreignField: "_id",
+          as: "jenisChallenge_fk"
+        }
+      },
+      {
+        "$project":
+        {
+          _id: 1,
+          nameChallenge: 1,
+          jenisChallenge:1,
+          jenisChallenge_fk:
+          {
+            "$arrayElemAt":
+              [
+                "$jenisChallenge_fk.name", 0
+              ]
+          },
+          caragabung:
+          {
+            "$arrayElemAt":
+              [
+                "$peserta.caraGabung", 0
+              ]
+          },
+          statuscurrentChallenge:
+          {
+            "$switch":
             {
-                $set: {
-                    "timenow":
+              branches:
+                [
+                  {
+                    case:
                     {
-                        "$dateToString": {
-                            "format": "%Y-%m-%d %H:%M:%S",
-                            "date": {
-                                $add: [new Date(), - 61200000] // 1 hari 61200000
-                            }
-                        }
-                    }
-                }
+                      "$and":
+                        [
+                          {
+                            "$gte": ["$timenow", "$startChallenge"]
+                          },
+                          {
+                            "$lte": ["$timenow", "$endChallenge"]
+                          },
+                        ]
+                    },
+                    then: "SEDANG BERJALAN"
+                  },
+                  {
+                    case:
+                    {
+                      "$and":
+                        [
+                          {
+                            "$gt": ["$timenow", "$endChallenge"]
+                          },
+                        ]
+                    },
+                    then: "SELESAI"
+                  },
+                ],
+              default: "AKAN DATANG"
             }
-        );
-
-        var firstmatch = [];
-
-        if (namachallenge != null && namachallenge != undefined) {
-            firstmatch.push(
-                {
-                    "nameChallenge":
-                    {
-                        "$regex": namachallenge,
-                        "$options": "i"
-                    }
-                },
-            );
+          },
+          bannerLeaderboard:
+          {
+            "$arrayElemAt":
+              [
+                "$leaderBoard.bannerLeaderboard", 0
+              ]
+          },
+          statusChallenge: 1,
+          objectChallenge: 1,
+          startChallenge: 1,
+          endChallenge: 1,
+          createdAt: 1
         }
+      },
+    );
 
-        if (startdate != null && enddate != undefined) {
-            try {
-                var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-
-                var dateend = currentdate.toISOString().split("T")[0];
-            } catch (e) {
-                dateend = "";
-            }
-
-            firstmatch.push(
-                {
-                    "$expr":
-                    {
-                        "$gte":
-                            [
-                                "$createdAt",
-                                startdate
-                            ]
-                    }
-                },
-                {
-                    "$expr":
-                    {
-                        "$lte":
-                            [
-                                "$createdAt",
-                                dateend
-                            ]
-                    }
-                }
-            );
-        }
-
-        if (objectchallenge != null && objectchallenge != undefined) {
-            var konversiobject = objectchallenge.toString().split(",");
-            firstmatch.push(
-                {
-                    "$expr":
-                    {
-                        "$in":
-                            [
-                                "$objectChallenge", konversiobject
-                            ]
-                    }
-                }
-            );
-        }
-
-        if (caragabung != null && caragabung != undefined) {
-            var konversigabung = caragabung.toString().split(",");
-            firstmatch.push(
-                {
-                    "$expr":
-                    {
-                        "$in":
-                            [
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$peserta.caraGabung", 0
-                                        ]
-                                },
-                                konversigabung
-                            ]
-                    }
-                },
-            );
-        }
-
-        if (firstmatch.length != 0) {
-            pipeline.push(
-                {
-                    "$match":
-                    {
-                        "$and": firstmatch
-                    }
-                }
-            );
-        }
-
+    if (menuChallenge != null && menuChallenge != undefined) {
+      if (menuChallenge == 'DRAFT') {
         pipeline.push(
+          {
+            "$match":
             {
-                $lookup:
-                {
-                    from: "jenisChallenge",
-                    localField: "jenisChallenge",
-                    foreignField: "_id",
-                    as: "jenisChallenge_fk"
-                }
-            },
-            {
-                "$project":
-                {
-                    _id: 1,
-                    nameChallenge: 1,
-                    jenisChallenge: 1,
-                    jenisChallenge_fk:
-                    {
-                        "$arrayElemAt":
-                            [
-                                "$jenisChallenge_fk.name", 0
-                            ]
-                    },
-                    caragabung:
-                    {
-                        "$arrayElemAt":
-                            [
-                                "$peserta.caraGabung", 0
-                            ]
-                    },
-                    statuscurrentChallenge:
-                    {
-                        "$switch":
-                        {
-                            branches:
-                                [
-                                    {
-                                        case:
-                                        {
-                                            "$and":
-                                                [
-                                                    {
-                                                        "$gte": ["$timenow", "$startChallenge"]
-                                                    },
-                                                    {
-                                                        "$lte": ["$timenow", "$endChallenge"]
-                                                    },
-                                                ]
-                                        },
-                                        then: "SEDANG BERJALAN"
-                                    },
-                                    {
-                                        case:
-                                        {
-                                            "$and":
-                                                [
-                                                    {
-                                                        "$gt": ["$timenow", "$endChallenge"]
-                                                    },
-                                                ]
-                                        },
-                                        then: "SELESAI"
-                                    },
-                                ],
-                            default: "AKAN DATANG"
-                        }
-                    },
-                    bannerLeaderboard:
-                    {
-                        "$arrayElemAt":
-                            [
-                                "$leaderBoard.bannerLeaderboard", 0
-                            ]
-                    },
-                    statusChallenge: 1,
-                    objectChallenge: 1,
-                    startChallenge: 1,
-                    endChallenge: 1,
-                    createdAt: 1
-                }
-            },
+              "$expr":
+              {
+                "$eq":
+                  [
+                    "$statusChallenge", 'DRAFT'
+                  ]
+              }
+            }
+          }
         );
+      }
+      else {
+        var mongo = require('mongoose');
+        var convertid = mongo.Types.ObjectId(menuChallenge);
+        pipeline.push(
+          {
+            "$match":
+            {
+              "$and":
+                [
+                  {
+                    "$expr":
+                    {
+                      "$eq":
+                        [
+                          "$jenisChallenge", convertid
+                        ]
+                    }
+                  },
+                  {
+                    "$expr":
+                    {
+                      "$ne":
+                        [
+                          "$statusChallenge", 'DRAFT'
+                        ]
+                    }
+                  },
+                  {
+                    "$expr":
+                    {
+                      "$ne":
+                        [
+                          "$statusChallenge", 'NONACTIVE'
+                        ]
+                    }
+                  },
+                ]
+            }
+          }
+        );
+      }
+    }
 
-        if (menuChallenge != null && menuChallenge != undefined) {
-            if (menuChallenge == 'DRAFT') {
-                pipeline.push(
+    if (statuschallenge != null && statuschallenge != undefined) {
+      var konversistatus = statuschallenge.toString().split(",");
+      pipeline.push(
+        {
+          "$match":
+          {
+            "$expr":
+            {
+              "$in":
+                [
+                  "$statuscurrentChallenge", konversistatus
+                ]
+            }
+          }
+        }
+      );
+    }
+
+    if (page > 0) {
+      pipeline.push({
+        "$skip": limit * page
+      });
+    }
+
+    if (limit > 0) {
+      pipeline.push({
+        "$limit": limit
+      });
+    }
+
+    if (ascending != null) {
+      var setascending = null;
+      if (ascending == true) {
+        setascending = 1;
+      }
+      else {
+        setascending = -1;
+      }
+
+      pipeline.push({
+        "$sort":
+        {
+          "createdAt": setascending
+        }
+      });
+    }
+
+    // console.log(JSON.stringify(pipeline));
+
+    var query = await this.ChallengeModel.aggregate(pipeline);
+    return query;
+  }
+
+  async findOne(id: string): Promise<Challenge> {
+    return this.ChallengeModel.findOne({ _id: new Types.ObjectId(id) }).exec();
+  }
+
+  async detailchallenge(id: string)
+  {
+    var mongo = require('mongoose');
+    var konvertid = mongo.Types.ObjectId(id);
+
+    var query = await this.ChallengeModel.aggregate([
+        {
+            "$match":
+            {
+                _id: konvertid
+            }
+        },
+        {
+            "$lookup": 
+            {
+                from: "jenisChallenge",
+                as: "jenischallenge_data",
+                let: 
+                {
+                    jenis_challenge_fk: "$jenisChallenge"
+                },
+                pipeline: [
                     {
                         "$match":
                         {
                             "$expr":
                             {
                                 "$eq":
-                                    [
-                                        "$statusChallenge", 'DRAFT'
-                                    ]
+                                [
+                                    "$$jenis_challenge_fk", "$_id"
+                                ]
                             }
                         }
+                    },
+                    {
+                        "$project":
+                        {
+                            _id:0,
+                            name:1,
+                        }
                     }
-                );
+                ]
             }
-            else {
-                var mongo = require('mongoose');
-                var convertid = mongo.Types.ObjectId(menuChallenge);
-                pipeline.push(
+        },
+        {
+            "$lookup": 
+            {
+                from: "userChallenge",
+                as: "userChallenge_data",
+                let: 
+                {
+                    userChallenge_fk: "$_id"
+                },
+                pipeline: [
                     {
                         "$match":
                         {
-                            "$and":
+                            "$expr":
+                            {
+                                "$eq":
                                 [
+                                    "$$userChallenge_fk", "$idChallenge"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "$group":
+                        {
+                            _id:"$idSubChallenge",
+                            total:
+                            {
+                                "$sum":1
+                            }
+                        }
+                    },
+                    {
+                        "$lookup":
+                        {
+                            from: "subChallenge",
+                            as: "subChallenge_data",
+                            let: 
+                            {
+                                subChallenge_fk: "$_id"
+                            },
+                            pipeline: [
+                                {
+                                    "$match":
                                     {
                                         "$expr":
                                         {
                                             "$eq":
-                                                [
-                                                    "$jenisChallenge", convertid
-                                                ]
-                                        }
-                                    },
-                                    {
-                                        "$expr":
-                                        {
-                                            "$ne":
-                                                [
-                                                    "$statusChallenge", 'DRAFT'
-                                                ]
-                                        }
-                                    },
-                                    {
-                                        "$expr":
-                                        {
-                                            "$ne":
-                                                [
-                                                    "$statusChallenge", 'NONACTIVE'
-                                                ]
-                                        }
-                                    },
-                                ]
-                        }
-                    }
-                );
-            }
-        }
-
-        if (statuschallenge != null && statuschallenge != undefined) {
-            var konversistatus = statuschallenge.toString().split(",");
-            pipeline.push(
-                {
-                    "$match":
-                    {
-                        "$expr":
-                        {
-                            "$in":
-                                [
-                                    "$statuscurrentChallenge", konversistatus
-                                ]
-                        }
-                    }
-                }
-            );
-        }
-
-        if (page > 0) {
-            pipeline.push({
-                "$skip": limit * page
-            });
-        }
-
-        if (limit > 0) {
-            pipeline.push({
-                "$limit": limit
-            });
-        }
-
-        if (ascending != null) {
-            var setascending = null;
-            if (ascending == true) {
-                setascending = 1;
-            }
-            else {
-                setascending = -1;
-            }
-
-            pipeline.push({
-                "$sort":
-                {
-                    "createdAt": setascending
-                }
-            });
-        }
-
-        // console.log(JSON.stringify(pipeline));
-
-        var query = await this.ChallengeModel.aggregate(pipeline);
-        return query;
-    }
-
-    async findOne(id: string): Promise<Challenge> {
-        return this.ChallengeModel.findOne({ _id: new Types.ObjectId(id) }).exec();
-    }
-
-    async detailchallenge(id: string) {
-        var mongo = require('mongoose');
-        var konvertid = mongo.Types.ObjectId(id);
-
-        var query = await this.ChallengeModel.aggregate([
-            {
-                "$match":
-                {
-                    _id: konvertid
-                }
-            },
-            {
-                "$lookup":
-                {
-                    from: "jenisChallenge",
-                    as: "jenischallenge_data",
-                    let:
-                    {
-                        jenis_challenge_fk: "$jenisChallenge"
-                    },
-                    pipeline: [
-                        {
-                            "$match":
-                            {
-                                "$expr":
-                                {
-                                    "$eq":
-                                        [
-                                            "$$jenis_challenge_fk", "$_id"
-                                        ]
-                                }
-                            }
-                        },
-                        {
-                            "$project":
-                            {
-                                _id: 0,
-                                name: 1,
-                            }
-                        }
-                    ]
-                }
-            },
-            {
-                "$lookup":
-                {
-                    from: "userChallenge",
-                    as: "userChallenge_data",
-                    let:
-                    {
-                        userChallenge_fk: "$_id"
-                    },
-                    pipeline: [
-                        {
-                            "$match":
-                            {
-                                "$expr":
-                                {
-                                    "$eq":
-                                        [
-                                            "$$userChallenge_fk", "$idChallenge"
-                                        ]
-                                }
-                            }
-                        },
-                        {
-                            "$group":
-                            {
-                                _id: "$idSubChallenge",
-                                total:
-                                {
-                                    "$sum": 1
-                                }
-                            }
-                        },
-                        {
-                            "$lookup":
-                            {
-                                from: "subChallenge",
-                                as: "subChallenge_data",
-                                let:
-                                {
-                                    subChallenge_fk: "$_id"
-                                },
-                                pipeline: [
-                                    {
-                                        "$match":
-                                        {
-                                            "$expr":
-                                            {
-                                                "$eq":
-                                                    [
-                                                        "$$subChallenge_fk", "$_id"
-                                                    ]
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "$project":
-                                        {
-                                            _id: 1,
-                                            session: 1,
-                                            startDatetime: 1,
-                                            endDatetime: 1,
+                                            [
+                                                "$$subChallenge_fk", "$_id"
+                                            ]
                                         }
                                     }
+                                },
+                                {
+                                    "$project":
+                                    {
+                                        _id:1,
+                                        session:1,
+                                        startDatetime:1,
+                                        endDatetime:1,
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "$project":
+                        {
+                            _id:1,
+                            total:1,
+                            startDatetime:
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$subChallenge_data.startDatetime", 0
+                                ]
+                            },
+                            endDatetime:
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$subChallenge_data.endDatetime", 0
+                                ]
+                            },
+                            session:
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$subChallenge_data.session", 0
                                 ]
                             }
-                        },
+                        }
+                    },
+                    {
+                        "$sort":
                         {
-                            "$project":
-                            {
-                                _id: 1,
-                                total: 1,
-                                startDatetime:
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$subChallenge_data.startDatetime", 0
-                                        ]
-                                },
-                                endDatetime:
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$subChallenge_data.endDatetime", 0
-                                        ]
-                                },
-                                session:
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$subChallenge_data.session", 0
-                                        ]
-                                }
-                            }
-                        },
+                            session:1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "$project":
+            {
+                _id: 1,
+                nameChallenge: 1,
+                jenisChallenge: 1,
+                jenisChallengeName:
+                {
+                    "$arrayElemAt":
+                    [
+                        "$jenischallenge_data.name", 0
+                    ]
+                },
+                description: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                totaldurasi:
+                {
+                    "$dateDiff":
+                    {
+                        startDate:
                         {
-                            "$sort":
+                            "$toDate":"$startChallenge",
+                        },
+                        endDate:
+                        {
+                            "$toDate":"$endChallenge",
+                        },
+                        unit:
+                        {
+                            "$cond":
                             {
-                                session: 1
+                                if:
+                                {
+                                    "$eq":
+                                    [
+                                        "$jenisDurasi", "DAY"
+                                    ]
+                                },
+                                then:"day",
+                                else:"week"
                             }
                         }
-                    ]
-                }
-            },
-            {
-                "$project":
+                    }
+                },
+                durasi: 1,
+                startChallenge: 1,
+                endChallenge: 1,
+                startTime: 1,
+                endTime: 1,
+                jenisDurasi: 1,
+                tampilStatusPengguna: 1,
+                objectChallenge: 1,
+                statusChallenge: 1,
+                metrik:1,
+                peserta:1,
+                leaderBoard:1,
+                ketentuanHadiah:1,
+                hadiahPemenang:1,
+                bannerSearch:1,
+                popUp:1,
+                notifikasiPush:1,
+                session:"$userChallenge_data",
+                juara1:
                 {
-                    _id: 1,
-                    nameChallenge: 1,
-                    jenisChallenge: 1,
-                    jenisChallengeName:
+                    "$ifNull":
+                    [
+                        {
+                            "$let":
+                            {
+                                vars:
+                                {
+                                    databadge:
+                                    {
+                                        "$arrayElemAt":
+                                        [
+                                            {
+                                                "$let":
+                                                {
+                                                    vars:
+                                                    {
+                                                        badgeId:
+                                                        {
+                                                            "$arrayElemAt":
+                                                            [
+                                                                "$ketentuanHadiah", 0
+                                                            ]
+                                                        }
+                                                    },
+                                                    in:"$$badgeId.badge"
+                                                }
+                                            },
+                                            0
+                                        ]
+                                    }
+                                },
+                                in:"$$databadge.juara1"
+                            }
+                        },
+                        ""
+                    ]
+                },
+                juara2:
+                {
+                    "$ifNull":
+                    [
+                        {
+                            "$let":
+                            {
+                                vars:
+                                {
+                                    databadge:
+                                    {
+                                        "$arrayElemAt":
+                                        [
+                                            {
+                                                "$let":
+                                                {
+                                                    vars:
+                                                    {
+                                                        badgeId:
+                                                        {
+                                                            "$arrayElemAt":
+                                                            [
+                                                                "$ketentuanHadiah", 0
+                                                            ]
+                                                        }
+                                                    },
+                                                    in:"$$badgeId.badge"
+                                                }
+                                            },
+                                            0
+                                        ]
+                                    }
+                                },
+                                in:"$$databadge.juara2"
+                            }
+                        },
+                        ""
+                    ]
+                },
+                juara3:
+                {
+                    "$ifNull":
+                    [
+                        {
+                            "$let":
+                            {
+                                vars:
+                                {
+                                    databadge:
+                                    {
+                                        "$arrayElemAt":
+                                        [
+                                            {
+                                                "$let":
+                                                {
+                                                    vars:
+                                                    {
+                                                        badgeId:
+                                                        {
+                                                            "$arrayElemAt":
+                                                            [
+                                                                "$ketentuanHadiah", 0
+                                                            ]
+                                                        }
+                                                    },
+                                                    in:"$$badgeId.badge"
+                                                }
+                                            },
+                                            0
+                                        ]
+                                    }
+                                },
+                                in:"$$databadge.juara3"
+                            }
+                        },
+                        ""
+                    ]
+                },
+            }
+        },
+        {
+            "$lookup": 
+            {
+                from: "badge",
+                as: "badge_data",
+                let: 
+                {
+                    juara1: "$juara1",
+                    juara2: "$juara2",
+                    juara3: "$juara3",
+                },
+                pipeline: 
+                [
+                    {
+                        "$match":
+                        {
+                            "$expr":
+                            {
+                                "$in":
+                                [
+                                    "$_id", ["$$juara1", "$$juara2", "$$juara3"]
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "$sort":
+                        {
+                            type:1
+                        }
+                    },
+                    {
+                        "$project":
+                        {
+                            _id:1,
+                            type:1,
+                            badgeProfile:1,
+                            badgeOther:1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "$lookup": 
+            {
+                from: "areas",
+                as: "areas_data",
+                let: 
+                {
+                    listarea: 
                     {
                         "$arrayElemAt":
-                            [
-                                "$jenischallenge_data.name", 0
-                            ]
+                        [
+                            "$peserta.lokasiPengguna",
+                            0
+                        ]
                     },
-                    description: 1,
-                    createdAt: 1,
-                    updatedAt: 1,
-                    totaldurasi:
+                },
+                pipeline: 
+                [
                     {
-                        "$dateDiff":
+                        "$match":
                         {
-                            startDate:
+                            "$expr":
                             {
-                                "$toDate": "$startChallenge",
-                            },
-                            endDate:
-                            {
-                                "$toDate": "$endChallenge",
-                            },
-                            unit:
-                            {
-                                "$cond":
-                                {
-                                    if:
-                                    {
-                                        "$eq":
-                                            [
-                                                "$jenisDurasi", "DAY"
-                                            ]
-                                    },
-                                    then: "day",
-                                    else: "week"
-                                }
+                                "$in":
+                                [
+                                    "$_id", "$$listarea"
+                                ]
                             }
                         }
                     },
-                    durasi: 1,
-                    startChallenge: 1,
-                    endChallenge: 1,
-                    startTime: 1,
-                    endTime: 1,
-                    jenisDurasi: 1,
-                    tampilStatusPengguna: 1,
-                    objectChallenge: 1,
-                    statusChallenge: 1,
-                    metrik: 1,
-                    peserta: 1,
-                    leaderBoard: 1,
-                    ketentuanHadiah: 1,
-                    hadiahPemenang: 1,
-                    bannerSearch: 1,
-                    popUp: 1,
-                    notifikasiPush: 1,
-                    session: "$userChallenge_data",
-                    juara1:
                     {
-                        "$ifNull":
-                            [
-                                {
-                                    "$let":
-                                    {
-                                        vars:
-                                        {
-                                            databadge:
-                                            {
-                                                "$arrayElemAt":
-                                                    [
-                                                        {
-                                                            "$let":
-                                                            {
-                                                                vars:
-                                                                {
-                                                                    badgeId:
-                                                                    {
-                                                                        "$arrayElemAt":
-                                                                            [
-                                                                                "$ketentuanHadiah", 0
-                                                                            ]
-                                                                    }
-                                                                },
-                                                                in: "$$badgeId.badge"
-                                                            }
-                                                        },
-                                                        0
-                                                    ]
-                                            }
-                                        },
-                                        in: "$$databadge.juara1"
-                                    }
-                                },
-                                ""
-                            ]
-                    },
-                    juara2:
-                    {
-                        "$ifNull":
-                            [
-                                {
-                                    "$let":
-                                    {
-                                        vars:
-                                        {
-                                            databadge:
-                                            {
-                                                "$arrayElemAt":
-                                                    [
-                                                        {
-                                                            "$let":
-                                                            {
-                                                                vars:
-                                                                {
-                                                                    badgeId:
-                                                                    {
-                                                                        "$arrayElemAt":
-                                                                            [
-                                                                                "$ketentuanHadiah", 0
-                                                                            ]
-                                                                    }
-                                                                },
-                                                                in: "$$badgeId.badge"
-                                                            }
-                                                        },
-                                                        0
-                                                    ]
-                                            }
-                                        },
-                                        in: "$$databadge.juara2"
-                                    }
-                                },
-                                ""
-                            ]
-                    },
-                    juara3:
-                    {
-                        "$ifNull":
-                            [
-                                {
-                                    "$let":
-                                    {
-                                        vars:
-                                        {
-                                            databadge:
-                                            {
-                                                "$arrayElemAt":
-                                                    [
-                                                        {
-                                                            "$let":
-                                                            {
-                                                                vars:
-                                                                {
-                                                                    badgeId:
-                                                                    {
-                                                                        "$arrayElemAt":
-                                                                            [
-                                                                                "$ketentuanHadiah", 0
-                                                                            ]
-                                                                    }
-                                                                },
-                                                                in: "$$badgeId.badge"
-                                                            }
-                                                        },
-                                                        0
-                                                    ]
-                                            }
-                                        },
-                                        in: "$$databadge.juara3"
-                                    }
-                                },
-                                ""
-                            ]
-                    },
-                }
-            },
-            {
-                "$lookup":
-                {
-                    from: "badge",
-                    as: "badge_data",
-                    let:
-                    {
-                        juara1: "$juara1",
-                        juara2: "$juara2",
-                        juara3: "$juara3",
-                    },
-                    pipeline:
-                        [
-                            {
-                                "$match":
-                                {
-                                    "$expr":
-                                    {
-                                        "$in":
-                                            [
-                                                "$_id", ["$$juara1", "$$juara2", "$$juara3"]
-                                            ]
-                                    }
-                                }
-                            },
-                            {
-                                "$sort":
-                                {
-                                    type: 1
-                                }
-                            },
-                            {
-                                "$project":
-                                {
-                                    _id: 1,
-                                    type: 1,
-                                    badgeProfile: 1,
-                                    badgeOther: 1
-                                }
-                            }
-                        ]
-                }
-            },
-            {
-                "$lookup":
-                {
-                    from: "areas",
-                    as: "areas_data",
-                    let:
-                    {
-                        listarea:
+                        "$group":
                         {
-                            "$arrayElemAt":
-                                [
-                                    "$peserta.lokasiPengguna",
-                                    0
-                                ]
-                        },
-                    },
-                    pipeline:
-                        [
+                            _id:null,
+                            data:
                             {
-                                "$match":
-                                {
-                                    "$expr":
-                                    {
-                                        "$in":
-                                            [
-                                                "$_id", "$$listarea"
-                                            ]
-                                    }
-                                }
-                            },
-                            {
-                                "$group":
-                                {
-                                    _id: null,
-                                    data:
-                                    {
-                                        "$push": "$stateName"
-                                    }
-                                }
-                            }
-                        ]
-                }
-            },
-            {
-                $set: {
-                    "timenow":
-                    {
-                        "$dateToString": {
-                            "format": "%Y-%m-%d %H:%M:%S",
-                            "date": {
-                                $add: [
-                                    new Date(), - 61200000
-                                ] // 1 hari 61200000
+                                "$push":"$stateName"
                             }
                         }
                     }
-                }
-            },
-            {
-                "$project":
-                {
-                    _id: 1,
-                    nameChallenge: 1,
-                    jenisChallenge: 1,
-                    jenisChallengeName: 1,
-                    description: 1,
-                    createdAt: 1,
-                    updatedAt: 1,
-                    durasi: 1,
-                    totaldurasi: 1,
-                    startChallenge: 1,
-                    endChallenge: 1,
-                    startTime: 1,
-                    endTime: 1,
-                    jenisDurasi: 1,
-                    tampilStatusPengguna: 1,
-                    objectChallenge: 1,
-                    // statusChallenge: 1,
-                    statusChallenge:
-                    {
-                        "$switch":
-                        {
-                            branches:
-                                [
-                                    {
-                                        case:
-                                        {
-                                            "$and":
-                                                [
-                                                    {
-                                                        "$gte": ["$timenow", "$startChallenge"]
-                                                    },
-                                                    {
-                                                        "$lte": ["$timenow", "$endChallenge"]
-                                                    },
-                                                ]
-                                        },
-                                        then: "SEDANG BERJALAN"
-                                    },
-                                    {
-                                        case:
-                                        {
-                                            "$and":
-                                                [
-                                                    {
-                                                        "$gt": ["$timenow", "$endChallenge"]
-                                                    },
-                                                ]
-                                        },
-                                        then: "SELESAI"
-                                    },
-                                ],
-                            default: "AKAN DATANG"
-                        }
-                    },
-                    metrik: 1,
-                    leaderBoard: 1,
-                    ketentuanHadiah:
-                        [
-                            {
-                                badgePemenang:
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$ketentuanHadiah.badgePemenang",
-                                            0
-                                        ]
-                                },
-                                Height:
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$ketentuanHadiah.Height",
-                                            0
-                                        ]
-                                },
-                                Width:
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$ketentuanHadiah.Width",
-                                            0
-                                        ]
-                                },
-                                maxSize:
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$ketentuanHadiah.maxSize",
-                                            0
-                                        ]
-                                },
-                                minSize:
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$ketentuanHadiah.minSize",
-                                            0
-                                        ]
-                                },
-                                formatFile:
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$ketentuanHadiah.formatFile",
-                                            0
-                                        ]
-                                },
-                                badge: [
-                                    {
-                                        juara1: "$juara1",
-                                        juara1_general:
-                                        {
-                                            "$arrayElemAt":
-                                                [
-                                                    "$badge_data.badgeOther",
-                                                    0
-                                                ]
-                                        },
-                                        juara1_profile:
-                                        {
-                                            "$arrayElemAt":
-                                                [
-                                                    "$badge_data.badgeProfile",
-                                                    0
-                                                ]
-                                        },
-                                        juara2: "$juara2",
-                                        juara2_general:
-                                        {
-                                            "$arrayElemAt":
-                                                [
-                                                    "$badge_data.badgeOther",
-                                                    1
-                                                ]
-                                        },
-                                        juara2_profile:
-                                        {
-                                            "$arrayElemAt":
-                                                [
-                                                    "$badge_data.badgeProfile",
-                                                    1
-                                                ]
-                                        },
-                                        juara3: "$juara3",
-                                        juara3_general:
-                                        {
-                                            "$arrayElemAt":
-                                                [
-                                                    "$badge_data.badgeOther",
-                                                    2
-                                                ]
-                                        },
-                                        juara3_profile:
-                                        {
-                                            "$arrayElemAt":
-                                                [
-                                                    "$badge_data.badgeProfile",
-                                                    2
-                                                ]
-                                        },
-                                    }
-                                ],
-                            }
-                        ],
-                    peserta:
-                        [
-                            {
-                                tipeAkunTerverikasi:
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$peserta.tipeAkunTerverikasi", 0
-                                        ]
-                                },
-                                statusTipeAkunTerverifikasi:
-                                {
-                                    "$switch":
-                                    {
-                                        branches: [
-                                            {
-                                                case:
-                                                {
-                                                    "$eq":
-                                                        [
-                                                            {
-                                                                "$arrayElemAt":
-                                                                    [
-                                                                        "$peserta.tipeAkunTerverikasi", 0
-                                                                    ]
-                                                            },
-                                                            "YES"
-                                                        ]
-                                                },
-                                                then: "KYC"
-                                            },
-                                            {
-                                                case:
-                                                {
-                                                    "$eq":
-                                                        [
-                                                            {
-                                                                "$arrayElemAt":
-                                                                    [
-                                                                        "$peserta.tipeAkunTerverikasi", 0
-                                                                    ]
-                                                            },
-                                                            "NO"
-                                                        ]
-                                                },
-                                                then: "Non E-KYC"
-                                            },
-                                        ],
-                                        default: "KYC & Non E-KYC"
-                                    }
-                                },
-                                caraGabung:
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$peserta.caraGabung", 0
-                                        ]
-                                },
-                                "jenisKelamin":
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$peserta.jenisKelamin", 0
-                                        ]
-                                },
-                                "lokasiPengguna":
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$peserta.lokasiPengguna", 0
-                                        ]
-                                },
-                                "listNamaArea":
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$areas_data.data", 0
-                                        ]
-                                },
-                                "rentangUmur":
-                                {
-                                    "$arrayElemAt":
-                                        [
-                                            "$peserta.rentangUmur", 0
-                                        ]
-                                },
-                            }
-                        ],
-                    hadiahPemenang: 1,
-                    bannerSearch: 1,
-                    popUp: 1,
-                    notifikasiPush: 1,
-                    totalsession:
-                    {
-                        "$last": "$session.session"
-                    },
-                    session: 1
-                }
+                ]
             }
-        ]);
-
-        return query[0];
-    }
-
-    async findlistingBanner(targetbanner: string): Promise<Challenge[]> {
-        var pipeline = [];
-        pipeline.push({
-            "$set": {
-                "timenow": {
+        },
+        {
+            $set: {
+                "timenow":
+                {
                     "$dateToString": {
                         "format": "%Y-%m-%d %H:%M:%S",
                         "date": {
-                            "$add": [
-                                new Date(),
-                                -61200000
-                            ]
+                            $add: [
+                                new Date(), - 61200000
+                            ] // 1 hari 61200000
                         }
                     }
                 }
             }
         },
+        {
+            "$project":
             {
-                "$match":
+                _id: 1,
+                nameChallenge: 1,
+                jenisChallenge: 1,
+                jenisChallengeName:1,
+                description: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                durasi: 1,
+                totaldurasi:1,
+                startChallenge: 1,
+                endChallenge: 1,
+                startTime: 1,
+                endTime: 1,
+                jenisDurasi: 1,
+                tampilStatusPengguna: 1,
+                objectChallenge: 1,
+                // statusChallenge: 1,
+                statusChallenge: 
                 {
-                    "$and":
+                    "$switch":
+                    {
+                        branches:
                         [
                             {
-                                "$expr":
+                                case:
                                 {
-                                    "$lte":
-                                        [
-                                            "$startChallenge",
-                                            "$timenow"
-                                        ]
-                                }
+                                    "$and":
+                                    [
+                                        {
+                                            "$gte": ["$timenow", "$startChallenge"]
+                                        },
+                                        {
+                                            "$lte": ["$timenow", "$endChallenge"]
+                                        },
+                                    ]
+                                },
+                                then: "SEDANG BERJALAN"
                             },
                             {
-                                "$expr":
+                                case:
                                 {
-                                    "$gte":
-                                        [
-                                            "$endChallenge",
-                                            "$timenow"
-                                        ]
-                                }
+                                    "$and":
+                                    [
+                                        {
+                                            "$gt": ["$timenow", "$endChallenge"]
+                                        },
+                                    ]
+                                },
+                                then: "SELESAI"
                             },
+                        ],
+                        default: "AKAN DATANG"
+                    }
+                },
+                metrik:1,
+                leaderBoard:1,
+                ketentuanHadiah:
+                [
+                    {
+                        badgePemenang:
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$ketentuanHadiah.badgePemenang",
+                                0
+                            ]
+                        },
+                        Height: 
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$ketentuanHadiah.Height",
+                                0
+                            ]
+                        },
+                        Width:
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$ketentuanHadiah.Width",
+                                0
+                            ]
+                        },
+                        maxSize: 
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$ketentuanHadiah.maxSize",
+                                0
+                            ]
+                        },
+                        minSize: 
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$ketentuanHadiah.minSize",
+                                0
+                            ]
+                        },
+                        formatFile: 
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$ketentuanHadiah.formatFile",
+                                0
+                            ]
+                        },
+                        badge: [
                             {
-                                "$expr":
+                                juara1: "$juara1",
+                                juara1_general:
                                 {
-                                    "$eq":
-                                        [
-                                            "$statusChallenge",
-                                            "PUBLISH"
-                                        ]
-                                }
+                                    "$arrayElemAt":
+                                    [
+                                        "$badge_data.badgeOther",
+                                        0
+                                    ]
+                                },
+                                juara1_profile:
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$badge_data.badgeProfile",
+                                        0
+                                    ]
+                                },
+                                juara2: "$juara2",
+                                juara2_general:
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$badge_data.badgeOther",
+                                        1
+                                    ]
+                                },
+                                juara2_profile:
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$badge_data.badgeProfile",
+                                        1
+                                    ]
+                                },
+                                juara3: "$juara3",
+                                juara3_general:
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$badge_data.badgeOther",
+                                        2
+                                    ]
+                                },
+                                juara3_profile:
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$badge_data.badgeProfile",
+                                        2
+                                    ]
+                                },
                             }
-                        ]
-                }
-            });
+                        ],
+                    }
+                ],
+                peserta:
+                [
+                    {
+                        tipeAkunTerverikasi: 
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$peserta.tipeAkunTerverikasi", 0
+                            ]
+                        },
+                        statusTipeAkunTerverifikasi:
+                        {
+                            "$switch":
+                            {
+                                branches:[
+                                    {
+                                        case:
+                                        {
+                                            "$eq":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$peserta.tipeAkunTerverikasi", 0
+                                                    ]
+                                                },
+                                                "YES"
+                                            ]
+                                        },
+                                        then:"KYC"
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            "$eq":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$peserta.tipeAkunTerverikasi", 0
+                                                    ]
+                                                },
+                                                "NO"
+                                            ]
+                                        },
+                                        then:"Non E-KYC"
+                                    },
+                                ],
+                                default:"KYC & Non E-KYC"
+                            }
+                        },
+                        caraGabung: 
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$peserta.caraGabung", 0
+                            ]
+                        },
+                        "jenisKelamin": 
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$peserta.jenisKelamin", 0
+                            ]
+                        },
+                        "lokasiPengguna": 
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$peserta.lokasiPengguna", 0
+                            ]
+                        },
+                        "listNamaArea": 
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$areas_data.data", 0
+                            ]
+                        },
+                        "rentangUmur": 
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$peserta.rentangUmur", 0
+                            ]
+                        },
+                    }
+                ],
+                hadiahPemenang:1,
+                bannerSearch:1,
+                popUp:1,
+                notifikasiPush:1,
+                totalsession:
+                {
+                    "$last":"$session.session"
+                },
+                session:1
+            }
+        }
+    ]);
 
-        var projectdata = {
-            _id: 1,
-            nameChallenge: 1,
-            createdAt: 1,
-            startChallenge: 1,
-            endChallenge: 1,
-            statusChallenge: 1,
-        };
+    return query[0];
+  }
 
-        if (targetbanner == 'search') {
-            projectdata['bannerLandingpage'] = {
-                "$arrayElemAt":
+  async findlistingBanner(targetbanner: string): Promise<Challenge[]> {
+    var pipeline = [];
+    pipeline.push({
+      "$set": {
+        "timenow": {
+          "$dateToString": {
+            "format": "%Y-%m-%d %H:%M:%S",
+            "date": {
+              "$add": [
+                new Date(),
+                -61200000
+              ]
+            }
+          }
+        }
+      }
+    },
+      {
+        "$match":
+        {
+          "$and":
+            [
+              {
+                "$expr":
+                {
+                  "$lte":
                     [
-                        "$bannerSearch.image",
-                        0
+                      "$startChallenge",
+                      "$timenow"
                     ]
-            }
-        }
-        else if (targetbanner == 'popup') {
-            projectdata['bannerLandingpage'] = {
-                "$arrayElemAt":
+                }
+              },
+              {
+                "$expr":
+                {
+                  "$gte":
                     [
-                        "$popUp.image",
-                        0
+                      "$endChallenge",
+                      "$timenow"
                     ]
-            }
+                }
+              },
+              {
+                "$expr":
+                {
+                  "$eq":
+                    [
+                      "$statusChallenge",
+                      "PUBLISH"
+                    ]
+                }
+              }
+            ]
         }
+      });
 
-        pipeline.push({
-            "$project": projectdata
-        });
+    var projectdata = {
+      _id: 1,
+      nameChallenge: 1,
+      createdAt: 1,
+      startChallenge: 1,
+      endChallenge: 1,
+      statusChallenge: 1,
+    };
 
-        // console.log(JSON.stringify(pipeline));
-
-        var query = await this.ChallengeModel.aggregate(pipeline);
-        return query;
+    if (targetbanner == 'search') {
+      projectdata['bannerLandingpage'] = {
+        "$arrayElemAt":
+          [
+            "$bannerSearch.image",
+            0
+          ]
+      }
+    }
+    else if (targetbanner == 'popup') {
+      projectdata['bannerLandingpage'] = {
+        "$arrayElemAt":
+          [
+            "$popUp.image",
+            0
+          ]
+      }
     }
 
-    async find(): Promise<Challenge[]> {
-        return this.ChallengeModel.find().exec();
-    }
+    pipeline.push({
+      "$project": projectdata
+    });
 
-    async update(id: string, Challenge_: Challenge): Promise<Challenge> {
-        let data = await this.ChallengeModel.findByIdAndUpdate(id, Challenge_, { new: true });
-        if (!data) {
-            throw new Error('Data is not found!');
+    // console.log(JSON.stringify(pipeline));
+
+    var query = await this.ChallengeModel.aggregate(pipeline);
+    return query;
+  }
+
+  async find(): Promise<Challenge[]> {
+    return this.ChallengeModel.find().exec();
+  }
+
+  async update(id: string, Challenge_: Challenge): Promise<Challenge> {
+    let data = await this.ChallengeModel.findByIdAndUpdate(id, Challenge_, { new: true });
+    if (!data) {
+      throw new Error('Data is not found!');
+    }
+    return data;
+  }
+
+  async delete(id: string) {
+    const data = await this.ChallengeModel.findByIdAndRemove({ _id: new Types.ObjectId(id) }).exec();
+    return data;
+  }
+  async challengeReferal() {
+    var query = await this.ChallengeModel.aggregate([
+
+      { $match: { "statusChallenge": "PUBLISH" } },
+      {
+        $project: {
+          "statusChallenge": 1,
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "endChallenge": 1,
+          "startChallenge": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "Aktivitas": {
+            $arrayElemAt: ['$metrik.Aktivitas', 0]
+          },
+          "Interaksi": {
+            $arrayElemAt: ['$metrik.Interaksi', 0]
+          },
+          "AktivitasAkun": {
+            $arrayElemAt: ['$metrik.AktivitasAkun', 0]
+          },
+
         }
-        return data;
-    }
+      },
+      {
+        $project: {
+          "statusChallenge": 1,
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "endChallenge": 1,
+          "startChallenge": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "Aktivitas": 1,
+          "Interaksi": 1,
+          "poinReferal": {
+            $arrayElemAt: ['$AktivitasAkun.Referal', 0]
+          },
+          "poinFollow": {
+            $arrayElemAt: ['$AktivitasAkun.Ikuti', 0]
+          },
 
-    async delete(id: string) {
-        const data = await this.ChallengeModel.findByIdAndRemove({ _id: new Types.ObjectId(id) }).exec();
-        return data;
-    }
-    async challengeReferal() {
-        var query = await this.ChallengeModel.aggregate([
+        }
+      },
+      {
+        $match: { "poinReferal": { $ne: null } }
+      }
+    ]);
+    return query;
+  }
 
-            { $match: { "statusChallenge": "PUBLISH" } },
-            {
-                $project: {
-                    "statusChallenge": 1,
-                    "nameChallenge": 1,
-                    "jenisChallenge": 1,
-                    "description": 1,
-                    "createdAt": 1,
-                    "updatedAt": 1,
-                    "durasi": 1,
-                    "endChallenge": 1,
-                    "startChallenge": 1,
-                    "tampilStatusPengguna": 1,
-                    "objectChallenge": 1,
-                    "Aktivitas": {
-                        $arrayElemAt: ['$metrik.Aktivitas', 0]
-                    },
-                    "Interaksi": {
-                        $arrayElemAt: ['$metrik.Interaksi', 0]
-                    },
-                    "AktivitasAkun": {
-                        $arrayElemAt: ['$metrik.AktivitasAkun', 0]
-                    },
+  async challengeFollow() {
+    var query = await this.ChallengeModel.aggregate([
 
-                }
-            },
-            {
-                $project: {
-                    "statusChallenge": 1,
-                    "nameChallenge": 1,
-                    "jenisChallenge": 1,
-                    "description": 1,
-                    "createdAt": 1,
-                    "updatedAt": 1,
-                    "durasi": 1,
-                    "endChallenge": 1,
-                    "startChallenge": 1,
-                    "tampilStatusPengguna": 1,
-                    "objectChallenge": 1,
-                    "Aktivitas": 1,
-                    "Interaksi": 1,
-                    "poinReferal": {
-                        $arrayElemAt: ['$AktivitasAkun.Referal', 0]
-                    },
-                    "poinFollow": {
-                        $arrayElemAt: ['$AktivitasAkun.Ikuti', 0]
-                    },
+      { $match: { "statusChallenge": "PUBLISH" } },
+      {
+        $project: {
+          "statusChallenge": 1,
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "endChallenge": 1,
+          "startChallenge": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "Aktivitas": {
+            $arrayElemAt: ['$metrik.Aktivitas', 0]
+          },
+          "Interaksi": {
+            $arrayElemAt: ['$metrik.Interaksi', 0]
+          },
+          "AktivitasAkun": {
+            $arrayElemAt: ['$metrik.AktivitasAkun', 0]
+          },
 
-                }
-            },
-            {
-                $match: { "poinReferal": { $ne: null } }
-            }
-        ]);
-        return query;
-    }
+        }
+      },
+      {
+        $project: {
+          "statusChallenge": 1,
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "endChallenge": 1,
+          "startChallenge": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "Aktivitas": 1,
+          "Interaksi": 1,
+          "poinReferal": {
+            $arrayElemAt: ['$AktivitasAkun.Referal', 0]
+          },
+          "poinFollow": {
+            $arrayElemAt: ['$AktivitasAkun.Ikuti', 0]
+          },
 
-    async challengeFollow() {
-        var query = await this.ChallengeModel.aggregate([
+        }
+      },
+      {
+        $match: { "poinFollow": { $ne: null } }
+      }
+    ]);
+    return query;
+  }
 
-            { $match: { "statusChallenge": "PUBLISH" } },
-            {
-                $project: {
-                    "statusChallenge": 1,
-                    "nameChallenge": 1,
-                    "jenisChallenge": 1,
-                    "description": 1,
-                    "createdAt": 1,
-                    "updatedAt": 1,
-                    "durasi": 1,
-                    "endChallenge": 1,
-                    "startChallenge": 1,
-                    "tampilStatusPengguna": 1,
-                    "objectChallenge": 1,
-                    "Aktivitas": {
-                        $arrayElemAt: ['$metrik.Aktivitas', 0]
-                    },
-                    "Interaksi": {
-                        $arrayElemAt: ['$metrik.Interaksi', 0]
-                    },
-                    "AktivitasAkun": {
-                        $arrayElemAt: ['$metrik.AktivitasAkun', 0]
-                    },
+  async challengeKonten() {
+    var pipeline = [];
 
-                }
-            },
-            {
-                $project: {
-                    "statusChallenge": 1,
-                    "nameChallenge": 1,
-                    "jenisChallenge": 1,
-                    "description": 1,
-                    "createdAt": 1,
-                    "updatedAt": 1,
-                    "durasi": 1,
-                    "endChallenge": 1,
-                    "startChallenge": 1,
-                    "tampilStatusPengguna": 1,
-                    "objectChallenge": 1,
-                    "Aktivitas": 1,
-                    "Interaksi": 1,
-                    "poinReferal": {
-                        $arrayElemAt: ['$AktivitasAkun.Referal', 0]
-                    },
-                    "poinFollow": {
-                        $arrayElemAt: ['$AktivitasAkun.Ikuti', 0]
-                    },
+    pipeline.push({
+      $match: {
+        "statusChallenge": "PUBLISH"
+      }
+    },
+      {
+        $project: {
+          "statusChallenge": 1,
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "endChallenge": 1,
+          "startChallenge": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "Aktivitas": {
+            $arrayElemAt: ['$metrik.Aktivitas', 0]
+          },
+          "Interaksi": {
+            $arrayElemAt: ['$metrik.Interaksi', 0]
+          },
+          "InteraksiKonten": {
+            $arrayElemAt: ['$metrik.InteraksiKonten', 0]
+          },
 
-                }
-            },
-            {
-                $match: { "poinFollow": { $ne: null } }
-            }
-        ]);
-        return query;
-    }
+        }
+      },
+      {
+        $project: {
+          "statusChallenge": 1,
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "endChallenge": 1,
+          "startChallenge": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "Aktivitas": 1,
+          "Interaksi": 1,
+          "InteraksiKonten": 1,
 
-    async challengeKonten() {
-        var pipeline = [];
+        }
+      },
+      {
+        $match: {
+          "InteraksiKonten": {
+            $ne: []
+          },
+          "Interaksi": true
+        }
+      },
+      {
+        $project: {
+          "statusChallenge": 1,
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "endChallenge": 1,
+          "startChallenge": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "Aktivitas": 1,
+          "Interaksi": 1,
+          "tagar": {
+            $arrayElemAt: ['$InteraksiKonten.tagar', 0]
+          },
+          "buatKonten": {
+            $arrayElemAt: ['$InteraksiKonten.buatKonten', 0]
+          },
+          "suka": {
+            $arrayElemAt: ['$InteraksiKonten.suka', 0]
+          },
+          "tonton": {
+            $arrayElemAt: ['$InteraksiKonten.tonton', 0]
+          },
+        }
+      },);
+    var query = await this.ChallengeModel.aggregate(pipeline);
+    return query;
+  }
 
-        pipeline.push({
-            $match: {
-                "statusChallenge": "PUBLISH"
+  async checkuserstatusjoin(email:string)
+  {
+    var data = await this.ChallengeModel.aggregate([
+        {
+            $set: {
+                mail: email
             }
         },
+        {
+            $set: 
             {
-                $project: {
-                    "statusChallenge": 1,
-                    "nameChallenge": 1,
-                    "jenisChallenge": 1,
-                    "description": 1,
-                    "createdAt": 1,
-                    "updatedAt": 1,
-                    "durasi": 1,
-                    "endChallenge": 1,
-                    "startChallenge": 1,
-                    "tampilStatusPengguna": 1,
-                    "objectChallenge": 1,
-                    "Aktivitas": {
-                        $arrayElemAt: ['$metrik.Aktivitas', 0]
-                    },
-                    "Interaksi": {
-                        $arrayElemAt: ['$metrik.Interaksi', 0]
-                    },
-                    "InteraksiKonten": {
-                        $arrayElemAt: ['$metrik.InteraksiKonten', 0]
-                    },
-
-                }
+                co: ["MALE", " MALE", "Laki-laki", "Pria"]
             },
+            
+        },
+        {
+            $set: 
             {
-                $project: {
-                    "statusChallenge": 1,
-                    "nameChallenge": 1,
-                    "jenisChallenge": 1,
-                    "description": 1,
-                    "createdAt": 1,
-                    "updatedAt": 1,
-                    "durasi": 1,
-                    "endChallenge": 1,
-                    "startChallenge": 1,
-                    "tampilStatusPengguna": 1,
-                    "objectChallenge": 1,
-                    "Aktivitas": 1,
-                    "Interaksi": 1,
-                    "InteraksiKonten": 1,
-
-                }
-            },
+                ce: 
+                ["FEMALE", " FEMALE", "Perempuan", "Wanita"]
+            }
+        },
+        {
+            $set: 
             {
-                $match: {
-                    "InteraksiKonten": {
-                        $ne: []
-                    },
-                    "Interaksi": true
-                }
-            },
+                all: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria", "Other"]
+            }
+        },
+        {
+            $set: 
             {
-                $project: {
-                    "statusChallenge": 1,
-                    "nameChallenge": 1,
-                    "jenisChallenge": 1,
-                    "description": 1,
-                    "createdAt": 1,
-                    "updatedAt": 1,
-                    "durasi": 1,
-                    "endChallenge": 1,
-                    "startChallenge": 1,
-                    "tampilStatusPengguna": 1,
-                    "objectChallenge": 1,
-                    "Aktivitas": 1,
-                    "Interaksi": 1,
-                    "tagar": {
-                        $arrayElemAt: ['$InteraksiKonten.tagar', 0]
-                    },
-                    "buatKonten": {
-                        $arrayElemAt: ['$InteraksiKonten.buatKonten', 0]
-                    },
-                    "suka": {
-                        $arrayElemAt: ['$InteraksiKonten.suka', 0]
-                    },
-                    "tonton": {
-                        $arrayElemAt: ['$InteraksiKonten.tonton', 0]
-                    },
-                }
-            },);
-        var query = await this.ChallengeModel.aggregate(pipeline);
-        return query;
-    }
-
-    async checkuserstatusjoin(email: string) {
-        var data = await this.ChallengeModel.aggregate([
+                ceOther: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "Other"]
+            }
+        },
+        {
+            $set: 
             {
-                $set: {
-                    mail: email
-                }
-            },
+                coOther: ["MALE", " MALE", "Laki-laki", "Pria", "Other"]
+            }
+        },
+        {
+            $set: 
             {
-                $set:
+                ceCo: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria"]
+            }
+        },
+        {
+            $set: 
+            {
+                other: ["Other"]
+            }
+        },
+        {
+            $set: {
+                "nowDate": 
                 {
-                    co: ["MALE", " MALE", "Laki-laki", "Pria"]
-                },
-
-            },
-            {
-                $set:
-                {
-                    ce:
-                        ["FEMALE", " FEMALE", "Perempuan", "Wanita"]
-                }
-            },
-            {
-                $set:
-                {
-                    all: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria", "Other"]
-                }
-            },
-            {
-                $set:
-                {
-                    ceOther: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "Other"]
-                }
-            },
-            {
-                $set:
-                {
-                    coOther: ["MALE", " MALE", "Laki-laki", "Pria", "Other"]
-                }
-            },
-            {
-                $set:
-                {
-                    ceCo: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria"]
-                }
-            },
-            {
-                $set:
-                {
-                    other: ["Other"]
-                }
-            },
-            {
-                $set: {
-                    "nowDate":
-                    {
-                        "$dateToString": {
-                            "format": "%Y-%m-%d %H:%M:%S",
-                            "date": {
-                                $add: [new Date(), 25200000]
-                            }
+                    "$dateToString": {
+                        "format": "%Y-%m-%d %H:%M:%S",
+                        "date": {
+                            $add: [new Date(), 25200000]
                         }
                     }
-                }
-            },
-            {
-                "$set": {
-                    "endDate": {
-                        "$concat": [
-                            {
-                                "$dateToString": {
-                                    "format": "%Y-%m-%d",
-                                    "date": {
-                                        $toDate: "$endChallenge"
-                                    }
-                                }
-                            },
-                            " ",
-                            "$endTime"
-                        ]
-                    }
-                }
-            },
-            {
-                $match: {
-                    $and: [
-                        {
-                            $expr:
-                            {
-                                $gt: ["$endDate", "$nowDate"]
-                            },
-
-                        },
-                        {
-                            "statusChallenge": "PUBLISH"
-                        }
-                    ]
-                }
-            },
-            {
-                "$lookup": {
-                    from: "userbasics",
-                    as: "joinUser",
-                    let: {
-                        localID: "$mail"
-                    },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $and: [
-                                        {
-                                            $eq: ["$email", "$$localID"]
-                                        },
-
-                                    ]
-                                }
-                            }
-                        },
-
-                    ],
-
-                }
-            },
-            {
-                $unwind: {
-                    path: "$joinUser"
-                }
-            },
-            {
-                $set: {
-                    kelamin:
-                    {
-                        $switch: {
-                            branches: [
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: "$ce"
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: "$co"
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: "$other"
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: "$ceCo"
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: "$coOther"
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: "$coOther"
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: "$ceOther"
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: "$all"
-                                },
-
-                            ],
-                            default: "kancut"
-                        }
-                    },
-
-                }
-            },
-            {
-                $set: {
-                    verified: {
-                        $cond: {
-                            if: {
-                                $eq: [{
-                                    $arrayElemAt: ["$peserta.tipeAkunTerverikasi", 0]
-                                }, "ALL"]
-                            },
-                            then: true,
-                            else: {
-                                $cond: {
-                                    if: {
-                                        $eq: [{
-                                            $arrayElemAt: ["$peserta.tipeAkunTerverikasi", 0]
-                                        }, "YES"]
-                                    },
-                                    else: {
-                                        $cond: {
-                                            if: {
-                                                $eq: [{
-                                                    $arrayElemAt: ["$peserta.tipeAkunTerverikasi", 0]
-                                                }, "NO"]
-                                            },
-                                            then: {
-                                                $cond: {
-                                                    if: {
-                                                        $eq: ["$joinUser.isIdVerified", false]
-                                                    },
-                                                    then: true,
-                                                    else: false
-                                                }
-                                            },
-                                            else: false
-                                        }
-                                    },
-                                    then: {
-                                        $cond: {
-                                            if: {
-                                                $eq: ["$joinUser.isIdVerified", true]
-                                            },
-                                            then: true,
-                                            else: false
-                                        }
-                                    }
-                                }
-                            }
-                        },
-
-                    },
-
-                }
-            },
-            {
-                $set: {
-                    "age":
-                    {
-                        $cond: {
-                            if: {
-                                $and: ['$joinUser.dob', {
-                                    $ne: ["$joinUser.dob", ""]
-                                }]
-                            },
-                            then: {
-                                $toInt: {
-                                    $divide: [{
-                                        $subtract: [new Date(), {
-                                            $toDate: "$joinUser.dob"
-                                        }]
-                                    }, (365 * 24 * 60 * 60 * 1000)]
-                                }
-                            },
-                            else: 0
-                        }
-                    },
-
-                }
-            },
-            {
-                $set: {
-                    ageChallenge:
-                    {
-                        $switch: {
-                            branches: [
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: [0, 14]
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: {
-                                        $cond: {
-                                            if: {
-                                                $lte: ["$age", 28]
-                                            },
-                                            else: "error umur 28",
-                                            then: true,
-
-                                        }
-                                    },
-
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: {
-                                        $cond: {
-                                            if: {
-                                                $lte: ["$age", 43]
-                                            },
-                                            else: "error umur <43",
-                                            then: true,
-
-                                        }
-                                    },
-
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: {
-                                        $cond: {
-                                            if: {
-                                                $lte: ["$age", 100000]
-                                            },
-                                            else: "error umur >43",
-                                            then: true,
-
-                                        }
-                                    },
-
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: {
-                                        $cond: {
-                                            if: {
-                                                $and: [
-                                                    {
-                                                        $lte: ["$age", 100000]
-                                                    },
-                                                    {
-                                                        $gt: ["$age", 14]
-                                                    }
-                                                ]
-                                            },
-                                            else: "error umur 14-1000",
-                                            then: true,
-
-                                        }
-                                    },
-
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: {
-                                        $cond: {
-                                            if: {
-                                                $and: [
-                                                    {
-                                                        $lte: ["$age", 100000]
-                                                    },
-                                                    {
-                                                        $gt: ["$age", 28]
-                                                    }
-                                                ]
-                                            },
-                                            else: "error umur 28-1000",
-                                            then: true,
-
-                                        }
-                                    },
-
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: {
-                                        $cond: {
-                                            if: {
-                                                $and: [
-                                                    {
-                                                        $lte: ["$age", 100000]
-                                                    },
-                                                    {
-                                                        $gt: ["$age", 43]
-                                                    }
-                                                ]
-                                            },
-                                            else: "error umur 43-1000",
-                                            then: true,
-
-                                        }
-                                    },
-                                },
-                                //beda case//
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: {
-                                        $cond: {
-                                            if: {
-                                                $or: [
-                                                    {
-                                                        $and: [
-                                                            {
-                                                                $lte: ["$age", 14]
-                                                            },
-                                                            {
-                                                                $gt: ["$age", 0]
-                                                            }
-                                                        ]
-                                                    },
-                                                    {
-                                                        $and: [
-                                                            {
-                                                                $lte: ["$age", 100000]
-                                                            },
-                                                            {
-                                                                $gt: ["$age", 28]
-                                                            }
-                                                        ]
-                                                    },
-                                                ]
-                                            },
-                                            else: "error umur 0,28,1000",
-                                            then: true,
-
-                                        }
-                                    },
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: {
-                                        $cond: {
-                                            if: {
-                                                $or: [
-                                                    {
-                                                        $and: [
-                                                            {
-                                                                $lte: ["$age", 14]
-                                                            },
-                                                            {
-                                                                $gt: ["$age", 0]
-                                                            }
-                                                        ]
-                                                    },
-                                                    {
-                                                        $and: [
-                                                            {
-                                                                $lte: ["$age", 100000]
-                                                            },
-                                                            {
-                                                                $gt: ["$age", 43]
-                                                            }
-                                                        ]
-                                                    },
-                                                ]
-                                            },
-                                            else: "error umur 0,43,1000",
-                                            then: true,
-
-                                        }
-                                    },
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: {
-                                        $cond: {
-                                            if: {
-                                                $or: [
-                                                    {
-                                                        $and: [
-                                                            {
-                                                                $lte: ["$age", 28]
-                                                            },
-                                                            {
-                                                                $gt: ["$age", 14]
-                                                            }
-                                                        ]
-                                                    },
-                                                    {
-                                                        $and: [
-                                                            {
-                                                                $lte: ["$age", 100000]
-                                                            },
-                                                            {
-                                                                $gt: ["$age", 43]
-                                                            }
-                                                        ]
-                                                    },
-                                                ]
-                                            },
-                                            else: "error umur 0,43,1000",
-                                            then: true,
-
-                                        }
-                                    },
-                                },
-                                {
-                                    case: {
-                                        $and: [
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                    }, 0]
-                                                }, "NO"]
-                                            },
-                                            {
-                                                $eq: [{
-                                                    $arrayElemAt: [{
-                                                        $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                    }, 0]
-                                                }, "YES"]
-                                            },
-
-                                        ]
-                                    },
-                                    then: {
-                                        $cond: {
-                                            if: {
-                                                $or: [
-                                                    {
-                                                        $and: [
-                                                            {
-                                                                $lte: ["$age", 28]
-                                                            },
-                                                            {
-                                                                $gt: ["$age", 0]
-                                                            }
-                                                        ]
-                                                    },
-                                                    {
-                                                        $and: [
-                                                            {
-                                                                $lte: ["$age", 100000]
-                                                            },
-                                                            {
-                                                                $gt: ["$age", 43]
-                                                            }
-                                                        ]
-                                                    },
-                                                ]
-                                            },
-                                            else: "error umur 0,43,1000",
-                                            then: true,
-
-                                        }
-                                    },
-                                },
-                            ],
-                            "default": 10000
-                        }
-                    }
-                }
-            },
-            {
-                $project: {
-                    "_id": 1,
-                    "nameChallenge": 1,
-                    "jenisChallenge": 1,
-                    "description": 1,
-                    "createdAt": 1,
-                    "updatedAt": 1,
-                    "durasi": 1,
-                    "startChallenge": 1,
-                    "endChallenge": 1,
-                    "startTime": 1,
-                    "endTime": 1,
-                    "jenisDurasi": 1,
-                    "tampilStatusPengguna": 1,
-                    "objectChallenge": 1,
-                    "statusChallenge": 1,
-                    "metrik": 1,
-                    "peserta": 1,
-                    "leaderBoard": 1,
-                    "ketentuanHadiah": 1,
-                    "hadiahPemenang": 1,
-                    "bannerSearch": 1,
-                    "popUp": 1,
-                    "notifikasiPush": 1,
-                    "kelamin": 1,
-                    "kelaminKu": "$joinUser.gender",
-                    "verifiedUser": "$joinUser.isIdVerified",
-                    "verified": 1,
-                    "user": "$ageChallenge",
-                    "userAge": "$age",
-                    "lokasi": { $arrayElemAt: ["$peserta.lokasiPengguna", 0] },
-                    "ChalleAge14": {
-                        $arrayElemAt: [{
-                            $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                        }, 0]
-                    },
-                    "joined":
-                    {
-                        $cond: {
-                            if: {
-                                $eq: [{
-                                    $arrayElemAt: ["$peserta.caraGabung", 0]
-                                }, "SEMUA PENGGUNA"]
-                            },
-                            then:
-                            {
-                                $cond: {
-                                    if: {
-                                        $eq: ["$verified", true]
-                                    },
-                                    else: "error verified",
-                                    then: {
-                                        $cond: {
-                                            if: {
-                                                $eq: ["$ads.kelamin", "$userBasic.gender"]
-                                            },
-                                            else: "error kelamin",
-                                            then: {
-                                                $cond: {
-                                                    if: {
-                                                        $eq: ["$ageChallenge", true]
-                                                    },
-                                                    else: "error age",
-                                                    then: {
-                                                        $cond: {
-                                                            if: {
-                                                                $eq: [{ $arrayElemAt: ["$peserta.lokasiPengguna", 0] }, "$userBasic.states.$id"]
-                                                            },
-                                                            else: "error lokasi",
-                                                            then: true
-                                                        }
-                                                    },
-                                                }
-                                            }
-                                        }
-                                    },
-
-                                },
-
-                            },
-                            else: "error undangan"
-                        }
-                    },
-
                 }
             }
-        ]);
+        },
+        {
+            "$set": {
+                "endDate": {
+                    "$concat": [
+                        {
+                            "$dateToString": {
+                                "format": "%Y-%m-%d",
+                                "date": {
+                                    $toDate: "$endChallenge"
+                                }
+                            }
+                        },
+                        " ",
+                        "$endTime"
+                    ]
+                }
+            }
+        },
+        {
+            $match: {
+                $and: [
+                    {
+                        $expr: 
+                        {
+                            $gt: ["$endDate", "$nowDate"]
+                        },
+                        
+                    },
+                    {
+                        "statusChallenge": "PUBLISH"
+                    }
+                ]
+            }
+        },
+        {
+            "$lookup": {
+                from: "userbasics",
+                as: "joinUser",
+                let: {
+                    localID: "$mail"
+                },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    {
+                                        $eq: ["$email", "$$localID"]
+                                    },
+                                    
+                                ]
+                            }
+                        }
+                    },
+                    
+                ],
+                
+            }
+        },
+        {
+            $unwind: {
+                path: "$joinUser"
+            }
+        },
+        {
+            $set: {
+                kelamin: 
+                {
+                    $switch: {
+                        branches: [
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: "$ce"
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: "$co"
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: "$other"
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: "$ceCo"
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: "$coOther"
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: "$coOther"
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: "$ceOther"
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: "$all"
+                            },
+                            
+                        ],
+                        default: "kancut"
+                    }
+                },
+                
+            }
+        },
+        {
+            $set: {
+                verified: {
+                    $cond: {
+                        if : {
+                            $eq: [{
+                                $arrayElemAt: ["$peserta.tipeAkunTerverikasi", 0]
+                            }, "ALL"]
+                        },
+                        then: true,
+                        else : {
+                            $cond: {
+                                if : {
+                                    $eq: [{
+                                        $arrayElemAt: ["$peserta.tipeAkunTerverikasi", 0]
+                                    }, "YES"]
+                                },
+                                else : {
+                                    $cond: {
+                                        if : {
+                                            $eq: [{
+                                                $arrayElemAt: ["$peserta.tipeAkunTerverikasi", 0]
+                                            }, "NO"]
+                                        },
+                                        then: {
+                                            $cond: {
+                                                if : {
+                                                    $eq: ["$joinUser.isIdVerified", false]
+                                                },
+                                                then: true,
+                                                else : false
+                                            }
+                                        },
+                                        else : false
+                                    }
+                                },
+                                then: {
+                                    $cond: {
+                                        if : {
+                                            $eq: ["$joinUser.isIdVerified", true]
+                                        },
+                                        then: true,
+                                        else : false
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    
+                },
+                
+            }
+        },
+        {
+            $set: {
+                "age": 
+                {
+                    $cond: {
+                        if : {
+                            $and: ['$joinUser.dob', {
+                                $ne: ["$joinUser.dob", ""]
+                            }]
+                        },
+                        then: {
+                            $toInt: {
+                                $divide: [{
+                                    $subtract: [new Date(), {
+                                        $toDate: "$joinUser.dob"
+                                    }]
+                                }, (365 * 24 * 60 * 60 * 1000)]
+                            }
+                        },
+                        else : 0
+                    }
+                },
+                
+            }
+        },
+        {
+            $set: {
+                ageChallenge: 
+                {
+                    $switch: {
+                        branches: [
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: [0, 14]
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: {
+                                    $cond: {
+                                        if : {
+                                            $lte: ["$age", 28]
+                                        },
+                                        else : "error umur 28",
+                                        then: true,
+                                        
+                                    }
+                                },
+                                
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: {
+                                    $cond: {
+                                        if : {
+                                            $lte: ["$age", 43]
+                                        },
+                                        else : "error umur <43",
+                                        then: true,
+                                        
+                                    }
+                                },
+                                
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: {
+                                    $cond: {
+                                        if : {
+                                            $lte: ["$age", 100000]
+                                        },
+                                        else : "error umur >43",
+                                        then: true,
+                                        
+                                    }
+                                },
+                                
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: {
+                                    $cond: {
+                                        if : {
+                                            $and:[
+                                              {
+                                                  $lte: ["$age", 100000]
+                                              },
+                                              {
+                                                  $gt: ["$age", 14]
+                                              }
+                                            ]
+                                        },
+                                        else : "error umur 14-1000",
+                                        then: true,
+                                        
+                                    }
+                                },
+                                
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: {
+                                    $cond: {
+                                        if : {
+                                            $and:[
+                                              {
+                                                  $lte: ["$age", 100000]
+                                              },
+                                              {
+                                                  $gt: ["$age", 28]
+                                              }
+                                            ]
+                                        },
+                                        else : "error umur 28-1000",
+                                        then: true,
+                                        
+                                    }
+                                },
+                                
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: {
+                                    $cond: {
+                                        if : {
+                                            $and:[
+                                              {
+                                                  $lte: ["$age", 100000]
+                                              },
+                                              {
+                                                  $gt: ["$age", 43]
+                                              }
+                                            ]
+                                        },
+                                        else : "error umur 43-1000",
+                                        then: true,
+                                        
+                                    }
+                                },
+                            },
+                            //beda case//
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: {
+                                    $cond: {
+                                        if : {
+                                            $or:[
+                                              {
+                                                $and:[
+                                                  {
+                                                      $lte: ["$age", 14]
+                                                  },
+                                                  {
+                                                      $gt: ["$age", 0]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                $and:[
+                                                  {
+                                                      $lte: ["$age", 100000]
+                                                  },
+                                                  {
+                                                      $gt: ["$age", 28]
+                                                  }
+                                                ]
+                                              },
+                                            ]
+                                        },
+                                        else : "error umur 0,28,1000",
+                                        then: true,
+                                        
+                                    }
+                                },
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: {
+                                    $cond: {
+                                        if : {
+                                            $or:[
+                                              {
+                                                $and:[
+                                                  {
+                                                      $lte: ["$age", 14]
+                                                  },
+                                                  {
+                                                      $gt: ["$age", 0]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                $and:[
+                                                  {
+                                                      $lte: ["$age", 100000]
+                                                  },
+                                                  {
+                                                      $gt: ["$age", 43]
+                                                  }
+                                                ]
+                                              },
+                                            ]
+                                        },
+                                        else : "error umur 0,43,1000",
+                                        then: true,
+                                        
+                                    }
+                                },
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: {
+                                    $cond: {
+                                        if : {
+                                            $or:[
+                                              {
+                                                $and:[
+                                                  {
+                                                      $lte: ["$age", 28]
+                                                  },
+                                                  {
+                                                      $gt: ["$age",14]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                $and:[
+                                                  {
+                                                      $lte: ["$age", 100000]
+                                                  },
+                                                  {
+                                                      $gt: ["$age", 43]
+                                                  }
+                                                ]
+                                              },
+                                            ]
+                                        },
+                                        else : "error umur 0,43,1000",
+                                        then: true,
+                                        
+                                    }
+                                },
+                            },
+                            {
+                                case: {
+                                    $and: [
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
+                                                }, 0]
+                                            }, "NO"]
+                                        },
+                                        {
+                                            $eq: [{
+                                                $arrayElemAt: [{
+                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
+                                                }, 0]
+                                            }, "YES"]
+                                        },
+                                        
+                                    ]
+                                },
+                                then: {
+                                    $cond: {
+                                        if : {
+                                            $or:[
+                                              {
+                                                $and:[
+                                                  {
+                                                      $lte: ["$age", 28]
+                                                  },
+                                                  {
+                                                      $gt: ["$age",0]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                $and:[
+                                                  {
+                                                      $lte: ["$age", 100000]
+                                                  },
+                                                  {
+                                                      $gt: ["$age", 43]
+                                                  }
+                                                ]
+                                              },
+                                            ]
+                                        },
+                                        else : "error umur 0,43,1000",
+                                        then: true,
+                                        
+                                    }
+                                },
+                            },
+                        ],
+                        "default": 10000
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                "_id": 1,
+                "nameChallenge": 1,
+                "jenisChallenge": 1,
+                "description": 1,
+                "createdAt": 1,
+                "updatedAt": 1,
+                "durasi": 1,
+                "startChallenge": 1,
+                "endChallenge": 1,
+                "startTime": 1,
+                "endTime": 1,
+                "jenisDurasi": 1,
+                "tampilStatusPengguna": 1,
+                "objectChallenge": 1,
+                "statusChallenge": 1,
+                "metrik": 1,
+                "peserta": 1,
+                "leaderBoard": 1,
+                "ketentuanHadiah": 1,
+                "hadiahPemenang": 1,
+                "bannerSearch": 1,
+                "popUp": 1,
+                "notifikasiPush": 1,
+                "kelamin": 1,
+                "kelaminKu": "$joinUser.gender",
+                "verifiedUser": "$joinUser.isIdVerified",
+                "verified": 1,
+                "user": "$ageChallenge",
+                "userAge": "$age",
+                "lokasi":{$arrayElemAt: ["$peserta.lokasiPengguna", 0]},
+                "ChalleAge14":{
+                    $arrayElemAt: [{
+                        $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
+                    }, 0]
+                },
+                "joined": 
+                {
+                    $cond: {
+                        if : {
+                            $eq: [{
+                                $arrayElemAt: ["$peserta.caraGabung", 0]
+                            }, "SEMUA PENGGUNA"]
+                        },
+                        then: 
+                        {
+                            $cond: {
+                                if : {
+                                    $eq: ["$verified", true]
+                                },
+                                else : "error verified",
+                                then: {
+                                    $cond: {
+                                        if : {
+                                            $eq: ["$ads.kelamin", "$userBasic.gender"]
+                                        },
+                                        else : "error kelamin",
+                                        then: {
+                                            $cond: {
+                                                if : {
+                                                    $eq: ["$ageChallenge", true]
+                                                },
+                                                else : "error age",
+                                                then: {
+                                                          $cond: {
+                                                              if : {
+                                                                  $eq: [{$arrayElemAt: ["$peserta.lokasiPengguna", 0]}, "$userBasic.states.$id"]
+                                                              },
+                                                              else : "error lokasi",
+                                                              then: true
+                                                          }
+                                                      },
+                                                }
+                                        }
+                                    }
+                                },
+                                
+                            },
+                            
+                        },
+                        else : "error undangan"
+                    }
+                },
+                
+            }
+        }
+    ]);
 
-        return data;
-    }
+    return data;
+  }
 }
