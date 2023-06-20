@@ -259,7 +259,7 @@ export class ChallengeController {
       var dataumur = request_json['rentangumur'];
       var konversiumur = dataumur.toString();
       konversiumur.split(",");
-      var listumur = ["<14","14-28","29-43","44<"];
+      var listumur = ["<14","14-28","29-43","44<","LAINNYA"];
       var setumur = {};
       var mongoose = require('mongoose');
       for(var i = 0; i < listumur.length; i++)
@@ -377,9 +377,9 @@ export class ChallengeController {
       var ektensipopup = request_json['popup_formatFile'];
       var insertpopup = files.popUpnotif[0];
       var path = "images/challenge/" + insertdata._id + "_popup" + "." + ektensipopup;
-      var result = await this.osservices.uploadFile(insertpopup, path);
-      setpopup['image'] = result.url;
-      // setpopup['image'] = path;
+      // var result = await this.osservices.uploadFile(insertpopup, path);
+      // setpopup['image'] = result.url;
+      setpopup['image'] = path;
       
       insertdata.popUp = [setpopup];
   
@@ -434,7 +434,21 @@ export class ChallengeController {
           for(var j = 0; j < listvariable.length; j++)
           {
             getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_' + listvariable[j];
-            tempnotifikasi[listvariable[j]] = request_json[getvarname];
+            if(getvarname == 'notifikasiPush_updateLeaderboard_aturWaktu')
+            {
+              var convertdata = request_json[getvarname].split(",");
+              var inputdatatoarray = [];
+              for(var i = 0; i < convertdata.length; i++)
+              {
+                inputdatatoarray.push(convertdata[i]);
+              }
+
+              tempnotifikasi[listvariable[j]] = inputdatatoarray;
+            }
+            else
+            {
+              tempnotifikasi[listvariable[j]] = request_json[getvarname];
+            }
           }
         }
         else
@@ -574,7 +588,7 @@ export class ChallengeController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.challengeService.findOne(id);
+    return this.challengeService.detailchallenge(id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -754,15 +768,69 @@ export class ChallengeController {
   // }
 
   @UseGuards(JwtAuthGuard)
-  @Get('userchallenge/checkuserstatus')
+  @Post('userchallenge/checkuserstatus')
   async checkuserstatus(
-    @Res() res, @Req() request: Request
+    @Req() request: Request
   )
   {
       var email = null;
 
       var request_json = JSON.parse(JSON.stringify(request.body));
-      email = request_json['email']; 
+
+      if (request_json["email"] !== undefined) {
+        email = request_json['email']; 
+      } else {
+        throw new BadRequestException("Unabled to proceed, email field is required");
+      }
+      
+
+      var data = await this.challengeService.checkuserstatusjoin(email);
+
+      const messages = {
+        "info": ["The process successful"],
+      };
+
+      return {
+        response_code: 202,
+        data:data,
+        messages: messages,
+      };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('leaderboard')
+  async listingleaderboard(
+    @Req() request: Request
+  )
+  {
+      var challengeId = null;
+      var userId = null;
+
+      var request_json = JSON.parse(JSON.stringify(request.body));
+
+      if (request_json["challengeId"] !== undefined) {
+        challengeId = request_json['challengeId']; 
+      } else {
+        throw new BadRequestException("Unabled to proceed, challenge field is required");
+      }
+
+      if (request_json["userId"] !== undefined) {
+        userId = request_json['userId']; 
+      } else {
+        throw new BadRequestException("Unabled to proceed, user id field is required");
+      }
+      
+      var data = await this.subchallenge.listingleaderboard(challengeId, userId);
+      
+      const messages = {
+        "info": ["The process successful"],
+      };
+
+      return {
+        response_code: 202,
+        data:data,
+        messages: messages,
+      };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -865,14 +933,19 @@ export class ChallengeController {
       listtanggal.push([startdatetime, enddatetime]);
     }
 
+    var checkviainvite = false;
     var getuserpartisipan = null;
     if(partisipan != null && partisipan != undefined)
     {
-      getuserpartisipan = partisipan.toString().split(",");
-    }
-    else
-    {
-      getuserpartisipan = await this.userbasicsSS.findAll();
+      if(partisipan == 'ALL')
+      {
+        getuserpartisipan = await this.userbasicsSS.findAll();
+      }
+      else
+      {
+        getuserpartisipan = partisipan.toString().split(",");
+      }
+      checkviainvite = true;
     }
 
     var listsubchallenge = [];
@@ -892,8 +965,10 @@ export class ChallengeController {
       // console.log(getuserpartisipan);
 
       var checkpartisipan = [];
-      for(var j = 0; j < getuserpartisipan.length; j++)
+      if(checkviainvite == true)
       {
+        for(var j = 0; j < getuserpartisipan.length; j++)
+        {
           var insertuserchallenge = new Userchallenges();
           insertuserchallenge._id = new mongoose.Types.ObjectId();
           insertuserchallenge.idChallenge = new mongoose.Types.ObjectId(parentdata._id);
@@ -910,6 +985,7 @@ export class ChallengeController {
           await this.userchallengeSS.create(insertuserchallenge);
 
           checkpartisipan.push(insertuserchallenge);
+        }
       }
 
       listsubchallenge.push([insertsub, checkpartisipan]);
