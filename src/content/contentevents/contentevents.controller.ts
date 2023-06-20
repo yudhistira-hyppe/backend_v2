@@ -1755,7 +1755,7 @@ export class ContenteventsController {
           datauserchall = null;
         }
 
-        if (datauserchall.length > 0) {
+        if (datauserchall !== null && datauserchall.length > 0) {
 
 
           for (let y = 0; y < datauserchall.length; y++) {
@@ -1787,7 +1787,7 @@ export class ContenteventsController {
 
               var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
-              if (datauschall.length > 0) {
+              if (datauschall !== null && datauschall.length > 0) {
                 for (let x = 0; x < datauschall.length; x++) {
 
                   let iducall = datauschall[x]._id;
@@ -1968,7 +1968,7 @@ export class ContenteventsController {
             datauserchall = null;
           }
 
-          if (datauserchall.length > 0) {
+          if (datauserchall !== null && datauserchall.length > 0) {
 
 
             for (let y = 0; y < datauserchall.length; y++) {
@@ -2193,7 +2193,7 @@ export class ContenteventsController {
             datauserchall = null;
           }
 
-          if (datauserchall.length > 0) {
+          if (datauserchall !== null && datauserchall.length > 0) {
 
 
             for (let y = 0; y < datauserchall.length; y++) {
