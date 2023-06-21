@@ -5030,7 +5030,7 @@ export class GetusercontentsController {
         if (await this.utilsService.ceckData(posts)) {
             post_type = posts.postType.toString();
 
-            await this.utilsService.sendFcmMassal(email, titlein, bodyin, "GENERAL", "ACCEPT", postID, post_type)
+            await this.utilsService.sendFcmMassal(email, titlein, bodyin, "LIKE", "ACCEPT", postID, post_type)
         }
 
     }
