@@ -4911,6 +4911,100 @@ export class GetusercontentsController {
         return { response_code: 202, data: picts, version: version.toString(), version_ios: (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(), messages };
     }
 
+    @Post('api/getusercontents/sendnotif')
+    @UseGuards(JwtAuthGuard)
+    async sendmasal(@Req() request: Request): Promise<any> {
 
+        var page = 0;
+        var limit = 0;
+        var title = null;
+        var body = null;
+        var email = null;
+        var data = null;
+        var postID = null;
+        var emailreceiver = null;
+
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if (request_json["title"] !== undefined) {
+            title = request_json["title"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["body"] !== undefined) {
+            body = request_json["body"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        this.testSend(500, postID, title, body);
+
+        return { response_code: 202, messages };
+    }
+
+
+    async testSend(limit: number, postID: string, titlein: string, bodyin: string) {
+        var email = null;
+        var datacount = null;
+        var totalall = 0;
+        try {
+            datacount = await this.userbasicsService.getcount();
+            totalall = datacount[0].totalpost / limit;
+        } catch (e) {
+            datacount = null;
+            totalall = 0;
+        }
+        var totalpage = 0;
+        var tpage2 = (totalall).toFixed(0);
+        var tpage = (totalall % limit);
+        if (tpage > 0 && tpage < 5) {
+            totalpage = parseInt(tpage2) + 1;
+
+        } else {
+            totalpage = parseInt(tpage2);
+        }
+
+        console.log(totalpage);
+
+        for (let x = 0; x < totalpage; x++) {
+            var data = await this.userbasicsService.getuser(x, limit);
+            for (var i = 0; i < data.length; i++) {
+                email = data[i].email;
+                console.log('data ke-' + i);
+                try {
+                    console.log(i);
+                    //await this.friendlistService.create(data[i]);
+
+                    this.sendInteractiveFCM(email, postID, titlein, bodyin);
+                }
+                catch (e) {
+                    //await this.friendlistService.update(data[i]._id, data[i]);
+                }
+            }
+        }
+
+    }
+
+    async sendInteractiveFCM(email: string, postID: string, titlein: string, bodyin: string) {
+
+
+        var posts = await this.postsService.findid(postID);
+        var post_type = "";
+        if (await this.utilsService.ceckData(posts)) {
+            post_type = posts.postType.toString();
+
+            await this.utilsService.sendFcmMassal(email, titlein, bodyin, "GENERAL", "ACCEPT", postID, post_type)
+        }
+
+    }
 
 }
