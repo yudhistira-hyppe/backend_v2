@@ -957,7 +957,7 @@ export class ChallengeController {
             unitAkandatang = dataAkandatang[0].unit;
             aturWaktuAkandatang = dataAkandatang[0].aturWaktu;
             let dt = new Date(startTime);
-            dt.setHours(dt.getHours() - aturWaktuAkandatang); // timestamp
+            dt.setHours(dt.getHours() + aturWaktuAkandatang); // timestamp
             dt = new Date(dt);
             let strdate = dt.toISOString();
             let repdate = strdate.replace('T', ' ');
@@ -1063,7 +1063,7 @@ export class ChallengeController {
             aturWaktuchallengeAkanBerakhir = datachallengeAkanBerakhir[0].aturWaktu;
 
             let dt = new Date(endTime);
-            dt.setHours(dt.getHours() - aturWaktuchallengeAkanBerakhir); // timestamp
+            dt.setHours(dt.getHours() + aturWaktuchallengeAkanBerakhir); // timestamp
             dt = new Date(dt);
             let strdate = dt.toISOString();
             let repdate = strdate.replace('T', ' ');
