@@ -407,4 +407,224 @@ export class subChallengeService {
 
     return data;
   }
+
+  async getwilayahpengguna(challengeid: string)
+  {
+    var mongo = require('mongoose');
+    var konvertid = mongo.Types.ObjectId(challengeid);
+
+    var data = await this.subChallengeModel.aggregate([
+        {
+            "$match":
+            {
+                challengeId: konvertid
+            }
+        },
+        {
+            "$lookup":
+            {
+                from: "userChallenge",
+                as: "userChallenge_data",
+                let: 
+                {
+                    userChallenge_fk: "$_id",
+                },
+                pipeline: [
+                    {
+                        "$match":
+                        {
+                            "$and":
+                            [
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                        [
+                                            "$$userChallenge_fk", "$idSubChallenge"
+                                        ]
+                                    }
+                                }
+                            ],
+                        }
+                    },
+                    {
+                        "$lookup":
+                        {
+                            from: "userbasics",
+                            as: "userbasics_data",
+                            let: 
+                            {
+                                userbasic_fk: "$idUser"
+                            },
+                            pipeline: [
+                                {
+                                    "$match":
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$_id", "$$userbasic_fk"
+                                            ]
+                                        }
+                                    },
+                                },
+                                {
+                                    "$project":
+                                    {
+                                        _id:1,
+                                        states:"$states.$id"
+                                        // states:1
+                                    }
+                                }
+                            ]                        
+                        }
+                    },
+                    {
+                        "$project":
+                        {
+                            _id:1,
+                            idUser:1,
+                            wilayah:
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$userbasics_data.states", 0
+                                ]
+                            }
+                        }
+                    },
+                    // {
+                    //     "$match":
+                    //     {
+                    //         wilayah:
+                    //         {
+                    //             "$exists":true
+                    //         }
+                    //     }
+                    // }
+                    {
+                        "$lookup":
+                        {
+                            "from": "areas",
+                            "as": "listdaerah",
+                            "let": {
+                                "area_fk": "$wilayah"
+                            },
+                            "pipeline": 
+                            [
+                                {
+                                    "$match":
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":["$_id", "$$area_fk"]
+                                        }
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        "$project":
+                        {
+                            _id:0,
+                            areas_name:
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$listdaerah.stateName",0
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "$group":
+                        {
+                            _id:
+                            {
+                                "$ifNull":
+                                [
+                                    "$areas_name",
+                                    "Lainnya"
+                                ]
+                            },
+                            total:
+                            {
+                                "$sum":1
+                            }
+                        }
+                    },
+                    {
+                        "$group":
+                        {
+                            _id:null,
+                            totaldata:
+                            {
+                                "$sum":"$total"
+                            },
+                            data:
+                            {
+                                "$push":
+                                {
+                                    _id:"$_id",
+                                    total:"$total"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "$unwind":
+                        {
+                            path:"$data"
+                        }
+                    },
+                    {
+                        "$sort":
+                        {
+                            _id:1
+                        }
+                    },
+                    {
+                        "$project":
+                        {
+                            _id:"$data._id",
+                            //total:{}"$data.total",
+                            persentase:
+                            {
+                                "$multiply":
+                                [
+                                    {
+                                        "$divide":
+                                        [
+                                            "$data.total", "$totaldata"
+                                        ]
+                                    }, 100
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "$group":
+                        {
+                            _id:"$_id",
+                            persentase:
+                            {
+                                "$first":"$persentase"
+                            }
+                        }
+                    },
+                    {
+                        "$sort":
+                        {
+                            _id:1
+                        }
+                    }
+                ]
+            }
+        },
+    ]);
+
+    return data;
+  }
 }

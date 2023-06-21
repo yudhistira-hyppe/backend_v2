@@ -842,6 +842,23 @@ export class ChallengeController {
 
     var data = await this.subchallenge.getwilayahpengguna(challengeId);
 
+    for(var i = 0; i < data.length; i++)
+    {
+      var setarray = [];
+      var getarray = data[i].userChallenge_data;
+      for(var j = 0; j < getarray.length; j++)
+      {
+        var setobject = {};
+        setobject["_id"] = getarray[j]._id;
+        var getangka = getarray[j].persentase;
+        setobject["persentase"] = parseFloat(getangka.toFixed(2));
+
+        setarray.push(setobject);
+      }
+
+      data[i].userChallenge_data = setarray;
+    }
+
     const messages = {
       "info": ["The process successful"],
     };
