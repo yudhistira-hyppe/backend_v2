@@ -54,4 +54,577 @@ export class subChallengeService {
     ]);
     return query;
   }
+
+  async listingleaderboard(challengeId: string, userId: string)
+  {
+    var mongo = require('mongoose');
+    var konvertChallenge = mongo.Types.ObjectId(challengeId);
+    var konvertUser = mongo.Types.ObjectId(userId);
+
+    var data = await this.subChallengeModel.aggregate([
+        {
+            $set: {
+                "timenow": 
+                {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d %H:%M:%S",
+                        "date": {
+                            $add: [
+                                new Date(),
+                                - 61200000
+                            ] // 1 hari 61200000
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$match": 
+            {
+                "$and": 
+                [
+                    {
+                        challengeId: konvertChallenge
+                    },
+                    
+                ]
+            }
+        },
+        {
+            "$lookup": 
+            {
+                from: "userChallenge",
+                let: 
+                {
+                    userchallenge_fk: "$_id"
+                },
+                as: 'getlastrank',
+                pipeline: 
+                [
+                    {
+                        "$match": 
+                        {
+                            $or: 
+                            [
+                                {
+                                    "$and": 
+                                    [
+                                        {
+                                            "$expr": 
+                                            {
+                                                "$eq": 
+                                                [
+                                                    "$$userchallenge_fk",
+                                                    "$idSubChallenge"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            isActive: true
+                                        },
+                                        {
+                                            ranking: {
+                                                $ne: 0
+                                            }
+                                        },
+                                        {
+                                            ranking: {
+                                                $ne: null
+                                            }
+                                        },
+                                        {
+                                            $expr: 
+                                            {
+                                                $lte: 
+                                                [
+                                                    "$timenow",
+                                                    "$startDatetime",
+                                                    
+                                                ]
+                                            }
+                                        },
+                                        
+                                    ]
+                                },
+                                {
+                                    "$and": 
+                                    [
+                                        {
+                                            "$expr": 
+                                            {
+                                                "$eq": 
+                                                [
+                                                    "$$userchallenge_fk",
+                                                    "$idSubChallenge"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            idUser: konvertUser,
+                                            
+                                        },
+                                        {
+                                            isActive: true
+                                        },
+                                        {
+                                            ranking: {
+                                                $ne: 0
+                                            }
+                                        },
+                                        {
+                                            ranking: {
+                                                $ne: null
+                                            }
+                                        },
+                                        {
+                                            $expr: 
+                                            {
+                                                $lte: 
+                                                [
+                                                    "$timenow",
+                                                    "$startDatetime",
+                                                    
+                                                ]
+                                            }
+                                        },
+                                        
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $set: {
+                            lastRank: //{$arrayElemAt:[ "$history.ranking", 0]}
+                            {
+                                $ifNull: 
+                                [
+                                    {
+                                        $arrayElemAt: ["$history.ranking", 0]
+                                    },
+                                    0
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        $set: {
+                            userID: konvertUser,
+                            
+                        }
+                    },
+                    {
+                        $set: {
+                            isUserLogin: 
+                            {
+                                "$cond": 
+                                {
+                                    if : 
+                                        {
+                                        "$eq": 
+                                        ["$userID", "$idUser"]
+                                    },
+                                    then: true,
+                                    else : false
+                                }
+                            },
+                            
+                        }
+                    },
+                    {
+                        "$sort": 
+                        {
+                            isUserLogin: - 1,
+                            ranking: 1
+                        }
+                    },
+                    {
+                        $limit: 11
+                    },
+                    {
+                        "$lookup": 
+                        {
+                            from: "userbasics",
+                            let: 
+                            {
+                                basic_fk: "$idUser",
+                                
+                            },
+                            as: 'userbasic_data',
+                            pipeline: 
+                            [
+                                {
+                                    "$match": 
+                                    {
+                                        "$expr": 
+                                        {
+                                            "$eq": 
+                                            [
+                                                "$_id",
+                                                "$$basic_fk"
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    "$lookup": 
+                                    {
+                                        from: "userauths",
+                                        let: 
+                                        {
+                                            basic_fk: "$email"
+                                        },
+                                        as: 'userauth_data',
+                                        pipeline: 
+                                        [
+                                            {
+                                                "$match": 
+                                                {
+                                                    "$and": 
+                                                    [
+                                                        {
+                                                            "$expr": 
+                                                            {
+                                                                "$eq": 
+                                                                [
+                                                                    "$email",
+                                                                    "$$basic_fk"
+                                                                ]
+                                                            },
+                                                            
+                                                        },
+                                                        
+                                                    ]
+                                                }
+                                            },
+                                            
+                                        ]
+                                    }
+                                },
+                                {
+                                    "$project": 
+                                    {
+                                        _id: 1,
+                                        email: 1,
+                                        username: 
+                                        {
+                                            "$arrayElemAt": 
+                                            [
+                                                "$userauth_data.username",
+                                                0
+                                            ]
+                                        },
+                                        avatar: 
+                                        {
+                                            mediaEndpoint: 
+                                            {
+                                                "$concat": 
+                                                [
+                                                    "/profilepict/",
+                                                    "$profilePict.$id",
+                                                    
+                                                ]
+                                            }
+                                        },
+                                        
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "$project": 
+                        {
+                            idUser: 1,
+                            score: 1,
+                            ranking: 1,
+                            lastRank: 1,
+                            idSubChallenge: 1,
+                            history: 1,
+                            sorter: "$ranking",
+                            username: 
+                            {
+                                "$arrayElemAt": 
+                                [
+                                    "$userbasic_data.username",
+                                    0
+                                ]
+                            },
+                            email: 
+                            {
+                                "$arrayElemAt": 
+                                [
+                                    "$userbasic_data.email",
+                                    0
+                                ]
+                            },
+                            avatar: 
+                            {
+                                "$arrayElemAt": 
+                                [
+                                    "$userbasic_data.avatar",
+                                    0
+                                ]
+                            },
+                            currentstatistik: 
+                            {
+                                "$switch": 
+                                {
+                                    branches: 
+                                    [
+                                        {
+                                            case: 
+                                            {
+                                                $gt: ["$ranking", "$lastRank"]
+                                            },
+                                            then: "UP"
+                                        },
+                                        {
+                                            case: 
+                                            {
+                                                "$gt": ["$lastRank", "$ranking"]
+                                            },
+                                            then: "DOWN"
+                                        },
+                                        
+                                    ],
+                                    default: "NETRAL"
+                                }
+                            },
+                            isUserLogin: 1,
+                        }
+                    },
+                    {
+                        $sort: {
+                            ranking: 1
+                        }
+                    },
+                ]
+            },
+            
+        },
+    ]);
+
+    return data;
+  }
+
+  async getwilayahpengguna(challengeid: string)
+  {
+    var mongo = require('mongoose');
+    var konvertid = mongo.Types.ObjectId(challengeid);
+
+    var data = await this.subChallengeModel.aggregate([
+        {
+            "$match":
+            {
+                challengeId: konvertid
+            }
+        },
+        {
+            "$lookup":
+            {
+                from: "userChallenge",
+                as: "userChallenge_data",
+                let: 
+                {
+                    userChallenge_fk: "$_id",
+                },
+                pipeline: [
+                    {
+                        "$match":
+                        {
+                            "$and":
+                            [
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                        [
+                                            "$$userChallenge_fk", "$idSubChallenge"
+                                        ]
+                                    }
+                                }
+                            ],
+                        }
+                    },
+                    {
+                        "$lookup":
+                        {
+                            from: "userbasics",
+                            as: "userbasics_data",
+                            let: 
+                            {
+                                userbasic_fk: "$idUser"
+                            },
+                            pipeline: [
+                                {
+                                    "$match":
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$_id", "$$userbasic_fk"
+                                            ]
+                                        }
+                                    },
+                                },
+                                {
+                                    "$project":
+                                    {
+                                        _id:1,
+                                        states:"$states.$id"
+                                        // states:1
+                                    }
+                                }
+                            ]                        
+                        }
+                    },
+                    {
+                        "$project":
+                        {
+                            _id:1,
+                            idUser:1,
+                            wilayah:
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$userbasics_data.states", 0
+                                ]
+                            }
+                        }
+                    },
+                    // {
+                    //     "$match":
+                    //     {
+                    //         wilayah:
+                    //         {
+                    //             "$exists":true
+                    //         }
+                    //     }
+                    // }
+                    {
+                        "$lookup":
+                        {
+                            "from": "areas",
+                            "as": "listdaerah",
+                            "let": {
+                                "area_fk": "$wilayah"
+                            },
+                            "pipeline": 
+                            [
+                                {
+                                    "$match":
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":["$_id", "$$area_fk"]
+                                        }
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        "$project":
+                        {
+                            _id:0,
+                            areas_name:
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$listdaerah.stateName",0
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "$group":
+                        {
+                            _id:
+                            {
+                                "$ifNull":
+                                [
+                                    "$areas_name",
+                                    "Lainnya"
+                                ]
+                            },
+                            total:
+                            {
+                                "$sum":1
+                            }
+                        }
+                    },
+                    {
+                        "$group":
+                        {
+                            _id:null,
+                            totaldata:
+                            {
+                                "$sum":"$total"
+                            },
+                            data:
+                            {
+                                "$push":
+                                {
+                                    _id:"$_id",
+                                    total:"$total"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "$unwind":
+                        {
+                            path:"$data"
+                        }
+                    },
+                    {
+                        "$sort":
+                        {
+                            _id:1
+                        }
+                    },
+                    {
+                        "$project":
+                        {
+                            _id:"$data._id",
+                            //total:{}"$data.total",
+                            persentase:
+                            {
+                                "$multiply":
+                                [
+                                    {
+                                        "$divide":
+                                        [
+                                            "$data.total", "$totaldata"
+                                        ]
+                                    }, 100
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "$group":
+                        {
+                            _id:"$_id",
+                            persentase:
+                            {
+                                "$first":"$persentase"
+                            }
+                        }
+                    },
+                    {
+                        "$sort":
+                        {
+                            _id:1
+                        }
+                    }
+                ]
+            }
+        },
+    ]);
+
+    return data;
+  }
 }

@@ -100,7 +100,7 @@ export class UserchallengesService {
             },
             {
 
-                $sort: { score: -1, createdAt: -1 }
+                $sort: { score: -1, createdAt: 1 }
             }
         ]);
         return query;
@@ -121,5 +121,145 @@ export class UserchallengesService {
     async updateHistory(id: string, idSubChallenge: string, data: {}) {
         let result = await this.UserchallengesModel.updateOne({ _id: new Types.ObjectId(id), idSubChallenge: new Types.ObjectId(idSubChallenge) }, { $push: { history: data } }).exec();
         return result;
+    }
+
+    async listUserChallenge(idChallenge: string) {
+        var pipeline = [];
+        pipeline.push({
+            $match: {
+                "idChallenge": new Types.ObjectId(idChallenge),
+
+            }
+        },
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    localField: 'idUser',
+                    foreignField: '_id',
+                    as: 'databasic',
+
+                },
+
+            },
+            {
+                $lookup: {
+                    from: 'subChallenge',
+                    localField: 'idSubChallenge',
+                    foreignField: '_id',
+                    as: 'subChallenge_data',
+
+                },
+
+            },
+            {
+                $lookup: {
+                    from: 'challenge',
+                    localField: 'idChallenge',
+                    foreignField: '_id',
+                    as: 'Challenge_data',
+
+                },
+
+            },
+            {
+                $project: {
+                    "idChallenge": 1,
+                    "idUser": 1,
+                    "email": {
+                        $arrayElemAt: ["$databasic.email", 0]
+                    },
+                    "idSubChallenge": 1,
+                    "startDatetime": 1,
+                    "endDatetime": 1,
+                    "createdAt": 1,
+                    "updatedAt": 1,
+                    "isActive": 1,
+                    "activity": 1,
+                    "history": 1,
+                    "session": {
+                        $arrayElemAt: ["$subChallenge_data.session", 0]
+                    },
+                    "nameChallenge": {
+                        $arrayElemAt: ["$Challenge_data.nameChallenge", 0]
+                    },
+                    "notifikasiPush": {
+                        $arrayElemAt: ["$Challenge_data.notifikasiPush", 0]
+                    },
+
+                }
+            },
+            {
+                $lookup: {
+                    from: 'userauths',
+                    localField: 'email',
+                    foreignField: 'email',
+                    as: 'dataauth',
+
+                },
+
+            },
+            {
+                $project: {
+                    "idChallenge": 1,
+                    "idUser": 1,
+                    "email": 1,
+                    "idSubChallenge": 1,
+                    "startDatetime": 1,
+                    "endDatetime": 1,
+                    "createdAt": 1,
+                    "updatedAt": 1,
+                    "isActive": 1,
+                    "activity": 1,
+                    "history": 1,
+                    "session": 1,
+                    "nameChallenge": 1,
+                    "notifikasiPush": 1,
+                    "username": {
+                        $arrayElemAt: ["$dataauth.username", 0]
+                    },
+
+                }
+            },
+            {
+                "$group":
+                {
+                    _id: {
+                        idChallenge: "$idChallenge",
+                        idSubChallenge: "$idSubChallenge",
+                        startDatetime: "$startDatetime",
+                        endDatetime: "$endDatetime",
+                        session: "$session",
+                        nameChallenge: "$nameChallenge",
+                        notifikasiPush: "$notifikasiPush"
+                    },
+                    userID:
+                    {
+                        "$push":
+                        {
+                            "idUser": "$idUser",
+                            "email": "$email",
+                            "username": "$username"
+                        }
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: 0,
+                    idChallenge: "$_id.idChallenge",
+                    idSubChallenge: "$_id.idSubChallenge",
+                    startDatetime: "$_id.startDatetime",
+                    endDatetime: "$_id.endDatetime",
+                    session: "$_id.session",
+                    nameChallenge: "$_id.nameChallenge",
+                    notifikasiPush: "$_id.notifikasiPush",
+                    userID: 1
+                }
+            },
+
+        );
+        var query = await this.UserchallengesModel.aggregate(pipeline);
+        return query;
     }
 }
