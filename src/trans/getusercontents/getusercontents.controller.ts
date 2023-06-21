@@ -4696,7 +4696,7 @@ export class GetusercontentsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-        if (request_json["type"] !== undefined) {
+        if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
             throw new BadRequestException("Unabled to proceed");
