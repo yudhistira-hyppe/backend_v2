@@ -4920,10 +4920,11 @@ export class GetusercontentsController {
         var limit = 0;
         var title = null;
         var body = null;
-        var email = null;
+        var emailuser = null;
         var data = null;
         var postID = null;
         var emailreceiver = null;
+        var type = null;
 
 
         var request_json = JSON.parse(JSON.stringify(request.body));
@@ -4943,55 +4944,82 @@ export class GetusercontentsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+
+        type = request_json["type"];
+        emailuser = request_json["emailuser"];
         const messages = {
             "info": ["The process successful"],
         };
 
-        this.testSend(200, postID, title, body);
+        this.testSend(200, postID, title, body, type, emailuser);
 
         return { response_code: 202, messages };
     }
 
 
-    async testSend(limit: number, postID: string, titlein: string, bodyin: string) {
+    async testSend(limit: number, postID: string, titlein: string, bodyin: string, type: string, emailuser: any[]) {
         var email = null;
         var datacount = null;
         var totalall = 0;
-        try {
-            datacount = await this.userbasicsService.getcount();
-            totalall = datacount[0].totalpost / limit;
-        } catch (e) {
-            datacount = null;
-            totalall = 0;
-        }
-        var totalpage = 0;
-        var tpage2 = (totalall).toFixed(0);
-        var tpage = (totalall % limit);
-        if (tpage > 0 && tpage < 5) {
-            totalpage = parseInt(tpage2) + 1;
 
-        } else {
-            totalpage = parseInt(tpage2);
-        }
+        if (type != undefined && type == "ALL") {
+            try {
+                datacount = await this.userbasicsService.getcount();
+                totalall = datacount[0].totalpost / limit;
+            } catch (e) {
+                datacount = null;
+                totalall = 0;
+            }
+            var totalpage = 0;
+            var tpage2 = (totalall).toFixed(0);
+            var tpage = (totalall % limit);
+            if (tpage > 0 && tpage < 5) {
+                totalpage = parseInt(tpage2) + 1;
 
-        console.log(totalpage);
+            } else {
+                totalpage = parseInt(tpage2);
+            }
 
-        for (let x = 0; x < totalpage; x++) {
-            var data = await this.userbasicsService.getuser(x, limit);
-            for (var i = 0; i < data.length; i++) {
-                email = data[i].email;
-                console.log('data ke-' + i);
-                try {
-                    console.log(i);
-                    //await this.friendlistService.create(data[i]);
+            console.log(totalpage);
 
-                    this.sendInteractiveFCM(email, postID, titlein, bodyin);
-                }
-                catch (e) {
-                    //await this.friendlistService.update(data[i]._id, data[i]);
+            for (let x = 0; x < totalpage; x++) {
+                var data = await this.userbasicsService.getuser(x, limit);
+                for (var i = 0; i < data.length; i++) {
+                    email = data[i].email;
+                    console.log('data ke-' + i);
+                    try {
+                        console.log(i);
+                        //await this.friendlistService.create(data[i]);
+
+                        this.sendInteractiveFCM(email, postID, titlein, bodyin);
+                    }
+                    catch (e) {
+                        //await this.friendlistService.update(data[i]._id, data[i]);
+                    }
                 }
             }
         }
+        else if (type != undefined && type == "OPTION") {
+            if (emailuser !== undefined && emailuser.length > 0) {
+
+
+                for (var i = 0; i < emailuser.length; i++) {
+                    email = emailuser[i];
+                    console.log('data ke-' + i);
+                    try {
+                        console.log(i);
+                        //await this.friendlistService.create(data[i]);
+
+                        this.sendInteractiveFCM(email, postID, titlein, bodyin);
+                    }
+                    catch (e) {
+                        //await this.friendlistService.update(data[i]._id, data[i]);
+                    }
+                }
+
+            }
+        }
+
 
     }
 
