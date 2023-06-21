@@ -426,7 +426,7 @@ export class ChallengeController {
       }
   
       var setnotifikasi = {};
-      var listnotifikasipush = ['akanDatang', 'challengeDimulai', 'updateLeaderboard', 'challengeAkanBerakhir', 'untukPemenang'];
+      var listnotifikasipush = ['akanDatang', 'challengeDimulai', 'updateLeaderboard', 'challengeAkanBerakhir', 'challengeBerakhir', 'untukPemenang'];
       var listvariable = ['include', 'title', 'description', 'unit', 'aturWaktu'];
       for(var i = 0; i < listnotifikasipush.length; i++)
       {
@@ -441,12 +441,16 @@ export class ChallengeController {
             {
               var convertdata = request_json[getvarname].split(",");
               var inputdatatoarray = [];
-              for(var i = 0; i < convertdata.length; i++)
+              for(var k = 0; k < convertdata.length; k++)
               {
-                inputdatatoarray.push(convertdata[i]);
+                inputdatatoarray.push(parseInt(convertdata[k]));
               }
 
               tempnotifikasi[listvariable[j]] = inputdatatoarray;
+            }
+            else if(listvariable[j] == 'aturWaktu')
+            {
+              tempnotifikasi[listvariable[j]] = parseInt(request_json[getvarname]);
             }
             else
             {
@@ -461,6 +465,10 @@ export class ChallengeController {
             if(listvariable[j] == 'include')
             {
               tempnotifikasi[listvariable[j]] = 'NO';
+            }
+            else if(listvariable[j] == 'aturWaktu')
+            {
+              tempnotifikasi[listvariable[j]] = 0;
             }
             else
             {
