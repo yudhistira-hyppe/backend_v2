@@ -6181,4 +6181,40 @@ export class UserbasicsService {
     ]);
     return query;
   }
+
+  // async getuser(page: number, limit: number) {
+  //   var pipeline = [];
+
+  //   pipeline.push(
+  //     {
+  //       $match: {
+  //         $or: [
+  //           {
+  //             'email': "ilhamarahman97@gmail.com"
+  //           },
+  //           {
+  //             'email': "ahmad.taslim07@gmail.com"
+  //           },
+  //         ]
+  //       }
+  //     },
+  //     { $skip: page * limit },
+  //     { $limit: limit },
+  //   );
+  //   var query = await this.userbasicModel.aggregate(pipeline);
+
+  //   return query;
+  // }
+
+  async getuser(page: number, limit: number) {
+    var pipeline = [];
+
+    pipeline.push(
+      { $skip: page * limit },
+      { $limit: limit },
+    );
+    var query = await this.userbasicModel.aggregate(pipeline);
+
+    return query;
+  }
 }
