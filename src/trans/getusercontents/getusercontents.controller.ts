@@ -4947,7 +4947,7 @@ export class GetusercontentsController {
             "info": ["The process successful"],
         };
 
-        this.testSend(500, postID, title, body);
+        this.testSend(200, postID, title, body);
 
         return { response_code: 202, messages };
     }
