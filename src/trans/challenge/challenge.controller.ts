@@ -616,8 +616,11 @@ export class ChallengeController {
     insertdata.createdAt = await this.util.getDateTimeString();
     insertdata.updatedAt = await this.util.getDateTimeString();
     insertdata.durasi = data.durasi;
-    insertdata.startChallenge = data.startChallenge;
-    insertdata.endChallenge = data.endChallenge;
+    insertdata.jenisDurasi = data.jenisDurasi;
+    // insertdata.startTime = data.startTime;
+    // insertdata.endTime = data.endTime;
+    // insertdata.startChallenge = data.startChallenge;
+    // insertdata.endChallenge = data.endChallenge;
     insertdata.tampilStatusPengguna = data.tampilStatusPengguna;
     insertdata.objectChallenge = data.objectChallenge;
     insertdata.metrik = data.metrik;

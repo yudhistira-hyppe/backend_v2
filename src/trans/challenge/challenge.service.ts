@@ -576,7 +576,7 @@ export class ChallengeService {
                                 in:"$$databadge.juara1"
                             }
                         },
-                        ""
+                        null
                     ]
                 },
                 juara2:
@@ -615,7 +615,7 @@ export class ChallengeService {
                                 in:"$$databadge.juara2"
                             }
                         },
-                        ""
+                        null
                     ]
                 },
                 juara3:
@@ -654,7 +654,7 @@ export class ChallengeService {
                                 in:"$$databadge.juara3"
                             }
                         },
-                        ""
+                        null
                     ]
                 },
             }
@@ -779,8 +779,8 @@ export class ChallengeService {
                 jenisDurasi: 1,
                 tampilStatusPengguna: 1,
                 objectChallenge: 1,
-                // statusChallenge: 1,
-                statusChallenge: 
+                statusChallenge: 1,
+                statuscurrentChallenge: 
                 {
                     "$switch":
                     {
@@ -872,7 +872,21 @@ export class ChallengeService {
                         },
                         badge: [
                             {
-                                juara1: "$juara1",
+                                juara1: 
+                                {
+                                    "$cond":
+                                    {
+                                        if:
+                                        {
+                                            "$eq":
+                                            [
+                                                "$juara1", null
+                                            ]
+                                        },
+                                        then:"$$REMOVE",
+                                        else:"$juara1"
+                                    }
+                                },
                                 juara1_general:
                                 {
                                     "$arrayElemAt":
@@ -889,7 +903,21 @@ export class ChallengeService {
                                         0
                                     ]
                                 },
-                                juara2: "$juara2",
+                                juara2: 
+                                {
+                                    "$cond":
+                                    {
+                                        if:
+                                        {
+                                            "$eq":
+                                            [
+                                                "$juara2", null
+                                            ]
+                                        },
+                                        then:"$$REMOVE",
+                                        else:"$juara2"
+                                    }
+                                },
                                 juara2_general:
                                 {
                                     "$arrayElemAt":
@@ -906,7 +934,21 @@ export class ChallengeService {
                                         1
                                     ]
                                 },
-                                juara3: "$juara3",
+                                juara3: 
+                                {
+                                    "$cond":
+                                    {
+                                        if:
+                                        {
+                                            "$eq":
+                                            [
+                                                "$juara3", null
+                                            ]
+                                        },
+                                        then:"$$REMOVE",
+                                        else:"$juara3"
+                                    }
+                                },
                                 juara3_general:
                                 {
                                     "$arrayElemAt":
