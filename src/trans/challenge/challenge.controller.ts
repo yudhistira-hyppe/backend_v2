@@ -1075,7 +1075,7 @@ export class ChallengeController {
             unitAkandatang = dataAkandatang[0].unit;
             aturWaktuAkandatang = dataAkandatang[0].aturWaktu;
             let dt = new Date(startTime);
-            dt.setHours(dt.getHours() + aturWaktuAkandatang); // timestamp
+            dt.setHours(dt.getHours() + 7) + aturWaktuAkandatang; // timestamp
             dt = new Date(dt);
             let strdate = dt.toISOString();
             let repdate = strdate.replace('T', ' ');
@@ -1144,7 +1144,7 @@ export class ChallengeController {
 
             for (let i = 0; i < lengtime; i++) {
               let dt = new Date(startTime);
-              dt.setHours(dt.getHours() + aturWaktuupdateLeaderboard[i]); // timestamp
+              dt.setHours(dt.getHours() + 7) + aturWaktuupdateLeaderboard[i]; // timestamp
               dt = new Date(dt);
               let strdate = dt.toISOString();
               let repdate = strdate.replace('T', ' ');
@@ -1181,7 +1181,7 @@ export class ChallengeController {
             aturWaktuchallengeAkanBerakhir = datachallengeAkanBerakhir[0].aturWaktu;
 
             let dt = new Date(endTime);
-            dt.setHours(dt.getHours() + aturWaktuchallengeAkanBerakhir); // timestamp
+            dt.setHours(dt.getHours() + 7) + aturWaktuchallengeAkanBerakhir; // timestamp
             dt = new Date(dt);
             let strdate = dt.toISOString();
             let repdate = strdate.replace('T', ' ');
@@ -1217,7 +1217,7 @@ export class ChallengeController {
             aturWaktuchallengeBerakhir = datachallengeBerakhir[0].aturWaktu;
 
             let dt = new Date(endTime);
-            dt.setHours(dt.getHours() + aturWaktuchallengeBerakhir); // timestamp
+            dt.setHours(dt.getHours() + 7) + aturWaktuchallengeBerakhir; // timestamp
             dt = new Date(dt);
             let strdate = dt.toISOString();
             let repdate = strdate.replace('T', ' ');
@@ -1254,7 +1254,7 @@ export class ChallengeController {
             aturWaktuuntukPemenang = datauntukPemenang[0].aturWaktu;
 
             let dt = new Date(endTime);
-            dt.setHours(dt.getHours() + aturWaktuuntukPemenang); // timestamp
+            dt.setHours(dt.getHours() + 7) + aturWaktuuntukPemenang; // timestamp
             dt = new Date(dt);
             let strdate = dt.toISOString();
             let repdate = strdate.replace('T', ' ');
