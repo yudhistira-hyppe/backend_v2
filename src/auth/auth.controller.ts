@@ -1910,7 +1910,8 @@ export class AuthController {
 
             if (datathummb !== null && datathummb !== undefined && datathummb.length > 0) {
               var mediaThumb = mediaproofpicts.mediaSupportUriThumb[index].toString();
-              mediaThumb = mediaThumb.replace("http://be-production.oss-ap-southeast-5.aliyuncs.com/", "");
+              // mediaThumb = mediaThumb.replace("http://be-production.oss-ap-southeast-5.aliyuncs.com/", "");
+              mediaThumb = mediaThumb.replace("http://be-staging.oss-ap-southeast-5.aliyuncs.com/", "");
               data2 = await this.ossService.readFile(mediaThumb);
             } else {
               data2 = await this.ossService.readFile(mediaproofpicts.SupportfsTargetUri[index].toString());
