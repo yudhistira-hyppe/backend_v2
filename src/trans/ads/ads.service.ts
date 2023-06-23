@@ -7285,34 +7285,16 @@ export class AdsService {
                         mediaBasePath: '$avatar.mediaBasePath',
                         mediaUri: '$avatar.mediaUri',
                         mediaType: '$avatar.mediaType',
-                        mediaEndpoint: '$avatar.fsTargetUri',
-                        medreplace: {
-                            $replaceOne: {
-                                input: "$avatar.mediaUri",
-                                find: "_0001.jpeg",
-                                replacement: ""
-                            }
+                        mediaEndpoint: {
+                            "$concat": ["/profilepict/", '$avatar.mediaID']
                         },
+
 
                     },
 
                 }
             },
-            {
-                $addFields: {
 
-                    concat: '/profilepict',
-                    pict: {
-                        $replaceOne: {
-                            input: "$avatar.mediaUri",
-                            find: "_0001.jpeg",
-                            replacement: ""
-                        }
-                    },
-
-                },
-
-            },
             {
 
                 $project: {
@@ -7345,15 +7327,7 @@ export class AdsService {
                     createdAtReportLast: 1,
                     createdAtAppealLast: 1,
                     place: '$place.namePlace',
-                    avatar: {
-                        mediaBasePath: '$profilpict.mediaBasePath',
-                        mediaUri: '$profilpict.mediaUri',
-                        mediaType: '$profilpict.mediaType',
-                        mediaEndpoint: {
-                            $concat: ["$concat", "/", "$pict"]
-                        },
-
-                    },
+                    avatar: 1,
                     lastAppeal: {
                         $cond: {
                             if: {
@@ -8150,20 +8124,13 @@ export class AdsService {
                     },
                     email: 1,
                     avatar: {
-                        mediaID: '$avatar.mediaID',
                         mediaBasePath: '$avatar.mediaBasePath',
                         mediaUri: '$avatar.mediaUri',
                         mediaType: '$avatar.mediaType',
                         mediaEndpoint: {
-                            "$concat": ["/profilepict/", "$avatar.mediaID"]
+                            "$concat": ["/profilepict/", '$avatar.mediaID']
                         },
-                        medreplace: {
-                            $replaceOne: {
-                                input: "$avatar.mediaUri",
-                                find: "_0001.jpeg",
-                                replacement: ""
-                            }
-                        },
+
 
                     },
                     proofpict: 1,
