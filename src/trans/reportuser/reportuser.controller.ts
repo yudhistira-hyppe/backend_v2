@@ -104,7 +104,7 @@ export class ReportuserController {
         const messagesEror = {
             "info": ["Todo is not found!"],
         };
-
+        var status = null;
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
@@ -146,6 +146,13 @@ export class ReportuserController {
                     reportedUserCount = 0;
                 }
 
+                try {
+
+                    status = datacontent._doc.reportedStatus;
+                } catch (e) {
+                    status = null;
+                }
+
                 if (lenguserreport > 0) {
                     for (let i = 0; i < lenguserreport; i++) {
 
@@ -182,6 +189,10 @@ export class ReportuserController {
 
                     }
 
+                    if (status == "BLURRED") {
+                        createPostsDto.reportedStatus = "BLURRED"
+                    }
+
                     this.postsService.update(postID, createPostsDto);
                 } else {
                     createPostsDto.reportedStatus = reportedStatus;
@@ -193,7 +204,9 @@ export class ReportuserController {
                     } else {
 
                     }
-
+                    if (status == "BLURRED") {
+                        createPostsDto.reportedStatus = "BLURRED"
+                    }
                     this.postsService.update(postID, createPostsDto);
                 }
 
@@ -237,7 +250,12 @@ export class ReportuserController {
                 } catch (e) {
                     reportedUserCount = 0;
                 }
+                try {
 
+                    status = datacontent._doc.reportedStatus;
+                } catch (e) {
+                    status = null;
+                }
 
 
                 if (lenguserreport > 0) {
@@ -278,6 +296,9 @@ export class ReportuserController {
                     } else {
 
                     }
+                    if (status == "BLURRED") {
+                        createAdsDto.reportedStatus = "BLURRED"
+                    }
                     this.adsService.update(postID, createAdsDto);
                 } else {
                     createAdsDto.reportedStatus = reportedStatus;
@@ -289,7 +310,9 @@ export class ReportuserController {
                     } else {
 
                     }
-
+                    if (status == "BLURRED") {
+                        createAdsDto.reportedStatus = "BLURRED"
+                    }
                     this.adsService.update(postID, createAdsDto);
                 }
 
