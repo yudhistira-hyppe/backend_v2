@@ -10,7 +10,7 @@ export class CreateChallengeDto {
     endChallenge: string;
     startTime: string;
     endTime: string;
-    jenisDurasi: string;
+    jumlahSiklusdurasi: number;
     tampilStatusPengguna: boolean;
     objectChallenge: string;
     statusChallenge: string;

@@ -38,7 +38,7 @@ export class Challenge {
     endTime: string;
 
     @Prop()
-    jenisDurasi: string;
+    jumlahSiklusdurasi: number;
 
     @Prop()
     tampilStatusPengguna: boolean;
