@@ -1777,8 +1777,8 @@ export class ReportuserController {
 
                                     mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
                                     console.log(mediaprofilepicts)
-                                    var mediaUri = mediaprofilepicts.mediaUri;
-                                    let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+                                    var mediaID = mediaprofilepicts.mediaID;
+                                    let result = "/profilepict/" + mediaID;
                                     mediaprofilepicts_res = {
                                         mediaBasePath: mediaprofilepicts.mediaBasePath,
                                         mediaUri: mediaprofilepicts.mediaUri,
@@ -1890,8 +1890,8 @@ export class ReportuserController {
 
                                     mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
                                     console.log(mediaprofilepicts)
-                                    var mediaUri = mediaprofilepicts.mediaUri;
-                                    let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+                                    var mediaID = mediaprofilepicts.mediaID;
+                                    let result = "/profilepict/" + mediaID;
                                     mediaprofilepicts_res = {
                                         mediaBasePath: mediaprofilepicts.mediaBasePath,
                                         mediaUri: mediaprofilepicts.mediaUri,
