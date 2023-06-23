@@ -179,7 +179,7 @@ export class ReportuserController {
                 }
 
                 if (reportedUserCount === 0 || reportedUserCount === undefined) {
-                    createPostsDto.reportedStatus = reportedStatus;
+
                     createPostsDto.contentModeration = contentModeration;
                     createPostsDto.contentModerationResponse = contentModerationResponse;
                     createPostsDto.reportedUserCount = lenguserreport;
@@ -191,11 +191,13 @@ export class ReportuserController {
 
                     if (status == "BLURRED") {
                         createPostsDto.reportedStatus = "BLURRED"
+                    } else {
+                        createPostsDto.reportedStatus = reportedStatus;
                     }
 
                     this.postsService.update(postID, createPostsDto);
                 } else {
-                    createPostsDto.reportedStatus = reportedStatus;
+
                     createPostsDto.contentModeration = contentModeration;
                     createPostsDto.contentModerationResponse = contentModerationResponse;
                     createPostsDto.reportedUserCount = parseInt(reportedUserCount) + parseInt(lenguserreport);
@@ -206,6 +208,8 @@ export class ReportuserController {
                     }
                     if (status == "BLURRED") {
                         createPostsDto.reportedStatus = "BLURRED"
+                    } else {
+                        createPostsDto.reportedStatus = reportedStatus;
                     }
                     this.postsService.update(postID, createPostsDto);
                 }
@@ -286,7 +290,7 @@ export class ReportuserController {
 
 
                 if (reportedUserCount === 0 || reportedUserCount === undefined) {
-                    createAdsDto.reportedStatus = reportedStatus;
+
                     createAdsDto.contentModeration = contentModeration;
                     createAdsDto.contentModerationResponse = contentModerationResponse;
                     createAdsDto.reportedUserCount = lenguserreport;
@@ -298,10 +302,12 @@ export class ReportuserController {
                     }
                     if (status == "BLURRED") {
                         createAdsDto.reportedStatus = "BLURRED"
+                    } else {
+                        createAdsDto.reportedStatus = reportedStatus;
                     }
                     this.adsService.update(postID, createAdsDto);
                 } else {
-                    createAdsDto.reportedStatus = reportedStatus;
+
                     createAdsDto.contentModeration = contentModeration;
                     createAdsDto.contentModerationResponse = contentModerationResponse;
                     createAdsDto.reportedUserCount = parseInt(reportedUserCount) + parseInt(lenguserreport);
@@ -312,6 +318,8 @@ export class ReportuserController {
                     }
                     if (status == "BLURRED") {
                         createAdsDto.reportedStatus = "BLURRED"
+                    } else {
+                        createAdsDto.reportedStatus = reportedStatus;
                     }
                     this.adsService.update(postID, createAdsDto);
                 }
@@ -411,7 +419,6 @@ export class ReportuserController {
 
 
     }
-
     @UseGuards(JwtAuthGuard)
     @Post('appeal')
     async reportHandle(@Req() request) {
