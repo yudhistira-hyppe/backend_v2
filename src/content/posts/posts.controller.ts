@@ -1437,8 +1437,6 @@ export class PostsController {
 
                 data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
 
-
-
               }
               else if (gettempresultpictapsara[j].ImageId == data[i].content.apsaraId) {
 
@@ -1479,12 +1477,23 @@ export class PostsController {
           var gettempresultvidapsara = resultvidapsara.VideoList;
 
           for (var j = 0; j < gettempresultvidapsara.length; j++) {
+            var apsaraID = null;
+            try {
 
-            if (gettempresultvidapsara[j].VideoId == data[i].content.apsaraId) {
-
-              data[i].content.mediaThumbEndpoint = gettempresultvidapsara[j].CoverURL;
-
+              apsaraID = data[i].content.apsaraId;
+            } catch (e) {
+              apsaraID = null;
             }
+
+            if (apsaraID !== null && apsaraID !== undefined) {
+              if (gettempresultvidapsara[j].VideoId == apsaraID) {
+
+                data[i].content.mediaThumbEndpoint = gettempresultvidapsara[j].CoverURL;
+
+              }
+            }
+
+
 
           }
         }
