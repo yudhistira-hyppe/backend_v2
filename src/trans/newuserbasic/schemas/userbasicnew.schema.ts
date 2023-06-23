@@ -118,6 +118,8 @@ export class Userbasic {
     statusKyc: string;
     @Prop()
     import: String;
+    @Prop()
+    badge: any[];
 }
 
 export const UserbasicnewSchema = SchemaFactory.createForClass(Userbasic);

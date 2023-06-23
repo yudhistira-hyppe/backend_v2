@@ -77,4 +77,5 @@ export class CreateUserbasicnewDto {
   otp_attemp: number;
   statusKyc: string;
   import: String;
+  badge: any[];
 }
