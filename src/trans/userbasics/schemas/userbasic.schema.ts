@@ -138,6 +138,8 @@ export class Userbasic {
   userAssets: mongoose.Types.ObjectId[];
   @Prop()
   import: String;
+  @Prop()
+  badge: any[];
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);
