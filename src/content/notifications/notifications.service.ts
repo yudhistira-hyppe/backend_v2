@@ -41,22 +41,22 @@ export class NotificationsService {
 
   async findbusinesslatest(email: string, skip: number, limit: number): Promise<object> {
     const query = await this.NotificationsModel.aggregate([
-      { 
-        "$match": 
+      {
+        "$match":
         {
           "$and":
-          [
-            {
-              email: email
-            },
-            {
-              deviceType:"WEB"
-            }
-            // {
-            //   eventType:"TRANSACTION"
-            // }
-          ]  
-        } 
+            [
+              {
+                email: email
+              },
+              {
+                deviceType: "WEB"
+              }
+              // {
+              //   eventType:"TRANSACTION"
+              // }
+            ]
+        }
       },
       { "$sort": { createdAt: -1 }, },
       { "$skip": skip },
@@ -216,7 +216,7 @@ export class NotificationsService {
   async getNotification2(email: string, eventType: string, skip: number, limit: number,) {
     var pipeline = [];
 
-    if (eventType && eventType !== undefined && eventType !== "GENERAL") {
+    if (eventType && eventType !== undefined && eventType !== null && eventType !== "GENERAL") {
       pipeline.push(
         {
           $match:
@@ -245,7 +245,7 @@ export class NotificationsService {
         },
       );
     }
-    else if (eventType && eventType !== undefined && eventType === "GENERAL") {
+    else if (eventType && eventType !== undefined && eventType !== null && eventType === "GENERAL") {
       pipeline.push(
         {
           $match:
