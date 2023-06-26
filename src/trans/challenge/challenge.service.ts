@@ -525,8 +525,24 @@ export class ChallengeService {
                 durasi: 1,
                 startChallenge: 1,
                 endChallenge: 1,
-                startTime: 1,
-                endTime: 1,
+                startTime:
+                {
+                  "$concat":
+                  [
+                    "$startChallenge",
+                    " ",
+                    "$startTime",
+                  ]
+                },
+                endTime: 
+                {
+                  "$concat":
+                  [
+                    "$endChallenge",
+                    " ",
+                    "$endTime",
+                  ]
+                },
                 jenisDurasi: 1,
                 tampilStatusPengguna: 1,
                 objectChallenge: 1,
@@ -738,7 +754,11 @@ export class ChallengeService {
                             _id:null,
                             data:
                             {
-                                "$push":"$stateName"
+                                "$push":
+                                {
+                                   _id:"$_id",
+                                   stateName:"$stateName"
+                                }  
                             }
                         }
                     }
@@ -1034,14 +1054,14 @@ export class ChallengeService {
                                 "$peserta.jenisKelamin", 0
                             ]
                         },
+                        // "lokasiPengguna": 
+                        // {
+                        //     "$arrayElemAt":
+                        //     [
+                        //         "$peserta.lokasiPengguna", 0
+                        //     ]
+                        // },
                         "lokasiPengguna": 
-                        {
-                            "$arrayElemAt":
-                            [
-                                "$peserta.lokasiPengguna", 0
-                            ]
-                        },
-                        "listNamaArea": 
                         {
                             "$arrayElemAt":
                             [
@@ -1396,74 +1416,15 @@ export class ChallengeService {
     return query;
   }
 
-  async checkuserstatusjoin(email:string)
+  async checkuserstatusjoin(email:string, page:number, limit:number)
   {
+    var mongo = require('mongoose');
+    var konvertid = mongo.Types.ObjectId(email);
+
     var data = await this.ChallengeModel.aggregate([
         {
-            $set: {
-                mail: email
-            }
-        },
-        {
-            $set: 
-            {
-                co: ["MALE", " MALE", "Laki-laki", "Pria"]
-            },
-            
-        },
-        {
-            $set: 
-            {
-                ce: 
-                ["FEMALE", " FEMALE", "Perempuan", "Wanita"]
-            }
-        },
-        {
-            $set: 
-            {
-                all: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria", "Other"]
-            }
-        },
-        {
-            $set: 
-            {
-                ceOther: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "Other"]
-            }
-        },
-        {
-            $set: 
-            {
-                coOther: ["MALE", " MALE", "Laki-laki", "Pria", "Other"]
-            }
-        },
-        {
-            $set: 
-            {
-                ceCo: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria"]
-            }
-        },
-        {
-            $set: 
-            {
-                other: ["Other"]
-            }
-        },
-        {
-            $set: {
-                "nowDate": 
-                {
-                    "$dateToString": {
-                        "format": "%Y-%m-%d %H:%M:%S",
-                        "date": {
-                            $add: [new Date(), 25200000]
-                        }
-                    }
-                }
-            }
-        },
-        {
             "$set": {
-                "endDate": {
+                timeEnd: {
                     "$concat": [
                         {
                             "$dateToString": {
@@ -1479,13 +1440,44 @@ export class ChallengeService {
                 }
             }
         },
+                {
+            "$set": {
+                timeStart: {
+                    "$concat": [
+                        {
+                            "$dateToString": {
+                                "format": "%Y-%m-%d",
+                                "date": {
+                                    $toDate: "$startChallenge"
+                                }
+                            }
+                        },
+                        " ",
+                        "$startTime"
+                    ]
+                }
+            }
+        },
+        {
+            $set: {
+                nowDate: 
+                {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d %H:%M:%S",
+                        "date": {
+                            $add: [new Date(), 25200000]
+                        }
+                    }
+                }
+            }
+        },
         {
             $match: {
                 $and: [
                     {
                         $expr: 
                         {
-                            $gt: ["$endDate", "$nowDate"]
+                            $gte: ["$timeEnd", "$nowDate"]
                         },
                         
                     },
@@ -1496,967 +1488,45 @@ export class ChallengeService {
             }
         },
         {
-            "$lookup": {
-                from: "userbasics",
-                as: "joinUser",
-                let: {
-                    localID: "$mail"
+            "$lookup": 
+            {
+                from: "userChallenge",
+                let: 
+                {
+                    userchallenge_fk: "$_id"
                 },
-                pipeline: [
+                as: 'userChallenges',
+                pipeline: 
+                [
                     {
-                        $match: {
-                            $expr: {
-                                $and: [
+                        "$match": 
+                        {
+                            "$and": 
+                            [
+                                {
+                                    "$expr": 
                                     {
-                                        $eq: ["$email", "$$localID"]
-                                    },
+                                        "$eq": 
+                                        [
+                                            "$$userchallenge_fk",
+                                            "$idChallenge"
+                                        ]
+                                    }
+                                },
+                                {
+                                    isActive: true
+                                },
+                                {
+                                    idUser: konvertid,
                                     
-                                ]
-                            }
-                        }
-                    },
-                    
-                ],
-                
-            }
-        },
-        {
-            $unwind: {
-                path: "$joinUser"
-            }
-        },
-        {
-            $set: {
-                kelamin: 
-                {
-                    $switch: {
-                        branches: [
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: "$ce"
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: "$co"
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: "$other"
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: "$ceCo"
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: "$coOther"
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: "$coOther"
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: "$ceOther"
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.LAKI-LAKI", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.PEREMPUAN", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.jenisKelamin.OTHER", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: "$all"
-                            },
-                            
-                        ],
-                        default: "kancut"
-                    }
-                },
-                
-            }
-        },
-        {
-            $set: {
-                verified: {
-                    $cond: {
-                        if : {
-                            $eq: [{
-                                $arrayElemAt: ["$peserta.tipeAkunTerverikasi", 0]
-                            }, "ALL"]
-                        },
-                        then: true,
-                        else : {
-                            $cond: {
-                                if : {
-                                    $eq: [{
-                                        $arrayElemAt: ["$peserta.tipeAkunTerverikasi", 0]
-                                    }, "YES"]
-                                },
-                                else : {
-                                    $cond: {
-                                        if : {
-                                            $eq: [{
-                                                $arrayElemAt: ["$peserta.tipeAkunTerverikasi", 0]
-                                            }, "NO"]
-                                        },
-                                        then: {
-                                            $cond: {
-                                                if : {
-                                                    $eq: ["$joinUser.isIdVerified", false]
-                                                },
-                                                then: true,
-                                                else : false
-                                            }
-                                        },
-                                        else : false
-                                    }
-                                },
-                                then: {
-                                    $cond: {
-                                        if : {
-                                            $eq: ["$joinUser.isIdVerified", true]
-                                        },
-                                        then: true,
-                                        else : false
-                                    }
                                 }
-                            }
+                            ]
                         }
                     },
                     
-                },
-                
-            }
-        },
-        {
-            $set: {
-                "age": 
-                {
-                    $cond: {
-                        if : {
-                            $and: ['$joinUser.dob', {
-                                $ne: ["$joinUser.dob", ""]
-                            }]
-                        },
-                        then: {
-                            $toInt: {
-                                $divide: [{
-                                    $subtract: [new Date(), {
-                                        $toDate: "$joinUser.dob"
-                                    }]
-                                }, (365 * 24 * 60 * 60 * 1000)]
-                            }
-                        },
-                        else : 0
-                    }
-                },
-                
-            }
-        },
-        {
-            $set: {
-                ageChallenge: 
-                {
-                    $switch: {
-                        branches: [
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: [0, 14]
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: {
-                                    $cond: {
-                                        if : {
-                                            $lte: ["$age", 28]
-                                        },
-                                        else : "error umur 28",
-                                        then: true,
-                                        
-                                    }
-                                },
-                                
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: {
-                                    $cond: {
-                                        if : {
-                                            $lte: ["$age", 43]
-                                        },
-                                        else : "error umur <43",
-                                        then: true,
-                                        
-                                    }
-                                },
-                                
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: {
-                                    $cond: {
-                                        if : {
-                                            $lte: ["$age", 100000]
-                                        },
-                                        else : "error umur >43",
-                                        then: true,
-                                        
-                                    }
-                                },
-                                
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: {
-                                    $cond: {
-                                        if : {
-                                            $and:[
-                                              {
-                                                  $lte: ["$age", 100000]
-                                              },
-                                              {
-                                                  $gt: ["$age", 14]
-                                              }
-                                            ]
-                                        },
-                                        else : "error umur 14-1000",
-                                        then: true,
-                                        
-                                    }
-                                },
-                                
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: {
-                                    $cond: {
-                                        if : {
-                                            $and:[
-                                              {
-                                                  $lte: ["$age", 100000]
-                                              },
-                                              {
-                                                  $gt: ["$age", 28]
-                                              }
-                                            ]
-                                        },
-                                        else : "error umur 28-1000",
-                                        then: true,
-                                        
-                                    }
-                                },
-                                
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: {
-                                    $cond: {
-                                        if : {
-                                            $and:[
-                                              {
-                                                  $lte: ["$age", 100000]
-                                              },
-                                              {
-                                                  $gt: ["$age", 43]
-                                              }
-                                            ]
-                                        },
-                                        else : "error umur 43-1000",
-                                        then: true,
-                                        
-                                    }
-                                },
-                            },
-                            //beda case//
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: {
-                                    $cond: {
-                                        if : {
-                                            $or:[
-                                              {
-                                                $and:[
-                                                  {
-                                                      $lte: ["$age", 14]
-                                                  },
-                                                  {
-                                                      $gt: ["$age", 0]
-                                                  }
-                                                ]
-                                              },
-                                              {
-                                                $and:[
-                                                  {
-                                                      $lte: ["$age", 100000]
-                                                  },
-                                                  {
-                                                      $gt: ["$age", 28]
-                                                  }
-                                                ]
-                                              },
-                                            ]
-                                        },
-                                        else : "error umur 0,28,1000",
-                                        then: true,
-                                        
-                                    }
-                                },
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: {
-                                    $cond: {
-                                        if : {
-                                            $or:[
-                                              {
-                                                $and:[
-                                                  {
-                                                      $lte: ["$age", 14]
-                                                  },
-                                                  {
-                                                      $gt: ["$age", 0]
-                                                  }
-                                                ]
-                                              },
-                                              {
-                                                $and:[
-                                                  {
-                                                      $lte: ["$age", 100000]
-                                                  },
-                                                  {
-                                                      $gt: ["$age", 43]
-                                                  }
-                                                ]
-                                              },
-                                            ]
-                                        },
-                                        else : "error umur 0,43,1000",
-                                        then: true,
-                                        
-                                    }
-                                },
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: {
-                                    $cond: {
-                                        if : {
-                                            $or:[
-                                              {
-                                                $and:[
-                                                  {
-                                                      $lte: ["$age", 28]
-                                                  },
-                                                  {
-                                                      $gt: ["$age",14]
-                                                  }
-                                                ]
-                                              },
-                                              {
-                                                $and:[
-                                                  {
-                                                      $lte: ["$age", 100000]
-                                                  },
-                                                  {
-                                                      $gt: ["$age", 43]
-                                                  }
-                                                ]
-                                              },
-                                            ]
-                                        },
-                                        else : "error umur 0,43,1000",
-                                        then: true,
-                                        
-                                    }
-                                },
-                            },
-                            {
-                                case: {
-                                    $and: [
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.14-28", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.29-43", 0]
-                                                }, 0]
-                                            }, "NO"]
-                                        },
-                                        {
-                                            $eq: [{
-                                                $arrayElemAt: [{
-                                                    $arrayElemAt: ["$peserta.rentangUmur.44<", 0]
-                                                }, 0]
-                                            }, "YES"]
-                                        },
-                                        
-                                    ]
-                                },
-                                then: {
-                                    $cond: {
-                                        if : {
-                                            $or:[
-                                              {
-                                                $and:[
-                                                  {
-                                                      $lte: ["$age", 28]
-                                                  },
-                                                  {
-                                                      $gt: ["$age",0]
-                                                  }
-                                                ]
-                                              },
-                                              {
-                                                $and:[
-                                                  {
-                                                      $lte: ["$age", 100000]
-                                                  },
-                                                  {
-                                                      $gt: ["$age", 43]
-                                                  }
-                                                ]
-                                              },
-                                            ]
-                                        },
-                                        else : "error umur 0,43,1000",
-                                        then: true,
-                                        
-                                    }
-                                },
-                            },
-                        ],
-                        "default": 10000
-                    }
-                }
-            }
+                ]
+            },
+            
         },
         {
             $project: {
@@ -2475,75 +1545,54 @@ export class ChallengeService {
                 "tampilStatusPengguna": 1,
                 "objectChallenge": 1,
                 "statusChallenge": 1,
-                "metrik": 1,
-                "peserta": 1,
-                "leaderBoard": 1,
-                "ketentuanHadiah": 1,
-                "hadiahPemenang": 1,
-                "bannerSearch": 1,
-                "popUp": 1,
-                "notifikasiPush": 1,
-                "kelamin": 1,
-                "kelaminKu": "$joinUser.gender",
-                "verifiedUser": "$joinUser.isIdVerified",
-                "verified": 1,
-                "user": "$ageChallenge",
-                "userAge": "$age",
-                "lokasi":{$arrayElemAt: ["$peserta.lokasiPengguna", 0]},
-                "ChalleAge14":{
-                    $arrayElemAt: [{
-                        $arrayElemAt: ["$peserta.rentangUmur.<14", 0]
-                    }, 0]
+                searchBanner: {
+                    $arrayElemAt: ["$bannerSearch.image", 0]
                 },
-                "joined": 
+                bannerLeaderboard: {
+                    $arrayElemAt: ["$leaderBoard.bannerLeaderboard", 0]
+                },
+                statusJoined: 
                 {
                     $cond: {
                         if : {
-                            $eq: [{
-                                $arrayElemAt: ["$peserta.caraGabung", 0]
-                            }, "SEMUA PENGGUNA"]
+                            $gt: [{
+                                $size: '$userChallenges'
+                            }, 0]
                         },
-                        then: 
-                        {
-                            $cond: {
-                                if : {
-                                    $eq: ["$verified", true]
-                                },
-                                else : "error verified",
-                                then: {
-                                    $cond: {
-                                        if : {
-                                            $eq: ["$ads.kelamin", "$userBasic.gender"]
-                                        },
-                                        else : "error kelamin",
-                                        then: {
-                                            $cond: {
-                                                if : {
-                                                    $eq: ["$ageChallenge", true]
-                                                },
-                                                else : "error age",
-                                                then: {
-                                                          $cond: {
-                                                              if : {
-                                                                  $eq: [{$arrayElemAt: ["$peserta.lokasiPengguna", 0]}, "$userBasic.states.$id"]
-                                                              },
-                                                              else : "error lokasi",
-                                                              then: true
-                                                          }
-                                                      },
-                                                }
-                                        }
-                                    }
-                                },
-                                
-                            },
-                            
-                        },
-                        else : "error undangan"
+                        then: "Partisipan",
+                        else : "Bukan Partisipan"
                     }
                 },
-                
+                statusFormalChallenge: 
+                {
+                    $cond: {
+                        if : {
+                            $and:[
+                                                            {
+                                                                    $gte: ["$timeEnd", "$nowDate"]
+                                                            },		
+                                                            {
+                                                                    $lte: ["$timeStart", "$nowDate"]
+                                                            },																													
+                                                    ]
+                        },
+                        then: "Berlangsung",
+                        else : "Akan Datang"
+                    }
+                },
             }
+        },
+        {
+                    $sort:{
+                            statusChallenge:-1,
+                            timeStart:1,							
+                    }
+        },
+        {
+          $skip:page * limit
+        },
+        {
+          $limit:limit
         }
     ]);
 
