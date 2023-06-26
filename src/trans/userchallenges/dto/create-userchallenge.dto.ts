@@ -2,7 +2,8 @@ export class CreateUserChallengeDto {
     _id: { oid: String; };    
     idChallenge: { oid: String; };    
     idUser: { oid: String; };    
-    idSubChallenge: { oid: String; };    
+    idSubChallenge: { oid: String; };
+    objectChallenge: String;    
     isActive: boolean;
     ranking: number;
     score: number;

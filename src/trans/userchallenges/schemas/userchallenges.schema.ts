@@ -15,6 +15,8 @@ export class Userchallenges {
     @Prop({ type: mongoose.Schema.Types.ObjectId })
     idUser: mongoose.Types.ObjectId;
     @Prop()
+    objectChallenge: String;
+    @Prop()
     startDatetime: String;
     @Prop()
     endDatetime: String;
