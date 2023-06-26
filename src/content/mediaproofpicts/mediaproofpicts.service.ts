@@ -340,7 +340,31 @@ export class MediaproofpictsService {
           createdAt: 1,
           status: 1,
           idcardnumber: 1,
-          tglLahir: '$basicdata.dob',
+          tglLahir: {
+            "$cond":
+            {
+              if:
+              {
+                "$or":
+                [
+                  {
+                    "$eq":
+                    [
+                      "$tglLahir", null
+                    ]
+                  },
+                  {
+                    "$eq":
+                    [
+                      "$tglLahir", ""
+                    ]
+                  }
+                ]
+              },
+              then:"$basicdata.dob",
+              else:"$tglLahir"
+            }
+          },
           nama: 1,
           tempatLahir: 1,
           jenisKelamin: 1,
