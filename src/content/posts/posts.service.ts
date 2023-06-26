@@ -4304,14 +4304,10 @@ export class PostsService {
             mediaBasePath: '$avatar.mediaBasePath',
             mediaUri: '$avatar.mediaUri',
             mediaType: '$avatar.mediaType',
-            mediaEndpoint: '$avatar.fsTargetUri',
-            medreplace: {
-              $replaceOne: {
-                input: "$avatar.mediaUri",
-                find: "_0001.jpeg",
-                replacement: ""
-              }
+            mediaEndpoint: {
+              "$concat": ["/profilepict/", '$avatar.mediaID']
             },
+
 
           },
         }
@@ -4339,13 +4335,7 @@ export class PostsService {
           avatar: 1
         }
       },
-      {
-        $addFields: {
 
-          concat: '/profilepict',
-          pict: { $replaceOne: { input: "$avatar.mediaUri", find: "_0001.jpeg", replacement: "" } },
-        },
-      },
       {
         $lookup: {
           from: 'mediapicts',
@@ -4408,13 +4398,8 @@ export class PostsService {
           reportedUserCount: 1,
           reportedUserHandle: 1,
           reportedUser: 1,
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: { $concat: ["$concat", "/", "$pict"] },
+          avatar: 1
 
-          },
         }
       },
       {
@@ -4856,11 +4841,8 @@ export class PostsService {
           reportStatusLast: 1,
           reasonLastAppeal: 1,
           avatar: 1,
-
-
         }
       },
-
 
 
     ];

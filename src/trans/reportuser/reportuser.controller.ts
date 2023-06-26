@@ -104,7 +104,7 @@ export class ReportuserController {
         const messagesEror = {
             "info": ["Todo is not found!"],
         };
-
+        var status = null;
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
@@ -146,6 +146,13 @@ export class ReportuserController {
                     reportedUserCount = 0;
                 }
 
+                try {
+
+                    status = datacontent._doc.reportedStatus;
+                } catch (e) {
+                    status = null;
+                }
+
                 if (lenguserreport > 0) {
                     for (let i = 0; i < lenguserreport; i++) {
 
@@ -172,7 +179,7 @@ export class ReportuserController {
                 }
 
                 if (reportedUserCount === 0 || reportedUserCount === undefined) {
-                    createPostsDto.reportedStatus = reportedStatus;
+
                     createPostsDto.contentModeration = contentModeration;
                     createPostsDto.contentModerationResponse = contentModerationResponse;
                     createPostsDto.reportedUserCount = lenguserreport;
@@ -182,9 +189,15 @@ export class ReportuserController {
 
                     }
 
+                    if (status == "BLURRED") {
+                        createPostsDto.reportedStatus = "BLURRED"
+                    } else {
+                        createPostsDto.reportedStatus = reportedStatus;
+                    }
+
                     this.postsService.update(postID, createPostsDto);
                 } else {
-                    createPostsDto.reportedStatus = reportedStatus;
+
                     createPostsDto.contentModeration = contentModeration;
                     createPostsDto.contentModerationResponse = contentModerationResponse;
                     createPostsDto.reportedUserCount = parseInt(reportedUserCount) + parseInt(lenguserreport);
@@ -193,7 +206,11 @@ export class ReportuserController {
                     } else {
 
                     }
-
+                    if (status == "BLURRED") {
+                        createPostsDto.reportedStatus = "BLURRED"
+                    } else {
+                        createPostsDto.reportedStatus = reportedStatus;
+                    }
                     this.postsService.update(postID, createPostsDto);
                 }
 
@@ -237,7 +254,12 @@ export class ReportuserController {
                 } catch (e) {
                     reportedUserCount = 0;
                 }
+                try {
 
+                    status = datacontent._doc.reportedStatus;
+                } catch (e) {
+                    status = null;
+                }
 
 
                 if (lenguserreport > 0) {
@@ -268,7 +290,7 @@ export class ReportuserController {
 
 
                 if (reportedUserCount === 0 || reportedUserCount === undefined) {
-                    createAdsDto.reportedStatus = reportedStatus;
+
                     createAdsDto.contentModeration = contentModeration;
                     createAdsDto.contentModerationResponse = contentModerationResponse;
                     createAdsDto.reportedUserCount = lenguserreport;
@@ -278,9 +300,14 @@ export class ReportuserController {
                     } else {
 
                     }
+                    if (status == "BLURRED") {
+                        createAdsDto.reportedStatus = "BLURRED"
+                    } else {
+                        createAdsDto.reportedStatus = reportedStatus;
+                    }
                     this.adsService.update(postID, createAdsDto);
                 } else {
-                    createAdsDto.reportedStatus = reportedStatus;
+
                     createAdsDto.contentModeration = contentModeration;
                     createAdsDto.contentModerationResponse = contentModerationResponse;
                     createAdsDto.reportedUserCount = parseInt(reportedUserCount) + parseInt(lenguserreport);
@@ -289,7 +316,11 @@ export class ReportuserController {
                     } else {
 
                     }
-
+                    if (status == "BLURRED") {
+                        createAdsDto.reportedStatus = "BLURRED"
+                    } else {
+                        createAdsDto.reportedStatus = reportedStatus;
+                    }
                     this.adsService.update(postID, createAdsDto);
                 }
 
@@ -388,7 +419,6 @@ export class ReportuserController {
 
 
     }
-
     @UseGuards(JwtAuthGuard)
     @Post('appeal')
     async reportHandle(@Req() request) {
@@ -1754,8 +1784,8 @@ export class ReportuserController {
 
                                     mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
                                     console.log(mediaprofilepicts)
-                                    var mediaUri = mediaprofilepicts.mediaUri;
-                                    let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+                                    var mediaID = mediaprofilepicts.mediaID;
+                                    let result = "/profilepict/" + mediaID;
                                     mediaprofilepicts_res = {
                                         mediaBasePath: mediaprofilepicts.mediaBasePath,
                                         mediaUri: mediaprofilepicts.mediaUri,
@@ -1867,8 +1897,8 @@ export class ReportuserController {
 
                                     mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
                                     console.log(mediaprofilepicts)
-                                    var mediaUri = mediaprofilepicts.mediaUri;
-                                    let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+                                    var mediaID = mediaprofilepicts.mediaID;
+                                    let result = "/profilepict/" + mediaID;
                                     mediaprofilepicts_res = {
                                         mediaBasePath: mediaprofilepicts.mediaBasePath,
                                         mediaUri: mediaprofilepicts.mediaUri,
