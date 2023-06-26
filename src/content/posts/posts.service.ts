@@ -4229,6 +4229,96 @@ export class PostsService {
 
     pipeline = [
       {
+        "$unwind":
+        {
+          path:"$reportedUser"
+        }
+      },
+      {
+        "$group":
+        {
+          _id:"$_id",
+          postID:
+          {
+            "$first":"$postID"
+          },
+          email:
+          {
+            "$first":"$email"
+          },
+          postType:
+          {
+            "$first":"$postType"
+          },
+          description:
+          {
+            "$first":"$description"
+          },
+          active:
+          {
+            "$first":"$active"
+          },
+          createdAt:
+          {
+            "$first":"$createdAt"
+          },
+          updatedAt:
+          {
+            "$first":"$updatedAt"
+          },
+          metadata:
+          {
+            "$first":"$metadata"
+          },
+          userProfile:
+          {
+            "$first":"$userProfile"
+          },
+          contentMedias:
+          {
+            "$first":"$contentMedias"
+          },
+          contentModeration:
+          {
+            "$first":"$contentModeration"
+          },
+          contentModerationResponse:
+          {
+            "$first":"$contentModerationResponse"
+          },
+          reportedStatus:
+          {
+            "$first":"$reportedStatus"
+          },
+          reportedUser:
+          {
+            "$push":"$reportedUser"
+          },
+          reportedUserHandle:
+          {
+            "$first":"$reportedUserHandle"
+          },
+          reportedUserCount: 
+          {
+            "$sum":
+            {
+              "$cond":
+              {
+                if:
+                {
+                  "$eq":
+                  [
+                    "$reportedUser.active", true
+                  ]
+                },
+                then:1,
+                else:0
+              }
+            }
+          }
+        }
+      },
+      {
         $lookup: {
           from: 'userbasics',
           localField: 'email',
@@ -5032,6 +5122,9 @@ export class PostsService {
     if (limit > 0) {
       pipeline.push({ $limit: limit });
     }
+
+    console.log(JSON.stringify(pipeline))
+
     let query = await this.PostsModel.aggregate(pipeline);
 
     return query;
