@@ -318,18 +318,6 @@ export class ChallengeService {
       );
     }
 
-    if (page > 0) {
-      pipeline.push({
-        "$skip": limit * page
-      });
-    }
-
-    if (limit > 0) {
-      pipeline.push({
-        "$limit": limit
-      });
-    }
-
     if (ascending != null) {
       var setascending = null;
       if (ascending == true) {
@@ -344,6 +332,18 @@ export class ChallengeService {
         {
           "createdAt": setascending
         }
+      });
+    }
+
+    if (page > 0) {
+      pipeline.push({
+        "$skip": limit * page
+      });
+    }
+
+    if (limit > 0) {
+      pipeline.push({
+        "$limit": limit
       });
     }
 
