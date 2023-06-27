@@ -44,9 +44,11 @@ import { InterestdayModule } from '../interestday/interestday.module';
 import { OssContentPictService } from './osscontentpict.service';
 import { UserchallengesModule } from 'src/trans/userchallenges/userchallenges.module';
 import { ChallengeModule } from 'src/trans/challenge/challenge.module';
+import { PostchallengeModule } from 'src/trans/postchallenge/postchallenge.module';
 @Module({
 
     imports: [
+        PostchallengeModule,
         UserchallengesModule,
         ChallengeModule,
         InterestCountModule,
