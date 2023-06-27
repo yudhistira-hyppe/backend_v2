@@ -1901,6 +1901,7 @@ export class UtilsService {
     var datadevice = null;
     var languages = null;
     var payload = null;
+    var payloadios = null;
     var idlanguages = null;
     var datalanguage = null;
     var langIso = null;
@@ -1983,6 +1984,15 @@ export class UtilsService {
           postType: postType
         }
       };
+      payloadios = {
+        notification: {
+
+          title: titlein,
+          body: bodyin,
+          postID: postID_,
+          postType: postType
+        }
+      };
 
 
 
@@ -1996,6 +2006,7 @@ export class UtilsService {
       for (var i = 0; i < datadevice.length; i++) {
         var deviceid = datadevice[i].deviceID;
         await admin.messaging().sendToDevice(deviceid, payload);
+        await admin.messaging().sendToDevice(deviceid, payloadios);
 
         arraydevice.push(deviceid);
 
