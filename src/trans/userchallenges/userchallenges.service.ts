@@ -66,6 +66,35 @@ export class UserchallengesService {
                     "idUser": new Types.ObjectId(iduser),
                     "isActive": true
                 }
+            },
+            {
+                $lookup: {
+                    from: 'subChallenge',
+                    localField: 'idSubChallenge',
+                    foreignField: '_id',
+                    as: 'subChallenge_data',
+
+                },
+
+            },
+            {
+                $project: {
+                    "idChallenge": 1,
+                    "idSubChallenge": 1,
+                    "idUser": 1,
+                    "objectChallenge": 1,
+                    "startDatetime": 1,
+                    "endDatetime": 1,
+                    "createdAt": 1,
+                    "updatedAt": 1,
+                    "isActive": 1,
+                    "activity": 1,
+                    "history": 1,
+                    "session": {
+                        $arrayElemAt: ["$subChallenge_data.session", 0]
+                    },
+
+                }
             }
         ]);
         return query;

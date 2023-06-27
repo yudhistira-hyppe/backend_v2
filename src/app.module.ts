@@ -106,9 +106,10 @@ import { JenischallengeModule } from './trans/jenischallenge/jenischallenge.modu
 import { BadgeModule } from './trans/badge/badge.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TaskModule } from './schedule/task/task.module';
-//import { ChallengeModule } from './trans/challenge/challenge.module';
+import { PostchallengeModule } from './trans/postchallenge/postchallenge.module';
 @Module({
   imports: [
+
     TaskModule,
     OssModule,
     AssetsFilterModule,
