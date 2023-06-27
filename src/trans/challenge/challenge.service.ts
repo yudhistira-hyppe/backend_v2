@@ -20,22 +20,6 @@ export class ChallengeService {
   async findAll(namachallenge: string, menuChallenge: string, startdate: string, enddate: string, objectchallenge: any[], statuschallenge: any[], caragabung: any[], ascending: boolean, page: number, limit: number) {
     var pipeline = [];
 
-    pipeline.push(
-      {
-        $set: {
-          "timenow":
-          {
-            "$dateToString": {
-              "format": "%Y-%m-%d %H:%M:%S",
-              "date": {
-                $add: [new Date(), - 61200000] // 1 hari 61200000
-              }
-            }
-          }
-        }
-      }
-    );
-
     var firstmatch = [];
 
     if (namachallenge != null && namachallenge != undefined) {
@@ -141,6 +125,19 @@ export class ChallengeService {
         }
       },
       {
+        $set: {
+          "timenow":
+          {
+            "$dateToString": {
+              "format": "%Y-%m-%d %H:%M:%S",
+              "date": {
+                $add: [new Date(), 25200000]
+              }
+            }
+          }
+        }
+      },
+      {
         "$project":
         {
           _id: 1,
@@ -172,10 +169,30 @@ export class ChallengeService {
                       "$and":
                         [
                           {
-                            "$gte": ["$timenow", "$startChallenge"]
+                            "$gte": [
+                              "$timenow", 
+                              {
+                                "$concat":
+                                [
+                                  "$startChallenge",
+                                  " ",
+                                  "$startTime"
+                                ]
+                              }
+                            ]
                           },
                           {
-                            "$lte": ["$timenow", "$endChallenge"]
+                            "$lte": [
+                              "$timenow", 
+                              {
+                                "$concat":
+                                [
+                                  "$endChallenge",
+                                  " ",
+                                  "$endTime"
+                                ]
+                              }
+                            ]
                           },
                         ]
                     },
@@ -187,7 +204,17 @@ export class ChallengeService {
                       "$and":
                         [
                           {
-                            "$gt": ["$timenow", "$endChallenge"]
+                            "$gt": [
+                              "$timenow", 
+                              {
+                                "$concat":
+                                [
+                                  "$endChallenge",
+                                  " ",
+                                  "$endTime"
+                                ]
+                              }
+                            ]
                           },
                         ]
                     },
@@ -355,13 +382,18 @@ export class ChallengeService {
                     {
                         "$match":
                         {
-                            "$expr":
+                          "$and":
+                          [
                             {
-                                "$eq":
-                                [
-                                    "$$jenis_challenge_fk", "$_id"
-                                ]
-                            }
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$$jenis_challenge_fk", "$_id"
+                                    ]
+                                }
+                            },
+                          ]
                         }
                     },
                     {
@@ -387,13 +419,18 @@ export class ChallengeService {
                     {
                         "$match":
                         {
-                            "$expr":
-                            {
-                                "$eq":
-                                [
-                                    "$$userChallenge_fk", "$idChallenge"
-                                ]
-                            }
+                            "$and":
+                            [
+                              {
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$$userChallenge_fk", "$idChallenge"
+                                    ]
+                                }
+                              },
+                            ]
                         }
                     },
                     {
@@ -764,8 +801,8 @@ export class ChallengeService {
                         "format": "%Y-%m-%d %H:%M:%S",
                         "date": {
                             $add: [
-                                new Date(), - 61200000
-                            ] // 1 hari 61200000
+                                new Date(), 25200000
+                            ]
                         }
                     }
                 }
@@ -793,40 +830,49 @@ export class ChallengeService {
                 statusChallenge: 1,
                 statuscurrentChallenge: 
                 {
-                    "$switch":
-                    {
-                        branches:
-                        [
-                            {
-                                case:
+                  "$switch":
+                  {
+                    branches:
+                      [
+                        {
+                          case:
+                          {
+                            "$and":
+                              [
                                 {
-                                    "$and":
-                                    [
-                                        {
-                                            "$gte": ["$timenow", "$startChallenge"]
-                                        },
-                                        {
-                                            "$lte": ["$timenow", "$endChallenge"]
-                                        },
-                                    ]
+                                  "$gte": [
+                                    "$timenow", 
+                                    "$startTime"
+                                  ]
                                 },
-                                then: "SEDANG BERJALAN"
-                            },
-                            {
-                                case:
                                 {
-                                    "$and":
-                                    [
-                                        {
-                                            "$gt": ["$timenow", "$endChallenge"]
-                                        },
-                                    ]
+                                  "$lte": [
+                                    "$timenow", 
+                                    "$endTime"
+                                  ]
                                 },
-                                then: "SELESAI"
-                            },
-                        ],
-                        default: "AKAN DATANG"
-                    }
+                              ]
+                          },
+                          then: "SEDANG BERJALAN"
+                        },
+                        {
+                          case:
+                          {
+                            "$and":
+                              [
+                                {
+                                  "$gt": [
+                                    "$timenow", 
+                                    "$endTime",
+                                  ]
+                                },
+                              ]
+                          },
+                          then: "SELESAI"
+                        },
+                      ],
+                    default: "AKAN DATANG"
+                  }
                 },
                 metrik:1,
                 leaderBoard:1,
@@ -1115,7 +1161,7 @@ export class ChallengeService {
             "date": {
               "$add": [
                 new Date(),
-                -61200000
+                25200000
               ]
             }
           }

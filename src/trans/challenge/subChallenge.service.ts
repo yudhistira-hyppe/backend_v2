@@ -2155,7 +2155,7 @@ export class subChallengeService {
                         "format": "%Y-%m-%d %H:%M:%S",
                         "date": 
                         {
-                            $add: [new Date(), - 61200000] // 1 hari 61200000
+                            $add: [new Date(), 25200000]
                         }
                     }
                 }
