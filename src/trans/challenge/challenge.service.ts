@@ -495,32 +495,23 @@ export class ChallengeService {
                 updatedAt: 1,
                 totaldurasi:
                 {
-                    "$dateDiff":
-                    {
-                        startDate:
-                        {
-                            "$toDate":"$startChallenge",
-                        },
-                        endDate:
-                        {
-                            "$toDate":"$endChallenge",
-                        },
-                        unit:
-                        {
-                            "$cond":
-                            {
-                                if:
-                                {
-                                    "$eq":
-                                    [
-                                        "$jenisDurasi", "DAY"
-                                    ]
-                                },
-                                then:"day",
-                                else:"week"
-                            }
-                        }
-                    }
+                  "$multiply":
+                  [
+                    "$durasi",
+                    "$jumlahSiklusdurasi"
+                  ]
+                    // "$dateDiff":
+                    // {
+                    //     startDate:
+                    //     {
+                    //         "$toDate":"$startChallenge",
+                    //     },
+                    //     endDate:
+                    //     {
+                    //         "$toDate":"$endChallenge",
+                    //     },
+                    //     unit:"day"
+                    // }
                 },
                 durasi: 1,
                 startChallenge: 1,
