@@ -1982,7 +1982,7 @@ export class UtilsService {
           body: bodyin,
           postID: postID_,
           postType: postType
-        }, 
+        },
         notification: {
 
           title: titlein,
@@ -1991,8 +1991,6 @@ export class UtilsService {
           postType: postType
         }
       };
-
-
 
 
 

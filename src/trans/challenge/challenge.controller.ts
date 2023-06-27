@@ -1103,6 +1103,45 @@ export class ChallengeController {
       if (request_json['description'] != undefined) {
         getdata["description"] = request_json['description'];
       }
+
+      if (request_json['leaderboard_warnaBackground'] != undefined) {
+        getdata["leaderBoard"][0]["warnaBackground"] = request_json['leaderboard_warnaBackground'];
+      }
+
+      if(request_json['listbadge'] != undefined)
+      {
+        var listjuara = request_json['listbadge'];
+        var konversilistjuara = listjuara.toString().split(",");
+        var mongoose = require('mongoose');
+        var setjuara = {};
+        var listbadgeprofile = [files.badge_profile_1, files.badge_profile_2, files.badge_profile_3];
+        var listbadgegeneral = [files.badge_general_1, files.badge_general_2, files.badge_general_3];
+        for (var i = 0; i < konversilistjuara.length; i++) {
+          var tambahsatu = i + 1;
+          var settype = 'juara' + tambahsatu.toString();
+          var convertid = null;
+
+          if (konversilistjuara[i].toString() == 'new') {
+            var getbadgeprofile = listbadgeprofile[i];
+            var getbadgegeneral = listbadgegeneral[i];
+
+            var insertnewbadge = new CreateBadgeDto();
+            insertnewbadge.name = insertdata.nameChallenge + "_" + settype;
+            insertnewbadge.type = settype;
+            
+            var resultbadge = await this.badge.create(getbadgegeneral, getbadgeprofile, insertnewbadge);
+            var getbadgeid = resultbadge._id;
+            // var getbadgeid = insertnewbadge.name;
+            convertid = new mongoose.Types.ObjectId(getbadgeid.toString());
+          }
+          else {
+            convertid = new mongoose.Types.ObjectId(konversilistjuara[i].toString());
+          }
+          setjuara[settype] = convertid;
+        }
+
+        getdata['ketentuanHadiah'][0]['badge'] = [setjuara];
+      }
   
       getdata["statusChallenge"] = request_json["statusChallenge"];
       getdata['updatedAt'] = await this.util.getDateTimeString();
