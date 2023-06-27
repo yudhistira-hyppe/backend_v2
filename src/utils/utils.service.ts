@@ -1981,10 +1981,15 @@ export class UtilsService {
           body: bodyin,
           postID: postID_,
           postType: postType
+        },
+        notification: {
+
+          title: titlein,
+          body: bodyin,
+          postID: postID_,
+          postType: postType
         }
       };
-
-
 
 
 
