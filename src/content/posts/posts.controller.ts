@@ -45,6 +45,8 @@ import { OssContentPictService } from './osscontentpict.service';
 import { Mediapicts } from '../mediapicts/schemas/mediapicts.schema';
 import { UserchallengesService } from 'src/trans/userchallenges/userchallenges.service';
 import { ChallengeService } from 'src/trans/challenge/challenge.service';
+import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
+import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.schema';
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -70,6 +72,7 @@ export class PostsController {
     private ossContentPictService: OssContentPictService,
     private readonly userchallengesService: UserchallengesService,
     private readonly challengeService: ChallengeService,
+    private readonly postchallengeService: PostchallengeService,
     private readonly methodepaymentsService: MethodepaymentsService) { }
 
   @Post()
@@ -2868,12 +2871,15 @@ export class PostsController {
 
                   for (let y = 0; y < datauserchall.length; y++) {
 
-                    var iduserchall = datauserchall[y]._id;
-                    var idsubchallenge = datauserchall[y].idSubChallenge;
-                    var idChallenges = datauserchall[y].idChallenge;
-                    var start = new Date(datauserchall[y].startDatetime);
-                    var end = new Date(datauserchall[y].endDatetime);
-                    var datenow = new Date(Date.now());
+                    let iduserchall = datauserchall[y]._id;
+                    let idsubchallenge = datauserchall[y].idSubChallenge;
+                    let idChallenges = datauserchall[y].idChallenge;
+                    let session = datauserchall[y].session;
+                    let startDatetime = datauserchall[y].startDatetime;
+                    let endDatetime = datauserchall[y].endDatetime;
+                    let start = new Date(datauserchall[y].startDatetime);
+                    let end = new Date(datauserchall[y].endDatetime);
+                    let datenow = new Date(Date.now());
 
                     if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
 
@@ -2894,12 +2900,26 @@ export class PostsController {
                       }
                       await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                       await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+                      try {
+                        var Postchallenge_ = new Postchallenge();
+                        Postchallenge_.postID = postID;
+                        Postchallenge_.createdAt = timedate;
+                        Postchallenge_.idChallenge = idChallenge;
+                        Postchallenge_.idSubChallenge = idsubchallenge;
+                        Postchallenge_.session = session;
+                        Postchallenge_.startDatetime = startDatetime;
+                        Postchallenge_.endDatetime = endDatetime;
+                        await this.postchallengeService.create(Postchallenge_);
+                      } catch (e) {
+
+                      }
                       var detail = await this.userchallengesService.findOne(iduserchall.toString());
                       var activity = detail.activity;
                       objintr = { "type": nametable, "id": idref, "desc": action }
                       console.log(objintr)
                       activity.push(objintr)
                       await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+
                       var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
                       if (datauschall.length > 0) {
@@ -2946,12 +2966,15 @@ export class PostsController {
 
             for (let y = 0; y < datauserchall.length; y++) {
 
-              var iduserchall = datauserchall[y]._id;
-              var idsubchallenge = datauserchall[y].idSubChallenge;
-              var idChallenges = datauserchall[y].idChallenge;
-              var start = new Date(datauserchall[y].startDatetime);
-              var end = new Date(datauserchall[y].endDatetime);
-              var datenow = new Date(Date.now());
+              let iduserchall = datauserchall[y]._id;
+              let idsubchallenge = datauserchall[y].idSubChallenge;
+              let idChallenges = datauserchall[y].idChallenge;
+              let session = datauserchall[y].session;
+              let startDatetime = datauserchall[y].startDatetime;
+              let endDatetime = datauserchall[y].endDatetime;
+              let start = new Date(datauserchall[y].startDatetime);
+              let end = new Date(datauserchall[y].endDatetime);
+              let datenow = new Date(Date.now());
 
               if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
 
@@ -2971,6 +2994,19 @@ export class PostsController {
                 }
                 await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                 await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+                try {
+                  var Postchallenge_ = new Postchallenge();
+                  Postchallenge_.postID = postID;
+                  Postchallenge_.createdAt = timedate;
+                  Postchallenge_.idChallenge = idChallenge;
+                  Postchallenge_.idSubChallenge = idsubchallenge;
+                  Postchallenge_.session = session;
+                  Postchallenge_.startDatetime = startDatetime;
+                  Postchallenge_.endDatetime = endDatetime;
+                  await this.postchallengeService.create(Postchallenge_);
+                } catch (e) {
+
+                }
                 var detail = await this.userchallengesService.findOne(iduserchall.toString());
                 var activity = detail.activity;
                 objintr = { "type": nametable, "id": idref, "desc": action }
