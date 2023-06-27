@@ -534,7 +534,7 @@ export class ChallengeService {
                     "$endTime",
                   ]
                 },
-                jenisDurasi: 1,
+                jumlahSiklusdurasi: 1,
                 tampilStatusPengguna: 1,
                 objectChallenge: 1,
                 statusChallenge: 1,
@@ -787,7 +787,7 @@ export class ChallengeService {
                 endChallenge: 1,
                 startTime: 1,
                 endTime: 1,
-                jenisDurasi: 1,
+                jumlahSiklusdurasi: 1,
                 tampilStatusPengguna: 1,
                 objectChallenge: 1,
                 statusChallenge: 1,
