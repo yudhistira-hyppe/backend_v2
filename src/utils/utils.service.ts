@@ -1982,9 +1982,7 @@ export class UtilsService {
           body: bodyin,
           postID: postID_,
           postType: postType
-        }
-      };
-      payloadios = {
+        }, 
         notification: {
 
           title: titlein,
@@ -2006,7 +2004,6 @@ export class UtilsService {
       for (var i = 0; i < datadevice.length; i++) {
         var deviceid = datadevice[i].deviceID;
         await admin.messaging().sendToDevice(deviceid, payload);
-        await admin.messaging().sendToDevice(deviceid, payloadios);
 
         arraydevice.push(deviceid);
 
