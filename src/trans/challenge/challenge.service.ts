@@ -534,7 +534,7 @@ export class ChallengeService {
                     "$endTime",
                   ]
                 },
-                jenisDurasi: 1,
+                jumlahSiklusdurasi: 1,
                 tampilStatusPengguna: 1,
                 objectChallenge: 1,
                 statusChallenge: 1,
@@ -787,7 +787,7 @@ export class ChallengeService {
                 endChallenge: 1,
                 startTime: 1,
                 endTime: 1,
-                jenisDurasi: 1,
+                jumlahSiklusdurasi: 1,
                 tampilStatusPengguna: 1,
                 objectChallenge: 1,
                 statusChallenge: 1,
@@ -832,7 +832,7 @@ export class ChallengeService {
                 leaderBoard:1,
                 ketentuanHadiah:
                 [
-                    {
+                  {
                         badgePemenang:
                         {
                             "$arrayElemAt":
@@ -881,8 +881,27 @@ export class ChallengeService {
                                 0
                             ]
                         },
-                        badge: [
+                        badge:
+                        {
+                          "$cond":
+                          {
+                            if:
                             {
+                              "$eq":
+                              [
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$ketentuanHadiah.badgePemenang",
+                                        0
+                                    ]
+                                }, 
+                                false
+                              ]
+                            },
+                            then:[],
+                            else:[
+                              {
                                 juara1: 
                                 {
                                     "$cond":
@@ -976,9 +995,11 @@ export class ChallengeService {
                                         2
                                     ]
                                 },
-                            }
-                        ],
-                    }
+                              },
+                            ]
+                          }
+                        },
+                  }
                 ],
                 peserta:
                 [
