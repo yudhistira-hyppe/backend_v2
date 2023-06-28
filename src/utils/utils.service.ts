@@ -1986,7 +1986,7 @@ export class UtilsService {
             body: bodyin,
             postID: postID_,
             postType: postType
-          },
+          }
         };
       } else {
         payload = {
