@@ -1939,6 +1939,7 @@ export class UtilsService {
       var mediaType = null;
       var mediaEndpoint = null;
       var regSrc = null;
+      var title = null;
       if (mediaprofilepicts != null) {
         mediaUri = mediaprofilepicts.mediaUri;
       }
@@ -2019,7 +2020,7 @@ export class UtilsService {
       createNotificationsDto.event = event;
       createNotificationsDto.mate = emailuserbasic;
       createNotificationsDto.devices = arraydevice;
-      createNotificationsDto.title = payload.data.title;
+      createNotificationsDto.title = titlein.toString();
       createNotificationsDto.body = bodyin;
       createNotificationsDto.bodyId = bodyin;
       createNotificationsDto.active = true;
