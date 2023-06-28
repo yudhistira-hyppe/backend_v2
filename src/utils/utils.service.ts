@@ -2006,8 +2006,8 @@ export class UtilsService {
       datadevice = await this.userdevicesService.findActive(emailuserbasic);
       for (var i = 0; i < datadevice.length; i++) {
         var deviceid = datadevice[i].deviceID;
-        await admin.messaging().sendToDevice(deviceid, payload);
-
+        var adm = await admin.messaging().sendToDevice(deviceid, payload);
+        console.log(adm);
         arraydevice.push(deviceid);
 
       }
