@@ -2019,7 +2019,7 @@ export class UtilsService {
       createNotificationsDto.event = event;
       createNotificationsDto.mate = emailuserbasic;
       createNotificationsDto.devices = arraydevice;
-      createNotificationsDto.title = payload.data.title;
+      createNotificationsDto.title = titlein.toString();
       createNotificationsDto.body = bodyin;
       createNotificationsDto.bodyId = bodyin;
       createNotificationsDto.active = true;
