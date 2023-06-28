@@ -1976,6 +1976,7 @@ export class UtilsService {
         username: user_userAuth.username.toString()
       };
 
+<<<<<<< HEAD
       regSrc = user_userAuth.regSrc;
 
       if (regSrc == "android") {
@@ -1999,6 +2000,27 @@ export class UtilsService {
         };
       }
 
+=======
+      payload = {
+        data: {
+
+          title: titlein,
+          body: bodyin,
+          postID: postID_,
+          postType: postType
+        },
+        notification: {
+
+          title: titlein,
+          body: bodyin,
+          postID: postID_,
+          postType: postType
+        }
+      };
+
+
+
+>>>>>>> eeec3abaaaab19c33acaf354b5c284d9196aa36e
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
 
 
