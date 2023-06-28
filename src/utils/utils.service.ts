@@ -1938,6 +1938,7 @@ export class UtilsService {
       var mediaBasePath = null;
       var mediaType = null;
       var mediaEndpoint = null;
+      var regSrc = null;
       if (mediaprofilepicts != null) {
         mediaUri = mediaprofilepicts.mediaUri;
       }
@@ -1975,26 +1976,28 @@ export class UtilsService {
         username: user_userAuth.username.toString()
       };
 
-      payload = {
-        data: {
+      regSrc = user_userAuth.regSrc;
 
-          title: titlein,
-          body: bodyin,
-          postID: postID_,
-          postType: postType
-        }, 
-        notification: {
+      if (regSrc == "android") {
+        payload = {
+          data: {
 
-          title: titlein,
-          body: bodyin,
-          postID: postID_,
-          postType: postType
-        }
-      };
-
-
-
-
+            title: titlein,
+            body: bodyin,
+            postID: postID_,
+            postType: postType
+          },
+        };
+      } else {
+        payload = {
+          notification: {
+            title: titlein,
+            body: bodyin,
+            postID: postID_,
+            postType: postType
+          }
+        };
+      }
 
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
 
