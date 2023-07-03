@@ -188,6 +188,9 @@ export class UtilsService {
     var profile_receiverParty = await this.generateProfile(receiverParty, "FULL");
     var profile_senderParty = await this.generateProfile(senderParty, "FULL");
 
+    //GET REGSRC
+    var profile_regsrc = await this.getregSrc(receiverParty);
+
     //GET LANGISO
     const langIso_receiverParty = (profile_receiverParty.langIso != undefined) ? profile_receiverParty.langIso : "id";
     const langIso_senderParty = (profile_senderParty.langIso != undefined) ? profile_senderParty.langIso : "id";
@@ -341,13 +344,29 @@ export class UtilsService {
     data_send['body'] = body_send;
     if (typeTemplate != "REACTION") {
       for (var i = 0; i < datadevice.length; i++) {
-        var notification = {
-          // notification: {
-          //   title: title_send,
-          //   body: body_send,
-          //   tag: await this.makeid(7)
-          // },
-          data: data_send,
+        var notification = null
+        if (profile_regsrc == "android") {
+          notification = {
+            data: data_send,
+          }
+        } else if (profile_regsrc == "iOS") {
+          notification = {
+            notification: {
+              title: data_send['title'],
+              body: data_send['body']
+            }
+          };
+        } else if (profile_regsrc == "ios") {
+          notification = {
+            notification: {
+              title: data_send['title'],
+              body: data_send['body']
+            }
+          };
+        } else {
+          notification = {
+            data: data_send,
+          }
         }
         await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
         device_user.push(datadevice[i].deviceID)
@@ -410,6 +429,9 @@ export class UtilsService {
 
     //GET PROFILE
     var profile_receiverParty = await this.generateProfile(receiverParty, "FULL");
+
+    //GET REGSRC
+    var profile_regsrc = await this.getregSrc(receiverParty);
 
     //GET LANGISO
     const langIso_receiverParty = (profile_receiverParty.langIso != undefined) ? profile_receiverParty.langIso : "id";
@@ -522,13 +544,37 @@ export class UtilsService {
     data_send['body'] = body_send;
     for (var i = 0; i < datadevice.length; i++) {
       this.logger.log('sendFcmCMod >>> send: title-> ' + title_send + ' body: ' + JSON.stringify(body_send));
-      var notification = {
-        // notification: {
-        //   title: title_send,
-        //   body: body_send,
-        // },
-        data: data_send,
+      var notification = null
+      if (profile_regsrc == "android") {
+        notification = {
+          data: data_send,
+        }
+      } else if (profile_regsrc == "iOS") {
+        notification = {
+          notification: {
+            title: data_send['title'],
+            body: data_send['body']
+          }
+        };
+      } else if (profile_regsrc == "ios") {
+        notification = {
+          notification: {
+            title: data_send['title'],
+            body: data_send['body']
+          }
+        };
+      } else {
+        notification = {
+          data: data_send,
+        }
       }
+      // var notification = {
+      //   // notification: {
+      //   //   title: title_send,
+      //   //   body: body_send,
+      //   // },
+      //   data: data_send,
+      // }
       await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
       device_user.push(datadevice[i].deviceID)
     }
@@ -978,6 +1024,14 @@ export class UtilsService {
 
   async getUsertname(email: string) {
     return (await this.userauthsService.findOne(email)).username;
+  }
+
+  async getregSrc(email: string) {
+    var regSrc = (await this.userauthsService.findOne(email)).regSrc;
+    if (regSrc == undefined || regSrc == null){
+      regSrc = "android";
+    }
+    return regSrc;
   }
 
   async updateSetting(jenis: string, value: any) {
