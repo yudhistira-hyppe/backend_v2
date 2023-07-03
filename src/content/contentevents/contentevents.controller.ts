@@ -1201,7 +1201,10 @@ export class ContenteventsController {
           await this.insightsService.updateLike(email_receiverParty);
           await this.postsService.updateLike(email_receiverParty, request.body.postID);
           this.sendInteractiveFCM(email_receiverParty, "LIKE", request.body.postID, email_user);
+<<<<<<< HEAD
 
+=======
+>>>>>>> Challenge
           const databasic = await this.userbasicsService.findOne(
             email_receiverParty
           );
