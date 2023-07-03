@@ -22,7 +22,12 @@ export class Postchallenge {
     postID: String;
     @Prop()
     session: number;
-
+    @Prop()
+    updatedAt: String;
+    @Prop({ type: mongoose.Schema.Types.ObjectId })
+    idUser: mongoose.Types.ObjectId;
+    @Prop()
+    score: number;
 
 }
 export const PostchallengeSchema = SchemaFactory.createForClass(Postchallenge);
