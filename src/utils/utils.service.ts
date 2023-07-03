@@ -1939,6 +1939,7 @@ export class UtilsService {
       var mediaType = null;
       var mediaEndpoint = null;
       var regSrc = null;
+      var title = null;
       if (mediaprofilepicts != null) {
         mediaUri = mediaprofilepicts.mediaUri;
       }
@@ -1988,9 +1989,34 @@ export class UtilsService {
             postType: postType
           }
         };
+      }
+      else if (regSrc == "iOS") {
+        payload = {
+          "notification": {
+            "title": titlein,
+            "body": {
+              "body": bodyin,
+              "postID": postID_,
+              "postType": postType
+            }
+          }
+        };
+      }
+      else if (regSrc == "ios") {
+        payload = {
+          "notification": {
+            "title": titlein,
+            "body": {
+              "body": bodyin,
+              "postID": postID_,
+              "postType": postType
+            }
+          }
+        };
       } else {
         payload = {
-          notification: {
+          data: {
+
             title: titlein,
             body: bodyin,
             postID: postID_,
