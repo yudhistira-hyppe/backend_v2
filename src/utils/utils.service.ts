@@ -345,18 +345,22 @@ export class UtilsService {
     if (typeTemplate != "REACTION") {
       for (var i = 0; i < datadevice.length; i++) {
         var notification = null
+        console.log(profile_regsrc);
         if (profile_regsrc == "android") {
+          console.log("android");
           notification = {
             data: data_send,
           }
         } else if (profile_regsrc.toLowerCase() == "ios") {
+          console.log("ios");
           notification = {
             notification: {
               title: data_send['title'],
               body: data_send['body']
             }
           };
-        }  else {
+        } else {
+          console.log("android");
           notification = {
             data: data_send,
           }
