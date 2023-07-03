@@ -623,6 +623,7 @@ export class UtilsService {
     var date = splitdt[0].replace("T", " ");
     var mediaprofilepicts = null;
     var bodypayload = null;
+    var regSrc = null;
     let createNotificationsDto = new CreateNotificationsDto();
 
     const datauserbasicsService = await this.userbasicsService.findOne(
@@ -707,55 +708,200 @@ export class UtilsService {
         pid = "";
       }
 
-
+      regSrc = user_userAuth.regSrc;
       if (langIso === "id") {
 
-        payload = {
+        // payload = {
 
-          // notification: {
-          //   title: titlein,
-          //   body: bodyin,
-          //   tag: "background"
-          // },
-          data: {
+        //   // notification: {
+        //   //   title: titlein,
+        //   //   body: bodyin,
+        //   //   tag: "background"
+        //   // },
+        //   data: {
 
-            title: titlein,
-            body: bodyin,
-            postID: pid,
-            postType: postType
-          }
-        };
+        //     title: titlein,
+        //     body: bodyin,
+        //     postID: pid,
+        //     postType: postType
+        //   }
+        // };
+
+
+
+        if (regSrc == "android") {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: pid,
+              postType: postType
+            }
+          };
+        }
+        else if (regSrc == "iOS") {
+          payload = {
+            "notification": {
+              "title": titlein,
+              "body": JSON.stringify({
+                "title": titlein,
+                "body": bodyin,
+                "postID": pid,
+                "postType": postType
+              })
+            }
+          };
+        }
+        else if (regSrc == "ios") {
+          payload = {
+            "notification": {
+              "title": titlein,
+              "body": JSON.stringify({
+                "title": titlein,
+                "body": bodyin,
+                "postID": pid,
+                "postType": postType
+              })
+            }
+          };
+        } else {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: pid,
+              postType: postType
+            }
+          };
+        }
+
       }
       else if (langIso === "en") {
-        payload = {
+        // payload = {
 
-          // notification: {
-          //   title: titleen,
-          //   body: bodyen,
-          //   tag: "background"
-          // },
-          data: {
-            title: titleen,
-            body: bodyen,
-            postID: pid,
-            postType: postType
-          }
-        };
+        //   // notification: {
+        //   //   title: titleen,
+        //   //   body: bodyen,
+        //   //   tag: "background"
+        //   // },
+        //   data: {
+        //     title: titleen,
+        //     body: bodyen,
+        //     postID: pid,
+        //     postType: postType
+        //   }
+        // };
+        if (regSrc == "android") {
+          payload = {
+            data: {
+
+              title: titleen,
+              body: bodyen,
+              postID: pid,
+              postType: postType
+            }
+          };
+        }
+        else if (regSrc == "iOS") {
+          payload = {
+            "notification": {
+              "title": titleen,
+              "body": JSON.stringify({
+                "title": titleen,
+                "body": bodyen,
+                "postID": pid,
+                "postType": postType
+              })
+            }
+          };
+        }
+        else if (regSrc == "ios") {
+          payload = {
+            "notification": {
+              "title": titleen,
+              "body": JSON.stringify({
+                "title": titleen,
+                "body": bodyen,
+                "postID": pid,
+                "postType": postType
+              })
+            }
+          };
+        } else {
+          payload = {
+            data: {
+
+              title: titleen,
+              body: bodyen,
+              postID: pid,
+              postType: postType
+            }
+          };
+        }
       } else {
-        payload = {
+        // payload = {
 
-          // notification: {
-          //   title: titlein,
-          //   body: bodyin,
-          //   tag: "background"
-          // },
-          data: {
-            title: titlein,
-            body: bodyin,
-            postID: pid,
-            postType: postType
-          }
-        };
+        //   // notification: {
+        //   //   title: titlein,
+        //   //   body: bodyin,
+        //   //   tag: "background"
+        //   // },
+        //   data: {
+        //     title: titlein,
+        //     body: bodyin,
+        //     postID: pid,
+        //     postType: postType
+        //   }
+        // };
+        if (regSrc == "android") {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: pid,
+              postType: postType
+            }
+          };
+        }
+        else if (regSrc == "iOS") {
+          payload = {
+            "notification": {
+              "title": titlein,
+              "body": JSON.stringify({
+                "title": titlein,
+                "body": bodyin,
+                "postID": pid,
+                "postType": postType
+              })
+            }
+          };
+        }
+        else if (regSrc == "ios") {
+          payload = {
+            "notification": {
+              "title": titlein,
+              "body": JSON.stringify({
+                "title": titlein,
+                "body": bodyin,
+                "postID": pid,
+                "postType": postType
+              })
+            }
+          };
+        } else {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: pid,
+              postType: postType
+            }
+          };
+        }
       }
 
 
