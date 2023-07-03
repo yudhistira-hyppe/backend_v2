@@ -140,6 +140,31 @@ export class BadgeController {
     };
   }
 
+  // listing get badge berdasarkan tipe juara
+  @UseGuards(JwtAuthGuard)
+  @Post('findall')
+  async findAllByType(@Req() request: Request) {
+
+    var listjuara = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    
+    if (request_json["juara"] !== undefined) {
+      listjuara = [request_json["juara"]];
+    }
+
+    var data = await this.badgeService.detailAll(null, listjuara, null, null);
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    return {
+        response_code: 202,
+        data:data,
+        messages: messages,
+    };
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('listing')
   async detailAll(@Req() request: Request) {
