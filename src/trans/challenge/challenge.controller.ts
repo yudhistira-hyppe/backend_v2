@@ -1126,7 +1126,7 @@ export class ChallengeController {
             var getbadgegeneral = listbadgegeneral[i];
 
             var insertnewbadge = new CreateBadgeDto();
-            insertnewbadge.name = insertdata.nameChallenge + "_" + settype;
+            insertnewbadge.name = getdata.nameChallenge + "_" + settype;
             insertnewbadge.type = settype;
             
             var resultbadge = await this.badge.create(getbadgegeneral, getbadgeprofile, insertnewbadge);
