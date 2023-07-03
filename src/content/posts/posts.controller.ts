@@ -2909,6 +2909,9 @@ export class PostsController {
                         Postchallenge_.session = session;
                         Postchallenge_.startDatetime = startDatetime;
                         Postchallenge_.endDatetime = endDatetime;
+                        Postchallenge_.updatedAt = timedate;
+                        Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
+                        Postchallenge_.score = poin;
                         await this.postchallengeService.create(Postchallenge_);
                       } catch (e) {
 
@@ -3003,6 +3006,9 @@ export class PostsController {
                   Postchallenge_.session = session;
                   Postchallenge_.startDatetime = startDatetime;
                   Postchallenge_.endDatetime = endDatetime;
+                  Postchallenge_.updatedAt = timedate;
+                  Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
+                  Postchallenge_.score = poin;
                   await this.postchallengeService.create(Postchallenge_);
                 } catch (e) {
 
