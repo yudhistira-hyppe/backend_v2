@@ -1193,6 +1193,35 @@ export class ChallengeController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('setstatuschallenge/:id')
+  async updatechallengedata(
+    @Param('id') id: string,
+    @Req() request: Request
+  ) {
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+    var statusChallenge = request_json['statusChallenge'];
+
+    var getdata = await this.challengeService.findOne(id);
+
+    // var mongo = require('mongoose');
+    // setupdatedata._id = new mongo.Types.ObjectId(id);
+    getdata.statusChallenge = statusChallenge;
+    getdata.updatedAt = await this.util.getDateTimeString();
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    await this.challengeService.update(id, getdata);
+
+    return {
+      response_code: 202,
+      messages: messages,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('listing/bannerlandingpage')
   async listingbanner(
     @Req() request: Request
