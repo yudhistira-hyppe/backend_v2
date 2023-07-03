@@ -356,7 +356,7 @@ export class UtilsService {
           notification_ = {
             notification: {
               title: data_send['title'],
-              body: data_send
+              body: JSON.stringify(data_send)
             }
           };
         } else {
