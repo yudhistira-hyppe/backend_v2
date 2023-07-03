@@ -361,6 +361,7 @@ export class UtilsService {
             data: data_send,
           }
         }
+        console.log(notification);
         await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
         device_user.push(datadevice[i].deviceID)
       }
@@ -2071,6 +2072,7 @@ export class UtilsService {
           }
         };
       }
+      console.log(payload);
 
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
 
