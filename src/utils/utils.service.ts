@@ -349,21 +349,14 @@ export class UtilsService {
           notification = {
             data: data_send,
           }
-        } else if (profile_regsrc == "iOS") {
+        } else if (profile_regsrc.toLowerCase() == "ios") {
           notification = {
             notification: {
               title: data_send['title'],
               body: data_send['body']
             }
           };
-        } else if (profile_regsrc == "ios") {
-          notification = {
-            notification: {
-              title: data_send['title'],
-              body: data_send['body']
-            }
-          };
-        } else {
+        }  else {
           notification = {
             data: data_send,
           }
