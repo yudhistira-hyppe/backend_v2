@@ -344,16 +344,16 @@ export class UtilsService {
     data_send['body'] = body_send;
     if (typeTemplate != "REACTION") {
       for (var i = 0; i < datadevice.length; i++) {
-        var notification = null
+        var notification_ = null
         console.log(profile_regsrc);
         if (profile_regsrc == "android") {
           console.log("android");
-          notification = {
+          notification_ = {
             data: data_send,
           }
         } else if (profile_regsrc.toLowerCase() == "ios") {
           console.log("ios");
-          notification = {
+          notification_ = {
             notification: {
               title: data_send['title'],
               body: data_send['body']
@@ -361,12 +361,12 @@ export class UtilsService {
           };
         } else {
           console.log("android");
-          notification = {
+          notification_ = {
             data: data_send,
           }
         }
-        console.log(notification);
-        await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
+        console.log(notification_);
+        await admin.messaging().sendToDevice(datadevice[i].deviceID, notification_);
         device_user.push(datadevice[i].deviceID)
       }
     }
