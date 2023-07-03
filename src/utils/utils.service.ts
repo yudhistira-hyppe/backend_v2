@@ -344,29 +344,31 @@ export class UtilsService {
     data_send['body'] = body_send;
     if (typeTemplate != "REACTION") {
       for (var i = 0; i < datadevice.length; i++) {
-        var notification_ = null
-        console.log(profile_regsrc);
+        var notification = null
         if (profile_regsrc == "android") {
-          console.log("android");
-          notification_ = {
+          notification = {
             data: data_send,
           }
-        } else if (profile_regsrc.toLowerCase() == "ios") {
-          console.log("ios");
-          notification_ = {
+        } else if (profile_regsrc == "iOS") {
+          notification = {
             notification: {
               title: data_send['title'],
-              body: JSON.stringify(data_send)
+              body: data_send['body']
+            }
+          };
+        } else if (profile_regsrc == "ios") {
+          notification = {
+            notification: {
+              title: data_send['title'],
+              body: data_send['body']
             }
           };
         } else {
-          console.log("android");
-          notification_ = {
+          notification = {
             data: data_send,
           }
         }
-        console.log(notification_);
-        await admin.messaging().sendToDevice(datadevice[i].deviceID, notification_);
+        await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
         device_user.push(datadevice[i].deviceID)
       }
     }
@@ -1026,7 +1028,7 @@ export class UtilsService {
 
   async getregSrc(email: string) {
     var regSrc = (await this.userauthsService.findOne(email)).regSrc;
-    if (regSrc == undefined || regSrc == null){
+    if (regSrc == undefined || regSrc == null) {
       regSrc = "android";
     }
     return regSrc;
@@ -2046,11 +2048,12 @@ export class UtilsService {
         payload = {
           "notification": {
             "title": titlein,
-            "body": {
+            "body": JSON.stringify({
+              "title": titlein,
               "body": bodyin,
               "postID": postID_,
               "postType": postType
-            }
+            })
           }
         };
       }
@@ -2058,11 +2061,12 @@ export class UtilsService {
         payload = {
           "notification": {
             "title": titlein,
-            "body": {
+            "body": JSON.stringify({
+              "title": titlein,
               "body": bodyin,
               "postID": postID_,
               "postType": postType
-            }
+            })
           }
         };
       } else {
@@ -2076,7 +2080,6 @@ export class UtilsService {
           }
         };
       }
-      console.log(payload);
 
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
 
