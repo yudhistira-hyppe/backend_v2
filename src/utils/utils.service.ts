@@ -544,27 +544,22 @@ export class UtilsService {
     data_send['body'] = body_send;
     for (var i = 0; i < datadevice.length; i++) {
       this.logger.log('sendFcmCMod >>> send: title-> ' + title_send + ' body: ' + JSON.stringify(body_send));
-      var notification = null
+      var notification_ = null
       if (profile_regsrc == "android") {
-        notification = {
+        notification_ = {
           data: data_send,
         }
-      } else if (profile_regsrc == "iOS") {
-        notification = {
+      } else if (profile_regsrc.toLowerCase() == "ios") {
+        console.log("ios");
+        notification_ = {
           notification: {
             title: data_send['title'],
-            body: data_send['body']
-          }
-        };
-      } else if (profile_regsrc == "ios") {
-        notification = {
-          notification: {
-            title: data_send['title'],
-            body: data_send['body']
+            body: JSON.stringify(data_send)
           }
         };
       } else {
-        notification = {
+        console.log("android");
+        notification_ = {
           data: data_send,
         }
       }
@@ -575,7 +570,7 @@ export class UtilsService {
       //   // },
       //   data: data_send,
       // }
-      await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, notification_);
       device_user.push(datadevice[i].deviceID)
     }
 
