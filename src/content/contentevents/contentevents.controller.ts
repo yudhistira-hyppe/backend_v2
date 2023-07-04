@@ -28,7 +28,8 @@ import { NewpostsService } from '../newposts/newposts.service';
 import { UserchallengesService } from 'src/trans/userchallenges/userchallenges.service';
 import { ChallengeService } from 'src/trans/challenge/challenge.service';
 import { TagCountService } from 'src/content/tag_count/tag_count.service';
-
+import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
+import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.schema';
 
 @Controller()
 export class ContenteventsController {
@@ -50,6 +51,7 @@ export class ContenteventsController {
     private readonly userchallengesService: UserchallengesService,
     private readonly challengeService: ChallengeService,
     private readonly tagCountService: TagCountService,
+    private readonly postchallengeService: PostchallengeService,
     private readonly errorHandler: ErrorHandler) { }
 
   @Post('api/contentevents')
@@ -1037,7 +1039,8 @@ export class ContenteventsController {
       }
 
       this.checkFriendbasedString(email_user, email_receiverParty, "create");
-    } else if (eventType == "VIEW") {
+    }
+    else if (eventType == "VIEW") {
 
       if (email_user !== email_receiverParty) {
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW Email Not Same >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify({ postID: request.body.postID, email_user: email_user, email_receiverParty: email_receiverParty }));
@@ -1843,6 +1846,8 @@ export class ContenteventsController {
     var poinViewDiary = null;
     var poinPict = null;
     var tagar = null;
+    var datapostchall = null;
+    var idpostchall = null;
     try {
       datachallenge = await this.challengeService.challengeKonten();
     } catch (e) {
@@ -1927,6 +1932,21 @@ export class ContenteventsController {
                       console.log(objintr)
                       activity.push(objintr)
                       await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                      try {
+                        datapostchall = await this.postchallengeService.findBypostID(postID);
+                      } catch (e) {
+                        datapostchall = null;
+                      }
+                      if (datapostchall != null) {
+                        idpostchall = datapostchall._id.toString();
+                      }
+                      try {
+                        await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                      } catch (e) {
+
+                      }
+
+
                       var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
                       if (datauschall.length > 0) {
@@ -2003,6 +2023,19 @@ export class ContenteventsController {
                 console.log(objintr)
                 activity.push(objintr)
                 await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                try {
+                  datapostchall = await this.postchallengeService.findBypostID(postID);
+                } catch (e) {
+                  datapostchall = null;
+                }
+                if (datapostchall != null) {
+                  idpostchall = datapostchall._id.toString();
+                }
+                try {
+                  await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                } catch (e) {
+
+                }
                 var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
                 if (datauschall.length > 0) {
@@ -2060,6 +2093,8 @@ export class ContenteventsController {
     var poinViewDiary = null;
     var poinPict = null;
     var tagar = null;
+    var datapostchall = null;
+    var idpostchall = null;
     try {
       datachallenge = await this.challengeService.challengeKonten();
     } catch (e) {
@@ -2152,6 +2187,19 @@ export class ContenteventsController {
                       console.log(objintr)
                       activity.push(objintr)
                       await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                      try {
+                        datapostchall = await this.postchallengeService.findBypostID(postID);
+                      } catch (e) {
+                        datapostchall = null;
+                      }
+                      if (datapostchall != null) {
+                        idpostchall = datapostchall._id.toString();
+                      }
+                      try {
+                        await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                      } catch (e) {
+
+                      }
                       var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
                       if (datauschall.length > 0) {
@@ -2229,6 +2277,19 @@ export class ContenteventsController {
                 console.log(objintr)
                 activity.push(objintr)
                 await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                try {
+                  datapostchall = await this.postchallengeService.findBypostID(postID);
+                } catch (e) {
+                  datapostchall = null;
+                }
+                if (datapostchall != null) {
+                  idpostchall = datapostchall._id.toString();
+                }
+                try {
+                  await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                } catch (e) {
+
+                }
                 var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
                 if (datauschall.length > 0) {

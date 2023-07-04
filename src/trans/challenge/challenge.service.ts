@@ -142,7 +142,7 @@ export class ChallengeService {
         {
           _id: 1,
           nameChallenge: 1,
-          jenisChallenge:1,
+          jenisChallenge: 1,
           jenisChallenge_fk:
           {
             "$arrayElemAt":
@@ -170,27 +170,27 @@ export class ChallengeService {
                         [
                           {
                             "$gte": [
-                              "$timenow", 
+                              "$timenow",
                               {
                                 "$concat":
-                                [
-                                  "$startChallenge",
-                                  " ",
-                                  "$startTime"
-                                ]
+                                  [
+                                    "$startChallenge",
+                                    " ",
+                                    "$startTime"
+                                  ]
                               }
                             ]
                           },
                           {
                             "$lte": [
-                              "$timenow", 
+                              "$timenow",
                               {
                                 "$concat":
-                                [
-                                  "$endChallenge",
-                                  " ",
-                                  "$endTime"
-                                ]
+                                  [
+                                    "$endChallenge",
+                                    " ",
+                                    "$endTime"
+                                  ]
                               }
                             ]
                           },
@@ -205,14 +205,14 @@ export class ChallengeService {
                         [
                           {
                             "$gt": [
-                              "$timenow", 
+                              "$timenow",
                               {
                                 "$concat":
-                                [
-                                  "$endChallenge",
-                                  " ",
-                                  "$endTime"
-                                ]
+                                  [
+                                    "$endChallenge",
+                                    " ",
+                                    "$endTime"
+                                  ]
                               }
                             ]
                           },
@@ -357,795 +357,794 @@ export class ChallengeService {
     return this.ChallengeModel.findOne({ _id: new Types.ObjectId(id) }).exec();
   }
 
-  async detailchallenge(id: string)
-  {
+  async detailchallenge(id: string) {
     var mongo = require('mongoose');
     var konvertid = mongo.Types.ObjectId(id);
 
     var query = await this.ChallengeModel.aggregate([
+      {
+        "$match":
         {
-            "$match":
+          _id: konvertid
+        }
+      },
+      {
+        "$lookup":
+        {
+          from: "jenisChallenge",
+          as: "jenischallenge_data",
+          let:
+          {
+            jenis_challenge_fk: "$jenisChallenge"
+          },
+          pipeline: [
             {
-                _id: konvertid
+              "$match":
+              {
+                "$and":
+                  [
+                    {
+                      "$expr":
+                      {
+                        "$eq":
+                          [
+                            "$$jenis_challenge_fk", "$_id"
+                          ]
+                      }
+                    },
+                  ]
+              }
+            },
+            {
+              "$project":
+              {
+                _id: 0,
+                name: 1,
+              }
             }
-        },
+          ]
+        }
+      },
+      {
+        "$lookup":
         {
-            "$lookup": 
+          from: "userChallenge",
+          as: "userChallenge_data",
+          let:
+          {
+            userChallenge_fk: "$_id"
+          },
+          pipeline: [
             {
-                from: "jenisChallenge",
-                as: "jenischallenge_data",
-                let: 
+              "$match":
+              {
+                "$and":
+                  [
+                    {
+                      "$expr":
+                      {
+                        "$eq":
+                          [
+                            "$$userChallenge_fk", "$idChallenge"
+                          ]
+                      }
+                    },
+                  ]
+              }
+            },
+            {
+              "$group":
+              {
+                _id: "$idSubChallenge",
+                total:
                 {
-                    jenis_challenge_fk: "$jenisChallenge"
+                  "$sum": 1
+                }
+              }
+            },
+            {
+              "$lookup":
+              {
+                from: "subChallenge",
+                as: "subChallenge_data",
+                let:
+                {
+                  subChallenge_fk: "$_id"
                 },
                 pipeline: [
+                  {
+                    "$match":
                     {
-                        "$match":
-                        {
-                          "$and":
+                      "$expr":
+                      {
+                        "$eq":
+                          [
+                            "$$subChallenge_fk", "$_id"
+                          ]
+                      }
+                    }
+                  },
+                  {
+                    "$project":
+                    {
+                      _id: 1,
+                      session: 1,
+                      startDatetime: 1,
+                      endDatetime: 1,
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "$project":
+              {
+                _id: 1,
+                total: 1,
+                startDatetime:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$subChallenge_data.startDatetime", 0
+                    ]
+                },
+                endDatetime:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$subChallenge_data.endDatetime", 0
+                    ]
+                },
+                session:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$subChallenge_data.session", 0
+                    ]
+                }
+              }
+            },
+            {
+              "$sort":
+              {
+                session: 1
+              }
+            }
+          ]
+        }
+      },
+      {
+        "$project":
+        {
+          _id: 1,
+          nameChallenge: 1,
+          jenisChallenge: 1,
+          jenisChallengeName:
+          {
+            "$arrayElemAt":
+              [
+                "$jenischallenge_data.name", 0
+              ]
+          },
+          description: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          totaldurasi:
+          {
+            "$multiply":
+              [
+                "$durasi",
+                "$jumlahSiklusdurasi"
+              ]
+            // "$dateDiff":
+            // {
+            //     startDate:
+            //     {
+            //         "$toDate":"$startChallenge",
+            //     },
+            //     endDate:
+            //     {
+            //         "$toDate":"$endChallenge",
+            //     },
+            //     unit:"day"
+            // }
+          },
+          durasi: 1,
+          startChallenge: 1,
+          endChallenge: 1,
+          startTime:
+          {
+            "$concat":
+              [
+                "$startChallenge",
+                " ",
+                "$startTime",
+              ]
+          },
+          endTime:
+          {
+            "$concat":
+              [
+                "$endChallenge",
+                " ",
+                "$endTime",
+              ]
+          },
+          jumlahSiklusdurasi: 1,
+          tampilStatusPengguna: 1,
+          objectChallenge: 1,
+          statusChallenge: 1,
+          metrik: 1,
+          peserta: 1,
+          leaderBoard: 1,
+          ketentuanHadiah: 1,
+          hadiahPemenang: 1,
+          bannerSearch: 1,
+          popUp: 1,
+          notifikasiPush: 1,
+          session: "$userChallenge_data",
+          juara1:
+          {
+            "$ifNull":
+              [
+                {
+                  "$let":
+                  {
+                    vars:
+                    {
+                      databadge:
+                      {
+                        "$arrayElemAt":
                           [
                             {
-                                "$expr":
-                                {
-                                    "$eq":
-                                    [
-                                        "$$jenis_challenge_fk", "$_id"
-                                    ]
-                                }
-                            },
-                          ]
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            _id:0,
-                            name:1,
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "$lookup": 
-            {
-                from: "userChallenge",
-                as: "userChallenge_data",
-                let: 
-                {
-                    userChallenge_fk: "$_id"
-                },
-                pipeline: [
-                    {
-                        "$match":
-                        {
-                            "$and":
-                            [
+                              "$let":
                               {
-                                "$expr":
-                                {
-                                    "$eq":
-                                    [
-                                        "$$userChallenge_fk", "$idChallenge"
-                                    ]
-                                }
-                              },
-                            ]
-                        }
-                    },
-                    {
-                        "$group":
-                        {
-                            _id:"$idSubChallenge",
-                            total:
-                            {
-                                "$sum":1
-                            }
-                        }
-                    },
-                    {
-                        "$lookup":
-                        {
-                            from: "subChallenge",
-                            as: "subChallenge_data",
-                            let: 
-                            {
-                                subChallenge_fk: "$_id"
-                            },
-                            pipeline: [
-                                {
-                                    "$match":
-                                    {
-                                        "$expr":
-                                        {
-                                            "$eq":
-                                            [
-                                                "$$subChallenge_fk", "$_id"
-                                            ]
-                                        }
-                                    }
-                                },
-                                {
-                                    "$project":
-                                    {
-                                        _id:1,
-                                        session:1,
-                                        startDatetime:1,
-                                        endDatetime:1,
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            _id:1,
-                            total:1,
-                            startDatetime:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$subChallenge_data.startDatetime", 0
-                                ]
-                            },
-                            endDatetime:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$subChallenge_data.endDatetime", 0
-                                ]
-                            },
-                            session:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$subChallenge_data.session", 0
-                                ]
-                            }
-                        }
-                    },
-                    {
-                        "$sort":
-                        {
-                            session:1
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "$project":
-            {
-                _id: 1,
-                nameChallenge: 1,
-                jenisChallenge: 1,
-                jenisChallengeName:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$jenischallenge_data.name", 0
-                    ]
-                },
-                description: 1,
-                createdAt: 1,
-                updatedAt: 1,
-                totaldurasi:
-                {
-                  "$multiply":
-                  [
-                    "$durasi",
-                    "$jumlahSiklusdurasi"
-                  ]
-                    // "$dateDiff":
-                    // {
-                    //     startDate:
-                    //     {
-                    //         "$toDate":"$startChallenge",
-                    //     },
-                    //     endDate:
-                    //     {
-                    //         "$toDate":"$endChallenge",
-                    //     },
-                    //     unit:"day"
-                    // }
-                },
-                durasi: 1,
-                startChallenge: 1,
-                endChallenge: 1,
-                startTime:
-                {
-                  "$concat":
-                  [
-                    "$startChallenge",
-                    " ",
-                    "$startTime",
-                  ]
-                },
-                endTime: 
-                {
-                  "$concat":
-                  [
-                    "$endChallenge",
-                    " ",
-                    "$endTime",
-                  ]
-                },
-                jumlahSiklusdurasi: 1,
-                tampilStatusPengguna: 1,
-                objectChallenge: 1,
-                statusChallenge: 1,
-                metrik:1,
-                peserta:1,
-                leaderBoard:1,
-                ketentuanHadiah:1,
-                hadiahPemenang:1,
-                bannerSearch:1,
-                popUp:1,
-                notifikasiPush:1,
-                session:"$userChallenge_data",
-                juara1:
-                {
-                    "$ifNull":
-                    [
-                        {
-                            "$let":
-                            {
                                 vars:
                                 {
-                                    databadge:
-                                    {
-                                        "$arrayElemAt":
-                                        [
-                                            {
-                                                "$let":
-                                                {
-                                                    vars:
-                                                    {
-                                                        badgeId:
-                                                        {
-                                                            "$arrayElemAt":
-                                                            [
-                                                                "$ketentuanHadiah", 0
-                                                            ]
-                                                        }
-                                                    },
-                                                    in:"$$badgeId.badge"
-                                                }
-                                            },
-                                            0
-                                        ]
-                                    }
+                                  badgeId:
+                                  {
+                                    "$arrayElemAt":
+                                      [
+                                        "$ketentuanHadiah", 0
+                                      ]
+                                  }
                                 },
-                                in:"$$databadge.juara1"
-                            }
-                        },
-                        null
-                    ]
-                },
-                juara2:
-                {
-                    "$ifNull":
-                    [
-                        {
-                            "$let":
-                            {
-                                vars:
-                                {
-                                    databadge:
-                                    {
-                                        "$arrayElemAt":
-                                        [
-                                            {
-                                                "$let":
-                                                {
-                                                    vars:
-                                                    {
-                                                        badgeId:
-                                                        {
-                                                            "$arrayElemAt":
-                                                            [
-                                                                "$ketentuanHadiah", 0
-                                                            ]
-                                                        }
-                                                    },
-                                                    in:"$$badgeId.badge"
-                                                }
-                                            },
-                                            0
-                                        ]
-                                    }
-                                },
-                                in:"$$databadge.juara2"
-                            }
-                        },
-                        null
-                    ]
-                },
-                juara3:
-                {
-                    "$ifNull":
-                    [
-                        {
-                            "$let":
-                            {
-                                vars:
-                                {
-                                    databadge:
-                                    {
-                                        "$arrayElemAt":
-                                        [
-                                            {
-                                                "$let":
-                                                {
-                                                    vars:
-                                                    {
-                                                        badgeId:
-                                                        {
-                                                            "$arrayElemAt":
-                                                            [
-                                                                "$ketentuanHadiah", 0
-                                                            ]
-                                                        }
-                                                    },
-                                                    in:"$$badgeId.badge"
-                                                }
-                                            },
-                                            0
-                                        ]
-                                    }
-                                },
-                                in:"$$databadge.juara3"
-                            }
-                        },
-                        null
-                    ]
-                },
-            }
-        },
-        {
-            "$lookup": 
-            {
-                from: "badge",
-                as: "badge_data",
-                let: 
-                {
-                    juara1: "$juara1",
-                    juara2: "$juara2",
-                    juara3: "$juara3",
-                },
-                pipeline: 
-                [
-                    {
-                        "$match":
-                        {
-                            "$expr":
-                            {
-                                "$in":
-                                [
-                                    "$_id", ["$$juara1", "$$juara2", "$$juara3"]
-                                ]
-                            }
-                        }
-                    },
-                    {
-                        "$sort":
-                        {
-                            type:1
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            _id:1,
-                            type:1,
-                            badgeProfile:1,
-                            badgeOther:1
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "$lookup": 
-            {
-                from: "areas",
-                as: "areas_data",
-                let: 
-                {
-                    listarea: 
-                    {
-                        "$arrayElemAt":
-                        [
-                            "$peserta.lokasiPengguna",
+                                in: "$$badgeId.badge"
+                              }
+                            },
                             0
-                        ]
+                          ]
+                      }
                     },
-                },
-                pipeline: 
-                [
-                    {
-                        "$match":
-                        {
-                            "$expr":
-                            {
-                                "$in":
-                                [
-                                    "$_id", "$$listarea"
-                                ]
-                            }
-                        }
-                    },
-                    {
-                        "$group":
-                        {
-                            _id:null,
-                            data:
-                            {
-                                "$push":
-                                {
-                                   _id:"$_id",
-                                   stateName:"$stateName"
-                                }  
-                            }
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            $set: {
-                "timenow":
-                {
-                    "$dateToString": {
-                        "format": "%Y-%m-%d %H:%M:%S",
-                        "date": {
-                            $add: [
-                                new Date(), 25200000
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "$project":
-            {
-                _id: 1,
-                nameChallenge: 1,
-                jenisChallenge: 1,
-                jenisChallengeName:1,
-                description: 1,
-                createdAt: 1,
-                updatedAt: 1,
-                durasi: 1,
-                totaldurasi:1,
-                startChallenge: 1,
-                endChallenge: 1,
-                startTime: 1,
-                endTime: 1,
-                jumlahSiklusdurasi: 1,
-                tampilStatusPengguna: 1,
-                objectChallenge: 1,
-                statusChallenge: 1,
-                statuscurrentChallenge: 
-                {
-                  "$switch":
-                  {
-                    branches:
-                      [
-                        {
-                          case:
-                          {
-                            "$and":
-                              [
-                                {
-                                  "$gte": [
-                                    "$timenow", 
-                                    "$startTime"
-                                  ]
-                                },
-                                {
-                                  "$lte": [
-                                    "$timenow", 
-                                    "$endTime"
-                                  ]
-                                },
-                              ]
-                          },
-                          then: "SEDANG BERJALAN"
-                        },
-                        {
-                          case:
-                          {
-                            "$and":
-                              [
-                                {
-                                  "$gt": [
-                                    "$timenow", 
-                                    "$endTime",
-                                  ]
-                                },
-                              ]
-                          },
-                          then: "SELESAI"
-                        },
-                      ],
-                    default: "AKAN DATANG"
+                    in: "$$databadge.juara1"
                   }
                 },
-                metrik:1,
-                leaderBoard:1,
-                ketentuanHadiah:
+                null
+              ]
+          },
+          juara2:
+          {
+            "$ifNull":
+              [
+                {
+                  "$let":
+                  {
+                    vars:
+                    {
+                      databadge:
+                      {
+                        "$arrayElemAt":
+                          [
+                            {
+                              "$let":
+                              {
+                                vars:
+                                {
+                                  badgeId:
+                                  {
+                                    "$arrayElemAt":
+                                      [
+                                        "$ketentuanHadiah", 0
+                                      ]
+                                  }
+                                },
+                                in: "$$badgeId.badge"
+                              }
+                            },
+                            0
+                          ]
+                      }
+                    },
+                    in: "$$databadge.juara2"
+                  }
+                },
+                null
+              ]
+          },
+          juara3:
+          {
+            "$ifNull":
+              [
+                {
+                  "$let":
+                  {
+                    vars:
+                    {
+                      databadge:
+                      {
+                        "$arrayElemAt":
+                          [
+                            {
+                              "$let":
+                              {
+                                vars:
+                                {
+                                  badgeId:
+                                  {
+                                    "$arrayElemAt":
+                                      [
+                                        "$ketentuanHadiah", 0
+                                      ]
+                                  }
+                                },
+                                in: "$$badgeId.badge"
+                              }
+                            },
+                            0
+                          ]
+                      }
+                    },
+                    in: "$$databadge.juara3"
+                  }
+                },
+                null
+              ]
+          },
+        }
+      },
+      {
+        "$lookup":
+        {
+          from: "badge",
+          as: "badge_data",
+          let:
+          {
+            juara1: "$juara1",
+            juara2: "$juara2",
+            juara3: "$juara3",
+          },
+          pipeline:
+            [
+              {
+                "$match":
+                {
+                  "$expr":
+                  {
+                    "$in":
+                      [
+                        "$_id", ["$$juara1", "$$juara2", "$$juara3"]
+                      ]
+                  }
+                }
+              },
+              {
+                "$sort":
+                {
+                  type: 1
+                }
+              },
+              {
+                "$project":
+                {
+                  _id: 1,
+                  type: 1,
+                  badgeProfile: 1,
+                  badgeOther: 1
+                }
+              }
+            ]
+        }
+      },
+      {
+        "$lookup":
+        {
+          from: "areas",
+          as: "areas_data",
+          let:
+          {
+            listarea:
+            {
+              "$arrayElemAt":
+                [
+                  "$peserta.lokasiPengguna",
+                  0
+                ]
+            },
+          },
+          pipeline:
+            [
+              {
+                "$match":
+                {
+                  "$expr":
+                  {
+                    "$in":
+                      [
+                        "$_id", "$$listarea"
+                      ]
+                  }
+                }
+              },
+              {
+                "$group":
+                {
+                  _id: null,
+                  data:
+                  {
+                    "$push":
+                    {
+                      _id: "$_id",
+                      stateName: "$stateName"
+                    }
+                  }
+                }
+              }
+            ]
+        }
+      },
+      {
+        $set: {
+          "timenow":
+          {
+            "$dateToString": {
+              "format": "%Y-%m-%d %H:%M:%S",
+              "date": {
+                $add: [
+                  new Date(), 25200000
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        "$project":
+        {
+          _id: 1,
+          nameChallenge: 1,
+          jenisChallenge: 1,
+          jenisChallengeName: 1,
+          description: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          durasi: 1,
+          totaldurasi: 1,
+          startChallenge: 1,
+          endChallenge: 1,
+          startTime: 1,
+          endTime: 1,
+          jumlahSiklusdurasi: 1,
+          tampilStatusPengguna: 1,
+          objectChallenge: 1,
+          statusChallenge: 1,
+          statuscurrentChallenge:
+          {
+            "$switch":
+            {
+              branches:
                 [
                   {
-                        badgePemenang:
-                        {
+                    case:
+                    {
+                      "$and":
+                        [
+                          {
+                            "$gte": [
+                              "$timenow",
+                              "$startTime"
+                            ]
+                          },
+                          {
+                            "$lte": [
+                              "$timenow",
+                              "$endTime"
+                            ]
+                          },
+                        ]
+                    },
+                    then: "SEDANG BERJALAN"
+                  },
+                  {
+                    case:
+                    {
+                      "$and":
+                        [
+                          {
+                            "$gt": [
+                              "$timenow",
+                              "$endTime",
+                            ]
+                          },
+                        ]
+                    },
+                    then: "SELESAI"
+                  },
+                ],
+              default: "AKAN DATANG"
+            }
+          },
+          metrik: 1,
+          leaderBoard: 1,
+          ketentuanHadiah:
+            [
+              {
+                badgePemenang:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$ketentuanHadiah.badgePemenang",
+                      0
+                    ]
+                },
+                Height:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$ketentuanHadiah.Height",
+                      0
+                    ]
+                },
+                Width:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$ketentuanHadiah.Width",
+                      0
+                    ]
+                },
+                maxSize:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$ketentuanHadiah.maxSize",
+                      0
+                    ]
+                },
+                minSize:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$ketentuanHadiah.minSize",
+                      0
+                    ]
+                },
+                formatFile:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$ketentuanHadiah.formatFile",
+                      0
+                    ]
+                },
+                badge:
+                {
+                  "$cond":
+                  {
+                    if:
+                    {
+                      "$eq":
+                        [
+                          {
                             "$arrayElemAt":
-                            [
+                              [
                                 "$ketentuanHadiah.badgePemenang",
                                 0
-                            ]
-                        },
-                        Height: 
-                        {
-                            "$arrayElemAt":
-                            [
-                                "$ketentuanHadiah.Height",
-                                0
-                            ]
-                        },
-                        Width:
-                        {
-                            "$arrayElemAt":
-                            [
-                                "$ketentuanHadiah.Width",
-                                0
-                            ]
-                        },
-                        maxSize: 
-                        {
-                            "$arrayElemAt":
-                            [
-                                "$ketentuanHadiah.maxSize",
-                                0
-                            ]
-                        },
-                        minSize: 
-                        {
-                            "$arrayElemAt":
-                            [
-                                "$ketentuanHadiah.minSize",
-                                0
-                            ]
-                        },
-                        formatFile: 
-                        {
-                            "$arrayElemAt":
-                            [
-                                "$ketentuanHadiah.formatFile",
-                                0
-                            ]
-                        },
-                        badge:
+                              ]
+                          },
+                          false
+                        ]
+                    },
+                    then: [],
+                    else: [
+                      {
+                        juara1:
                         {
                           "$cond":
                           {
                             if:
                             {
                               "$eq":
-                              [
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$ketentuanHadiah.badgePemenang",
-                                        0
-                                    ]
-                                }, 
-                                false
-                              ]
+                                [
+                                  "$juara1", null
+                                ]
                             },
-                            then:[],
-                            else:[
-                              {
-                                juara1: 
-                                {
-                                    "$cond":
-                                    {
-                                        if:
-                                        {
-                                            "$eq":
-                                            [
-                                                "$juara1", null
-                                            ]
-                                        },
-                                        then:"$$REMOVE",
-                                        else:"$juara1"
-                                    }
-                                },
-                                juara1_general:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$badge_data.badgeOther",
-                                        0
-                                    ]
-                                },
-                                juara1_profile:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$badge_data.badgeProfile",
-                                        0
-                                    ]
-                                },
-                                juara2: 
-                                {
-                                    "$cond":
-                                    {
-                                        if:
-                                        {
-                                            "$eq":
-                                            [
-                                                "$juara2", null
-                                            ]
-                                        },
-                                        then:"$$REMOVE",
-                                        else:"$juara2"
-                                    }
-                                },
-                                juara2_general:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$badge_data.badgeOther",
-                                        1
-                                    ]
-                                },
-                                juara2_profile:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$badge_data.badgeProfile",
-                                        1
-                                    ]
-                                },
-                                juara3: 
-                                {
-                                    "$cond":
-                                    {
-                                        if:
-                                        {
-                                            "$eq":
-                                            [
-                                                "$juara3", null
-                                            ]
-                                        },
-                                        then:"$$REMOVE",
-                                        else:"$juara3"
-                                    }
-                                },
-                                juara3_general:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$badge_data.badgeOther",
-                                        2
-                                    ]
-                                },
-                                juara3_profile:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$badge_data.badgeProfile",
-                                        2
-                                    ]
-                                },
-                              },
-                            ]
+                            then: "$$REMOVE",
+                            else: "$juara1"
                           }
                         },
-                  }
-                ],
-                peserta:
-                [
-                    {
-                        tipeAkunTerverikasi: 
+                        juara1_general:
                         {
-                            "$arrayElemAt":
+                          "$arrayElemAt":
                             [
-                                "$peserta.tipeAkunTerverikasi", 0
+                              "$badge_data.badgeOther",
+                              0
                             ]
                         },
-                        statusTipeAkunTerverifikasi:
+                        juara1_profile:
                         {
-                            "$switch":
+                          "$arrayElemAt":
+                            [
+                              "$badge_data.badgeProfile",
+                              0
+                            ]
+                        },
+                        juara2:
+                        {
+                          "$cond":
+                          {
+                            if:
                             {
-                                branches:[
-                                    {
-                                        case:
-                                        {
-                                            "$eq":
-                                            [
-                                                {
-                                                    "$arrayElemAt":
-                                                    [
-                                                        "$peserta.tipeAkunTerverikasi", 0
-                                                    ]
-                                                },
-                                                "YES"
-                                            ]
-                                        },
-                                        then:"KYC"
-                                    },
-                                    {
-                                        case:
-                                        {
-                                            "$eq":
-                                            [
-                                                {
-                                                    "$arrayElemAt":
-                                                    [
-                                                        "$peserta.tipeAkunTerverikasi", 0
-                                                    ]
-                                                },
-                                                "NO"
-                                            ]
-                                        },
-                                        then:"Non E-KYC"
-                                    },
-                                ],
-                                default:"KYC & Non E-KYC"
-                            }
+                              "$eq":
+                                [
+                                  "$juara2", null
+                                ]
+                            },
+                            then: "$$REMOVE",
+                            else: "$juara2"
+                          }
                         },
-                        caraGabung: 
+                        juara2_general:
                         {
-                            "$arrayElemAt":
+                          "$arrayElemAt":
                             [
-                                "$peserta.caraGabung", 0
+                              "$badge_data.badgeOther",
+                              1
                             ]
                         },
-                        "jenisKelamin": 
+                        juara2_profile:
                         {
-                            "$arrayElemAt":
+                          "$arrayElemAt":
                             [
-                                "$peserta.jenisKelamin", 0
+                              "$badge_data.badgeProfile",
+                              1
                             ]
                         },
-                        // "lokasiPengguna": 
-                        // {
-                        //     "$arrayElemAt":
-                        //     [
-                        //         "$peserta.lokasiPengguna", 0
-                        //     ]
-                        // },
-                        "lokasiPengguna": 
+                        juara3:
                         {
-                            "$arrayElemAt":
+                          "$cond":
+                          {
+                            if:
+                            {
+                              "$eq":
+                                [
+                                  "$juara3", null
+                                ]
+                            },
+                            then: "$$REMOVE",
+                            else: "$juara3"
+                          }
+                        },
+                        juara3_general:
+                        {
+                          "$arrayElemAt":
                             [
-                                "$areas_data.data", 0
+                              "$badge_data.badgeOther",
+                              2
                             ]
                         },
-                        "rentangUmur": 
+                        juara3_profile:
                         {
-                            "$arrayElemAt":
+                          "$arrayElemAt":
                             [
-                                "$peserta.rentangUmur", 0
+                              "$badge_data.badgeProfile",
+                              2
                             ]
                         },
-                    }
-                ],
-                hadiahPemenang:1,
-                bannerSearch:1,
-                popUp:1,
-                notifikasiPush:1,
-                totalsession:
-                {
-                    "$last":"$session.session"
+                      },
+                    ]
+                  }
                 },
-                session:1
-            }
+              }
+            ],
+          peserta:
+            [
+              {
+                tipeAkunTerverikasi:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$peserta.tipeAkunTerverikasi", 0
+                    ]
+                },
+                statusTipeAkunTerverifikasi:
+                {
+                  "$switch":
+                  {
+                    branches: [
+                      {
+                        case:
+                        {
+                          "$eq":
+                            [
+                              {
+                                "$arrayElemAt":
+                                  [
+                                    "$peserta.tipeAkunTerverikasi", 0
+                                  ]
+                              },
+                              "YES"
+                            ]
+                        },
+                        then: "KYC"
+                      },
+                      {
+                        case:
+                        {
+                          "$eq":
+                            [
+                              {
+                                "$arrayElemAt":
+                                  [
+                                    "$peserta.tipeAkunTerverikasi", 0
+                                  ]
+                              },
+                              "NO"
+                            ]
+                        },
+                        then: "Non E-KYC"
+                      },
+                    ],
+                    default: "KYC & Non E-KYC"
+                  }
+                },
+                caraGabung:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$peserta.caraGabung", 0
+                    ]
+                },
+                "jenisKelamin":
+                {
+                  "$arrayElemAt":
+                    [
+                      "$peserta.jenisKelamin", 0
+                    ]
+                },
+                // "lokasiPengguna": 
+                // {
+                //     "$arrayElemAt":
+                //     [
+                //         "$peserta.lokasiPengguna", 0
+                //     ]
+                // },
+                "lokasiPengguna":
+                {
+                  "$arrayElemAt":
+                    [
+                      "$areas_data.data", 0
+                    ]
+                },
+                "rentangUmur":
+                {
+                  "$arrayElemAt":
+                    [
+                      "$peserta.rentangUmur", 0
+                    ]
+                },
+              }
+            ],
+          hadiahPemenang: 1,
+          bannerSearch: 1,
+          popUp: 1,
+          notifikasiPush: 1,
+          totalsession:
+          {
+            "$last": "$session.session"
+          },
+          session: 1
         }
+      }
     ]);
 
     return query[0];
@@ -1442,6 +1441,9 @@ export class ChallengeService {
         }
       },
       {
+        $unwind: "$InteraksiKonten"
+      },
+      {
         $project: {
           "statusChallenge": 1,
           "nameChallenge": 1,
@@ -1457,201 +1459,204 @@ export class ChallengeService {
           "Aktivitas": 1,
           "Interaksi": 1,
           "tagar": {
-            $arrayElemAt: ['$InteraksiKonten.tagar', 0]
+            $ifNull: ['$InteraksiKonten.tagar', []]
           },
-          "buatKonten": {
-            $arrayElemAt: ['$InteraksiKonten.buatKonten', 0]
+          "buatKonten":
+          {
+            $ifNull: ['$InteraksiKonten.buatKonten', []]
           },
           "suka": {
-            $arrayElemAt: ['$InteraksiKonten.suka', 0]
+            $ifNull: ['$InteraksiKonten.suka', []]
           },
           "tonton": {
-            $arrayElemAt: ['$InteraksiKonten.tonton', 0]
+            $ifNull: ['$InteraksiKonten.tonton', []]
           },
+
+
+
         }
-      },);
+      });
     var query = await this.ChallengeModel.aggregate(pipeline);
     return query;
   }
 
-  async checkuserstatusjoin(email:string, page:number, limit:number)
-  {
+  async checkuserstatusjoin(email: string, page: number, limit: number) {
     var mongo = require('mongoose');
     var konvertid = mongo.Types.ObjectId(email);
 
     var data = await this.ChallengeModel.aggregate([
-        {
-            "$set": {
-                timeEnd: {
-                    "$concat": [
-                        {
-                            "$dateToString": {
-                                "format": "%Y-%m-%d",
-                                "date": {
-                                    $toDate: "$endChallenge"
-                                }
-                            }
-                        },
-                        " ",
-                        "$endTime"
-                    ]
+      {
+        "$set": {
+          timeEnd: {
+            "$concat": [
+              {
+                "$dateToString": {
+                  "format": "%Y-%m-%d",
+                  "date": {
+                    $toDate: "$endChallenge"
+                  }
                 }
-            }
-        },
-                {
-            "$set": {
-                timeStart: {
-                    "$concat": [
-                        {
-                            "$dateToString": {
-                                "format": "%Y-%m-%d",
-                                "date": {
-                                    $toDate: "$startChallenge"
-                                }
-                            }
-                        },
-                        " ",
-                        "$startTime"
-                    ]
+              },
+              " ",
+              "$endTime"
+            ]
+          }
+        }
+      },
+      {
+        "$set": {
+          timeStart: {
+            "$concat": [
+              {
+                "$dateToString": {
+                  "format": "%Y-%m-%d",
+                  "date": {
+                    $toDate: "$startChallenge"
+                  }
                 }
+              },
+              " ",
+              "$startTime"
+            ]
+          }
+        }
+      },
+      {
+        $set: {
+          nowDate:
+          {
+            "$dateToString": {
+              "format": "%Y-%m-%d %H:%M:%S",
+              "date": {
+                $add: [new Date(), 25200000]
+              }
             }
-        },
-        {
-            $set: {
-                nowDate: 
-                {
-                    "$dateToString": {
-                        "format": "%Y-%m-%d %H:%M:%S",
-                        "date": {
-                            $add: [new Date(), 25200000]
-                        }
-                    }
-                }
-            }
-        },
-        {
-            $match: {
-                $and: [
-                    {
-                        $expr: 
-                        {
-                            $gte: ["$timeEnd", "$nowDate"]
-                        },
-                        
-                    },
-                    {
-                        "statusChallenge": "PUBLISH"
-                    }
-                ]
-            }
-        },
-        {
-            "$lookup": 
+          }
+        }
+      },
+      {
+        $match: {
+          $and: [
             {
-                from: "userChallenge",
-                let: 
+              $expr:
+              {
+                $gte: ["$timeEnd", "$nowDate"]
+              },
+
+            },
+            {
+              "statusChallenge": "PUBLISH"
+            }
+          ]
+        }
+      },
+      {
+        "$lookup":
+        {
+          from: "userChallenge",
+          let:
+          {
+            userchallenge_fk: "$_id"
+          },
+          as: 'userChallenges',
+          pipeline:
+            [
+              {
+                "$match":
                 {
-                    userchallenge_fk: "$_id"
-                },
-                as: 'userChallenges',
-                pipeline: 
-                [
-                    {
-                        "$match": 
+                  "$and":
+                    [
+                      {
+                        "$expr":
                         {
-                            "$and": 
+                          "$eq":
                             [
-                                {
-                                    "$expr": 
-                                    {
-                                        "$eq": 
-                                        [
-                                            "$$userchallenge_fk",
-                                            "$idChallenge"
-                                        ]
-                                    }
-                                },
-                                {
-                                    isActive: true
-                                },
-                                {
-                                    idUser: konvertid,
-                                    
-                                }
+                              "$$userchallenge_fk",
+                              "$idChallenge"
                             ]
                         }
-                    },
-                    
-                ]
-            },
-            
+                      },
+                      {
+                        isActive: true
+                      },
+                      {
+                        idUser: konvertid,
+
+                      }
+                    ]
+                }
+              },
+
+            ]
         },
-        {
-            $project: {
-                "_id": 1,
-                "nameChallenge": 1,
-                "jenisChallenge": 1,
-                "description": 1,
-                "createdAt": 1,
-                "updatedAt": 1,
-                "durasi": 1,
-                "startChallenge": 1,
-                "endChallenge": 1,
-                "startTime": 1,
-                "endTime": 1,
-                "jenisDurasi": 1,
-                "tampilStatusPengguna": 1,
-                "objectChallenge": 1,
-                "statusChallenge": 1,
-                searchBanner: {
-                    $arrayElemAt: ["$bannerSearch.image", 0]
-                },
-                bannerLeaderboard: {
-                    $arrayElemAt: ["$leaderBoard.bannerLeaderboard", 0]
-                },
-                statusJoined: 
-                {
-                    $cond: {
-                        if : {
-                            $gt: [{
-                                $size: '$userChallenges'
-                            }, 0]
-                        },
-                        then: "Partisipan",
-                        else : "Bukan Partisipan"
-                    }
-                },
-                statusFormalChallenge: 
-                {
-                    $cond: {
-                        if : {
-                            $and:[
-                                                            {
-                                                                    $gte: ["$timeEnd", "$nowDate"]
-                                                            },		
-                                                            {
-                                                                    $lte: ["$timeStart", "$nowDate"]
-                                                            },																													
-                                                    ]
-                        },
-                        then: "Berlangsung",
-                        else : "Akan Datang"
-                    }
-                },
+
+      },
+      {
+        $project: {
+          "_id": 1,
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "startChallenge": 1,
+          "endChallenge": 1,
+          "startTime": 1,
+          "endTime": 1,
+          "jenisDurasi": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "statusChallenge": 1,
+          searchBanner: {
+            $arrayElemAt: ["$bannerSearch.image", 0]
+          },
+          bannerLeaderboard: {
+            $arrayElemAt: ["$leaderBoard.bannerLeaderboard", 0]
+          },
+          statusJoined:
+          {
+            $cond: {
+              if: {
+                $gt: [{
+                  $size: '$userChallenges'
+                }, 0]
+              },
+              then: "Partisipan",
+              else: "Bukan Partisipan"
             }
-        },
-        {
-                    $sort:{
-                            statusChallenge:-1,
-                            timeStart:1,							
-                    }
-        },
-        {
-          $skip:page * limit
-        },
-        {
-          $limit:limit
+          },
+          statusFormalChallenge:
+          {
+            $cond: {
+              if: {
+                $and: [
+                  {
+                    $gte: ["$timeEnd", "$nowDate"]
+                  },
+                  {
+                    $lte: ["$timeStart", "$nowDate"]
+                  },
+                ]
+              },
+              then: "Berlangsung",
+              else: "Akan Datang"
+            }
+          },
         }
+      },
+      {
+        $sort: {
+          statusChallenge: -1,
+          timeStart: 1,
+        }
+      },
+      {
+        $skip: page * limit
+      },
+      {
+        $limit: limit
+      }
     ]);
 
     return data;
