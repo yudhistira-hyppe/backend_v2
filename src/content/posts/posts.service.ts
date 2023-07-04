@@ -7279,28 +7279,6 @@ export class PostsService {
 
     var pipeline = [];
 
-    pipeline.push(
-      {
-        "$unwind":
-        {
-          path:"$reportedUser"
-        }
-      },
-      {
-        "$match":
-        {
-          "$expr":
-          {
-            "$eq":
-            [
-              "$reportedUser.active",
-              true
-            ]
-          }
-        }
-      }
-    );
-
     if (startdate === undefined && enddate === undefined) {
       pipeline.push(
         {
@@ -7380,10 +7358,14 @@ export class PostsService {
 
             "report": [
               {
+                "$unwind":
+                {
+                  path:"$reportedUser"
+                }
+              },
+              {
                 $addFields: {
-                  createdAtReportLast: {
-                    $last: "$reportedUser.createdAt"
-                  },
+                  createdAtReportLast: "$reportedUser.createdAt",
                   reportStatusLast: {
                     $cond: {
                       if: {
@@ -7408,24 +7390,46 @@ export class PostsService {
                 }
               },
               {
-                $match: {
+                $match: 
+                {
+                  "$and":
+                  [
+                    {
+                      reportedUser: {
+                        $ne: null
+                      },
+                    },
+                    {
+                      "reportedUser.active":true
+                    },
+                    {
+                      active: true,
+                    },
+                    // {
+                    //   contentModeration: false
+                    // }
+                  ]
+                }
+              },
+              // {
+              //   $match: {
 
-                  reportedUser: {
-                    $ne: null
-                  },
-                  active: true,
-                  // contentModeration: false
-                }
-              },
-              {
-                $match: {
-                  reportedUser: {
-                    $ne: []
-                  },
-                  active: true,
-                  // contentModeration: false
-                }
-              },
+              //     reportedUser: {
+              //       $ne: null
+              //     },
+              //     active: true,
+              //     // contentModeration: false
+              //   }
+              // },
+              // {
+              //   $match: {
+              //     reportedUser: {
+              //       $ne: []
+              //     },
+              //     active: true,
+              //     // contentModeration: false
+              //   }
+              // },
 
               {
                 $group: {
@@ -7579,10 +7583,14 @@ export class PostsService {
 
             "report": [
               {
+                "$unwind":
+                {
+                  path:"$reportedUser"
+                }
+              },
+              {
                 $addFields: {
-                  createdAtReportLast: {
-                    $last: "$reportedUser.createdAt"
-                  },
+                  createdAtReportLast: "$reportedUser.createdAt",
                   reportStatusLast: {
                     $cond: {
                       if: {
@@ -7607,24 +7615,46 @@ export class PostsService {
                 }
               },
               {
-                $match: {
+                $match: 
+                {
+                  "$and":
+                  [
+                    {
+                      reportedUser: {
+                        $ne: null
+                      },
+                    },
+                    {
+                      "reportedUser.active":true
+                    },
+                    {
+                      active: true,
+                    },
+                    // {
+                    //   contentModeration: false
+                    // }
+                  ]
+                }
+              },
+              // {
+              //   $match: {
 
-                  reportedUser: {
-                    $ne: null
-                  },
-                  active: true,
-                  contentModeration: false
-                }
-              },
-              {
-                $match: {
-                  reportedUser: {
-                    $ne: []
-                  },
-                  active: true,
-                  contentModeration: false
-                }
-              },
+              //     reportedUser: {
+              //       $ne: null
+              //     },
+              //     active: true,
+              //     contentModeration: false
+              //   }
+              // },
+              // {
+              //   $match: {
+              //     reportedUser: {
+              //       $ne: []
+              //     },
+              //     active: true,
+              //     contentModeration: false
+              //   }
+              // },
               { $match: { createdAtReportLast: { "$gte": startdate, "$lte": dateend } } },
               {
                 $group: {
