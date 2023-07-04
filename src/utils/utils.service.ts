@@ -544,27 +544,22 @@ export class UtilsService {
     data_send['body'] = body_send;
     for (var i = 0; i < datadevice.length; i++) {
       this.logger.log('sendFcmCMod >>> send: title-> ' + title_send + ' body: ' + JSON.stringify(body_send));
-      var notification = null
+      var notification_ = null
       if (profile_regsrc == "android") {
-        notification = {
+        notification_ = {
           data: data_send,
         }
-      } else if (profile_regsrc == "iOS") {
-        notification = {
+      } else if (profile_regsrc.toLowerCase() == "ios") {
+        console.log("ios");
+        notification_ = {
           notification: {
             title: data_send['title'],
-            body: data_send['body']
-          }
-        };
-      } else if (profile_regsrc == "ios") {
-        notification = {
-          notification: {
-            title: data_send['title'],
-            body: data_send['body']
+            body: JSON.stringify(data_send)
           }
         };
       } else {
-        notification = {
+        console.log("android");
+        notification_ = {
           data: data_send,
         }
       }
@@ -575,7 +570,7 @@ export class UtilsService {
       //   // },
       //   data: data_send,
       // }
-      await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, notification_);
       device_user.push(datadevice[i].deviceID)
     }
 
@@ -628,6 +623,7 @@ export class UtilsService {
     var date = splitdt[0].replace("T", " ");
     var mediaprofilepicts = null;
     var bodypayload = null;
+    var regSrc = null;
     let createNotificationsDto = new CreateNotificationsDto();
 
     const datauserbasicsService = await this.userbasicsService.findOne(
@@ -712,55 +708,200 @@ export class UtilsService {
         pid = "";
       }
 
-
+      regSrc = user_userAuth.regSrc;
       if (langIso === "id") {
 
-        payload = {
+        // payload = {
 
-          // notification: {
-          //   title: titlein,
-          //   body: bodyin,
-          //   tag: "background"
-          // },
-          data: {
+        //   // notification: {
+        //   //   title: titlein,
+        //   //   body: bodyin,
+        //   //   tag: "background"
+        //   // },
+        //   data: {
 
-            title: titlein,
-            body: bodyin,
-            postID: pid,
-            postType: postType
-          }
-        };
+        //     title: titlein,
+        //     body: bodyin,
+        //     postID: pid,
+        //     postType: postType
+        //   }
+        // };
+
+
+
+        if (regSrc == "android") {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: pid,
+              postType: postType
+            }
+          };
+        }
+        else if (regSrc == "iOS") {
+          payload = {
+            "notification": {
+              "title": titlein,
+              "body": JSON.stringify({
+                "title": titlein,
+                "body": bodyin,
+                "postID": pid,
+                "postType": postType
+              })
+            }
+          };
+        }
+        else if (regSrc == "ios") {
+          payload = {
+            "notification": {
+              "title": titlein,
+              "body": JSON.stringify({
+                "title": titlein,
+                "body": bodyin,
+                "postID": pid,
+                "postType": postType
+              })
+            }
+          };
+        } else {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: pid,
+              postType: postType
+            }
+          };
+        }
+
       }
       else if (langIso === "en") {
-        payload = {
+        // payload = {
 
-          // notification: {
-          //   title: titleen,
-          //   body: bodyen,
-          //   tag: "background"
-          // },
-          data: {
-            title: titleen,
-            body: bodyen,
-            postID: pid,
-            postType: postType
-          }
-        };
+        //   // notification: {
+        //   //   title: titleen,
+        //   //   body: bodyen,
+        //   //   tag: "background"
+        //   // },
+        //   data: {
+        //     title: titleen,
+        //     body: bodyen,
+        //     postID: pid,
+        //     postType: postType
+        //   }
+        // };
+        if (regSrc == "android") {
+          payload = {
+            data: {
+
+              title: titleen,
+              body: bodyen,
+              postID: pid,
+              postType: postType
+            }
+          };
+        }
+        else if (regSrc == "iOS") {
+          payload = {
+            "notification": {
+              "title": titleen,
+              "body": JSON.stringify({
+                "title": titleen,
+                "body": bodyen,
+                "postID": pid,
+                "postType": postType
+              })
+            }
+          };
+        }
+        else if (regSrc == "ios") {
+          payload = {
+            "notification": {
+              "title": titleen,
+              "body": JSON.stringify({
+                "title": titleen,
+                "body": bodyen,
+                "postID": pid,
+                "postType": postType
+              })
+            }
+          };
+        } else {
+          payload = {
+            data: {
+
+              title: titleen,
+              body: bodyen,
+              postID: pid,
+              postType: postType
+            }
+          };
+        }
       } else {
-        payload = {
+        // payload = {
 
-          // notification: {
-          //   title: titlein,
-          //   body: bodyin,
-          //   tag: "background"
-          // },
-          data: {
-            title: titlein,
-            body: bodyin,
-            postID: pid,
-            postType: postType
-          }
-        };
+        //   // notification: {
+        //   //   title: titlein,
+        //   //   body: bodyin,
+        //   //   tag: "background"
+        //   // },
+        //   data: {
+        //     title: titlein,
+        //     body: bodyin,
+        //     postID: pid,
+        //     postType: postType
+        //   }
+        // };
+        if (regSrc == "android") {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: pid,
+              postType: postType
+            }
+          };
+        }
+        else if (regSrc == "iOS") {
+          payload = {
+            "notification": {
+              "title": titlein,
+              "body": JSON.stringify({
+                "title": titlein,
+                "body": bodyin,
+                "postID": pid,
+                "postType": postType
+              })
+            }
+          };
+        }
+        else if (regSrc == "ios") {
+          payload = {
+            "notification": {
+              "title": titlein,
+              "body": JSON.stringify({
+                "title": titlein,
+                "body": bodyin,
+                "postID": pid,
+                "postType": postType
+              })
+            }
+          };
+        } else {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: pid,
+              postType: postType
+            }
+          };
+        }
       }
 
 
@@ -1028,7 +1169,7 @@ export class UtilsService {
 
   async getregSrc(email: string) {
     var regSrc = (await this.userauthsService.findOne(email)).regSrc;
-    if (regSrc == undefined || regSrc == null){
+    if (regSrc == undefined || regSrc == null) {
       regSrc = "android";
     }
     return regSrc;
@@ -2048,11 +2189,12 @@ export class UtilsService {
         payload = {
           "notification": {
             "title": titlein,
-            "body": {
+            "body": JSON.stringify({
+              "title": titlein,
               "body": bodyin,
               "postID": postID_,
               "postType": postType
-            }
+            })
           }
         };
       }
@@ -2060,11 +2202,12 @@ export class UtilsService {
         payload = {
           "notification": {
             "title": titlein,
-            "body": {
+            "body": JSON.stringify({
+              "title": titlein,
               "body": bodyin,
               "postID": postID_,
               "postType": postType
-            }
+            })
           }
         };
       } else {
