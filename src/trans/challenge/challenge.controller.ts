@@ -93,13 +93,13 @@ export class ChallengeController {
         var setreferal = null;
         var setikuti = null;
   
-        if((request_json["akun_referal"] == undefined && request_json["akun_referal"] == null) || (request_json["akun_ikuti"] == undefined && request_json["akun_ikuti"] == null))
+        setreferal = (request_json["akun_referal"] == undefined && request_json["akun_referal"] == null ? 0 : Number(request_json['akun_referal']));
+        setikuti = (request_json["akun_ikuti"] == undefined && request_json["akun_ikuti"] == null ? 0 : Number(request_json['akun_ikuti']));
+
+        if(setreferal == 0 && setikuti == 0)
         {
           throw new BadRequestException("Unabled to proceed, referral score or following score is required");
         }
-
-        setreferal = (request_json["akun_referal"] == undefined && request_json["akun_referal"] == null ? 0 : Number(request_json['akun_referal']));
-        setikuti = (request_json["akun_ikuti"] == undefined && request_json["akun_ikuti"] == null ? 0 : Number(request_json['akun_ikuti']));
   
         setmetrik = {
           "Aktivitas": true,
@@ -674,13 +674,13 @@ export class ChallengeController {
         var setreferal = null;
         var setikuti = null;
   
-        if((request_json["akun_referal"] == undefined && request_json["akun_referal"] == null) || (request_json["akun_ikuti"] == undefined && request_json["akun_ikuti"] == null))
+        setreferal = (request_json["akun_referal"] == undefined && request_json["akun_referal"] == null ? 0 : Number(request_json['akun_referal']));
+        setikuti = (request_json["akun_ikuti"] == undefined && request_json["akun_ikuti"] == null ? 0 : Number(request_json['akun_ikuti']));
+
+        if(setreferal == 0 && setikuti == 0)
         {
           throw new BadRequestException("Unabled to proceed, referral score or following score is required");
         }
-
-        setreferal = (request_json["akun_referal"] == undefined && request_json["akun_referal"] == null ? 0 : Number(request_json['akun_referal']));
-        setikuti = (request_json["akun_ikuti"] == undefined && request_json["akun_ikuti"] == null ? 0 : Number(request_json['akun_ikuti']));
   
         setmetrik = {
           "Aktivitas": true,

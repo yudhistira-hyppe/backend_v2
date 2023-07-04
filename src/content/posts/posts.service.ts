@@ -7279,6 +7279,28 @@ export class PostsService {
 
     var pipeline = [];
 
+    pipeline.push(
+      {
+        "$unwind":
+        {
+          path:"$reportedUser"
+        }
+      },
+      {
+        "$match":
+        {
+          "$expr":
+          {
+            "$eq":
+            [
+              "$reportedUser.active",
+              true
+            ]
+          }
+        }
+      }
+    );
+
     if (startdate === undefined && enddate === undefined) {
       pipeline.push(
         {
