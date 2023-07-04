@@ -20,6 +20,8 @@ export class LoginRequest {
     imei: string;
     @IsString()
     lang: string;
+    @IsString()
+    regSrc: string;
 } 
 
 export class RefreshTokenRequest {

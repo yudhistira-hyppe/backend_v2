@@ -103,6 +103,14 @@ export class UserauthsService {
     );
   }
 
+  async update2(_id: string, CreateUserauthDto_: CreateUserauthDto) {
+    let data = await this.userauthModel.findByIdAndUpdate(
+      _id,
+      CreateUserauthDto_,
+      { new: true });
+    return data;
+  }
+
   async findOneByEmail(email: String): Promise<Userauth> {
     return this.userauthModel.findOne({ email: email }).exec();
   }
