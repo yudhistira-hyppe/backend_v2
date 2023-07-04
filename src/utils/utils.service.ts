@@ -917,54 +917,47 @@ export class UtilsService {
       }
 
 
+      var option = {
+        priority: "high",
+        contentAvailable: true
+      }
       if (langIso === "id") {
 
         payload = {
-
-          // notification: {
-          //   title: titlein,
-          //   body: bodyin,
-          //   tag: "background"
-          // },
           data: {
+
             title: titlein,
             body: bodyin,
             postID: pid,
             postType: postType
           }
-        };
+        }
+
+
       }
       else if (langIso === "en") {
-        payload = {
 
-          // notification: {
-          //   title: titleen,
-          //   body: bodyen,
-          //   tag: "background"
-          // },
+        payload = {
           data: {
+
             title: titleen,
             body: bodyen,
             postID: pid,
             postType: postType
           }
-        };
+        }
       } else {
         payload = {
-
-          // notification: {
-          //   title: titlein,
-          //   body: bodyin,
-          //   tag: "background"
-          // },
           data: {
+
             title: titlein,
             body: bodyin,
             postID: pid,
             postType: postType
           }
-        };
+        }
       }
+
 
 
 
@@ -976,7 +969,7 @@ export class UtilsService {
       datadevice = await this.userdevicesService.findActive(emailuserbasic);
       for (var i = 0; i < datadevice.length; i++) {
         var deviceid = datadevice[i].deviceID;
-        await admin.messaging().sendToDevice(deviceid, payload);
+        await admin.messaging().sendToDevice(deviceid, payload, option);
 
         arraydevice.push(deviceid);
 
