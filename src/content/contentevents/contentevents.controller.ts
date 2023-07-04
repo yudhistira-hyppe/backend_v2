@@ -1039,8 +1039,7 @@ export class ContenteventsController {
       }
 
       this.checkFriendbasedString(email_user, email_receiverParty, "create");
-    }
-    else if (eventType == "VIEW") {
+    } else if (eventType == "VIEW") {
 
       if (email_user !== email_receiverParty) {
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW Email Not Same >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify({ postID: request.body.postID, email_user: email_user, email_receiverParty: email_receiverParty }));
@@ -1821,6 +1820,7 @@ export class ContenteventsController {
     }
 
   }
+
 
   async userChallengeView(iduser: string, idref: string, nametable: string, action: string, postID: string) {
     const mongoose = require('mongoose');
