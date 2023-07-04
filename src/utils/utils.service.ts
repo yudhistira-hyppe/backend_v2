@@ -102,7 +102,17 @@ export class UtilsService {
     return sendEmail_;
   }
 
-  async getImageMode(width: number, height: number) {
+  async generateNumberVoucher() {
+      const getRandomId = (min = 0, max = 500000) => {
+          min = Math.ceil(min);
+          max = Math.floor(max);
+          const num = Math.floor(Math.random() * (max - min + 1)) + min;
+          return num.toString().padStart(6, "0")
+      };
+      return getRandomId();
+  }
+
+  async getImageMode(width: number, height: number){
     var mode = "LANDSCAPE";
     if (width > height) {
       mode = "LANDSCAPE";
@@ -344,31 +354,38 @@ export class UtilsService {
     data_send['body'] = body_send;
     if (typeTemplate != "REACTION") {
       for (var i = 0; i < datadevice.length; i++) {
-        var notification = null
-        if (profile_regsrc == "android") {
-          notification = {
-            data: data_send,
-          }
-        } else if (profile_regsrc == "iOS") {
-          notification = {
-            notification: {
-              title: data_send['title'],
-              body: data_send['body']
-            }
-          };
-        } else if (profile_regsrc == "ios") {
-          notification = {
-            notification: {
-              title: data_send['title'],
-              body: data_send['body']
-            }
-          };
-        } else {
-          notification = {
-            data: data_send,
-          }
+        var notification = {
+          data: data_send,
         }
-        await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
+        var option ={
+          priority: "high",
+          contentAvailable: true
+        }
+        
+        // if (profile_regsrc == "android") {
+        //   notification = {
+        //     data: data_send,
+        //   }
+        // } else if (profile_regsrc == "iOS") {
+        //   notification = {
+        //     notification: {
+        //       title: data_send['title'],
+        //       body: data_send['body']
+        //     }
+        //   };
+        // } else if (profile_regsrc == "ios") {
+        //   notification = {
+        //     notification: {
+        //       title: data_send['title'],
+        //       body: data_send['body']
+        //     }
+        //   };
+        // } else {
+        //   notification = {
+        //     data: data_send,
+        //   }
+        // }
+        await admin.messaging().sendToDevice(datadevice[i].deviceID, notification, option);
         device_user.push(datadevice[i].deviceID)
       }
     }
@@ -544,33 +561,32 @@ export class UtilsService {
     data_send['body'] = body_send;
     for (var i = 0; i < datadevice.length; i++) {
       this.logger.log('sendFcmCMod >>> send: title-> ' + title_send + ' body: ' + JSON.stringify(body_send));
-      var notification_ = null
-      if (profile_regsrc == "android") {
-        notification_ = {
-          data: data_send,
-        }
-      } else if (profile_regsrc.toLowerCase() == "ios") {
-        console.log("ios");
-        notification_ = {
-          notification: {
-            title: data_send['title'],
-            body: JSON.stringify(data_send)
-          }
-        };
-      } else {
-        console.log("android");
-        notification_ = {
-          data: data_send,
-        }
+      var notification = {
+        data: data_send,
       }
-      // var notification = {
-      //   // notification: {
-      //   //   title: title_send,
-      //   //   body: body_send,
-      //   // },
-      //   data: data_send,
+      var option = {
+        priority: "high",
+        contentAvailable: true
+      }
+      // if (profile_regsrc == "android") {
+      //   notification_ = {
+      //     data: data_send,
+      //   }
+      // } else if (profile_regsrc.toLowerCase() == "ios") {
+      //   console.log("ios");
+      //   notification_ = {
+      //     notification: {
+      //       title: data_send['title'],
+      //       body: JSON.stringify(data_send)
+      //     }
+      //   };
+      // } else {
+      //   console.log("android");
+      //   notification_ = {
+      //     data: data_send,
+      //   }
       // }
-      await admin.messaging().sendToDevice(datadevice[i].deviceID, notification_);
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, notification, option);
       device_user.push(datadevice[i].deviceID)
     }
 
@@ -1911,6 +1927,35 @@ export class UtilsService {
     return TransactionNumber;
   }
 
+  async generateCampaignID(No: number, typeAdsID: string) {
+    var noCampaignID = "";
+    var date_current = await this.getDateTimeString();
+    var tahun_nember = date_current.substring(0, 4);
+    noCampaignID += tahun_nember;
+    if (typeAdsID == "62e238a4f63d0000510026b3") {
+      noCampaignID += "-001";
+    } else if (typeAdsID == "62f0b435118731ecc0f45772") {
+      noCampaignID += "-002";
+    } else if (typeAdsID == "632a806ad2770000fd007a62") {
+      noCampaignID += "-003";
+    }
+
+    if ((No.toString().length) == 6) {
+      noCampaignID += "-"+No;
+    } else if ((No.toString().length) == 5) {
+      noCampaignID += "-0" + No;
+    } else if ((No.toString().length) == 4) {
+      noCampaignID += "-00" + No;
+    } else if ((No.toString().length) == 3) {
+      noCampaignID += "-000" + No;
+    } else if ((No.toString().length) == 2) {
+      noCampaignID += "-0000" + No;
+    } else if ((No.toString().length) == 1) {
+      noCampaignID += "-00000" + No;
+    }
+    return noCampaignID;
+  }
+
   async formatMoney(num: number) {
     var p = num.toFixed(2).split(".");
     return "Rp " + p[0].split("").reverse().reduce(function (acc, num, i, orig) {
@@ -2084,9 +2129,26 @@ export class UtilsService {
       }
 
     }
+  }
 
-
-
+  async validateParam(nameParam:string, value: any, type: string): Promise<string> {
+    if (value != undefined) {
+      if ((typeof value) != type) {
+        return "Unabled to proceed param " + nameParam + " is required " + type;
+      } else {
+        if (type=="string"){
+          if (value.length == 0) {
+            return "Unabled to proceed param " + nameParam + " is required";
+          } else {
+            return "";
+          }
+        } else {
+          return "";
+        }
+      }
+    } else {
+      return "Unabled to proceed param " + nameParam + " is required";
+    }
   }
 
   async sendFcmMassal(email: string, titlein: string, bodyin: any, eventType: string, event: string, postID_?: string, postType?: string) {

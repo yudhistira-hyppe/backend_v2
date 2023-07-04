@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
 import * as admin from 'firebase-admin';
 import { ServiceAccount } from "firebase-admin";
+import { ValidationPipe } from '@nestjs/common';
 
 // const httpsOptions = {
 //   key: fs.readFileSync(process.env.PRIVATE_KEY),
@@ -13,6 +14,7 @@ import { ServiceAccount } from "firebase-admin";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  //app.useGlobalPipes(new ValidationPipe());
   // const app = await NestFactory.create(AppModule, {
   //   httpsOptions,
   // });

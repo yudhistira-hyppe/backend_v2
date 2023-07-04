@@ -39,4 +39,5 @@ export class CreateUserauthDto {
   }
   loginSource: String;
   uuid: String;
+  loginSrc: String;
 }

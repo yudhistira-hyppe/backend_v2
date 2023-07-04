@@ -5,10 +5,13 @@ import mongoose, { Model, Types } from 'mongoose';
 import { CreateUserAdsDto } from './dto/create-userads.dto';
 import { UserAds, UserAdsDocument } from './schemas/userads.schema';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class UserAdsService {
     constructor(@InjectModel(UserAds.name, 'SERVER_FULL')
-    private readonly userAdsModel: Model<UserAdsDocument>, private readonly mediaprofilepictsService: MediaprofilepictsService,
+    private readonly userAdsModel: Model<UserAdsDocument>, 
+        private readonly mediaprofilepictsService: MediaprofilepictsService,
+        private readonly configService: ConfigService,
     ) { }
 
     async create(CreateUserAdsDto: CreateUserAdsDto): Promise<UserAds> {
@@ -2990,6 +2993,5079 @@ export class UserAdsService {
         // console.log(JSON.stringify(pipeline));
 
         var query = await this.userAdsModel.aggregate(pipeline);
+        return query;
+    }
+
+    async campaignDashboard(start_date: any, end_date: any){
+        var pipelineMatch = [];
+        if (start_date != null && end_date != null) {
+            start_date = new Date(start_date);
+            end_date = new Date(end_date);
+            end_date.setDate(end_date.getDate() + 1);
+            pipelineMatch.push({
+                $match:
+                {
+                    $expr: {
+                        $and: [
+                            { $gte: ["$timestamp", start_date.toISOString()] },
+                            { $lte: ["$timestamp", end_date.toISOString()] }
+                        ]
+                    }
+                },
+            })
+        }
+        pipelineMatch.push(
+        {
+            $project:{
+                status: {
+                    $switch: {
+                        branches: [
+                            {
+                                case: { $eq: ['$status', 'DRAFT'] },
+                                then: 'DRAFT',
+                            },
+                            {
+                                case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
+                                then: 'IN_ACTIVE',
+                            },
+                            {
+                                case: { $or: [{ $eq: ['$status', 'APPROVE'] }, { $eq: ['$status', 'ACTIVE'] }] },
+                                then: 'ACTIVE',
+                            },
+                            {
+                                case: { $eq: ['$status', 'UNDER_REVIEW'] },
+                                then: 'UNDER_REVIEW',
+                            },
+
+                        ],
+                        default: "OTHER",
+                    },
+                }
+            }
+        },
+        {
+            $facet:
+            {
+                status: [
+                    {
+                        $group: {
+                            _id: "$status",
+                            status: { $first: '$status' },
+                            count: { $sum: 1 }
+                        }
+                    }
+                ],
+            }
+        });
+
+        //------------FACET VIEWED------------
+        var viewedFacet = [];
+        if (start_date != undefined && end_date != undefined) {
+            viewedFacet.push({
+                $match: {
+                    viewTime: {
+                        $elemMatch: {
+                            $gte: start_date.toISOString(),
+                            $lte: end_date.toISOString()
+                        }
+                    }
+                }
+            });
+        }
+        viewedFacet.push({
+            $unwind:
+            {
+                path: "$viewTime",
+                includeArrayIndex: 'viewTime_index',
+            }
+        });
+        if (start_date != undefined && end_date != undefined) {
+            viewedFacet.push({
+                $match: {
+                    viewTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        viewedFacet.push({
+            $group: {
+                _id: "$userID",
+                userIDCount: { "$sum": 1 }
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                reach: { "$sum": 1 },
+                impresi: { "$sum": "$userIDCount" }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                reach: 1,
+                impresi: 1
+            }
+        });
+
+        //------------FACET REACH------------
+        var reachFacet = [];
+        if (start_date != undefined && end_date != undefined) {
+            reachFacet.push({
+                $match: {
+                    viewTime: {
+                        $elemMatch: {
+                            $gte: start_date.toISOString(),
+                            $lte: end_date.toISOString()
+                        }
+                    }
+                }
+            });
+        }
+        reachFacet.push({
+            $unwind:
+            {
+                path: "$viewTime",
+                includeArrayIndex: 'viewTime_index',
+            }
+        });
+        if (start_date != undefined && end_date != undefined) {
+            reachFacet.push({
+                $match: {
+                    viewTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        reachFacet.push({
+            $project: {
+                userID: 1,
+                viewTime: {
+                    $substr:
+                        [
+                            "$viewTime", 0, 10
+                        ]
+                }
+            }
+        },
+            {
+                $group: {
+                    _id: {
+                        "viewTime": "$viewTime",
+                        "userID": "$userID"
+                    },
+                    "userIDCount": { "$sum": 1 }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id.viewTime",
+                    viewTime: {
+                        $push: {
+                            "userID": "$_id.userID",
+                            "count": "$userIDCount"
+                        },
+                    },
+                    count: { "$sum": "$userIDCount" }
+                }
+            },
+            {
+                $project: {
+                    _id: "$_id",
+                    reachView: { $size: "$viewTime" }
+                }
+            });
+
+        //------------FACET IMPRESI------------
+        var impresiFacet = [];
+        if (start_date != undefined && end_date != undefined) {
+            impresiFacet.push({
+                $match: {
+                    viewTime: {
+                        $elemMatch: {
+                            $gte: start_date.toISOString(),
+                            $lte: end_date.toISOString()
+                        }
+                    }
+                }
+            },);
+        }
+        impresiFacet.push({
+            $unwind:
+            {
+                path: "$viewTime",
+                includeArrayIndex: 'viewTime_index',
+            }
+        });
+        if (start_date != undefined && end_date != undefined) {
+            impresiFacet.push({
+                $match: {
+                    viewTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        impresiFacet.push({
+            $project: {
+                viewTime: {
+                    $substr:
+                        [
+                            "$viewTime", 0, 10
+                        ]
+                }
+            }
+        },
+        {
+            $group:
+            {
+                _id: "$viewTime",
+                impresiView:
+                {
+                    "$sum": 1
+                }
+            }
+            });
+
+        //------------FACET CTA------------
+        var CTAFacet = [];
+        if (start_date != undefined && end_date != undefined) {
+            CTAFacet.push({
+                $match: {
+                    clickTime: {
+                        $elemMatch: {
+                            $gte: start_date.toISOString(),
+                            $lte: end_date.toISOString()
+                        }
+                    }
+                }
+            });
+        }
+        CTAFacet.push({
+            $unwind:
+            {
+                path: "$clickTime",
+                includeArrayIndex: 'clickTime_index',
+            }
+        });
+        if (start_date != undefined && end_date != undefined) {
+            CTAFacet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        CTAFacet.push({
+            $project: {
+                clickTime: {
+                    $substr:
+                        [
+                            "$clickTime", 0, 10
+                        ]
+                }
+            }
+        },
+        {
+            $group:
+            {
+                _id: "$clickTime",
+                CTACount:
+                {
+                    "$sum": 1
+                }
+            }
+            });
+
+        //------------FACET CTA COUNT------------
+        var CTACountFacet = [];
+        if (start_date != undefined && end_date != undefined) {
+            CTACountFacet.push({
+                $match: {
+                    clickTime: {
+                        $elemMatch: {
+                            $gte: start_date.toISOString(),
+                            $lte: end_date.toISOString()
+                        }
+                    }
+                }
+            });
+        }
+        CTACountFacet.push({
+            $unwind:
+            {
+                path: "$clickTime",
+                includeArrayIndex: 'clickTime_index',
+            }
+        });
+        if (start_date != undefined && end_date != undefined) {
+            CTACountFacet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        CTACountFacet.push({
+            $project: {
+                clickTime: {
+                    $substr:
+                        [
+                            "$clickTime", 0, 10
+                        ]
+                }
+            }
+        },
+            {
+                $group:
+                {
+                    _id: "$clickTime",
+                    CTACount:
+                    {
+                        "$sum": 1
+                    }
+                }
+            },
+            {
+                $group:
+                {
+                    _id: null,
+                    CTACount:
+                    {
+                        "$sum": "$CTACount"
+                    }
+                }
+            });
+
+        //------------FACET VIEWTIME------------
+        var viewTimeFacet = [];
+        if (start_date != undefined && end_date != undefined) {
+            viewTimeFacet.push({
+                $match: {
+                    viewTime: {
+                        $elemMatch: {
+                            $gte: start_date.toISOString(),
+                            $lte: end_date.toISOString()
+                        }
+                    }
+                }
+            });
+        }
+        viewTimeFacet.push(
+            {
+                $lookup:
+                {
+                    from: "ads",
+                    as: "adsTable",
+                    let:
+                    {
+                        type_fk: "$adsID"
+                    },
+                    pipeline:
+                        [
+                            {
+                                $match:
+                                {
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$_id",
+                                                "$$type_fk"
+                                            ]
+                                    }
+                                },
+                            },
+                            {
+                                $lookup: {
+                                    from: "adstypes",
+                                    localField: "typeAdsID",
+                                    foreignField: "_id",
+                                    as: "adstypes_data"
+                                }
+                            },
+                            {
+                                $project:
+                                {
+                                    CPV: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
+                                            },
+                                            "in": "$$tmp.CPV"
+                                        }
+                                    },
+                                }
+                            }
+                        ]
+                }
+            }, 
+            {
+            $unwind:
+            {
+                    path: "$viewTime",
+                    includeArrayIndex: 'viewTime_index',
+            }
+        });
+        if (start_date != undefined && end_date != undefined) {
+            viewTimeFacet.push({
+                $match: {
+                    viewTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        viewTimeFacet.push(
+            {
+                $project: {
+                    CPV: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                            },
+                            "in": "$$tmp.CPV"
+                        }
+                    },
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    row: { $sum: 1 },
+                    count: { $sum: "$CPV" }
+                }
+            });
+
+        //------------FACET CLICKTIME------------
+        var clickTimeFacet = [];
+        if (start_date != undefined && end_date != undefined) {
+            clickTimeFacet.push({
+                $match: {
+                    clickTime: {
+                        $elemMatch: {
+                            $gte: start_date.toISOString(),
+                            $lte: end_date.toISOString()
+                        }
+                    }
+                }
+            });
+        }
+        clickTimeFacet.push(
+            {
+                $lookup:
+                {
+                    from: "ads",
+                    as: "adsTable",
+                    let:
+                    {
+                        type_fk: "$adsID"
+                    },
+                    pipeline:
+                        [
+                            {
+                                $match:
+                                {
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$_id",
+                                                "$$type_fk"
+                                            ]
+                                    }
+                                },
+                            },
+                            {
+                                $lookup: {
+                                    from: "adstypes",
+                                    localField: "typeAdsID",
+                                    foreignField: "_id",
+                                    as: "adstypes_data"
+                                }
+                            },
+                            {
+                                $project:
+                                {
+                                    CPA: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
+                                            },
+                                            "in": "$$tmp.CPA"
+                                        }
+                                    },
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            });
+        if (start_date != undefined && end_date != undefined) {
+            clickTimeFacet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        clickTimeFacet.push(
+            {
+                $project: {
+                    CPA: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                            },
+                            "in": "$$tmp.CPA"
+                        }
+                    },
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    row: { $sum: 1 },
+                    count: { $sum: "$CPA" }
+                }
+            });
+
+        let query = await this.userAdsModel.aggregate([
+            {
+                $addFields: {
+                    dateStart: start_date,
+                    dateEnd: end_date
+                }
+            },
+            {
+                $lookup:
+                {
+                    from: "ads",
+                    as: "ads_data",
+                    let:
+                    {
+                        dateStart_: "$dateStart",
+                        dateEnd_: "$dateEnd"
+                    },
+                    pipeline: pipelineMatch
+                }
+            },
+            {
+                $facet: 
+                {
+                    viewed: viewedFacet,
+                    reach: reachFacet,
+                    impresi: impresiFacet,
+                    CTA: CTAFacet,
+                    CTACount: CTACountFacet,
+                    viewTime: viewTimeFacet,
+                    clickTime: clickTimeFacet,
+                    status: [
+                        {
+                            $group: {
+                                _id: "$ads_data",
+                                count: { $sum: 1 }
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: null,
+                                data: {
+                                    "$first": "$_id"
+                                },
+                            }
+                        },
+                    ],
+                }
+            },
+            {
+                $project:{
+                    statusIklan: {
+                        "$arrayElemAt": [{
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$status", 0] },
+                                },
+                                "in": "$$tmp.data.status"
+                            }
+                        }, 0]
+                    },
+                    saldoKredit: {
+                        $sum: [
+                            {
+                                $convert: {
+                                    input: { "$arrayElemAt": ['$viewTime.count', 0] },
+                                    to: "int",
+                                    onError: 0,
+                                    onNull: 0
+                                }
+                            },
+                            {
+                                $convert: {
+                                    input: { "$arrayElemAt": ['$clickTime.count', 0] },
+                                    to: "int",
+                                    onError: 0,
+                                    onNull: 0
+                                }
+                            }
+                        ] 
+                    },
+                    Totalimpresi: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$viewed", 0] },
+                            },
+                            "in": "$$tmp.impresi"
+                        }
+                    },
+                    Totalreach: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$viewed", 0] },
+                            },
+                            "in": "$$tmp.reach"
+                        }
+                    },
+                    TotalCTA: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$CTACount", 0] },
+                            },
+                            "in": "$$tmp.CTACount"
+                        }
+                    },
+                    impresi: 1,
+                    reach: 1,
+                    CTA: 1
+                }
+            }
+        ]);
+        return query;
+    }
+
+    async campaignDetailSummary(adsId: string, start_date: any, end_date: any) {
+        var andMatch = [];
+        if (start_date != null && end_date != null) {
+            start_date = new Date(start_date);
+            end_date = new Date(end_date);
+            end_date.setDate(end_date.getDate() + 1);
+            andMatch.push({ $gte: ["$timestamp", start_date.toISOString()] },
+                { $lte: ["$timestamp", end_date.toISOString()] })
+        }
+        andMatch.push({ $eq: ["$_id", "$$adsID"] });
+
+        //------------FACET VIEWED------------
+        var viewedFacet = [];
+        var andMatchviewedFacet = [];
+        andMatchviewedFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchviewedFacet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        viewedFacet.push({
+            $match: {
+                $and: andMatchviewedFacet
+            }
+        },
+            {
+                $unwind:
+                {
+                    path: "$viewTime",
+                    includeArrayIndex: 'viewTime_index',
+                }
+            })
+        if (start_date != null && end_date != null) {
+            viewedFacet.push({
+                $match: {
+                    viewTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        viewedFacet.push({
+            $group: {
+                _id: "$userID",
+                userIDCount: { "$sum": 1 }
+            }
+        },
+            {
+                $group: {
+                    _id: null,
+                    reach: { "$sum": 1 },
+                    impresi: { "$sum": "$userIDCount" }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    reach: 1,
+                    impresi: 1
+                }
+            });
+
+        //------------FACET REACH------------
+        var reachFacet = [];
+        var andMatchreachFacet = [];
+        andMatchreachFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchreachFacet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        reachFacet.push({
+            $match: {
+                $and: andMatchreachFacet
+            }
+        },
+            {
+                $unwind:
+                {
+                    path: "$viewTime",
+                    includeArrayIndex: 'viewTime_index',
+                }
+            })
+        if (start_date != null && end_date != null) {
+            reachFacet.push({
+                $match: {
+                    viewTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        reachFacet.push(
+            {
+                $project: {
+                    userID: 1,
+                    viewTime: {
+                        $substr:
+                            [
+                                "$viewTime", 0, 10
+                            ]
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        "viewTime": "$viewTime",
+                        "userID": "$userID"
+                    },
+                    "userIDCount": { "$sum": 1 }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id.viewTime",
+                    viewTime: {
+                        $push: {
+                            "userID": "$_id.userID",
+                            "count": "$userIDCount"
+                        },
+                    },
+                    count: { "$sum": "$userIDCount" }
+                }
+            },
+            {
+                $project: {
+                    _id: "$_id",
+                    reachView: { $size: "$viewTime" }
+                }
+            });
+
+        //------------FACET IMPRESI------------
+        var impresiFacet = [];
+        var andMatchimpresiFacet = [];
+        andMatchimpresiFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchimpresiFacet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        impresiFacet.push({
+            $match: {
+                $and: andMatchimpresiFacet
+            }
+        },
+            {
+                $unwind:
+                {
+                    path: "$viewTime",
+                    includeArrayIndex: 'viewTime_index',
+                }
+            })
+        if (start_date != null && end_date != null) {
+            impresiFacet.push({
+                $match: {
+                    viewTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        impresiFacet.push(
+            {
+                $project: {
+                    viewTime: {
+                        $substr:
+                            [
+                                "$viewTime", 0, 10
+                            ]
+                    }
+                }
+            },
+            {
+                $group:
+                {
+                    _id: "$viewTime",
+                    impresiView:
+                    {
+                        "$sum": 1
+                    }
+                }
+            },);
+
+        //------------FACET CTA------------
+        var CTAFacet = [];
+        var andMatchCTAFacet = [];
+        andMatchCTAFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchCTAFacet.push({
+                clickTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        CTAFacet.push({
+            $match: {
+                $and: andMatchCTAFacet
+            }
+        },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            })
+        if (start_date != null && end_date != null) {
+            CTAFacet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        CTAFacet.push(
+            {
+                $project: {
+                    clickTime: {
+                        $substr:
+                            [
+                                "$clickTime", 0, 10
+                            ]
+                    }
+                }
+            },
+            {
+                $group:
+                {
+                    _id: "$clickTime",
+                    CTACount:
+                    {
+                        "$sum": 1
+                    }
+                }
+            },);
+
+        //------------FACET CTA COUNT------------
+        var CTACountFacet = [];
+        var andMatchCTACountFacet = [];
+        andMatchCTACountFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchCTACountFacet.push({
+                clickTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        CTACountFacet.push({
+            $match: {
+                $and: andMatchCTACountFacet
+            }
+        },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            })
+        if (start_date != null && end_date != null) {
+            CTACountFacet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        CTACountFacet.push(
+            {
+                $project: {
+                    clickTime: {
+                        $substr:
+                            [
+                                "$clickTime", 0, 10
+                            ]
+                    }
+                }
+            },
+            {
+                $group:
+                {
+                    _id: "$clickTime",
+                    CTACount:
+                    {
+                        "$sum": 1
+                    }
+                }
+            },
+            {
+                $group:
+                {
+                    _id: null,
+                    CTACount:
+                    {
+                        "$sum": "$CTACount"
+                    }
+                }
+            },);
+
+        //------------FACET VIEWTIME------------
+        var viewTimeFacet = [];
+        var andMatchviewTimeFacet = [];
+        andMatchviewTimeFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchviewTimeFacet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        viewTimeFacet.push({
+            $match: {
+                $and: andMatchviewTimeFacet
+            }
+        },
+            {
+                $lookup:
+                {
+                    from: "ads",
+                    as: "adsTable",
+                    let:
+                    {
+                        type_fk: "$adsID"
+                    },
+                    pipeline:
+                        [
+                            {
+                                $match:
+                                {
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$_id",
+                                                "$$type_fk"
+                                            ]
+                                    }
+                                },
+                            },
+                            {
+                                $lookup: {
+                                    from: "adstypes",
+                                    localField: "typeAdsID",
+                                    foreignField: "_id",
+                                    as: "adstypes_data"
+                                }
+                            },
+                            {
+                                $project:
+                                {
+                                    CPV: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
+                                            },
+                                            "in": "$$tmp.CPV"
+                                        }
+                                    },
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                $unwind:
+                {
+                    path: "$viewTime",
+                    includeArrayIndex: 'viewTime_index',
+                }
+            })
+        if (start_date != null && end_date != null) {
+            viewTimeFacet.push({
+                $match: {
+                    viewTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        viewTimeFacet.push(
+            {
+                $project: {
+                    CPV: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                            },
+                            "in": "$$tmp.CPV"
+                        }
+                    },
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    row: { $sum: 1 },
+                    count: { $sum: "$CPV" }
+                }
+            });
+
+        //------------FACET CLICKTIME------------
+        var clickTimeFacet = [];
+        var andMatchclickTimeFacet = [];
+        andMatchclickTimeFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchclickTimeFacet.push({
+                clickTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        clickTimeFacet.push(
+            {
+                $match: {
+                    $and: andMatchclickTimeFacet
+                }
+            },
+            {
+                $lookup:
+                {
+                    from: "ads",
+                    as: "adsTable",
+                    let:
+                    {
+                        type_fk: "$adsID"
+                    },
+                    pipeline:
+                        [
+                            {
+                                $match:
+                                {
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$_id",
+                                                "$$type_fk"
+                                            ]
+                                    }
+                                },
+                            },
+                            {
+                                $lookup: {
+                                    from: "adstypes",
+                                    localField: "typeAdsID",
+                                    foreignField: "_id",
+                                    as: "adstypes_data"
+                                }
+                            },
+                            {
+                                $project:
+                                {
+                                    CPA: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
+                                            },
+                                            "in": "$$tmp.CPA"
+                                        }
+                                    },
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            },)
+        if (start_date != null && end_date != null) {
+            clickTimeFacet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        clickTimeFacet.push(
+            {
+                $project: {
+                    CPA: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                            },
+                            "in": "$$tmp.CPA"
+                        }
+                    },
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    row: { $sum: 1 },
+                    count: { $sum: "$CPA" }
+                }
+            });
+
+        //------------FACET USERADS------------
+        var userAdsFacet = [];
+        var andMatchuserAdsFacet = [];
+        andMatchuserAdsFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchuserAdsFacet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        userAdsFacet.push(
+            {
+                $match: {
+                    $and: andMatchuserAdsFacet
+                }
+            },
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    as: 'userbasics_data',
+                    let: {
+                        local_id: "$userID"
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr: {
+                                    $eq: ['$_id', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                email: 1,
+                                fullName: 1,
+                                gender: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $or: [
+                                                        { $eq: ["$gender", "Male"] },
+                                                        { $eq: ["$gender", "Laki-laki"] },
+                                                        { $eq: ["$gender", "MALE"] }
+                                                    ]
+                                                }, then: "Laki-laki"
+                                            },
+                                            {
+                                                case: {
+                                                    $or: [
+                                                        { $eq: ["$gender", " Perempuan"] },
+                                                        { $eq: ["$gender", "Perempuan"] },
+                                                        { $eq: ["$gender", "PEREMPUAN"] },
+                                                        { $eq: ["$gender", "FEMALE"] },
+                                                        { $eq: ["$gender", " FEMALE"] }
+                                                    ]
+                                                }, then: "Perempuan"
+                                            }
+                                        ],
+                                        "default": "Lainnya"
+                                    }
+                                },
+                                age: {
+                                    $cond: {
+                                        if: {
+                                            $and: ['$dob', {
+                                                $ne: ["$dob", ""]
+                                            }]
+                                        },
+                                        then: {
+                                            $toInt: {
+                                                $divide: [{
+                                                    $subtract: [new Date(), {
+                                                        $toDate: "$dob"
+                                                    }]
+                                                }, (365 * 24 * 60 * 60 * 1000)]
+                                            }
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                ageQualication: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $lt: [{
+                                                        $cond: {
+                                                            if: {
+                                                                $and: ['$dob', {
+                                                                    $ne: ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            then: {
+                                                                $toInt: {
+                                                                    $divide: [{
+                                                                        $subtract: [new Date(), {
+                                                                            $toDate: "$dob"
+                                                                        }]
+                                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                                }
+                                                            },
+                                                            else: 0
+                                                        }
+                                                    }, 14]
+                                                },
+                                                then: "< 14 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 14]
+                                                    }, {
+                                                        $lte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 28]
+                                                    }]
+                                                },
+                                                then: "14 - 28 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 29]
+                                                    }, {
+                                                        $lte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 43]
+                                                    }]
+                                                },
+                                                then: "29 - 43 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $gt: [{
+                                                        $cond: {
+                                                            if: {
+                                                                $and: ['$dob', {
+                                                                    $ne: ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            then: {
+                                                                $toInt: {
+                                                                    $divide: [{
+                                                                        $subtract: [new Date(), {
+                                                                            $toDate: "$dob"
+                                                                        }]
+                                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                                }
+                                                            },
+                                                            else: 0
+                                                        }
+                                                    }, 43]
+                                                },
+                                                then: "> 43 Tahun"
+                                            },
+                                        ],
+                                        "default": "Other"
+                                    }
+                                },
+                                userInterests_array: {
+                                    $map: {
+                                        input: {
+                                            $map: {
+                                                input: "$userInterests",
+                                                in: {
+                                                    $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                                },
+                                            }
+                                        },
+                                        in: "$$this.v"
+                                    }
+                                },
+                                states: 1,
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "interests_repo",
+                                localField: "userInterests_array",
+                                foreignField: "_id",
+                                as: "interests"
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'areas',
+                                as: 'areas',
+                                let: {
+                                    local_id: "$states.$id"
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$local_id']
+                                            }
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        // {
+                        //     $group:
+                        //     {
+                        //         _id: "$clickTime",
+                        //         CTACount:
+                        //         {
+                        //             "$sum": 1
+                        //         }
+                        //     }
+                        // }
+                    ],
+                },
+            },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            },)
+        if (start_date != null && end_date != null) {
+            userAdsFacet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        userAdsFacet.push(
+            {
+                $group: {
+                    _id: "$userID",
+                    user: { "$first": "$$ROOT" },
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    gender: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.gender"
+                        }
+                    },
+                    ageQualication: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.ageQualication"
+                        }
+                    },
+                    interest: {
+                        $map: {
+                            input: {
+                                $map: {
+                                    input: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.interests"
+                                        }
+                                    },
+                                    in: {
+                                        $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                    },
+                                }
+                            },
+                            in: "$$this.v"
+                        }
+                    },
+                    areas: {
+                        $let: {
+                            "vars": {
+                                userauths: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.areas"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$userauths.stateName"
+                        }
+                    },
+                }
+            });
+
+        let query = await this.userAdsModel.aggregate([
+            {
+                $addFields: {
+                    dateStart: start_date,
+                    dateEnd: end_date,
+                    paramadsId: new mongoose.Types.ObjectId(adsId)
+                }
+            },
+            {
+                $lookup:
+                {
+                    from: "ads",
+                    as: "ads_data",
+                    let:
+                    {
+                        adsID: "$paramadsId",
+                        dateStart_: "$dateStart",
+                        dateEnd_: "$dateEnd"
+                    },
+                    pipeline:
+                    [
+                        {
+                            $match:
+                            {
+                                $expr: {
+                                    $and: andMatch
+                                }
+                            },
+                        },
+                        {
+                            $lookup: {
+                                from: "adstypes",
+                                localField: "typeAdsID",
+                                foreignField: "_id",
+                                as: "adstypes_data"
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "adsobjectivitas",
+                                localField: "adsObjectivitasId",
+                                foreignField: "_id",
+                                as: "adsobjectivitas_data"
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                $facet:
+                {
+                    adsDetail: [
+                        {
+                            $group: {
+                                _id: "$ads_data",
+                                userIDCount: { "$sum": 1 }
+                            },
+                        },
+                        {
+                            $project: {
+                                _id: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp._id"
+                                    }
+                                },
+                                campaignId: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.campaignId"
+                                    }
+                                },
+                                name: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.name"
+                                    }
+                                },
+                                description: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.description"
+                                    }
+                                },
+                                typeAdsID: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.typeAdsID"
+                                    }
+                                },
+                                typeAdsIDName: {
+                                    $let: {
+                                        "vars": {
+                                            adstypes: {
+                                                "$arrayElemAt": [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                                        },
+                                                        "in": "$$tmp.adstypes_data"
+                                                    }
+                                                }, 0]
+                                            }
+                                        },
+                                        "in": "$$adstypes.nameType"
+                                    }
+                                },
+                                liveAt: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.liveAt"
+                                    }
+                                },
+                                liveEnd: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.liveEnd"
+                                    }
+                                },
+                                urlLink: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.urlLink"
+                                    }
+                                },
+                                tayang: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.tayang"
+                                    }
+                                },
+                                credit: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.credit"
+                                    }
+                                },
+                                objectivitasId: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.adsObjectivitasId"
+                                    }
+                                },
+                                objectivitasIdNameId: {
+                                    $let: {
+                                        "vars": {
+                                            adsobjectivitas: {
+                                                "$arrayElemAt": [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                                        },
+                                                        "in": "$$tmp.adsobjectivitas_data"
+                                                    }
+                                                }, 0]
+                                            }
+                                        },
+                                        "in": "$$adsobjectivitas.name_id"
+                                    }
+                                },
+                                objectivitasIdNameEn: {
+                                    $let: {
+                                        "vars": {
+                                            adsobjectivitas: {
+                                                "$arrayElemAt": [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                                        },
+                                                        "in": "$$tmp.adsobjectivitas_data"
+                                                    }
+                                                }, 0]
+                                            }
+                                        },
+                                        "in": "$$adsobjectivitas.name_en"
+                                    }
+                                },
+                                audiensFrekuensi: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.audiensFrekuensi"
+                                    }
+                                },
+                                status: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.status"
+                                    }
+                                },
+                                dayAds: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.dayAds"
+                                    }
+                                },
+                            }
+                        }
+                    ],
+                    viewed: viewedFacet,
+                    reach: reachFacet,
+                    impresi: impresiFacet,
+                    CTA: CTAFacet,
+                    CTACount: CTACountFacet,
+                    viewTime: viewTimeFacet,
+                    clickTime: clickTimeFacet,
+                    userAds: userAdsFacet,
+                }
+            },
+            // {
+            //     $facet:
+            //     {
+            //         adsDetail: [
+            //             {
+            //                 $project:{
+            //                     adsDetail: { "$arrayElemAt": ["$adsDetail", 0] },
+            //                 }
+            //             }
+            //         ],
+            //         Totalimpresi: [{
+            //             $project: { 
+            //                 impresi: {
+            //                     "$let": {
+            //                         "vars": {
+            //                             "tmp": { "$arrayElemAt": ["$viewed", 0] },
+            //                         },
+            //                         "in": "$$tmp.impresi"
+            //                     }
+            //                 },
+            //             },
+            //         }],
+            //         Totalreach: [{
+            //             $project: {
+            //                 reach: {
+            //                     "$let": {
+            //                         "vars": {
+            //                             "tmp": { "$arrayElemAt": ["$viewed", 0] },
+            //                         },
+            //                         "in": "$$tmp.reach"
+            //                     }
+            //                 },
+            //             },
+            //         }],
+            //         TotalCTA: [{
+            //             $project: {
+            //                 CTACount: {
+            //                     "$let": {
+            //                         "vars": {
+            //                             "tmp": { "$arrayElemAt": ["$CTACount", 0] },
+            //                         },
+            //                         "in": "$$tmp.CTACount"
+            //                     }
+            //                 },
+            //             },
+            //         }],
+            //         CTR: [{
+            //             $project: {
+            //                 CTR: {
+            //                     "$concat": [{
+            //                         "$toString": {
+            //                             "$multiply": [{
+            //                                 "$divide": [{
+            //                                     "$let": {
+            //                                         "vars": {
+            //                                             "tmp": { "$arrayElemAt": ["$CTACount", 0] },
+            //                                         },
+            //                                         "in": "$$tmp.CTACount"
+            //                                     }
+            //                                 }, {
+            //                                     "$let": {
+            //                                         "vars": {
+            //                                             "tmp": { "$arrayElemAt": ["$viewed", 0] },
+            //                                         },
+            //                                         "in": "$$tmp.reach"
+            //                                     }
+            //                                 }]
+            //                             }, 100]
+            //                         }
+            //                     }, "", "%"]
+            //                 }
+            //             },
+            //         }],
+            //         impresi:[
+            //             {
+            //                 $project:{
+            //                     impresi: "$impresi",
+            //                 }
+            //             }
+            //         ],
+            //         reach: [
+            //             {
+            //                 $project: {
+            //                     impresi: "$reach",
+            //                 }
+            //             }
+            //         ],
+            //         CTA: [
+            //             {
+            //                 $project: {
+            //                     impresi: "$CTA",
+            //                 }
+            //             }
+            //         ],
+            //         saldoKredit: [
+            //             {
+            //                 $project: {
+            //                     saldoKredit: {
+            //                         $sum: [
+            //                             {
+            //                                 $convert: {
+            //                                     input: { "$arrayElemAt": ['$viewTime.count', 0] },
+            //                                     to: "int",
+            //                                     onError: 0,
+            //                                     onNull: 0
+            //                                 }
+            //                             },
+            //                             {
+            //                                 $convert: {
+            //                                     input: { "$arrayElemAt": ['$clickTime.count', 0] },
+            //                                     to: "int",
+            //                                     onError: 0,
+            //                                     onNull: 0
+            //                                 }
+            //                             }
+            //                         ]
+            //                     },
+            //                 }
+            //             }
+            //         ],
+            //         userAds: [{
+            //             $project: {
+            //                 userAds: "$userAds",
+            //             }
+            //         }],
+            //         ageRange: [
+            //         {
+            //             $group: {
+            //                 _id: "$userAds.ageQualication",
+            //                 count: { $sum: 1 }
+            //             },
+            //         }],
+            //         gender: [
+            //         {
+            //             $group: {
+            //                 _id: "$userAds.gender",
+            //                 count: { $sum: 1 }
+            //             },
+            //             }],
+            //         interest_: [
+            //             {
+            //                 $project: {
+            //                     userAds: "$userAds.interest",
+            //                 }
+            //             }],
+            //         interest: [
+            //         // {
+            //         //     $project: {
+            //         //         userAds_: "$userAds",
+            //         //     }
+            //         // },
+            //         //     {
+            //         //         $unwind: "$userAds_.gender"
+            //         //     },
+            //         {
+            //             $group: {
+            //                 _id: {
+            //                     "ageQualication": "$userAds_.ageQualication",
+            //                 },
+            //                 count: { $sum: 1 }
+            //             },
+            //         },
+            //         // {
+            //         //     $unwind:
+            //         //     {
+            //         //         path: "$_id.interest",
+            //         //         includeArrayIndex: 'interest_index',
+            //         //     }
+            //         // },
+            //     ]
+            //     }
+            // }
+            {
+                $project: {
+                    adsDetail: { "$arrayElemAt": ["$adsDetail", 0] },
+                    summary: {
+                        Totalimpresi: {
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$viewed", 0] },
+                                },
+                                "in": "$$tmp.impresi"
+                            }
+                        },
+                        Totalreach: {
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$viewed", 0] },
+                                },
+                                "in": "$$tmp.reach"
+                            }
+                        },
+                        TotalCTA: {
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$CTACount", 0] },
+                                },
+                                "in": "$$tmp.CTACount"
+                            }
+                        },
+                        CTR: {
+                            "$concat": [{
+                                "$toString": {
+                                    "$multiply": [{
+                                        "$divide": [{
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": { "$arrayElemAt": ["$CTACount", 0] },
+                                                },
+                                                "in": "$$tmp.CTACount"
+                                            }
+                                        }, {
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": { "$arrayElemAt": ["$viewed", 0] },
+                                                },
+                                                "in": "$$tmp.reach"
+                                            }
+                                        }]
+                                    }, 100]
+                                }
+                            }, "", "%"]
+                        },
+                        impresi: "$impresi",
+                        reach: "$reach",
+                        CTA: "$CTA",
+                    },
+                    saldoKredit: {
+                        $sum: [
+                            {
+                                $convert: {
+                                    input: { "$arrayElemAt": ['$viewTime.count', 0] },
+                                    to: "int",
+                                    onError: 0,
+                                    onNull: 0
+                                }
+                            },
+                            {
+                                $convert: {
+                                    input: { "$arrayElemAt": ['$clickTime.count', 0] },
+                                    to: "int",
+                                    onError: 0,
+                                    onNull: 0
+                                }
+                            }
+                        ]
+                    },
+                    userAds: "$userAds"
+                },
+            },
+            // {
+            //     $unwind: "$ageRange_"
+            // },
+            // {
+            //     $project: {
+            //         adsDetail: 1,
+            //         summary: 1,
+            //         saldoKredit: 1,
+            //         ageRange: "$userAds.ageQualication",
+            //         gender: "$userAds.gender",
+            //         interest: "$userAds.interest",
+            //         areas: "$userAds.areas",
+            //     }
+            // }
+            // {
+            //     $facet:{
+            //         adsDetail: [
+            //             {
+            //                 $group: {
+            //                     _id: "$adsDetail",
+            //                 }
+            //             },
+            //         ],
+            //         summary: [
+            //             {
+            //                 $group: {
+            //                     _id: "$summary",
+            //                 }
+            //             },
+            //         ],
+            //         saldoKredit: [
+            //             {
+            //                 $group: {
+            //                     _id: "$saldoKredit",
+            //                 }
+            //             },
+            //         ],
+            //         ageRange: [
+            //             {
+            //                 $group: {
+            //                     _id: "$saldoKredit",
+            //                 }
+            //             },
+            //         ],
+            //     }
+            // }
+
+        ]);
+        return query;
+    }
+
+    async campaignDetail(adsId: string, start_date: any, end_date: any) {
+        var andMatch = [];
+        andMatch.push({ $eq: ["$_id", "$$adsID"] });
+
+        //------------FACET VIEWED------------
+        var viewedFacet = [];
+        var andMatchviewedFacet = [];
+        andMatchviewedFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchviewedFacet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        viewedFacet.push({
+            $match: {
+                $and: andMatchviewedFacet
+            }
+        }, 
+        {
+            $unwind:
+            {
+                path: "$viewTime",
+                includeArrayIndex: 'viewTime_index',
+            }
+        })
+        if (start_date != null && end_date != null) {
+            viewedFacet.push({
+                $match: {
+                    viewTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        viewedFacet.push({
+            $group: {
+                _id: "$userID",
+                userIDCount: { "$sum": 1 }
+            }
+        },
+            {
+                $group: {
+                    _id: null,
+                    reach: { "$sum": 1 },
+                    impresi: { "$sum": "$userIDCount" }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    reach: 1,
+                    impresi: 1
+                }
+            });
+
+        //------------FACET REACH------------
+        var reachFacet = [];
+        var andMatchreachFacet = [];
+        andMatchreachFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchreachFacet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        reachFacet.push({
+            $match: {
+                $and: andMatchreachFacet
+            }
+        },
+            {
+                $unwind:
+                {
+                    path: "$viewTime",
+                    includeArrayIndex: 'viewTime_index',
+                }
+            })
+        if (start_date != null && end_date != null) {
+            reachFacet.push({
+                $match: {
+                    viewTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        reachFacet.push(
+            {
+                $project: {
+                    userID: 1,
+                    viewTime: {
+                        $substr:
+                            [
+                                "$viewTime", 0, 10
+                            ]
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        "viewTime": "$viewTime",
+                        "userID": "$userID"
+                    },
+                    "userIDCount": { "$sum": 1 }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id.viewTime",
+                    viewTime: {
+                        $push: {
+                            "userID": "$_id.userID",
+                            "count": "$userIDCount"
+                        },
+                    },
+                    count: { "$sum": "$userIDCount" }
+                }
+            },
+            {
+                $project: {
+                    _id: "$_id",
+                    reachView: { $size: "$viewTime" }
+                }
+            });
+
+        //------------FACET IMPRESI------------
+        var impresiFacet = [];
+        var andMatchimpresiFacet = [];
+        andMatchimpresiFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchimpresiFacet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        impresiFacet.push({
+            $match: {
+                $and: andMatchimpresiFacet
+            }
+        },
+            {
+                $unwind:
+                {
+                    path: "$viewTime",
+                    includeArrayIndex: 'viewTime_index',
+                }
+            })
+        if (start_date != null && end_date != null) {
+            impresiFacet.push({
+                $match: {
+                    viewTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        impresiFacet.push(
+            {
+                $project: {
+                    viewTime: {
+                        $substr:
+                            [
+                                "$viewTime", 0, 10
+                            ]
+                    }
+                }
+            },
+            {
+                $group:
+                {
+                    _id: "$viewTime",
+                    impresiView:
+                    {
+                        "$sum": 1
+                    }
+                }
+            },);
+
+        //------------FACET CTA------------
+        var CTAFacet = [];
+        var andMatchCTAFacet = [];
+        andMatchCTAFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchCTAFacet.push({
+                clickTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        CTAFacet.push({
+            $match: {
+                $and: andMatchCTAFacet
+            }
+        },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            })
+        if (start_date != null && end_date != null) {
+            CTAFacet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        CTAFacet.push(
+            {
+                $project: {
+                    clickTime: {
+                        $substr:
+                            [
+                                "$clickTime", 0, 10
+                            ]
+                    }
+                }
+            },
+            {
+                $group:
+                {
+                    _id: "$clickTime",
+                    CTACount:
+                    {
+                        "$sum": 1
+                    }
+                }
+            },);
+
+        //------------FACET CTA COUNT------------
+        var CTACountFacet = [];
+        var andMatchCTACountFacet = [];
+        andMatchCTACountFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchCTACountFacet.push({
+                clickTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        CTACountFacet.push({
+            $match: {
+                $and: andMatchCTACountFacet
+            }
+        },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            })
+        if (start_date != null && end_date != null) {
+            CTACountFacet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        CTACountFacet.push(
+            {
+                $project: {
+                    clickTime: {
+                        $substr:
+                            [
+                                "$clickTime", 0, 10
+                            ]
+                    }
+                }
+            },
+            {
+                $group:
+                {
+                    _id: "$clickTime",
+                    CTACount:
+                    {
+                        "$sum": 1
+                    }
+                }
+            },
+            {
+                $group:
+                {
+                    _id: null,
+                    CTACount:
+                    {
+                        "$sum": "$CTACount"
+                    }
+                }
+            },);
+
+        //------------FACET VIEWTIME------------
+        var viewTimeFacet = [];
+        var andMatchviewTimeFacet = [];
+        andMatchviewTimeFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchviewTimeFacet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        viewTimeFacet.push({
+            $match: {
+                $and: andMatchviewTimeFacet
+            }
+        },
+            {
+                $lookup:
+                {
+                    from: "ads",
+                    as: "adsTable",
+                    let:
+                    {
+                        type_fk: "$adsID"
+                    },
+                    pipeline:
+                        [
+                            {
+                                $match:
+                                {
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$_id",
+                                                "$$type_fk"
+                                            ]
+                                    }
+                                },
+                            },
+                            {
+                                $lookup: {
+                                    from: "adstypes",
+                                    localField: "typeAdsID",
+                                    foreignField: "_id",
+                                    as: "adstypes_data"
+                                }
+                            },
+                            {
+                                $project:
+                                {
+                                    CPV: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
+                                            },
+                                            "in": "$$tmp.CPV"
+                                        }
+                                    },
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                $unwind:
+                {
+                    path: "$viewTime",
+                    includeArrayIndex: 'viewTime_index',
+                }
+            })
+        if (start_date != null && end_date != null) {
+            viewTimeFacet.push({
+                $match: {
+                    viewTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        viewTimeFacet.push(
+            {
+                $project: {
+                    CPV: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                            },
+                            "in": "$$tmp.CPV"
+                        }
+                    },
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    row: { $sum: 1 },
+                    count: { $sum: "$CPV" }
+                }
+            });
+
+        //------------FACET CLICKTIME------------
+        var clickTimeFacet = [];
+        var andMatchclickTimeFacet = [];
+        andMatchclickTimeFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchclickTimeFacet.push({
+                clickTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        clickTimeFacet.push(
+            {
+            $match: {
+                $and: andMatchclickTimeFacet
+            }
+            },
+            {
+                $lookup:
+                {
+                    from: "ads",
+                    as: "adsTable",
+                    let:
+                    {
+                        type_fk: "$adsID"
+                    },
+                    pipeline:
+                        [
+                            {
+                                $match:
+                                {
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$_id",
+                                                "$$type_fk"
+                                            ]
+                                    }
+                                },
+                            },
+                            {
+                                $lookup: {
+                                    from: "adstypes",
+                                    localField: "typeAdsID",
+                                    foreignField: "_id",
+                                    as: "adstypes_data"
+                                }
+                            },
+                            {
+                                $project:
+                                {
+                                    CPA: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
+                                            },
+                                            "in": "$$tmp.CPA"
+                                        }
+                                    },
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            },)
+        if (start_date != null && end_date != null) {
+            clickTimeFacet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        clickTimeFacet.push(
+            {
+                $project: {
+                    CPA: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                            },
+                            "in": "$$tmp.CPA"
+                        }
+                    },
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    row: { $sum: 1 },
+                    count: { $sum: "$CPA" }
+                }
+            });
+
+        //------------FACET USERADS AGE------------
+        var userAds_Age_Facet = [];
+        var andMatchuserAds_Age_Facet = [];
+        andMatchuserAds_Age_Facet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchuserAds_Age_Facet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        userAds_Age_Facet.push(
+            {
+                $match: {
+                    $and: andMatchuserAds_Age_Facet
+                }
+            },
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    as: 'userbasics_data',
+                    let: {
+                        local_id: "$userID"
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr: {
+                                    $eq: ['$_id', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                email: 1,
+                                fullName: 1,
+                                gender: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $or: [
+                                                        { $eq: ["$gender", "Male"] },
+                                                        { $eq: ["$gender", "Laki-laki"] },
+                                                        { $eq: ["$gender", "MALE"] }
+                                                    ]
+                                                }, then: "Laki-laki"
+                                            },
+                                            {
+                                                case: {
+                                                    $or: [
+                                                        { $eq: ["$gender", " Perempuan"] },
+                                                        { $eq: ["$gender", "Perempuan"] },
+                                                        { $eq: ["$gender", "PEREMPUAN"] },
+                                                        { $eq: ["$gender", "FEMALE"] },
+                                                        { $eq: ["$gender", " FEMALE"] }
+                                                    ]
+                                                }, then: "Perempuan"
+                                            }
+                                        ],
+                                        "default": "Lainnya"
+                                    }
+                                },
+                                age: {
+                                    $cond: {
+                                        if: {
+                                            $and: ['$dob', {
+                                                $ne: ["$dob", ""]
+                                            }]
+                                        },
+                                        then: {
+                                            $toInt: {
+                                                $divide: [{
+                                                    $subtract: [new Date(), {
+                                                        $toDate: "$dob"
+                                                    }]
+                                                }, (365 * 24 * 60 * 60 * 1000)]
+                                            }
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                ageQualication: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $lt: [{
+                                                        $cond: {
+                                                            if: {
+                                                                $and: ['$dob', {
+                                                                    $ne: ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            then: {
+                                                                $toInt: {
+                                                                    $divide: [{
+                                                                        $subtract: [new Date(), {
+                                                                            $toDate: "$dob"
+                                                                        }]
+                                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                                }
+                                                            },
+                                                            else: 0
+                                                        }
+                                                    }, 14]
+                                                },
+                                                then: "< 14 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 14]
+                                                    }, {
+                                                        $lte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 28]
+                                                    }]
+                                                },
+                                                then: "14 - 28 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 29]
+                                                    }, {
+                                                        $lte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 43]
+                                                    }]
+                                                },
+                                                then: "29 - 43 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $gt: [{
+                                                        $cond: {
+                                                            if: {
+                                                                $and: ['$dob', {
+                                                                    $ne: ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            then: {
+                                                                $toInt: {
+                                                                    $divide: [{
+                                                                        $subtract: [new Date(), {
+                                                                            $toDate: "$dob"
+                                                                        }]
+                                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                                }
+                                                            },
+                                                            else: 0
+                                                        }
+                                                    }, 43]
+                                                },
+                                                then: "> 43 Tahun"
+                                            },
+                                        ],
+                                        "default": "Other"
+                                    }
+                                },
+                                userInterests_array: {
+                                    $map: {
+                                        input: {
+                                            $map: {
+                                                input: "$userInterests",
+                                                in: {
+                                                    $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                                },
+                                            }
+                                        },
+                                        in: "$$this.v"
+                                    }
+                                },
+                                states: 1,
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "interests_repo",
+                                localField: "userInterests_array",
+                                foreignField: "_id",
+                                as: "interests"
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'areas',
+                                as: 'areas',
+                                let: {
+                                    local_id: "$states.$id"
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$local_id']
+                                            }
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                    ],
+                },
+            },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            },)
+        if (start_date != null && end_date != null) {
+            userAds_Age_Facet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        userAds_Age_Facet.push(
+            {
+                $group: {
+                    _id: "$userID",
+                    user: { "$first": "$$ROOT" },
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    gender: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.gender"
+                        }
+                    },
+                    ageQualication: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.ageQualication"
+                        }
+                    },
+                    interest: {
+                        $map: {
+                            input: {
+                                $map: {
+                                    input: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.interests"
+                                        }
+                                    },
+                                    in: {
+                                        $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                    },
+                                }
+                            },
+                            in: "$$this.v"
+                        }
+                    },
+                    areas: {
+                        $let: {
+                            "vars": {
+                                userauths: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.areas"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$userauths.stateName"
+                        }
+                    },
+                }
+            },
+            {
+                $group: {
+                    _id: "$ageQualication",
+                    ageCount: { "$sum": 1 }
+                },
+            });
+
+        //------------FACET USERADS GENDER------------
+        var userAds_Gender_Facet = [];
+        var andMatchuserAds_Gender_Facet = [];
+        andMatchuserAds_Gender_Facet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchuserAds_Gender_Facet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        userAds_Gender_Facet.push(
+            {
+                $match: {
+                    $and: andMatchuserAds_Gender_Facet
+                }
+            },
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    as: 'userbasics_data',
+                    let: {
+                        local_id: "$userID"
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr: {
+                                    $eq: ['$_id', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                email: 1,
+                                fullName: 1,
+                                gender: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $or: [
+                                                        { $eq: ["$gender", "Male"] },
+                                                        { $eq: ["$gender", "Laki-laki"] },
+                                                        { $eq: ["$gender", "MALE"] }
+                                                    ]
+                                                }, then: "Laki-laki"
+                                            },
+                                            {
+                                                case: {
+                                                    $or: [
+                                                        { $eq: ["$gender", " Perempuan"] },
+                                                        { $eq: ["$gender", "Perempuan"] },
+                                                        { $eq: ["$gender", "PEREMPUAN"] },
+                                                        { $eq: ["$gender", "FEMALE"] },
+                                                        { $eq: ["$gender", " FEMALE"] }
+                                                    ]
+                                                }, then: "Perempuan"
+                                            }
+                                        ],
+                                        "default": "Lainnya"
+                                    }
+                                },
+                                age: {
+                                    $cond: {
+                                        if: {
+                                            $and: ['$dob', {
+                                                $ne: ["$dob", ""]
+                                            }]
+                                        },
+                                        then: {
+                                            $toInt: {
+                                                $divide: [{
+                                                    $subtract: [new Date(), {
+                                                        $toDate: "$dob"
+                                                    }]
+                                                }, (365 * 24 * 60 * 60 * 1000)]
+                                            }
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                ageQualication: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $lt: [{
+                                                        $cond: {
+                                                            if: {
+                                                                $and: ['$dob', {
+                                                                    $ne: ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            then: {
+                                                                $toInt: {
+                                                                    $divide: [{
+                                                                        $subtract: [new Date(), {
+                                                                            $toDate: "$dob"
+                                                                        }]
+                                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                                }
+                                                            },
+                                                            else: 0
+                                                        }
+                                                    }, 14]
+                                                },
+                                                then: "< 14 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 14]
+                                                    }, {
+                                                        $lte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 28]
+                                                    }]
+                                                },
+                                                then: "14 - 28 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 29]
+                                                    }, {
+                                                        $lte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 43]
+                                                    }]
+                                                },
+                                                then: "29 - 43 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $gt: [{
+                                                        $cond: {
+                                                            if: {
+                                                                $and: ['$dob', {
+                                                                    $ne: ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            then: {
+                                                                $toInt: {
+                                                                    $divide: [{
+                                                                        $subtract: [new Date(), {
+                                                                            $toDate: "$dob"
+                                                                        }]
+                                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                                }
+                                                            },
+                                                            else: 0
+                                                        }
+                                                    }, 43]
+                                                },
+                                                then: "> 43 Tahun"
+                                            },
+                                        ],
+                                        "default": "Other"
+                                    }
+                                },
+                                userInterests_array: {
+                                    $map: {
+                                        input: {
+                                            $map: {
+                                                input: "$userInterests",
+                                                in: {
+                                                    $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                                },
+                                            }
+                                        },
+                                        in: "$$this.v"
+                                    }
+                                },
+                                states: 1,
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "interests_repo",
+                                localField: "userInterests_array",
+                                foreignField: "_id",
+                                as: "interests"
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'areas',
+                                as: 'areas',
+                                let: {
+                                    local_id: "$states.$id"
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$local_id']
+                                            }
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                    ],
+                },
+            },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            },)
+        if (start_date != null && end_date != null) {
+            userAds_Gender_Facet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        userAds_Gender_Facet.push(
+            {
+                $group: {
+                    _id: "$userID",
+                    user: { "$first": "$$ROOT" },
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    gender: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.gender"
+                        }
+                    },
+                    ageQualication: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.ageQualication"
+                        }
+                    },
+                    interest: {
+                        $map: {
+                            input: {
+                                $map: {
+                                    input: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.interests"
+                                        }
+                                    },
+                                    in: {
+                                        $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                    },
+                                }
+                            },
+                            in: "$$this.v"
+                        }
+                    },
+                    areas: {
+                        $let: {
+                            "vars": {
+                                userauths: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.areas"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$userauths.stateName"
+                        }
+                    },
+                }
+            },
+            {
+                $group: {
+                    _id: "$gender",
+                    genderCount: { "$sum": 1 }
+                },
+            });
+
+        //------------FACET USERADS AREA------------
+        var userAds_Area_Facet = [];
+        var andMatchuserAds_Area_Facet = [];
+        andMatchuserAds_Area_Facet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchuserAds_Area_Facet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        userAds_Area_Facet.push(
+            {
+                $match: {
+                    $and: andMatchuserAds_Area_Facet
+                }
+            },
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    as: 'userbasics_data',
+                    let: {
+                        local_id: "$userID"
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr: {
+                                    $eq: ['$_id', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                email: 1,
+                                fullName: 1,
+                                gender: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $or: [
+                                                        { $eq: ["$gender", "Male"] },
+                                                        { $eq: ["$gender", "Laki-laki"] },
+                                                        { $eq: ["$gender", "MALE"] }
+                                                    ]
+                                                }, then: "Laki-laki"
+                                            },
+                                            {
+                                                case: {
+                                                    $or: [
+                                                        { $eq: ["$gender", " Perempuan"] },
+                                                        { $eq: ["$gender", "Perempuan"] },
+                                                        { $eq: ["$gender", "PEREMPUAN"] },
+                                                        { $eq: ["$gender", "FEMALE"] },
+                                                        { $eq: ["$gender", " FEMALE"] }
+                                                    ]
+                                                }, then: "Perempuan"
+                                            }
+                                        ],
+                                        "default": "Lainnya"
+                                    }
+                                },
+                                age: {
+                                    $cond: {
+                                        if: {
+                                            $and: ['$dob', {
+                                                $ne: ["$dob", ""]
+                                            }]
+                                        },
+                                        then: {
+                                            $toInt: {
+                                                $divide: [{
+                                                    $subtract: [new Date(), {
+                                                        $toDate: "$dob"
+                                                    }]
+                                                }, (365 * 24 * 60 * 60 * 1000)]
+                                            }
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                ageQualication: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $lt: [{
+                                                        $cond: {
+                                                            if: {
+                                                                $and: ['$dob', {
+                                                                    $ne: ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            then: {
+                                                                $toInt: {
+                                                                    $divide: [{
+                                                                        $subtract: [new Date(), {
+                                                                            $toDate: "$dob"
+                                                                        }]
+                                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                                }
+                                                            },
+                                                            else: 0
+                                                        }
+                                                    }, 14]
+                                                },
+                                                then: "< 14 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 14]
+                                                    }, {
+                                                        $lte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 28]
+                                                    }]
+                                                },
+                                                then: "14 - 28 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 29]
+                                                    }, {
+                                                        $lte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 43]
+                                                    }]
+                                                },
+                                                then: "29 - 43 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $gt: [{
+                                                        $cond: {
+                                                            if: {
+                                                                $and: ['$dob', {
+                                                                    $ne: ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            then: {
+                                                                $toInt: {
+                                                                    $divide: [{
+                                                                        $subtract: [new Date(), {
+                                                                            $toDate: "$dob"
+                                                                        }]
+                                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                                }
+                                                            },
+                                                            else: 0
+                                                        }
+                                                    }, 43]
+                                                },
+                                                then: "> 43 Tahun"
+                                            },
+                                        ],
+                                        "default": "Other"
+                                    }
+                                },
+                                userInterests_array: {
+                                    $map: {
+                                        input: {
+                                            $map: {
+                                                input: "$userInterests",
+                                                in: {
+                                                    $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                                },
+                                            }
+                                        },
+                                        in: "$$this.v"
+                                    }
+                                },
+                                states: 1,
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "interests_repo",
+                                localField: "userInterests_array",
+                                foreignField: "_id",
+                                as: "interests"
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'areas',
+                                as: 'areas',
+                                let: {
+                                    local_id: "$states.$id"
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$local_id']
+                                            }
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                    ],
+                },
+            },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            },)
+        if (start_date != null && end_date != null) {
+            userAds_Area_Facet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        userAds_Area_Facet.push(
+            {
+                $group: {
+                    _id: "$userID",
+                    user: { "$first": "$$ROOT" },
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    gender: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.gender"
+                        }
+                    },
+                    ageQualication: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.ageQualication"
+                        }
+                    },
+                    interest: {
+                        $map: {
+                            input: {
+                                $map: {
+                                    input: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.interests"
+                                        }
+                                    },
+                                    in: {
+                                        $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                    },
+                                }
+                            },
+                            in: "$$this.v"
+                        }
+                    },
+                    areas: {
+                        $let: {
+                            "vars": {
+                                userauths: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.areas"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$userauths.stateName"
+                        }
+                    },
+                }
+            },
+            {
+                $group: {
+                    _id: "$areas",
+                    areasCount: { "$sum": 1 }
+                },
+            });
+
+        //------------FACET USERADS INTEREST------------
+        var userAds_Interest_Facet = [];
+        var andMatchuserAds_Interest_Facet = [];
+        andMatchuserAds_Interest_Facet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchuserAds_Interest_Facet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        userAds_Interest_Facet.push(
+            {
+                $match: {
+                    $and: andMatchuserAds_Interest_Facet
+                }
+            },
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    as: 'userbasics_data',
+                    let: {
+                        local_id: "$userID"
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr: {
+                                    $eq: ['$_id', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                email: 1,
+                                fullName: 1,
+                                gender: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $or: [
+                                                        { $eq: ["$gender", "Male"] },
+                                                        { $eq: ["$gender", "Laki-laki"] },
+                                                        { $eq: ["$gender", "MALE"] }
+                                                    ]
+                                                }, then: "Laki-laki"
+                                            },
+                                            {
+                                                case: {
+                                                    $or: [
+                                                        { $eq: ["$gender", " Perempuan"] },
+                                                        { $eq: ["$gender", "Perempuan"] },
+                                                        { $eq: ["$gender", "PEREMPUAN"] },
+                                                        { $eq: ["$gender", "FEMALE"] },
+                                                        { $eq: ["$gender", " FEMALE"] }
+                                                    ]
+                                                }, then: "Perempuan"
+                                            }
+                                        ],
+                                        "default": "Lainnya"
+                                    }
+                                },
+                                age: {
+                                    $cond: {
+                                        if: {
+                                            $and: ['$dob', {
+                                                $ne: ["$dob", ""]
+                                            }]
+                                        },
+                                        then: {
+                                            $toInt: {
+                                                $divide: [{
+                                                    $subtract: [new Date(), {
+                                                        $toDate: "$dob"
+                                                    }]
+                                                }, (365 * 24 * 60 * 60 * 1000)]
+                                            }
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                ageQualication: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $lt: [{
+                                                        $cond: {
+                                                            if: {
+                                                                $and: ['$dob', {
+                                                                    $ne: ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            then: {
+                                                                $toInt: {
+                                                                    $divide: [{
+                                                                        $subtract: [new Date(), {
+                                                                            $toDate: "$dob"
+                                                                        }]
+                                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                                }
+                                                            },
+                                                            else: 0
+                                                        }
+                                                    }, 14]
+                                                },
+                                                then: "< 14 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 14]
+                                                    }, {
+                                                        $lte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 28]
+                                                    }]
+                                                },
+                                                then: "14 - 28 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 29]
+                                                    }, {
+                                                        $lte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 43]
+                                                    }]
+                                                },
+                                                then: "29 - 43 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $gt: [{
+                                                        $cond: {
+                                                            if: {
+                                                                $and: ['$dob', {
+                                                                    $ne: ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            then: {
+                                                                $toInt: {
+                                                                    $divide: [{
+                                                                        $subtract: [new Date(), {
+                                                                            $toDate: "$dob"
+                                                                        }]
+                                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                                }
+                                                            },
+                                                            else: 0
+                                                        }
+                                                    }, 43]
+                                                },
+                                                then: "> 43 Tahun"
+                                            },
+                                        ],
+                                        "default": "Other"
+                                    }
+                                },
+                                userInterests_array: {
+                                    $map: {
+                                        input: {
+                                            $map: {
+                                                input: "$userInterests",
+                                                in: {
+                                                    $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                                },
+                                            }
+                                        },
+                                        in: "$$this.v"
+                                    }
+                                },
+                                states: 1,
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "interests_repo",
+                                localField: "userInterests_array",
+                                foreignField: "_id",
+                                as: "interests"
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'areas',
+                                as: 'areas',
+                                let: {
+                                    local_id: "$states.$id"
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$local_id']
+                                            }
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                    ],
+                },
+            },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            },)
+        if (start_date != null && end_date != null) {
+            userAds_Interest_Facet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        userAds_Interest_Facet.push(
+            {
+                $group: {
+                    _id: "$userID",
+                    user: { "$first": "$$ROOT" },
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    gender: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.gender"
+                        }
+                    },
+                    ageQualication: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.ageQualication"
+                        }
+                    },
+                    interest: {
+                        $map: {
+                            input: {
+                                $map: {
+                                    input: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.interests"
+                                        }
+                                    },
+                                    in: {
+                                        $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                    },
+                                }
+                            },
+                            in: "$$this.v"
+                        }
+                    },
+                    areas: {
+                        $let: {
+                            "vars": {
+                                userauths: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.areas"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$userauths.stateName"
+                        }
+                    },
+                }
+            },
+            {
+                $unwind: "$interest"
+            },
+            {
+                $group: {
+                    _id: "$interest",
+                    interestCount: { "$sum": 1 }
+                },
+            });
+
+        //------------FACET USERADS------------
+        var userAdsFacet = [];
+        var andMatchuserAdsFacet = [];
+        andMatchuserAdsFacet.push({ adsID: new mongoose.Types.ObjectId(adsId) });
+        if (start_date != null && end_date != null) {
+            andMatchuserAdsFacet.push({
+                viewTime: {
+                    $elemMatch: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        userAdsFacet.push(
+            {
+                $match: {
+                    $and: andMatchuserAdsFacet
+                }
+            },
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    as: 'userbasics_data',
+                    let: {
+                        local_id: "$userID"
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr: {
+                                    $eq: ['$_id', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                email: 1,
+                                fullName: 1,
+                                gender: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $or: [
+                                                        { $eq: ["$gender", "Male"] },
+                                                        { $eq: ["$gender", "Laki-laki"] },
+                                                        { $eq: ["$gender", "MALE"] }
+                                                    ]
+                                                }, then: "Laki-laki"
+                                            },
+                                            {
+                                                case: {
+                                                    $or: [
+                                                        { $eq: ["$gender", " Perempuan"] },
+                                                        { $eq: ["$gender", "Perempuan"] },
+                                                        { $eq: ["$gender", "PEREMPUAN"] },
+                                                        { $eq: ["$gender", "FEMALE"] },
+                                                        { $eq: ["$gender", " FEMALE"] }
+                                                    ]
+                                                }, then: "Perempuan"
+                                            }
+                                        ],
+                                        "default": "Lainnya"
+                                    }
+                                },
+                                age: {
+                                    $cond: {
+                                        if: {
+                                            $and: ['$dob', {
+                                                $ne: ["$dob", ""]
+                                            }]
+                                        },
+                                        then: {
+                                            $toInt: {
+                                                $divide: [{
+                                                    $subtract: [new Date(), {
+                                                        $toDate: "$dob"
+                                                    }]
+                                                }, (365 * 24 * 60 * 60 * 1000)]
+                                            }
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                ageQualication: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $lt: [{
+                                                        $cond: {
+                                                            if: {
+                                                                $and: ['$dob', {
+                                                                    $ne: ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            then: {
+                                                                $toInt: {
+                                                                    $divide: [{
+                                                                        $subtract: [new Date(), {
+                                                                            $toDate: "$dob"
+                                                                        }]
+                                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                                }
+                                                            },
+                                                            else: 0
+                                                        }
+                                                    }, 14]
+                                                },
+                                                then: "< 14 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 14]
+                                                    }, {
+                                                        $lte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 28]
+                                                    }]
+                                                },
+                                                then: "14 - 28 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 29]
+                                                    }, {
+                                                        $lte: [{
+                                                            $cond: {
+                                                                if: {
+                                                                    $and: ['$dob', {
+                                                                        $ne: ["$dob", ""]
+                                                                    }]
+                                                                },
+                                                                then: {
+                                                                    $toInt: {
+                                                                        $divide: [{
+                                                                            $subtract: [new Date(), {
+                                                                                $toDate: "$dob"
+                                                                            }]
+                                                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                                                    }
+                                                                },
+                                                                else: 0
+                                                            }
+                                                        }, 43]
+                                                    }]
+                                                },
+                                                then: "29 - 43 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $gt: [{
+                                                        $cond: {
+                                                            if: {
+                                                                $and: ['$dob', {
+                                                                    $ne: ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            then: {
+                                                                $toInt: {
+                                                                    $divide: [{
+                                                                        $subtract: [new Date(), {
+                                                                            $toDate: "$dob"
+                                                                        }]
+                                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                                }
+                                                            },
+                                                            else: 0
+                                                        }
+                                                    }, 43]
+                                                },
+                                                then: "> 43 Tahun"
+                                            },
+                                        ],
+                                        "default": "Other"
+                                    }
+                                },
+                                userInterests_array: {
+                                    $map: {
+                                        input: {
+                                            $map: {
+                                                input: "$userInterests",
+                                                in: {
+                                                    $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                                },
+                                            }
+                                        },
+                                        in: "$$this.v"
+                                    }
+                                },
+                                states: 1,
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "interests_repo",
+                                localField: "userInterests_array",
+                                foreignField: "_id",
+                                as: "interests"
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'areas',
+                                as: 'areas',
+                                let: {
+                                    local_id: "$states.$id"
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$local_id']
+                                            }
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                    ],
+                },
+            },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            },)
+        if (start_date != null && end_date != null) {
+            userAdsFacet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            })
+        }
+        userAdsFacet.push(
+            {
+                $group: {
+                    _id: "$userID",
+                    user: { "$first": "$$ROOT" },
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    gender: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.gender"
+                        }
+                    },
+                    ageQualication: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.ageQualication"
+                        }
+                    },
+                    interest: {
+                        $map: {
+                            input: {
+                                $map: {
+                                    input: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.interests"
+                                        }
+                                    },
+                                    in: {
+                                        $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                    },
+                                }
+                            },
+                            in: "$$this.v"
+                        }
+                    },
+                    areas: {
+                        $let: {
+                            "vars": {
+                                userauths: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$user.userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.areas"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$userauths.stateName"
+                        }
+                    },
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    adsViewCount: { "$sum": 1 }
+                },
+            });
+
+        let query = await this.userAdsModel.aggregate([
+            {
+                $addFields: {
+                    dateStart: start_date,
+                    dateEnd: end_date,
+                    paramadsId: new mongoose.Types.ObjectId(adsId)
+                }
+            },
+            {
+                $match:
+                {
+                    adsID: new mongoose.Types.ObjectId(adsId)
+                }
+            },
+            {
+                $lookup:
+                {
+                    from: "ads",
+                    as: "ads_data",
+                    let:
+                    {
+                        adsID: "$paramadsId",
+                        dateStart_: "$dateStart",
+                        dateEnd_: "$dateEnd"
+                    },
+                    pipeline:
+                    [
+                        {
+                            $match:
+                            {
+                                $expr: {
+                                    $and: andMatch
+                                }
+                            },
+                        }, 
+                        {
+                            $lookup: {
+                                from: "adstypes",
+                                localField: "typeAdsID",
+                                foreignField: "_id",
+                                as: "adstypes_data"
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "adsobjectivitas",
+                                localField: "adsObjectivitasId",
+                                foreignField: "_id",
+                                as: "adsobjectivitas_data"
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                $facet:
+                {
+                    adsDetail: [
+                        {
+                            $group: {
+                                _id: "$ads_data",
+                                userIDCount: { "$sum": 1 }
+                            },
+                        },
+                        {
+                            $project: {
+                                _id: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp._id"
+                                    }
+                                },
+                                campaignId: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.campaignId"
+                                    }
+                                },
+                                name: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.name"
+                                    }
+                                }, 
+                                description: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.description"
+                                    }
+                                },
+                                typeAdsID: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.typeAdsID"
+                                    }
+                                },
+                                typeAdsIDName: {
+                                    $let: {
+                                        "vars": {
+                                            adstypes: {
+                                                "$arrayElemAt": [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                                        },
+                                                        "in": "$$tmp.adstypes_data"
+                                                    }
+                                                }, 0]
+                                            }
+                                        },
+                                        "in": "$$adstypes.nameType"
+                                    }
+                                },
+                                liveAt: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.liveAt"
+                                    }
+                                },
+                                liveEnd: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.liveEnd"
+                                    }
+                                }, 
+                                urlLink: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.urlLink"
+                                    }
+                                },
+                                tayang: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.tayang"
+                                    }
+                                },
+                                credit: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.credit"
+                                    }
+                                },
+                                objectivitasId: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.adsObjectivitasId"
+                                    }
+                                },
+                                objectivitasIdNameId: {
+                                    $let: {
+                                        "vars": {
+                                            adsobjectivitas: {
+                                                "$arrayElemAt": [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                                        },
+                                                        "in": "$$tmp.adsobjectivitas_data"
+                                                    }
+                                                }, 0]
+                                            }
+                                        },
+                                        "in": "$$adsobjectivitas.name_id"
+                                    }
+                                },
+                                objectivitasIdNameEn: {
+                                    $let: {
+                                        "vars": {
+                                            adsobjectivitas: {
+                                                "$arrayElemAt": [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                                        },
+                                                        "in": "$$tmp.adsobjectivitas_data"
+                                                    }
+                                                }, 0]
+                                            }
+                                        },
+                                        "in": "$$adsobjectivitas.name_en"
+                                    }
+                                },
+                                audiensFrekuensi: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.audiensFrekuensi"
+                                    }
+                                },
+                                status: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: [{
+                                                        "$let": {
+                                                            "vars": {
+                                                                "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                                            },
+                                                            "in": "$$tmp.status"
+                                                        }
+                                                    }, 'DRAFT'] },
+                                                then: 'DRAFT',
+                                            },
+                                            {
+                                                case: {
+                                                    $or: [{
+                                                        $eq: [{
+                                                            "$let": {
+                                                                "vars": {
+                                                                    "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                                                },
+                                                                "in": "$$tmp.status"
+                                                            }
+                                                        }, 'FINISH']
+                                                    }, {
+                                                        $eq: [{
+                                                            "$let": {
+                                                                "vars": {
+                                                                    "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                                                },
+                                                                "in": "$$tmp.status"
+                                                            }
+                                                        }, 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
+                                                then: 'IN_ACTIVE',
+                                            },
+                                            {
+                                                case: {
+                                                    $or: [{
+                                                        $eq: [{
+                                                            "$let": {
+                                                                "vars": {
+                                                                    "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                                                },
+                                                                "in": "$$tmp.status"
+                                                            }
+                                                        }, 'APPROVE'] }, { $eq: ['$status', 'ACTIVE'] }] },
+                                                then: 'ACTIVE',
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: [{
+                                                        "$let": {
+                                                            "vars": {
+                                                                "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                                            },
+                                                            "in": "$$tmp.status"
+                                                        }
+                                                    }, 'UNDER_REVIEW'] },
+                                                then: 'UNDER_REVIEW',
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                }, 
+                                dayAds: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$_id", 0] },
+                                        },
+                                        "in": "$$tmp.dayAds"
+                                    }
+                                },
+                            }
+                        }
+                    ],
+                    viewed: viewedFacet,
+                    reach: reachFacet,
+                    impresi: impresiFacet,
+                    CTA: CTAFacet,
+                    CTACount: CTACountFacet,
+                    viewTime: viewTimeFacet,
+                    clickTime: clickTimeFacet,
+                    userAdsAge: userAds_Age_Facet,
+                    userAdsGender: userAds_Gender_Facet,
+                    userAdsArea: userAds_Area_Facet,
+                    userAdsInterest: userAds_Interest_Facet,
+                    userAds: userAdsFacet,
+                }
+            },
+            {
+                $project: {
+                    adsDetail: { "$arrayElemAt": ["$adsDetail", 0] },
+                    summary: {
+                        Totalimpresi: {
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$viewed", 0] },
+                                },
+                                "in": "$$tmp.impresi"
+                            }
+                        },
+                        Totalreach: {
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$viewed", 0] },
+                                },
+                                "in": "$$tmp.reach"
+                            }
+                        },
+                        TotalCTA: {
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$CTACount", 0] },
+                                },
+                                "in": "$$tmp.CTACount"
+                            }
+                        },
+                        CTR: {
+                            "$concat": [{
+                                "$toString": {
+                                    "$multiply": [{
+                                        "$divide": [{
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": { "$arrayElemAt": ["$CTACount", 0] },
+                                                },
+                                                "in": "$$tmp.CTACount"
+                                            }
+                                        }, {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$viewed", 0] },
+                                                    },
+                                                    "in": "$$tmp.reach"
+                                                }
+                                            }]
+                                    }, 100]
+                                }
+                            }, "", "%"]
+                        },
+                        impresi: "$impresi",
+                        reach: "$reach",
+                        CTA: "$CTA",
+                    },
+                    saldoKredit: {
+                        $sum: [
+                            {
+                                $convert: {
+                                    input: { "$arrayElemAt": ['$viewTime.count', 0] },
+                                    to: "int",
+                                    onError: 0,
+                                    onNull: 0
+                                }
+                            },
+                            {
+                                $convert: {
+                                    input: { "$arrayElemAt": ['$clickTime.count', 0] },
+                                    to: "int",
+                                    onError: 0,
+                                    onNull: 0
+                                }
+                            }
+                        ]
+                    },
+                    userAds: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userAds", 0] },
+                            },
+                            "in": "$$tmp.adsViewCount"
+                        }
+                    },
+                    userAdsAge: {
+                        "$map": {
+                            "input": { "$range": [0, { "$size": "$userAdsAge" }] },
+                            "in": {
+                                "name": {
+                                    "$arrayElemAt": ["$userAdsAge._id", "$$this"]
+                                },
+                                "count": {
+                                    "$arrayElemAt": ["$userAdsAge.ageCount", "$$this"]
+                                },
+                                "persentase": {
+                                    "$multiply": [{
+                                        "$divide": [{
+                                            "$arrayElemAt": ["$userAdsAge.ageCount", "$$this"]
+                                        }, {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$userAds", 0] },
+                                                    },
+                                                    "in": "$$tmp.adsViewCount"
+                                                }
+                                            }]
+                                    }, 100]
+                                },
+                                "persentaseText": {
+                                    "$concat": [{
+                                        "$toString": {
+                                            "$multiply": [{
+                                                "$divide": [{
+                                                    "$arrayElemAt": ["$userAdsAge.ageCount", "$$this"]
+                                                }, {
+                                                        "$let": {
+                                                            "vars": {
+                                                                "tmp": { "$arrayElemAt": ["$userAds", 0] },
+                                                            },
+                                                            "in": "$$tmp.adsViewCount"
+                                                        }
+                                                    }]
+                                            }, 100]
+                                        }
+                                    }, "", "%"]
+                                }
+                            }
+                        }
+                    },
+                    userAdsGender: {
+                        "$map": {
+                            "input": { "$range": [0, { "$size": "$userAdsGender" }] },
+                            "in": {
+                                "name": {
+                                    "$arrayElemAt": ["$userAdsGender._id", "$$this"]
+                                },
+                                "count": {
+                                    "$arrayElemAt": ["$userAdsGender.genderCount", "$$this"]
+                                },
+                                "persentase": {
+                                    "$multiply": [{
+                                        "$divide": [{
+                                            "$arrayElemAt": ["$userAdsGender.genderCount", "$$this"]
+                                        }, {
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": { "$arrayElemAt": ["$userAds", 0] },
+                                                },
+                                                "in": "$$tmp.adsViewCount"
+                                            }
+                                        }]
+                                    }, 100]
+                                },
+                                "persentaseText": {
+                                    "$concat": [{
+                                        "$toString": {
+                                            "$multiply": [{
+                                                "$divide": [{
+                                                    "$arrayElemAt": ["$userAdsGender.genderCount", "$$this"]
+                                                }, {
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$userAds", 0] },
+                                                        },
+                                                        "in": "$$tmp.adsViewCount"
+                                                    }
+                                                }]
+                                            }, 100]
+                                        }
+                                    }, "", "%"]
+                                }
+                            }
+                        }
+                    },
+                    userAdsArea: {
+                        "$map": {
+                            "input": { "$range": [0, { "$size": "$userAdsArea" }] },
+                            "in": {
+                                "name": {
+                                    "$arrayElemAt": ["$userAdsArea._id", "$$this"]
+                                },
+                                "count": {
+                                    "$arrayElemAt": ["$userAdsArea.areasCount", "$$this"]
+                                },
+                                "persentase": {
+                                    "$multiply": [{
+                                        "$divide": [{
+                                            "$arrayElemAt": ["$userAdsArea.areasCount", "$$this"]
+                                        }, {
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": { "$arrayElemAt": ["$userAds", 0] },
+                                                },
+                                                "in": "$$tmp.adsViewCount"
+                                            }
+                                        }]
+                                    }, 100]
+                                },
+                                "persentaseText": {
+                                    "$concat": [{
+                                        "$toString": {
+                                            "$multiply": [{
+                                                "$divide": [{
+                                                    "$arrayElemAt": ["$userAdsArea.areasCount", "$$this"]
+                                                }, {
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$userAds", 0] },
+                                                        },
+                                                        "in": "$$tmp.adsViewCount"
+                                                    }
+                                                }]
+                                            }, 100]
+                                        }
+                                    }, "", "%"]
+                                }
+                            }
+                        }
+                    },
+                    userAdsInterest: {
+                        "$map": {
+                            "input": { "$range": [0, { "$size": "$userAdsInterest" }] },
+                            "in": {
+                                "name": {
+                                    "$arrayElemAt": ["$userAdsInterest._id", "$$this"]
+                                },
+                                "count": {
+                                    "$arrayElemAt": ["$userAdsInterest.interestCount", "$$this"]
+                                },
+                                "persentase": {
+                                    "$multiply": [{
+                                        "$divide": [{
+                                            "$arrayElemAt": ["$userAdsInterest.interestCount", "$$this"]
+                                        }, {
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": { "$arrayElemAt": ["$userAds", 0] },
+                                                },
+                                                "in": "$$tmp.adsViewCount"
+                                            }
+                                        }]
+                                    }, 100]
+                                },
+                                "persentaseText": {
+                                    "$concat": [{
+                                        "$toString": {
+                                            "$multiply": [{
+                                                "$divide": [{
+                                                    "$arrayElemAt": ["$userAdsInterest.interestCount", "$$this"]
+                                                }, {
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$userAds", 0] },
+                                                        },
+                                                        "in": "$$tmp.adsViewCount"
+                                                    }
+                                                }]
+                                            }, 100]
+                                        }
+                                    }, "", "%"]
+                                }
+                            }
+                        }
+                    },
+                    // userAdsGender_: "$userAdsGender",
+                    // userAdsArea_: "$userAdsArea",
+                    // userAdsInterest_: "$userAdsInterest"
+                }, 
+            },
+        ]);
         return query;
     }
 

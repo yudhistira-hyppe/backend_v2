@@ -143,7 +143,7 @@ export class MediavideosService {
     return await this.MediavideosModel.find({ apsaraId: { $eq: null }, mediaBasePath: { $ne: null } }).exec();
   }
 
-  async getDataMediavideosSeaweedOne(postID: string): Promise<Mediavideos[]> {
+  async getDataMediavideosSeaweedOne(postID:string): Promise<Mediavideos[]> {
     return await this.MediavideosModel.find({ apsaraId: { $eq: null }, mediaBasePath: { $ne: null }, postID: postID }).exec();
   }
 }

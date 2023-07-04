@@ -62,6 +62,7 @@ import { UserbankaccountsService } from '../trans/userbankaccounts/userbankaccou
 import { OssService } from '../stream/oss/oss.service';
 import { CreateMediaprofilepictsDto } from 'src/content/mediaprofilepicts/dto/create-mediaprofilepicts.dto';
 import { FriendListService } from 'src/content/friend_list/friend_list.service';
+import { CreateUserauthDto } from 'src/trans/userauths/dto/create-userauth.dto';
 
 const sharp = require('sharp');
 const convert = require('heic-convert');
@@ -857,10 +858,18 @@ export class AuthController {
               'Unabled to proceed, Failed update devices userauths. Error:' + error,
             );
           }
-          messages_response = 'Login successful';
         }
 
+        messages_response = 'Login successful';
         var datasetting = await this.settingsService.findAll();
+
+        var CreateUserauthDto_ = new CreateUserauthDto();
+        if (LoginRequest_.regSrc == undefined) {
+          CreateUserauthDto_.loginSrc = data_userauths.regSrc.toString();
+        }else{
+          CreateUserauthDto_.loginSrc = LoginRequest_.regSrc.toString();
+        }
+        this.userauthsService.update2(data_userauths._id.toString(), CreateUserauthDto_);
 
         var ProfileDTO_ = new ProfileDTO();
         ProfileDTO_ = await this.utilsService.generateProfile(LoginRequest_.email, 'LOGIN');

@@ -6317,13 +6317,17 @@ export class PostContentService {
     return await this.videoService.getDataMediavideosSeaweed();
   }
 
+  async getDataMediavidSeaweedOne(postID: string): Promise<Mediavideos[]> {
+    return await this.videoService.getDataMediavideosSeaweedOne(postID);
+  }
+
   async getDataMediadiariesSeaweed(): Promise<Mediadiaries[]> {
     return await this.diaryService.getDataMediadiariesSeaweed();
   }
 
-  async getDataMediavidSeaweedOne(postID: string): Promise<Mediavideos[]> {
-    return await this.videoService.getDataMediavideosSeaweedOne(postID);
-  }
+  // async getDataMediavidSeaweedOne(postID: string): Promise<Mediavideos[]> {
+  //   return await this.videoService.getDataMediavideosSeaweedOne(postID);
+  // }
 
   async getSeaweedFile(media: string): Promise<any> {
     var data = await this.seaweedfsService.read(media.replace('/localrepo', ''));

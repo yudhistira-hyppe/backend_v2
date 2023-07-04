@@ -182,6 +182,52 @@ export class MediamusicController {
     return Response;
   }
 
+  // @UseGuards(JwtAuthGuard)
+  // @Get('api/music/:id')
+  // async getOneMusicPost(@Param('id') id: string, @Headers() headers) {
+  //   if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+  //     await this.errorHandler.generateNotAcceptableException(
+  //       'Unauthorized',
+  //     );
+  //   }
+  //   if (!(await this.utilsService.validasiTokenEmail(headers))) {
+  //     await this.errorHandler.generateNotAcceptableException(
+  //       'Unabled to proceed email header dan token not match',
+  //     );
+  //   }
+  //   if (id == undefined) {
+  //     await this.errorHandler.generateNotAcceptableException(
+  //       'Unabled to proceed param id is required',
+  //     );
+  //   }
+  //   var data = await this.mediamusicService.findOneDetail_(id);
+  //   if (data.length>0){
+  //     if (data[0].apsaraMusic != undefined) {
+  //       var dataApsaraMusic = await this.mediamusicService.getVideoApsaraSingle(data[0].apsaraMusic)
+  //       var apsaraMusicData = {
+  //         PlayURL: dataApsaraMusic.PlayInfoList.PlayInfo[0].PlayURL,
+  //         Duration: dataApsaraMusic.PlayInfoList.PlayInfo[0].Duration,
+  //       }
+  //       data[0]["music"] = apsaraMusicData;
+  //     }
+  //     if (data[0].apsaraThumnail != undefined) {
+  //       var dataApsaraThumnail = await this.mediamusicService.getImageApsara([data[0].apsaraThumnail])
+  //       data[0]["apsaraThumnailUrl"] = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == data[0].apsaraThumnail).URL;
+  //     }
+  //   }
+  //   console.log("data",data);
+  //   var Response = {
+  //     data: data,
+  //     response_code: 202,
+  //     messages: {
+  //       info: [
+  //         "Get music succesfully"
+  //       ]
+  //     }
+  //   }
+  //   return Response;
+  // }
+
   @UseGuards(JwtAuthGuard)
   @Get('api/music/:id')
   async getOneMusicPost(@Param('id') id: string, @Headers() headers) {
@@ -200,8 +246,9 @@ export class MediamusicController {
         'Unabled to proceed param id is required',
       );
     }
-    var data = await this.mediamusicService.findOneDetail(id);
-    if (data.length>0){
+
+    var data = await this.mediamusicService.findByMusicId(id);
+    if (data.length > 0) {
       if (data[0].apsaraMusic != undefined) {
         var dataApsaraMusic = await this.mediamusicService.getVideoApsaraSingle(data[0].apsaraMusic)
         var apsaraMusicData = {
@@ -215,7 +262,6 @@ export class MediamusicController {
         data[0]["apsaraThumnailUrl"] = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == data[0].apsaraThumnail).URL;
       }
     }
-    console.log("data",data);
     var Response = {
       data: data,
       response_code: 202,

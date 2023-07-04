@@ -8324,7 +8324,6 @@ export class AdsService {
 
         var pipeline = [];
 
-
         if (startdate === undefined && enddate === undefined) {
 
             pipeline.push({
@@ -8404,10 +8403,14 @@ export class AdsService {
 
                         "report": [
                             {
+                                "$unwind":
+                                {
+                                    path:"$reportedUser"
+                                }
+                            },
+                            {
                                 $addFields: {
-                                    createdAtReportLast: {
-                                        $last: "$reportedUser.createdAt"
-                                    },
+                                    createdAtReportLast: "$reportedUser.createdAt",
                                     reportStatusLast: {
                                         $cond: {
                                             if: {
@@ -8432,24 +8435,46 @@ export class AdsService {
                                 }
                             },
                             {
-                                $match: {
-
-                                    reportedUser: {
+                                $match: 
+                                {
+                                  "$and":
+                                  [
+                                    {
+                                      reportedUser: {
                                         $ne: null
+                                      },
                                     },
-                                    isActive: true,
-                                    contentModeration: false
+                                    {
+                                      "reportedUser.active":true
+                                    },
+                                    {
+                                      isActive: true,
+                                    },
+                                    // {
+                                    //   contentModeration: false
+                                    // }
+                                  ]
                                 }
                             },
-                            {
-                                $match: {
-                                    reportedUser: {
-                                        $ne: []
-                                    },
-                                    isActive: true,
-                                    contentModeration: false
-                                }
-                            },
+                            // {
+                            //     $match: {
+
+                            //         reportedUser: {
+                            //             $ne: null
+                            //         },
+                            //         isActive: true,
+                            //         contentModeration: false
+                            //     }
+                            // },
+                            // {
+                            //     $match: {
+                            //         reportedUser: {
+                            //             $ne: []
+                            //         },
+                            //         isActive: true,
+                            //         contentModeration: false
+                            //     }
+                            // },
 
                             {
                                 $group: {
@@ -8604,10 +8629,14 @@ export class AdsService {
 
                         "report": [
                             {
+                                "$unwind":
+                                {
+                                    path:"$reportedUser"
+                                }
+                            },
+                            {
                                 $addFields: {
-                                    createdAtReportLast: {
-                                        $last: "$reportedUser.createdAt"
-                                    },
+                                    createdAtReportLast: "$reportedUser.createdAt",
                                     reportStatusLast: {
                                         $cond: {
                                             if: {
@@ -8632,24 +8661,46 @@ export class AdsService {
                                 }
                             },
                             {
-                                $match: {
-
-                                    reportedUser: {
+                                $match: 
+                                {
+                                  "$and":
+                                  [
+                                    {
+                                      reportedUser: {
                                         $ne: null
+                                      },
                                     },
-                                    isActive: true,
-                                    contentModeration: false
+                                    {
+                                      "reportedUser.active":true
+                                    },
+                                    {
+                                        isActive: true,
+                                    },
+                                    // {
+                                    //   contentModeration: false
+                                    // }
+                                  ]
                                 }
                             },
-                            {
-                                $match: {
-                                    reportedUser: {
-                                        $ne: []
-                                    },
-                                    isActive: true,
-                                    contentModeration: false
-                                }
-                            },
+                            // {
+                            //     $match: {
+
+                            //         reportedUser: {
+                            //             $ne: null
+                            //         },
+                            //         isActive: true,
+                            //         contentModeration: false
+                            //     }
+                            // },
+                            // {
+                            //     $match: {
+                            //         // reportedUser: {
+                            //         //     $ne: []
+                            //         // },
+                            //         isActive: true,
+                            //         contentModeration: false
+                            //     }
+                            // },
                             { $match: { createdAtReportLast: { "$gte": startdate, "$lte": dateend } } },
                             {
                                 $group: {

@@ -81,4 +81,15 @@ export class TemplatesRepoService {
     }).exec();
     return deletedCat;
   }
+
+  async updateAdsNotification(event: string, category: string, CreateTemplatesRepoDto_: CreateTemplatesRepoDto) {
+    const _CreateTemplatesRepoDto_ = this.TemplatesRepoModel.findOneAndUpdate(
+      { event: event, category: category },
+      CreateTemplatesRepoDto_);
+    return _CreateTemplatesRepoDto_;
+  }
+
+  async getAdsNotification(event: string, category: string): Promise<TemplatesRepo> {
+    return await this.TemplatesRepoModel.findOne({ event: event, category: category }).exec();
+  }
 }

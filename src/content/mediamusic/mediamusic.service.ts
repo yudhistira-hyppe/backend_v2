@@ -713,6 +713,35 @@ export class MediamusicService {
     return query;
   }
 
+  async findByMusicId(_id: string) {
+    var ObjectId_ = new mongoose.Types.ObjectId(_id);
+    const query = await this.MediamusicModel.aggregate(
+      [
+        {
+          $match:
+          {
+            "_id": ObjectId_
+          }
+        },
+        {
+          $project: {
+            musicTitle: '$musicTitle',
+            artistName: '$artistName',
+            albumName: '$albumName',
+            isActive: '$isActive',
+            genre: '$genre',
+            theme: '$theme',
+            mood: '$mood',
+            releaseDate: '$releaseDate',
+            apsaraMusic: '$apsaraMusic',
+            apsaraThumnail: '$apsaraThumnail',
+          }
+        },
+      ]
+    );
+    return query;
+  }
+
   async updateMusic(_id: string, MediamusicDto_: MediamusicDto) {
     this.MediamusicModel.updateOne(
       { _id: Object(_id) },
@@ -1124,7 +1153,7 @@ export class MediamusicService {
     let requestOption = {
       method: 'POST'
     };
-
+    console.log(ids);
     let result = await client.request('GetPlayInfo', params, requestOption);
     let xres = new ApsaraPlayResponse();
     //this.logger.log('getVideoApsaraSingle >>> response: ' + JSON.stringify(result));

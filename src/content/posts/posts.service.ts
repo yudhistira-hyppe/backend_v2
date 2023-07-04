@@ -106,6 +106,686 @@ export class PostsService {
   async findByPostId(postID: string): Promise<Posts> {
     return this.PostsModel.findOne({ postID: postID }).exec();
   }
+
+  async findByMusicId(musicId: string) {
+    var ObjectId_ = new mongoose.Types.ObjectId(musicId);
+    const query = await this.PostsModel.aggregate([
+      {
+        $match:
+        {
+          "musicId": ObjectId_
+        },
+      },
+      {
+        $lookup: {
+          from: 'contentevents',
+          let: {
+            "postID": "$postID"
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and:[
+                    { $eq: ["$postID", "$$postID"] },
+                    { $eq: ["$eventType", "VIEW"] },
+                    { $eq: ["$event", "ACCEPT"] }
+                  ]
+                },
+              },
+            },
+            {
+              $lookup: {
+                from: 'userbasics',
+                as: 'userbasics_data',
+                let: {
+                  local_id: "$senderParty"
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $expr: {
+                        $eq: ['$email', '$$local_id']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      _id: 1,
+                      email: 1,
+                      fullName: 1,
+                      gender: {
+                        $switch: {
+                          branches: [
+                            {
+                              case: {
+                                $or: [
+                                  { $eq: ["$gender", "Male"] },
+                                  { $eq: ["$gender", "Laki-laki"] },
+                                  { $eq: ["$gender", "MALE"] }
+                                ]
+                              }, then: "Laki-laki"
+                            },
+                            {
+                              case: {
+                                $or: [
+                                  { $eq: ["$gender", " Perempuan"] },
+                                  { $eq: ["$gender", "Perempuan"] },
+                                  { $eq: ["$gender", "PEREMPUAN"] },
+                                  { $eq: ["$gender", "FEMALE"] },
+                                  { $eq: ["$gender", " FEMALE"] }
+                                ]
+                              }, then: "Perempuan"
+                            }
+                          ],
+                          "default": "Lainnya"
+                        }
+                      },
+                      age: {
+                        $cond: {
+                          if: {
+                            $and: ['$dob', {
+                              $ne: ["$dob", ""]
+                            }]
+                          },
+                          then: {
+                            $toInt: {
+                              $divide: [{
+                                $subtract: [new Date(), {
+                                  $toDate: "$dob"
+                                }]
+                              }, (365 * 24 * 60 * 60 * 1000)]
+                            }
+                          },
+                          else: 0
+                        }
+                      },
+                      ageQualication: {
+                        $switch: {
+                          branches: [
+                            {
+                              case: {
+                                $and: [{
+                                  $gte: [{
+                                    $cond: {
+                                      if: {
+                                        $and: ['$dob', {
+                                          $ne: ["$dob", ""]
+                                        }]
+                                      },
+                                      then: {
+                                        $toInt: {
+                                          $divide: [{
+                                            $subtract: [new Date(), {
+                                              $toDate: "$dob"
+                                            }]
+                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                        }
+                                      },
+                                      else: 0
+                                    }
+                                  }, 1]
+                                }, {
+                                  $lte: [{
+                                    $cond: {
+                                      if: {
+                                        $and: ['$dob', {
+                                          $ne: ["$dob", ""]
+                                        }]
+                                      },
+                                      then: {
+                                        $toInt: {
+                                          $divide: [{
+                                            $subtract: [new Date(), {
+                                              $toDate: "$dob"
+                                            }]
+                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                        }
+                                      },
+                                      else: 0
+                                    }
+                                  }, 14]
+                                }]
+                              },
+                              then: "< 14 Tahun"
+                            },
+                            {
+                              case: {
+                                $and: [{
+                                  $gte: [{
+                                    $cond: {
+                                      if: {
+                                        $and: ['$dob', {
+                                          $ne: ["$dob", ""]
+                                        }]
+                                      },
+                                      then: {
+                                        $toInt: {
+                                          $divide: [{
+                                            $subtract: [new Date(), {
+                                              $toDate: "$dob"
+                                            }]
+                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                        }
+                                      },
+                                      else: 0
+                                    }
+                                  }, 14]
+                                }, {
+                                  $lte: [{
+                                    $cond: {
+                                      if: {
+                                        $and: ['$dob', {
+                                          $ne: ["$dob", ""]
+                                        }]
+                                      },
+                                      then: {
+                                        $toInt: {
+                                          $divide: [{
+                                            $subtract: [new Date(), {
+                                              $toDate: "$dob"
+                                            }]
+                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                        }
+                                      },
+                                      else: 0
+                                    }
+                                  }, 24]
+                                }]
+                              },
+                              then: "14 - 24 Tahun"
+                            },
+                            {
+                              case: {
+                                $and: [{
+                                  $gte: [{
+                                    $cond: {
+                                      if: {
+                                        $and: ['$dob', {
+                                          $ne: ["$dob", ""]
+                                        }]
+                                      },
+                                      then: {
+                                        $toInt: {
+                                          $divide: [{
+                                            $subtract: [new Date(), {
+                                              $toDate: "$dob"
+                                            }]
+                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                        }
+                                      },
+                                      else: 0
+                                    }
+                                  }, 25]
+                                }, {
+                                  $lte: [{
+                                    $cond: {
+                                      if: {
+                                        $and: ['$dob', {
+                                          $ne: ["$dob", ""]
+                                        }]
+                                      },
+                                      then: {
+                                        $toInt: {
+                                          $divide: [{
+                                            $subtract: [new Date(), {
+                                              $toDate: "$dob"
+                                            }]
+                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                        }
+                                      },
+                                      else: 0
+                                    }
+                                  }, 35]
+                                }]
+                              },
+                              then: "24 - 35 Tahun"
+                            },
+                            {
+                              case: {
+                                $and: [{
+                                  $gte: [{
+                                    $cond: {
+                                      if: {
+                                        $and: ['$dob', {
+                                          $ne: ["$dob", ""]
+                                        }]
+                                      },
+                                      then: {
+                                        $toInt: {
+                                          $divide: [{
+                                            $subtract: [new Date(), {
+                                              $toDate: "$dob"
+                                            }]
+                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                        }
+                                      },
+                                      else: 0
+                                    }
+                                  }, 35]
+                                }, {
+                                  $lte: [{
+                                    $cond: {
+                                      if: {
+                                        $and: ['$dob', {
+                                          $ne: ["$dob", ""]
+                                        }]
+                                      },
+                                      then: {
+                                        $toInt: {
+                                          $divide: [{
+                                            $subtract: [new Date(), {
+                                              $toDate: "$dob"
+                                            }]
+                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                        }
+                                      },
+                                      else: 0
+                                    }
+                                  }, 44]
+                                }]
+                              },
+                              then: "35 - 44 Tahun"
+                            },
+                            {
+                              case: {
+                                $gt: [{
+                                  $cond: {
+                                    if: {
+                                      $and: ['$dob', {
+                                        $ne: ["$dob", ""]
+                                      }]
+                                    },
+                                    then: {
+                                      $toInt: {
+                                        $divide: [{
+                                          $subtract: [new Date(), {
+                                            $toDate: "$dob"
+                                          }]
+                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                      }
+                                    },
+                                    else: 0
+                                  }
+                                }, 43]
+                              },
+                              then: "> 44 Tahun"
+                            },
+                          ],
+                          "default": "Other"
+                        }
+                      },
+                      userInterests_array: {
+                        $map: {
+                          input: {
+                            $map: {
+                              input: "$userInterests",
+                              in: {
+                                $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                              },
+                            }
+                          },
+                          in: "$$this.v"
+                        }
+                      },
+                      states: 1,
+                    }
+                  },
+                  {
+                    $lookup: {
+                      from: "interests_repo",
+                      localField: "userInterests_array",
+                      foreignField: "_id",
+                      as: "interests"
+                    }
+                  },
+                  {
+                    $lookup: {
+                      from: 'areas',
+                      as: 'areas',
+                      let: {
+                        local_id: "$states.$id"
+                      },
+                      pipeline: [
+                        {
+                          $match:
+                          {
+                            $expr: {
+                              $eq: ['$_id', '$$local_id']
+                            }
+                          }
+                        },
+                      ]
+                    }
+                  },
+                ],
+              },
+            },
+            {
+              $project: {
+                senderParty:1,
+                gender: {
+                  $ifNull: [
+                    {
+                      "$let": {
+                        "vars": {
+                          "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                        },
+                        "in": "$$tmp.gender"
+                      }
+                    }, "Lainnya"]
+                },
+                ageQualication: {
+                  "$let": {
+                    "vars": {
+                      "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                    },
+                    "in": "$$tmp.ageQualication"
+                  }
+                },
+                interest: {
+                  $map: {
+                    input: {
+                      $map: {
+                        input: {
+                          "$let": {
+                            "vars": {
+                              "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.interests"
+                          }
+                        },
+                        in: {
+                          $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                        },
+                      }
+                    },
+                    in: "$$this.v"
+                  }
+                },
+                areas: {
+                  $let: {
+                    "vars": {
+                      userauths: {
+                        "$arrayElemAt": [{
+                          "$let": {
+                            "vars": {
+                              "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.areas"
+                          }
+                        }, 0]
+                      }
+                    },
+                    "in": "$$userauths.stateName"
+                  }
+                },
+              }
+            },
+          ],
+          as: 'contentevents_data'
+        }
+      },
+      {
+        $unwind: {
+          path: "$contentevents_data",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $facet: {
+          wilayah: [
+            {
+              $group: {
+                _id: "$contentevents_data.areas",
+                count: {
+                  $sum: 1
+                }
+              }
+            },
+          ],
+          gender: [
+            {
+              $group: {
+                _id: "$contentevents_data.gender",
+                count: {
+                  $sum: 1
+                }
+              }
+            }
+          ],
+          used: [
+            {
+              $group: {
+                _id: "$postID",
+                count: {
+                  $sum: 1
+                }
+              }
+            }
+          ],
+          view: [
+            {
+              $group: {
+                _id: "$postID",
+                count: {
+                  $sum: 1
+                }
+              }
+            }
+          ],
+          age: [
+            {
+              $group: {
+                _id: "$postID",
+                count: {
+                  $sum: 1
+                }
+              }
+            }
+          ]
+        }
+      }
+      // {
+      //   $unwind: {
+      //     path: "$contentevents_data",
+      //     preserveNullAndEmptyArrays: true
+      //   }
+      // },
+      // {
+      //   $facet: {
+      //     "musicId": [
+      //       {
+      //         "$group": {
+      //           "_id": "$musicId",
+
+      //         }
+      //       }
+      //     ],
+      //     "musicTitle": [
+      //       {
+      //         "$group": {
+      //           "_id": "$mediamusic_data.musicTitle",
+
+      //         }
+      //       }
+      //     ],
+      //     "isActive": [
+      //       {
+      //         "$group": {
+      //           "_id": "$mediamusic_data.isActive",
+
+      //         }
+      //       }
+      //     ],
+      //     "artistName": [
+      //       {
+      //         "$group": {
+      //           "_id": "$mediamusic_data.artistName",
+
+      //         }
+      //       }
+      //     ],
+      //     "albumName": [
+      //       {
+      //         "$group": {
+      //           "_id": "$mediamusic_data.albumName",
+
+      //         }
+      //       }
+      //     ],
+      //     "genre": [
+      //       {
+      //         "$group": {
+      //           "_id": "$mediamusic_data.genre",
+
+      //         }
+      //       }
+      //     ],
+      //     "theme": [
+      //       {
+      //         "$group": {
+      //           "_id": "$mediamusic_data.theme",
+
+      //         }
+      //       }
+      //     ],
+      //     "mood": [
+      //       {
+      //         "$group": {
+      //           "_id": "$mediamusic_data.mood",
+
+      //         }
+      //       }
+      //     ],
+      //     "releaseDate": [
+      //       {
+      //         "$group": {
+      //           "_id": "$mediamusic_data.releaseDate",
+
+      //         }
+      //       }
+      //     ],
+      //     "apsaraMusic": [
+      //       {
+      //         "$group": {
+      //           "_id": "$mediamusic_data.apsaraMusic",
+
+      //         }
+      //       }
+      //     ],
+      //     "apsaraThumnail": [
+      //       {
+      //         "$group": {
+      //           "_id": "$mediamusic_data.apsaraThumnail",
+
+      //         }
+      //       }
+      //     ],
+      //     "wilayah": [
+      //       {
+      //         "$group": {
+      //           "_id": "$contentevents_data.areas",
+      //           "count": {
+      //             "$sum": 1
+      //           }
+      //         }
+      //       }
+      //     ],
+      //     "gender": [
+      //       {
+      //         "$group": {
+      //           "_id": "$contentevents_data.gender",
+      //           "count": {
+      //             "$sum": 1
+      //           }
+      //         }
+      //       }
+      //     ],
+      //     "used": [
+      //       {
+      //         "$group": {
+      //           "_id": "$postID",
+      //           "count": {
+      //             "$sum": 1
+      //           }
+      //         }
+      //       }
+      //     ],
+      //     "view": [
+      //       {
+      //         "$group": {
+      //           "_id": "$contentevents_data._id",
+      //           "count": {
+      //             "$sum": 1
+      //           }
+      //         }
+      //       }
+      //     ],
+      //     "age": [
+      //       {
+      //         "$group": {
+      //           "_id": "$contentevents_data.ageQualication",
+      //           "count": {
+      //             "$sum": 1
+      //           }
+      //         }
+      //       }
+      //     ]
+      //   }
+      // },
+      // {
+      //   $project: {
+
+      //     postID: {
+      //       $arrayElemAt: ['$postID._id', 0]
+      //     },
+      //     musicTitle: {
+      //       $arrayElemAt: ['$musicTitle', 0]
+      //     },
+      //     artistName: {
+      //       $arrayElemAt: ['$artistName', 0]
+      //     },
+      //     albumName: {
+      //       $arrayElemAt: ['$albumName', 0]
+      //     },
+      //     isActive: {
+      //       $arrayElemAt: ['$isActive', 0]
+      //     },
+      //     genre: {
+      //       $arrayElemAt: ['$genre', 0]
+      //     },
+      //     theme: {
+      //       $arrayElemAt: ['$theme', 0]
+      //     },
+      //     mood: {
+      //       $arrayElemAt: ['$mood', 0]
+      //     },
+      //     releaseDate: {
+      //       $arrayElemAt: ['$releaseDate', 0]
+      //     },
+      //     apsaraMusic: {
+      //       $arrayElemAt: ['$apsaraMusic', 0]
+      //     },
+      //     apsaraThumnail: {
+      //       $arrayElemAt: ['$apsaraThumnail', 0]
+      //     },
+      //     view: {
+      //       $size: '$view'
+      //     },
+      //     used: {
+      //       $size: '$used'
+      //     },
+      //     gender: 1,
+      //     wilayah: 1,
+      //     age: 1,
+      //   }
+      // },
+    ]);
+    return query;
+  }
+
   async updateByPostId(
     postID: string,
     CreatePostsDto: CreatePostsDto,
@@ -6678,10 +7358,14 @@ export class PostsService {
 
             "report": [
               {
+                "$unwind":
+                {
+                  path:"$reportedUser"
+                }
+              },
+              {
                 $addFields: {
-                  createdAtReportLast: {
-                    $last: "$reportedUser.createdAt"
-                  },
+                  createdAtReportLast: "$reportedUser.createdAt",
                   reportStatusLast: {
                     $cond: {
                       if: {
@@ -6706,24 +7390,46 @@ export class PostsService {
                 }
               },
               {
-                $match: {
+                $match: 
+                {
+                  "$and":
+                  [
+                    {
+                      reportedUser: {
+                        $ne: null
+                      },
+                    },
+                    {
+                      "reportedUser.active":true
+                    },
+                    {
+                      active: true,
+                    },
+                    // {
+                    //   contentModeration: false
+                    // }
+                  ]
+                }
+              },
+              // {
+              //   $match: {
 
-                  reportedUser: {
-                    $ne: null
-                  },
-                  active: true,
-                  // contentModeration: false
-                }
-              },
-              {
-                $match: {
-                  reportedUser: {
-                    $ne: []
-                  },
-                  active: true,
-                  // contentModeration: false
-                }
-              },
+              //     reportedUser: {
+              //       $ne: null
+              //     },
+              //     active: true,
+              //     // contentModeration: false
+              //   }
+              // },
+              // {
+              //   $match: {
+              //     reportedUser: {
+              //       $ne: []
+              //     },
+              //     active: true,
+              //     // contentModeration: false
+              //   }
+              // },
 
               {
                 $group: {
@@ -6877,10 +7583,14 @@ export class PostsService {
 
             "report": [
               {
+                "$unwind":
+                {
+                  path:"$reportedUser"
+                }
+              },
+              {
                 $addFields: {
-                  createdAtReportLast: {
-                    $last: "$reportedUser.createdAt"
-                  },
+                  createdAtReportLast: "$reportedUser.createdAt",
                   reportStatusLast: {
                     $cond: {
                       if: {
@@ -6905,24 +7615,46 @@ export class PostsService {
                 }
               },
               {
-                $match: {
+                $match: 
+                {
+                  "$and":
+                  [
+                    {
+                      reportedUser: {
+                        $ne: null
+                      },
+                    },
+                    {
+                      "reportedUser.active":true
+                    },
+                    {
+                      active: true,
+                    },
+                    // {
+                    //   contentModeration: false
+                    // }
+                  ]
+                }
+              },
+              // {
+              //   $match: {
 
-                  reportedUser: {
-                    $ne: null
-                  },
-                  active: true,
-                  contentModeration: false
-                }
-              },
-              {
-                $match: {
-                  reportedUser: {
-                    $ne: []
-                  },
-                  active: true,
-                  contentModeration: false
-                }
-              },
+              //     reportedUser: {
+              //       $ne: null
+              //     },
+              //     active: true,
+              //     contentModeration: false
+              //   }
+              // },
+              // {
+              //   $match: {
+              //     reportedUser: {
+              //       $ne: []
+              //     },
+              //     active: true,
+              //     contentModeration: false
+              //   }
+              // },
               { $match: { createdAtReportLast: { "$gte": startdate, "$lte": dateend } } },
               {
                 $group: {
