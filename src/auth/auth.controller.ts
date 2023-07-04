@@ -858,13 +858,13 @@ export class AuthController {
               'Unabled to proceed, Failed update devices userauths. Error:' + error,
             );
           }
-          messages_response = 'Login successful';
         }
 
+        messages_response = 'Login successful';
         var datasetting = await this.settingsService.findAll();
 
         var CreateUserauthDto_ = new CreateUserauthDto();
-        if (LoginRequest_.regSrc != undefined) {
+        if (LoginRequest_.regSrc == undefined) {
           CreateUserauthDto_.loginSrc = data_userauths.regSrc.toString();
         }else{
           CreateUserauthDto_.loginSrc = LoginRequest_.regSrc.toString();
