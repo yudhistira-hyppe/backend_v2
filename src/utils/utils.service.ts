@@ -2172,54 +2172,18 @@ export class UtilsService {
         username: user_userAuth.username.toString()
       };
 
-      regSrc = user_userAuth.regSrc;
+      payload = {
+        data: {
 
-      if (regSrc == "android") {
-        payload = {
-          data: {
-
-            title: titlein,
-            body: bodyin,
-            postID: postID_,
-            postType: postType
-          }
-        };
+          title: titlein,
+          body: bodyin,
+          postID: postID_,
+          postType: postType
+        }
       }
-      else if (regSrc == "iOS") {
-        payload = {
-          "notification": {
-            "title": titlein,
-            "body": JSON.stringify({
-              "title": titlein,
-              "body": bodyin,
-              "postID": postID_,
-              "postType": postType
-            })
-          }
-        };
-      }
-      else if (regSrc == "ios") {
-        payload = {
-          "notification": {
-            "title": titlein,
-            "body": JSON.stringify({
-              "title": titlein,
-              "body": bodyin,
-              "postID": postID_,
-              "postType": postType
-            })
-          }
-        };
-      } else {
-        payload = {
-          data: {
-
-            title: titlein,
-            body: bodyin,
-            postID: postID_,
-            postType: postType
-          }
-        };
+      var option = {
+        priority: "high",
+        contentAvailable: true
       }
 
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
@@ -2229,7 +2193,7 @@ export class UtilsService {
       datadevice = await this.userdevicesService.findActive(emailuserbasic);
       for (var i = 0; i < datadevice.length; i++) {
         var deviceid = datadevice[i].deviceID;
-        var adm = await admin.messaging().sendToDevice(deviceid, payload);
+        var adm = await admin.messaging().sendToDevice(deviceid, payload, option);
         console.log(adm);
         arraydevice.push(deviceid);
 
