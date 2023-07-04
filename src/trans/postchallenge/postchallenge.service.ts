@@ -20,6 +20,10 @@ export class PostchallengeService {
         return this.PostchallengeModel.findOne({ _id: new Types.ObjectId(id) }).exec();
     }
 
+    async findBypostID(postID: string): Promise<Postchallenge> {
+        return this.PostchallengeModel.findOne({ postID: postID }).exec();
+    }
+
     async find(): Promise<Postchallenge[]> {
         return this.PostchallengeModel.find().exec();
     }
@@ -30,5 +34,30 @@ export class PostchallengeService {
             throw new Error('Data is not found!');
         }
         return data;
+    }
+
+    async updatebYpostID(postID: string, Postchallenge_: Postchallenge): Promise<Postchallenge> {
+        let data = await this.PostchallengeModel.findByIdAndUpdate(postID, Postchallenge_, { new: true });
+        if (!data) {
+            throw new Error('Data is not found!');
+        }
+        return data;
+    }
+
+    async updatePostchallenge(id: string, score: number) {
+        this.PostchallengeModel.updateOne(
+            {
+
+                _id: new Types.ObjectId(id),
+            },
+            { $inc: { score: score } },
+            function (err, docs) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(docs);
+                }
+            },
+        );
     }
 }
