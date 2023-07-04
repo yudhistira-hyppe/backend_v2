@@ -103,16 +103,16 @@ export class UtilsService {
   }
 
   async generateNumberVoucher() {
-      const getRandomId = (min = 0, max = 500000) => {
-          min = Math.ceil(min);
-          max = Math.floor(max);
-          const num = Math.floor(Math.random() * (max - min + 1)) + min;
-          return num.toString().padStart(6, "0")
-      };
-      return getRandomId();
+    const getRandomId = (min = 0, max = 500000) => {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      const num = Math.floor(Math.random() * (max - min + 1)) + min;
+      return num.toString().padStart(6, "0")
+    };
+    return getRandomId();
   }
 
-  async getImageMode(width: number, height: number){
+  async getImageMode(width: number, height: number) {
     var mode = "LANDSCAPE";
     if (width > height) {
       mode = "LANDSCAPE";
@@ -357,11 +357,11 @@ export class UtilsService {
         var notification = {
           data: data_send,
         }
-        var option ={
+        var option = {
           priority: "high",
           contentAvailable: true
         }
-        
+
         // if (profile_regsrc == "android") {
         //   notification = {
         //     data: data_send,
@@ -1941,7 +1941,7 @@ export class UtilsService {
     }
 
     if ((No.toString().length) == 6) {
-      noCampaignID += "-"+No;
+      noCampaignID += "-" + No;
     } else if ((No.toString().length) == 5) {
       noCampaignID += "-0" + No;
     } else if ((No.toString().length) == 4) {
@@ -2131,12 +2131,12 @@ export class UtilsService {
     }
   }
 
-  async validateParam(nameParam:string, value: any, type: string): Promise<string> {
+  async validateParam(nameParam: string, value: any, type: string): Promise<string> {
     if (value != undefined) {
       if ((typeof value) != type) {
         return "Unabled to proceed param " + nameParam + " is required " + type;
       } else {
-        if (type=="string"){
+        if (type == "string") {
           if (value.length == 0) {
             return "Unabled to proceed param " + nameParam + " is required";
           } else {
@@ -2234,54 +2234,18 @@ export class UtilsService {
         username: user_userAuth.username.toString()
       };
 
-      regSrc = user_userAuth.regSrc;
+      payload = {
+        data: {
 
-      if (regSrc == "android") {
-        payload = {
-          data: {
-
-            title: titlein,
-            body: bodyin,
-            postID: postID_,
-            postType: postType
-          }
-        };
+          title: titlein,
+          body: bodyin,
+          postID: postID_,
+          postType: postType
+        }
       }
-      else if (regSrc == "iOS") {
-        payload = {
-          "notification": {
-            "title": titlein,
-            "body": JSON.stringify({
-              "title": titlein,
-              "body": bodyin,
-              "postID": postID_,
-              "postType": postType
-            })
-          }
-        };
-      }
-      else if (regSrc == "ios") {
-        payload = {
-          "notification": {
-            "title": titlein,
-            "body": JSON.stringify({
-              "title": titlein,
-              "body": bodyin,
-              "postID": postID_,
-              "postType": postType
-            })
-          }
-        };
-      } else {
-        payload = {
-          data: {
-
-            title: titlein,
-            body: bodyin,
-            postID: postID_,
-            postType: postType
-          }
-        };
+      var option = {
+        priority: "high",
+        contentAvailable: true
       }
 
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
@@ -2291,7 +2255,7 @@ export class UtilsService {
       datadevice = await this.userdevicesService.findActive(emailuserbasic);
       for (var i = 0; i < datadevice.length; i++) {
         var deviceid = datadevice[i].deviceID;
-        var adm = await admin.messaging().sendToDevice(deviceid, payload);
+        var adm = await admin.messaging().sendToDevice(deviceid, payload, option);
         console.log(adm);
         arraydevice.push(deviceid);
 
