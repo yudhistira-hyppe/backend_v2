@@ -8,22 +8,49 @@ export type AdsDocument = Ads & Document;
 export class Ads {
     _id: mongoose.Types.ObjectId;
     @Prop({ type: Object })
-    userID: { oid: String; };
+    adsObjectivitasId: mongoose.Types.ObjectId;
+    @Prop()
+    campaignId: string;
+    @Prop()
+    name: string;
     @Prop({ type: Object })
-    userIDAssesment: { oid: String; };
-    // @Prop({ type: Object })
-    // demografisID: {
-    //     $ref: String;
-    //     $id: { oid: String };
-    //     $db: String;
-    // };
+    typeAdsID: { oid: String; };
+    @Prop()
+    skipTime: number;
+    @Prop({ type: Object })
+    placingID: { oid: String; };
+    @Prop({ type: Object })
+    dayAds: {
+        sunday: boolean;
+        monday: boolean;
+        tuesday: boolean;
+        wednesday: boolean;
+        thursday: boolean;
+        friday: boolean;
+        saturday: boolean;
+    };
+    @Prop({ type: Object })
+    timeAds: {
+        time_4_8: boolean;
+        time_8_12: boolean;
+        time_12_16: boolean;
+        time_16_20: boolean;
+        time_20_24: boolean;
+        time_24_4: boolean;
+    };
+    @Prop()
+    liveAt: string;
+    @Prop()
+    liveEnd: string;
+    @Prop()
+    tayang: number;
+    @Prop()
+    credit: number;
     @Prop([{ type: Object }])
     demografisID: [
         {
             ref: String;
-            id: {
-                oid: String;
-            };
+            id: mongoose.Types.ObjectId;
             db: String;
         },
     ];
@@ -37,48 +64,52 @@ export class Ads {
             db: String;
         },
     ];
+    @Prop()
+    audiensFrekuensi: number;
+    @Prop()
+    gender: any[];
     @Prop({ type: Object })
-    typeAdsID: { oid: String; };
+    age: {
+        age_smaller_than_14: boolean;
+        age_14_smaller_than_28: boolean;
+        age_29_smaller_than_43: boolean;
+        age_greater_than_44: boolean;
+        age_other: boolean;
+    };
     @Prop({ type: Object })
-    placingID: { oid: String; };
+    userID: { oid: String; };
+    @Prop({ type: Object })
+    userIDAssesment: { oid: String; };
+    @Prop()
+    type: string;
+    @Prop()
+    urlLink: string;
+    @Prop()
+    ctaButton: number;
     @Prop()
     description: string;
     @Prop()
-    expiredAt: string;
-    @Prop()
-    gender: any[];
-    @Prop()
-    liveAt: string;
-    @Prop()
-    name: string;
-    @Prop()
-    objectifitas: string;
-    @Prop()
     status: string;
     @Prop()
-    timestamp: string;
-    @Prop()
-    totalClick: number;
-    @Prop()
-    totalUsedCredit: number;
-    @Prop()
-    totalView: number;
-    @Prop()
-    urlLink: string;
-    @Prop([])
-    userVoucherID: [];
+    statusDescription: string;
     @Prop()
     isActive: boolean;
+    // @Prop({ type: Object })
+    // demografisID: {
+    //     $ref: String;
+    //     $id: { oid: String };
+    //     $db: String;
+    // };
+
     @Prop()
-    type: string;
-    @Prop({ type: Object })
-    mediaAds: { oid: String; };
+    createdAt: string;
     @Prop()
-    tayang: number;
+    expiredAt: string;
     @Prop()
-    endAge: number;
-    @Prop()
-    startAge: number;
+    timestamp: string;
+
+    @Prop([])
+    userVoucherID: [];
     @Prop()
     usedCredit: number;
     @Prop()
@@ -90,11 +121,15 @@ export class Ads {
     @Prop()
     totalCredit: number;
     @Prop()
-    liveTypeAds: boolean;
+    totalUsedCredit: number;
+
     @Prop()
     idApsara: string;
     @Prop()
     duration: number;
+    @Prop()
+    sizeFile: number;
+
     @Prop()
     reportedStatus: string
     @Prop()
@@ -107,12 +142,26 @@ export class Ads {
     contentModerationResponse: string
     @Prop()
     reportedUserHandle: any[];
+
     @Prop()
-    age: string;
+    objectifitas: string;
+    @Prop({ type: Object })
+    mediaAds: { oid: String; };
+    @Prop()
+    liveTypeAds: boolean;
+
+    @Prop()
+    totalClick: number;
+    @Prop()
+    totalView: number;
+    @Prop()
+    endAge: number;
+    @Prop()
+    startAge: number;
     @Prop()
     updatedAt: string;
     @Prop()
-    skipTime: number;
+    remark: string;
 }
 
 export const AdsSchema = SchemaFactory.createForClass(Ads);

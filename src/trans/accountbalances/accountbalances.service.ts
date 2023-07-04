@@ -5,6 +5,7 @@ import { Model, Types } from 'mongoose';
 import { CreateAccountbalancesDto } from './dto/create-accountbalances.dto';
 import { Accountbalances, AccountbalancesDocument } from './schemas/accountbalances.schema';
 import { PostContentService } from '../../content/posts/postcontent.service';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class AccountbalancesService {
@@ -41,6 +42,869 @@ export class AccountbalancesService {
 
 
         ]);
+        return query;
+    }
+
+    async getReward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], page: number, limit: number, sorting: boolean){
+        var paramaggregate = [];
+        var $match = {};
+
+        $match["type"] = "rewards";
+        $match["idtrans"] = { $ne: null };
+        //------------FILTER DATE------------
+        if (start_date != undefined && end_date != undefined) {
+            start_date = new Date(start_date);
+            end_date = new Date(end_date);
+            end_date.setDate(end_date.getDate() + 1);
+            console.log(start_date.toISOString());
+            console.log(end_date.toISOString());
+            $match["timestamp"] = {
+                $gte: start_date.toISOString(),
+                $lte: end_date.toISOString()
+            };
+        }
+        //------------PUSH MATCH START------------
+        paramaggregate.push({ $match });
+
+
+        $match = {};
+        //------------FILTER NAME------------
+        if (name != undefined) {
+            $match["username"] = {
+                $regex: name,
+                $options: "i"
+            };
+        }
+        //------------FILTER GENDER------------
+        if (gender != undefined ) {
+            if (gender.length>0){
+                var Array_Gender = [];
+                if (gender.includes("MALE")){
+                    console.log("MALE TRUE",gender);
+                    Array_Gender.push("Male", "Laki-laki", "MALE")
+                }
+                if (gender.includes("FEMALE")) {
+                    console.log("FEMALE TRUE", gender);
+                    Array_Gender.push(" Perempuan", "Perempuan", "PEREMPUAN", "FEMALE", " FEMALE")
+                }
+                if (gender.includes("OTHER")) {
+                    console.log("OTHER TRUE", gender);
+                    Array_Gender.push("", null)
+                }
+            }
+            $match["gender"] = {
+                $in: Array_Gender
+            };
+        }
+        //------------FILTER GENDER------------
+        if (age != undefined) {
+            if (age.length > 0) {
+                if (age.includes("show_smaller_than_14")) {
+                    $match["age"] = {
+                        $lt: 14
+                    }
+                }
+                if (age.includes("show_14_smaller_than_28")) {
+                    $match["age"] = {
+                        $gte: 14, $lte: 28
+                    }
+                }
+                if (age.includes("show_29_smaller_than_43")) {
+                    $match["age"] = {
+                        $gte: 29, $lte: 43
+                    }
+                }
+                if (age.includes("show_greater_than_43")) {
+                    $match["age"] = {
+                        $gt: 43
+                    }
+                }
+            }
+        }
+        //------------FILTER AREA------------
+        if (areas != undefined) {
+            if (areas.length > 0) {
+                $match["lokasiId"] = { $in: areas };
+            }
+        }
+        //------------PUSH MATCH QUERY------------
+        paramaggregate.push(
+        {
+            $lookup: {
+                from: 'userbasics',
+                as: 'userbasics_data',
+                let: {
+                    local_id: "$iduser"
+                },
+                pipeline: [
+                    {
+                        $match:
+                        {
+                            $expr: {
+                                $eq: ['$_id', '$$local_id']
+                            }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            email: 1,
+                            fullName: 1,
+                            profileID: 1,
+                            gender: 1,
+                            age: {
+                                $cond: {
+                                    if: {
+                                        $and: ['$dob', {
+                                            $ne: ["$dob", ""]
+                                        }]
+                                    },
+                                    then: {
+                                        $toInt: {
+                                            $divide: [{
+                                                $subtract: [new Date(), {
+                                                    $toDate: "$dob"
+                                                }]
+                                            }, (365 * 24 * 60 * 60 * 1000)]
+                                        }
+                                    },
+                                    else: 0
+                                }
+                            },
+                            userInterests_array: {
+                                $map: {
+                                    input: {
+                                        $map: {
+                                            input: "$userInterests",
+                                            in: {
+                                                $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                            },
+                                        }
+                                    },
+                                    in: "$$this.v"
+                                }
+                            },
+                            states: 1,
+                            userAuth: 1,
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "interests_repo",
+                            localField: "userInterests_array",
+                            foreignField: "_id",
+                            as: "interests"
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'areas',
+                            as: 'areas',
+                            let: {
+                                local_id: "$states.$id"
+                            },
+                            pipeline: [
+                                {
+                                    $match:
+                                    {
+                                        $expr: {
+                                            $eq: ['$_id', '$$local_id']
+                                        }
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: 'userauths',
+                            as: 'userauths',
+                            let: {
+                                local_id: "$userAuth.$id"
+                            },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $and: [
+                                                { $eq: ['$_id', '$$local_id'] },
+                                            ]
+                                        }
+                                    }
+                                },
+                            ]
+                        }
+                    }
+                ],
+            },
+        },
+        {
+            $lookup: {
+                from: 'userads',
+                as: 'userads_data',
+                let: {
+                    userID: "$iduser",
+                    adsID: "$idtrans"
+                },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ['$userID', '$$userID'] },
+                                    { $eq: ['$adsID', '$$adsID'] },
+                                ]
+                            }
+                        }
+                    },
+                ]
+            }
+        },
+        {
+            $project: {
+                _id: 1,
+                timestamp: 1,
+                fullName: {
+                    "$let": {
+                        "vars": {
+                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                        },
+                        "in": "$$tmp.fullName"
+                    }
+                },
+                email: {
+                    "$let": {
+                        "vars": {
+                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                        },
+                        "in": "$$tmp.email"
+                    }
+                },
+                profileID: {
+                    "$let": {
+                        "vars": {
+                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                        },
+                        "in": "$$tmp.profileID"
+                    }
+                },
+                gender: {
+                    "$let": {
+                        "vars": {
+                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                        },
+                        "in": "$$tmp.gender"
+                    }
+                },
+                ageQualication: {
+                    $switch: {
+                        branches: [
+                            {
+                                case: {
+                                    $lt: [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.age"
+                                        }
+                                    }, 14]
+                                },
+                                then: "< 14 Tahun"
+                            },
+                            {
+                                case: {
+                                    $and: [{
+                                        $gte: [{
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                },
+                                                "in": "$$tmp.age"
+                                            }
+                                        }, 14]
+                                    }, {
+                                        $lte: [{
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                },
+                                                "in": "$$tmp.age"
+                                            }
+                                        }, 28]
+                                    }]
+                                },
+                                then: "14 - 28 Tahun"
+                            },
+                            {
+                                case: {
+                                    $and: [{
+                                        $gte: [{
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                },
+                                                "in": "$$tmp.age"
+                                            }
+                                        }, 29]
+                                    }, {
+                                        $lte: [{
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                },
+                                                "in": "$$tmp.age"
+                                            }
+                                        }, 43]
+                                    }]
+                                },
+                                then: "29 - 43 Tahun"
+                            },
+                            {
+                                case: {
+                                    $gt: [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.age"
+                                        }
+                                    }, 43]
+                                },
+                                then: "> 43 Tahun"
+                            },
+                        ],
+                        "default": "Other"
+                    }
+                },
+                age: {
+                    "$let": {
+                        "vars": {
+                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                        },
+                        "in": "$$tmp.age"
+                    }
+                },
+                username: {
+                    $let: {
+                        "vars": {
+                            userauths: {
+                                "$arrayElemAt": [{
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                        },
+                                        "in": "$$tmp.userauths"
+                                    }
+                                }, 0]
+                            }
+                        },
+                        "in": "$$userauths.username"
+                    }
+                },
+                lokasiId: {
+                    "$let": {
+                        "vars": {
+                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                        },
+                        "in": "$$tmp.states.$id"
+                    }
+                },
+                lokasi: {
+                    $let: {
+                        "vars": {
+                            areas: {
+                                "$arrayElemAt": [{
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                        },
+                                        "in": "$$tmp.areas"
+                                    }
+                                }, 0]
+                            }
+                        },
+                        "in": "$$areas.stateName"
+                    }
+                },
+                interest: {
+                    $map: {
+                        input: {
+                            $map: {
+                                input: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                        },
+                                        "in": "$$tmp.interests"
+                                    }
+                                },
+                                in: {
+                                    $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                },
+                            }
+                        },
+                        in: "$$this.v"
+                    }
+                },
+                useradsId: {
+                    "$let": {
+                        "vars": {
+                            "tmp": { "$arrayElemAt": ["$userads_data", 0] },
+                        },
+                        "in": "$$tmp._id"
+                    }
+                },
+                commonality: {
+                    $cond: {
+                        if: {
+                            $and: [{
+                                "$let": {
+                                    "vars": {
+                                        "tmp": { "$arrayElemAt": ["$userads_data", 0] },
+                                    },
+                                    "in": "$$tmp.commonality"
+                                }
+                            }, {
+                                $ne: [{
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$userads_data", 0] },
+                                        },
+                                        "in": "$$tmp.commonality"
+                                    }
+                                }, ""]
+                            }]
+                        },
+                        then: {
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$userads_data", 0] },
+                                },
+                                "in": "$$tmp.commonality"
+                            }
+                        },
+                        else: 0
+                    }
+                },
+            }
+        },);
+        //------------PUSH MATCH END------------
+        paramaggregate.push({ $match });
+        //------------SORTIR------------
+        if (sorting) {
+            paramaggregate.push({
+                "$sort": {
+                    timestamp: -1
+                }
+            });
+        } else {
+            paramaggregate.push({
+                "$sort": {
+                    timestamp: 1
+                }
+            })
+        }
+        //------------PAGE------------
+        if (page > 0) {
+            paramaggregate.push({
+                "$skip": (limit * page)
+            });
+        }
+        //------------LIMIT------------
+        if (limit > 0) {
+            paramaggregate.push({
+                "$limit": limit
+            });
+        }
+        console.log(JSON.stringify(paramaggregate));
+        const query = await this.accountbalancesModel.aggregate(paramaggregate);
+        // const query = await this.accountbalancesModel.aggregate([
+        //     {
+        //         $match: {
+        //             type: "rewards", 
+        //             idtrans: { $ne: null },
+        //         }
+        //     },
+        //     {
+        //         $lookup: {
+        //             from: 'userbasics',
+        //             as: 'userbasics_data',
+        //             let: {
+        //                 local_id: "$iduser"
+        //             },
+        //             pipeline: [
+        //                 {
+        //                     $match:
+        //                     {
+        //                         $expr: {
+        //                             $eq: ['$_id', '$$local_id']
+        //                         }
+        //                     }
+        //                 },
+        //                 {
+        //                     $project: {
+        //                         _id: 1,
+        //                         email: 1,
+        //                         fullName: 1, 
+        //                         profileID: 1, 
+        //                         gender: 1,
+        //                         age: {
+        //                             $cond: {
+        //                                 if: {
+        //                                     $and: ['$dob', {
+        //                                         $ne: ["$dob", ""]
+        //                                     }]
+        //                                 },
+        //                                 then: {
+        //                                     $toInt: {
+        //                                         $divide: [{
+        //                                             $subtract: [new Date(), {
+        //                                                 $toDate: "$dob"
+        //                                             }]
+        //                                         }, (365 * 24 * 60 * 60 * 1000)]
+        //                                     }
+        //                                 },
+        //                                 else: 0
+        //                             }
+        //                         },
+        //                         userInterests_array: {
+        //                             $map: {
+        //                                 input: {
+        //                                     $map: {
+        //                                         input: "$userInterests",
+        //                                         in: {
+        //                                             $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+        //                                         },
+        //                                     }
+        //                                 },
+        //                                 in: "$$this.v"
+        //                             }
+        //                         },
+        //                         states: 1,
+        //                         userAuth: 1,
+        //                     }
+        //                 },
+        //                 {
+        //                     $lookup: {
+        //                         from: "interests_repo",
+        //                         localField: "userInterests_array",
+        //                         foreignField: "_id",
+        //                         as: "interests"
+        //                     }
+        //                 },
+        //                 {
+        //                     $lookup: {
+        //                         from: 'areas',
+        //                         as: 'areas',
+        //                         let: {
+        //                             local_id: "$states.$id"
+        //                         },
+        //                         pipeline: [
+        //                             {
+        //                                 $match:
+        //                                 {
+        //                                     $expr: {
+        //                                         $eq: ['$_id', '$$local_id']
+        //                                     }
+        //                                 }
+        //                             },
+        //                         ]
+        //                     }
+        //                 },
+        //                 {
+        //                     $lookup: {
+        //                         from: 'userauths',
+        //                         as: 'userauths',
+        //                         let: {
+        //                             local_id: "$userAuth.$id"
+        //                         },
+        //                         pipeline: [
+        //                             {
+        //                                 $match: {
+        //                                     $expr: {
+        //                                         $and: [
+        //                                             { $eq: ['$_id', '$$local_id'] },
+        //                                         ]
+        //                                     }
+        //                                 }
+        //                             },
+        //                         ]
+        //                     }
+        //                 }
+        //             ],
+        //         },
+        //     },
+        //     {
+        //         $lookup: {
+        //             from: 'userads',
+        //             as: 'userads_data',
+        //             let: {
+        //                 userID: "$iduser",
+        //                 adsID: "$idtrans"
+        //             },
+        //             pipeline: [
+        //                 {
+        //                     $match: {
+        //                         $expr: {
+        //                             $and: [
+        //                                 { $eq: ['$userID', '$$userID'] },
+        //                                 { $eq: ['$adsID', '$$adsID'] },
+        //                             ]
+        //                         }
+        //                     }
+        //                 },
+        //             ]
+        //         }
+        //     },
+        //     {
+        //         $project: {
+        //             _id: 1,
+        //             timestamp: 1,
+        //             fullName: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                     },
+        //                     "in": "$$tmp.fullName"
+        //                 }
+        //             },
+        //             email: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                     },
+        //                     "in": "$$tmp.email"
+        //                 }
+        //             },
+        //             profileID: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                     },
+        //                     "in": "$$tmp.profileID"
+        //                 }
+        //             }, 
+        //             gender: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                     },
+        //                     "in": "$$tmp.gender"
+        //                 }
+        //             },
+        //             ageQualication: {
+        //                 $switch: {
+        //                     branches: [
+        //                         {
+        //                             case: {
+        //                                 $lt: [{
+        //                                     "$let": {
+        //                                         "vars": {
+        //                                             "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                                         },
+        //                                         "in": "$$tmp.age"
+        //                                     }
+        //                                 }, 8]
+        //                             },
+        //                             then: "< 8"
+        //                         },
+        //                         {
+        //                             case: {
+        //                                 $and: [{
+        //                                     $gte: [{
+        //                                         "$let": {
+        //                                             "vars": {
+        //                                                 "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                                             },
+        //                                             "in": "$$tmp.age"
+        //                                         }
+        //                                     }, 8]
+        //                                 }, {
+        //                                     $lte: [{
+        //                                         "$let": {
+        //                                             "vars": {
+        //                                                 "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                                             },
+        //                                             "in": "$$tmp.age"
+        //                                         }
+        //                                     }, 23]
+        //                                 }]
+        //                             },
+        //                             then: "8 - 23"
+        //                         },
+        //                         {
+        //                             case: {
+        //                                 $and: [{
+        //                                     $gte: [{
+        //                                         "$let": {
+        //                                             "vars": {
+        //                                                 "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                                             },
+        //                                             "in": "$$tmp.age"
+        //                                         }
+        //                                     }, 24]
+        //                                 }, {
+        //                                     $lte: [{
+        //                                         "$let": {
+        //                                             "vars": {
+        //                                                 "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                                             },
+        //                                             "in": "$$tmp.age"
+        //                                         }
+        //                                     }, 39]
+        //                                 }]
+        //                             },
+        //                             then: "24 - 39 Tahun"
+        //                         },
+        //                         {
+        //                             case: {
+        //                                 $and: [{
+        //                                     $gte: [{
+        //                                         "$let": {
+        //                                             "vars": {
+        //                                                 "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                                             },
+        //                                             "in": "$$tmp.age"
+        //                                         }
+        //                                     }, 1]
+        //                                 }, {
+        //                                     $lt: [{
+        //                                         "$let": {
+        //                                             "vars": {
+        //                                                 "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                                             },
+        //                                             "in": "$$tmp.age"
+        //                                         }
+        //                                     }, 14]
+        //                                 }]
+        //                             },
+        //                             then: "< 14 Tahun"
+        //                         }
+        //                     ],
+        //                     "default": "Other"
+        //                 }
+        //             },
+        //             age: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                     },
+        //                     "in": "$$tmp.age"
+        //                 }
+        //             },
+        //             username: {
+        //                 $let: {
+        //                     "vars": {
+        //                         userauths: {
+        //                             "$arrayElemAt":[{
+        //                                 "$let": {
+        //                                     "vars": {
+        //                                         "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                                     },
+        //                                     "in": "$$tmp.userauths"
+        //                                 }
+        //                             },0]
+        //                         }
+        //                     },
+        //                     "in": "$$userauths.username"
+        //                 }
+        //             },
+        //             lokasiId: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                     },
+        //                     "in": "$$tmp.states.$id"
+        //                 }
+        //             },
+        //             lokasi: {
+        //                 $let: {
+        //                     "vars": {
+        //                         areas: {
+        //                             "$arrayElemAt": [{
+        //                                 "$let": {
+        //                                     "vars": {
+        //                                         "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                                     },
+        //                                     "in": "$$tmp.areas"
+        //                                 }
+        //                             }, 0]
+        //                         }
+        //                     },
+        //                     "in": "$$areas.stateName"
+        //                 }
+        //             },
+        //             interest: {
+        //                 $map: {
+        //                     input: {
+        //                         $map: {
+        //                             input: {
+        //                                 "$let": {
+        //                                     "vars": {
+        //                                         "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+        //                                     },
+        //                                     "in": "$$tmp.interests"
+        //                                 }
+        //                             },
+        //                             in: {
+        //                                 $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+        //                             },
+        //                         }
+        //                     },
+        //                     in: "$$this.v"
+        //                 }
+        //             },
+        //             useradsId: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$userads_data", 0] },
+        //                     },
+        //                     "in": "$$tmp._id"
+        //                 }
+        //             },
+        //             commonality: {
+        //                 $cond: {
+        //                     if: {
+        //                         $and: [{
+        //                             "$let": {
+        //                                 "vars": {
+        //                                     "tmp": { "$arrayElemAt": ["$userads_data", 0] },
+        //                                 },
+        //                                 "in": "$$tmp.commonality"
+        //                             }
+        //                         }, {
+        //                             $ne: [{
+        //                                 "$let": {
+        //                                     "vars": {
+        //                                         "tmp": { "$arrayElemAt": ["$userads_data", 0] },
+        //                                     },
+        //                                     "in": "$$tmp.commonality"
+        //                                 }
+        //                             }, ""]
+        //                         }]
+        //                     }, 
+        //                     then: {
+        //                         "$let": {
+        //                             "vars": {
+        //                                 "tmp": { "$arrayElemAt": ["$userads_data", 0] },
+        //                             },
+        //                             "in": "$$tmp.commonality"
+        //                         }
+        //                     }, 
+        //                     else: 0 }
+        //             },
+        //         }
+        //     },
+        //     {
+        //         $match: {
+        //             username: {
+        //                 $regex: name,
+        //                 $options: "i"
+        //             }
+        //         }
+        //     },
+        // ]);
         return query;
     }
 
