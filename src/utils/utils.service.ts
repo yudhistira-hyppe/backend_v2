@@ -561,10 +561,12 @@ export class UtilsService {
     data_send['body'] = body_send;
     for (var i = 0; i < datadevice.length; i++) {
       this.logger.log('sendFcmCMod >>> send: title-> ' + title_send + ' body: ' + JSON.stringify(body_send));
-      var notification_ = {
+      var notification = {
         data: data_send,
+      }
+      var option = {
         priority: "high",
-        content_available: true
+        contentAvailable: true
       }
       // if (profile_regsrc == "android") {
       //   notification_ = {
@@ -584,7 +586,7 @@ export class UtilsService {
       //     data: data_send,
       //   }
       // }
-      await admin.messaging().sendToDevice(datadevice[i].deviceID, notification_);
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, notification, option);
       device_user.push(datadevice[i].deviceID)
     }
 
