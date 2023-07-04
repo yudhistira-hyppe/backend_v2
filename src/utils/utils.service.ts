@@ -356,8 +356,10 @@ export class UtilsService {
       for (var i = 0; i < datadevice.length; i++) {
         var notification = {
           data: data_send,
+        }
+        var option ={
           priority: "high",
-          content_available: true
+          contentAvailable: true
         }
         
         // if (profile_regsrc == "android") {
@@ -383,7 +385,7 @@ export class UtilsService {
         //     data: data_send,
         //   }
         // }
-        await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
+        await admin.messaging().sendToDevice(datadevice[i].deviceID, notification, option);
         device_user.push(datadevice[i].deviceID)
       }
     }
