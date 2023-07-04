@@ -129,7 +129,6 @@ export class ContentModService {
 
   }
 
-
   async cmodResult(postId: string, taskId: string) {
     this.logger.log('cmodResult >>> start');
     const accessKeyId = this.configService.get("APSARA_ACCESS_KEY");

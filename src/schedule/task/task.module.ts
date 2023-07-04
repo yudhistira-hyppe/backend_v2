@@ -6,10 +6,12 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { UtilsModule } from '../../utils/utils.module';
 import { UserticketsModule } from '../../trans/usertickets/usertickets.module';
 import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
+import { PostsModule } from '../../content/posts/posts.module';
 
 @Module({
   imports: [
-      ScheduleModule.forRoot()
+      ScheduleModule.forRoot(),
+      PostsModule
     ],
   controllers: [TaskController],
   providers: [TaskService]

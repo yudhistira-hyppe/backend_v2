@@ -28,11 +28,13 @@ import { MediastoriesModule } from '../../content/mediastories/mediastories.modu
 import { LanguagesModule } from '../../infra/languages/languages.module';
 import { AdsModule } from '../ads/ads.module';
 import { HttpModule } from '@nestjs/axios';
+import { AdsBalaceCreditModule } from '../adsv2/adsbalacecredit/adsbalacecredit.module';
 
 
 @Module({
 
     imports: [
+        AdsBalaceCreditModule,
         HttpModule,
         BoostintervalModule,
         BoostsessionModule,

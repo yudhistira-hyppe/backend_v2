@@ -1,3 +1,4 @@
+import { AdslogsModule } from './trans/adsv2/adslog/adslogs.module';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserdevicesModule } from './trans/userdevices/userdevices.module';
@@ -106,8 +107,18 @@ import { JenischallengeModule } from './trans/jenischallenge/jenischallenge.modu
 import { BadgeModule } from './trans/badge/badge.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TaskModule } from './schedule/task/task.module';
+import { AdsSettingModule } from './trans/adsv2/adssetting/adssetting.module';
+import { AdsModule as Adsv2Module } from './trans/adsv2/ads/ads.module'
+import { AdsTypesModule } from './trans/adsv2/adstype/adstype.module';
+import { AdsObjectivitasModule } from './trans/adsv2/adsobjectivitas/adsobjectivitas.module';
 @Module({
   imports: [
+    AdslogsModule,
+    Adsv2Module,
+    AdsModule,
+    AdsTypesModule,
+    AdsObjectivitasModule,
+    AdsSettingModule,
     TaskModule,
     OssModule,
     AssetsFilterModule,

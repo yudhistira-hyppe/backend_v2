@@ -6259,6 +6259,10 @@ export class PostContentService {
     return await this.videoService.getDataMediavideosSeaweed();
   }
 
+  async getDataMediavidSeaweedOne(postID: string): Promise<Mediavideos[]> {
+    return await this.videoService.getDataMediavideosSeaweedOne(postID);
+  }
+
   async getDataMediadiariesSeaweed(): Promise<Mediadiaries[]> {
     return await this.diaryService.getDataMediadiariesSeaweed();
   }

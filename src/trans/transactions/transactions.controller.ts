@@ -37,6 +37,8 @@ import { CreatePostsDto } from 'src/content/posts/dto/create-posts.dto';
 import { Accountbalances } from '../accountbalances/schemas/accountbalances.schema';
 import { Templates } from 'src/infra/templates/schemas/templates.schema';
 import { Console } from 'console';
+import { AdsBalaceCreditDto } from '../adsv2/adsbalacecredit/dto/adsbalacecredit.dto';
+import { AdsBalaceCreditService } from '../adsv2/adsbalacecredit/adsbalacecredit.service';
 
 const cheerio = require('cheerio');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -67,7 +69,8 @@ export class TransactionsController {
         private readonly mediavideosService: MediavideosService,
         private readonly mediapictsService: MediapictsService,
         private readonly languagesService: LanguagesService,
-        private readonly adsService: AdsService,
+        private readonly adsService: AdsService, 
+        private readonly adsBalaceCreditService: AdsBalaceCreditService,
     ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -1418,6 +1421,7 @@ export class TransactionsController {
                         await this.transactionsService.updateoneVoucher(idtransaction, idbalance, payload);
                         await this.utilsService.sendFcmWebMode(emailseller.toString(), titleinsuksesvoucher, titleensuksesvoucher, bodyinsuksesvoucher, bodyensuksesvoucher, eventType, event, undefined, "TRANSACTION", noinvoice, "TRANSACTION");
                         await this.utilsService.sendFcmWebMode(emailbuyer.toString(), titleinsuksesbelivoucher, titleensuksesbelivoucher, bodyinsuksesbelivoucher, bodyensuksesbelivoucher, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
+                        
                         for (var i = 0; i < lengtvoucherid; i++) {
                             var postvcid = detail[i].id.toString();
                             var jml = detail[i].qty;
@@ -1435,6 +1439,7 @@ export class TransactionsController {
                             totalCredit = datavoucher.creditTotal * jml;
                             var total_creditValue_voucher = datavoucher.creditValue * jml;
                             var total_creditPromo_voucher = datavoucher.creditPromo * jml;
+                            var all_total_credit_voucher = total_creditValue_voucher + total_creditPromo_voucher;
 
                             let datauservoucher = new Uservoucher();
                             datauservoucher.userID = iduserbuy;
@@ -1452,6 +1457,7 @@ export class TransactionsController {
                             await this.uservouchersService.create(datauservoucher);
                             // await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml), (pendingUsed - jml));
                             await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
+                            await this.insertBalanceCredit(iduserbuy.toString(), 0, all_total_credit_voucher, "TOPUP", "PURCHASING VOUCHERS", idtransaction.toString());
                         }
 
                         return res.status(HttpStatus.OK).json({
@@ -10274,6 +10280,19 @@ export class TransactionsController {
 
     async notifbuyvoucher(emailbuy: string, titleinsukses: string, titleensukses: string, bodyinsukses: string, bodyensukses: string, eventType: string, event: string, no: string) {
         await this.utilsService.sendFcmWebMode(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", no, "TRANSACTION");
+    }
+
+    async insertBalanceCredit(iduser: string, debet: number, kredit: number, type: String, description: String, idtrans: string){
+        var AdsBalaceCreditDto_ = new AdsBalaceCreditDto();
+        AdsBalaceCreditDto_._id = new mongoose.Types.ObjectId;
+        AdsBalaceCreditDto_.iduser = new mongoose.Types.ObjectId(iduser);
+        AdsBalaceCreditDto_.debet = debet;
+        AdsBalaceCreditDto_.kredit = kredit;
+        AdsBalaceCreditDto_.type = type; 
+        AdsBalaceCreditDto_.timestamp = await this.utilsService.getDateTimeString();
+        AdsBalaceCreditDto_.description = description;
+        AdsBalaceCreditDto_.idtrans = new mongoose.Types.ObjectId(idtrans);
+        await this.adsBalaceCreditService.create(AdsBalaceCreditDto_);
     }
 }
 

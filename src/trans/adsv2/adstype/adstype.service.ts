@@ -2,98 +2,57 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AdsTypeDto } from './dto/adstype.dto';
-import { Adstype, AdstypeDocument } from './schemas/adstype.schema';
+import { AdsType, AdsTypeDocument } from './schemas/adstype.schema';
 
 @Injectable()
-export class AdstypeService {
+export class AdsTypeService {
     constructor(
-        @InjectModel(Adstype.name, 'SERVER_FULL')
-        private readonly adstypeModel: Model<AdstypeDocument>,
+        @InjectModel(AdsType.name, 'SERVER_FULL')
+        private readonly adstypeModel: Model<AdsTypeDocument>,
     ) { }
 
-    async create(AdsTypeDto_: AdsTypeDto): Promise<Adstype> {
-        let data = await this.adstypeModel.create(AdsTypeDto_);
-        if (!data) {
-            throw new Error('Todo is not found!');
-        }
+    async create(AdsTypeDto_: AdsTypeDto): Promise<AdsType> {
+        const _AdsTypeDto_ = await this.adstypeModel.create(AdsTypeDto_);
+        return _AdsTypeDto_;
+    }
+
+    async update(_id: string, AdsTypeDto_: AdsTypeDto) {
+        let data = await this.adstypeModel.findByIdAndUpdate(
+            _id ,
+            AdsTypeDto_,
+            { new: true });
         return data;
     }
 
-    async findAll(): Promise<Adstype[]> {
-        return this.adstypeModel.find().exec();
-    }
-
-    async findPlaces(): Promise<Adstype[]> {
-        let query = await this.adstypeModel.aggregate([
-
-            {
-                $lookup: {
-                    from: "adsplaces",
-                    localField: "_id",
-                    foreignField: "adsType",
-                    as: "adsplaces"
-                }
-            },
-            {
-                $project: {
-                    _id: "$_id",
-                    nameType: "$nameType",
-                    creditValue: "$creditValue",
-                    adsplaces: "$adsplaces"
-                }
-            }
-
-        ]);
-
-        return query;
-    }
-
-    async findOne(id: Object): Promise<Adstype> {
-        return this.adstypeModel.findOne({ _id: id }).exec();
+    async findOne(id: string): Promise<AdsType> {
+        return await this.adstypeModel.findOne({ _id: Object(id) }).exec();
     }
 
     async delete(id: string) {
-        const deletedCat = await this.adstypeModel
-            .findByIdAndRemove({ _id: id })
-            .exec();
-        return deletedCat;
+        this.adstypeModel.deleteOne({ _id: Object(id) }).exec();
     }
 
-    async update(
-        id: string,
-        AdsTypeDto_: AdsTypeDto,
-    ): Promise<Adstype> {
-        let data = await this.adstypeModel.findByIdAndUpdate(
-            id,
-            AdsTypeDto_,
-            { new: true },
-        );
-
-        if (!data) {
-            throw new Error('Todo is not found!');
-        }
-        return data;
+    async filAll(): Promise<AdsType[]> {
+        return await this.adstypeModel.find().exec();
     }
 
-    async getAll(page:number, limit:number) {
-        var pipeline = [];
-
-        if(page > 0)
-        {
-            pipeline.push({
-                "$skip":limit * page
-            });
+    async find(AdsTypeDto_: AdsTypeDto): Promise<AdsType[]> {
+        return await this.adstypeModel.find(AdsTypeDto_).exec();
+    }
+    
+    async findCriteria(pageNumber: number, pageRow: number, search: string): Promise<AdsType[]> {
+        var perPage = pageRow, page = Math.max(0, pageNumber);
+        var where = {
+            $and: []
+        };
+        var where_and = {};
+        var where_name = {};
+        if (search != undefined) {
+            where_name['nameType'] = { $regex: search, $options: "i" };
+            where['$or'].push(where_name);
         }
-
-        if(limit > 0)
-        {
-            pipeline.push({   
-                "$limit":limit
-            });
-        }
-
-        var query = await this.adstypeModel.aggregate(pipeline);
+        where.$and.push(where_and);
+        const query = await this.adstypeModel.find(where).limit(perPage).skip(perPage * page).sort({ nameType: -1 });
         return query;
     }
-
 }

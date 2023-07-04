@@ -2745,4 +2745,63 @@ export class PostsController {
       messages: "RUN MIGRATION DIARRY"
     }
   }
+
+  @Post('api/posts/vid/seaweed/migration/one')
+  async mediavidSeaweedMigrationOne(@Body('postID') postID: string): Promise<any>{
+    var Mediavid_ = await this.postContentService.getDataMediavidSeaweedOne(postID);
+    console.log(Mediavid_.length);
+    console.log(postID);
+    this.postContentService.runMigrationVid(Mediavid_);
+    return {
+      status: 202,
+      messages: "RUN MIGRATION VID POSTID " + postID
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('api/music/used/:id')
+  async getOneMusicPost(@Param('id') id: string, @Headers() headers) {
+    if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+    if (id == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed param id is required',
+      );
+    }
+
+    var data = await this.PostsService.findByMusicId(id);
+    console.log(data.length);
+    // if (data.length > 0) {
+    //   if (data[0].apsaraMusic != undefined) {
+    //     var dataApsaraMusic = await this.mediamusicService.getVideoApsaraSingle(data[0].apsaraMusic)
+    //     var apsaraMusicData = {
+    //       PlayURL: dataApsaraMusic.PlayInfoList.PlayInfo[0].PlayURL,
+    //       Duration: dataApsaraMusic.PlayInfoList.PlayInfo[0].Duration,
+    //     }
+    //     data[0]["music"] = apsaraMusicData;
+    //   }
+    //   if (data[0].apsaraThumnail != undefined) {
+    //     var dataApsaraThumnail = await this.mediamusicService.getImageApsara([data[0].apsaraThumnail])
+    //     data[0]["apsaraThumnailUrl"] = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == data[0].apsaraThumnail).URL;
+    //   }
+    // }
+    var Response = {
+      data: data,
+      response_code: 202,
+      messages: {
+        info: [
+          "Get music succesfully"
+        ]
+      }
+    }
+    return Response;
+  }
 }

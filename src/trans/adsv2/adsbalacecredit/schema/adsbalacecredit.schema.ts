@@ -7,7 +7,7 @@ export type AdsBalaceCreditDocument = AdsBalaceCredit & Document;
 export class AdsBalaceCredit {
     _id: mongoose.Types.ObjectId;
     @Prop({ type: mongoose.Schema.Types.ObjectId })
-    iduser: { oid: String }
+    iduser: mongoose.Types.ObjectId;
     @Prop()
     debet: number
     @Prop()

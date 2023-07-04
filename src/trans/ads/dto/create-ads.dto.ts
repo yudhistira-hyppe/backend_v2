@@ -51,6 +51,7 @@ export class CreateAdsDto {
     age: string;
     updatedAt: string;
     skipTime: number;
+    remark: string;
 }
 
 export class MediaimageadsDto {

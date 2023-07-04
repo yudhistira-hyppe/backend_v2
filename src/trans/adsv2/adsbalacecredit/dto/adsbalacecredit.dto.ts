@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 export class AdsBalaceCreditDto {
-    readonly _id: { oid: String; };
+    _id: mongoose.Types.ObjectId;
     iduser: mongoose.Types.ObjectId;
     debet: number;
     kredit: number;
