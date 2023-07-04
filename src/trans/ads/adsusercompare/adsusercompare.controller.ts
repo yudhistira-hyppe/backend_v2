@@ -525,7 +525,7 @@ export class AdsUserCompareController {
                                 if (sisa_credit == 0) {
                                     used_credit = used_credit + credit_view;
                                 }else if (sisa_credit > 0) {
-                                    if (watching_time > AdsSkip) {
+                                    if (watching_time >= AdsSkip) {
                                         this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, AdsSkip : " + AdsSkip.toString());
                                         this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, watching_time : " + watching_time.toString());
                                         this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, rewards : " + rewards.toString());
@@ -800,7 +800,7 @@ export class AdsUserCompareController {
                         if (sisa_credit == 0) {
                             used_credit = used_credit + credit_view;
                         } else if (sisa_credit > 0) {
-                            if (watching_time > AdsSkip) {
+                            if (watching_time >= AdsSkip) {
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, AdsSkip : " + AdsSkip.toString());
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, watching_time : " + watching_time.toString());
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PROCCES, rewards : " + rewards.toString());
