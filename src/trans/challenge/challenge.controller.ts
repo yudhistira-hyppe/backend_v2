@@ -1254,16 +1254,16 @@ export class ChallengeController {
   async checkuserstatus(
     @Req() request: Request
   ) {
-    var email = null;
+    var iduser = null;
     var page = null;
     var limit = null;
 
     var request_json = JSON.parse(JSON.stringify(request.body));
 
-    if (request_json["email"] !== undefined) {
-      email = request_json['email'];
+    if (request_json["iduser"] !== undefined) {
+      iduser = request_json['iduser'];
     } else {
-      throw new BadRequestException("Unabled to proceed, email field is required");
+      throw new BadRequestException("Unabled to proceed, iduser field is required");
     }
 
     if (request_json["page"] !== undefined) {
@@ -1279,7 +1279,7 @@ export class ChallengeController {
     }
 
 
-    var data = await this.challengeService.checkuserstatusjoin(email, page, limit);
+    var data = await this.challengeService.checkuserstatusjoin(iduser, page, limit);
 
     const messages = {
       "info": ["The process successful"],
