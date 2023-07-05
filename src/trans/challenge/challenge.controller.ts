@@ -1270,7 +1270,7 @@ export class ChallengeController {
   // }
 
   @UseGuards(JwtAuthGuard)
-  @Post('allChallenge')
+  @Post('allchallenge')
   async showallchallenge(
     @Req() request: Request
   ) {
