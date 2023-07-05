@@ -1177,7 +1177,14 @@ export class ChallengeService {
                 {
                   "$lte":
                     [
-                      "$startChallenge",
+                      {
+                        "$concat":
+                        [
+                          "$startChallenge",
+                          " ",
+                          "$startTime"
+                        ]
+                      },
                       "$timenow"
                     ]
                 }
@@ -1187,7 +1194,14 @@ export class ChallengeService {
                 {
                   "$gte":
                     [
-                      "$endChallenge",
+                      {
+                        "$concat":
+                        [
+                          "$endChallenge",
+                          " ",
+                          "$endTime"
+                        ]
+                      },
                       "$timenow"
                     ]
                 }
@@ -1234,9 +1248,20 @@ export class ChallengeService {
       }
     }
 
-    pipeline.push({
-      "$project": projectdata
-    });
+    pipeline.push(
+      {
+        "$project": projectdata
+      },
+      {
+        "$sort":
+        {
+          createdAt:-1
+        }
+      },
+      {
+        "$limit":5
+      }
+    );
 
     // console.log(JSON.stringify(pipeline));
 
@@ -1480,184 +1505,197 @@ export class ChallengeService {
     return query;
   }
 
-  async checkuserstatusjoin(email: string, page: number, limit: number) {
+  async checkuserstatusjoin(iduser: string, page: number, limit: number) {
     var mongo = require('mongoose');
-    var konvertid = mongo.Types.ObjectId(email);
-
-    var data = await this.ChallengeModel.aggregate([
-      {
+    var konvertid = mongo.Types.ObjectId(iduser);
+    var pipeline = [];
+    pipeline.push({
         "$set": {
-          timeEnd: {
-            "$concat": [
-              {
-                "$dateToString": {
-                  "format": "%Y-%m-%d",
-                  "date": {
-                    $toDate: "$endChallenge"
-                  }
-                }
-              },
-              " ",
-              "$endTime"
-            ]
-          }
-        }
-      },
-      {
-        "$set": {
-          timeStart: {
-            "$concat": [
-              {
-                "$dateToString": {
-                  "format": "%Y-%m-%d",
-                  "date": {
-                    $toDate: "$startChallenge"
-                  }
-                }
-              },
-              " ",
-              "$startTime"
-            ]
-          }
-        }
-      },
-      {
-        $set: {
-          nowDate:
-          {
-            "$dateToString": {
-              "format": "%Y-%m-%d %H:%M:%S",
-              "date": {
-                $add: [new Date(), 25200000]
-              }
-            }
-          }
-        }
-      },
-      {
-        $match: {
-          $and: [
-            {
-              $expr:
-              {
-                $gte: ["$timeEnd", "$nowDate"]
-              },
-
-            },
-            {
-              "statusChallenge": "PUBLISH"
-            }
-          ]
-        }
-      },
-      {
-        "$lookup":
-        {
-          from: "userChallenge",
-          let:
-          {
-            userchallenge_fk: "$_id"
-          },
-          as: 'userChallenges',
-          pipeline:
-            [
-              {
-                "$match":
-                {
-                  "$and":
-                    [
-                      {
-                        "$expr":
-                        {
-                          "$eq":
-                            [
-                              "$$userchallenge_fk",
-                              "$idChallenge"
-                            ]
+            timeEnd: {
+                "$concat": [
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d",
+                            "date": {
+                                $toDate: "$endChallenge"
+                            }
                         }
-                      },
-                      {
-                        isActive: true
-                      },
-                      {
-                        idUser: konvertid,
-
-                      }
-                    ]
-                }
-              },
-
-            ]
-        },
-
-      },
-      {
-        $project: {
-          "_id": 1,
-          "nameChallenge": 1,
-          "jenisChallenge": 1,
-          "description": 1,
-          "createdAt": 1,
-          "updatedAt": 1,
-          "durasi": 1,
-          "startChallenge": 1,
-          "endChallenge": 1,
-          "startTime": 1,
-          "endTime": 1,
-          "jenisDurasi": 1,
-          "tampilStatusPengguna": 1,
-          "objectChallenge": 1,
-          "statusChallenge": 1,
-          searchBanner: {
-            $arrayElemAt: ["$bannerSearch.image", 0]
-          },
-          bannerLeaderboard: {
-            $arrayElemAt: ["$leaderBoard.bannerLeaderboard", 0]
-          },
-          statusJoined:
-          {
-            $cond: {
-              if: {
-                $gt: [{
-                  $size: '$userChallenges'
-                }, 0]
-              },
-              then: "Partisipan",
-              else: "Bukan Partisipan"
-            }
-          },
-          statusFormalChallenge:
-          {
-            $cond: {
-              if: {
-                $and: [
-                  {
-                    $gte: ["$timeEnd", "$nowDate"]
-                  },
-                  {
-                    $lte: ["$timeStart", "$nowDate"]
-                  },
+                    },
+                    " ",
+                    "$endTime"
                 ]
-              },
-              then: "Berlangsung",
-              else: "Akan Datang"
             }
+          }
+      },
+          {
+          "$set": {
+              timeStart: {
+                  "$concat": [
+                      {
+                          "$dateToString": {
+                              "format": "%Y-%m-%d",
+                              "date": {
+                                  $toDate: "$startChallenge"
+                              }
+                          }
+                      },
+                      " ",
+                      "$startTime"
+                  ]
+              }
+          }
+      },
+      {
+          $set: {
+              nowDate: 
+              {
+                  "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                          $add: [new Date(), 25200000]
+                      }
+                  }
+              }
+          }
+      },
+      {
+          $match: {
+              $and: [
+                  {
+                      $expr: 
+                      {
+                          $gte: ["$timeEnd", "$nowDate"]
+                      },
+                      
+                  },
+                  {
+                      "statusChallenge": "PUBLISH"
+                  }
+              ]
+          }
+      },
+      {
+          "$lookup": 
+          {
+              from: "userChallenge",
+              let: 
+              {
+                  userchallenge_fk: "$_id"
+              },
+              as: 'userChallenges',
+              pipeline: 
+              [
+                  {
+                      "$match": 
+                      {
+                          "$and": 
+                          [
+                              {
+                                  "$expr": 
+                                  {
+                                      "$eq": 
+                                      [
+                                          "$$userchallenge_fk",
+                                          "$idChallenge"
+                                      ]
+                                  }
+                              },
+                              {
+                                  isActive: true
+                              },
+                              {
+                                  idUser: konvertid,
+                                  
+                              }
+                          ]
+                      }
+                  },
+                  
+              ]
           },
-        }
+          
       },
       {
-        $sort: {
-          statusChallenge: -1,
-          timeStart: 1,
-        }
+          $project: {
+              "_id": 1,
+              "nameChallenge": 1,
+              "jenisChallenge": 1,
+              "description": 1,
+              "createdAt": 1,
+              "updatedAt": 1,
+              "durasi": 1,
+              "startChallenge": 1,
+              "endChallenge": 1,
+              "startTime": 1,
+              "endTime": 1,
+              "jenisDurasi": 1,
+              "tampilStatusPengguna": 1,
+              "objectChallenge": 1,
+              "statusChallenge": 1,
+              searchBanner: {
+                  $arrayElemAt: ["$bannerSearch.image", 0]
+              },
+              bannerLeaderboard: {
+                  $arrayElemAt: ["$leaderBoard.bannerLeaderboard", 0]
+              },
+              statusJoined: 
+              {
+                  $cond: {
+                      if: {
+                          $gt: [{
+                              $size: '$userChallenges'
+                          }, 0]
+                      },
+                      then: "Partisipan",
+                      else: "Bukan Partisipan"
+                  }
+              },
+              statusFormalChallenge: 
+              {
+                  $cond: {
+                      if: {
+                          $and: [
+                              {
+                                  $gte: ["$timeEnd", "$nowDate"]
+                              },		
+                              {
+                                  $lte: ["$timeStart", "$nowDate"]
+                              },																													
+                          ]
+                      },
+                      then: "Berlangsung",
+                      else: "Akan Datang"
+                  }
+              },
+          }
       },
       {
-        $skip: page * limit
-      },
-      {
-        $limit: limit
+            $sort: {
+                statusChallenge: -1,
+                timeStart: 1,
+            }
       }
-    ]);
+    );
+
+    if(page > 0)
+    {
+      pipeline.push(
+        {
+          "$skip":page * limit
+        }
+      );
+    }
+
+    if(limit > 0)
+    {
+      pipeline.push(
+        {
+          "$limit":limit
+        }
+      );
+    }
+
+    var data = await this.ChallengeModel.aggregate(pipeline);
 
     return data;
   }
