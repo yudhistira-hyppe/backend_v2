@@ -1177,7 +1177,14 @@ export class ChallengeService {
                 {
                   "$lte":
                     [
-                      "$startChallenge",
+                      {
+                        "$concat":
+                        [
+                          "$startChallenge",
+                          " ",
+                          "$startTime"
+                        ]
+                      },
                       "$timenow"
                     ]
                 }
@@ -1187,7 +1194,14 @@ export class ChallengeService {
                 {
                   "$gte":
                     [
-                      "$endChallenge",
+                      {
+                        "$concat":
+                        [
+                          "$endChallenge",
+                          " ",
+                          "$endTime"
+                        ]
+                      },
                       "$timenow"
                     ]
                 }
@@ -1234,9 +1248,20 @@ export class ChallengeService {
       }
     }
 
-    pipeline.push({
-      "$project": projectdata
-    });
+    pipeline.push(
+      {
+        "$project": projectdata
+      },
+      {
+        "$sort":
+        {
+          createdAt:-1
+        }
+      },
+      {
+        "$limit":5
+      }
+    );
 
     // console.log(JSON.stringify(pipeline));
 

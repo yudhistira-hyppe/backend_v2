@@ -811,7 +811,6 @@ export class UtilsService {
 
     }
   }
-
   async sendFcmWebMode(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID_?: string, postType?: string, noinvoice?: string, jenis?: string) {
 
     console.log(postID_);
