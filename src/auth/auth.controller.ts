@@ -865,7 +865,15 @@ export class AuthController {
 
         var CreateUserauthDto_ = new CreateUserauthDto();
         if (LoginRequest_.regSrc == undefined) {
-          CreateUserauthDto_.loginSrc = data_userauths.regSrc.toString();
+          if (await this.utilsService.ceckData(data_userauths)) {
+            if (data_userauths.regSrc != undefined) {
+              CreateUserauthDto_.loginSrc = data_userauths.regSrc.toString();
+            } else {
+              CreateUserauthDto_.loginSrc = "android";
+            }
+          }else{
+            CreateUserauthDto_.loginSrc = "android";
+          }
         }else{
           CreateUserauthDto_.loginSrc = LoginRequest_.regSrc.toString();
         }
