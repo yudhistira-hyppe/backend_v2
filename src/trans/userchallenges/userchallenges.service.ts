@@ -52,6 +52,25 @@ export class UserchallengesService {
         );
     }
 
+    async updateUnUserchallenge(id: string, idSubChallenge: string, score: number) {
+        this.UserchallengesModel.updateOne(
+            {
+
+                _id: new Types.ObjectId(id), idSubChallenge: idSubChallenge
+            },
+            { $inc: { score: -score } },
+            function (err, docs) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(docs);
+                }
+            },
+        );
+    }
+
+
+
     async delete(id: string) {
         const data = await this.UserchallengesModel.findByIdAndRemove({ _id: new Types.ObjectId(id) }).exec();
         return data;

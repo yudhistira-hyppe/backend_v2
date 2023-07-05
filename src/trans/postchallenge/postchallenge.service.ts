@@ -60,4 +60,21 @@ export class PostchallengeService {
             },
         );
     }
+
+    async updateUnchallnge(id: string, score: number) {
+        this.PostchallengeModel.updateOne(
+            {
+
+                _id: new Types.ObjectId(id),
+            },
+            { $inc: { score: -score } },
+            function (err, docs) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(docs);
+                }
+            },
+        );
+    }
 }
