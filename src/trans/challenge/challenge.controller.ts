@@ -1019,7 +1019,9 @@ export class ChallengeController {
               tempnotifikasi[listvariable[j]] = inputdatatoarray;
             }
             else if (listvariable[j] == 'aturWaktu') {
-              tempnotifikasi[listvariable[j]] = parseInt(request_json[getvarname]);
+              if (listnotifikasipush[i] != 'challengeDimulai') {
+                tempnotifikasi[listvariable[j]] = parseInt(request_json[getvarname]);
+              }
             }
             else {
               tempnotifikasi[listvariable[j]] = request_json[getvarname];
@@ -1036,7 +1038,9 @@ export class ChallengeController {
               tempnotifikasi[listvariable[j]] = [];
             }
             else if (listvariable[j] == 'aturWaktu') {
-              tempnotifikasi[listvariable[j]] = 0;
+              if (listnotifikasipush[i] != 'challengeDimulai') {
+                tempnotifikasi[listvariable[j]] = 0;
+              }
             }
             else {
               tempnotifikasi[listvariable[j]] = null;
