@@ -419,7 +419,9 @@ export class ChallengeController {
             tempnotifikasi[listvariable[j]] = inputdatatoarray;
           }
           else if (listvariable[j] == 'aturWaktu') {
-            tempnotifikasi[listvariable[j]] = parseInt(request_json[getvarname]);
+            if (listnotifikasipush[i] != 'challengeDimulai') {
+              tempnotifikasi[listvariable[j]] = parseInt(request_json[getvarname]);
+            }
           }
           else {
             tempnotifikasi[listvariable[j]] = request_json[getvarname];
@@ -428,11 +430,17 @@ export class ChallengeController {
       }
       else {
         for (var j = 0; j < listvariable.length; j++) {
+          getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_' + listvariable[j];
           if (listvariable[j] == 'include') {
             tempnotifikasi[listvariable[j]] = 'NO';
           }
+          else if (getvarname == 'notifikasiPush_updateLeaderboard_aturWaktu') {
+            tempnotifikasi[listvariable[j]] = [];
+          }
           else if (listvariable[j] == 'aturWaktu') {
-            tempnotifikasi[listvariable[j]] = 0;
+            if (listnotifikasipush[i] != 'challengeDimulai') {
+              tempnotifikasi[listvariable[j]] = 0;
+            }
           }
           else {
             tempnotifikasi[listvariable[j]] = null;
@@ -1011,7 +1019,9 @@ export class ChallengeController {
               tempnotifikasi[listvariable[j]] = inputdatatoarray;
             }
             else if (listvariable[j] == 'aturWaktu') {
-              tempnotifikasi[listvariable[j]] = parseInt(request_json[getvarname]);
+              if (listnotifikasipush[i] != 'challengeDimulai') {
+                tempnotifikasi[listvariable[j]] = parseInt(request_json[getvarname]);
+              }
             }
             else {
               tempnotifikasi[listvariable[j]] = request_json[getvarname];
@@ -1020,11 +1030,17 @@ export class ChallengeController {
         }
         else {
           for (var j = 0; j < listvariable.length; j++) {
+            getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_' + listvariable[j];
             if (listvariable[j] == 'include') {
               tempnotifikasi[listvariable[j]] = 'NO';
             }
+            else if (getvarname == 'notifikasiPush_updateLeaderboard_aturWaktu') {
+              tempnotifikasi[listvariable[j]] = [];
+            }
             else if (listvariable[j] == 'aturWaktu') {
-              tempnotifikasi[listvariable[j]] = 0;
+              if (listnotifikasipush[i] != 'challengeDimulai') {
+                tempnotifikasi[listvariable[j]] = 0;
+              }
             }
             else {
               tempnotifikasi[listvariable[j]] = null;
@@ -1232,8 +1248,8 @@ export class ChallengeController {
   // }
 
   @UseGuards(JwtAuthGuard)
-  @Post('userchallenge/checkuserstatus')
-  async checkuserstatus(
+  @Post('allchallenge')
+  async showallchallenge(
     @Req() request: Request
   ) {
     var iduser = null;
