@@ -1923,7 +1923,7 @@ export class ChallengeController {
 
 
   @UseGuards(JwtAuthGuard)
-  @Post('listleaderboaard')
+  @Post('listleaderboard')
   async listleaderboaard(@Req() request: Request) {
     var idchallenge = null;
     var iduser = null;
