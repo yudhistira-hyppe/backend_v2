@@ -17,13 +17,13 @@ import { AdslogsService } from '../adslog/adslog.service';
 export class AdsSettingController {
     constructor(
         private readonly adssettingService: AdssettingService,
-        private readonly utilsService: UtilsService, 
+        private readonly utilsService: UtilsService,
         private readonly adsNotificationService: AdsNotificationService,
         private readonly adsTypeService: AdsTypeService,
-        private readonly userbasicsService: UserbasicsService, 
+        private readonly userbasicsService: UserbasicsService,
         private readonly adslogsService: AdslogsService,
         private readonly configService: ConfigService,
-        private readonly errorHandler: ErrorHandler) {}
+        private readonly errorHandler: ErrorHandler) { }
 
     @UseGuards(JwtAuthGuard)
     @Get()
@@ -69,7 +69,7 @@ export class AdsSettingController {
                 };
             }));
             var getSetting_Notification = await this.adsNotificationService.getAdsNotification("NOTIFY_REWARDS", "NOTIFICATION");
-            
+
             //----------------Get Log----------------
             var InContentAdsDurationMin = await this.adslogsService.getLog("InContentAdsDurationMin");
             var InContentAdsDurationMax = await this.adslogsService.getLog("InContentAdsDurationMax");
@@ -97,10 +97,10 @@ export class AdsSettingController {
             var AdsDurationMax = await this.adslogsService.getLog("AdsDurationMax");
             var AdsPlanMin = await this.adslogsService.getLog("AdsPlanMin");
             var AdsPlanMax = await this.adslogsService.getLog("AdsPlanMax");
-            
+
             //----------------Create Response----------------
             var responseData = {
-                adsSetting:[
+                adsSetting: [
                     {
                         Jenis: "InContentAdsDurationMin",
                         Nilai: (getSetting_InContentAds.durationMin != undefined) ? getSetting_InContentAds.durationMin : 0,
@@ -117,7 +117,7 @@ export class AdsSettingController {
                     },
                     {
                         Jenis: "InContentAdsSkipTimeMin",
-                        Nilai: (getSetting_InContentAds.skipMin != undefined) ? getSetting_InContentAds.skipMin:0,
+                        Nilai: (getSetting_InContentAds.skipMin != undefined) ? getSetting_InContentAds.skipMin : 0,
                         Unit: "Detik",
                         Aktifitas: InContentAdsSkipTimeMin[0].userbasics_data[0].fullName,
                         Date: InContentAdsSkipTimeMin[0].dateTime,
@@ -368,18 +368,18 @@ export class AdsSettingController {
         var AdsLogsDto_ = new AdsLogsDto();
         var nameActivitas: string[] = [];
         //----------------In Content Ads----------------
-        if(
+        if (
             (body.InContentAdsDurationMin != undefined) ||
             (body.InContentAdsDurationMax != undefined) ||
             (body.InContentAdsSkipTimeMin != undefined) ||
             (body.InContentAdsSkipTimeMax != undefined) ||
             (body.InContentCPAPrice != undefined) ||
             (body.InContentCPVPrice != undefined) ||
-            (body.EconomySharingInContent != undefined) 
+            (body.EconomySharingInContent != undefined)
         ) {
             var AdsTypeDto_ = new AdsTypeDto();
             //----------------DURATION MIN----------------
-            if (body.InContentAdsDurationMin!=undefined){ 
+            if (body.InContentAdsDurationMin != undefined) {
                 //VALIDASI PARAM value
                 var ceck_InContentAdsDurationMin = await this.utilsService.validateParam("InContentAdsDurationMin", body.InContentAdsDurationMin, "number")
                 if (ceck_InContentAdsDurationMin != "") {
@@ -387,7 +387,7 @@ export class AdsSettingController {
                         ceck_InContentAdsDurationMin,
                     );
                 }
-                AdsTypeDto_.durationMin = body.InContentAdsDurationMin; 
+                AdsTypeDto_.durationMin = body.InContentAdsDurationMin;
                 nameActivitas.push("InContentAdsDurationMin");
             }
             //----------------DURATION MAX----------------
@@ -410,7 +410,7 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_InContentAdsSkipTimeMin,
                     );
-                } 
+                }
                 AdsTypeDto_.skipMin = body.InContentAdsSkipTimeMin;
                 nameActivitas.push("InContentAdsSkipTimeMin");
             }
@@ -422,7 +422,7 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_InContentAdsSkipTimeMax,
                     );
-                } 
+                }
                 AdsTypeDto_.skipMax = body.InContentAdsSkipTimeMax;
                 nameActivitas.push("InContentAdsSkipTimeMax");
             }
@@ -434,7 +434,7 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_InContentCPAPrice,
                     );
-                } 
+                }
                 AdsTypeDto_.CPA = body.InContentCPAPrice;
                 nameActivitas.push("InContentCPAPrice");
             }
@@ -446,7 +446,7 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_InContentCPVPrice,
                     );
-                } 
+                }
                 AdsTypeDto_.CPV = body.InContentCPVPrice;
                 nameActivitas.push("InContentCPVPrice");
             }
@@ -458,9 +458,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_EconomySharingInContent,
                     );
-                } 
+                }
                 AdsTypeDto_.rewards = body.EconomySharingInContent;
-                nameActivitas.push("EconomySharingInContent"); 
+                nameActivitas.push("EconomySharingInContent");
             }
             try {
                 await this.adsTypeService.update(_id_InContentAds, AdsTypeDto_);
@@ -469,7 +469,7 @@ export class AdsSettingController {
                     'Unabled to proceed, ' + e.toString(),
                 );
             }
-        } 
+        }
 
         //----------------In Between Ads----------------
         if (
@@ -490,9 +490,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_InBetweenAdsDurationMin,
                     );
-                } 
+                }
                 AdsTypeDto_.durationMin = body.InBetweenAdsDurationMin;
-                nameActivitas.push("InBetweenAdsDurationMin"); 
+                nameActivitas.push("InBetweenAdsDurationMin");
             }
             //----------------DURATION MAX----------------
             if (body.InBetweenAdsDurationMax != undefined) {
@@ -502,9 +502,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_InBetweenAdsDurationMax,
                     );
-                } 
+                }
                 AdsTypeDto_.durationMax = body.InBetweenAdsDurationMax;
-                nameActivitas.push("InBetweenAdsDurationMax"); 
+                nameActivitas.push("InBetweenAdsDurationMax");
             }
             //----------------SKIP MIN----------------
             if (body.InBetweenAdsSkipTimeMin != undefined) {
@@ -514,9 +514,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_InBetweenAdsSkipTimeMin,
                     );
-                } 
+                }
                 AdsTypeDto_.skipMin = body.InBetweenAdsSkipTimeMin;
-                nameActivitas.push("InBetweenAdsSkipTimeMin"); 
+                nameActivitas.push("InBetweenAdsSkipTimeMin");
             }
             //----------------SKIP MAX----------------
             if (body.InBetweenAdsSkipTimeMax != undefined) {
@@ -526,9 +526,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_InBetweenAdsSkipTimeMax,
                     );
-                } 
+                }
                 AdsTypeDto_.skipMax = body.InBetweenAdsSkipTimeMax;
-                nameActivitas.push("InBetweenAdsSkipTimeMax"); 
+                nameActivitas.push("InBetweenAdsSkipTimeMax");
             }
             //----------------CPA PRICE----------------
             if (body.InBetweenCPAPrice != undefined) {
@@ -538,9 +538,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_InBetweenCPAPrice,
                     );
-                } 
+                }
                 AdsTypeDto_.CPA = body.InBetweenCPAPrice;
-                nameActivitas.push("InBetweenCPAPrice"); 
+                nameActivitas.push("InBetweenCPAPrice");
             }
             //----------------CPV PRICE----------------
             if (body.InBetweenCPVPrice != undefined) {
@@ -550,9 +550,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_InBetweenCPVPrice,
                     );
-                } 
+                }
                 AdsTypeDto_.CPV = body.InBetweenCPVPrice;
-                nameActivitas.push("InBetweenCPVPrice"); 
+                nameActivitas.push("InBetweenCPVPrice");
             }
             //----------------ECONOMY SHARING----------------
             if (body.EconomySharingInBetween != undefined) {
@@ -562,9 +562,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_EconomySharingInBetween,
                     );
-                } 
+                }
                 AdsTypeDto_.rewards = body.EconomySharingInBetween;
-                nameActivitas.push("EconomySharingInBetween"); 
+                nameActivitas.push("EconomySharingInBetween");
             }
             try {
                 await this.adsTypeService.update(_id_InBetweenAds, AdsTypeDto_);
@@ -594,9 +594,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_PopUpAdsDurationMin,
                     );
-                } 
+                }
                 AdsTypeDto_.durationMin = body.PopUpAdsDurationMin;
-                nameActivitas.push("PopUpAdsDurationMin"); 
+                nameActivitas.push("PopUpAdsDurationMin");
             }
             //----------------DURATION MAX----------------
             if (body.PopUpAdsDurationMax != undefined) {
@@ -606,9 +606,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_PopUpAdsDurationMax,
                     );
-                } 
+                }
                 AdsTypeDto_.durationMax = body.PopUpAdsDurationMax;
-                nameActivitas.push("PopUpAdsDurationMax"); 
+                nameActivitas.push("PopUpAdsDurationMax");
             }
             //----------------SKIP MIN----------------
             if (body.PopUpAdsSkipTimeMin != undefined) {
@@ -618,9 +618,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_PopUpAdsSkipTimeMin,
                     );
-                } 
+                }
                 AdsTypeDto_.skipMin = body.PopUpAdsSkipTimeMin;
-                nameActivitas.push("PopUpAdsSkipTimeMin"); 
+                nameActivitas.push("PopUpAdsSkipTimeMin");
             }
             //----------------SKIP MAX----------------
             if (body.PopUpAdsSkipTimeMax != undefined) {
@@ -630,9 +630,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_PopUpAdsSkipTimeMax,
                     );
-                } 
+                }
                 AdsTypeDto_.skipMax = body.PopUpAdsSkipTimeMax;
-                nameActivitas.push("PopUpAdsSkipTimeMax"); 
+                nameActivitas.push("PopUpAdsSkipTimeMax");
             }
             //----------------CPA PRICE----------------
             if (body.PopUpCPAPrice != undefined) {
@@ -642,9 +642,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_PopUpCPAPrice,
                     );
-                } 
+                }
                 AdsTypeDto_.CPA = body.PopUpCPAPrice;
-                nameActivitas.push("PopUpCPAPrice"); 
+                nameActivitas.push("PopUpCPAPrice");
             }
             //----------------CPV PRICE----------------
             if (body.PopUpCPVPrice != undefined) {
@@ -654,9 +654,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_PopUpCPVPrice,
                     );
-                } 
+                }
                 AdsTypeDto_.CPV = body.PopUpCPVPrice;
-                nameActivitas.push("PopUpCPVPrice"); 
+                nameActivitas.push("PopUpCPVPrice");
             }
             //----------------ECONOMY SHARING----------------
             if (body.EconomySharingSPonsorPopUp != undefined) {
@@ -666,9 +666,9 @@ export class AdsSettingController {
                     await this.errorHandler.generateBadRequestException(
                         ceck_EconomySharingSPonsorPopUp,
                     );
-                } 
+                }
                 AdsTypeDto_.rewards = body.EconomySharingSPonsorPopUp;
-                nameActivitas.push("EconomySharingSPonsorPopUp"); 
+                nameActivitas.push("EconomySharingSPonsorPopUp");
             }
             try {
                 await this.adsTypeService.update(_id_PopUpAds, AdsTypeDto_);
@@ -686,8 +686,7 @@ export class AdsSettingController {
             (body.AdsDurationMax != undefined) ||
             (body.AdsPlanMin != undefined) ||
             (body.AdsPlanMax != undefined) ||
-            (body.CTAButtonIndex != undefined) ||
-            (body.CTAButtonText != undefined) 
+            (body.CTAButtonText != undefined)
         ) {
             //----------------CREDIT PRICE----------------
             if (body.CreditPrice != undefined) {
@@ -699,7 +698,7 @@ export class AdsSettingController {
                     );
                 }
                 try {
-                    nameActivitas.push("CreditPrice"); 
+                    nameActivitas.push("CreditPrice");
                     await this.adssettingService.updateAdsSetting(_id_setting_CreditPrice, body.CreditPrice);
                 } catch (e) {
                     await this.errorHandler.generateNotAcceptableException(
@@ -780,25 +779,36 @@ export class AdsSettingController {
                 }
             }
             //----------------CTA BUTTON----------------
-            if ((body.CTAButtonIndex != undefined) || (body.CTAButton != undefined)) {
+            console.log(body.CTAButtonText);
+            if (body.CTAButtonText != undefined) {
                 try {
-                    var data_CTABUtton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
-                    const stringValue = data_CTABUtton.value.toString();
-                    const stringSplit = stringValue.split(',');
-                    if (stringSplit[body.CTAButtonIndex] == undefined) {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed',
-                        );
-                    }
-                    stringSplit[body.CTAButtonIndex] = body.CTAButton.toString();
-                    nameActivitas.push("CTAButton"); 
-                    await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, stringSplit);
+                    await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, body.CTAButtonText);
                 } catch (e) {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed, ' + e.toString(),
                     );
                 }
             }
+
+            // if ((body.CTAButtonIndex != undefined) || (body.CTAButton != undefined)) {
+            //     try {
+            //         var data_CTABUtton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
+            //         const stringValue = data_CTABUtton.value.toString();
+            //         const stringSplit = stringValue.split(',');
+            //         if (stringSplit[body.CTAButtonIndex] == undefined) {
+            //             await this.errorHandler.generateNotAcceptableException(
+            //                 'Unabled to proceed',
+            //             );
+            //         }
+            //         stringSplit[body.CTAButtonIndex] = body.CTAButton.toString();
+            //         nameActivitas.push("CTAButton"); 
+            //         await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, stringSplit);
+            //     } catch (e) {
+            //         await this.errorHandler.generateNotAcceptableException(
+            //             'Unabled to proceed, ' + e.toString(),
+            //         );
+            //     }
+            // }
         }
 
         //----------------Ads Template Notification----------------
@@ -854,7 +864,7 @@ export class AdsSettingController {
                 CreateTemplatesRepoDto_.body_detail_id = body.body_id.toString();
                 CreateTemplatesRepoDto_.subject = body.title_en.toString();
                 CreateTemplatesRepoDto_.subject_id = body.title_id.toString();
-                nameActivitas.push("NotificationAds"); 
+                nameActivitas.push("NotificationAds");
                 await this.adsNotificationService.updateAdsNotification(event, category, CreateTemplatesRepoDto_);
             } catch (e) {
                 await this.errorHandler.generateNotAcceptableException(
@@ -865,7 +875,7 @@ export class AdsSettingController {
 
         try {
             AdsLogsDto_.iduser = new mongoose.Types.ObjectId(ubasic._id.toString());
-            AdsLogsDto_.nameActivitas = nameActivitas; 
+            AdsLogsDto_.nameActivitas = nameActivitas;
             AdsLogsDto_.dateTime = await this.utilsService.getDateTimeString();
             this.adslogsService.create(AdsLogsDto_);
 
@@ -885,7 +895,7 @@ export class AdsSettingController {
                 };
             }));
             var getSetting_Notification = await this.adsNotificationService.getAdsNotification("NOTIFY_REWARDS", "NOTIFICATION");
-            
+
             //----------------Get Log----------------
             var InContentAdsDurationMin = await this.adslogsService.getLog("InContentAdsDurationMin");
             var InContentAdsDurationMax = await this.adslogsService.getLog("InContentAdsDurationMax");
@@ -1304,20 +1314,10 @@ export class AdsSettingController {
         }
 
         //----------------CTA BUTTON----------------
-        if ((body.CTAButtonIndex != undefined) || (body.CTAButton != undefined)) {
-            var _id_setting_CTAButton = this.configService.get("ID_SETTING_ADS_CTA_BUTTON");
+        if (body.CTAButton != undefined) {
             try {
-                var data_CTABUtton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
-                const stringValue = data_CTABUtton.value.toString();
-                const stringSplit = stringValue.split(',');
-                if (stringSplit[body.CTAButtonIndex] == undefined) {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed',
-                    );
-                }
-                stringSplit[body.CTAButtonIndex] = body.CTAButton.toString();
-                await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, stringSplit);
-
+                var _id_setting_CTAButton = this.configService.get("ID_SETTING_ADS_CTA_BUTTON");
+                await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, body.CTAButton);
                 var getSetting_CTAButton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
                 var adsCTAButton = await Promise.all(((getSetting_CTAButton.value.toString()).split(',')).map(async (item, index) => {
                     return {
@@ -1334,5 +1334,36 @@ export class AdsSettingController {
                 );
             }
         }
+
+        // if ((body.CTAButtonIndex != undefined) || (body.CTAButton != undefined)) {
+        //     var _id_setting_CTAButton = this.configService.get("ID_SETTING_ADS_CTA_BUTTON");
+        //     try {
+        //         var data_CTABUtton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
+        //         const stringValue = data_CTABUtton.value.toString();
+        //         const stringSplit = stringValue.split(',');
+        //         if (stringSplit[body.CTAButtonIndex] == undefined) {
+        //             await this.errorHandler.generateNotAcceptableException(
+        //                 'Unabled to proceed',
+        //             );
+        //         }
+        //         stringSplit[body.CTAButtonIndex] = body.CTAButton.toString();
+        //         await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, stringSplit);
+
+        //         var getSetting_CTAButton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
+        //         var adsCTAButton = await Promise.all(((getSetting_CTAButton.value.toString()).split(',')).map(async (item, index) => {
+        //             return {
+        //                 CTAButtonIndex: index,
+        //                 CTAButton: item
+        //             };
+        //         }));
+        //         return await this.errorHandler.generateAcceptResponseCodeWithData(
+        //             "Update setting CTA ads succesfully", adsCTAButton
+        //         );
+        //     } catch (e) {
+        //         await this.errorHandler.generateNotAcceptableException(
+        //             'Unabled to proceed, ' + e.toString(),
+        //         );
+        //     }
+        // }
     }
 }
