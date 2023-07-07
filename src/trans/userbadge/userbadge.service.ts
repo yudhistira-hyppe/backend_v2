@@ -31,4 +31,20 @@ export class UserbadgeService {
         }
         return data;
     }
+
+    async getUserbadge(iduser: string, idsubchallenge: string) {
+        var query = await this.UserbadgeModel.aggregate(
+            [
+
+                {
+                    $match: {
+                        "userId": new Types.ObjectId(iduser),
+                        "SubChallengeId": new Types.ObjectId(idsubchallenge),
+                    }
+                }
+            ]
+        );
+        return query[0];
+
+    }
 }

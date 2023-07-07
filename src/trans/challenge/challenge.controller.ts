@@ -17,6 +17,9 @@ import { CreateBadgeDto } from '../badge/dto/create-badge.dto';
 import { UserbasicsService } from '../userbasics/userbasics.service';
 import { notifChallenge } from './schemas/notifChallenge.schema';
 import { notifChallengeService } from './notifChallenge.service';
+import { UserbadgeService } from '../userbadge/userbadge.service';
+import { Userbadge } from '../userbadge/schemas/userbadge.schema';
+import { session } from 'passport';
 
 @Controller('api/challenge')
 export class ChallengeController {
@@ -27,6 +30,7 @@ export class ChallengeController {
     private readonly subchallenge: subChallengeService,
     private readonly userchallengeSS: UserchallengesService,
     private readonly notifChallengeService: notifChallengeService,
+    private readonly userbadgeService: UserbadgeService,
     private readonly userbasicsSS: UserbasicsService) { }
 
   @UseGuards(JwtAuthGuard)
@@ -1956,6 +1960,97 @@ export class ChallengeController {
       response_code: 202,
       "data": data,
       "message": messages
+    }
+  }
+
+
+  @Post('userbadge')
+  async userbadges() {
+
+    this.userbadge();
+
+    const messages = {
+      "info": ["The proses successful"],
+    };
+
+    return {
+      response_code: 202,
+      "message": messages
+    }
+  }
+
+  async userbadge() {
+    var datachallengejuara = null;
+    var status = null;
+    var idsubchallenge = null;
+    var idchallenge = null;
+    var session = null;
+    var startDatetime = null;
+    var endDatetime = null;
+    var userjuara = null;
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+    try {
+      datachallengejuara = await this.subchallenge.getjuara();
+    } catch (e) {
+      datachallengejuara = null;
+    }
+
+    if (datachallengejuara !== null && datachallengejuara.length > 0) {
+      for (let i = 0; i < datachallengejuara.length; i++) {
+        status = datachallengejuara[i], status;
+        idsubchallenge = datachallengejuara[i]._id;
+        idchallenge = datachallengejuara[i].challengeId;
+        session = datachallengejuara[i].session;
+        startDatetime = datachallengejuara[i].startDatetime;
+        endDatetime = datachallengejuara[i].endDatetime;
+        userjuara = datachallengejuara[i].getlastrank;
+        let lengtjuara = userjuara.length;
+
+        if (lengtjuara > 0) {
+          for (let x = 0; x < lengtjuara; x++) {
+            let iduser = userjuara[x].idUser;
+            let ranking = userjuara[x].ranking;
+            let score = userjuara[x].score;
+            let lastRank = userjuara[x].lastRank;
+            let idBadge = userjuara[x].idBadge;
+            let idSubChallenges = userjuara[x].idSubChallenge;
+            let databadge = null;
+            try {
+              databadge = await this.userbadgeService.getUserbadge(iduser.toString(), idSubChallenges.toString());
+            } catch (e) {
+              databadge = null;
+            }
+
+            if (databadge == null) {
+              if (status = "BERAKHIR") {
+                let Userbadge_ = new Userbadge();
+                Userbadge_.SubChallengeId = idSubChallenges;
+                Userbadge_.idBadge = idBadge;
+                Userbadge_.createdAt = timedate;
+                Userbadge_.isActive = true;
+                Userbadge_.userId = iduser;
+                Userbadge_.session = session;
+                Userbadge_.startDatetime = startDatetime;
+                Userbadge_.endDatetime = endDatetime;
+
+                await this.userbadgeService.create(Userbadge_);
+
+              }
+
+            }
+
+          }
+        }
+
+      }
+
     }
   }
 }

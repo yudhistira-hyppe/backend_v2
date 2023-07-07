@@ -16,10 +16,12 @@ import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { UserbasicsService } from '../userbasics/userbasics.service';
 import { notifChallenge, notifChallengeSchema } from './schemas/notifChallenge.schema';
 import { notifChallengeService } from './notifChallenge.service';
+import { UserbadgeModule } from '../userbadge/userbadge.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
     OssModule,
+    UserbadgeModule,
     UtilsModule,
     BadgeModule,
     UserchallengesModule,
