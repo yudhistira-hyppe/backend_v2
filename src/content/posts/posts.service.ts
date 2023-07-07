@@ -156,31 +156,41 @@ export class PostsService {
                       email: 1,
                       fullName: 1,
                       gender: {
-                        $switch: {
-                          branches: [
-                            {
-                              case: {
-                                $or: [
-                                  { $eq: ["$gender", "Male"] },
-                                  { $eq: ["$gender", "Laki-laki"] },
-                                  { $eq: ["$gender", "MALE"] }
-                                ]
-                              }, then: "Laki-laki"
-                            },
-                            {
-                              case: {
-                                $or: [
-                                  { $eq: ["$gender", " Perempuan"] },
-                                  { $eq: ["$gender", "Perempuan"] },
-                                  { $eq: ["$gender", "PEREMPUAN"] },
-                                  { $eq: ["$gender", "FEMALE"] },
-                                  { $eq: ["$gender", " FEMALE"] }
-                                ]
-                              }, then: "Perempuan"
+                        $cond: {
+                          if: { $ne: ["$gender", null] }, then: {
+                            $switch: {
+                              branches: [
+                                {
+                                  case: {
+                                    $or: [
+                                      { $eq: ["$gender", "Male"] },
+                                      { $eq: ["$gender", "Laki-laki"] },
+                                      { $eq: ["$gender", "MALE"] }
+                                    ]
+                                  }, then: "FEMALE"
+                                },
+                                {
+                                  case: {
+                                    $or: [
+                                      { $eq: ["$gender", " Perempuan"] },
+                                      { $eq: ["$gender", "Perempuan"] },
+                                      { $eq: ["$gender", "PEREMPUAN"] },
+                                      { $eq: ["$gender", "FEMALE"] },
+                                      { $eq: ["$gender", " FEMALE"] }
+                                    ]
+                                  }, then: "MALE"
+                                },
+                                {
+                                  case: {
+                                    $or: [
+                                      { $eq: ["$gender", null] },
+                                    ]
+                                  }, then: "OTHER"
+                                }
+                              ],
+                              "default": "OTHER"
                             }
-                          ],
-                          "default": "Lainnya"
-                        }
+                          }, else: "OTHER" }
                       },
                       age: {
                         $cond: {
@@ -413,7 +423,7 @@ export class PostsService {
                               then: "> 44 Tahun"
                             },
                           ],
-                          "default": "Other"
+                          "default": "OTHER"
                         }
                       },
                       userInterests_array: {
@@ -474,15 +484,18 @@ export class PostsService {
                         },
                         "in": "$$tmp.gender"
                       }
-                    }, "Lainnya"]
+                    }, "OTHER"]
                 },
                 ageQualication: {
-                  "$let": {
-                    "vars": {
-                      "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                    },
-                    "in": "$$tmp.ageQualication"
-                  }
+                  $ifNull: [
+                    {
+                      "$let": {
+                        "vars": {
+                          "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                        },
+                        "in": "$$tmp.ageQualication"
+                      }
+                    }, "OTHER"]
                 },
                 interest: {
                   $map: {
@@ -505,21 +518,24 @@ export class PostsService {
                   }
                 },
                 areas: {
-                  $let: {
-                    "vars": {
-                      userauths: {
-                        "$arrayElemAt": [{
-                          "$let": {
-                            "vars": {
-                              "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                            },
-                            "in": "$$tmp.areas"
+                  $ifNull: [
+                    {
+                      $let: {
+                        "vars": {
+                          userauths: {
+                            "$arrayElemAt": [{
+                              "$let": {
+                                "vars": {
+                                  "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                },
+                                "in": "$$tmp.areas"
+                              }
+                            }, 0]
                           }
-                        }, 0]
+                        },
+                        "in": "$$userauths.stateName"
                       }
-                    },
-                    "in": "$$userauths.stateName"
-                  }
+                    }, "OTHER"]
                 },
               }
             },
@@ -530,7 +546,7 @@ export class PostsService {
       {
         $unwind: {
           path: "$contentevents_data",
-          preserveNullAndEmptyArrays: true
+          //preserveNullAndEmptyArrays: true
         }
       },
       {
@@ -555,30 +571,10 @@ export class PostsService {
               }
             }
           ],
-          used: [
-            {
-              $group: {
-                _id: "$postID",
-                count: {
-                  $sum: 1
-                }
-              }
-            }
-          ],
-          view: [
-            {
-              $group: {
-                _id: "$postID",
-                count: {
-                  $sum: 1
-                }
-              }
-            }
-          ],
           age: [
             {
               $group: {
-                _id: "$postID",
+                _id: "$contentevents_data.ageQualication",
                 count: {
                   $sum: 1
                 }

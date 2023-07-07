@@ -686,7 +686,6 @@ export class AdsSettingController {
             (body.AdsDurationMax != undefined) ||
             (body.AdsPlanMin != undefined) ||
             (body.AdsPlanMax != undefined) ||
-            (body.CTAButtonIndex != undefined) ||
             (body.CTAButtonText != undefined) 
         ) {
             //----------------CREDIT PRICE----------------
@@ -780,25 +779,36 @@ export class AdsSettingController {
                 }
             }
             //----------------CTA BUTTON----------------
-            if ((body.CTAButtonIndex != undefined) || (body.CTAButton != undefined)) {
+            console.log(body.CTAButtonText);
+            if (body.CTAButtonText != undefined) {
                 try {
-                    var data_CTABUtton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
-                    const stringValue = data_CTABUtton.value.toString();
-                    const stringSplit = stringValue.split(',');
-                    if (stringSplit[body.CTAButtonIndex] == undefined) {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed',
-                        );
-                    }
-                    stringSplit[body.CTAButtonIndex] = body.CTAButton.toString();
-                    nameActivitas.push("CTAButton"); 
-                    await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, stringSplit);
+                    await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, body.CTAButtonText);
                 } catch (e) {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed, ' + e.toString(),
                     );
                 }
             }
+
+            // if ((body.CTAButtonIndex != undefined) || (body.CTAButton != undefined)) {
+            //     try {
+            //         var data_CTABUtton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
+            //         const stringValue = data_CTABUtton.value.toString();
+            //         const stringSplit = stringValue.split(',');
+            //         if (stringSplit[body.CTAButtonIndex] == undefined) {
+            //             await this.errorHandler.generateNotAcceptableException(
+            //                 'Unabled to proceed',
+            //             );
+            //         }
+            //         stringSplit[body.CTAButtonIndex] = body.CTAButton.toString();
+            //         nameActivitas.push("CTAButton"); 
+            //         await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, stringSplit);
+            //     } catch (e) {
+            //         await this.errorHandler.generateNotAcceptableException(
+            //             'Unabled to proceed, ' + e.toString(),
+            //         );
+            //     }
+            // }
         }
 
         //----------------Ads Template Notification----------------
@@ -1304,20 +1314,10 @@ export class AdsSettingController {
         }
 
         //----------------CTA BUTTON----------------
-        if ((body.CTAButtonIndex != undefined) || (body.CTAButton != undefined)) {
-            var _id_setting_CTAButton = this.configService.get("ID_SETTING_ADS_CTA_BUTTON");
+        if (body.CTAButton != undefined) {
             try {
-                var data_CTABUtton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
-                const stringValue = data_CTABUtton.value.toString();
-                const stringSplit = stringValue.split(',');
-                if (stringSplit[body.CTAButtonIndex] == undefined) {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed',
-                    );
-                }
-                stringSplit[body.CTAButtonIndex] = body.CTAButton.toString();
-                await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, stringSplit);
-
+                var _id_setting_CTAButton = this.configService.get("ID_SETTING_ADS_CTA_BUTTON");
+                await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, body.CTAButton);
                 var getSetting_CTAButton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
                 var adsCTAButton = await Promise.all(((getSetting_CTAButton.value.toString()).split(',')).map(async (item, index) => {
                     return {
@@ -1334,5 +1334,36 @@ export class AdsSettingController {
                 );
             }
         }
+
+        // if ((body.CTAButtonIndex != undefined) || (body.CTAButton != undefined)) {
+        //     var _id_setting_CTAButton = this.configService.get("ID_SETTING_ADS_CTA_BUTTON");
+        //     try {
+        //         var data_CTABUtton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
+        //         const stringValue = data_CTABUtton.value.toString();
+        //         const stringSplit = stringValue.split(',');
+        //         if (stringSplit[body.CTAButtonIndex] == undefined) {
+        //             await this.errorHandler.generateNotAcceptableException(
+        //                 'Unabled to proceed',
+        //             );
+        //         }
+        //         stringSplit[body.CTAButtonIndex] = body.CTAButton.toString();
+        //         await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, stringSplit);
+
+        //         var getSetting_CTAButton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
+        //         var adsCTAButton = await Promise.all(((getSetting_CTAButton.value.toString()).split(',')).map(async (item, index) => {
+        //             return {
+        //                 CTAButtonIndex: index,
+        //                 CTAButton: item
+        //             };
+        //         }));
+        //         return await this.errorHandler.generateAcceptResponseCodeWithData(
+        //             "Update setting CTA ads succesfully", adsCTAButton
+        //         );
+        //     } catch (e) {
+        //         await this.errorHandler.generateNotAcceptableException(
+        //             'Unabled to proceed, ' + e.toString(),
+        //         );
+        //     }
+        // }
     }
 }
