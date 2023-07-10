@@ -570,8 +570,17 @@ export class AdsController {
             end_date = new Date(body.end_date);
         }
 
-        const ads_dashboard = await this.adsService.dashboard(start_date, end_date);
-        return ads_dashboard;
+        try {
+            const ads_dashboard = await this.adsService.dashboard(start_date, end_date);
+            return await this.errorHandler.generateAcceptResponseCodeWithData(
+                "Get Ads Dashboard succesfully", ads_dashboard,
+            );
+        }
+        catch (e) {
+            await this.errorHandler.generateInternalServerErrorException(
+                'Unabled to proceed, ERROR ' + e,
+            );
+        }
     }
 
     @UseGuards(JwtAuthGuard)
@@ -606,6 +615,45 @@ export class AdsController {
             if (await this.utilsService.ceckData(ads_campaign_dashboard)){
                 if (ads_campaign_dashboard.length>0){
                     ads_campaign_dashboard = ads_campaign_dashboard[0];
+                }
+            }
+            for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {
+                var DateFormat = await this.utilsService.consvertDateTimeString(new Date(d));
+                const isFoundreach = ads_campaign_dashboard.reach.some(element => {
+                    if (element._id === DateFormat) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (!isFoundreach){
+                    ads_campaign_dashboard.reach.push({
+                        "_id": DateFormat,
+                        "reachView": 0
+                    })
+                }
+                const isFoundimpresi = ads_campaign_dashboard.impresi.some(element => {
+                    if (element._id === DateFormat) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (!isFoundimpresi) {
+                    ads_campaign_dashboard.impresi.push({
+                        "_id": DateFormat,
+                        "impresiView": 0
+                    })
+                }
+                const isFoundCTA = ads_campaign_dashboard.CTA.some(element => {
+                    if (element._id === DateFormat) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (!isFoundCTA) {
+                    ads_campaign_dashboard.CTA.push({
+                        "_id": DateFormat,
+                        "CTACount": 0
+                    })
                 }
             }
             return await this.errorHandler.generateAcceptResponseCodeWithData(
@@ -665,6 +713,49 @@ export class AdsController {
             if (await this.utilsService.ceckData(ads_campaign_detail)) {
                 if (ads_campaign_detail.length > 0) {
                     ads_campaign_detail = ads_campaign_detail[0];
+                }
+            }
+
+            if (ads_campaign_detail.summary.CTR==null){
+                ads_campaign_detail.summary.CTR="0%"
+            }
+            for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {
+                var DateFormat = await this.utilsService.consvertDateTimeString(new Date(d));
+                const isFoundreach = ads_campaign_detail.summary.reach.some(element => {
+                    if (element._id === DateFormat) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (!isFoundreach) {
+                    ads_campaign_detail.summary.reach.push({
+                        "_id": DateFormat,
+                        "reachView": 0
+                    })
+                }
+                const isFoundimpresi = ads_campaign_detail.summary.impresi.some(element => {
+                    if (element._id === DateFormat) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (!isFoundimpresi) {
+                    ads_campaign_detail.summary.impresi.push({
+                        "_id": DateFormat,
+                        "impresiView": 0
+                    })
+                }
+                const isFoundCTA = ads_campaign_detail.summary.CTA.some(element => {
+                    if (element._id === DateFormat) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (!isFoundCTA) {
+                    ads_campaign_detail.summary.CTA.push({
+                        "_id": DateFormat,
+                        "CTACount": 0
+                    })
                 }
             }
             return await this.errorHandler.generateAcceptResponseCodeWithData(

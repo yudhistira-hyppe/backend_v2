@@ -32,7 +32,8 @@ export class AdslogsService {
                     as: "userbasics_data"
                 }
             },
-            { $sort: { dateTime: -1 } },
+            { 
+                $sort: { dateTime: -1 } },
             {
                 $limit: 1
             },
