@@ -5310,4 +5310,23 @@ export class subChallengeService {
         var query = await this.subChallengeModel.aggregate(pipeline);
         return query;
     }
+
+    async getcount(challengeId: string) {
+        var query = await this.subChallengeModel.aggregate([
+            {
+                $match: {
+                    "challengeId": new Types.ObjectId(challengeId),
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalSession: {
+                        $sum: 1
+                    }
+                }
+            }
+        ]);
+        return query;
+    }
 }
