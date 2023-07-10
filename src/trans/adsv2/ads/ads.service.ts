@@ -600,7 +600,7 @@ export class AdsService {
                 }
                 if (plan_ads.includes("show_greater_than_500")) {
                     $match["tayang"] = {
-                        $gt: 50
+                        $gt: 500
                     }
                 }
             }
