@@ -2000,6 +2000,46 @@ export class ChallengeController {
   }
 
 
+  @UseGuards(JwtAuthGuard)
+  @Post('listbadgebyuser')
+  async listbadgebyuser(@Req() request: Request) {
+    var iduser = null;
+    var page = null;
+    var limit = null;
+    var datasession = null;
+    var data = null;
+    var totalSession = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+
+    if (request_json["iduser"] !== undefined) {
+      iduser = request_json['iduser'];
+    } else {
+      throw new BadRequestException("Unabled to proceed, ascending field is required");
+    }
+
+    page = request_json['page'];
+    limit = request_json['limit'];
+    try {
+      data = await this.userbadgeService.getBadgeByuser(iduser, page, limit);
+    } catch (e) {
+      data = [];
+    }
+
+
+    const messages = {
+      "info": ["The proses successful"],
+    };
+
+    return {
+      response_code: 202,
+      "data": data,
+      "page": page,
+      "limit": limit,
+      "message": messages
+    }
+  }
+
   @Post('userbadge')
   async userbadges() {
 
