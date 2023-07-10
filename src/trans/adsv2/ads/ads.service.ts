@@ -556,6 +556,7 @@ export class AdsService {
     async list(name_ads: string, start_date: any, end_date: any, type_ads: any[], plan_ads: any[], status_list: any[], page: number, limit: number, sorting: boolean) {
         var paramaggregate = [];
         var $match = {};
+        paramaggregate.push({ $addFields: { date_now: new Date() }});
         $match["adsObjectivitasId"] = { $ne: null };
         //------------FILTER DATE START END------------
         if (start_date != undefined && end_date != undefined) {
@@ -818,6 +819,10 @@ export class AdsService {
                     },
                     tayang: 1,
                     totalCredit: 1,
+                    dateNow_1: "$date_now",
+                    dateNow_2: {
+                                                    $toDate: "$liveAt"
+                                                },
                     status: {
                         $switch: {
                             branches: [
@@ -844,7 +849,52 @@ export class AdsService {
                         },
 
                     },
-                    remark: 1,
+                    remark: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: { $eq: ['$status', 'DRAFT'] },
+                                    then: "Kredit tidak mencukupi",
+                                },
+                                {
+                                    case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
+                                    then: {
+                                        $cond:
+                                        {
+                                            if:
+                                            {
+                                                "$eq": ["$description", 'ADS REJECTED']
+                                            },
+                                            then: 'Iklan ditolak, kredit dikembalikan ke saldo Anda',
+                                            else: 'Iklan sudah selesai'
+                                        }
+                                    },
+                                },
+                                {
+                                    case: { $or: [{ $eq: ['$status', 'APPROVE'] }, { $eq: ['$status', 'ACTIVE'] }] },
+                                    then: {
+                                        $cond:
+                                        {
+                                            if: {
+                                                $lte: [{
+                                                    $toDate: "$liveAt"
+                                                }, "$date_now"] },
+                                            then: 'Iklan sedang tayang',
+                                            else: 'Sedang menunggu penayangan'
+                                        }
+                                    },
+                                },
+                                {
+                                    case: { $eq: ['$status', 'UNDER_REVIEW'] },
+                                    then: 'Sedang ditinjau oleh Hyppe',
+                                },
+
+                            ],
+                            default: "OTHER",
+
+                        },
+
+                    },
                     CTA: {
                         $let: {
                             "vars": {
