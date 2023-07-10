@@ -1225,15 +1225,26 @@ export class ChallengeController {
     @Req() request: Request
   ) {
     var targetbanner = null;
+    var page = null;
     var request_json = JSON.parse(JSON.stringify(request.body));
 
-    targetbanner = request_json['target'];
+    if (request_json["target"] !== undefined) {
+      targetbanner = request_json['target'];
+    } else {
+      throw new BadRequestException("Unabled to proceed, filter target banner field is required");
+    }
+
+    if (request_json["page"] !== undefined) {
+      page = request_json['page'];
+    } else {
+      throw new BadRequestException("Unabled to proceed, page field is required");
+    }
 
     const messages = {
       "info": ["The process successful"],
     };
 
-    var data = await this.challengeService.findlistingBanner(targetbanner);
+    var data = await this.challengeService.findlistingBanner(targetbanner, page);
 
     return {
       response_code: 202,
