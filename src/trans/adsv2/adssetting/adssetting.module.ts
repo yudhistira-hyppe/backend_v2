@@ -10,9 +10,11 @@ import { AdsNotificationService } from './adsnotification.service';
 import { TemplatesRepoModule } from '../../../infra/templates_repo/templates_repo.module';
 import { UserbasicsModule } from '../../../trans/userbasics/userbasics.module';
 import { AdslogsModule } from '../adslog/adslogs.module';
+import { AdsObjectivitasModule } from '../adsobjectivitas/adsobjectivitas.module';
 
 @Module({
     imports: [
+        AdsObjectivitasModule,
         AdslogsModule,
         UserbasicsModule,
         TemplatesRepoModule,

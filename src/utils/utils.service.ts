@@ -1234,6 +1234,11 @@ export class UtilsService {
     return DateTime.substring(0, DateTime.lastIndexOf('.'));
   }
 
+  async consvertDateTimeString(date:Date): Promise<string> {
+    var DateTime = new Date(date).toISOString().replace('T', ' ');
+    return DateTime.substring(0, 10);
+  }
+
   async getDateString(): Promise<string> {
     var date = new Date();
     var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');

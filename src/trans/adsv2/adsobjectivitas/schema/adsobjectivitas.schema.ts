@@ -20,5 +20,11 @@ export class AdsObjectivitas {
     createdAt: string;
     @Prop()
     updatedAt: string;
+    @Prop()
+    percentageMin: number;
+    @Prop()
+    percentageMax: number;
+    @Prop()
+    priority: number;
 }
 export const AdsObjectivitasSchema = SchemaFactory.createForClass(AdsObjectivitas);

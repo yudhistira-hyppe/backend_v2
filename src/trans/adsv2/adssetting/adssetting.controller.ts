@@ -6,12 +6,14 @@ import { ErrorHandler } from '../../../utils/error.handler';
 import mongoose from 'mongoose';
 import { AdsTypeService } from '../adstype/adstype.service';
 import { AdsTypeDto } from '../adstype/dto/adstype.dto';
-import { CreateTemplatesRepoDto } from 'src/infra/templates_repo/dto/create-templatesrepo.dto';
+import { CreateTemplatesRepoDto } from '../../../infra/templates_repo/dto/create-templatesrepo.dto';
 import { AdsNotificationService } from './adsnotification.service';
 import { ConfigService } from '@nestjs/config';
 import { AdsLogsDto } from '../adslog/dto/adslog.dto';
-import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
+import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
 import { AdslogsService } from '../adslog/adslog.service';
+import { AdsObjectivitasService } from '../adsobjectivitas/adsobjectivitas.service';
+import { AdsObjectivitasDto } from '../adsobjectivitas/dto/adsobjectivitas.dto';
 
 @Controller('api/adsv2/setting')
 export class AdsSettingController {
@@ -22,13 +24,14 @@ export class AdsSettingController {
         private readonly adsTypeService: AdsTypeService,
         private readonly userbasicsService: UserbasicsService,
         private readonly adslogsService: AdslogsService,
-        private readonly configService: ConfigService,
+        private readonly configService: ConfigService, 
+        private readonly adsObjectivitasService: AdsObjectivitasService,
         private readonly errorHandler: ErrorHandler) { }
 
     @UseGuards(JwtAuthGuard)
-    @Get()
+    @Post()
     @HttpCode(HttpStatus.ACCEPTED)
-    async getAdsSetting(@Headers() headers): Promise<any> {
+    async getAdsSetting(@Headers() headers, @Body() body): Promise<any> {
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
@@ -39,20 +42,83 @@ export class AdsSettingController {
                 'Unabled to proceed email header dan token not match',
             );
         }
+        //ADS ID OBJECTIVITAS
+        var _id_Objectivitas_Action = this.configService.get("ID_ADS_OBJECTTIVITAS_ACTION");
+        var _remark_Objectivitas_Action_Similirity_Min = this.configService.get("REMARK_ADS_OBJECTTIVITAS_ACTION_SIMILARITY_MIN");
+        var _remark_Objectivitas_Action_Similirity_Max = this.configService.get("REMARK_ADS_OBJECTTIVITAS_ACTION_SIMILARITY_MAX");
 
+        var _id_Objectivitas_Awareness = this.configService.get("ID_ADS_OBJECTTIVITAS_AWARENESS");
+        var _remark_Objectivitas_Awareness_Similirity_Min = this.configService.get("REMARK_ADS_OBJECTTIVITAS_AWARENESS_SIMILARITY_MIN");
+        var _remark_Objectivitas_Awareness_Similirity_Max = this.configService.get("REMARK_ADS_OBJECTTIVITAS_AWARENESS_SIMILARITY_MAX");
+
+        var _id_Objectivitas_Consideration = this.configService.get("ID_ADS_OBJECTTIVITAS_CONSIDERATION");
+        var _remark_Objectivitas_Consideration_Similirity_Min = this.configService.get("REMARK_ADS_OBJECTTIVITAS_CONSIDERATION_SIMILARITY_MIN");
+        var _remark_Objectivitas_Consideration_Similirity_Max = this.configService.get("REMARK_ADS_OBJECTTIVITAS_CONSIDERATION_SIMILARITY_MAX");
+
+        //ADS ID TYPE ADS
         var _id_InContentAds = this.configService.get("ID_ADS_IN_CONTENT");
+        var _remark_InContentAds_Duration_Min = this.configService.get("REMARK_ADS_IN_CONTENT_DURATION_MIN");
+        var _remark_InContentAds_Duration_Max = this.configService.get("REMARK_ADS_IN_CONTENT_DURATION_MAX");
+        var _remark_InContentAds_Skip_Time_Min = this.configService.get("REMARK_ADS_IN_CONTENT_SKIP_TIME_MIN");
+        var _remark_InContentAds_Skip_Time_Max = this.configService.get("REMARK_ADS_IN_CONTENT_SKIP_TIME_MAX");
+        var _remark_InContentAds_CPV_Price = this.configService.get("REMARK_ADS_IN_CONTENT_CPV_PRICE");
+        var _remark_InContentAds_CPA_Price = this.configService.get("REMARK_ADS_IN_CONTENT_CPA_PRICE");
+        var _remark_InContentAds_Economy_Sharing = this.configService.get("REMARK_ADS_IN_CONTENT_ECONOMY_SHARING");
+        
         var _id_InBetweenAds = this.configService.get("ID_ADS_IN_BETWEEN");
-        var _id_PopUpAds = this.configService.get("ID_ADS_IN_POPUP");
+        var _remark_InBetweenAds_Duration_Min = this.configService.get("REMARK_ADS_IN_BETWEEN_DURATION_MIN");
+        var _remark_InBetweenAds_Duration_Max = this.configService.get("REMARK_ADS_IN_BETWEEN_DURATION_MAX");
+        var _remark_InBetweenAds_Skip_Time_Min = this.configService.get("REMARK_ADS_IN_BETWEEN_SKIP_TIME_MIN");
+        var _remark_InBetweenAds_Skip_Time_Max = this.configService.get("REMARK_ADS_IN_BETWEEN_SKIP_TIME_MAX");
+        var _remark_InBetweenAds_CPV_Price = this.configService.get("REMARK_ADS_IN_BETWEEN_CPV_PRICE");
+        var _remark_InBetweenAds_CPA_Price = this.configService.get("REMARK_ADS_IN_BETWEEN_CPA_PRICE");
+        var _remark_InBetweenAds_Economy_Sharing = this.configService.get("REMARK_ADS_IN_BETWEEN_ECONOMY_SHARING");
 
+        var _id_PopUpAds = this.configService.get("ID_ADS_IN_POPUP");
+        var _remark_PopUpAds_Duration_Min = this.configService.get("REMARK_ADS_IN_POPUP_DURATION_MIN");
+        var _remark_PopUpAds_Duration_Max = this.configService.get("REMARK_ADS_IN_POPUP_DURATION_MAX");
+        var _remark_PopUpAds_Skip_Time_Min = this.configService.get("REMARK_ADS_IN_POPUP_SKIP_TIME_MIN");
+        var _remark_PopUpAds_Skip_Time_Max = this.configService.get("REMARK_ADS_IN_POPUP_SKIP_TIME_MAX");
+        var _remark_PopUpAds_CPV_Price = this.configService.get("REMARK_ADS_IN_POPUP_CPV_PRICE");
+        var _remark_PopUpAds_CPA_Price = this.configService.get("REMARK_ADS_IN_POPUP_CPA_PRICE");
+        var _remark_PopUpAds_Economy_Sharing = this.configService.get("REMARK_ADS_IN_POPUP_ECONOMY_SHARING");
+
+        //ADS SETTING
         var _id_setting_CreditPrice = this.configService.get("ID_SETTING_ADS_CREDIT_PRICE");
+        var _remark_setting_CreditPrice = this.configService.get("REMARK_SETTING_ADS_CREDIT_PRICE");
+
         var _id_setting_AdsDurationMin = this.configService.get("ID_SETTING_ADS_DURATION_MIN");
+        var _remark_setting_AdsDurationMin = this.configService.get("REMARK_SETTING_ADS_DURATION_MIN");
+
         var _id_setting_AdsDurationMax = this.configService.get("ID_SETTING_ADS_DURATION_MAX");
+        var _remark_setting_AdsDurationMax = this.configService.get("REMARK_SETTING_ADS_DURATION_MAX");
+
         var _id_setting_AdsPlanMin = this.configService.get("ID_SETTING_ADS_PLAN_MIN");
+        var _remark_setting_AdsPlanMin = this.configService.get("REMARK_SETTING_ADS_PLAN_MIN");
+
         var _id_setting_AdsPlanMax = this.configService.get("ID_SETTING_ADS_PLAN_MAX");
+        var _remark_setting_AdsPlanMax = this.configService.get("REMARK_SETTING_ADS_PLAN_MAX");
+
         var _id_setting_CTAButton = this.configService.get("ID_SETTING_ADS_CTA_BUTTON");
+        var _remark_setting_CTAButton = this.configService.get("REMARK_SETTING_ADS_CTA_BUTTON");
+
+        var _id_setting_Similirity_Gender = this.configService.get("ID_SETTING_ADS_GENDER_SIMILARITY");
+        var _remark_setting_Similirity_Gender = this.configService.get("REMARK_SETTING_ADS_GENDER_SIMILARITY");
+
+        var _id_setting_Similirity_Age = this.configService.get("ID_SETTING_ADS_AGE_SIMILARITY");
+        var _remark_setting_Similirity_Age = this.configService.get("REMARK_SETTING_ADS_AGE_SIMILARITY");
+
+        var _id_setting_Similirity_Interest = this.configService.get("ID_SETTING_ADS_INTEREST_SIMILARITY");
+        var _remark_setting_Similirity_Interest = this.configService.get("REMARK_SETTING_ADSINTEREST_SIMILARITY");
+
+        var _id_setting_Similirity_Location = this.configService.get("ID_SETTING_ADS_LOCATION_SIMILARITY");
+        var _remark_setting_Similirity_Location = this.configService.get("REMARK_SETTING_ADS_LOCATION_SIMILARITY");
 
         try {
             //----------------Get Ads Data Setting----------------
+            var getSetting_Objectivitas_Action = await this.adsObjectivitasService.findOne(_id_Objectivitas_Action);
+            var getSetting_Objectivitas_Awareness = await this.adsObjectivitasService.findOne(_id_Objectivitas_Awareness);
+            var getSetting_Objectivitas_Consideration = await this.adsObjectivitasService.findOne(_id_Objectivitas_Consideration);
             var getSetting_InContentAds = await this.adsTypeService.findOne(_id_InContentAds);
             var getSetting_InBetweenAds = await this.adsTypeService.findOne(_id_InBetweenAds);
             var getSetting_PopUpAds = await this.adsTypeService.findOne(_id_PopUpAds);
@@ -62,6 +128,10 @@ export class AdsSettingController {
             var getSetting_AdsPlanMin = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsPlanMin));
             var getSetting_AdsPlanMax = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsPlanMax));
             var getSetting_CTAButton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
+            var getSetting_Similirity_Gender = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_Similirity_Gender));
+            var getSetting_Similirity_Age = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_Similirity_Age));
+            var getSetting_Similirity_Interest = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_Similirity_Interest));
+            var getSetting_Similirity_Location = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_Similirity_Location));
             var adsCTAButton = await Promise.all(((getSetting_CTAButton.value.toString()).split(',')).map(async (item, index) => {
                 return {
                     CTAButtonIndex: index,
@@ -71,6 +141,15 @@ export class AdsSettingController {
             var getSetting_Notification = await this.adsNotificationService.getAdsNotification("NOTIFY_REWARDS", "NOTIFICATION");
 
             //----------------Get Log----------------
+            var AwarenessSimiliarityAudienceMin = await this.adslogsService.getLog("AwarenessSimiliarityAudienceMin");
+            var AwarenessSimiliarityAudienceMax = await this.adslogsService.getLog("AwarenessSimiliarityAudienceMax");
+            
+            var ConsiderationSimiliarityAudienceMin = await this.adslogsService.getLog("ConsiderationSimiliarityAudienceMin");
+            var ConsiderationSimiliarityAudienceMax = await this.adslogsService.getLog("ConsiderationSimiliarityAudienceMax");
+
+            var ActionSimiliarityAudienceMin = await this.adslogsService.getLog("ActionSimiliarityAudienceMin");
+            var ActionSimiliarityAudienceMax = await this.adslogsService.getLog("ActionSimiliarityAudienceMax");
+
             var InContentAdsDurationMin = await this.adslogsService.getLog("InContentAdsDurationMin");
             var InContentAdsDurationMax = await this.adslogsService.getLog("InContentAdsDurationMax");
             var InContentAdsSkipTimeMin = await this.adslogsService.getLog("InContentAdsSkipTimeMin");
@@ -78,6 +157,7 @@ export class AdsSettingController {
             var InContentCPAPrice = await this.adslogsService.getLog("InContentCPAPrice");
             var InContentCPVPrice = await this.adslogsService.getLog("InContentCPVPrice");
             var EconomySharingInContent = await this.adslogsService.getLog("EconomySharingInContent");
+            
             var InBetweenAdsDurationMin = await this.adslogsService.getLog("InBetweenAdsDurationMin");
             var InBetweenAdsDurationMax = await this.adslogsService.getLog("InBetweenAdsDurationMax");
             var InBetweenAdsSkipTimeMin = await this.adslogsService.getLog("InBetweenAdsSkipTimeMin");
@@ -85,6 +165,7 @@ export class AdsSettingController {
             var InBetweenCPAPrice = await this.adslogsService.getLog("InBetweenCPAPrice");
             var InBetweenCPVPrice = await this.adslogsService.getLog("InBetweenCPVPrice");
             var EconomySharingInBetween = await this.adslogsService.getLog("EconomySharingInBetween");
+            
             var PopUpAdsDurationMin = await this.adslogsService.getLog("PopUpAdsDurationMin");
             var PopUpAdsDurationMax = await this.adslogsService.getLog("PopUpAdsDurationMax");
             var PopUpAdsSkipTimeMin = await this.adslogsService.getLog("PopUpAdsSkipTimeMin");
@@ -92,232 +173,19 @@ export class AdsSettingController {
             var PopUpCPAPrice = await this.adslogsService.getLog("PopUpCPAPrice");
             var PopUpCPVPrice = await this.adslogsService.getLog("PopUpCPVPrice");
             var EconomySharingSPonsorPopUp = await this.adslogsService.getLog("EconomySharingSPonsorPopUp");
+            
             var CreditPrice = await this.adslogsService.getLog("CreditPrice");
             var AdsDurationMin = await this.adslogsService.getLog("AdsDurationMin");
             var AdsDurationMax = await this.adslogsService.getLog("AdsDurationMax");
             var AdsPlanMin = await this.adslogsService.getLog("AdsPlanMin");
             var AdsPlanMax = await this.adslogsService.getLog("AdsPlanMax");
+            var GenderCharacteristicWeight = await this.adslogsService.getLog("GenderCharacteristicWeight");
+            var AgeCharacteristicWeight = await this.adslogsService.getLog("AgeCharacteristicWeight");
+            var InterestCharacteristicWeight = await this.adslogsService.getLog("InterestCharacteristicWeight");
+            var LocationCharacteristicWeight = await this.adslogsService.getLog("LocationCharacteristicWeight");
 
             //----------------Create Response----------------
             var responseData = {
-                adsSetting: [
-                    {
-                        Jenis: "InContentAdsDurationMin",
-                        Nilai: (getSetting_InContentAds.durationMin != undefined) ? getSetting_InContentAds.durationMin : 0,
-                        Unit: "Detik",
-                        Aktifitas: InContentAdsDurationMin[0].userbasics_data[0].fullName,
-                        Date: InContentAdsDurationMin[0].dateTime,
-                    },
-                    {
-                        Jenis: "InContentAdsDurationMax",
-                        Nilai: (getSetting_InContentAds.durationMax != undefined) ? getSetting_InContentAds.durationMax : 0,
-                        Unit: "Detik",
-                        Aktifitas: InContentAdsDurationMax[0].userbasics_data[0].fullName,
-                        Date: InContentAdsDurationMax[0].dateTime,
-                    },
-                    {
-                        Jenis: "InContentAdsSkipTimeMin",
-                        Nilai: (getSetting_InContentAds.skipMin != undefined) ? getSetting_InContentAds.skipMin : 0,
-                        Unit: "Detik",
-                        Aktifitas: InContentAdsSkipTimeMin[0].userbasics_data[0].fullName,
-                        Date: InContentAdsSkipTimeMin[0].dateTime,
-                    },
-                    {
-                        Jenis: "InContentAdsSkipTimeMax",
-                        Nilai: (getSetting_InContentAds.skipMax != undefined) ? getSetting_InContentAds.skipMax : 0,
-                        Unit: "Detik",
-                        Aktifitas: InContentAdsSkipTimeMax[0].userbasics_data[0].fullName,
-                        Date: InContentAdsSkipTimeMax[0].dateTime,
-                    },
-                    {
-                        Jenis: "InContentCPAPrice",
-                        Nilai: (getSetting_InContentAds.CPA != undefined) ? getSetting_InContentAds.CPA : 0,
-                        Unit: "Kredit",
-                        Aktifitas: InContentCPAPrice[0].userbasics_data[0].fullName,
-                        Date: InContentCPAPrice[0].dateTime,
-                    },
-                    {
-                        Jenis: "InContentCPVPrice",
-                        Nilai: (getSetting_InContentAds.CPV != undefined) ? getSetting_InContentAds.CPV : 0,
-                        Unit: "Kredit",
-                        Aktifitas: InContentCPVPrice[0].userbasics_data[0].fullName,
-                        Date: InContentCPVPrice[0].dateTime,
-                    },
-                    {
-                        Jenis: "EconomySharingInContent",
-                        Nilai: (getSetting_InContentAds.rewards != undefined) ? getSetting_InContentAds.rewards : 0,
-                        Unit: "Rupiah",
-                        Aktifitas: EconomySharingInContent[0].userbasics_data[0].fullName,
-                        Date: EconomySharingInContent[0].dateTime,
-                    },
-                    {
-                        Jenis: "InBetweenAdsDurationMin",
-                        Nilai: (getSetting_InBetweenAds.durationMin != undefined) ? getSetting_InBetweenAds.durationMin : 0,
-                        Unit: "Detik",
-                        Aktifitas: InBetweenAdsDurationMin[0].userbasics_data[0].fullName,
-                        Date: InBetweenAdsDurationMin[0].dateTime,
-                    },
-                    {
-                        Jenis: "InBetweenAdsDurationMax",
-                        Nilai: (getSetting_InBetweenAds.durationMax != undefined) ? getSetting_InBetweenAds.durationMax : 0,
-                        Unit: "Detik",
-                        Aktifitas: InBetweenAdsDurationMax[0].userbasics_data[0].fullName,
-                        Date: InBetweenAdsDurationMax[0].dateTime,
-                    },
-                    {
-                        Jenis: "InBetweenAdsSkipTimeMin",
-                        Nilai: (getSetting_InBetweenAds.skipMin != undefined) ? getSetting_InBetweenAds.skipMin : 0,
-                        Unit: "Detik",
-                        Aktifitas: InBetweenAdsSkipTimeMin[0].userbasics_data[0].fullName,
-                        Date: InBetweenAdsSkipTimeMin[0].dateTime,
-                    },
-                    {
-                        Jenis: "InBetweenAdsSkipTimeMax",
-                        Nilai: (getSetting_InBetweenAds.skipMax != undefined) ? getSetting_InBetweenAds.skipMax : 0,
-                        Unit: "Detik",
-                        Aktifitas: InBetweenAdsSkipTimeMax[0].userbasics_data[0].fullName,
-                        Date: InBetweenAdsSkipTimeMax[0].dateTime,
-                    },
-                    {
-                        Jenis: "InBetweenCPAPrice",
-                        Nilai: (getSetting_InBetweenAds.CPA != undefined) ? getSetting_InBetweenAds.CPA : 0,
-                        Unit: "Kredit",
-                        Aktifitas: InBetweenCPAPrice[0].userbasics_data[0].fullName,
-                        Date: InBetweenCPAPrice[0].dateTime,
-                    },
-                    {
-                        Jenis: "InBetweenCPVPrice",
-                        Nilai: (getSetting_InBetweenAds.CPV != undefined) ? getSetting_InBetweenAds.CPV : 0,
-                        Unit: "Kredit",
-                        Aktifitas: InBetweenCPVPrice[0].userbasics_data[0].fullName,
-                        Date: InBetweenCPVPrice[0].dateTime,
-                    },
-                    {
-                        Jenis: "EconomySharingInBetween",
-                        Nilai: (getSetting_InBetweenAds.rewards != undefined) ? getSetting_InBetweenAds.rewards : 0,
-                        Unit: "Rupiah",
-                        Aktifitas: EconomySharingInBetween[0].userbasics_data[0].fullName,
-                        Date: EconomySharingInBetween[0].dateTime,
-                    },
-
-
-                    {
-                        Jenis: "PopUpAdsDurationMin",
-                        Nilai: (getSetting_PopUpAds.durationMin != undefined) ? getSetting_PopUpAds.durationMin : 0,
-                        Unit: "Detik",
-                        Aktifitas: PopUpAdsDurationMin[0].userbasics_data[0].fullName,
-                        Date: PopUpAdsDurationMin[0].dateTime,
-                    },
-                    {
-                        Jenis: "PopUpAdsDurationMax",
-                        Nilai: (getSetting_PopUpAds.durationMax != undefined) ? getSetting_PopUpAds.durationMax : 0,
-                        Unit: "Detik",
-                        Aktifitas: PopUpAdsDurationMax[0].userbasics_data[0].fullName,
-                        Date: PopUpAdsDurationMax[0].dateTime,
-                    },
-                    {
-                        Jenis: "PopUpAdsSkipTimeMin",
-                        Nilai: (getSetting_PopUpAds.skipMin != undefined) ? getSetting_PopUpAds.skipMin : 0,
-                        Unit: "Detik",
-                        Aktifitas: PopUpAdsSkipTimeMin[0].userbasics_data[0].fullName,
-                        Date: PopUpAdsSkipTimeMin[0].dateTime,
-                    },
-                    {
-                        Jenis: "PopUpAdsSkipTimeMax",
-                        Nilai: (getSetting_PopUpAds.skipMax != undefined) ? getSetting_PopUpAds.skipMax : 0,
-                        Unit: "Detik",
-                        Aktifitas: PopUpAdsSkipTimeMax[0].userbasics_data[0].fullName,
-                        Date: PopUpAdsSkipTimeMax[0].dateTime,
-                    },
-                    {
-                        Jenis: "PopUpCPAPrice",
-                        Nilai: (getSetting_PopUpAds.CPA != undefined) ? getSetting_PopUpAds.CPA : 0,
-                        Unit: "Kredit",
-                        Aktifitas: PopUpCPAPrice[0].userbasics_data[0].fullName,
-                        Date: PopUpCPAPrice[0].dateTime,
-                    },
-                    {
-                        Jenis: "PopUpCPVPrice",
-                        Nilai: (getSetting_PopUpAds.CPV != undefined) ? getSetting_PopUpAds.CPV : 0,
-                        Unit: "Kredit",
-                        Aktifitas: PopUpCPVPrice[0].userbasics_data[0].fullName,
-                        Date: PopUpCPVPrice[0].dateTime,
-                    },
-                    {
-                        Jenis: "EconomySharingSPonsorPopUp",
-                        Nilai: (getSetting_PopUpAds.rewards != undefined) ? getSetting_PopUpAds.rewards : 0,
-                        Unit: "Rupiah",
-                        Aktifitas: EconomySharingSPonsorPopUp[0].userbasics_data[0].fullName,
-                        Date: EconomySharingSPonsorPopUp[0].dateTime,
-                    },
-
-
-                    {
-                        Jenis: "CreditPrice",
-                        Nilai: (getSetting_CreditPrice.value != undefined) ? getSetting_CreditPrice.value : 0,
-                        Unit: getSetting_AdsPlanMax.remark,
-                        Aktifitas: CreditPrice[0].userbasics_data[0].fullName,
-                        Date: CreditPrice[0].dateTime,
-                    },
-                    {
-                        Jenis: "AdsDurationMin",
-                        Nilai: (getSetting_AdsDurationMin.value != undefined) ? getSetting_AdsDurationMin.value : 0,
-                        Unit: getSetting_AdsPlanMax.remark,
-                        Aktifitas: AdsDurationMin[0].userbasics_data[0].fullName,
-                        Date: AdsDurationMin[0].dateTime,
-                    },
-                    {
-                        Jenis: "AdsDurationMax",
-                        Nilai: (getSetting_AdsDurationMax.value != undefined) ? getSetting_AdsDurationMax.value : 0,
-                        Unit: getSetting_AdsPlanMax.remark,
-                        Aktifitas: AdsDurationMax[0].userbasics_data[0].fullName,
-                        Date: AdsDurationMax[0].dateTime,
-                    },
-                    {
-                        Jenis: "AdsPlanMin",
-                        Nilai: (getSetting_AdsPlanMin.value != undefined) ? getSetting_AdsPlanMin.value : 0,
-                        Unit: getSetting_AdsPlanMax.remark,
-                        Aktifitas: AdsPlanMin[0].userbasics_data[0].fullName,
-                        Date: AdsPlanMin[0].dateTime,
-                    },
-                    {
-                        Jenis: "AdsPlanMax",
-                        Nilai: (getSetting_AdsPlanMax.value != undefined) ? getSetting_AdsPlanMax.value : 0,
-                        Unit: getSetting_AdsPlanMax.remark,
-                        Aktifitas: AdsPlanMax[0].userbasics_data[0].fullName,
-                        Date: AdsPlanMax[0].dateTime,
-                    },
-                ],
-                //     InContentAdsDurationMin: getSetting_InContentAds.durationMin,
-                //     InContentAdsDurationMax: getSetting_InContentAds.durationMax,
-                //     InContentAdsSkipTimeMin: getSetting_InContentAds.skipMin,
-                //     InContentAdsSkipTimeMax: getSetting_InContentAds.skipMax,
-                //     InContentCPAPrice: getSetting_InContentAds.CPA,
-                //     InContentCPVPrice: getSetting_InContentAds.CPV,
-                //     EconomySharingInContent: getSetting_InContentAds.rewards,
-
-                //     InBetweenAdsDurationMin: getSetting_InBetweenAds.durationMin,
-                //     InBetweenAdsDurationMax: getSetting_InBetweenAds.durationMax,
-                //     InBetweenAdsSkipTimeMin: getSetting_InBetweenAds.skipMin,
-                //     InBetweenAdsSkipTimeMax: getSetting_InBetweenAds.skipMax,
-                //     InBetweenCPAPrice: getSetting_InBetweenAds.CPA,
-                //     InBetweenCPVPrice: getSetting_InBetweenAds.CPV,
-                //     EconomySharingInBetween: getSetting_InBetweenAds.rewards,
-
-                //     PopUpAdsDurationMin: getSetting_PopUpAds.durationMin,
-                //     PopUpAdsDurationMax: getSetting_PopUpAds.durationMax,
-                //     PopUpAdsSkipTimeMin: getSetting_PopUpAds.skipMin,
-                //     PopUpAdsSkipTimeMax: getSetting_PopUpAds.skipMax,
-                //     PopUpCPAPrice: getSetting_PopUpAds.CPA,
-                //     PopUpCPVPrice: getSetting_PopUpAds.CPV,
-                //     EconomySharingSPonsorPopUp: getSetting_PopUpAds.rewards,
-
-                //     CreditPrice: getSetting_CreditPrice.value,
-                //     AdsDurationMin: getSetting_AdsDurationMin.value,
-                //     AdsDurationMax: getSetting_AdsDurationMax.value,
-                //     AdsPlanMin: getSetting_AdsPlanMin.value,
-                //     AdsPlanMax: getSetting_AdsPlanMax.value,
-                // },
                 adsCTAButton,
                 adsNotification: {
                     title_id: getSetting_Notification.subject_id,
@@ -326,6 +194,343 @@ export class AdsSettingController {
                     body_end: getSetting_Notification.body_detail,
                 },
             }
+
+            var adsSetting = [
+                //ADS CONTENT
+                {
+                    Jenis: "InContentAdsDurationMin",
+                    Nilai: (getSetting_InContentAds.durationMin != undefined) ? getSetting_InContentAds.durationMin : 0,
+                    Unit: "Detik",
+                    Aktifitas: (InContentAdsDurationMin.length > 0) ? InContentAdsDurationMin[0].userbasics_data[0].fullName : "",
+                    Date: (InContentAdsDurationMin.length > 0) ? InContentAdsDurationMin[0].dateTime : "-",
+                    Desc: _remark_InContentAds_Duration_Min,
+                },
+                {
+                    Jenis: "InContentAdsDurationMax",
+                    Nilai: (getSetting_InContentAds.durationMax != undefined) ? getSetting_InContentAds.durationMax : 0,
+                    Unit: "Detik",
+                    Aktifitas: (InContentAdsDurationMax.length > 0) ? InContentAdsDurationMax[0].userbasics_data[0].fullName : "",
+                    Date: (InContentAdsDurationMax.length > 0) ? InContentAdsDurationMax[0].dateTime : "-",
+                    Desc: _remark_InContentAds_Duration_Max,
+                },
+                {
+                    Jenis: "InContentAdsSkipTimeMin",
+                    Nilai: (getSetting_InContentAds.skipMin != undefined) ? getSetting_InContentAds.skipMin : 0,
+                    Unit: "Detik",
+                    Aktifitas: (InContentAdsSkipTimeMin.length > 0) ? InContentAdsSkipTimeMin[0].userbasics_data[0].fullName : "",
+                    Date: (InContentAdsSkipTimeMin.length > 0) ? InContentAdsSkipTimeMin[0].dateTime : "-",
+                    Desc: _remark_InContentAds_Skip_Time_Min,
+                },
+                {
+                    Jenis: "InContentAdsSkipTimeMax",
+                    Nilai: (getSetting_InContentAds.skipMax != undefined) ? getSetting_InContentAds.skipMax : 0,
+                    Unit: "Detik",
+                    Aktifitas: (InContentAdsSkipTimeMax.length > 0) ? InContentAdsSkipTimeMax[0].userbasics_data[0].fullName : "",
+                    Date: (InContentAdsSkipTimeMax.length > 0) ? InContentAdsSkipTimeMax[0].dateTime : "-",
+                    Desc: _remark_InContentAds_Skip_Time_Max,
+                },
+                {
+                    Jenis: "InContentCPAPrice",
+                    Nilai: (getSetting_InContentAds.CPA != undefined) ? getSetting_InContentAds.CPA : 0,
+                    Unit: "Kredit",
+                    Aktifitas: (InContentCPAPrice.length > 0) ? InContentCPAPrice[0].userbasics_data[0].fullName : "",
+                    Date: (InContentCPAPrice.length > 0) ? InContentCPAPrice[0].dateTime : "-",
+                    Desc: _remark_InContentAds_CPA_Price,
+                },
+                {
+                    Jenis: "InContentCPVPrice",
+                    Nilai: (getSetting_InContentAds.CPV != undefined) ? getSetting_InContentAds.CPV : 0,
+                    Unit: "Kredit",
+                    Aktifitas: (InContentCPVPrice.length > 0) ? InContentCPVPrice[0].userbasics_data[0].fullName : "",
+                    Date: (InContentCPVPrice.length > 0) ? InContentCPVPrice[0].dateTime : "-",
+                    Desc: _remark_InContentAds_CPV_Price,
+                },
+                {
+                    Jenis: "EconomySharingInContent",
+                    Nilai: (getSetting_InContentAds.rewards != undefined) ? getSetting_InContentAds.rewards : 0,
+                    Unit: "Rupiah",
+                    Aktifitas: (EconomySharingInContent.length > 0) ? EconomySharingInContent[0].userbasics_data[0].fullName : "",
+                    Date: (EconomySharingInContent.length > 0) ? EconomySharingInContent[0].dateTime : "-",
+                    Desc: _remark_InContentAds_Economy_Sharing,
+                },
+                //ADS BETWEEN
+                {
+                    Jenis: "InBetweenAdsDurationMin",
+                    Nilai: (getSetting_InBetweenAds.durationMin != undefined) ? getSetting_InBetweenAds.durationMin : 0,
+                    Unit: "Detik",
+                    Aktifitas: (InBetweenAdsDurationMin.length > 0) ? InBetweenAdsDurationMin[0].userbasics_data[0].fullName : "",
+                    Date: (InBetweenAdsDurationMin.length > 0) ? InBetweenAdsDurationMin[0].dateTime : "-",
+                    Desc: _remark_InBetweenAds_Duration_Min,
+                },
+                {
+                    Jenis: "InBetweenAdsDurationMax",
+                    Nilai: (getSetting_InBetweenAds.durationMax != undefined) ? getSetting_InBetweenAds.durationMax : 0,
+                    Unit: "Detik",
+                    Aktifitas: (InBetweenAdsDurationMax.length > 0) ? InBetweenAdsDurationMax[0].userbasics_data[0].fullName : "",
+                    Date: (InBetweenAdsDurationMax.length > 0) ? InBetweenAdsDurationMax[0].dateTime : "-",
+                    Desc: _remark_InBetweenAds_Duration_Max,
+                },
+                {
+                    Jenis: "InBetweenAdsSkipTimeMin",
+                    Nilai: (getSetting_InBetweenAds.skipMin != undefined) ? getSetting_InBetweenAds.skipMin : 0,
+                    Unit: "Detik",
+                    Aktifitas: (InBetweenAdsSkipTimeMin.length > 0) ? InBetweenAdsSkipTimeMin[0].userbasics_data[0].fullName : "",
+                    Date: (InBetweenAdsSkipTimeMin.length > 0) ? InBetweenAdsSkipTimeMin[0].dateTime : "-",
+                    Desc: _remark_InBetweenAds_Skip_Time_Min,
+                },
+                {
+                    Jenis: "InBetweenAdsSkipTimeMax",
+                    Nilai: (getSetting_InBetweenAds.skipMax != undefined) ? getSetting_InBetweenAds.skipMax : 0,
+                    Unit: "Detik",
+                    Aktifitas: (InBetweenAdsSkipTimeMax.length > 0) ? InBetweenAdsSkipTimeMax[0].userbasics_data[0].fullName : "",
+                    Date: (InBetweenAdsSkipTimeMax.length > 0) ? InBetweenAdsSkipTimeMax[0].dateTime : "-",
+                    Desc: _remark_InBetweenAds_Skip_Time_Max,
+                },
+                {
+                    Jenis: "InBetweenCPAPrice",
+                    Nilai: (getSetting_InBetweenAds.CPA != undefined) ? getSetting_InBetweenAds.CPA : 0,
+                    Unit: "Kredit",
+                    Aktifitas: (InBetweenCPAPrice.length > 0) ? InBetweenCPAPrice[0].userbasics_data[0].fullName : "",
+                    Date: (InBetweenCPAPrice.length > 0) ? InBetweenCPAPrice[0].dateTime : "-",
+                    Desc: _remark_InBetweenAds_CPA_Price,
+                },
+                {
+                    Jenis: "InBetweenCPVPrice",
+                    Nilai: (getSetting_InBetweenAds.CPV != undefined) ? getSetting_InBetweenAds.CPV : 0,
+                    Unit: "Kredit",
+                    Aktifitas: (InBetweenCPVPrice.length > 0) ? InBetweenCPVPrice[0].userbasics_data[0].fullName : "",
+                    Date: (InBetweenCPVPrice.length > 0) ? InBetweenCPVPrice[0].dateTime : "-",
+                    Desc: _remark_InBetweenAds_CPV_Price,
+                },
+                {
+                    Jenis: "EconomySharingInBetween",
+                    Nilai: (getSetting_InBetweenAds.rewards != undefined) ? getSetting_InBetweenAds.rewards : 0,
+                    Unit: "Rupiah",
+                    Aktifitas: (EconomySharingInBetween.length > 0) ? EconomySharingInBetween[0].userbasics_data[0].fullName : "",
+                    Date: (EconomySharingInBetween.length > 0) ? EconomySharingInBetween[0].dateTime : "-",
+                    Desc: _remark_InBetweenAds_Economy_Sharing,
+                },
+                //ADS POPUP
+                {
+                    Jenis: "PopUpAdsDurationMin",
+                    Nilai: (getSetting_PopUpAds.durationMin != undefined) ? getSetting_PopUpAds.durationMin : 0,
+                    Unit: "Detik",
+                    Aktifitas: (PopUpAdsDurationMin.length > 0) ? PopUpAdsDurationMin[0].userbasics_data[0].fullName : "",
+                    Date: (PopUpAdsDurationMin.length > 0) ? PopUpAdsDurationMin[0].dateTime : "-",
+                    Desc: _remark_PopUpAds_Duration_Min,
+                },
+                {
+                    Jenis: "PopUpAdsDurationMax",
+                    Nilai: (getSetting_PopUpAds.durationMax != undefined) ? getSetting_PopUpAds.durationMax : 0,
+                    Unit: "Detik",
+                    Aktifitas: (PopUpAdsDurationMax.length > 0) ? PopUpAdsDurationMax[0].userbasics_data[0].fullName : "",
+                    Date: (PopUpAdsDurationMax.length > 0) ? PopUpAdsDurationMax[0].dateTime : "-",
+                    Desc: _remark_PopUpAds_Duration_Max,
+                },
+                {
+                    Jenis: "PopUpAdsSkipTimeMin",
+                    Nilai: (getSetting_PopUpAds.skipMin != undefined) ? getSetting_PopUpAds.skipMin : 0,
+                    Unit: "Detik",
+                    Aktifitas: (PopUpAdsSkipTimeMin.length > 0) ? PopUpAdsSkipTimeMin[0].userbasics_data[0].fullName : "",
+                    Date: (PopUpAdsSkipTimeMin.length > 0) ? PopUpAdsSkipTimeMin[0].dateTime : "-",
+                    Desc: _remark_PopUpAds_Skip_Time_Min,
+                },
+                {
+                    Jenis: "PopUpAdsSkipTimeMax",
+                    Nilai: (getSetting_PopUpAds.skipMax != undefined) ? getSetting_PopUpAds.skipMax : 0,
+                    Unit: "Detik",
+                    Aktifitas: (PopUpAdsSkipTimeMax.length > 0) ? PopUpAdsSkipTimeMax[0].userbasics_data[0].fullName : "",
+                    Date: (PopUpAdsSkipTimeMax.length > 0) ? PopUpAdsSkipTimeMax[0].dateTime : "-",
+                    Desc: _remark_PopUpAds_Skip_Time_Max,
+                },
+                {
+                    Jenis: "PopUpCPAPrice",
+                    Nilai: (getSetting_PopUpAds.CPA != undefined) ? getSetting_PopUpAds.CPA : 0,
+                    Unit: "Kredit",
+                    Aktifitas: (PopUpCPAPrice.length > 0) ? PopUpCPAPrice[0].userbasics_data[0].fullName : "",
+                    Date: (PopUpCPAPrice.length > 0) ? PopUpCPAPrice[0].dateTime : "-",
+                    Desc: _remark_PopUpAds_CPA_Price,
+                },
+                {
+                    Jenis: "PopUpCPVPrice",
+                    Nilai: (getSetting_PopUpAds.CPV != undefined) ? getSetting_PopUpAds.CPV : 0,
+                    Unit: "Kredit",
+                    Aktifitas: (PopUpCPVPrice.length > 0) ? PopUpCPVPrice[0].userbasics_data[0].fullName : "",
+                    Date: (PopUpCPVPrice.length > 0) ? PopUpCPVPrice[0].dateTime : "-",
+                    Desc: _remark_PopUpAds_CPV_Price,
+                },
+                {
+                    Jenis: "EconomySharingSPonsorPopUp",
+                    Nilai: (getSetting_PopUpAds.rewards != undefined) ? getSetting_PopUpAds.rewards : 0,
+                    Unit: "Rupiah",
+                    Aktifitas: (EconomySharingSPonsorPopUp.length > 0) ? EconomySharingSPonsorPopUp[0].userbasics_data[0].fullName : "",
+                    Date: (EconomySharingSPonsorPopUp.length > 0) ? EconomySharingSPonsorPopUp[0].dateTime : "-",
+                    Desc: _remark_PopUpAds_Economy_Sharing,
+                },
+                //OBJECTIVITAS
+                {
+                    Jenis: "ActionSimiliarityAudienceMin",
+                    Nilai: (getSetting_Objectivitas_Action.percentageMin != undefined) ? getSetting_Objectivitas_Action.percentageMin : 0,
+                    Unit: "Persen",
+                    Aktifitas: (ActionSimiliarityAudienceMin.length > 0) ? ActionSimiliarityAudienceMin[0].userbasics_data[0].fullName : "",
+                    Date: (ActionSimiliarityAudienceMin.length > 0) ? ActionSimiliarityAudienceMin[0].dateTime : "-",
+                    Desc: _remark_Objectivitas_Action_Similirity_Min,
+                },
+                {
+                    Jenis: "ActionSimiliarityAudienceMax",
+                    Nilai: (getSetting_Objectivitas_Action.percentageMax != undefined) ? getSetting_Objectivitas_Action.percentageMax : 0,
+                    Unit: "Persen",
+                    Aktifitas: (ActionSimiliarityAudienceMax.length > 0) ? ActionSimiliarityAudienceMax[0].userbasics_data[0].fullName : "",
+                    Date: (ActionSimiliarityAudienceMax.length > 0) ? ActionSimiliarityAudienceMin[0].dateTime : "-",
+                    Desc: _remark_Objectivitas_Action_Similirity_Max,
+                },
+                {
+                    Jenis: "ConsiderationSimiliarityAudienceMin",
+                    Nilai: (getSetting_Objectivitas_Awareness.percentageMin != undefined) ? getSetting_Objectivitas_Awareness.percentageMin : 0,
+                    Unit: "Persen",
+                    Aktifitas: (ConsiderationSimiliarityAudienceMin.length > 0) ? ConsiderationSimiliarityAudienceMin[0].userbasics_data[0].fullName : "",
+                    Date: (ConsiderationSimiliarityAudienceMin.length > 0) ? ConsiderationSimiliarityAudienceMin[0].dateTime : "-",
+                    Desc: _remark_Objectivitas_Consideration_Similirity_Min,
+                },
+                {
+                    Jenis: "ConsiderationSimiliarityAudienceMax",
+                    Nilai: (getSetting_Objectivitas_Consideration.percentageMax != undefined) ? getSetting_Objectivitas_Consideration.percentageMax : 0,
+                    Unit: "Persen",
+                    Aktifitas: (ConsiderationSimiliarityAudienceMax.length > 0) ? ConsiderationSimiliarityAudienceMax[0].userbasics_data[0].fullName : "",
+                    Date: (ConsiderationSimiliarityAudienceMax.length > 0) ? ConsiderationSimiliarityAudienceMax[0].dateTime : "-",
+                    Desc: _remark_Objectivitas_Consideration_Similirity_Max,
+                },
+                {
+                    Jenis: "AwarenessSimiliarityAudienceMin",
+                    Nilai: (getSetting_Objectivitas_Awareness.percentageMin != undefined) ? getSetting_Objectivitas_Awareness.percentageMin : 0,
+                    Unit: "Persen",
+                    Aktifitas: (AwarenessSimiliarityAudienceMin.length > 0) ? AwarenessSimiliarityAudienceMin[0].userbasics_data[0].fullName : "",
+                    Date: (AwarenessSimiliarityAudienceMin.length > 0) ? AwarenessSimiliarityAudienceMin[0].dateTime : "-",
+                    Desc: _remark_Objectivitas_Awareness_Similirity_Min,
+                },
+                {
+                    Jenis: "AwarenessSimiliarityAudienceMax",
+                    Nilai: (getSetting_Objectivitas_Awareness.percentageMax != undefined) ? getSetting_Objectivitas_Awareness.percentageMax : 0,
+                    Unit: "Persen",
+                    Aktifitas: (AwarenessSimiliarityAudienceMax.length > 0) ? AwarenessSimiliarityAudienceMax[0].userbasics_data[0].fullName : "",
+                    Date: (AwarenessSimiliarityAudienceMax.length > 0) ? AwarenessSimiliarityAudienceMax[0].dateTime : "-",
+                    Desc: _remark_Objectivitas_Awareness_Similirity_Max,
+                },
+                //ADS SETTING
+                {
+                    Jenis: "CreditPrice",
+                    Nilai: (getSetting_CreditPrice.value != undefined) ? getSetting_CreditPrice.value : 0,
+                    Unit: getSetting_AdsPlanMax.remark,
+                    Aktifitas: (CreditPrice.length > 0) ? CreditPrice[0].userbasics_data[0].fullName : "",
+                    Date: (CreditPrice.length > 0) ? CreditPrice[0].dateTime : "-",
+                    Desc: _remark_setting_CreditPrice,
+                },
+                {
+                    Jenis: "AdsDurationMin",
+                    Nilai: (getSetting_AdsDurationMin.value != undefined) ? getSetting_AdsDurationMin.value : 0,
+                    Unit: getSetting_AdsPlanMax.remark,
+                    Aktifitas: (AdsDurationMin.length > 0) ? AdsDurationMin[0].userbasics_data[0].fullName : "",
+                    Date: (AdsDurationMin.length > 0) ? AdsDurationMin[0].dateTime : "-",
+                    Desc: _remark_setting_AdsDurationMin,
+                },
+                {
+                    Jenis: "AdsDurationMax",
+                    Nilai: (getSetting_AdsDurationMax.value != undefined) ? getSetting_AdsDurationMax.value : 0,
+                    Unit: getSetting_AdsPlanMax.remark,
+                    Aktifitas: (AdsDurationMax.length > 0) ? AdsDurationMax[0].userbasics_data[0].fullName : "",
+                    Date: (AdsDurationMax.length > 0) ? AdsDurationMax[0].dateTime : "-",
+                    Desc: _remark_setting_AdsDurationMax,
+                },
+                {
+                    Jenis: "AdsPlanMin",
+                    Nilai: (getSetting_AdsPlanMin.value != undefined) ? getSetting_AdsPlanMin.value : 0,
+                    Unit: getSetting_AdsPlanMax.remark,
+                    Aktifitas: (AdsPlanMin.length > 0) ? AdsPlanMin[0].userbasics_data[0].fullName : "",
+                    Date: (AdsPlanMin.length > 0) ? AdsPlanMin[0].dateTime : "-",
+                    Desc: _remark_setting_AdsPlanMin,
+                },
+                {
+                    Jenis: "AdsPlanMax",
+                    Nilai: (getSetting_AdsPlanMax.value != undefined) ? getSetting_AdsPlanMax.value : 0,
+                    Unit: getSetting_AdsPlanMax.remark,
+                    Aktifitas: (AdsPlanMax.length > 0) ? AdsPlanMax[0].userbasics_data[0].fullName : "",
+                    Date: (AdsPlanMax.length > 0) ? AdsPlanMax[0].dateTime : "-",
+                    Desc: _remark_setting_AdsPlanMax,
+                },
+                {
+                    Jenis: "GenderCharacteristicWeight",
+                    Nilai: (getSetting_Similirity_Gender.value != undefined) ? getSetting_Similirity_Gender.value : 0,
+                    Unit: "Persen",
+                    Aktifitas: (GenderCharacteristicWeight.length > 0) ? GenderCharacteristicWeight[0].userbasics_data[0].fullName : "",
+                    Date: (GenderCharacteristicWeight.length > 0) ? GenderCharacteristicWeight[0].dateTime : "-",
+                    Desc: _remark_setting_Similirity_Gender,
+                },
+                {
+                    Jenis: "AgeCharacteristicWeight",
+                    Nilai: (getSetting_Similirity_Age.value != undefined) ? getSetting_Similirity_Age.value : 0,
+                    Unit: "Persen",
+                    Aktifitas: (AgeCharacteristicWeight.length > 0) ? AgeCharacteristicWeight[0].userbasics_data[0].fullName : "",
+                    Date: (AgeCharacteristicWeight.length > 0) ? AgeCharacteristicWeight[0].dateTime : "-",
+                    Desc: _remark_setting_Similirity_Age,
+                },
+                {
+                    Jenis: "InterestCharacteristicWeight",
+                    Nilai: (getSetting_Similirity_Interest.value != undefined) ? getSetting_Similirity_Interest.value : 0,
+                    Unit: "Persen",
+                    Aktifitas: (InterestCharacteristicWeight.length > 0) ? InterestCharacteristicWeight[0].userbasics_data[0].fullName : "",
+                    Date: (InterestCharacteristicWeight.length > 0) ? InterestCharacteristicWeight[0].dateTime : "-",
+                    Desc: _remark_setting_Similirity_Interest,
+                },
+                {
+                    Jenis: "LocationCharacteristicWeight",
+                    Nilai: (getSetting_Similirity_Location.value != undefined) ? getSetting_Similirity_Location.value : 0,
+                    Unit: "Persen",
+                    Aktifitas: (LocationCharacteristicWeight.length > 0) ? LocationCharacteristicWeight[0].userbasics_data[0].fullName : "",
+                    Date: (LocationCharacteristicWeight.length > 0) ? LocationCharacteristicWeight[0].dateTime : "-",
+                    Desc: _remark_setting_Similirity_Location,
+                },
+            ];
+
+            var adsSettingFilter = null;
+            if (body.search != undefined) {
+                if (body.search != "") {
+                    var search = body.search.toLowerCase();
+                    var condition = new RegExp(search);
+                    if (body.type != undefined) {
+                        if (body.type == "JENIS") {
+                            adsSettingFilter = adsSetting.filter(function (el) {
+                                return condition.test(el.Jenis.toLowerCase());
+                            });
+                        }
+                        if (body.type == "DESKRIPSI") {
+                            adsSettingFilter = adsSetting.filter(function (el) {
+                                return condition.test(el.Desc.toLowerCase());
+                            });
+                        }
+                    } else {
+                        adsSettingFilter = adsSetting;
+                    }
+                } else {
+                    adsSettingFilter = adsSetting;
+                }
+            } else {
+                adsSettingFilter = adsSetting;
+            }
+
+            if (body.sort!=undefined){
+                if (body.sort == "A-Z") {
+                    adsSettingFilter.sort((a, b) => (a.Jenis > b.Jenis ? 1 : -1));
+                } else if (body.sort == "Z-A") {
+                    adsSettingFilter.sort((a, b) => (a.Jenis < b.Jenis ? 1 : -1));
+                } else {
+                    adsSettingFilter.sort((a, b) => (a.Jenis > b.Jenis ? 1 : -1));
+                }
+            } else {
+                adsSettingFilter.sort((a, b) => (a.Jenis > b.Jenis ? 1 : -1));
+            }
+
+            responseData['adsSetting'] = adsSettingFilter;
+            
             return await this.errorHandler.generateAcceptResponseCodeWithData(
                 "Get setting ads succesfully", responseData
             );
@@ -353,20 +558,198 @@ export class AdsSettingController {
 
         //--------------------GET USERID--------------------
         const ubasic = await this.userbasicsService.findOne(headers['x-auth-user']);
+        //ADS ID OBJECTIVITAS
+        var _id_Objectivitas_Action = this.configService.get("ID_ADS_OBJECTTIVITAS_ACTION");
+        var _remark_Objectivitas_Action_Similirity_Min = this.configService.get("REMARK_ADS_OBJECTTIVITAS_ACTION_SIMILARITY_MIN");
+        var _remark_Objectivitas_Action_Similirity_Max = this.configService.get("REMARK_ADS_OBJECTTIVITAS_ACTION_SIMILARITY_MAX");
 
+        var _id_Objectivitas_Awareness = this.configService.get("ID_ADS_OBJECTTIVITAS_AWARENESS");
+        var _remark_Objectivitas_Awareness_Similirity_Min = this.configService.get("REMARK_ADS_OBJECTTIVITAS_AWARENESS_SIMILARITY_MIN");
+        var _remark_Objectivitas_Awareness_Similirity_Max = this.configService.get("REMARK_ADS_OBJECTTIVITAS_AWARENESS_SIMILARITY_MAX");
+
+        var _id_Objectivitas_Consideration = this.configService.get("ID_ADS_OBJECTTIVITAS_CONSIDERATION");
+        var _remark_Objectivitas_Consideration_Similirity_Min = this.configService.get("REMARK_ADS_OBJECTTIVITAS_CONSIDERATION_SIMILARITY_MIN");
+        var _remark_Objectivitas_Consideration_Similirity_Max = this.configService.get("REMARK_ADS_OBJECTTIVITAS_CONSIDERATION_SIMILARITY_MAX");
+
+        //ADS ID TYPE ADS
         var _id_InContentAds = this.configService.get("ID_ADS_IN_CONTENT");
-        var _id_InBetweenAds = this.configService.get("ID_ADS_IN_BETWEEN");
-        var _id_PopUpAds = this.configService.get("ID_ADS_IN_POPUP");
+        var _remark_InContentAds_Duration_Min = this.configService.get("REMARK_ADS_IN_CONTENT_DURATION_MIN");
+        var _remark_InContentAds_Duration_Max = this.configService.get("REMARK_ADS_IN_CONTENT_DURATION_MAX");
+        var _remark_InContentAds_Skip_Time_Min = this.configService.get("REMARK_ADS_IN_CONTENT_SKIP_TIME_MIN");
+        var _remark_InContentAds_Skip_Time_Max = this.configService.get("REMARK_ADS_IN_CONTENT_SKIP_TIME_MAX");
+        var _remark_InContentAds_CPV_Price = this.configService.get("REMARK_ADS_IN_CONTENT_CPV_PRICE");
+        var _remark_InContentAds_CPA_Price = this.configService.get("REMARK_ADS_IN_CONTENT_CPA_PRICE");
+        var _remark_InContentAds_Economy_Sharing = this.configService.get("REMARK_ADS_IN_CONTENT_ECONOMY_SHARING");
 
+        var _id_InBetweenAds = this.configService.get("ID_ADS_IN_BETWEEN");
+        var _remark_InBetweenAds_Duration_Min = this.configService.get("REMARK_ADS_IN_BETWEEN_DURATION_MIN");
+        var _remark_InBetweenAds_Duration_Max = this.configService.get("REMARK_ADS_IN_BETWEEN_DURATION_MAX");
+        var _remark_InBetweenAds_Skip_Time_Min = this.configService.get("REMARK_ADS_IN_BETWEEN_SKIP_TIME_MIN");
+        var _remark_InBetweenAds_Skip_Time_Max = this.configService.get("REMARK_ADS_IN_BETWEEN_SKIP_TIME_MAX");
+        var _remark_InBetweenAds_CPV_Price = this.configService.get("REMARK_ADS_IN_BETWEEN_CPV_PRICE");
+        var _remark_InBetweenAds_CPA_Price = this.configService.get("REMARK_ADS_IN_BETWEEN_CPA_PRICE");
+        var _remark_InBetweenAds_Economy_Sharing = this.configService.get("REMARK_ADS_IN_BETWEEN_ECONOMY_SHARING");
+
+        var _id_PopUpAds = this.configService.get("ID_ADS_IN_POPUP");
+        var _remark_PopUpAds_Duration_Min = this.configService.get("REMARK_ADS_IN_POPUP_DURATION_MIN");
+        var _remark_PopUpAds_Duration_Max = this.configService.get("REMARK_ADS_IN_POPUP_DURATION_MAX");
+        var _remark_PopUpAds_Skip_Time_Min = this.configService.get("REMARK_ADS_IN_POPUP_SKIP_TIME_MIN");
+        var _remark_PopUpAds_Skip_Time_Max = this.configService.get("REMARK_ADS_IN_POPUP_SKIP_TIME_MAX");
+        var _remark_PopUpAds_CPV_Price = this.configService.get("REMARK_ADS_IN_POPUP_CPV_PRICE");
+        var _remark_PopUpAds_CPA_Price = this.configService.get("REMARK_ADS_IN_POPUP_CPA_PRICE");
+        var _remark_PopUpAds_Economy_Sharing = this.configService.get("REMARK_ADS_IN_POPUP_ECONOMY_SHARING");
+
+        //ADS SETTING
         var _id_setting_CreditPrice = this.configService.get("ID_SETTING_ADS_CREDIT_PRICE");
+        var _remark_setting_CreditPrice = this.configService.get("REMARK_SETTING_ADS_CREDIT_PRICE");
+
         var _id_setting_AdsDurationMin = this.configService.get("ID_SETTING_ADS_DURATION_MIN");
+        var _remark_setting_AdsDurationMin = this.configService.get("REMARK_SETTING_ADS_DURATION_MIN");
+
         var _id_setting_AdsDurationMax = this.configService.get("ID_SETTING_ADS_DURATION_MAX");
+        var _remark_setting_AdsDurationMax = this.configService.get("REMARK_SETTING_ADS_DURATION_MAX");
+
         var _id_setting_AdsPlanMin = this.configService.get("ID_SETTING_ADS_PLAN_MIN");
+        var _remark_setting_AdsPlanMin = this.configService.get("REMARK_SETTING_ADS_PLAN_MIN");
+
         var _id_setting_AdsPlanMax = this.configService.get("ID_SETTING_ADS_PLAN_MAX");
+        var _remark_setting_AdsPlanMax = this.configService.get("REMARK_SETTING_ADS_PLAN_MAX");
+
         var _id_setting_CTAButton = this.configService.get("ID_SETTING_ADS_CTA_BUTTON");
+        var _remark_setting_CTAButton = this.configService.get("REMARK_SETTING_ADS_CTA_BUTTON");
+
+        var _id_setting_Similirity_Gender = this.configService.get("ID_SETTING_ADS_GENDER_SIMILARITY");
+        var _remark_setting_Similirity_Gender = this.configService.get("REMARK_SETTING_ADS_GENDER_SIMILARITY");
+
+        var _id_setting_Similirity_Age = this.configService.get("ID_SETTING_ADS_AGE_SIMILARITY");
+        var _remark_setting_Similirity_Age = this.configService.get("REMARK_SETTING_ADS_AGE_SIMILARITY");
+
+        var _id_setting_Similirity_Interest = this.configService.get("ID_SETTING_ADS_INTEREST_SIMILARITY");
+        var _remark_setting_Similirity_Interest = this.configService.get("REMARK_SETTING_ADSINTEREST_SIMILARITY");
+
+        var _id_setting_Similirity_Location = this.configService.get("ID_SETTING_ADS_LOCATION_SIMILARITY");
+        var _remark_setting_Similirity_Location = this.configService.get("REMARK_SETTING_ADS_LOCATION_SIMILARITY");
 
         var AdsLogsDto_ = new AdsLogsDto();
         var nameActivitas: string[] = [];
+
+        //----------------ADS Objectivitas Action----------------
+        if (
+            (body.ActionSimiliarityAudienceMin != undefined) ||
+            (body.ActionSimiliarityAudienceMax != undefined) 
+        ) {
+            var AdsObjectivitasDto_ = new AdsObjectivitasDto();
+            //----------------SIMILIRITY MIN----------------
+            if (body.ActionSimiliarityAudienceMin != undefined) {
+                //VALIDASI PARAM value
+                var ceck_ActionSimiliarityAudienceMin = await this.utilsService.validateParam("ActionSimiliarityAudienceMin", body.ActionSimiliarityAudienceMin, "number")
+                if (ceck_ActionSimiliarityAudienceMin != "") {
+                    await this.errorHandler.generateBadRequestException(
+                        ceck_ActionSimiliarityAudienceMin,
+                    );
+                }
+                AdsObjectivitasDto_.percentageMin = body.ActionSimiliarityAudienceMin;
+                nameActivitas.push("ActionSimiliarityAudienceMin");
+            }
+            //----------------DURATION MAX----------------
+            if (body.ActionSimiliarityAudienceMax != undefined) {
+                //VALIDASI PARAM value
+                var ceck_ActionSimiliarityAudienceMax = await this.utilsService.validateParam("ActionSimiliarityAudienceMax", body.ActionSimiliarityAudienceMax, "number")
+                if (ceck_ActionSimiliarityAudienceMax != "") {
+                    await this.errorHandler.generateBadRequestException(
+                        ceck_ActionSimiliarityAudienceMax,
+                    );
+                }
+                AdsObjectivitasDto_.percentageMax = body.ActionSimiliarityAudienceMax;
+                nameActivitas.push("ActionSimiliarityAudienceMax");
+            }
+            try {
+                await this.adsObjectivitasService.update(_id_Objectivitas_Action, AdsObjectivitasDto_);
+            } catch (e) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, ' + e.toString(),
+                );
+            }
+        }
+
+        //----------------ADS Objectivitas Awareness----------------
+        if (
+            (body.AwarenessSimiliarityAudienceMin != undefined) ||
+            (body.AwarenessSimiliarityAudienceMax != undefined)
+        ) {
+            var AdsObjectivitasDto_ = new AdsObjectivitasDto();
+            //----------------SIMILIRITY MIN----------------
+            if (body.AwarenessSimiliarityAudienceMin != undefined) {
+                //VALIDASI PARAM value
+                var ceck_AwarenessSimiliarityAudienceMin = await this.utilsService.validateParam("AwarenessSimiliarityAudienceMin", body.AwarenessSimiliarityAudienceMin, "number")
+                if (ceck_AwarenessSimiliarityAudienceMin != "") {
+                    await this.errorHandler.generateBadRequestException(
+                        ceck_AwarenessSimiliarityAudienceMin,
+                    );
+                }
+                AdsObjectivitasDto_.percentageMin = body.AwarenessSimiliarityAudienceMin;
+                nameActivitas.push("AwarenessSimiliarityAudienceMin");
+            }
+            //----------------DURATION MAX----------------
+            if (body.AwarenessSimiliarityAudienceMax != undefined) {
+                //VALIDASI PARAM value
+                var ceck_AwarenessSimiliarityAudienceMax = await this.utilsService.validateParam("AwarenessSimiliarityAudienceMax", body.AwarenessSimiliarityAudienceMax, "number")
+                if (ceck_AwarenessSimiliarityAudienceMax != "") {
+                    await this.errorHandler.generateBadRequestException(
+                        ceck_AwarenessSimiliarityAudienceMax,
+                    );
+                }
+                AdsObjectivitasDto_.percentageMax = body.AwarenessSimiliarityAudienceMax;
+                nameActivitas.push("AwarenessSimiliarityAudienceMax");
+            }
+            try {
+                await this.adsObjectivitasService.update(_id_Objectivitas_Awareness, AdsObjectivitasDto_);
+            } catch (e) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, ' + e.toString(),
+                );
+            }
+        }
+
+        //----------------ADS Objectivitas Consideration----------------
+        if (
+            (body.ConsiderationSimiliarityAudienceMin != undefined) ||
+            (body.ConsiderationSimiliarityAudienceMax != undefined)
+        ) {
+            var AdsObjectivitasDto_ = new AdsObjectivitasDto();
+            //----------------SIMILIRITY MIN----------------
+            if (body.ConsiderationSimiliarityAudienceMin != undefined) {
+                //VALIDASI PARAM value
+                var ceck_ConsiderationSimiliarityAudienceMin = await this.utilsService.validateParam("ConsiderationSimiliarityAudienceMin", body.ConsiderationSimiliarityAudienceMin, "number")
+                if (ceck_ConsiderationSimiliarityAudienceMin != "") {
+                    await this.errorHandler.generateBadRequestException(
+                        ceck_ConsiderationSimiliarityAudienceMin,
+                    );
+                }
+                AdsObjectivitasDto_.percentageMin = body.ConsiderationSimiliarityAudienceMin;
+                nameActivitas.push("ConsiderationSimiliarityAudienceMin");
+            }
+            //----------------DURATION MAX----------------
+            if (body.ConsiderationSimiliarityAudienceMax != undefined) {
+                //VALIDASI PARAM value
+                var ceck_ConsiderationSimiliarityAudienceMax = await this.utilsService.validateParam("ConsiderationSimiliarityAudienceMax", body.ConsiderationSimiliarityAudienceMax, "number")
+                if (ceck_ConsiderationSimiliarityAudienceMax != "") {
+                    await this.errorHandler.generateBadRequestException(
+                        ceck_ConsiderationSimiliarityAudienceMax,
+                    );
+                }
+                AdsObjectivitasDto_.percentageMax = body.ConsiderationSimiliarityAudienceMax;
+                nameActivitas.push("ConsiderationSimiliarityAudienceMax");
+            }
+            try {
+                await this.adsObjectivitasService.update(_id_Objectivitas_Consideration, AdsObjectivitasDto_);
+            } catch (e) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, ' + e.toString(),
+                );
+            }
+        }
+
         //----------------In Content Ads----------------
         if (
             (body.InContentAdsDurationMin != undefined) ||
@@ -686,7 +1069,11 @@ export class AdsSettingController {
             (body.AdsDurationMax != undefined) ||
             (body.AdsPlanMin != undefined) ||
             (body.AdsPlanMax != undefined) ||
-            (body.CTAButtonText != undefined)
+            (body.CTAButtonText != undefined) ||
+            (body.GenderCharacteristicWeight != undefined) ||
+            (body.AgeCharacteristicWeight != undefined) ||
+            (body.InterestCharacteristicWeight != undefined) ||
+            (body.LocationCharacteristicWeight != undefined)
         ) {
             //----------------CREDIT PRICE----------------
             if (body.CreditPrice != undefined) {
@@ -789,26 +1176,78 @@ export class AdsSettingController {
                     );
                 }
             }
-
-            // if ((body.CTAButtonIndex != undefined) || (body.CTAButton != undefined)) {
-            //     try {
-            //         var data_CTABUtton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
-            //         const stringValue = data_CTABUtton.value.toString();
-            //         const stringSplit = stringValue.split(',');
-            //         if (stringSplit[body.CTAButtonIndex] == undefined) {
-            //             await this.errorHandler.generateNotAcceptableException(
-            //                 'Unabled to proceed',
-            //             );
-            //         }
-            //         stringSplit[body.CTAButtonIndex] = body.CTAButton.toString();
-            //         nameActivitas.push("CTAButton"); 
-            //         await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, stringSplit);
-            //     } catch (e) {
-            //         await this.errorHandler.generateNotAcceptableException(
-            //             'Unabled to proceed, ' + e.toString(),
-            //         );
-            //     }
-            // }
+            //----------------ADS GENDER SIMILIRITY----------------
+            if (body.GenderCharacteristicWeight != undefined) {
+                //VALIDASI PARAM value
+                var ceck_GenderCharacteristicWeight = await this.utilsService.validateParam("GenderCharacteristicWeight", body.GenderCharacteristicWeight, "number")
+                if (ceck_GenderCharacteristicWeight != "") {
+                    await this.errorHandler.generateBadRequestException(
+                        ceck_GenderCharacteristicWeight,
+                    );
+                }
+                try {
+                    nameActivitas.push("GenderCharacteristicWeight");
+                    await this.adssettingService.updateAdsSetting(_id_setting_Similirity_Gender, body.GenderCharacteristicWeight);
+                } catch (e) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed, ' + e.toString(),
+                    );
+                }
+            }
+            //----------------ADS AGE SIMILIRITY----------------
+            if (body.GenderCharacteristicWeight != undefined) {
+                //VALIDASI PARAM value
+                var ceck_AgeCharacteristicWeight = await this.utilsService.validateParam("AgeCharacteristicWeight", body.AgeCharacteristicWeight, "number")
+                if (ceck_AgeCharacteristicWeight != "") {
+                    await this.errorHandler.generateBadRequestException(
+                        ceck_AgeCharacteristicWeight,
+                    );
+                }
+                try {
+                    nameActivitas.push("AgeCharacteristicWeight");
+                    await this.adssettingService.updateAdsSetting(_id_setting_Similirity_Age, body.AgeCharacteristicWeight);
+                } catch (e) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed, ' + e.toString(),
+                    );
+                }
+            }
+            //----------------ADS INTEREST SIMILIRITY----------------
+            if (body.InterestCharacteristicWeight != undefined) {
+                //VALIDASI PARAM value
+                var ceck_InterestCharacteristicWeight = await this.utilsService.validateParam("InterestCharacteristicWeight", body.AgeCharacteristicWeight, "number")
+                if (ceck_InterestCharacteristicWeight != "") {
+                    await this.errorHandler.generateBadRequestException(
+                        ceck_InterestCharacteristicWeight,
+                    );
+                }
+                try {
+                    nameActivitas.push("InterestCharacteristicWeight");
+                    await this.adssettingService.updateAdsSetting(_id_setting_Similirity_Interest, body.InterestCharacteristicWeight);
+                } catch (e) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed, ' + e.toString(),
+                    );
+                }
+            }
+            //----------------ADS INTEREST SIMILIRITY----------------
+            if (body.InterestCharacteristicWeight != undefined) {
+                //VALIDASI PARAM value
+                var ceck_LocationCharacteristicWeight = await this.utilsService.validateParam("LocationCharacteristicWeight", body.LocationCharacteristicWeight, "number")
+                if (ceck_LocationCharacteristicWeight != "") {
+                    await this.errorHandler.generateBadRequestException(
+                        ceck_LocationCharacteristicWeight,
+                    );
+                }
+                try {
+                    nameActivitas.push("LocationCharacteristicWeight");
+                    await this.adssettingService.updateAdsSetting(_id_setting_Similirity_Location, body.LocationCharacteristicWeight);
+                } catch (e) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed, ' + e.toString(),
+                    );
+                }
+            }
         }
 
         //----------------Ads Template Notification----------------
@@ -879,6 +1318,10 @@ export class AdsSettingController {
             AdsLogsDto_.dateTime = await this.utilsService.getDateTimeString();
             this.adslogsService.create(AdsLogsDto_);
 
+            //----------------Get Ads Data Setting----------------
+            var getSetting_Objectivitas_Action = await this.adsObjectivitasService.findOne(_id_Objectivitas_Action);
+            var getSetting_Objectivitas_Awareness = await this.adsObjectivitasService.findOne(_id_Objectivitas_Awareness);
+            var getSetting_Objectivitas_Consideration = await this.adsObjectivitasService.findOne(_id_Objectivitas_Consideration);
             var getSetting_InContentAds = await this.adsTypeService.findOne(_id_InContentAds);
             var getSetting_InBetweenAds = await this.adsTypeService.findOne(_id_InBetweenAds);
             var getSetting_PopUpAds = await this.adsTypeService.findOne(_id_PopUpAds);
@@ -888,6 +1331,10 @@ export class AdsSettingController {
             var getSetting_AdsPlanMin = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsPlanMin));
             var getSetting_AdsPlanMax = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsPlanMax));
             var getSetting_CTAButton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
+            var getSetting_Similirity_Gender = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_Similirity_Gender));
+            var getSetting_Similirity_Age = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_Similirity_Age));
+            var getSetting_Similirity_Interest = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_Similirity_Interest));
+            var getSetting_Similirity_Location = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_Similirity_Location));
             var adsCTAButton = await Promise.all(((getSetting_CTAButton.value.toString()).split(',')).map(async (item, index) => {
                 return {
                     CTAButtonIndex: index,
@@ -897,6 +1344,15 @@ export class AdsSettingController {
             var getSetting_Notification = await this.adsNotificationService.getAdsNotification("NOTIFY_REWARDS", "NOTIFICATION");
 
             //----------------Get Log----------------
+            var AwarenessSimiliarityAudienceMin = await this.adslogsService.getLog("AwarenessSimiliarityAudienceMin");
+            var AwarenessSimiliarityAudienceMax = await this.adslogsService.getLog("AwarenessSimiliarityAudienceMax");
+
+            var ConsiderationSimiliarityAudienceMin = await this.adslogsService.getLog("ConsiderationSimiliarityAudienceMin");
+            var ConsiderationSimiliarityAudienceMax = await this.adslogsService.getLog("ConsiderationSimiliarityAudienceMax");
+
+            var ActionSimiliarityAudienceMin = await this.adslogsService.getLog("ActionSimiliarityAudienceMin");
+            var ActionSimiliarityAudienceMax = await this.adslogsService.getLog("ActionSimiliarityAudienceMax");
+
             var InContentAdsDurationMin = await this.adslogsService.getLog("InContentAdsDurationMin");
             var InContentAdsDurationMax = await this.adslogsService.getLog("InContentAdsDurationMax");
             var InContentAdsSkipTimeMin = await this.adslogsService.getLog("InContentAdsSkipTimeMin");
@@ -904,6 +1360,7 @@ export class AdsSettingController {
             var InContentCPAPrice = await this.adslogsService.getLog("InContentCPAPrice");
             var InContentCPVPrice = await this.adslogsService.getLog("InContentCPVPrice");
             var EconomySharingInContent = await this.adslogsService.getLog("EconomySharingInContent");
+
             var InBetweenAdsDurationMin = await this.adslogsService.getLog("InBetweenAdsDurationMin");
             var InBetweenAdsDurationMax = await this.adslogsService.getLog("InBetweenAdsDurationMax");
             var InBetweenAdsSkipTimeMin = await this.adslogsService.getLog("InBetweenAdsSkipTimeMin");
@@ -911,6 +1368,7 @@ export class AdsSettingController {
             var InBetweenCPAPrice = await this.adslogsService.getLog("InBetweenCPAPrice");
             var InBetweenCPVPrice = await this.adslogsService.getLog("InBetweenCPVPrice");
             var EconomySharingInBetween = await this.adslogsService.getLog("EconomySharingInBetween");
+
             var PopUpAdsDurationMin = await this.adslogsService.getLog("PopUpAdsDurationMin");
             var PopUpAdsDurationMax = await this.adslogsService.getLog("PopUpAdsDurationMax");
             var PopUpAdsSkipTimeMin = await this.adslogsService.getLog("PopUpAdsSkipTimeMin");
@@ -918,228 +1376,314 @@ export class AdsSettingController {
             var PopUpCPAPrice = await this.adslogsService.getLog("PopUpCPAPrice");
             var PopUpCPVPrice = await this.adslogsService.getLog("PopUpCPVPrice");
             var EconomySharingSPonsorPopUp = await this.adslogsService.getLog("EconomySharingSPonsorPopUp");
+
             var CreditPrice = await this.adslogsService.getLog("CreditPrice");
             var AdsDurationMin = await this.adslogsService.getLog("AdsDurationMin");
             var AdsDurationMax = await this.adslogsService.getLog("AdsDurationMax");
             var AdsPlanMin = await this.adslogsService.getLog("AdsPlanMin");
             var AdsPlanMax = await this.adslogsService.getLog("AdsPlanMax");
+            var GenderCharacteristicWeight = await this.adslogsService.getLog("GenderCharacteristicWeight");
+            var AgeCharacteristicWeight = await this.adslogsService.getLog("AgeCharacteristicWeight");
+            var InterestCharacteristicWeight = await this.adslogsService.getLog("InterestCharacteristicWeight");
+            var LocationCharacteristicWeight = await this.adslogsService.getLog("LocationCharacteristicWeight");
 
             //----------------Create Response----------------
             var responseData = {
                 adsSetting: [
+                    //ADS CONTENT
                     {
                         Jenis: "InContentAdsDurationMin",
                         Nilai: (getSetting_InContentAds.durationMin != undefined) ? getSetting_InContentAds.durationMin : 0,
                         Unit: "Detik",
-                        Aktifitas: InContentAdsDurationMin[0].userbasics_data[0].fullName,
-                        Date: InContentAdsDurationMin[0].dateTime,
+                        Aktifitas: (InContentAdsDurationMin.length > 0) ? InContentAdsDurationMin[0].userbasics_data[0].fullName : "",
+                        Date: (InContentAdsDurationMin.length > 0) ? InContentAdsDurationMin[0].dateTime : "-",
+                        Desc: _remark_InContentAds_Duration_Min,
                     },
                     {
                         Jenis: "InContentAdsDurationMax",
                         Nilai: (getSetting_InContentAds.durationMax != undefined) ? getSetting_InContentAds.durationMax : 0,
                         Unit: "Detik",
-                        Aktifitas: InContentAdsDurationMax[0].userbasics_data[0].fullName,
-                        Date: InContentAdsDurationMax[0].dateTime,
+                        Aktifitas: (InContentAdsDurationMax.length > 0) ? InContentAdsDurationMax[0].userbasics_data[0].fullName : "",
+                        Date: (InContentAdsDurationMax.length > 0) ? InContentAdsDurationMax[0].dateTime : "-",
+                        Desc: _remark_InContentAds_Duration_Max,
                     },
                     {
                         Jenis: "InContentAdsSkipTimeMin",
                         Nilai: (getSetting_InContentAds.skipMin != undefined) ? getSetting_InContentAds.skipMin : 0,
                         Unit: "Detik",
-                        Aktifitas: InContentAdsSkipTimeMin[0].userbasics_data[0].fullName,
-                        Date: InContentAdsSkipTimeMin[0].dateTime,
+                        Aktifitas: (InContentAdsSkipTimeMin.length > 0) ? InContentAdsSkipTimeMin[0].userbasics_data[0].fullName : "",
+                        Date: (InContentAdsSkipTimeMin.length > 0) ? InContentAdsSkipTimeMin[0].dateTime : "-",
+                        Desc: _remark_InContentAds_Skip_Time_Min,
                     },
                     {
                         Jenis: "InContentAdsSkipTimeMax",
                         Nilai: (getSetting_InContentAds.skipMax != undefined) ? getSetting_InContentAds.skipMax : 0,
                         Unit: "Detik",
-                        Aktifitas: InContentAdsSkipTimeMax[0].userbasics_data[0].fullName,
-                        Date: InContentAdsSkipTimeMax[0].dateTime,
+                        Aktifitas: (InContentAdsSkipTimeMax.length > 0) ? InContentAdsSkipTimeMax[0].userbasics_data[0].fullName : "",
+                        Date: (InContentAdsSkipTimeMax.length > 0) ? InContentAdsSkipTimeMax[0].dateTime : "-",
+                        Desc: _remark_InContentAds_Skip_Time_Max,
                     },
                     {
                         Jenis: "InContentCPAPrice",
                         Nilai: (getSetting_InContentAds.CPA != undefined) ? getSetting_InContentAds.CPA : 0,
                         Unit: "Kredit",
-                        Aktifitas: InContentCPAPrice[0].userbasics_data[0].fullName,
-                        Date: InContentCPAPrice[0].dateTime,
+                        Aktifitas: (InContentCPAPrice.length > 0) ? InContentCPAPrice[0].userbasics_data[0].fullName : "",
+                        Date: (InContentCPAPrice.length > 0) ? InContentCPAPrice[0].dateTime : "-",
+                        Desc: _remark_InContentAds_CPA_Price,
                     },
                     {
                         Jenis: "InContentCPVPrice",
                         Nilai: (getSetting_InContentAds.CPV != undefined) ? getSetting_InContentAds.CPV : 0,
                         Unit: "Kredit",
-                        Aktifitas: InContentCPVPrice[0].userbasics_data[0].fullName,
-                        Date: InContentCPVPrice[0].dateTime,
+                        Aktifitas: (InContentCPVPrice.length > 0) ? InContentCPVPrice[0].userbasics_data[0].fullName : "",
+                        Date: (InContentCPVPrice.length > 0) ? InContentCPVPrice[0].dateTime : "-",
+                        Desc: _remark_InContentAds_CPV_Price,
                     },
                     {
                         Jenis: "EconomySharingInContent",
                         Nilai: (getSetting_InContentAds.rewards != undefined) ? getSetting_InContentAds.rewards : 0,
                         Unit: "Rupiah",
-                        Aktifitas: EconomySharingInContent[0].userbasics_data[0].fullName,
-                        Date: EconomySharingInContent[0].dateTime,
+                        Aktifitas: (EconomySharingInContent.length > 0) ? EconomySharingInContent[0].userbasics_data[0].fullName : "",
+                        Date: (EconomySharingInContent.length > 0) ? EconomySharingInContent[0].dateTime : "-",
+                        Desc: _remark_InContentAds_Economy_Sharing,
                     },
+                    //ADS BETWEEN
                     {
                         Jenis: "InBetweenAdsDurationMin",
                         Nilai: (getSetting_InBetweenAds.durationMin != undefined) ? getSetting_InBetweenAds.durationMin : 0,
                         Unit: "Detik",
-                        Aktifitas: InBetweenAdsDurationMin[0].userbasics_data[0].fullName,
-                        Date: InBetweenAdsDurationMin[0].dateTime,
+                        Aktifitas: (InBetweenAdsDurationMin.length > 0) ? InBetweenAdsDurationMin[0].userbasics_data[0].fullName : "",
+                        Date: (InBetweenAdsDurationMin.length > 0) ? InBetweenAdsDurationMin[0].dateTime : "-",
+                        Desc: _remark_InBetweenAds_Duration_Min,
                     },
                     {
                         Jenis: "InBetweenAdsDurationMax",
                         Nilai: (getSetting_InBetweenAds.durationMax != undefined) ? getSetting_InBetweenAds.durationMax : 0,
                         Unit: "Detik",
-                        Aktifitas: InBetweenAdsDurationMax[0].userbasics_data[0].fullName,
-                        Date: InBetweenAdsDurationMax[0].dateTime,
+                        Aktifitas: (InBetweenAdsDurationMax.length > 0) ? InBetweenAdsDurationMax[0].userbasics_data[0].fullName : "",
+                        Date: (InBetweenAdsDurationMax.length > 0) ? InBetweenAdsDurationMax[0].dateTime : "-",
+                        Desc: _remark_InBetweenAds_Duration_Max,
                     },
                     {
                         Jenis: "InBetweenAdsSkipTimeMin",
                         Nilai: (getSetting_InBetweenAds.skipMin != undefined) ? getSetting_InBetweenAds.skipMin : 0,
                         Unit: "Detik",
-                        Aktifitas: InBetweenAdsSkipTimeMin[0].userbasics_data[0].fullName,
-                        Date: InBetweenAdsSkipTimeMin[0].dateTime,
+                        Aktifitas: (InBetweenAdsSkipTimeMin.length > 0) ? InBetweenAdsSkipTimeMin[0].userbasics_data[0].fullName : "",
+                        Date: (InBetweenAdsSkipTimeMin.length > 0) ? InBetweenAdsSkipTimeMin[0].dateTime : "-",
+                        Desc: _remark_InBetweenAds_Skip_Time_Min,
                     },
                     {
                         Jenis: "InBetweenAdsSkipTimeMax",
                         Nilai: (getSetting_InBetweenAds.skipMax != undefined) ? getSetting_InBetweenAds.skipMax : 0,
                         Unit: "Detik",
-                        Aktifitas: InBetweenAdsSkipTimeMax[0].userbasics_data[0].fullName,
-                        Date: InBetweenAdsSkipTimeMax[0].dateTime,
+                        Aktifitas: (InBetweenAdsSkipTimeMax.length > 0) ? InBetweenAdsSkipTimeMax[0].userbasics_data[0].fullName : "",
+                        Date: (InBetweenAdsSkipTimeMax.length > 0) ? InBetweenAdsSkipTimeMax[0].dateTime : "-",
+                        Desc: _remark_InBetweenAds_Skip_Time_Max,
                     },
                     {
                         Jenis: "InBetweenCPAPrice",
                         Nilai: (getSetting_InBetweenAds.CPA != undefined) ? getSetting_InBetweenAds.CPA : 0,
                         Unit: "Kredit",
-                        Aktifitas: InBetweenCPAPrice[0].userbasics_data[0].fullName,
-                        Date: InBetweenCPAPrice[0].dateTime,
+                        Aktifitas: (InBetweenCPAPrice.length > 0) ? InBetweenCPAPrice[0].userbasics_data[0].fullName : "",
+                        Date: (InBetweenCPAPrice.length > 0) ? InBetweenCPAPrice[0].dateTime : "-",
+                        Desc: _remark_InBetweenAds_CPA_Price,
                     },
                     {
                         Jenis: "InBetweenCPVPrice",
                         Nilai: (getSetting_InBetweenAds.CPV != undefined) ? getSetting_InBetweenAds.CPV : 0,
                         Unit: "Kredit",
-                        Aktifitas: InBetweenCPVPrice[0].userbasics_data[0].fullName,
-                        Date: InBetweenCPVPrice[0].dateTime,
+                        Aktifitas: (InBetweenCPVPrice.length > 0) ? InBetweenCPVPrice[0].userbasics_data[0].fullName : "",
+                        Date: (InBetweenCPVPrice.length > 0) ? InBetweenCPVPrice[0].dateTime : "-",
+                        Desc: _remark_InBetweenAds_CPV_Price,
                     },
                     {
                         Jenis: "EconomySharingInBetween",
                         Nilai: (getSetting_InBetweenAds.rewards != undefined) ? getSetting_InBetweenAds.rewards : 0,
                         Unit: "Rupiah",
-                        Aktifitas: EconomySharingInBetween[0].userbasics_data[0].fullName,
-                        Date: EconomySharingInBetween[0].dateTime,
+                        Aktifitas: (EconomySharingInBetween.length > 0) ? EconomySharingInBetween[0].userbasics_data[0].fullName : "",
+                        Date: (EconomySharingInBetween.length > 0) ? EconomySharingInBetween[0].dateTime : "-",
+                        Desc: _remark_InBetweenAds_Economy_Sharing,
                     },
-
-
+                    //ADS POPUP
                     {
                         Jenis: "PopUpAdsDurationMin",
                         Nilai: (getSetting_PopUpAds.durationMin != undefined) ? getSetting_PopUpAds.durationMin : 0,
                         Unit: "Detik",
-                        Aktifitas: PopUpAdsDurationMin[0].userbasics_data[0].fullName,
-                        Date: PopUpAdsDurationMin[0].dateTime,
+                        Aktifitas: (PopUpAdsDurationMin.length > 0) ? PopUpAdsDurationMin[0].userbasics_data[0].fullName : "",
+                        Date: (PopUpAdsDurationMin.length > 0) ? PopUpAdsDurationMin[0].dateTime : "-",
+                        Desc: _remark_PopUpAds_Duration_Min,
                     },
                     {
                         Jenis: "PopUpAdsDurationMax",
                         Nilai: (getSetting_PopUpAds.durationMax != undefined) ? getSetting_PopUpAds.durationMax : 0,
                         Unit: "Detik",
-                        Aktifitas: PopUpAdsDurationMax[0].userbasics_data[0].fullName,
-                        Date: PopUpAdsDurationMax[0].dateTime,
+                        Aktifitas: (PopUpAdsDurationMax.length > 0) ? PopUpAdsDurationMax[0].userbasics_data[0].fullName : "",
+                        Date: (PopUpAdsDurationMax.length > 0) ? PopUpAdsDurationMax[0].dateTime : "-",
+                        Desc: _remark_PopUpAds_Duration_Max,
                     },
                     {
                         Jenis: "PopUpAdsSkipTimeMin",
                         Nilai: (getSetting_PopUpAds.skipMin != undefined) ? getSetting_PopUpAds.skipMin : 0,
                         Unit: "Detik",
-                        Aktifitas: PopUpAdsSkipTimeMin[0].userbasics_data[0].fullName,
-                        Date: PopUpAdsSkipTimeMin[0].dateTime,
+                        Aktifitas: (PopUpAdsSkipTimeMin.length > 0) ? PopUpAdsSkipTimeMin[0].userbasics_data[0].fullName : "",
+                        Date: (PopUpAdsSkipTimeMin.length > 0) ? PopUpAdsSkipTimeMin[0].dateTime : "-",
+                        Desc: _remark_PopUpAds_Skip_Time_Min,
                     },
                     {
                         Jenis: "PopUpAdsSkipTimeMax",
                         Nilai: (getSetting_PopUpAds.skipMax != undefined) ? getSetting_PopUpAds.skipMax : 0,
                         Unit: "Detik",
-                        Aktifitas: PopUpAdsSkipTimeMax[0].userbasics_data[0].fullName,
-                        Date: PopUpAdsSkipTimeMax[0].dateTime,
+                        Aktifitas: (PopUpAdsSkipTimeMax.length > 0) ? PopUpAdsSkipTimeMax[0].userbasics_data[0].fullName : "",
+                        Date: (PopUpAdsSkipTimeMax.length > 0) ? PopUpAdsSkipTimeMax[0].dateTime : "-",
+                        Desc: _remark_PopUpAds_Skip_Time_Max,
                     },
                     {
                         Jenis: "PopUpCPAPrice",
                         Nilai: (getSetting_PopUpAds.CPA != undefined) ? getSetting_PopUpAds.CPA : 0,
                         Unit: "Kredit",
-                        Aktifitas: PopUpCPAPrice[0].userbasics_data[0].fullName,
-                        Date: PopUpCPAPrice[0].dateTime,
+                        Aktifitas: (PopUpCPAPrice.length > 0) ? PopUpCPAPrice[0].userbasics_data[0].fullName : "",
+                        Date: (PopUpCPAPrice.length > 0) ? PopUpCPAPrice[0].dateTime : "-",
+                        Desc: _remark_PopUpAds_CPA_Price,
                     },
                     {
                         Jenis: "PopUpCPVPrice",
                         Nilai: (getSetting_PopUpAds.CPV != undefined) ? getSetting_PopUpAds.CPV : 0,
                         Unit: "Kredit",
-                        Aktifitas: PopUpCPVPrice[0].userbasics_data[0].fullName,
-                        Date: PopUpCPVPrice[0].dateTime,
+                        Aktifitas: (PopUpCPVPrice.length > 0) ? PopUpCPVPrice[0].userbasics_data[0].fullName : "",
+                        Date: (PopUpCPVPrice.length > 0) ? PopUpCPVPrice[0].dateTime : "-",
+                        Desc: _remark_PopUpAds_CPV_Price,
                     },
                     {
                         Jenis: "EconomySharingSPonsorPopUp",
                         Nilai: (getSetting_PopUpAds.rewards != undefined) ? getSetting_PopUpAds.rewards : 0,
                         Unit: "Rupiah",
-                        Aktifitas: EconomySharingSPonsorPopUp[0].userbasics_data[0].fullName,
-                        Date: EconomySharingSPonsorPopUp[0].dateTime,
+                        Aktifitas: (EconomySharingSPonsorPopUp.length > 0) ? EconomySharingSPonsorPopUp[0].userbasics_data[0].fullName : "",
+                        Date: (EconomySharingSPonsorPopUp.length > 0) ? EconomySharingSPonsorPopUp[0].dateTime : "-",
+                        Desc: _remark_PopUpAds_Economy_Sharing,
                     },
-
-
+                    //OBJECTIVITAS
+                    {
+                        Jenis: "ActionSimiliarityAudienceMin",
+                        Nilai: (getSetting_Objectivitas_Action.percentageMin != undefined) ? getSetting_Objectivitas_Action.percentageMin : 0,
+                        Unit: "Persen",
+                        Aktifitas: (ActionSimiliarityAudienceMin.length > 0) ? ActionSimiliarityAudienceMin[0].userbasics_data[0].fullName : "",
+                        Date: (ActionSimiliarityAudienceMin.length > 0) ? ActionSimiliarityAudienceMin[0].dateTime : "-",
+                        Desc: _remark_Objectivitas_Action_Similirity_Min,
+                    },
+                    {
+                        Jenis: "ActionSimiliarityAudienceMax",
+                        Nilai: (getSetting_Objectivitas_Action.percentageMax != undefined) ? getSetting_Objectivitas_Action.percentageMax : 0,
+                        Unit: "Persen",
+                        Aktifitas: (ActionSimiliarityAudienceMax.length > 0) ? ActionSimiliarityAudienceMax[0].userbasics_data[0].fullName : "",
+                        Date: (ActionSimiliarityAudienceMax.length > 0) ? ActionSimiliarityAudienceMin[0].dateTime : "-",
+                        Desc: _remark_Objectivitas_Action_Similirity_Max,
+                    },
+                    {
+                        Jenis: "ConsiderationSimiliarityAudienceMin",
+                        Nilai: (getSetting_Objectivitas_Awareness.percentageMin != undefined) ? getSetting_Objectivitas_Awareness.percentageMin : 0,
+                        Unit: "Persen",
+                        Aktifitas: (ConsiderationSimiliarityAudienceMin.length > 0) ? ConsiderationSimiliarityAudienceMin[0].userbasics_data[0].fullName : "",
+                        Date: (ConsiderationSimiliarityAudienceMin.length > 0) ? ConsiderationSimiliarityAudienceMin[0].dateTime : "-",
+                        Desc: _remark_Objectivitas_Consideration_Similirity_Min,
+                    },
+                    {
+                        Jenis: "ConsiderationSimiliarityAudienceMax",
+                        Nilai: (getSetting_Objectivitas_Consideration.percentageMax != undefined) ? getSetting_Objectivitas_Consideration.percentageMax : 0,
+                        Unit: "Persen",
+                        Aktifitas: (ConsiderationSimiliarityAudienceMax.length > 0) ? ConsiderationSimiliarityAudienceMax[0].userbasics_data[0].fullName : "",
+                        Date: (ConsiderationSimiliarityAudienceMax.length > 0) ? ConsiderationSimiliarityAudienceMax[0].dateTime : "-",
+                        Desc: _remark_Objectivitas_Consideration_Similirity_Max,
+                    },
+                    {
+                        Jenis: "AwarenessSimiliarityAudienceMin",
+                        Nilai: (getSetting_Objectivitas_Awareness.percentageMin != undefined) ? getSetting_Objectivitas_Awareness.percentageMin : 0,
+                        Unit: "Persen",
+                        Aktifitas: (AwarenessSimiliarityAudienceMin.length > 0) ? AwarenessSimiliarityAudienceMin[0].userbasics_data[0].fullName : "",
+                        Date: (AwarenessSimiliarityAudienceMin.length > 0) ? AwarenessSimiliarityAudienceMin[0].dateTime : "-",
+                        Desc: _remark_Objectivitas_Awareness_Similirity_Min,
+                    },
+                    {
+                        Jenis: "AwarenessSimiliarityAudienceMax",
+                        Nilai: (getSetting_Objectivitas_Awareness.percentageMax != undefined) ? getSetting_Objectivitas_Awareness.percentageMax : 0,
+                        Unit: "Persen",
+                        Aktifitas: (AwarenessSimiliarityAudienceMax.length > 0) ? AwarenessSimiliarityAudienceMax[0].userbasics_data[0].fullName : "",
+                        Date: (AwarenessSimiliarityAudienceMax.length > 0) ? AwarenessSimiliarityAudienceMax[0].dateTime : "-",
+                        Desc: _remark_Objectivitas_Awareness_Similirity_Max,
+                    },
+                    //ADS SETTING
                     {
                         Jenis: "CreditPrice",
                         Nilai: (getSetting_CreditPrice.value != undefined) ? getSetting_CreditPrice.value : 0,
                         Unit: getSetting_AdsPlanMax.remark,
-                        Aktifitas: CreditPrice[0].userbasics_data[0].fullName,
-                        Date: CreditPrice[0].dateTime,
+                        Aktifitas: (CreditPrice.length > 0) ? CreditPrice[0].userbasics_data[0].fullName : "",
+                        Date: (CreditPrice.length > 0) ? CreditPrice[0].dateTime : "-",
+                        Desc: _remark_setting_CreditPrice,
                     },
                     {
                         Jenis: "AdsDurationMin",
                         Nilai: (getSetting_AdsDurationMin.value != undefined) ? getSetting_AdsDurationMin.value : 0,
                         Unit: getSetting_AdsPlanMax.remark,
-                        Aktifitas: AdsDurationMin[0].userbasics_data[0].fullName,
-                        Date: AdsDurationMin[0].dateTime,
+                        Aktifitas: (AdsDurationMin.length > 0) ? AdsDurationMin[0].userbasics_data[0].fullName : "",
+                        Date: (AdsDurationMin.length > 0) ? AdsDurationMin[0].dateTime : "-",
+                        Desc: _remark_setting_AdsDurationMin,
                     },
                     {
                         Jenis: "AdsDurationMax",
                         Nilai: (getSetting_AdsDurationMax.value != undefined) ? getSetting_AdsDurationMax.value : 0,
                         Unit: getSetting_AdsPlanMax.remark,
-                        Aktifitas: AdsDurationMax[0].userbasics_data[0].fullName,
-                        Date: AdsDurationMax[0].dateTime,
+                        Aktifitas: (AdsDurationMax.length > 0) ? AdsDurationMax[0].userbasics_data[0].fullName : "",
+                        Date: (AdsDurationMax.length > 0) ? AdsDurationMax[0].dateTime : "-",
+                        Desc: _remark_setting_AdsDurationMax,
                     },
                     {
                         Jenis: "AdsPlanMin",
                         Nilai: (getSetting_AdsPlanMin.value != undefined) ? getSetting_AdsPlanMin.value : 0,
                         Unit: getSetting_AdsPlanMax.remark,
-                        Aktifitas: AdsPlanMin[0].userbasics_data[0].fullName,
-                        Date: AdsPlanMin[0].dateTime,
+                        Aktifitas: (AdsPlanMin.length > 0) ? AdsPlanMin[0].userbasics_data[0].fullName : "",
+                        Date: (AdsPlanMin.length > 0) ? AdsPlanMin[0].dateTime : "-",
+                        Desc: _remark_setting_AdsPlanMin,
                     },
                     {
                         Jenis: "AdsPlanMax",
                         Nilai: (getSetting_AdsPlanMax.value != undefined) ? getSetting_AdsPlanMax.value : 0,
                         Unit: getSetting_AdsPlanMax.remark,
-                        Aktifitas: AdsPlanMax[0].userbasics_data[0].fullName,
-                        Date: AdsPlanMax[0].dateTime,
+                        Aktifitas: (AdsPlanMax.length > 0) ? AdsPlanMax[0].userbasics_data[0].fullName : "",
+                        Date: (AdsPlanMax.length > 0) ? AdsPlanMax[0].dateTime : "-",
+                        Desc: _remark_setting_AdsPlanMax,
+                    },
+                    {
+                        Jenis: "GenderCharacteristicWeight",
+                        Nilai: (getSetting_Similirity_Gender.value != undefined) ? getSetting_Similirity_Gender.value : 0,
+                        Unit: "Persen",
+                        Aktifitas: (GenderCharacteristicWeight.length > 0) ? GenderCharacteristicWeight[0].userbasics_data[0].fullName : "",
+                        Date: (GenderCharacteristicWeight.length > 0) ? GenderCharacteristicWeight[0].dateTime : "-",
+                        Desc: _remark_setting_Similirity_Gender,
+                    },
+                    {
+                        Jenis: "AgeCharacteristicWeight",
+                        Nilai: (getSetting_Similirity_Age.value != undefined) ? getSetting_Similirity_Age.value : 0,
+                        Unit: "Persen",
+                        Aktifitas: (AgeCharacteristicWeight.length > 0) ? AgeCharacteristicWeight[0].userbasics_data[0].fullName : "",
+                        Date: (AgeCharacteristicWeight.length > 0) ? AgeCharacteristicWeight[0].dateTime : "-",
+                        Desc: _remark_setting_Similirity_Age,
+                    },
+                    {
+                        Jenis: "InterestCharacteristicWeight",
+                        Nilai: (getSetting_Similirity_Interest.value != undefined) ? getSetting_Similirity_Interest.value : 0,
+                        Unit: "Persen",
+                        Aktifitas: (InterestCharacteristicWeight.length > 0) ? InterestCharacteristicWeight[0].userbasics_data[0].fullName : "",
+                        Date: (InterestCharacteristicWeight.length > 0) ? InterestCharacteristicWeight[0].dateTime : "-",
+                        Desc: _remark_setting_Similirity_Interest,
+                    },
+                    {
+                        Jenis: "LocationCharacteristicWeight",
+                        Nilai: (getSetting_Similirity_Location.value != undefined) ? getSetting_Similirity_Location.value : 0,
+                        Unit: "Persen",
+                        Aktifitas: (LocationCharacteristicWeight.length > 0) ? LocationCharacteristicWeight[0].userbasics_data[0].fullName : "",
+                        Date: (LocationCharacteristicWeight.length > 0) ? LocationCharacteristicWeight[0].dateTime : "-",
+                        Desc: _remark_setting_Similirity_Location,
                     },
                 ],
-                //     InContentAdsDurationMin: getSetting_InContentAds.durationMin,
-                //     InContentAdsDurationMax: getSetting_InContentAds.durationMax,
-                //     InContentAdsSkipTimeMin: getSetting_InContentAds.skipMin,
-                //     InContentAdsSkipTimeMax: getSetting_InContentAds.skipMax,
-                //     InContentCPAPrice: getSetting_InContentAds.CPA,
-                //     InContentCPVPrice: getSetting_InContentAds.CPV,
-                //     EconomySharingInContent: getSetting_InContentAds.rewards,
-
-                //     InBetweenAdsDurationMin: getSetting_InBetweenAds.durationMin,
-                //     InBetweenAdsDurationMax: getSetting_InBetweenAds.durationMax,
-                //     InBetweenAdsSkipTimeMin: getSetting_InBetweenAds.skipMin,
-                //     InBetweenAdsSkipTimeMax: getSetting_InBetweenAds.skipMax,
-                //     InBetweenCPAPrice: getSetting_InBetweenAds.CPA,
-                //     InBetweenCPVPrice: getSetting_InBetweenAds.CPV,
-                //     EconomySharingInBetween: getSetting_InBetweenAds.rewards,
-
-                //     PopUpAdsDurationMin: getSetting_PopUpAds.durationMin,
-                //     PopUpAdsDurationMax: getSetting_PopUpAds.durationMax,
-                //     PopUpAdsSkipTimeMin: getSetting_PopUpAds.skipMin,
-                //     PopUpAdsSkipTimeMax: getSetting_PopUpAds.skipMax,
-                //     PopUpCPAPrice: getSetting_PopUpAds.CPA,
-                //     PopUpCPVPrice: getSetting_PopUpAds.CPV,
-                //     EconomySharingSPonsorPopUp: getSetting_PopUpAds.rewards,
-
-                //     CreditPrice: getSetting_CreditPrice.value,
-                // },
                 adsCTAButton,
                 adsNotification: {
                     title_id: getSetting_Notification.subject_id,

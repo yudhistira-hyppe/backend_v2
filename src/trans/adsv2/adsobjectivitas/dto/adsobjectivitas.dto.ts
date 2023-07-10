@@ -12,4 +12,7 @@ export class AdsObjectivitasDto {
     icon: string;
     createdAt: string;
     updatedAt: string;
+    percentageMin: number;
+    percentageMax: number;
+    priority: number;
 }
