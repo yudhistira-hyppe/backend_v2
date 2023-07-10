@@ -1855,7 +1855,7 @@ export class ChallengeService {
     return query[0];
   }
 
-  async findlistingBanner(targetbanner: string): Promise<Challenge[]> {
+  async findlistingBanner(targetbanner: string, page: number): Promise<Challenge[]> {
     var pipeline = [];
     pipeline.push({
       "$set": {
@@ -1967,6 +1967,15 @@ export class ChallengeService {
         "$limit":5
       }
     );
+
+    if(page > 0)
+    {
+      pipeline.push(
+        {
+          "$skip":page * 5
+        }
+      );
+    }
 
     // console.log(JSON.stringify(pipeline));
 

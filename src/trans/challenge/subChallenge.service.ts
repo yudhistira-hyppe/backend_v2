@@ -2709,6 +2709,7 @@ export class subChallengeService {
         var query = await this.subChallengeModel.aggregate(pipeline);
         return query;
     }
+    
     async getListUserChallenge(idchallenge: string, iduser: string, status: string, session: number) {
         var pipeline = [];
 
