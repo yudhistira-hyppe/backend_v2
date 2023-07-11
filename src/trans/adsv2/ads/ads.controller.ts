@@ -1002,7 +1002,7 @@ export class AdsController {
         }
         const data_ads = await this.adsService.getAdsUser(headers['x-auth-user'], data_userbasic._id.toString(), id);
         if (await this.utilsService.ceckData(data_ads)) {
-            var ceckData = await this.userAdsService.findAdsIDUserID(data_userbasic._id.toString(), data_ads[0].adsId.toString());
+            var ceckData = await this.userAdsService.findAdsIDUserID(data_userbasic._id.toString(), data_ads[0]._id.toString());
             if (!(await this.utilsService.ceckData(ceckData))) {
                 var CreateUserAdsDto_ = new CreateUserAdsDto();
                 CreateUserAdsDto_._id = genIdUserAds;
@@ -1033,7 +1033,7 @@ export class AdsController {
                 }
             }
             var data_response = {};
-            data_response['adsId'] = data_ads[0].adsId.toString();
+            data_response['adsId'] = data_ads[0]._id.toString();
             data_response['adsUrlLink'] = data_ads[0].urlLink;
             data_response['adsDescription'] = data_ads[0].description;
             if (await this.utilsService.ceckData(ceckData)) {
