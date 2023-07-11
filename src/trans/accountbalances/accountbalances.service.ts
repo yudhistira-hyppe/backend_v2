@@ -186,6 +186,7 @@ export class AccountbalancesService {
                             },
                             states: 1,
                             userAuth: 1,
+                            profilePict:1
                         }
                     },
                     {
@@ -288,12 +289,104 @@ export class AccountbalancesService {
                         "in": "$$tmp.profileID"
                     }
                 },
+                profilePict: {
+                    $concat: ["/profilepict/", {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.profilePict.$id"
+                        }
+                } ] },
                 gender: {
-                    "$let": {
-                        "vars": {
-                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                        },
-                        "in": "$$tmp.gender"
+                    $switch: {
+                        branches: [
+                            {
+                                case: {
+                                    $or: [
+                                        {
+                                            $eq: [{
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                    },
+                                                    "in": "$$tmp.gender"
+                                                }
+                                            }, "Male"] },
+                                        {
+                                            $eq: [{
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                    },
+                                                    "in": "$$tmp.gender"
+                                                }
+                                            }, "Laki-laki"] },
+                                        {
+                                            $eq: [{
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                    },
+                                                    "in": "$$tmp.gender"
+                                                }
+                                            }, "MALE"] }
+                                    ]
+                                }, then: "Laki-laki"
+                            },
+                            {
+                                case: {
+                                    $or: [
+                                        {
+                                            $eq: [{
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                    },
+                                                    "in": "$$tmp.gender"
+                                                }
+                                            }, " Perempuan"] },
+                                        {
+                                            $eq: [{
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                    },
+                                                    "in": "$$tmp.gender"
+                                                }
+                                            }, "Perempuan"] },
+                                        {
+                                            $eq: [{
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                    },
+                                                    "in": "$$tmp.gender"
+                                                }
+                                            }, "PEREMPUAN"] },
+                                        {
+                                            $eq: [{
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                    },
+                                                    "in": "$$tmp.gender"
+                                                }
+                                            }, "FEMALE"] },
+                                        {
+                                            $eq: [{
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                    },
+                                                    "in": "$$tmp.gender"
+                                                }
+                                            }, " FEMALE"] }
+                                    ]
+                                }, then: "Perempuan"
+                            }
+                        ],
+                        "default": "Lainnya"
                     }
                 },
                 ageQualication: {
