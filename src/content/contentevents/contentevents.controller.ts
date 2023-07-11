@@ -1001,7 +1001,7 @@ export class ContenteventsController {
           this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
           //  this.sendInteractiveFCM(email_user, "FOLLOWING", "", email_receiverParty);
           const databasic = await this.userbasicsService.findOne(
-            email_receiverParty
+            email_user
           );
           var iduser = null;
           if (databasic !== null) {
@@ -1026,7 +1026,7 @@ export class ContenteventsController {
           await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
 
           const databasic = await this.userbasicsService.findOne(
-            email_receiverParty
+            email_user
           );
           var iduser = null;
           if (databasic !== null) {
@@ -1356,7 +1356,7 @@ export class ContenteventsController {
           await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNFOLLOW", userbasic1._id);
 
           const databasic = await this.userbasicsService.findOne(
-            email_receiverParty
+            email_user
           );
           var iduser = null;
           if (databasic !== null) {
@@ -1592,7 +1592,7 @@ export class ContenteventsController {
             CreateDisqusDto_._id = id_discus;
             CreateDisqusDto_.room = id_discus;
             CreateDisqusDto_.disqusID = id_discus;
-            CreateDisqusDto_.active = true
+            CreateDisqusDto_.active = true;
             CreateDisqusDto_.email = email_user;
             CreateDisqusDto_.mate = email_receiverParty;
             CreateDisqusDto_.eventType = "DIRECT_MSG";
