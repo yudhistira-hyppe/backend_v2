@@ -89,9 +89,10 @@ export class AccountbalancesService {
                 }
                 if (gender.includes("OTHER")) {
                     console.log("OTHER TRUE", gender);
-                    Array_Gender.push("", null)
+                    Array_Gender.push("Lainnya", null)
                 }
             }
+            console.log("Array_Gender", Array_Gender);
             $match["gender"] = {
                 $in: Array_Gender
             };
@@ -100,8 +101,8 @@ export class AccountbalancesService {
         if (age != undefined) {
             if (age.length > 0) {
                 if (age.includes("show_smaller_than_14")) {
-                    $match["age"] = {
-                        $lt: 14
+                    $match["age"] = $match["age"] = {
+                        $gt: 0, $lt: 14
                     }
                 }
                 if (age.includes("show_14_smaller_than_28")) {
@@ -119,12 +120,18 @@ export class AccountbalancesService {
                         $gt: 43
                     }
                 }
+                if (age.includes("other")) {
+                    $match["age"] = 0
+                }
             }
         }
         //------------FILTER AREA------------
         if (areas != undefined) {
             if (areas.length > 0) {
-                $match["lokasiId"] = { $in: areas };
+                var area = await Promise.all(areas.map(async (item, index) => {
+                    return new mongoose.Types.ObjectId(item);
+                }))
+                $match["lokasiId"] = { $in: area };
             }
         }
         //------------PUSH MATCH QUERY------------
@@ -610,7 +617,7 @@ export class AccountbalancesService {
                 "$limit": limit
             });
         }
-        console.log(JSON.stringify(paramaggregate));
+        //console.log(JSON.stringify(paramaggregate));
         const query = await this.accountbalancesModel.aggregate(paramaggregate);
         // const query = await this.accountbalancesModel.aggregate([
         //     {
