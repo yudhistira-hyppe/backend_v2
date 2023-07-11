@@ -456,6 +456,42 @@ export class NotificationsService {
               mediaEndpoint: { $concat: ["/profilepict/", '$userSender.profilePict.$id'] }
             }
           },
+          urluserBadge:
+          {
+            "$filter":
+            {
+              input:"$userSender.userBadge",
+              as:"listbadge",
+              cond:
+              {
+                "$and":
+                [
+                  {
+                    "$eq":
+                    [
+                      "$$listbadge.isActive", true
+                    ]
+                  },
+                  {
+                    "$lte": [
+                      {
+                        "$dateToString": {
+                          "format": "%Y-%m-%d %H:%M:%S",
+                          "date": {
+                            "$add": [
+                              new Date(),
+                              25200000
+                            ]
+                          }
+                        }
+                      },
+                      "$$listbadge.endDatetime"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
           title: 1,
           updatedAt: 1,
 
@@ -723,6 +759,16 @@ export class NotificationsService {
           senderOrReceiverInfo: 1,
           title: 1,
           updatedAt: 1,
+          urluserBadge:
+          {
+            "$ifNull":
+            [
+              {
+                "$arrayElemAt":["$urluserBadge",0]
+              },
+              {}
+            ]
+          },
           content:
           {
             $cond: {
@@ -736,6 +782,7 @@ export class NotificationsService {
         }
       }
     );
+    console.log(JSON.stringify(pipeline));
     var query = await this.NotificationsModel.aggregate(pipeline);
     return query;
   }

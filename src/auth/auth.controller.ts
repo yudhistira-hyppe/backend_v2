@@ -2344,13 +2344,33 @@ export class AuthController {
       //Ceck User Userbasics
       const data_userbasics = await this.userbasicsService.findOne(SearchUserbasicDto_.search.toString());
       if (await this.utilsService.ceckData(data_userbasics)) {
-
+        
         var user_view = headers['x-auth-user'];
         await this.authService.viewProfile(SearchUserbasicDto_.search.toString(), user_view);
         var Data = await this.utilsService.generateProfile(SearchUserbasicDto_.search.toString(), 'PROFILE');
         var numPost = await this.postsService.findUserPost(SearchUserbasicDto_.search.toString());
         let aNumPost = <any>numPost;
         Data.insight.posts = <Long>aNumPost;
+
+        var temp = data_userbasics.userBadge;
+        Data.urluserBadge = [];
+        if(temp.length != 0)
+        {
+          for(var i = 0; i < temp.length; i++)
+          {
+            var getstatus = temp[i].isActive;
+            var getfromdb = new Date(temp[i].endDatetime);
+            getfromdb.setHours(getfromdb.getHours() + 7);
+            var convertnow = new Date();
+            convertnow.setHours(convertnow.getHours() + 7);
+            var datediff = getfromdb.getTime() - convertnow.getTime();
+            if (getstatus == true && datediff >= 0) 
+            {
+              Data.urluserBadge = temp[i];
+              break;
+            }
+          }
+        }
         return {
           "response_code": 202,
           "data": [Data],

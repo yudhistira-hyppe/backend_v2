@@ -140,6 +140,8 @@ export class Userbasic {
   import: String;
   @Prop()
   badge: any[];
+  @Prop()
+  userBadge: any[];
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);
