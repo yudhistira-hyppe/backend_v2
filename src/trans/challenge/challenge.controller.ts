@@ -2089,7 +2089,14 @@ export class ChallengeController {
         endDatetime = datachallengejuara[i].endDatetime;
         userjuara = datachallengejuara[i].getlastrank;
         let lengtjuara = userjuara.length;
-
+        let end = new Date(endDatetime);
+        end.setHours(dt.getHours() + 12); // timestamp
+        end = new Date(end);
+        let getseminngu = new Date(new Date(end).setDate(new Date(end).getDate() + 7));
+        let strdateseminggu = getseminngu.toISOString();
+        var repdatesm = strdateseminggu.replace('T', ' ');
+        var splitdatesm = repdatesm.split('.');
+        var timedatesm = splitdatesm[0];
         if (lengtjuara > 0) {
           for (let x = 0; x < lengtjuara; x++) {
             let iduser = userjuara[x].idUser;
@@ -2114,8 +2121,8 @@ export class ChallengeController {
                 Userbadge_.isActive = true;
                 Userbadge_.userId = iduser;
                 Userbadge_.session = session;
-                Userbadge_.startDatetime = startDatetime;
-                Userbadge_.endDatetime = endDatetime;
+                Userbadge_.startDatetime = endDatetime;
+                Userbadge_.endDatetime = timedatesm;
 
                 await this.userbadgeService.create(Userbadge_);
 
