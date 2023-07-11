@@ -553,6 +553,2587 @@ export class AdsService {
         return await this.userAdsService.campaignDetail(adsId,start_date, end_date);
     }
 
+    async campaignDetailAll_(adsId: string, start_date: any, end_date: any): Promise<any> {
+        var query = await this.adsModel.aggregate([
+            , {
+                "$match": {
+                    "adsID": new mongoose.Types.ObjectId(adsId)
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "adstypes",
+                    "localField": "typeAdsID",
+                    "foreignField": "_id",
+                    "as": "adstypes_data"
+                }
+            }, 
+            {
+                "$lookup": {
+                    "from": "adsobjectivitas",
+                    "localField": "adsObjectivitasId",
+                    "foreignField": "_id",
+                    "as": "adsobjectivitas_data"
+                }
+            },
+            {
+                $lookup:
+                {
+                    from: "userads",
+                    as: "userads",
+                    let:
+                    {
+                        type_fk: "$_id"
+                    },
+                    pipeline:
+                        [
+                            {
+                                $match:
+                                {
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$adsID",
+                                                "$$type_fk"
+                                            ]
+                                    }
+                                },
+                            }, 
+                            {
+                                "$facet": {
+                                    "viewed": [{
+                                        "$match": {
+                                            "$and": [{
+                                                "adsID": new mongoose.Types.ObjectId(adsId)
+                                            }, {
+                                                "viewTime": {
+                                                    "$elemMatch": {
+                                                        "$gte": start_date.toISOString(),
+                                                        "$lte": end_date.toISOString()
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$unwind": {
+                                            "path": "$viewTime",
+                                            "includeArrayIndex": "viewTime_index"
+                                        }
+                                    }, {
+                                        "$match": {
+                                            "viewTime": {
+                                                "$gte": start_date.toISOString(),
+                                                "$lte": end_date.toISOString()
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": "$userID",
+                                            "userIDCount": {
+                                                "$sum": 1
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": null,
+                                            "reach": {
+                                                "$sum": 1
+                                            },
+                                            "impresi": {
+                                                "$sum": "$userIDCount"
+                                            }
+                                        }
+                                    }, {
+                                        "$project": {
+                                            "_id": 0,
+                                            "reach": 1,
+                                            "impresi": 1
+                                        }
+                                    }],
+                                    "reach": [{
+                                        "$match": {
+                                            "$and": [{
+                                                "adsID": new mongoose.Types.ObjectId(adsId)
+                                            }, {
+                                                "viewTime": {
+                                                    "$elemMatch": {
+                                                        "$gte": start_date.toISOString(),
+                                                        "$lte": end_date.toISOString()
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$unwind": {
+                                            "path": "$viewTime",
+                                            "includeArrayIndex": "viewTime_index"
+                                        }
+                                    }, {
+                                        "$match": {
+                                            "viewTime": {
+                                                "$gte": start_date.toISOString(),
+                                                "$lte": end_date.toISOString()
+                                            }
+                                        }
+                                    }, {
+                                        "$project": {
+                                            "userID": 1,
+                                            "viewTime": {
+                                                "$substr": ["$viewTime", 0, 10]
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": {
+                                                "viewTime": "$viewTime",
+                                                "userID": "$userID"
+                                            },
+                                            "userIDCount": {
+                                                "$sum": 1
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": "$_id.viewTime",
+                                            "viewTime": {
+                                                "$push": {
+                                                    "userID": "$_id.userID",
+                                                    "count": "$userIDCount"
+                                                }
+                                            },
+                                            "count": {
+                                                "$sum": "$userIDCount"
+                                            }
+                                        }
+                                    }, {
+                                        "$project": {
+                                            "_id": "$_id",
+                                            "reachView": {
+                                                "$size": "$viewTime"
+                                            }
+                                        }
+                                    }],
+                                    "impresi": [{
+                                        "$match": {
+                                            "$and": [{
+                                                "adsID": new mongoose.Types.ObjectId(adsId)
+                                            }, {
+                                                "viewTime": {
+                                                    "$elemMatch": {
+                                                        "$gte": start_date.toISOString(),
+                                                        "$lte": end_date.toISOString()
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$unwind": {
+                                            "path": "$viewTime",
+                                            "includeArrayIndex": "viewTime_index"
+                                        }
+                                    }, {
+                                        "$match": {
+                                            "viewTime": {
+                                                "$gte": start_date.toISOString(),
+                                                "$lte": end_date.toISOString()
+                                            }
+                                        }
+                                    }, {
+                                        "$project": {
+                                            "viewTime": {
+                                                "$substr": ["$viewTime", 0, 10]
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": "$viewTime",
+                                            "impresiView": {
+                                                "$sum": 1
+                                            }
+                                        }
+                                    }],
+                                    "CTA": [{
+                                        "$match": {
+                                            "$and": [{
+                                                "adsID": new mongoose.Types.ObjectId(adsId)
+                                            }, {
+                                                "clickTime": {
+                                                    "$elemMatch": {
+                                                        "$gte": start_date.toISOString(),
+                                                        "$lte": end_date.toISOString()
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$unwind": {
+                                            "path": "$clickTime",
+                                            "includeArrayIndex": "clickTime_index"
+                                        }
+                                    }, {
+                                        "$match": {
+                                            "clickTime": {
+                                                "$gte": start_date.toISOString(),
+                                                "$lte": end_date.toISOString()
+                                            }
+                                        }
+                                    }, {
+                                        "$project": {
+                                            "clickTime": {
+                                                "$substr": ["$clickTime", 0, 10]
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": "$clickTime",
+                                            "CTACount": {
+                                                "$sum": 1
+                                            }
+                                        }
+                                    }],
+                                    "CTACount": [{
+                                        "$match": {
+                                            "$and": [{
+                                                "adsID": new mongoose.Types.ObjectId(adsId)
+                                            }, {
+                                                "clickTime": {
+                                                    "$elemMatch": {
+                                                        "$gte": start_date.toISOString(),
+                                                        "$lte": end_date.toISOString()
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$unwind": {
+                                            "path": "$clickTime",
+                                            "includeArrayIndex": "clickTime_index"
+                                        }
+                                    }, {
+                                        "$match": {
+                                            "clickTime": {
+                                                "$gte": start_date.toISOString(),
+                                                "$lte": end_date.toISOString()
+                                            }
+                                        }
+                                    }, {
+                                        "$project": {
+                                            "clickTime": {
+                                                "$substr": ["$clickTime", 0, 10]
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": "$clickTime",
+                                            "CTACount": {
+                                                "$sum": 1
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": null,
+                                            "CTACount": {
+                                                "$sum": "$CTACount"
+                                            }
+                                        }
+                                    }],
+                                    "viewTime": [{
+                                        "$match": {
+                                            "$and": [{
+                                                "adsID": new mongoose.Types.ObjectId(adsId)
+                                            }, {
+                                                "viewTime": {
+                                                    "$elemMatch": {
+                                                        "$gte": start_date.toISOString(),
+                                                        "$lte": end_date.toISOString()
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$lookup": {
+                                            "from": "ads",
+                                            "as": "adsTable",
+                                            "let": {
+                                                "type_fk": "$adsID"
+                                            },
+                                            "pipeline": [{
+                                                "$match": {
+                                                    "$expr": {
+                                                        "$eq": ["$_id", "$$type_fk"]
+                                                    }
+                                                }
+                                            }, {
+                                                "$lookup": {
+                                                    "from": "adstypes",
+                                                    "localField": "typeAdsID",
+                                                    "foreignField": "_id",
+                                                    "as": "adstypes_data"
+                                                }
+                                            }, {
+                                                "$project": {
+                                                    "CPV": {
+                                                        "$let": {
+                                                            "vars": {
+                                                                "tmp": {
+                                                                    "$arrayElemAt": ["$adstypes_data", 0]
+                                                                }
+                                                            },
+                                                            "in": "$$tmp.CPV"
+                                                        }
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$unwind": {
+                                            "path": "$viewTime",
+                                            "includeArrayIndex": "viewTime_index"
+                                        }
+                                    }, {
+                                        "$match": {
+                                            "viewTime": {
+                                                "$gte": start_date.toISOString(),
+                                                "$lte": end_date.toISOString()
+                                            }
+                                        }
+                                    }, {
+                                        "$project": {
+                                            "CPV": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": {
+                                                            "$arrayElemAt": ["$adsTable", 0]
+                                                        }
+                                                    },
+                                                    "in": "$$tmp.CPV"
+                                                }
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": null,
+                                            "row": {
+                                                "$sum": 1
+                                            },
+                                            "count": {
+                                                "$sum": "$CPV"
+                                            }
+                                        }
+                                    }],
+                                    "clickTime": [{
+                                        "$match": {
+                                            "$and": [{
+                                                "adsID": new mongoose.Types.ObjectId(adsId)
+                                            }, {
+                                                "clickTime": {
+                                                    "$elemMatch": {
+                                                        "$gte": start_date.toISOString(),
+                                                        "$lte": end_date.toISOString()
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$lookup": {
+                                            "from": "ads",
+                                            "as": "adsTable",
+                                            "let": {
+                                                "type_fk": "$adsID"
+                                            },
+                                            "pipeline": [{
+                                                "$match": {
+                                                    "$expr": {
+                                                        "$eq": ["$_id", "$$type_fk"]
+                                                    }
+                                                }
+                                            }, {
+                                                "$lookup": {
+                                                    "from": "adstypes",
+                                                    "localField": "typeAdsID",
+                                                    "foreignField": "_id",
+                                                    "as": "adstypes_data"
+                                                }
+                                            }, {
+                                                "$project": {
+                                                    "CPA": {
+                                                        "$let": {
+                                                            "vars": {
+                                                                "tmp": {
+                                                                    "$arrayElemAt": ["$adstypes_data", 0]
+                                                                }
+                                                            },
+                                                            "in": "$$tmp.CPA"
+                                                        }
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$unwind": {
+                                            "path": "$clickTime",
+                                            "includeArrayIndex": "clickTime_index"
+                                        }
+                                    }, {
+                                        "$match": {
+                                            "clickTime": {
+                                                "$gte": start_date.toISOString(),
+                                                "$lte": end_date.toISOString()
+                                            }
+                                        }
+                                    }, {
+                                        "$project": {
+                                            "CPA": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": {
+                                                            "$arrayElemAt": ["$adsTable", 0]
+                                                        }
+                                                    },
+                                                    "in": "$$tmp.CPA"
+                                                }
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": null,
+                                            "row": {
+                                                "$sum": 1
+                                            },
+                                            "count": {
+                                                "$sum": "$CPA"
+                                            }
+                                        }
+                                    }],
+                                    "userAdsAge": [{
+                                        "$match": {
+                                            "$and": [{
+                                                "adsID": new mongoose.Types.ObjectId(adsId)
+                                            }, {
+                                                "viewTime": {
+                                                    "$elemMatch": {
+                                                        "$gte": start_date.toISOString(),
+                                                        "$lte": end_date.toISOString()
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$lookup": {
+                                            "from": "userbasics",
+                                            "as": "userbasics_data",
+                                            "let": {
+                                                "local_id": "$userID"
+                                            },
+                                            "pipeline": [{
+                                                "$match": {
+                                                    "$expr": {
+                                                        "$eq": ["$_id", "$$local_id"]
+                                                    }
+                                                }
+                                            }, {
+                                                "$project": {
+                                                    "_id": 1,
+                                                    "email": 1,
+                                                    "fullName": 1,
+                                                    "gender": {
+                                                        "$switch": {
+                                                            "branches": [{
+                                                                "case": {
+                                                                    "$or": [{
+                                                                        "$eq": ["$gender", "Male"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "Laki-laki"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "MALE"]
+                                                                    }]
+                                                                },
+                                                                "then": "Laki-laki"
+                                                            }, {
+                                                                "case": {
+                                                                    "$or": [{
+                                                                        "$eq": ["$gender", " Perempuan"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "Perempuan"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "PEREMPUAN"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "FEMALE"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", " FEMALE"]
+                                                                    }]
+                                                                },
+                                                                "then": "Perempuan"
+                                                            }],
+                                                            "default": "Lainnya"
+                                                        }
+                                                    },
+                                                    "age": {
+                                                        "$cond": {
+                                                            "if": {
+                                                                "$and": ["$dob", {
+                                                                    "$ne": ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            "then": {
+                                                                "$toInt": {
+                                                                    "$divide": [{
+                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                            "$toDate": "$dob"
+                                                                        }]
+                                                                    }, 31536000000]
+                                                                }
+                                                            },
+                                                            "else": 0
+                                                        }
+                                                    },
+                                                    "ageQualication": {
+                                                        "$switch": {
+                                                            "branches": [{
+                                                                "case": {
+                                                                    "$lt": [{
+                                                                        "$cond": {
+                                                                            "if": {
+                                                                                "$and": ["$dob", {
+                                                                                    "$ne": ["$dob", ""]
+                                                                                }]
+                                                                            },
+                                                                            "then": {
+                                                                                "$toInt": {
+                                                                                    "$divide": [{
+                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$toDate": "$dob"
+                                                                                        }]
+                                                                                    }, 31536000000]
+                                                                                }
+                                                                            },
+                                                                            "else": 0
+                                                                        }
+                                                                    }, 14]
+                                                                },
+                                                                "then": "< 14 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$and": [{
+                                                                        "$gte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 14]
+                                                                    }, {
+                                                                        "$lte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 28]
+                                                                    }]
+                                                                },
+                                                                "then": "14 - 28 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$and": [{
+                                                                        "$gte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 29]
+                                                                    }, {
+                                                                        "$lte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 43]
+                                                                    }]
+                                                                },
+                                                                "then": "29 - 43 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$gt": [{
+                                                                        "$cond": {
+                                                                            "if": {
+                                                                                "$and": ["$dob", {
+                                                                                    "$ne": ["$dob", ""]
+                                                                                }]
+                                                                            },
+                                                                            "then": {
+                                                                                "$toInt": {
+                                                                                    "$divide": [{
+                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$toDate": "$dob"
+                                                                                        }]
+                                                                                    }, 31536000000]
+                                                                                }
+                                                                            },
+                                                                            "else": 0
+                                                                        }
+                                                                    }, 43]
+                                                                },
+                                                                "then": "> 43 Tahun"
+                                                            }],
+                                                            "default": "Other"
+                                                        }
+                                                    },
+                                                    "userInterests_array": {
+                                                        "$map": {
+                                                            "input": {
+                                                                "$map": {
+                                                                    "input": "$userInterests",
+                                                                    "in": {
+                                                                        "$arrayElemAt": [{
+                                                                            "$objectToArray": "$$this"
+                                                                        }, 1]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "in": "$$this.v"
+                                                        }
+                                                    },
+                                                    "states": 1
+                                                }
+                                            }, {
+                                                "$lookup": {
+                                                    "from": "interests_repo",
+                                                    "localField": "userInterests_array",
+                                                    "foreignField": "_id",
+                                                    "as": "interests"
+                                                }
+                                            }, {
+                                                "$lookup": {
+                                                    "from": "areas",
+                                                    "as": "areas",
+                                                    "let": {
+                                                        "local_id": "$states.$id"
+                                                    },
+                                                    "pipeline": [{
+                                                        "$match": {
+                                                            "$expr": {
+                                                                "$eq": ["$_id", "$$local_id"]
+                                                            }
+                                                        }
+                                                    }]
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$unwind": {
+                                            "path": "$clickTime",
+                                            "includeArrayIndex": "clickTime_index"
+                                        }
+                                    }, {
+                                        "$match": {
+                                            "clickTime": {
+                                                "$gte": start_date.toISOString(),
+                                                "$lte": end_date.toISOString()
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": "$userID",
+                                            "user": {
+                                                "$first": "$$ROOT"
+                                            }
+                                        }
+                                    }, {
+                                        "$project": {
+                                            "_id": 1,
+                                            "gender": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": {
+                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                        }
+                                                    },
+                                                    "in": "$$tmp.gender"
+                                                }
+                                            },
+                                            "ageQualication": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": {
+                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                        }
+                                                    },
+                                                    "in": "$$tmp.ageQualication"
+                                                }
+                                            },
+                                            "interest": {
+                                                "$map": {
+                                                    "input": {
+                                                        "$map": {
+                                                            "input": {
+                                                                "$let": {
+                                                                    "vars": {
+                                                                        "tmp": {
+                                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                                        }
+                                                                    },
+                                                                    "in": "$$tmp.interests"
+                                                                }
+                                                            },
+                                                            "in": {
+                                                                "$arrayElemAt": [{
+                                                                    "$objectToArray": "$$this"
+                                                                }, 1]
+                                                            }
+                                                        }
+                                                    },
+                                                    "in": "$$this.v"
+                                                }
+                                            },
+                                            "areas": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "userauths": {
+                                                            "$arrayElemAt": [{
+                                                                "$let": {
+                                                                    "vars": {
+                                                                        "tmp": {
+                                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                                        }
+                                                                    },
+                                                                    "in": "$$tmp.areas"
+                                                                }
+                                                            }, 0]
+                                                        }
+                                                    },
+                                                    "in": "$$userauths.stateName"
+                                                }
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": "$ageQualication",
+                                            "ageCount": {
+                                                "$sum": 1
+                                            }
+                                        }
+                                    }],
+                                    "userAdsGender": [{
+                                        "$match": {
+                                            "$and": [{
+                                                "adsID": new mongoose.Types.ObjectId(adsId)
+                                            }, {
+                                                "viewTime": {
+                                                    "$elemMatch": {
+                                                        "$gte": start_date.toISOString(),
+                                                        "$lte": end_date.toISOString()
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$lookup": {
+                                            "from": "userbasics",
+                                            "as": "userbasics_data",
+                                            "let": {
+                                                "local_id": "$userID"
+                                            },
+                                            "pipeline": [{
+                                                "$match": {
+                                                    "$expr": {
+                                                        "$eq": ["$_id", "$$local_id"]
+                                                    }
+                                                }
+                                            }, {
+                                                "$project": {
+                                                    "_id": 1,
+                                                    "email": 1,
+                                                    "fullName": 1,
+                                                    "gender": {
+                                                        "$switch": {
+                                                            "branches": [{
+                                                                "case": {
+                                                                    "$or": [{
+                                                                        "$eq": ["$gender", "Male"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "Laki-laki"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "MALE"]
+                                                                    }]
+                                                                },
+                                                                "then": "Laki-laki"
+                                                            }, {
+                                                                "case": {
+                                                                    "$or": [{
+                                                                        "$eq": ["$gender", " Perempuan"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "Perempuan"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "PEREMPUAN"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "FEMALE"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", " FEMALE"]
+                                                                    }]
+                                                                },
+                                                                "then": "Perempuan"
+                                                            }],
+                                                            "default": "Lainnya"
+                                                        }
+                                                    },
+                                                    "age": {
+                                                        "$cond": {
+                                                            "if": {
+                                                                "$and": ["$dob", {
+                                                                    "$ne": ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            "then": {
+                                                                "$toInt": {
+                                                                    "$divide": [{
+                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                            "$toDate": "$dob"
+                                                                        }]
+                                                                    }, 31536000000]
+                                                                }
+                                                            },
+                                                            "else": 0
+                                                        }
+                                                    },
+                                                    "ageQualication": {
+                                                        "$switch": {
+                                                            "branches": [{
+                                                                "case": {
+                                                                    "$lt": [{
+                                                                        "$cond": {
+                                                                            "if": {
+                                                                                "$and": ["$dob", {
+                                                                                    "$ne": ["$dob", ""]
+                                                                                }]
+                                                                            },
+                                                                            "then": {
+                                                                                "$toInt": {
+                                                                                    "$divide": [{
+                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$toDate": "$dob"
+                                                                                        }]
+                                                                                    }, 31536000000]
+                                                                                }
+                                                                            },
+                                                                            "else": 0
+                                                                        }
+                                                                    }, 14]
+                                                                },
+                                                                "then": "< 14 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$and": [{
+                                                                        "$gte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 14]
+                                                                    }, {
+                                                                        "$lte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 28]
+                                                                    }]
+                                                                },
+                                                                "then": "14 - 28 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$and": [{
+                                                                        "$gte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 29]
+                                                                    }, {
+                                                                        "$lte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 43]
+                                                                    }]
+                                                                },
+                                                                "then": "29 - 43 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$gt": [{
+                                                                        "$cond": {
+                                                                            "if": {
+                                                                                "$and": ["$dob", {
+                                                                                    "$ne": ["$dob", ""]
+                                                                                }]
+                                                                            },
+                                                                            "then": {
+                                                                                "$toInt": {
+                                                                                    "$divide": [{
+                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$toDate": "$dob"
+                                                                                        }]
+                                                                                    }, 31536000000]
+                                                                                }
+                                                                            },
+                                                                            "else": 0
+                                                                        }
+                                                                    }, 43]
+                                                                },
+                                                                "then": "> 43 Tahun"
+                                                            }],
+                                                            "default": "Other"
+                                                        }
+                                                    },
+                                                    "userInterests_array": {
+                                                        "$map": {
+                                                            "input": {
+                                                                "$map": {
+                                                                    "input": "$userInterests",
+                                                                    "in": {
+                                                                        "$arrayElemAt": [{
+                                                                            "$objectToArray": "$$this"
+                                                                        }, 1]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "in": "$$this.v"
+                                                        }
+                                                    },
+                                                    "states": 1
+                                                }
+                                            }, {
+                                                "$lookup": {
+                                                    "from": "interests_repo",
+                                                    "localField": "userInterests_array",
+                                                    "foreignField": "_id",
+                                                    "as": "interests"
+                                                }
+                                            }, {
+                                                "$lookup": {
+                                                    "from": "areas",
+                                                    "as": "areas",
+                                                    "let": {
+                                                        "local_id": "$states.$id"
+                                                    },
+                                                    "pipeline": [{
+                                                        "$match": {
+                                                            "$expr": {
+                                                                "$eq": ["$_id", "$$local_id"]
+                                                            }
+                                                        }
+                                                    }]
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$unwind": {
+                                            "path": "$clickTime",
+                                            "includeArrayIndex": "clickTime_index"
+                                        }
+                                    }, {
+                                        "$match": {
+                                            "clickTime": {
+                                                "$gte": start_date.toISOString(),
+                                                "$lte": end_date.toISOString()
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": "$userID",
+                                            "user": {
+                                                "$first": "$$ROOT"
+                                            }
+                                        }
+                                    }, {
+                                        "$project": {
+                                            "_id": 1,
+                                            "gender": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": {
+                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                        }
+                                                    },
+                                                    "in": "$$tmp.gender"
+                                                }
+                                            },
+                                            "ageQualication": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": {
+                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                        }
+                                                    },
+                                                    "in": "$$tmp.ageQualication"
+                                                }
+                                            },
+                                            "interest": {
+                                                "$map": {
+                                                    "input": {
+                                                        "$map": {
+                                                            "input": {
+                                                                "$let": {
+                                                                    "vars": {
+                                                                        "tmp": {
+                                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                                        }
+                                                                    },
+                                                                    "in": "$$tmp.interests"
+                                                                }
+                                                            },
+                                                            "in": {
+                                                                "$arrayElemAt": [{
+                                                                    "$objectToArray": "$$this"
+                                                                }, 1]
+                                                            }
+                                                        }
+                                                    },
+                                                    "in": "$$this.v"
+                                                }
+                                            },
+                                            "areas": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "userauths": {
+                                                            "$arrayElemAt": [{
+                                                                "$let": {
+                                                                    "vars": {
+                                                                        "tmp": {
+                                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                                        }
+                                                                    },
+                                                                    "in": "$$tmp.areas"
+                                                                }
+                                                            }, 0]
+                                                        }
+                                                    },
+                                                    "in": "$$userauths.stateName"
+                                                }
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": "$gender",
+                                            "genderCount": {
+                                                "$sum": 1
+                                            }
+                                        }
+                                    }],
+                                    "userAdsArea": [{
+                                        "$match": {
+                                            "$and": [{
+                                                "adsID": new mongoose.Types.ObjectId(adsId)
+                                            }, {
+                                                "viewTime": {
+                                                    "$elemMatch": {
+                                                        "$gte": start_date.toISOString(),
+                                                        "$lte": end_date.toISOString()
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$lookup": {
+                                            "from": "userbasics",
+                                            "as": "userbasics_data",
+                                            "let": {
+                                                "local_id": "$userID"
+                                            },
+                                            "pipeline": [{
+                                                "$match": {
+                                                    "$expr": {
+                                                        "$eq": ["$_id", "$$local_id"]
+                                                    }
+                                                }
+                                            }, {
+                                                "$project": {
+                                                    "_id": 1,
+                                                    "email": 1,
+                                                    "fullName": 1,
+                                                    "gender": {
+                                                        "$switch": {
+                                                            "branches": [{
+                                                                "case": {
+                                                                    "$or": [{
+                                                                        "$eq": ["$gender", "Male"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "Laki-laki"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "MALE"]
+                                                                    }]
+                                                                },
+                                                                "then": "Laki-laki"
+                                                            }, {
+                                                                "case": {
+                                                                    "$or": [{
+                                                                        "$eq": ["$gender", " Perempuan"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "Perempuan"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "PEREMPUAN"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "FEMALE"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", " FEMALE"]
+                                                                    }]
+                                                                },
+                                                                "then": "Perempuan"
+                                                            }],
+                                                            "default": "Lainnya"
+                                                        }
+                                                    },
+                                                    "age": {
+                                                        "$cond": {
+                                                            "if": {
+                                                                "$and": ["$dob", {
+                                                                    "$ne": ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            "then": {
+                                                                "$toInt": {
+                                                                    "$divide": [{
+                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                            "$toDate": "$dob"
+                                                                        }]
+                                                                    }, 31536000000]
+                                                                }
+                                                            },
+                                                            "else": 0
+                                                        }
+                                                    },
+                                                    "ageQualication": {
+                                                        "$switch": {
+                                                            "branches": [{
+                                                                "case": {
+                                                                    "$lt": [{
+                                                                        "$cond": {
+                                                                            "if": {
+                                                                                "$and": ["$dob", {
+                                                                                    "$ne": ["$dob", ""]
+                                                                                }]
+                                                                            },
+                                                                            "then": {
+                                                                                "$toInt": {
+                                                                                    "$divide": [{
+                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$toDate": "$dob"
+                                                                                        }]
+                                                                                    }, 31536000000]
+                                                                                }
+                                                                            },
+                                                                            "else": 0
+                                                                        }
+                                                                    }, 14]
+                                                                },
+                                                                "then": "< 14 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$and": [{
+                                                                        "$gte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 14]
+                                                                    }, {
+                                                                        "$lte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 28]
+                                                                    }]
+                                                                },
+                                                                "then": "14 - 28 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$and": [{
+                                                                        "$gte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 29]
+                                                                    }, {
+                                                                        "$lte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 43]
+                                                                    }]
+                                                                },
+                                                                "then": "29 - 43 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$gt": [{
+                                                                        "$cond": {
+                                                                            "if": {
+                                                                                "$and": ["$dob", {
+                                                                                    "$ne": ["$dob", ""]
+                                                                                }]
+                                                                            },
+                                                                            "then": {
+                                                                                "$toInt": {
+                                                                                    "$divide": [{
+                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$toDate": "$dob"
+                                                                                        }]
+                                                                                    }, 31536000000]
+                                                                                }
+                                                                            },
+                                                                            "else": 0
+                                                                        }
+                                                                    }, 43]
+                                                                },
+                                                                "then": "> 43 Tahun"
+                                                            }],
+                                                            "default": "Other"
+                                                        }
+                                                    },
+                                                    "userInterests_array": {
+                                                        "$map": {
+                                                            "input": {
+                                                                "$map": {
+                                                                    "input": "$userInterests",
+                                                                    "in": {
+                                                                        "$arrayElemAt": [{
+                                                                            "$objectToArray": "$$this"
+                                                                        }, 1]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "in": "$$this.v"
+                                                        }
+                                                    },
+                                                    "states": 1
+                                                }
+                                            }, {
+                                                "$lookup": {
+                                                    "from": "interests_repo",
+                                                    "localField": "userInterests_array",
+                                                    "foreignField": "_id",
+                                                    "as": "interests"
+                                                }
+                                            }, {
+                                                "$lookup": {
+                                                    "from": "areas",
+                                                    "as": "areas",
+                                                    "let": {
+                                                        "local_id": "$states.$id"
+                                                    },
+                                                    "pipeline": [{
+                                                        "$match": {
+                                                            "$expr": {
+                                                                "$eq": ["$_id", "$$local_id"]
+                                                            }
+                                                        }
+                                                    }]
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$unwind": {
+                                            "path": "$clickTime",
+                                            "includeArrayIndex": "clickTime_index"
+                                        }
+                                    }, {
+                                        "$match": {
+                                            "clickTime": {
+                                                "$gte": start_date.toISOString(),
+                                                "$lte": end_date.toISOString()
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": "$userID",
+                                            "user": {
+                                                "$first": "$$ROOT"
+                                            }
+                                        }
+                                    }, {
+                                        "$project": {
+                                            "_id": 1,
+                                            "gender": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": {
+                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                        }
+                                                    },
+                                                    "in": "$$tmp.gender"
+                                                }
+                                            },
+                                            "ageQualication": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": {
+                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                        }
+                                                    },
+                                                    "in": "$$tmp.ageQualication"
+                                                }
+                                            },
+                                            "interest": {
+                                                "$map": {
+                                                    "input": {
+                                                        "$map": {
+                                                            "input": {
+                                                                "$let": {
+                                                                    "vars": {
+                                                                        "tmp": {
+                                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                                        }
+                                                                    },
+                                                                    "in": "$$tmp.interests"
+                                                                }
+                                                            },
+                                                            "in": {
+                                                                "$arrayElemAt": [{
+                                                                    "$objectToArray": "$$this"
+                                                                }, 1]
+                                                            }
+                                                        }
+                                                    },
+                                                    "in": "$$this.v"
+                                                }
+                                            },
+                                            "areas": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "userauths": {
+                                                            "$arrayElemAt": [{
+                                                                "$let": {
+                                                                    "vars": {
+                                                                        "tmp": {
+                                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                                        }
+                                                                    },
+                                                                    "in": "$$tmp.areas"
+                                                                }
+                                                            }, 0]
+                                                        }
+                                                    },
+                                                    "in": "$$userauths.stateName"
+                                                }
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": "$areas",
+                                            "areasCount": {
+                                                "$sum": 1
+                                            }
+                                        }
+                                    }],
+                                    "userAdsInterest": [{
+                                        "$match": {
+                                            "$and": [{
+                                                "adsID": new mongoose.Types.ObjectId(adsId)
+                                            }, {
+                                                "viewTime": {
+                                                    "$elemMatch": {
+                                                        "$gte": start_date.toISOString(),
+                                                        "$lte": end_date.toISOString()
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$lookup": {
+                                            "from": "userbasics",
+                                            "as": "userbasics_data",
+                                            "let": {
+                                                "local_id": "$userID"
+                                            },
+                                            "pipeline": [{
+                                                "$match": {
+                                                    "$expr": {
+                                                        "$eq": ["$_id", "$$local_id"]
+                                                    }
+                                                }
+                                            }, {
+                                                "$project": {
+                                                    "_id": 1,
+                                                    "email": 1,
+                                                    "fullName": 1,
+                                                    "gender": {
+                                                        "$switch": {
+                                                            "branches": [{
+                                                                "case": {
+                                                                    "$or": [{
+                                                                        "$eq": ["$gender", "Male"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "Laki-laki"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "MALE"]
+                                                                    }]
+                                                                },
+                                                                "then": "Laki-laki"
+                                                            }, {
+                                                                "case": {
+                                                                    "$or": [{
+                                                                        "$eq": ["$gender", " Perempuan"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "Perempuan"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "PEREMPUAN"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "FEMALE"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", " FEMALE"]
+                                                                    }]
+                                                                },
+                                                                "then": "Perempuan"
+                                                            }],
+                                                            "default": "Lainnya"
+                                                        }
+                                                    },
+                                                    "age": {
+                                                        "$cond": {
+                                                            "if": {
+                                                                "$and": ["$dob", {
+                                                                    "$ne": ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            "then": {
+                                                                "$toInt": {
+                                                                    "$divide": [{
+                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                            "$toDate": "$dob"
+                                                                        }]
+                                                                    }, 31536000000]
+                                                                }
+                                                            },
+                                                            "else": 0
+                                                        }
+                                                    },
+                                                    "ageQualication": {
+                                                        "$switch": {
+                                                            "branches": [{
+                                                                "case": {
+                                                                    "$lt": [{
+                                                                        "$cond": {
+                                                                            "if": {
+                                                                                "$and": ["$dob", {
+                                                                                    "$ne": ["$dob", ""]
+                                                                                }]
+                                                                            },
+                                                                            "then": {
+                                                                                "$toInt": {
+                                                                                    "$divide": [{
+                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$toDate": "$dob"
+                                                                                        }]
+                                                                                    }, 31536000000]
+                                                                                }
+                                                                            },
+                                                                            "else": 0
+                                                                        }
+                                                                    }, 14]
+                                                                },
+                                                                "then": "< 14 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$and": [{
+                                                                        "$gte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 14]
+                                                                    }, {
+                                                                        "$lte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 28]
+                                                                    }]
+                                                                },
+                                                                "then": "14 - 28 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$and": [{
+                                                                        "$gte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 29]
+                                                                    }, {
+                                                                        "$lte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 43]
+                                                                    }]
+                                                                },
+                                                                "then": "29 - 43 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$gt": [{
+                                                                        "$cond": {
+                                                                            "if": {
+                                                                                "$and": ["$dob", {
+                                                                                    "$ne": ["$dob", ""]
+                                                                                }]
+                                                                            },
+                                                                            "then": {
+                                                                                "$toInt": {
+                                                                                    "$divide": [{
+                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$toDate": "$dob"
+                                                                                        }]
+                                                                                    }, 31536000000]
+                                                                                }
+                                                                            },
+                                                                            "else": 0
+                                                                        }
+                                                                    }, 43]
+                                                                },
+                                                                "then": "> 43 Tahun"
+                                                            }],
+                                                            "default": "Other"
+                                                        }
+                                                    },
+                                                    "userInterests_array": {
+                                                        "$map": {
+                                                            "input": {
+                                                                "$map": {
+                                                                    "input": "$userInterests",
+                                                                    "in": {
+                                                                        "$arrayElemAt": [{
+                                                                            "$objectToArray": "$$this"
+                                                                        }, 1]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "in": "$$this.v"
+                                                        }
+                                                    },
+                                                    "states": 1
+                                                }
+                                            }, {
+                                                "$lookup": {
+                                                    "from": "interests_repo",
+                                                    "localField": "userInterests_array",
+                                                    "foreignField": "_id",
+                                                    "as": "interests"
+                                                }
+                                            }, {
+                                                "$lookup": {
+                                                    "from": "areas",
+                                                    "as": "areas",
+                                                    "let": {
+                                                        "local_id": "$states.$id"
+                                                    },
+                                                    "pipeline": [{
+                                                        "$match": {
+                                                            "$expr": {
+                                                                "$eq": ["$_id", "$$local_id"]
+                                                            }
+                                                        }
+                                                    }]
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$unwind": {
+                                            "path": "$clickTime",
+                                            "includeArrayIndex": "clickTime_index"
+                                        }
+                                    }, {
+                                        "$match": {
+                                            "clickTime": {
+                                                "$gte": start_date.toISOString(),
+                                                "$lte": end_date.toISOString()
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": "$userID",
+                                            "user": {
+                                                "$first": "$$ROOT"
+                                            }
+                                        }
+                                    }, {
+                                        "$project": {
+                                            "_id": 1,
+                                            "gender": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": {
+                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                        }
+                                                    },
+                                                    "in": "$$tmp.gender"
+                                                }
+                                            },
+                                            "ageQualication": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": {
+                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                        }
+                                                    },
+                                                    "in": "$$tmp.ageQualication"
+                                                }
+                                            },
+                                            "interest": {
+                                                "$map": {
+                                                    "input": {
+                                                        "$map": {
+                                                            "input": {
+                                                                "$let": {
+                                                                    "vars": {
+                                                                        "tmp": {
+                                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                                        }
+                                                                    },
+                                                                    "in": "$$tmp.interests"
+                                                                }
+                                                            },
+                                                            "in": {
+                                                                "$arrayElemAt": [{
+                                                                    "$objectToArray": "$$this"
+                                                                }, 1]
+                                                            }
+                                                        }
+                                                    },
+                                                    "in": "$$this.v"
+                                                }
+                                            },
+                                            "areas": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "userauths": {
+                                                            "$arrayElemAt": [{
+                                                                "$let": {
+                                                                    "vars": {
+                                                                        "tmp": {
+                                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                                        }
+                                                                    },
+                                                                    "in": "$$tmp.areas"
+                                                                }
+                                                            }, 0]
+                                                        }
+                                                    },
+                                                    "in": "$$userauths.stateName"
+                                                }
+                                            }
+                                        }
+                                    }, {
+                                        "$unwind": "$interest"
+                                    }, {
+                                        "$group": {
+                                            "_id": "$interest",
+                                            "interestCount": {
+                                                "$sum": 1
+                                            }
+                                        }
+                                    }],
+                                    "userAds": [{
+                                        "$match": {
+                                            "$and": [{
+                                                "adsID": new mongoose.Types.ObjectId(adsId)
+                                            }, {
+                                                "viewTime": {
+                                                    "$elemMatch": {
+                                                        "$gte": start_date.toISOString(),
+                                                        "$lte": end_date.toISOString()
+                                                    }
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$lookup": {
+                                            "from": "userbasics",
+                                            "as": "userbasics_data",
+                                            "let": {
+                                                "local_id": "$userID"
+                                            },
+                                            "pipeline": [{
+                                                "$match": {
+                                                    "$expr": {
+                                                        "$eq": ["$_id", "$$local_id"]
+                                                    }
+                                                }
+                                            }, {
+                                                "$project": {
+                                                    "_id": 1,
+                                                    "email": 1,
+                                                    "fullName": 1,
+                                                    "gender": {
+                                                        "$switch": {
+                                                            "branches": [{
+                                                                "case": {
+                                                                    "$or": [{
+                                                                        "$eq": ["$gender", "Male"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "Laki-laki"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "MALE"]
+                                                                    }]
+                                                                },
+                                                                "then": "Laki-laki"
+                                                            }, {
+                                                                "case": {
+                                                                    "$or": [{
+                                                                        "$eq": ["$gender", " Perempuan"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "Perempuan"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "PEREMPUAN"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", "FEMALE"]
+                                                                    }, {
+                                                                        "$eq": ["$gender", " FEMALE"]
+                                                                    }]
+                                                                },
+                                                                "then": "Perempuan"
+                                                            }],
+                                                            "default": "Lainnya"
+                                                        }
+                                                    },
+                                                    "age": {
+                                                        "$cond": {
+                                                            "if": {
+                                                                "$and": ["$dob", {
+                                                                    "$ne": ["$dob", ""]
+                                                                }]
+                                                            },
+                                                            "then": {
+                                                                "$toInt": {
+                                                                    "$divide": [{
+                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                            "$toDate": "$dob"
+                                                                        }]
+                                                                    }, 31536000000]
+                                                                }
+                                                            },
+                                                            "else": 0
+                                                        }
+                                                    },
+                                                    "ageQualication": {
+                                                        "$switch": {
+                                                            "branches": [{
+                                                                "case": {
+                                                                    "$lt": [{
+                                                                        "$cond": {
+                                                                            "if": {
+                                                                                "$and": ["$dob", {
+                                                                                    "$ne": ["$dob", ""]
+                                                                                }]
+                                                                            },
+                                                                            "then": {
+                                                                                "$toInt": {
+                                                                                    "$divide": [{
+                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$toDate": "$dob"
+                                                                                        }]
+                                                                                    }, 31536000000]
+                                                                                }
+                                                                            },
+                                                                            "else": 0
+                                                                        }
+                                                                    }, 14]
+                                                                },
+                                                                "then": "< 14 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$and": [{
+                                                                        "$gte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 14]
+                                                                    }, {
+                                                                        "$lte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 28]
+                                                                    }]
+                                                                },
+                                                                "then": "14 - 28 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$and": [{
+                                                                        "$gte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 29]
+                                                                    }, {
+                                                                        "$lte": [{
+                                                                            "$cond": {
+                                                                                "if": {
+                                                                                    "$and": ["$dob", {
+                                                                                        "$ne": ["$dob", ""]
+                                                                                    }]
+                                                                                },
+                                                                                "then": {
+                                                                                    "$toInt": {
+                                                                                        "$divide": [{
+                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                                "$toDate": "$dob"
+                                                                                            }]
+                                                                                        }, 31536000000]
+                                                                                    }
+                                                                                },
+                                                                                "else": 0
+                                                                            }
+                                                                        }, 43]
+                                                                    }]
+                                                                },
+                                                                "then": "29 - 43 Tahun"
+                                                            }, {
+                                                                "case": {
+                                                                    "$gt": [{
+                                                                        "$cond": {
+                                                                            "if": {
+                                                                                "$and": ["$dob", {
+                                                                                    "$ne": ["$dob", ""]
+                                                                                }]
+                                                                            },
+                                                                            "then": {
+                                                                                "$toInt": {
+                                                                                    "$divide": [{
+                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$toDate": "$dob"
+                                                                                        }]
+                                                                                    }, 31536000000]
+                                                                                }
+                                                                            },
+                                                                            "else": 0
+                                                                        }
+                                                                    }, 43]
+                                                                },
+                                                                "then": "> 43 Tahun"
+                                                            }],
+                                                            "default": "Other"
+                                                        }
+                                                    },
+                                                    "userInterests_array": {
+                                                        "$map": {
+                                                            "input": {
+                                                                "$map": {
+                                                                    "input": "$userInterests",
+                                                                    "in": {
+                                                                        "$arrayElemAt": [{
+                                                                            "$objectToArray": "$$this"
+                                                                        }, 1]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "in": "$$this.v"
+                                                        }
+                                                    },
+                                                    "states": 1
+                                                }
+                                            }, {
+                                                "$lookup": {
+                                                    "from": "interests_repo",
+                                                    "localField": "userInterests_array",
+                                                    "foreignField": "_id",
+                                                    "as": "interests"
+                                                }
+                                            }, {
+                                                "$lookup": {
+                                                    "from": "areas",
+                                                    "as": "areas",
+                                                    "let": {
+                                                        "local_id": "$states.$id"
+                                                    },
+                                                    "pipeline": [{
+                                                        "$match": {
+                                                            "$expr": {
+                                                                "$eq": ["$_id", "$$local_id"]
+                                                            }
+                                                        }
+                                                    }]
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "$unwind": {
+                                            "path": "$clickTime",
+                                            "includeArrayIndex": "clickTime_index"
+                                        }
+                                    }, {
+                                        "$match": {
+                                            "clickTime": {
+                                                "$gte": start_date.toISOString(),
+                                                "$lte": end_date.toISOString()
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": "$userID",
+                                            "user": {
+                                                "$first": "$$ROOT"
+                                            }
+                                        }
+                                    }, {
+                                        "$project": {
+                                            "_id": 1,
+                                            "gender": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": {
+                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                        }
+                                                    },
+                                                    "in": "$$tmp.gender"
+                                                }
+                                            },
+                                            "ageQualication": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": {
+                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                        }
+                                                    },
+                                                    "in": "$$tmp.ageQualication"
+                                                }
+                                            },
+                                            "interest": {
+                                                "$map": {
+                                                    "input": {
+                                                        "$map": {
+                                                            "input": {
+                                                                "$let": {
+                                                                    "vars": {
+                                                                        "tmp": {
+                                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                                        }
+                                                                    },
+                                                                    "in": "$$tmp.interests"
+                                                                }
+                                                            },
+                                                            "in": {
+                                                                "$arrayElemAt": [{
+                                                                    "$objectToArray": "$$this"
+                                                                }, 1]
+                                                            }
+                                                        }
+                                                    },
+                                                    "in": "$$this.v"
+                                                }
+                                            },
+                                            "areas": {
+                                                "$let": {
+                                                    "vars": {
+                                                        "userauths": {
+                                                            "$arrayElemAt": [{
+                                                                "$let": {
+                                                                    "vars": {
+                                                                        "tmp": {
+                                                                            "$arrayElemAt": ["$user.userbasics_data", 0]
+                                                                        }
+                                                                    },
+                                                                    "in": "$$tmp.areas"
+                                                                }
+                                                            }, 0]
+                                                        }
+                                                    },
+                                                    "in": "$$userauths.stateName"
+                                                }
+                                            }
+                                        }
+                                    }, {
+                                        "$group": {
+                                            "_id": null,
+                                            "adsViewCount": {
+                                                "$sum": 1
+                                            }
+                                        }
+                                    }]
+                                }
+                            },
+                            {
+                                "$project": {
+                                    "adsDetail": {
+                                        "$arrayElemAt": ["$adsDetail", 0]
+                                    },
+                                    "summary": {
+                                        "Totalimpresi": {
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": {
+                                                        "$arrayElemAt": ["$viewed", 0]
+                                                    }
+                                                },
+                                                "in": "$$tmp.impresi"
+                                            }
+                                        },
+                                        "Totalreach": {
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": {
+                                                        "$arrayElemAt": ["$viewed", 0]
+                                                    }
+                                                },
+                                                "in": "$$tmp.reach"
+                                            }
+                                        },
+                                        "TotalCTA": {
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": {
+                                                        "$arrayElemAt": ["$CTACount", 0]
+                                                    }
+                                                },
+                                                "in": "$$tmp.CTACount"
+                                            }
+                                        },
+                                        "CTR": {
+                                            "$concat": [{
+                                                "$toString": {
+                                                    "$multiply": [{
+                                                        "$divide": [{
+                                                            "$let": {
+                                                                "vars": {
+                                                                    "tmp": {
+                                                                        "$arrayElemAt": ["$CTACount", 0]
+                                                                    }
+                                                                },
+                                                                "in": "$$tmp.CTACount"
+                                                            }
+                                                        }, {
+                                                            "$let": {
+                                                                "vars": {
+                                                                    "tmp": {
+                                                                        "$arrayElemAt": ["$viewed", 0]
+                                                                    }
+                                                                },
+                                                                "in": "$$tmp.reach"
+                                                            }
+                                                        }]
+                                                    }, 100]
+                                                }
+                                            }, "", "%"]
+                                        },
+                                        "impresi": "$impresi",
+                                        "reach": "$reach",
+                                        "CTA": "$CTA"
+                                    },
+                                    "saldoKredit": {
+                                        "$sum": [{
+                                            "$convert": {
+                                                "input": {
+                                                    "$arrayElemAt": ["$viewTime.count", 0]
+                                                },
+                                                "to": "int",
+                                                "onError": 0,
+                                                "onNull": 0
+                                            }
+                                        }, {
+                                            "$convert": {
+                                                "input": {
+                                                    "$arrayElemAt": ["$clickTime.count", 0]
+                                                },
+                                                "to": "int",
+                                                "onError": 0,
+                                                "onNull": 0
+                                            }
+                                        }]
+                                    },
+                                    "userAds": {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": {
+                                                    "$arrayElemAt": ["$userAds", 0]
+                                                }
+                                            },
+                                            "in": "$$tmp.adsViewCount"
+                                        }
+                                    },
+                                    "userAdsAge": {
+                                        "$map": {
+                                            "input": {
+                                                "$range": [0, {
+                                                    "$size": "$userAdsAge"
+                                                }]
+                                            },
+                                            "in": {
+                                                "name": {
+                                                    "$arrayElemAt": ["$userAdsAge._id", "$$this"]
+                                                },
+                                                "count": {
+                                                    "$arrayElemAt": ["$userAdsAge.ageCount", "$$this"]
+                                                },
+                                                "persentase": {
+                                                    "$multiply": [{
+                                                        "$divide": [{
+                                                            "$arrayElemAt": ["$userAdsAge.ageCount", "$$this"]
+                                                        }, {
+                                                            "$let": {
+                                                                "vars": {
+                                                                    "tmp": {
+                                                                        "$arrayElemAt": ["$userAds", 0]
+                                                                    }
+                                                                },
+                                                                "in": "$$tmp.adsViewCount"
+                                                            }
+                                                        }]
+                                                    }, 100]
+                                                },
+                                                "persentaseText": {
+                                                    "$concat": [{
+                                                        "$toString": {
+                                                            "$multiply": [{
+                                                                "$divide": [{
+                                                                    "$arrayElemAt": ["$userAdsAge.ageCount", "$$this"]
+                                                                }, {
+                                                                    "$let": {
+                                                                        "vars": {
+                                                                            "tmp": {
+                                                                                "$arrayElemAt": ["$userAds", 0]
+                                                                            }
+                                                                        },
+                                                                        "in": "$$tmp.adsViewCount"
+                                                                    }
+                                                                }]
+                                                            }, 100]
+                                                        }
+                                                    }, "", "%"]
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "userAdsGender": {
+                                        "$map": {
+                                            "input": {
+                                                "$range": [0, {
+                                                    "$size": "$userAdsGender"
+                                                }]
+                                            },
+                                            "in": {
+                                                "name": {
+                                                    "$arrayElemAt": ["$userAdsGender._id", "$$this"]
+                                                },
+                                                "count": {
+                                                    "$arrayElemAt": ["$userAdsGender.genderCount", "$$this"]
+                                                },
+                                                "persentase": {
+                                                    "$multiply": [{
+                                                        "$divide": [{
+                                                            "$arrayElemAt": ["$userAdsGender.genderCount", "$$this"]
+                                                        }, {
+                                                            "$let": {
+                                                                "vars": {
+                                                                    "tmp": {
+                                                                        "$arrayElemAt": ["$userAds", 0]
+                                                                    }
+                                                                },
+                                                                "in": "$$tmp.adsViewCount"
+                                                            }
+                                                        }]
+                                                    }, 100]
+                                                },
+                                                "persentaseText": {
+                                                    "$concat": [{
+                                                        "$toString": {
+                                                            "$multiply": [{
+                                                                "$divide": [{
+                                                                    "$arrayElemAt": ["$userAdsGender.genderCount", "$$this"]
+                                                                }, {
+                                                                    "$let": {
+                                                                        "vars": {
+                                                                            "tmp": {
+                                                                                "$arrayElemAt": ["$userAds", 0]
+                                                                            }
+                                                                        },
+                                                                        "in": "$$tmp.adsViewCount"
+                                                                    }
+                                                                }]
+                                                            }, 100]
+                                                        }
+                                                    }, "", "%"]
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "userAdsArea": {
+                                        "$map": {
+                                            "input": {
+                                                "$range": [0, {
+                                                    "$size": "$userAdsArea"
+                                                }]
+                                            },
+                                            "in": {
+                                                "name": {
+                                                    "$arrayElemAt": ["$userAdsArea._id", "$$this"]
+                                                },
+                                                "count": {
+                                                    "$arrayElemAt": ["$userAdsArea.areasCount", "$$this"]
+                                                },
+                                                "persentase": {
+                                                    "$multiply": [{
+                                                        "$divide": [{
+                                                            "$arrayElemAt": ["$userAdsArea.areasCount", "$$this"]
+                                                        }, {
+                                                            "$let": {
+                                                                "vars": {
+                                                                    "tmp": {
+                                                                        "$arrayElemAt": ["$userAds", 0]
+                                                                    }
+                                                                },
+                                                                "in": "$$tmp.adsViewCount"
+                                                            }
+                                                        }]
+                                                    }, 100]
+                                                },
+                                                "persentaseText": {
+                                                    "$concat": [{
+                                                        "$toString": {
+                                                            "$multiply": [{
+                                                                "$divide": [{
+                                                                    "$arrayElemAt": ["$userAdsArea.areasCount", "$$this"]
+                                                                }, {
+                                                                    "$let": {
+                                                                        "vars": {
+                                                                            "tmp": {
+                                                                                "$arrayElemAt": ["$userAds", 0]
+                                                                            }
+                                                                        },
+                                                                        "in": "$$tmp.adsViewCount"
+                                                                    }
+                                                                }]
+                                                            }, 100]
+                                                        }
+                                                    }, "", "%"]
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "userAdsInterest": {
+                                        "$map": {
+                                            "input": {
+                                                "$range": [0, {
+                                                    "$size": "$userAdsInterest"
+                                                }]
+                                            },
+                                            "in": {
+                                                "name": {
+                                                    "$arrayElemAt": ["$userAdsInterest._id", "$$this"]
+                                                },
+                                                "count": {
+                                                    "$arrayElemAt": ["$userAdsInterest.interestCount", "$$this"]
+                                                },
+                                                "persentase": {
+                                                    "$multiply": [{
+                                                        "$divide": [{
+                                                            "$arrayElemAt": ["$userAdsInterest.interestCount", "$$this"]
+                                                        }, {
+                                                            "$let": {
+                                                                "vars": {
+                                                                    "tmp": {
+                                                                        "$arrayElemAt": ["$userAds", 0]
+                                                                    }
+                                                                },
+                                                                "in": "$$tmp.adsViewCount"
+                                                            }
+                                                        }]
+                                                    }, 100]
+                                                },
+                                                "persentaseText": {
+                                                    "$concat": [{
+                                                        "$toString": {
+                                                            "$multiply": [{
+                                                                "$divide": [{
+                                                                    "$arrayElemAt": ["$userAdsInterest.interestCount", "$$this"]
+                                                                }, {
+                                                                    "$let": {
+                                                                        "vars": {
+                                                                            "tmp": {
+                                                                                "$arrayElemAt": ["$userAds", 0]
+                                                                            }
+                                                                        },
+                                                                        "in": "$$tmp.adsViewCount"
+                                                                    }
+                                                                }]
+                                                            }, 100]
+                                                        }
+                                                    }, "", "%"]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                $project: {
+                    _id:0,
+                    adsDetail:{
+                        "_id": "$_id",
+                        "name": "$name",
+                        "campaignId": "$campaignId"
+                    }
+                }
+            }
+        ]);
+        return query;
+    }
+
     async list(name_ads: string, start_date: any, end_date: any, type_ads: any[], plan_ads: any[], status_list: any[], page: number, limit: number, sorting: boolean) {
         var paramaggregate = [];
         var $match = {};

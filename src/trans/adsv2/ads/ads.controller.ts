@@ -775,6 +775,108 @@ export class AdsController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Post('/campaign/detail/alll')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async campaignDetailAll_(@Body() body: any, @Headers() headers) {
+        if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unauthorized',
+            );
+        }
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed email header dan token not match',
+            );
+        }
+
+        //VALIDASI PARAM adsId
+        if (body.adsId == undefined) {
+            await this.errorHandler.generateBadRequestException(
+                'Unabled to proceed, param adsId is required',
+            );
+        }
+
+        const dataAds = await this.adsService.findOne(body.adsId);
+        if (!(await this.utilsService.ceckData(dataAds))) {
+            await this.errorHandler.generateBadRequestException(
+                'Unabled to proceed, ads not found',
+            );
+        }
+
+        //----------------START DATE----------------
+        var start_date = null;
+        if (body.start_date != undefined) {
+            start_date = new Date(body.start_date);
+        }
+
+        //----------------END DATE----------------
+        var end_date = null;
+        if (body.end_date != undefined) {
+            end_date = new Date(body.end_date);
+        }
+
+        try {
+            let ads_campaign_detail = await this.adsService.campaignDetailAll_(body.adsId.toString(), start_date, end_date);
+            // if (await this.utilsService.ceckData(ads_campaign_detail)) {
+            //     if (ads_campaign_detail.length > 0) {
+            //         ads_campaign_detail = ads_campaign_detail[0];
+            //     }
+            // }
+
+            // if (ads_campaign_detail.summary.CTR == null) {
+            //     ads_campaign_detail.summary.CTR = "0%"
+            // }
+            // for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {
+            //     var DateFormat = await this.utilsService.consvertDateTimeString(new Date(d));
+            //     const isFoundreach = ads_campaign_detail.summary.reach.some(element => {
+            //         if (element._id === DateFormat) {
+            //             return true;
+            //         }
+            //         return false;
+            //     });
+            //     if (!isFoundreach) {
+            //         ads_campaign_detail.summary.reach.push({
+            //             "_id": DateFormat,
+            //             "reachView": 0
+            //         })
+            //     }
+            //     const isFoundimpresi = ads_campaign_detail.summary.impresi.some(element => {
+            //         if (element._id === DateFormat) {
+            //             return true;
+            //         }
+            //         return false;
+            //     });
+            //     if (!isFoundimpresi) {
+            //         ads_campaign_detail.summary.impresi.push({
+            //             "_id": DateFormat,
+            //             "impresiView": 0
+            //         })
+            //     }
+            //     const isFoundCTA = ads_campaign_detail.summary.CTA.some(element => {
+            //         if (element._id === DateFormat) {
+            //             return true;
+            //         }
+            //         return false;
+            //     });
+            //     if (!isFoundCTA) {
+            //         ads_campaign_detail.summary.CTA.push({
+            //             "_id": DateFormat,
+            //             "CTACount": 0
+            //         })
+            //     }
+            // }
+            return await this.errorHandler.generateAcceptResponseCodeWithData(
+                "Get Ads Campaign Detail succesfully", ads_campaign_detail,
+            );
+        }
+        catch (e) {
+            await this.errorHandler.generateInternalServerErrorException(
+                'Unabled to proceed, ERROR ' + e,
+            );
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post('/campaign/detail/')
     @HttpCode(HttpStatus.ACCEPTED)
     async campaignDetail1(@Body() body: any, @Headers() headers) {
