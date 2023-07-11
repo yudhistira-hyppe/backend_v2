@@ -49584,15 +49584,55 @@ export class PostsService {
               }
             },
             {
-              $project: {
-                "fullName": 1,
-                "profilePict": 1,
-                "isCelebrity": 1,
-                "isIdVerified": 1,
-                "isPrivate": 1,
-
+              "$unwind":
+              {
+                path:"$userBadge"
               }
-            }
+            },
+            {
+              "$match":
+              {
+                "$and":
+                [
+                    {
+                      "$expr":
+                      {
+                        "$eq":
+                        [
+                          "$userBadge.isActive", true
+                        ]
+                      }
+                    },
+                    {
+                      "$expr":
+                      {
+                        "$lte":
+                        [
+                          {
+                            "$dateToString": {
+                              "format": "%Y-%m-%d %H:%M:%S",
+                              "date": {
+                                $add: [new Date(), 25200000]
+                              }
+                            }
+                          },
+                          "$userBadge.endDatetime",
+                        ]
+                      }
+                    }
+                ]
+              }
+            },
+            {
+                  $project: {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "isCelebrity": 1,
+                  "isIdVerified": 1,
+                  "isPrivate": 1,
+                  "urluserBadge":"$userBadge"
+                  },
+            },
           ],
 
         }
@@ -49696,6 +49736,10 @@ export class PostsService {
                 "$arrayElemAt": ["$userBasic.profilePict.$id", 0]
               }]
             }
+          },
+          "urluserBadge":
+          {
+            "$arrayElemAt":["$userBasic.urluserBadge", 0]
           },
           "statusCB": 1,
           "mediaEndpoint": 1,
@@ -49810,6 +49854,7 @@ export class PostsService {
           "fullName": 1,
           "username": 1,
           "avatar": 1,
+          "urluserBadge": 1,
           "statusCB": 1,
           "privacy": 1,
           "isView": 1,
@@ -49888,6 +49933,7 @@ export class PostsService {
                   else: "$avatar"
                 }
               },
+              "urluserBadge": "$urluserBadge",
               "statusCB": "$statusCB",
               "privacy": "$privacy",
               "isViewed":

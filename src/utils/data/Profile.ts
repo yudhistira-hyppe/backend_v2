@@ -58,6 +58,7 @@ export class ProfileDTO {
     statusKyc: String;
     loginSource: String;
     devicetype: String;
+    urluserBadge: any[];
 }
 
 export class LocationDTO {

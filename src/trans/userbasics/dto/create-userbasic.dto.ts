@@ -82,6 +82,7 @@ export class CreateUserbasicDto {
   userAssets: mongoose.Types.ObjectId[];
   import: String;
   badge: any[];
+  userBadge: any[];
 }
 
 export class SearchUserbasicDto {
