@@ -381,7 +381,7 @@ export class AdsSettingController {
                     Nilai: (getSetting_Objectivitas_Action.percentageMax != undefined) ? getSetting_Objectivitas_Action.percentageMax : 0,
                     Unit: "Persen",
                     Aktifitas: (ActionSimiliarityAudienceMax.length > 0) ? ActionSimiliarityAudienceMax[0].userbasics_data[0].fullName : "",
-                    Date: (ActionSimiliarityAudienceMax.length > 0) ? ActionSimiliarityAudienceMin[0].dateTime : "-",
+                    Date: (ActionSimiliarityAudienceMax.length > 0) ? ActionSimiliarityAudienceMax[0].dateTime : "-",
                     Desc: _remark_Objectivitas_Action_Similirity_Max,
                 },
                 {
@@ -1315,6 +1315,7 @@ export class AdsSettingController {
         try {
             AdsLogsDto_.iduser = new mongoose.Types.ObjectId(ubasic._id.toString());
             AdsLogsDto_.nameActivitas = nameActivitas;
+            AdsLogsDto_.type = "SETTING";
             AdsLogsDto_.dateTime = await this.utilsService.getDateTimeString();
             this.adslogsService.create(AdsLogsDto_);
 
@@ -1878,36 +1879,5 @@ export class AdsSettingController {
                 );
             }
         }
-
-        // if ((body.CTAButtonIndex != undefined) || (body.CTAButton != undefined)) {
-        //     var _id_setting_CTAButton = this.configService.get("ID_SETTING_ADS_CTA_BUTTON");
-        //     try {
-        //         var data_CTABUtton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
-        //         const stringValue = data_CTABUtton.value.toString();
-        //         const stringSplit = stringValue.split(',');
-        //         if (stringSplit[body.CTAButtonIndex] == undefined) {
-        //             await this.errorHandler.generateNotAcceptableException(
-        //                 'Unabled to proceed',
-        //             );
-        //         }
-        //         stringSplit[body.CTAButtonIndex] = body.CTAButton.toString();
-        //         await this.adssettingService.updateAdsSetting(_id_setting_CTAButton, stringSplit);
-
-        //         var getSetting_CTAButton = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CTAButton));
-        //         var adsCTAButton = await Promise.all(((getSetting_CTAButton.value.toString()).split(',')).map(async (item, index) => {
-        //             return {
-        //                 CTAButtonIndex: index,
-        //                 CTAButton: item
-        //             };
-        //         }));
-        //         return await this.errorHandler.generateAcceptResponseCodeWithData(
-        //             "Update setting CTA ads succesfully", adsCTAButton
-        //         );
-        //     } catch (e) {
-        //         await this.errorHandler.generateNotAcceptableException(
-        //             'Unabled to proceed, ' + e.toString(),
-        //         );
-        //     }
-        // }
     }
 }

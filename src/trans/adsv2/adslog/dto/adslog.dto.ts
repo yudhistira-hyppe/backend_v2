@@ -7,5 +7,8 @@ export class AdsLogsDto {
     iduser: mongoose.Types.ObjectId;
     nameActivitas: string[];
     desc: string;
-    dateTime:string;
+    type: string;
+    dateTime: string;
+    request: string;
+    response: string;
 }
