@@ -2095,6 +2095,40 @@ export class ChallengeController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('badgechoice')
+  async badgechoice(@Req() request: Request) {
+    var iduserbadge = null;
+    var datauserbadge = null;
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+    if (request_json["iduserbadge"] !== undefined) {
+      iduserbadge = request_json["iduserbadge"];
+    } else {
+      throw new BadRequestException("Unabled to proceed, iduserbadge field is required");
+    }
+
+    try {
+      datauserbadge = await this.userbadgeService.getBadgeIduserbadge(iduserbadge);
+    } catch (e) {
+      datauserbadge = null;
+    }
+
+    if (datauserbadge !== null && datauserbadge.length > 0) {
+
+    }
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    return {
+      response_code: 202,
+      messages: messages,
+    };
+  }
+
   async userbadge() {
     var datachallengejuara = null;
     var status = null;
@@ -2231,4 +2265,6 @@ export class ChallengeController {
     }
 
   }
+
+
 }
