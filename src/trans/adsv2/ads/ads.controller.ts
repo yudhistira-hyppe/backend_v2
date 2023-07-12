@@ -1,22 +1,23 @@
 import { Body, Controller, HttpCode, Headers, Get, Param, HttpStatus, Post, UseGuards, Logger, Query } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { AdsDto } from './dto/ads.dto';
 import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
 import { AdsService } from './ads.service';
 import mongoose from 'mongoose';
 import { ConfigService } from '@nestjs/config';
-import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
+import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
 import { AdsTypeService } from '../adstype/adstype.service';
 import { AdsBalaceCreditDto } from '../adsbalacecredit/dto/adsbalacecredit.dto';
 import { AdsType } from '../adstype/schemas/adstype.schema';
 import { AdssettingService } from '../adssetting/adssetting.service';
 import { Mutex, MutexInterface } from 'async-mutex';
 import { UserAdsService } from '../../userads/userads.service'
-import { CreateUserAdsDto } from 'src/trans/userads/dto/create-userads.dto';
+import { CreateUserAdsDto } from '../../../trans/userads/dto/create-userads.dto';
 import { MediaprofilepictsService } from '../../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { AdsplacesService } from '../../../trans/adsplaces/adsplaces.service';
 import { AdstypesService } from '../../../trans/adstypes/adstypes.service';
+import { PostContentService } from '../../../content/posts/postcontent.service';
 
 @Controller('api/adsv2/ads')
 export class AdsController {
@@ -31,6 +32,7 @@ export class AdsController {
         private readonly adsTypeService: AdsTypeService,
         private readonly configService: ConfigService, 
         private readonly userAdsService: UserAdsService,
+        private readonly postContentService: PostContentService, 
         private adstypesService: AdstypesService,
         private adsplacesService: AdsplacesService,
         private mediaprofilepictsService: MediaprofilepictsService,
@@ -763,6 +765,19 @@ export class AdsController {
                     })
                 }
             }
+
+            var listdata = [];
+            if (ads_campaign_detail.adsDetail.idApsara!=undefined){
+                listdata.push(ads_campaign_detail.adsDetail.idApsara);
+            }
+            if (listdata.length>0){
+                var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
+                if (apsaravideodata.VideoList.length > 0) {
+                    if (apsaravideodata.VideoList[0] != undefined) {
+                        ads_campaign_detail.adsDetail.media = apsaravideodata.VideoList[0];
+                    }
+                }
+            }
             return await this.errorHandler.generateAcceptResponseCodeWithData(
                 "Get Ads Campaign Detail succesfully", ads_campaign_detail,
             );
@@ -808,6 +823,19 @@ export class AdsController {
             if (await this.utilsService.ceckData(ads_campaign_detail)) {
                 if (ads_campaign_detail.length > 0) {
                     ads_campaign_detail = ads_campaign_detail[0];
+                }
+            }
+
+            var listdata = [];
+            if (ads_campaign_detail.idApsara != undefined) {
+                listdata.push(ads_campaign_detail.idApsara);
+            }
+            if (listdata.length > 0) {
+                var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
+                if (apsaravideodata.VideoList.length > 0) {
+                    if (apsaravideodata.VideoList[0] != undefined) {
+                        ads_campaign_detail.media = apsaravideodata.VideoList[0];
+                    }
                 }
             }
             return await this.errorHandler.generateAcceptResponseCodeWithData(
