@@ -81,7 +81,6 @@ export class CreateUserbasicDto {
   listAddKyc: any[];
   userAssets: mongoose.Types.ObjectId[];
   import: String;
-  badge: any[];
   userBadge: any[];
 }
 

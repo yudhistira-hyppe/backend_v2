@@ -139,8 +139,6 @@ export class Userbasic {
   @Prop()
   import: String;
   @Prop()
-  badge: any[];
-  @Prop()
   userBadge: any[];
 }
 
