@@ -518,7 +518,82 @@ export class AdsService {
                     liveEnd: 1,
                     urlLink: 1,
                     tayang: 1, 
+                    status: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: { $eq: ['$status', 'DRAFT'] },
+                                    then: 'DRAFT',
+                                },
+                                {
+                                    case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
+                                    then: 'IN_ACTIVE',
+                                },
+                                {
+                                    case: { $or: [{ $eq: ['$status', 'APPROVE'] }, { $eq: ['$status', 'ACTIVE'] }] },
+                                    then: 'ACTIVE',
+                                },
+                                {
+                                    case: { $eq: ['$status', 'UNDER_REVIEW'] },
+                                    then: 'UNDER_REVIEW',
+                                },
+
+                            ],
+                            default: "OTHER",
+
+                        },
+
+                    },
+                    remark: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: { $eq: ['$status', 'DRAFT'] },
+                                    then: "Kredit tidak mencukupi",
+                                },
+                                {
+                                    case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
+                                    then: {
+                                        $cond:
+                                        {
+                                            if:
+                                            {
+                                                "$eq": ["$description", 'ADS REJECTED']
+                                            },
+                                            then: 'Iklan ditolak, kredit dikembalikan ke saldo Anda',
+                                            else: 'Iklan sudah selesai'
+                                        }
+                                    },
+                                },
+                                {
+                                    case: { $or: [{ $eq: ['$status', 'APPROVE'] }, { $eq: ['$status', 'ACTIVE'] }] },
+                                    then: {
+                                        $cond:
+                                        {
+                                            if: {
+                                                $lte: [{
+                                                    $toDate: "$liveAt"
+                                                }, "$date_now"]
+                                            },
+                                            then: 'Iklan sedang tayang',
+                                            else: 'Sedang menunggu penayangan'
+                                        }
+                                    },
+                                },
+                                {
+                                    case: { $eq: ['$status', 'UNDER_REVIEW'] },
+                                    then: 'Sedang ditinjau oleh Hyppe',
+                                },
+
+                            ],
+                            default: "OTHER",
+
+                        },
+
+                    },
+                    dayAds: 1,
                     credit: 1,
+                    audiensFrekuensi: 1,
                     objectivitasId: 1,
                     objectivitasIdNameId: {
                         "$let": {
@@ -536,9 +611,7 @@ export class AdsService {
                             "in": "$$tmp.name_en"
                         }
                     },
-                    audiensFrekuensi: 1,
-                    status: 1,
-                    dayAds: 1,
+                    idApsara: 1,
                 }
             }
         ]);

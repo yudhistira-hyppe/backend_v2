@@ -825,6 +825,19 @@ export class AdsController {
                     ads_campaign_detail = ads_campaign_detail[0];
                 }
             }
+
+            var listdata = [];
+            if (ads_campaign_detail.idApsara != undefined) {
+                listdata.push(ads_campaign_detail.idApsara);
+            }
+            if (listdata.length > 0) {
+                var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
+                if (apsaravideodata.VideoList.length > 0) {
+                    if (apsaravideodata.VideoList[0] != undefined) {
+                        ads_campaign_detail.media = apsaravideodata.VideoList[0];
+                    }
+                }
+            }
             return await this.errorHandler.generateAcceptResponseCodeWithData(
                 "Get Ads Campaign Detail succesfully", ads_campaign_detail,
             );
