@@ -766,7 +766,7 @@ export class NotificationsService {
               {
                 "$arrayElemAt":["$urluserBadge",0]
               },
-              {}
+              null
             ]
           },
           content:

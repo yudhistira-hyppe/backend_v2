@@ -49626,6 +49626,23 @@ export class PostsService {
                   }
                 },
             },
+            {
+              "$project":
+              {
+                "fullName": 1,
+                "profilePict": 1,
+                "isCelebrity": 1,
+                "isIdVerified": 1,
+                "isPrivate": 1,
+                "urluserBadge":
+                {
+                  "$arrayElemAt":
+                  [
+                    "$urluserBadge", 0
+                  ]
+                }
+              }
+            }
           ],
 
         }
