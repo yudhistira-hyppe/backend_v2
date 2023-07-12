@@ -2348,12 +2348,21 @@ export class AuthController {
         var user_view = headers['x-auth-user'];
         await this.authService.viewProfile(SearchUserbasicDto_.search.toString(), user_view);
         var Data = await this.utilsService.generateProfile(SearchUserbasicDto_.search.toString(), 'PROFILE');
+
         var numPost = await this.postsService.findUserPost(SearchUserbasicDto_.search.toString());
         let aNumPost = <any>numPost;
         Data.insight.posts = <Long>aNumPost;
 
+        var showresult = {};
+
         var temp = data_userbasics.userBadge;
-        Data.urluserBadge = [];
+
+        for(const keys in Data)
+        {
+          showresult[keys] = Data[keys];
+        }
+
+        var getbadge = null;
         if(temp.length != 0)
         {
           for(var i = 0; i < temp.length; i++)
@@ -2366,14 +2375,18 @@ export class AuthController {
             var datediff = getfromdb.getTime() - convertnow.getTime();
             if (getstatus == true && datediff >= 0) 
             {
-              Data.urluserBadge = temp[i];
+              getbadge = temp[i];
               break;
             }
           }
         }
+
+        showresult['urluserBadge'] = getbadge;
+
         return {
           "response_code": 202,
-          "data": [Data],
+          // "data": [Data],
+          "data": [showresult],
           "messages": {
             "info": [
               "The process successful"
