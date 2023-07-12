@@ -554,15 +554,20 @@ export class AdsService {
                                 {
                                     case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
                                     then: {
-                                        $cond:
-                                        {
-                                            if:
-                                            {
-                                                "$eq": ["$description", 'ADS REJECTED']
-                                            },
-                                            then: 'Iklan ditolak, kredit dikembalikan ke saldo Anda',
-                                            else: 'Iklan sudah selesai'
-                                        }
+                                        $ifNull:
+                                        [
+                                            "$remark",
+                                            "Iklan sudah selesai"
+                                        ]
+                                        // $cond:
+                                        // {
+                                        //     if:
+                                        //     {
+                                        //         "$eq": ["$description", 'ADS REJECTED']
+                                        //     },
+                                        //     then: 'Iklan ditolak, kredit dikembalikan ke saldo Anda',
+                                        //     else: 'Iklan sudah selesai'
+                                        // }
                                     },
                                 },
                                 {
@@ -3250,15 +3255,20 @@ export class AdsService {
                                     {
                                         case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
                                         then: {
-                                            $cond:
-                                            {
-                                                if:
-                                                {
-                                                    "$eq": ["$description", 'ADS REJECTED']
-                                                },
-                                                then: 'Iklan ditolak, kredit dikembalikan ke saldo Anda',
-                                                else: 'Iklan sudah selesai'
-                                            }
+                                            $ifNull:
+                                            [
+                                                "$remark",
+                                                "Iklan sudah selesai"
+                                            ]
+                                            // $cond:
+                                            // {
+                                            //     if:
+                                            //     {
+                                            //         "$eq": ["$description", 'ADS REJECTED']
+                                            //     },
+                                            //     then: 'Iklan ditolak, kredit dikembalikan ke saldo Anda',
+                                            //     else: 'Iklan sudah selesai'
+                                            // }
                                         },
                                     },
                                     {
@@ -3629,10 +3639,10 @@ export class AdsService {
                     },
                     tayang: 1,
                     totalCredit: 1,
-                    dateNow_1: "$date_now",
-                    dateNow_2: {
-                                                    $toDate: "$liveAt"
-                                                },
+                    // dateNow_1: "$date_now",
+                    // dateNow_2: {
+                    //                                 $toDate: "$liveAt"
+                    //                             },
                     status: {
                         $switch: {
                             branches: [
@@ -3669,15 +3679,20 @@ export class AdsService {
                                 {
                                     case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
                                     then: {
-                                        $cond:
-                                        {
-                                            if:
-                                            {
-                                                "$eq": ["$description", 'ADS REJECTED']
-                                            },
-                                            then: 'Iklan ditolak, kredit dikembalikan ke saldo Anda',
-                                            else: 'Iklan sudah selesai'
-                                        }
+                                        $ifNull:
+                                        [
+                                            "$remark",
+                                            "Iklan sudah selesai"
+                                        ]
+                                        // $cond:
+                                        // {  
+                                        //     if:
+                                        //     {
+                                        //         "$eq": ["$description", 'ADS REJECTED']
+                                        //     },
+                                        //     then: 'Iklan ditolak, kredit dikembalikan ke saldo Anda',
+                                        //     else: 'Iklan sudah selesai'
+                                        // }
                                     },
                                 },
                                 {
