@@ -2125,7 +2125,7 @@ export class subChallengeService {
                                             "$userChallenge_data.ranking", 0
                                         ]
                                 }
-                                , 0
+                                , 1
                             ]
                     }
                 }
