@@ -1717,6 +1717,27 @@ export class UtilsService {
           ProfileDTO_.isComplete = get_userbasic.isComplete.toString();
           ProfileDTO_.status = get_userbasic.status;
         }
+
+        ProfileDTO_.urluserBadge = null;
+        var tempbadge = get_userbasic.userBadge;
+        if(tempbadge.length != 0)
+        {
+          for(var loopingbadge = 0; loopingbadge < tempbadge.length; loopingbadge++)
+          {
+            var getstatus = tempbadge[loopingbadge].isActive;
+            var getfromdb = new Date(tempbadge[loopingbadge].endDatetime);
+            getfromdb.setHours(getfromdb.getHours() + 7);
+            var convertnow = new Date();
+            convertnow.setHours(convertnow.getHours() + 7);
+            var datediff = getfromdb.getTime() - convertnow.getTime();
+            if (getstatus == true && datediff >= 0) 
+            {
+              ProfileDTO_.urluserBadge = tempbadge[loopingbadge];
+              break;
+            }
+          }
+        }
+
         ProfileDTO_.pin_create = pin_create;
         ProfileDTO_.pin_verified = otppinVerified;
         ProfileDTO_.iduser = get_userbasic._id;
