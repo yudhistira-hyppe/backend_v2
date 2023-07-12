@@ -6618,4 +6618,46 @@ export class UserbasicsService {
 
     return query;
   }
+
+  async updateuser(id: string, userBadge: any[]): Promise<Object> {
+    let data = await this.userbasicModel.updateOne({ "_id": new Types.ObjectId(id) },
+      { $set: { "userBadge": userBadge } });
+    return data;
+  }
+
+  async updatefilter(id: string, idarray: string, value: boolean) {
+    return this.userbasicModel.findByIdAndUpdate(
+
+      { _id: new Types.ObjectId(id) },
+      {
+        $set: {
+          "userBadge.$[element].isActive": value,
+
+        }
+      },
+      {
+        arrayFilters: [{
+          "element.idUserBadge": new Types.ObjectId(idarray)
+        }]
+
+      });
+  }
+
+  async updatefilterfalse(id: string, idarray: string, value: boolean) {
+    return this.userbasicModel.findByIdAndUpdate(
+
+      { _id: new Types.ObjectId(id) },
+      {
+        $set: {
+          "userBadge.$[element].isActive": value,
+
+        }
+      },
+      {
+        arrayFilters: [{
+          "element.idUserBadge": new Types.ObjectId(idarray)
+        }]
+
+      });
+  }
 }

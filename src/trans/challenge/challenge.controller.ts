@@ -2100,6 +2100,27 @@ export class ChallengeController {
   async badgechoice(@Req() request: Request) {
     var iduserbadge = null;
     var datauserbadge = null;
+    var iduser = null;
+    var badgeProfile1 = null;
+    var badgeOther1 = null;
+    var endDatetime1 = null
+    var isActive1 = null;
+    var startDatetime1 = null;
+    var userBadge = [];
+    var obj = null;
+    var objnew = null;
+    var idUserBadge1 = null;
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var createdAt = splitdate[0];
+    var arrUserbadge = [];
+    var databasicbadge = null;
+    var userBadge2 = [];
 
     var request_json = JSON.parse(JSON.stringify(request.body));
 
@@ -2116,6 +2137,91 @@ export class ChallengeController {
     }
 
     if (datauserbadge !== null && datauserbadge.length > 0) {
+      idUserBadge1 = datauserbadge[0]._id;
+      iduser = datauserbadge[0].userId;
+      startDatetime1 = datauserbadge[0].startDatetime;
+      endDatetime1 = datauserbadge[0].endDatetime;
+      badgeProfile1 = datauserbadge[0].badge_data[0].badgeProfile;
+      badgeOther1 = datauserbadge[0].badge_data[0].badgeOther;
+      isActive1 = datauserbadge[0].isActive;
+
+      try {
+        userBadge = datauserbadge[0].userBadge;
+      } catch (e) {
+        userBadge = [];
+      }
+      obj = {
+        "idUserBadge": new mongoose.Types.ObjectId(iduserbadge),
+        "badgeProfile": badgeProfile1,
+        "badgeOther": badgeOther1,
+        "endDatetime": endDatetime1,
+        "isActive": isActive1,
+        "startDatetime": startDatetime1,
+        "createdAt": createdAt
+      };
+
+      if (userBadge.length == 0) {
+        userBadge.push(obj);
+        await this.userbasicsSS.updateuser(iduser.toString(), userBadge);
+      }
+
+      else if (userBadge.length > 0) {
+        userBadge.push(obj);
+        await this.userbasicsSS.updateuser(iduser.toString(), userBadge);
+
+
+        try {
+          databasicbadge = await this.userbasicsSS.findbyid(iduser.toString());
+        } catch (e) {
+          databasicbadge = null;
+        }
+
+        if (databasicbadge !== null) {
+
+          try {
+            userBadge2 = databasicbadge.userBadge;
+          } catch (e) {
+            userBadge2 = [];
+          }
+
+          for (let i = 0; i < userBadge2.length; i++) {
+            let max = userBadge2.length - 1;
+            let idUserBadge = userBadge2[i].idUserBadge;
+            let startDatetime = userBadge2[i].startDatetime;
+            let endDatetime = userBadge2[i].endDatetime;
+            let badgeProfile = userBadge2[i].badgeProfile;
+            let badgeOther = userBadge2[i].badgeOther;
+            let isActive = null;
+
+            if (i == max) {
+
+              isActive = true
+
+
+            }
+            else {
+
+              isActive = false
+
+            }
+            objnew = {
+              "idUserBadge": new mongoose.Types.ObjectId(iduserbadge),
+              "badgeProfile": badgeProfile,
+              "badgeOther": badgeOther,
+              "endDatetime": endDatetime,
+              "isActive": isActive,
+              "startDatetime": startDatetime,
+              "createdAt": createdAt
+            };
+            arrUserbadge.push(objnew);
+
+
+
+          }
+          await this.userbasicsSS.updateuser(iduser.toString(), arrUserbadge);
+
+        }
+      }
 
     }
 
