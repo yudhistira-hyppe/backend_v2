@@ -578,7 +578,7 @@ export class AdsService {
                                             if: {
                                                 $lte: [{
                                                     $toDate: "$liveAt"
-                                                }, "$date_now"]
+                                                }, new Date()]
                                             },
                                             then: 'Iklan sedang tayang',
                                             else: 'Sedang menunggu penayangan'
