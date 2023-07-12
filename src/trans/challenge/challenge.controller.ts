@@ -1245,7 +1245,7 @@ export class ChallengeController {
       throw new BadRequestException("Unabled to proceed, page field is required");
     }
 
-    if (request_json["jenischallenge"] !== undefined){
+    if (request_json["jenischallenge"] !== undefined) {
       jenischallenge = request_json['jenischallenge'];
     }
 
@@ -1297,8 +1297,7 @@ export class ChallengeController {
       throw new BadRequestException("Unabled to proceed, limit field is required");
     }
 
-    if(request_json["jenischallenge"] !== undefined)
-    {
+    if (request_json["jenischallenge"] !== undefined) {
       jenischallenge = request_json['jenischallenge'];
     }
 
@@ -2215,7 +2214,7 @@ export class ChallengeController {
 
             }
             objnew = {
-              "idUserBadge": new mongoose.Types.ObjectId(iduserbadge),
+              "idUserBadge": new mongoose.Types.ObjectId(idUserBadge),
               "badgeProfile": badgeProfile,
               "badgeOther": badgeOther,
               "endDatetime": endDatetime,
