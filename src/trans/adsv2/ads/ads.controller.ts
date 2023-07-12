@@ -1,22 +1,23 @@
 import { Body, Controller, HttpCode, Headers, Get, Param, HttpStatus, Post, UseGuards, Logger, Query } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { AdsDto } from './dto/ads.dto';
 import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
 import { AdsService } from './ads.service';
 import mongoose from 'mongoose';
 import { ConfigService } from '@nestjs/config';
-import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
+import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
 import { AdsTypeService } from '../adstype/adstype.service';
 import { AdsBalaceCreditDto } from '../adsbalacecredit/dto/adsbalacecredit.dto';
 import { AdsType } from '../adstype/schemas/adstype.schema';
 import { AdssettingService } from '../adssetting/adssetting.service';
 import { Mutex, MutexInterface } from 'async-mutex';
 import { UserAdsService } from '../../userads/userads.service'
-import { CreateUserAdsDto } from 'src/trans/userads/dto/create-userads.dto';
+import { CreateUserAdsDto } from '../../../trans/userads/dto/create-userads.dto';
 import { MediaprofilepictsService } from '../../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { AdsplacesService } from '../../../trans/adsplaces/adsplaces.service';
 import { AdstypesService } from '../../../trans/adstypes/adstypes.service';
+import { PostContentService } from '../../../content/posts/postcontent.service';
 
 @Controller('api/adsv2/ads')
 export class AdsController {
@@ -31,6 +32,7 @@ export class AdsController {
         private readonly adsTypeService: AdsTypeService,
         private readonly configService: ConfigService, 
         private readonly userAdsService: UserAdsService,
+        private readonly postContentService: PostContentService, 
         private adstypesService: AdstypesService,
         private adsplacesService: AdsplacesService,
         private mediaprofilepictsService: MediaprofilepictsService,
@@ -763,108 +765,19 @@ export class AdsController {
                     })
                 }
             }
-            return await this.errorHandler.generateAcceptResponseCodeWithData(
-                "Get Ads Campaign Detail succesfully", ads_campaign_detail,
-            );
-        }
-        catch (e) {
-            await this.errorHandler.generateInternalServerErrorException(
-                'Unabled to proceed, ERROR ' + e,
-            );
-        }
-    }
 
-    @UseGuards(JwtAuthGuard)
-    @Post('/campaign/detail/alll')
-    @HttpCode(HttpStatus.ACCEPTED)
-    async campaignDetailAll_(@Body() body: any, @Headers() headers) {
-        if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
-            await this.errorHandler.generateNotAcceptableException(
-                'Unauthorized',
-            );
-        }
-        if (!(await this.utilsService.validasiTokenEmail(headers))) {
-            await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed email header dan token not match',
-            );
-        }
-
-        //VALIDASI PARAM adsId
-        if (body.adsId == undefined) {
-            await this.errorHandler.generateBadRequestException(
-                'Unabled to proceed, param adsId is required',
-            );
-        }
-
-        const dataAds = await this.adsService.findOne(body.adsId);
-        if (!(await this.utilsService.ceckData(dataAds))) {
-            await this.errorHandler.generateBadRequestException(
-                'Unabled to proceed, ads not found',
-            );
-        }
-
-        //----------------START DATE----------------
-        var start_date = null;
-        if (body.start_date != undefined) {
-            start_date = new Date(body.start_date);
-        }
-
-        //----------------END DATE----------------
-        var end_date = null;
-        if (body.end_date != undefined) {
-            end_date = new Date(body.end_date);
-        }
-
-        try {
-            let ads_campaign_detail = await this.adsService.campaignDetailAll_(body.adsId.toString(), start_date, end_date);
-            // if (await this.utilsService.ceckData(ads_campaign_detail)) {
-            //     if (ads_campaign_detail.length > 0) {
-            //         ads_campaign_detail = ads_campaign_detail[0];
-            //     }
-            // }
-
-            // if (ads_campaign_detail.summary.CTR == null) {
-            //     ads_campaign_detail.summary.CTR = "0%"
-            // }
-            // for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {
-            //     var DateFormat = await this.utilsService.consvertDateTimeString(new Date(d));
-            //     const isFoundreach = ads_campaign_detail.summary.reach.some(element => {
-            //         if (element._id === DateFormat) {
-            //             return true;
-            //         }
-            //         return false;
-            //     });
-            //     if (!isFoundreach) {
-            //         ads_campaign_detail.summary.reach.push({
-            //             "_id": DateFormat,
-            //             "reachView": 0
-            //         })
-            //     }
-            //     const isFoundimpresi = ads_campaign_detail.summary.impresi.some(element => {
-            //         if (element._id === DateFormat) {
-            //             return true;
-            //         }
-            //         return false;
-            //     });
-            //     if (!isFoundimpresi) {
-            //         ads_campaign_detail.summary.impresi.push({
-            //             "_id": DateFormat,
-            //             "impresiView": 0
-            //         })
-            //     }
-            //     const isFoundCTA = ads_campaign_detail.summary.CTA.some(element => {
-            //         if (element._id === DateFormat) {
-            //             return true;
-            //         }
-            //         return false;
-            //     });
-            //     if (!isFoundCTA) {
-            //         ads_campaign_detail.summary.CTA.push({
-            //             "_id": DateFormat,
-            //             "CTACount": 0
-            //         })
-            //     }
-            // }
+            var listdata = [];
+            if (ads_campaign_detail.adsDetail.idApsara!=undefined){
+                listdata.push(ads_campaign_detail.adsDetail.idApsara);
+            }
+            if (listdata.length>0){
+                var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
+                if (apsaravideodata.VideoList.length > 0) {
+                    if (apsaravideodata.VideoList[0] != undefined) {
+                        ads_campaign_detail.adsDetail.media = apsaravideodata.VideoList[0];
+                    }
+                }
+            }
             return await this.errorHandler.generateAcceptResponseCodeWithData(
                 "Get Ads Campaign Detail succesfully", ads_campaign_detail,
             );

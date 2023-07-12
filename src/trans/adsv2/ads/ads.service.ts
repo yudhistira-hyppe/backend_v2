@@ -549,15 +549,15 @@ export class AdsService {
         return await this.userAdsService.campaignDetailSummary(adsId, start_date, end_date);
     }
 
-    async campaignDetailAll(adsId: string, start_date: any, end_date: any): Promise<any> {
-        return await this.userAdsService.campaignDetail(adsId,start_date, end_date);
-    }
+    // async campaignDetailAll_(adsId: string, start_date: any, end_date: any): Promise<any> {
+    //     return await this.userAdsService.campaignDetail(adsId,start_date, end_date);
+    // }
 
-    async campaignDetailAll_(adsId: string, start_date: any, end_date: any): Promise<any> {
+    async campaignDetailAll(adsId: string, start_date: any, end_date: any): Promise<any> {
         var query = await this.adsModel.aggregate([
-            , {
-                "$match": {
-                    "adsID": new mongoose.Types.ObjectId(adsId)
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(adsId)
                 }
             },
             {
@@ -1079,7 +1079,7 @@ export class AdsService {
                                                             "then": {
                                                                 "$toInt": {
                                                                     "$divide": [{
-                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                        "$subtract": [new Date(), {
                                                                             "$toDate": "$dob"
                                                                         }]
                                                                     }, 31536000000]
@@ -1102,7 +1102,7 @@ export class AdsService {
                                                                             "then": {
                                                                                 "$toInt": {
                                                                                     "$divide": [{
-                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                        "$subtract": [new Date(), {
                                                                                             "$toDate": "$dob"
                                                                                         }]
                                                                                     }, 31536000000]
@@ -1126,7 +1126,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -1146,7 +1146,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -1171,7 +1171,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -1191,7 +1191,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -1215,7 +1215,7 @@ export class AdsService {
                                                                             "then": {
                                                                                 "$toInt": {
                                                                                     "$divide": [{
-                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                        "$subtract": [new Date(), {
                                                                                             "$toDate": "$dob"
                                                                                         }]
                                                                                     }, 31536000000]
@@ -1438,7 +1438,7 @@ export class AdsService {
                                                             "then": {
                                                                 "$toInt": {
                                                                     "$divide": [{
-                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                        "$subtract": [new Date(), {
                                                                             "$toDate": "$dob"
                                                                         }]
                                                                     }, 31536000000]
@@ -1461,7 +1461,7 @@ export class AdsService {
                                                                             "then": {
                                                                                 "$toInt": {
                                                                                     "$divide": [{
-                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                        "$subtract": [new Date(), {
                                                                                             "$toDate": "$dob"
                                                                                         }]
                                                                                     }, 31536000000]
@@ -1485,7 +1485,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -1505,7 +1505,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -1530,7 +1530,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -1550,7 +1550,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -1574,7 +1574,7 @@ export class AdsService {
                                                                             "then": {
                                                                                 "$toInt": {
                                                                                     "$divide": [{
-                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                        "$subtract": [new Date(), {
                                                                                             "$toDate": "$dob"
                                                                                         }]
                                                                                     }, 31536000000]
@@ -1797,7 +1797,7 @@ export class AdsService {
                                                             "then": {
                                                                 "$toInt": {
                                                                     "$divide": [{
-                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                        "$subtract": [new Date(), {
                                                                             "$toDate": "$dob"
                                                                         }]
                                                                     }, 31536000000]
@@ -1820,7 +1820,7 @@ export class AdsService {
                                                                             "then": {
                                                                                 "$toInt": {
                                                                                     "$divide": [{
-                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                        "$subtract": [new Date(), {
                                                                                             "$toDate": "$dob"
                                                                                         }]
                                                                                     }, 31536000000]
@@ -1844,7 +1844,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -1864,7 +1864,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -1889,7 +1889,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -1909,7 +1909,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -1933,7 +1933,7 @@ export class AdsService {
                                                                             "then": {
                                                                                 "$toInt": {
                                                                                     "$divide": [{
-                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                        "$subtract": [new Date(), {
                                                                                             "$toDate": "$dob"
                                                                                         }]
                                                                                     }, 31536000000]
@@ -2156,7 +2156,7 @@ export class AdsService {
                                                             "then": {
                                                                 "$toInt": {
                                                                     "$divide": [{
-                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                        "$subtract": [new Date(), {
                                                                             "$toDate": "$dob"
                                                                         }]
                                                                     }, 31536000000]
@@ -2179,7 +2179,7 @@ export class AdsService {
                                                                             "then": {
                                                                                 "$toInt": {
                                                                                     "$divide": [{
-                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                        "$subtract": [new Date(), {
                                                                                             "$toDate": "$dob"
                                                                                         }]
                                                                                     }, 31536000000]
@@ -2203,7 +2203,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -2223,7 +2223,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -2248,7 +2248,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -2268,7 +2268,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -2292,7 +2292,7 @@ export class AdsService {
                                                                             "then": {
                                                                                 "$toInt": {
                                                                                     "$divide": [{
-                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                        "$subtract": [new Date(), {
                                                                                             "$toDate": "$dob"
                                                                                         }]
                                                                                     }, 31536000000]
@@ -2517,7 +2517,7 @@ export class AdsService {
                                                             "then": {
                                                                 "$toInt": {
                                                                     "$divide": [{
-                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                        "$subtract": [new Date(), {
                                                                             "$toDate": "$dob"
                                                                         }]
                                                                     }, 31536000000]
@@ -2540,7 +2540,7 @@ export class AdsService {
                                                                             "then": {
                                                                                 "$toInt": {
                                                                                     "$divide": [{
-                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                        "$subtract": [new Date(), {
                                                                                             "$toDate": "$dob"
                                                                                         }]
                                                                                     }, 31536000000]
@@ -2564,7 +2564,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -2584,7 +2584,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -2609,7 +2609,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -2629,7 +2629,7 @@ export class AdsService {
                                                                                 "then": {
                                                                                     "$toInt": {
                                                                                         "$divide": [{
-                                                                                            "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                            "$subtract": [new Date(), {
                                                                                                 "$toDate": "$dob"
                                                                                             }]
                                                                                         }, 31536000000]
@@ -2653,7 +2653,7 @@ export class AdsService {
                                                                             "then": {
                                                                                 "$toInt": {
                                                                                     "$divide": [{
-                                                                                        "$subtract": ["2023-07-11T10:05:23.666Z", {
+                                                                                        "$subtract": [new Date(), {
                                                                                             "$toDate": "$dob"
                                                                                         }]
                                                                                     }, 31536000000]
@@ -3124,9 +3124,165 @@ export class AdsService {
                 $project: {
                     _id:0,
                     adsDetail:{
-                        "_id": "$_id",
-                        "name": "$name",
-                        "campaignId": "$campaignId"
+                        _id: "$_id",
+                        name: "$name",
+                        campaignId: "$campaignId",
+                        description: "$description",
+                        typeAdsID: "$typeAdsID",
+                        typeAdsIDName: {
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
+                                },
+                                "in": "$$tmp.nameType"
+                            }
+                        },
+                        liveAt: "$liveAt",
+                        liveEnd: "$liveEnd",
+                        urlLink: "$liveAt",
+                        tayang: "$tayang",
+                        status: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: { $eq: ['$status', 'DRAFT'] },
+                                        then: 'DRAFT',
+                                    },
+                                    {
+                                        case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
+                                        then: 'IN_ACTIVE',
+                                    },
+                                    {
+                                        case: { $or: [{ $eq: ['$status', 'APPROVE'] }, { $eq: ['$status', 'ACTIVE'] }] },
+                                        then: 'ACTIVE',
+                                    },
+                                    {
+                                        case: { $eq: ['$status', 'UNDER_REVIEW'] },
+                                        then: 'UNDER_REVIEW',
+                                    },
+
+                                ],
+                                default: "OTHER",
+
+                            },
+
+                        },
+                        remark: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: { $eq: ['$status', 'DRAFT'] },
+                                        then: "Kredit tidak mencukupi",
+                                    },
+                                    {
+                                        case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
+                                        then: {
+                                            $cond:
+                                            {
+                                                if:
+                                                {
+                                                    "$eq": ["$description", 'ADS REJECTED']
+                                                },
+                                                then: 'Iklan ditolak, kredit dikembalikan ke saldo Anda',
+                                                else: 'Iklan sudah selesai'
+                                            }
+                                        },
+                                    },
+                                    {
+                                        case: { $or: [{ $eq: ['$status', 'APPROVE'] }, { $eq: ['$status', 'ACTIVE'] }] },
+                                        then: {
+                                            $cond:
+                                            {
+                                                if: {
+                                                    $lte: [{
+                                                        $toDate: "$liveAt"
+                                                    }, "$date_now"]
+                                                },
+                                                then: 'Iklan sedang tayang',
+                                                else: 'Sedang menunggu penayangan'
+                                            }
+                                        },
+                                    },
+                                    {
+                                        case: { $eq: ['$status', 'UNDER_REVIEW'] },
+                                        then: 'Sedang ditinjau oleh Hyppe',
+                                    },
+
+                                ],
+                                default: "OTHER",
+
+                            },
+
+                        },
+                        dayAds: "$dayAds", 
+                        credit: "$credit",
+                        audiensFrekuensi: "$audiensFrekuensi",
+                        adsObjectivitasId: "$adsObjectivitasId",
+                        objectivitasIdNameId: {
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$adsobjectivitas_data", 0] },
+                                },
+                                "in": "$$tmp.name_id"
+                            }
+                        },
+                        objectivitasIdNameEn: {
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$adsobjectivitas_data", 0] },
+                                },
+                                "in": "$$tmp.name_en"
+                            }
+                        }, 
+                        idApsara: "$idApsara",
+                    },
+                    summary: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userads", 0] },
+                            },
+                            "in": "$$tmp.summary"
+                        }
+                    },
+                    saldoKredit: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userads", 0] },
+                            },
+                            "in": "$$tmp.saldoKredit"
+                        }
+                    },
+                    userAdsAge: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userads", 0] },
+                            },
+                            "in": "$$tmp.userAdsAge"
+                        }
+                    },
+                    userAdsGender: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userads", 0] },
+                            },
+                            "in": "$$tmp.userAdsGender"
+                        }
+                    },
+                    userAdsArea: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userads", 0] },
+                            },
+                            "in": "$$tmp.userAdsArea"
+                        }
+                    },
+                    userAdsInterest: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userads", 0] },
+                            },
+                            "in": "$$tmp.userAdsInterest"
+                        }
                     }
                 }
             }
