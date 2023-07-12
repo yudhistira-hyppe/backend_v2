@@ -1082,6 +1082,7 @@ export class AdsController {
                 }
             }
 
+            data_response['placingID'] = data_ads[0].placingID.toString();
             var dataPlace = await this.adsplacesService.findOne(data_ads[0].placingID.toString());
             if (await this.utilsService.ceckData(dataPlace)) {
                 data_response['adsPlace'] = dataPlace.namePlace;

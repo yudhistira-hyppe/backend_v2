@@ -5159,7 +5159,8 @@ export class AdsService {
                 $match:{
                     typeAdsID: new mongoose.Types.ObjectId(idTypeAds),
                 }
-            }
+            },
+            { $limit: 1 }
         ]);
         return query;
     }
