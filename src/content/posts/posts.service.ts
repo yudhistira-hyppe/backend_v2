@@ -49584,54 +49584,47 @@ export class PostsService {
               }
             },
             {
-              "$unwind":
-              {
-                path:"$userBadge"
-              }
-            },
-            {
-              "$match":
-              {
-                "$and":
-                [
-                    {
-                      "$expr":
-                      {
-                        "$eq":
-                        [
-                          "$userBadge.isActive", true
-                        ]
-                      }
-                    },
-                    {
-                      "$expr":
-                      {
-                        "$lte":
-                        [
-                          {
-                            "$dateToString": {
-                              "format": "%Y-%m-%d %H:%M:%S",
-                              "date": {
-                                $add: [new Date(), 25200000]
-                              }
-                            }
-                          },
-                          "$userBadge.endDatetime",
-                        ]
-                      }
-                    }
-                ]
-              }
-            },
-            {
                   $project: {
                   "fullName": 1,
                   "profilePict": 1,
                   "isCelebrity": 1,
                   "isIdVerified": 1,
                   "isPrivate": 1,
-                  "urluserBadge":"$userBadge"
-                  },
+                  "urluserBadge":
+                  {
+                    "$filter":
+                    {
+                      input:"$userBadge",
+                      as:"listuserbadge",
+                      cond:
+                      {
+                        "$and":
+                        [  
+                          {
+                            "$eq":
+                            [
+                              "$$listuserbadge.isActive", true
+                            ]
+                          },
+                          {
+                            "$lte":
+                            [
+                              {
+                                "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                    $add: [new Date(), 25200000]
+                                  }
+                                }
+                              },
+                              "$$listuserbadge.endDatetime",
+                            ]
+                          }
+                        ]
+                      },
+                    }
+                  }
+                },
             },
           ],
 
@@ -49739,7 +49732,13 @@ export class PostsService {
           },
           "urluserBadge":
           {
-            "$arrayElemAt":["$userBasic.urluserBadge", 0]
+            "$ifNull":
+            [
+              {
+                "$arrayElemAt":["$userBasic.urluserBadge", 0]
+              },
+              null
+            ]
           },
           "statusCB": 1,
           "mediaEndpoint": 1,
