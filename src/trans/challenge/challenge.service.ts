@@ -1855,75 +1855,150 @@ export class ChallengeService {
     return query[0];
   }
 
-  async findlistingBanner(targetbanner: string, page: number): Promise<Challenge[]> {
+  async findlistingBanner(targetbanner: string, jenischallenge: string, page: number): Promise<Challenge[]> {
     var pipeline = [];
-    pipeline.push({
-      "$set": {
-        "timenow": {
-          "$dateToString": {
-            "format": "%Y-%m-%d %H:%M:%S",
-            "date": {
-              "$add": [
-                new Date(),
-                25200000
-              ]
+    pipeline.push(
+      {
+          "$set": {
+          "timenow": {
+            "$dateToString": {
+              "format": "%Y-%m-%d %H:%M:%S",
+              "date": {
+                "$add": [
+                  new Date(),
+                  25200000
+                ]
+              }
             }
           }
         }
       }
-    },
+    );
+  
+  if(jenischallenge != undefined && jenischallenge != null)
+  {
+    var mongo = require('mongoose');
+    var konvertchallenge = mongo.Types.ObjectId(jenischallenge);
+    pipeline.push(
+    {
+      "$match":
       {
-        "$match":
-        {
-          "$and":
-            [
+        "$and":
+          [
+            // {
+            //   "$expr":
+            //   {
+            //     "$lte":
+            //       [
+            //         {
+            //           "$concat":
+            //           [
+            //             "$startChallenge",
+            //             " ",
+            //             "$startTime"
+            //           ]
+            //         },
+            //         "$timenow"
+            //       ]
+            //   }
+            // },
+            {
+              "$expr":
               {
-                "$expr":
-                {
-                  "$lte":
-                    [
-                      {
-                        "$concat":
-                        [
-                          "$startChallenge",
-                          " ",
-                          "$startTime"
-                        ]
-                      },
-                      "$timenow"
-                    ]
-                }
-              },
-              {
-                "$expr":
-                {
-                  "$gte":
-                    [
-                      {
-                        "$concat":
-                        [
-                          "$endChallenge",
-                          " ",
-                          "$endTime"
-                        ]
-                      },
-                      "$timenow"
-                    ]
-                }
-              },
-              {
-                "$expr":
-                {
-                  "$eq":
-                    [
-                      "$statusChallenge",
-                      "PUBLISH"
-                    ]
-                }
+                "$gte":
+                  [
+                    {
+                      "$concat":
+                      [
+                        "$endChallenge",
+                        " ",
+                        "$endTime"
+                      ]
+                    },
+                    "$timenow"
+                  ]
               }
-            ]
-        }
-      });
+            },
+            {
+              "$expr":
+              {
+                "$eq":
+                  [
+                    "$statusChallenge",
+                    "PUBLISH"
+                  ]
+              }
+            },
+            {
+              "$expr":
+              {
+                "$eq":
+                  [
+                    "$jenisChallenge",
+                    konvertchallenge
+                  ]
+              }
+            }
+          ]
+      }
+    });
+  }
+  else
+  {
+    pipeline.push(
+    {
+      "$match":
+      {
+        "$and":
+          [
+            // {
+            //   "$expr":
+            //   {
+            //     "$lte":
+            //       [
+            //         {
+            //           "$concat":
+            //           [
+            //             "$startChallenge",
+            //             " ",
+            //             "$startTime"
+            //           ]
+            //         },
+            //         "$timenow"
+            //       ]
+            //   }
+            // },
+            {
+              "$expr":
+              {
+                "$gte":
+                  [
+                    {
+                      "$concat":
+                      [
+                        "$endChallenge",
+                        " ",
+                        "$endTime"
+                      ]
+                    },
+                    "$timenow"
+                  ]
+              }
+            },
+            {
+              "$expr":
+              {
+                "$eq":
+                  [
+                    "$statusChallenge",
+                    "PUBLISH"
+                  ]
+              }
+            }
+          ]
+      }
+    });
+  }
 
     var projectdata = {
       _id: 1,
@@ -2219,7 +2294,7 @@ export class ChallengeService {
     return query;
   }
 
-  async checkuserstatusjoin(iduser: string, page: number, limit: number) {
+  async checkuserstatusjoin(iduser: string, jenischallenge: string, page: number, limit: number) {
     var mongo = require('mongoose');
     var konvertid = mongo.Types.ObjectId(iduser);
     var pipeline = [];
@@ -2271,23 +2346,54 @@ export class ChallengeService {
                   }
               }
           }
-      },
-      {
-          $match: {
-              $and: [
+      });
+
+  if(jenischallenge != undefined && jenischallenge != null)
+  {
+    var mongo = require('mongoose');
+    var konvertjenischallenge = mongo.Types.ObjectId(jenischallenge);
+
+    pipeline.push({
+        $match: {
+            $and: [
+                {
+                  $expr: 
                   {
-                      $expr: 
-                      {
-                          $gte: ["$timeEnd", "$nowDate"]
-                      },
-                      
+                      $gte: ["$timeEnd", "$nowDate"]
                   },
-                  {
-                      "statusChallenge": "PUBLISH"
-                  }
-              ]
-          }
-      },
+                },
+                {
+                    "statusChallenge": "PUBLISH"
+                },
+                {
+                  "jenisChallenge":konvertjenischallenge
+                }
+            ]
+        }
+    });
+  }
+  else
+  {
+    pipeline.push(
+    {
+      $match: {
+            $and: [
+                {
+                    $expr: 
+                    {
+                        $gte: ["$timeEnd", "$nowDate"]
+                    },
+                    
+                },
+                {
+                    "statusChallenge": "PUBLISH"
+                }
+            ]
+        }
+    });
+  }
+
+  pipeline.push(
       {
           "$lookup": 
           {

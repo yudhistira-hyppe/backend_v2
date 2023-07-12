@@ -1231,6 +1231,7 @@ export class ChallengeController {
     var targetbanner = null;
     var page = null;
     var request_json = JSON.parse(JSON.stringify(request.body));
+    var jenischallenge = null;
 
     if (request_json["target"] !== undefined) {
       targetbanner = request_json['target'];
@@ -1244,11 +1245,15 @@ export class ChallengeController {
       throw new BadRequestException("Unabled to proceed, page field is required");
     }
 
+    if (request_json["jenischallenge"] !== undefined){
+      jenischallenge = request_json['jenischallenge'];
+    }
+
     const messages = {
       "info": ["The process successful"],
     };
 
-    var data = await this.challengeService.findlistingBanner(targetbanner, page);
+    var data = await this.challengeService.findlistingBanner(targetbanner, jenischallenge, page);
 
     return {
       response_code: 202,
@@ -1270,6 +1275,7 @@ export class ChallengeController {
     var iduser = null;
     var page = null;
     var limit = null;
+    var jenischallenge = null;
 
     var request_json = JSON.parse(JSON.stringify(request.body));
 
@@ -1291,8 +1297,12 @@ export class ChallengeController {
       throw new BadRequestException("Unabled to proceed, limit field is required");
     }
 
+    if(request_json["jenischallenge"] !== undefined)
+    {
+      jenischallenge = request_json['jenischallenge'];
+    }
 
-    var data = await this.challengeService.checkuserstatusjoin(iduser, page, limit);
+    var data = await this.challengeService.checkuserstatusjoin(iduser, jenischallenge, page, limit);
 
     const messages = {
       "info": ["The process successful"],
