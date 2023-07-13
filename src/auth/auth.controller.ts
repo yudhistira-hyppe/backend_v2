@@ -2353,40 +2353,10 @@ export class AuthController {
         let aNumPost = <any>numPost;
         Data.insight.posts = <Long>aNumPost;
 
-        var showresult = {};
-
-        var temp = data_userbasics.userBadge;
-
-        for(const keys in Data)
-        {
-          showresult[keys] = Data[keys];
-        }
-
-        var getbadge = null;
-        if(temp.length != 0)
-        {
-          for(var i = 0; i < temp.length; i++)
-          {
-            var getstatus = temp[i].isActive;
-            var getfromdb = new Date(temp[i].endDatetime);
-            getfromdb.setHours(getfromdb.getHours() + 7);
-            var convertnow = new Date();
-            convertnow.setHours(convertnow.getHours() + 7);
-            var datediff = getfromdb.getTime() - convertnow.getTime();
-            if (getstatus == true && datediff >= 0) 
-            {
-              getbadge = temp[i];
-              break;
-            }
-          }
-        }
-
-        showresult['urluserBadge'] = getbadge;
 
         return {
           "response_code": 202,
-          // "data": [Data],
-          "data": [showresult],
+          "data": [Data],
           "messages": {
             "info": [
               "The process successful"

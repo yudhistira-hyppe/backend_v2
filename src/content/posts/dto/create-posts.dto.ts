@@ -104,6 +104,7 @@ export class TagPeople {
     email: string;
     username: string;
     status: string;
+    urluserBadge: any[];
 }
 
 export class PostData {
