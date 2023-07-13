@@ -1093,6 +1093,8 @@ export class DisqusController {
     }
     if (profile.urluserBadge != undefined) {
       retVal.urluserBadge = profile.urluserBadge;
+    } else {
+      retVal.urluserBadge = [];
     }
 
 
@@ -1106,6 +1108,11 @@ export class DisqusController {
     }
     if (profile_mate.avatar != undefined) {
       mateInfo['avatar'] = profile_mate.avatar;
+    }
+    if (profile_mate.urluserBadge != undefined) {
+      mateInfo['urluserBadge'] = profile_mate.urluserBadge;
+    } else {
+      mateInfo['urluserBadge'] = [];
     }
     mateInfo['email'] = dis.mate;
     retVal.mate = mateInfo;
