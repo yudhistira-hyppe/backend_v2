@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { PostContentService } from '../../../content/posts/postcontent.service';
 import { AccountbalancesService } from '../../../trans/accountbalances/accountbalances.service';
 import { UserAdsService } from '../../../trans/userads/userads.service';
+import { OssContentPictService } from '../../../content/posts/osscontentpict.service';
 
 @Injectable()
 export class AdsService { 
@@ -22,6 +23,7 @@ export class AdsService {
         private readonly adsBalaceCreditService: AdsBalaceCreditService, 
         private readonly AccountbalancesService: AccountbalancesService,
         private readonly userAdsService: UserAdsService, 
+        private readonly ossContentPictService: OssContentPictService,
     ) { }
 
     async create(AdsDto_: AdsDto): Promise<Ads> {
@@ -5148,6 +5150,12 @@ export class AdsService {
                     scoreKelamin: 1,
                     scoreMinat: 1,
                     scoreGeografis: 1,
+                    mediaBasePath: 1,
+                    mediaUri: 1,
+                    mediaThumBasePath: 1,
+                    mediaThumUri: 1,
+                    width: 1,
+                    height: 1,
                     scoreTotal: 1,
                     isValid: 1,
                     objectivitasId: "$objectivitas.name_id",
@@ -5163,5 +5171,10 @@ export class AdsService {
             { $limit: 1 }
         ]);
         return query;
+    }
+
+    async uploadOss(buffer: Buffer, path: string) {
+        var result = await this.ossContentPictService.uploadFileBuffer(buffer, path);
+        return result;
     }
 }

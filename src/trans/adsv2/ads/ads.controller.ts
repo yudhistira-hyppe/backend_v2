@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Headers, Get, Param, HttpStatus, Post, UseGuards, Logger, Query } from '@nestjs/common';
+import { Body, Controller, HttpCode, Headers, Get, Param, HttpStatus, Post, UseGuards, Logger, Query, UseInterceptors, UploadedFile, Res } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { AdsDto } from './dto/ads.dto';
 import { UtilsService } from '../../../utils/utils.service';
@@ -18,6 +18,9 @@ import { MediaprofilepictsService } from '../../../content/mediaprofilepicts/med
 import { AdsplacesService } from '../../../trans/adsplaces/adsplaces.service';
 import { AdstypesService } from '../../../trans/adstypes/adstypes.service';
 import { PostContentService } from '../../../content/posts/postcontent.service';
+import { FileInterceptor } from '@nestjs/platform-express/multer';
+import { OssContentPictService } from '../../../content/posts/osscontentpict.service';
+const sharp = require('sharp');
 
 @Controller('api/adsv2/ads')
 export class AdsController {
@@ -36,8 +39,118 @@ export class AdsController {
         private adstypesService: AdstypesService,
         private adsplacesService: AdsplacesService,
         private mediaprofilepictsService: MediaprofilepictsService,
+        private readonly ossContentPictService: OssContentPictService, 
         private readonly adsService: AdsService) {
         this.locks = new Map();
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/image/upload')
+    @HttpCode(HttpStatus.ACCEPTED)
+    @UseInterceptors(FileInterceptor('imageAds'))
+    async imageAdsUpload(@UploadedFile() file: Express.Multer.File, @Headers() headers) {
+        if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unauthorized',
+            );
+        }
+
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed email header dan token not match',
+            );
+        }
+
+        if (file != undefined) {
+            var SIZE_IMAGE_RESIZE = this.configService.get("SIZE_IMAGE_RESIZE");
+
+            var image_information = await sharp(file.buffer).metadata();
+            console.log("IMAGE INFORMATION", image_information);
+
+            var image_height = image_information.height;
+            var image_width = image_information.width;
+            var image_size = image_information.size;
+            var image_format = image_information.format;
+            var image_orientation = image_information.orientation;
+            console.log(image_information);
+
+            //Get Image Mode
+            var image_mode = await this.utilsService.getImageMode(image_width, image_height);
+            console.log("IMAGE MODE", image_mode);
+
+            //Get Ceck Mode
+            var New_height = 0;
+            var New_width = 0;
+            if (image_mode == "LANDSCAPE") {
+                if (image_width > SIZE_IMAGE_RESIZE) {
+                    New_height = await this.utilsService.getHeight(image_width, image_height, SIZE_IMAGE_RESIZE);
+                    New_width = SIZE_IMAGE_RESIZE;
+                } else {
+                    New_height = image_height;
+                    New_width = image_width;
+                }
+            } else if (image_mode == "POTRET") {
+                if (image_height > SIZE_IMAGE_RESIZE) {
+                    New_width = await this.utilsService.getWidth(image_width, image_height, SIZE_IMAGE_RESIZE);
+                    New_height = SIZE_IMAGE_RESIZE;
+                } else {
+                    New_height = image_height;
+                    New_width = image_width;
+                }
+            }
+
+            var id = new mongoose.Types.ObjectId();
+            var extension = "jpg";
+
+            var filename = id + "." + extension;
+            var filename_thum = id + "_thum." + extension;
+            var filename_original = id + "_original." + extension;
+
+            var path_file = "ads/" + id + "/" + filename;
+            var path_file_thumb = "ads/" + id + "/" + filename_thum;
+            var path_file_original = "ads/" + id + "/" + filename_original;
+
+            var file_upload = await this.postContentService.generate_upload(file, "jpg");
+            var file_thumnail = await this.postContentService.generate_thumnail(file, "jpg");
+
+            var upload_file_upload = await this.adsService.uploadOss(file_upload, path_file);
+            var upload_file_thumnail = await this.adsService.uploadOss(file_thumnail, path_file_thumb);
+            this.adsService.uploadOss(file_thumnail, path_file_original);
+
+            var url_filename = "";
+            var url_filename_thum = "";
+
+            if (upload_file_upload != undefined) {
+                if (upload_file_upload.res != undefined) {
+                    if (upload_file_upload.res.statusCode != undefined) {
+                        if (upload_file_upload.res.statusCode == 200) {
+                            url_filename = upload_file_upload.res.requestUrls[0];
+                        }
+                    }
+                }
+            }
+
+            if (upload_file_thumnail != undefined) {
+                if (upload_file_thumnail.res != undefined) {
+                    if (upload_file_thumnail.res.statusCode != undefined) {
+                        if (upload_file_thumnail.res.statusCode == 200) {
+                            url_filename_thum = upload_file_thumnail.res.requestUrls[0];
+                        }
+                    }
+                }
+            }
+
+            return await this.errorHandler.generateAcceptResponseCodeWithData(
+                "succesfully ", {
+                    mediaBasePath: path_file,
+                    mediaUri: url_filename,
+                    mediaThumBasePath: path_file_thumb,
+                    mediaThumUri: url_filename_thum,
+                    height: New_height,
+                    width: New_width
+                }
+            ); 
+        }
     }
 
     @UseGuards(JwtAuthGuard)
@@ -1093,6 +1206,12 @@ export class AdsController {
             data_response['mediaType'] = data_ads[0].type;
             data_response['videoId'] = data_ads[0].idApsara;
             data_response['duration'] = data_ads[0].duration;
+            data_response['mediaBasePath'] = data_ads[0].mediaBasePath;
+            data_response['mediaUri'] = data_ads[0].mediaUri;
+            data_response['mediaThumBasePath'] = data_ads[0].mediaThumBasePath;
+            data_response['mediaThumUri'] = data_ads[0].mediaThumUri;
+            data_response['width'] = data_ads[0].width;
+            data_response['height'] = data_ads[0].height;
             this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, The process successfuly : " + JSON.stringify(data_response));
 
             return {
@@ -1109,5 +1228,125 @@ export class AdsController {
                 'Unabled to proceed Ads not found'
             );
         }  
+    }
+
+    @Get('image/read/:id')
+    @HttpCode(HttpStatus.OK)
+    async imageRead(
+        @Param('id') id: string,
+        @Query('x-auth-token') token: string,
+        @Query('x-auth-user') email: string, @Res() response) {
+        if ((id != undefined) && (token != undefined) && (email != undefined)) {
+            if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+                var dataAds = await this.adsService.findOne(id);
+                if (await this.utilsService.ceckData(dataAds)) {
+                    if (dataAds.mediaBasePath != undefined) {
+                        var data = await this.ossContentPictService.readFile(dataAds.mediaBasePath);
+                        if (data != null) {
+                            response.set("Content-Type", "image/jpeg");
+                            response.send(data);
+                        } else {
+                            response.send(null);
+                        }
+                    } else {
+                        response.send(null);
+                    }
+                } else {
+                    response.send(null);
+                }
+            } else {
+                response.send(null);
+            }
+        } else {
+            response.send(null);
+        }
+    }
+
+    @Get('image/thumb/read/:id')
+    @HttpCode(HttpStatus.OK)
+    async imageThumbRead(
+        @Param('id') id: string,
+        @Query('x-auth-token') token: string,
+        @Query('x-auth-user') email: string, @Res() response) {
+        if ((id != undefined) && (token != undefined) && (email != undefined)) {
+            if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+                var dataAds = await this.adsService.findOne(id);
+                if (await this.utilsService.ceckData(dataAds)) {
+                    if (dataAds.mediaThumBasePath != undefined) {
+                        var data = await this.ossContentPictService.readFile(dataAds.mediaThumBasePath);
+                        if (data != null) {
+                            response.set("Content-Type", "image/jpeg");
+                            response.send(data);
+                        } else {
+                            response.send(null);
+                        }
+                    } else {
+                        response.send(null);
+                    }
+                } else {
+                    response.send(null);
+                }
+            } else {
+                response.send(null);
+            }
+        } else {
+            response.send(null);
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('/interest/get')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async getInterest(@Headers() headers): Promise<any> {
+        if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unauthorized',
+            );
+        }
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed email header dan token not match',
+            );
+        }
+
+        try {
+            var data = await this.userbasicsService.findTopFive("INTEREST");
+
+            return await this.errorHandler.generateAcceptResponseCodeWithData(
+                "Get interest succesfully", data
+            );
+        } catch (e) {
+            await this.errorHandler.generateInternalServerErrorException(
+                'Unabled to proceed, ERROR ' + e,
+            );
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('/location/get')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async getLocation(@Headers() headers): Promise<any> {
+        if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unauthorized',
+            );
+        }
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed email header dan token not match',
+            );
+        }
+
+        try {
+            var data = await this.userbasicsService.findTopFive("LOCATION");
+
+            return await this.errorHandler.generateAcceptResponseCodeWithData(
+                "Get location succesfully", data
+            );
+        } catch (e) {
+            await this.errorHandler.generateInternalServerErrorException(
+                'Unabled to proceed, ERROR ' + e,
+            );
+        }
     }
 }
