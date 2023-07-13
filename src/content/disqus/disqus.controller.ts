@@ -41,7 +41,7 @@ export class DisqusController {
     private readonly disqusService: DisqusService,
     private readonly disqusLogService: DisquslogsService,
     private readonly insightsService: InsightsService,
-    private readonly contenteventsService: ContenteventsService, 
+    private readonly contenteventsService: ContenteventsService,
     private readonly userauthsService: UserauthsService,
     private readonly errorHandler: ErrorHandler) { }
 
@@ -67,7 +67,7 @@ export class DisqusController {
   }
 
   @Post('posts/disqus/test/test')
-  async getDiscusLog(){
+  async getDiscusLog() {
     return await this.DisqusService.getTest("daseho@getnada.com");
   }
 
@@ -75,13 +75,13 @@ export class DisqusController {
   @HttpCode(HttpStatus.ACCEPTED)
   @FormDataRequest()
   @Post('posts/disqus')
-  async disqus(@Headers() headers, @Body() ContentDto_: ContentDto, ) {
+  async disqus(@Headers() headers, @Body() ContentDto_: ContentDto,) {
     console.log('>>>>>>>>>> HEADER <<<<<<<<<<', JSON.stringify(headers))
     console.log('>>>>>>>>>> CONTENT DTO <<<<<<<<<<', JSON.stringify(ContentDto_))
     var email_header = headers['x-auth-user'];
     let type = "";
     let isQuery = 'false';
-    let res = new DisqusResponseApps();    
+    let res = new DisqusResponseApps();
 
     if (ContentDto_.eventType == undefined) {
       await this.errorHandler.generateNotAcceptableException('Unabled to proceed eventType is required',);
@@ -93,7 +93,7 @@ export class DisqusController {
       var isValid = false;
       isQuery = String(ContentDto_.isQuery);
       console.log("processDisqus >>> event: " + ContentDto_.eventType + " with isQuery: " + isQuery);
-      if (isQuery == undefined || isQuery == 'false'){
+      if (isQuery == undefined || isQuery == 'false') {
         if (type == "DIRECT_MSG") {
 
           let xres = await this.buildDisqus(ContentDto_, true);
@@ -114,21 +114,21 @@ export class DisqusController {
           //  if (retVal[retValCount].room != undefined) {
           //    var roomName = retVal[retValCount].room;
           //  }
-            // String roomName = AppUtils.getAsStr(it, QueryEnum.ROOM_FLD.getName());
-            //var roomName = retVal[retValCount].room;
+          // String roomName = AppUtils.getAsStr(it, QueryEnum.ROOM_FLD.getName());
+          //var roomName = retVal[retValCount].room;
           //}
-        } else if ((type == "COMMENT") && (ContentDto_.postID!=undefined)) {
+        } else if ((type == "COMMENT") && (ContentDto_.postID != undefined)) {
           console.log("Payload Insert Comment >>>>>> : ", ContentDto_);
-          if (ContentDto_.email==undefined){
+          if (ContentDto_.email == undefined) {
             ContentDto_.email = email_header;
-          } 
+          }
           if (ContentDto_.postID != undefined) {
             var Posts_ = new Posts();
             Posts_ = await this.postDisqusService.findid(ContentDto_.postID.toString());
             ContentDto_.receiverParty = Posts_.email;
             ContentDto_.postType = Posts_.postType;
           }
-          if (ContentDto_.tagComment!=undefined){
+          if (ContentDto_.tagComment != undefined) {
             var _tagComment_ = ContentDto_.tagComment;
             ContentDto_.tagComment_ = _tagComment_.toString().split(',').map(function (n) {
               return n.toString();
@@ -136,8 +136,8 @@ export class DisqusController {
           }
           let xres = await this.buildComments(ContentDto_, true);
           if (ContentDto_.tagComment != undefined) {
-            if (ContentDto_.tagComment_.length>0){
-              for (var n = 0; n < ContentDto_.tagComment_.length;n++){
+            if (ContentDto_.tagComment_.length > 0) {
+              for (var n = 0; n < ContentDto_.tagComment_.length; n++) {
                 var userAuth = await this.userauthsService.findByUsername(ContentDto_.tagComment_[n]);
                 if (await this.utilsService.ceckData(userAuth)) {
                   var UserEmail = userAuth.email.toString();
@@ -170,11 +170,11 @@ export class DisqusController {
           res.data = [xres];
           return res;
         }
-      }else{
+      } else {
         if (type == "DIRECT_MSG") {
-          
+
           console.log("processDisqus >>> DIRECT_MSG: ", String(ContentDto_.email));
-          let tmp : DisqusResDto[] = [];
+          let tmp: DisqusResDto[] = [];
 
           let dm = [];
           if (ContentDto_.disqusID != undefined) {
@@ -194,16 +194,16 @@ export class DisqusController {
               let o = dm[i];
               if (o.emot != undefined && o.emot.length > 0) {
                 for (let x = 0; x < o.disqusLogs.length; x++) {
-                  let dl = o.disqusLogs[x]; 
+                  let dl = o.disqusLogs[x];
                   if (dl.reactionUri != undefined) {
                     for (let y = 0; y < o.emot.length; y++) {
                       if (dl.reactionUri == o.emot[y].URL) {
-                        if (o.disqusLogs[x].medias !=undefined){
-                          if (o.disqusLogs[x].medias.length>0) {
+                        if (o.disqusLogs[x].medias != undefined) {
+                          if (o.disqusLogs[x].medias.length > 0) {
                             if (o.disqusLogs[x].medias.length > 0) {
-                              if (o.disqusLogs[x].medias[0] != undefined){
+                              if (o.disqusLogs[x].medias[0] != undefined) {
                                 if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
-                                  if (o.disqusLogs[x].medias[0].mediaType != undefined){
+                                  if (o.disqusLogs[x].medias[0].mediaType != undefined) {
                                     if (o.disqusLogs[x].medias[0].mediaType == 'image') {
                                       ApsaraArrayImage.push((o.disqusLogs[x].medias[0].apsaraId));
                                     } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
@@ -450,7 +450,7 @@ export class DisqusController {
     var Posts_ = new Posts();
     Posts_ = await this.postDisqusService.findid(inDto.postID.toString());
     if ((await this.utilsService.ceckData(Posts_))) {
-      if (Posts_.active && Posts_.allowComments){
+      if (Posts_.active && Posts_.allowComments) {
         var disqus = new CreateDisqusDto();
         var disqus_ = new CreateDisqusDto();
         disqus_ = await this.disqusService.findDisqusByPost_(Posts_.postID.toString(), "COMMENT");
@@ -463,22 +463,22 @@ export class DisqusController {
           disqus.eventType = inDto.eventType;
           disqus.email = inDto.receiverParty;
           disqus.mate = inDto.email;
-          disqus.active = true; 
+          disqus.active = true;
           disqus.createdAt = current_date;
           disqus.updatedAt = current_date;
           disqus._class = "io.melody.hyppe.content.domain.Disqus";
-          if (disqus.email!=undefined){
+          if (disqus.email != undefined) {
             if (disqus.email == "") {
               disqus.email = Posts_.email;
             }
           }
-        }else{
+        } else {
           disqus = disqus_;
         }
 
         inDto.postContent = Posts_;
         inDto.postID = Posts_.postID;
-        disqus.postID = Posts_.postID; 
+        disqus.postID = Posts_.postID;
         disqus.mate = null;
         if (buildInteractive) {
           var contentDto = new ContentDto();
@@ -492,7 +492,7 @@ export class DisqusController {
         }
 
         var parentLog = new CreateDisquslogsDto();
-        if (inDto.parentID!=undefined){
+        if (inDto.parentID != undefined) {
           if (inDto.parentID != "") {
             parentLog = await this.disqusLogService.findDisqusLogByParentID(inDto.parentID.toString());
           }
@@ -504,9 +504,9 @@ export class DisqusController {
           if (inDto.parentID != "") {
             console.log("'' parentID");
             var disqusLog_new = new CreateDisquslogsDto();
-            disqusLog_new._id = await this.utilsService.generateId(); 
+            disqusLog_new._id = await this.utilsService.generateId();
             disqusLog_new.disqusID = disqus.disqusID;
-            disqusLog_new.sequenceNumber = Number(parentLog.sequenceNumber)+1;
+            disqusLog_new.sequenceNumber = Number(parentLog.sequenceNumber) + 1;
             disqusLog_new.active = true;
             disqusLog_new.createdAt = current_date;
             disqusLog_new.updatedAt = current_date;
@@ -517,7 +517,7 @@ export class DisqusController {
             disqusLog_new.txtMessages = inDto.txtMessages;
             disqusLog_new.reactionUri = inDto.reactionUri;
             disqusLog_new._class = "io.melody.hyppe.content.domain.DisqusLog";
-            if (await this.utilsService.ceckData(inDto.postContent)){
+            if (await this.utilsService.ceckData(inDto.postContent)) {
               disqusLog_new.postID = inDto.postContent.postID;
               console.log("findOnepostID start");
               var media = await this.postDisqusService.findOnepostID2(inDto.postContent.postID.toString());
@@ -584,7 +584,7 @@ export class DisqusController {
           } else {
             console.log("not '' parentID");
             var disqusLog_new = new CreateDisquslogsDto();
-            disqusLog_new._id = await this.utilsService.generateId(); 
+            disqusLog_new._id = await this.utilsService.generateId();
             disqusLog_new.disqusID = disqus.disqusID;
             disqusLog_new.sender = inDto.email;
             disqusLog_new.sequenceNumber = 0;
@@ -744,7 +744,7 @@ export class DisqusController {
 
         if (parentLog._id != undefined) {
           var createDisquslogsDto_ = new CreateDisquslogsDto();
-          if (parentLog.replyLogs != undefined){
+          if (parentLog.replyLogs != undefined) {
             if (parentLog.replyLogs != null) {
               var data_replyLogs = parentLog.replyLogs;
               data_replyLogs.push({
@@ -762,7 +762,7 @@ export class DisqusController {
                 }
               ]
             }
-          }else{
+          } else {
             createDisquslogsDto_.replyLogs = [
               {
                 $ref: 'disquslogs',
@@ -771,17 +771,17 @@ export class DisqusController {
               }
             ]
           }
-          await this.disqusLogService.update(parentLog._id.toString(),createDisquslogsDto_);
+          await this.disqusLogService.update(parentLog._id.toString(), createDisquslogsDto_);
         }
 
-        if (disqus.disqusLogs!=undefined){
+        if (disqus.disqusLogs != undefined) {
           const data_disqusLogs = disqus.disqusLogs;
           data_disqusLogs.push({
             $ref: 'disquslogs',
             $id: disqusLog._id.toString(),
             $db: 'hyppe_content_db',
           });
-        }else{
+        } else {
           disqus.disqusLogs = [{
             $ref: 'disquslogs',
             $id: disqusLog._id.toString(),
@@ -797,12 +797,12 @@ export class DisqusController {
       }
     }
     return retVal;
-  } 
-  
+  }
+
   private async aggrDetailDisqusLog(disqus: CreateDisqusDto, disqusLog: CreateDisquslogsDto) {
     var retVal = new DisqusResDto();
     let retLineVal: DisquslogsDto[] = [];
-    if (disqus.eventType =="COMMENT") {
+    if (disqus.eventType == "COMMENT") {
       retVal["postID"] = disqus.postID;
     } else {
       retVal["room"] = disqus.room;
@@ -815,12 +815,12 @@ export class DisqusController {
       retVal["username"] = username_.username;
       retVal["fullName"] = fullName_.fullName;
       retVal["isIdVerified"] = fullName_.isIdVerified;
-      if (avatar_ != null){
+      if (avatar_ != null) {
         retVal["avatar"] = avatar_;
       }
     }
     retVal["email"] = disqus.email;
-    if (disqus.mate!=undefined){
+    if (disqus.mate != undefined) {
       if (disqus.mate != "") {
         var mateInfo = {};
         // var mateProfile = await this.utilsService.generateProfile(disqus.mate.toString(), "FULL");
@@ -833,7 +833,7 @@ export class DisqusController {
           mateInfo["isIdVerified"] = fullName_mate.isIdVerified;
           if (avatar_mate != null) {
             mateInfo['avatar'] = avatar_mate;
-          } 
+          }
         }
         mateInfo['email'] = username_mate.email;
         retVal["mate"] = mateInfo;
@@ -843,7 +843,7 @@ export class DisqusController {
     var line = new DisquslogsDto();
     line["disqusID"] = disqusLog.disqusID;
     line["postType"] = disqusLog.postType;
-    if (disqusLog.postID!=undefined){
+    if (disqusLog.postID != undefined) {
       if (disqusLog.postID != "") {
         var Posts_ = new Posts();
         Posts_ = await this.postDisqusService.findid(disqusLog.postID.toString());
@@ -887,12 +887,12 @@ export class DisqusController {
 
   }
 
-  private async aggrDisqusLog(eventType: string, DisqusLog: CreateDisquslogsDto){
+  private async aggrDisqusLog(eventType: string, DisqusLog: CreateDisquslogsDto) {
     var retVal = {};
     retVal["disqusID"] = DisqusLog.disqusID;
     retVal["postType"] = DisqusLog.postType;
 
-    if ((DisqusLog.postID != undefined) && (eventType =="DIRECT_MSG")) {
+    if ((DisqusLog.postID != undefined) && (eventType == "DIRECT_MSG")) {
       var post = this.postDisqusService.findOnepostID(DisqusLog.postID.toString());
       retVal["content"] = post;
     }
@@ -908,7 +908,7 @@ export class DisqusController {
         mateInfo['fullName'] = profile_mate.fullName;
         if (profile_mate.avatar != null) {
           mateInfo['avatar'] = profile_mate.avatar;
-        } 
+        }
         retVal["senderInfo"] = mateInfo;
       }
     }
@@ -928,13 +928,13 @@ export class DisqusController {
     return retVal;
   }
 
-  private async aggrDisqusLogV2(eventType: string, DisqusLog: Disquslogs){
+  private async aggrDisqusLogV2(eventType: string, DisqusLog: Disquslogs) {
     var retVal = new DisquslogsDto();
     retVal._id = DisqusLog._id;
     retVal.disqusID = DisqusLog.disqusID;
     retVal.postType = DisqusLog.postType;
 
-    if ((DisqusLog.postID != undefined) && (eventType =="DIRECT_MSG")) {
+    if ((DisqusLog.postID != undefined) && (eventType == "DIRECT_MSG")) {
       var post = this.postDisqusService.findOnepostID(DisqusLog.postID.toString());
       //retVal.content = post;
     }
@@ -950,10 +950,10 @@ export class DisqusController {
         mateInfo['fullName'] = profile_mate.fullName;
         if (profile_mate.avatar != null) {
           mateInfo['avatar'] = profile_mate.avatar;
-        } 
+        }
         //retVal.senderInfo = mateInfo;
       }
-    }else{
+    } else {
       var profile_mate = await this.utilsService.generateProfile(DisqusLog.sender.toString(), 'PROFILE');
       if ((profile_mate != null)) {
         retVal.username = profile_mate.username;
@@ -973,7 +973,7 @@ export class DisqusController {
     // }
 
     return retVal;
-  }  
+  }
 
   private async buildDisqus(dto: ContentDto, buildInteractive: boolean) {
     let cts = await this.disquscontactsService.findByEmailAndMate(dto.email.toString(), dto.receiverParty.toString());
@@ -993,7 +993,7 @@ export class DisqusController {
       dis.mate = dto.receiverParty;
       dis.active = dto.active;
       dis.createdAt = await this.utilsService.getDateTimeString();
-      dis.updatedAt = await this.utilsService.getDateTimeString();      
+      dis.updatedAt = await this.utilsService.getDateTimeString();
     }
 
     if (dto.postID != undefined) {
@@ -1031,10 +1031,10 @@ export class DisqusController {
 
     let agg = await this.aggrDisqusLogV2(String(dto.eventType), dl);
     let retVal = new DisqusResDto();
-    let arr : DisquslogsDto[] = [];
+    let arr: DisquslogsDto[] = [];
     arr.push(agg);
     retVal.disqusLogs = arr;
-  
+
     var usp = { "$ref": "disquslogs", "$id": String(ndl._id), "$db": "hyppe_content_db" };
     let usparr = [];
     if (dis.disqusLogs != undefined) {
@@ -1082,7 +1082,7 @@ export class DisqusController {
     retVal.lastestMessage = dis.lastestMessage;
 
     var profile = await this.utilsService.generateProfile(String(dis.email), 'PROFILE');
-    if (profile.username!=undefined){
+    if (profile.username != undefined) {
       retVal.username = profile.username;
     }
     if (profile.fullName != undefined) {
@@ -1091,6 +1091,10 @@ export class DisqusController {
     if (profile.avatar != undefined) {
       retVal.avatar = profile.avatar;
     }
+    if (profile.urluserBadge != undefined) {
+      retVal.urluserBadge = profile.urluserBadge;
+    }
+
 
     var profile_mate = await this.utilsService.generateProfile(String(dis.mate), 'PROFILE');
     var mateInfo = {};
@@ -1129,9 +1133,9 @@ export class DisqusController {
   }
 
   private async buildDisqus0(ContentDto_: ContentDto, buildInteractive: boolean) {
-    var cts :Disquscontacts[] = [];
+    var cts: Disquscontacts[] = [];
     cts = await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
-    if (await this.utilsService.ceckData(cts)){
+    if (await this.utilsService.ceckData(cts)) {
       for (let i = 0; i < cts.length; i++) {
         let ct = cts[i];
 
@@ -1151,27 +1155,27 @@ export class DisqusController {
           Disqus_.createdAt = await this.utilsService.getDateTimeString();
           Disqus_.updatedAt = await this.utilsService.getDateTimeString();
         }
-        
+
         if (ContentDto_.postID != undefined) {
           var Posts_ = new Posts();
           Posts_ = await this.postDisqusService.findid(ContentDto_.postID.toString());
           if (await this.utilsService.ceckData(Posts_)) {
             ContentDto_.postContent = Posts_;
             ContentDto_.postType = Posts_.postType;
-            if (buildInteractive){
+            if (buildInteractive) {
               var _ContentDto_ = new ContentDto();
               _ContentDto_ = ContentDto_;
               _ContentDto_.eventType = "REACTION";
               _ContentDto_.postType = Posts_.postType;
               _ContentDto_.receiverParty = Posts_.email;
               _ContentDto_.reactionUri = ContentDto_.reactionUri;
-  
+
               // var InsightsDto_ = new InsightsDto();
               // InsightsDto_ = await this.validationEvent(ContentDto_);
               // await this.processInsightEvent(InsightsDto_);
             }
           }
-        }        
+        }
       }
 
     }
@@ -1213,7 +1217,7 @@ export class DisqusController {
 
     // var bodyin = new_bodyin_get;
     // var bodyen = new_bodyen_get;
-    
+
     // var eventType = type.toString();
     // var event = "ACCEPT";
     // await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event, postID, post_type);

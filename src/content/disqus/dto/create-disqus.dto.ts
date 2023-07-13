@@ -6,25 +6,25 @@ import { CreatePostsDto } from "src/content/posts/dto/create-posts.dto";
 import { AvatarDTO } from "src/utils/data/Profile";
 
 export class CreateDisqusDto {
-  
 
-     _id: String;
-     disqusID: String;
-     email: String;
-     mate: String;
-     eventType: String;
-     active: boolean;
-     room: String;
+
+  _id: String;
+  disqusID: String;
+  email: String;
+  mate: String;
+  eventType: String;
+  active: boolean;
+  room: String;
   createdAt: String;
   postID: String;
-    updatedAt: String;
-    lastestMessage: String;
-    emailActive: boolean; 
-    mateActive: boolean;
+  updatedAt: String;
+  lastestMessage: String;
+  emailActive: boolean;
+  mateActive: boolean;
   disqusLogs: any[];
   idtransaction: mongoose.Types.ObjectId;
-     _class:String;
-  }
+  _class: String;
+}
 
 export class ContentDto {
   email: String;
@@ -53,18 +53,18 @@ export class ContentDto {
   postType: String;
   postContent: CreatePostsDto;
   title: String;
-  description: String; 
+  description: String;
   isQuery: boolean;
   withDetail: boolean;
   detailOnly: boolean;
   pageRow: String;
   pageNumber: String;
-  mate: String; 
+  mate: String;
   disqus: Array<Object>;
 }
 
 export class DisqusDto {
-  
+
 
   _id: String;
   disqusID: String;
@@ -80,13 +80,13 @@ export class DisqusDto {
   fullName: String;
   avatar: AvatarDTO;
   senderOrReceiverInfo: {};
-  emailActive: boolean; 
+  emailActive: boolean;
   mateActive: boolean;
-  _class:String;
+  _class: String;
 }
 
 export class DisqusResDto {
-  
+
 
   _id: String;
   disqusID: String;
@@ -103,7 +103,7 @@ export class DisqusResDto {
   fullName: String;
   avatar: AvatarDTO;
   senderOrReceiverInfo: {};
-  emailActive: boolean; 
+  emailActive: boolean;
   mateActive: boolean;
   postId: string;
   postType: string;
@@ -111,6 +111,7 @@ export class DisqusResDto {
   disqusLogs: DisquslogsDto[];
   _class: String;
   type: String;
+  urluserBadge: any[]
 }
 
 export class Messages {
