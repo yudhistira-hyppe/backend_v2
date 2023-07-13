@@ -2713,34 +2713,30 @@ export class subChallengeService {
     async getListUserChallenge(idchallenge: string, iduser: string, status: string, session: number) {
         var pipeline = [];
 
-        pipeline.push(
-            {
-                $set: {
-                    "timenow":
-                    {
-                        "$dateToString": {
-                            "format": "%Y-%m-%d %H:%M:%S",
-                            "date": {
-                                $add: [
-                                    new Date(),
-                                    25200000
-                                ]
-                            }
+        pipeline.push({
+            $set: {
+                "timenow":
+                {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d %H:%M:%S",
+                        "date": {
+                            $add: [
+                                new Date(),
+                                25200000
+                            ]
                         }
                     }
                 }
-            },
+            }
+        },
             {
                 "$match":
                 {
                     "$and":
                         [
-                            // {
-                            //     challengeId: new Types.ObjectId(idchallenge)
-                            // },
-                            //{
-                            //		session:3	
-                            //}
+                            //                {
+                            //                    challengeId: ObjectId("6486f6d4b8ab34f61602f85a")
+                            //                },
                             {
                                 $expr:
                                 {
@@ -2827,7 +2823,7 @@ export class subChallengeService {
                                                             }
                                                         },
                                                         {
-                                                            idUser: new Types.ObjectId(iduser)
+                                                            idUser: new Types.ObjectId(iduser),
 
                                                         },
                                                         {
@@ -2865,7 +2861,7 @@ export class subChallengeService {
                             },
                             {
                                 $set: {
-                                    userID: new Types.ObjectId(iduser)
+                                    userID: new Types.ObjectId(iduser),
 
                                 }
                             },
@@ -3287,7 +3283,6 @@ export class subChallengeService {
                                                         idPost: "$postID",
                                                         type: "$posted.postType",
                                                         emails: "$$emails"
-
                                                     },
                                                     as: 'index',
                                                     pipeline:
@@ -3387,6 +3382,7 @@ export class subChallengeService {
                                 "$project":
                                 {
                                     postChallengess: "$postChallenges",
+                                    objectChallenge: "$challenges.objectChallenge",
                                     idUser: 1,
                                     score: 1,
                                     ranking: 1,
@@ -3487,51 +3483,6 @@ export class subChallengeService {
                                             default: "Anda Kurang Beruntung.. COBA LAGI !!!"
                                         }
                                     },
-                                    winnerBadgeOther:
-                                    {
-                                        "$switch":
-                                        {
-                                            branches:
-                                                [
-                                                    {
-                                                        case:
-                                                        {
-                                                            $eq: ["$ranking", 1]
-                                                        },
-                                                        then: {
-                                                            $arrayElemAt: [{
-                                                                $arrayElemAt: ["$challenges.winner1.badgeOther", 0]
-                                                            }, 0]
-                                                        }
-                                                    },
-                                                    {
-                                                        case:
-                                                        {
-                                                            $eq: ["$ranking", 2]
-                                                        },
-                                                        then: {
-                                                            $arrayElemAt: [{
-                                                                $arrayElemAt: ["$challenges.winner2.badgeOther", 0]
-                                                            }, 0]
-                                                        }
-                                                    },
-                                                    {
-                                                        case:
-                                                        {
-                                                            $eq: ["$ranking", 3]
-                                                        },
-                                                        then: {
-                                                            $arrayElemAt: [{
-                                                                $arrayElemAt: ["$challenges.winner3.badgeOther", 0]
-                                                            }, 0]
-                                                        }
-                                                    },
-
-                                                ],
-                                            default: "Anda Kurang Beruntung.. COBA LAGI !!!"
-                                        }
-                                    },
-
 
                                 }
                             },
@@ -3550,7 +3501,7 @@ export class subChallengeService {
                     from: "userbasics",
                     as: "joinUser",
                     let: {
-                        localID: new Types.ObjectId(iduser)
+                        localID: new Types.ObjectId(iduser),
 
                     },
                     pipeline: [
@@ -3576,7 +3527,7 @@ export class subChallengeService {
                     from: "challenge",
                     as: "peserta",
                     let: {
-                        localID: new Types.ObjectId(idchallenge)
+                        localID: new Types.ObjectId(idchallenge),
 
                     },
                     pipeline: [
@@ -4707,6 +4658,57 @@ export class subChallengeService {
 
             },
             {
+                "$lookup": {
+                    from: "subChallenge",
+                    as: "subChallenges",
+                    let: {
+                        localID: '$challengeId',
+
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        {
+                                            $eq: ["$challengeId", "$$localID"]
+                                        },
+
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $set:
+                            {
+                                bulan:
+                                {
+                                    $month: {
+                                        $toDate: "$startDatetime"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$bulan",
+                                "subChalange": {
+                                    $push: "$$ROOT"
+                                },
+
+                            }
+                        },
+                        {
+                            $sort: {
+                                _id: 1
+                            }
+                        },
+
+                    ],
+
+                }
+            },
+            {
                 $project:
                 {
                     "_id": 1,
@@ -4719,11 +4721,11 @@ export class subChallengeService {
                     "getlastrank": 1,
                     "status": 1,
                     "joined": 1,
-                    "challenge_data": 1
+                    "challenge_data": 1,
+                    "subChallenges": 1,
 
                 }
             },
-
         );
 
         if (status !== undefined) {
