@@ -50,5 +50,15 @@ export class UserAds {
     updateAt: String[];
     @Prop()
     clickTime: String[];
+    @Prop()
+    scoreAge: number;
+    @Prop()
+    scoreGender: number;
+    @Prop()
+    scoreInterest: number;
+    @Prop()
+    scoreGeografis: number;
+    @Prop()
+    scoreTotal: number;
 }
 export const UserAdsSchema = SchemaFactory.createForClass(UserAds);

@@ -3375,66 +3375,122 @@ export class AdsService {
         return query;
     }
 
-    async list(name_ads: string, start_date: any, end_date: any, type_ads: any[], plan_ads: any[], status_list: any[], page: number, limit: number, sorting: boolean) {
+    async list(userID: string, name_ads: string, start_date: any, end_date: any, type_ads: any[], plan_ads: any[], status_list: any[], page: number, limit: number, sorting: boolean) {
         var paramaggregate = [];
         var $match = {};
+        var andFilter = [];
         paramaggregate.push({ $addFields: { date_now: new Date() }});
-        $match["adsObjectivitasId"] = { $ne: null };
+        //$match["adsObjectivitasId"] = { $ne: null };
+        if (userID != undefined) {
+            andFilter.push({
+                userID: new mongoose.Types.ObjectId(userID)
+            });
+        }
+
+        andFilter.push({
+            adsObjectivitasId: { $ne: null }
+        });
         //------------FILTER DATE START END------------
         if (start_date != undefined && end_date != undefined) {
             start_date = new Date(start_date);
             end_date = new Date(end_date);
             end_date.setDate(end_date.getDate() + 1);
-            $match["liveAt"] = {
-                $gte: start_date.toISOString(),
-                $lte: end_date.toISOString()
-            };
+            // $match["liveAt"] = {
+            //     $gte: start_date.toISOString(),
+            //     $lte: end_date.toISOString()
+            // };
+            andFilter.push({
+                liveAt: {
+                    $gte: start_date.toISOString(),
+                    $lte: end_date.toISOString()
+                }
+            });
         }
         //------------FILTER NAME------------
         if (name_ads != undefined) {
-            $match["name"] = {
-                $regex: name_ads,
-                $options: "i"
-            };
+            // $match["name"] = {
+            //     $regex: name_ads,
+            //     $options: "i"
+            // };
+            andFilter.push({
+                name: {
+                    $regex: name_ads,
+                    $options: "i"
+                }
+            });
         }
         //------------FILTER TYPE ADS------------
         if (type_ads != undefined) {
             if (type_ads.length > 0) {
-                $match["typeAdsID"] = { $in: type_ads };
+                //$match["typeAdsID"] = { $in: type_ads };
+                andFilter.push({
+                    typeAdsID: { $in: type_ads }
+                });
             }
         }
         //------------FILTER TAYANG------------
         if (plan_ads != undefined){
-            if (plan_ads.length>0){
+            if (plan_ads.length > 0) {
+                var plan_adsFilter = [];
                 if (plan_ads.includes("show_smaller_than_50")) {
-                    $match["tayang"] = {
-                        $lt: 50
-                    }
+                    // $match["tayang"] = {
+                    //     $lt: 50
+                    // }
+                    plan_adsFilter.push({
+                        tayang: {
+                            $lt: 50
+                        }
+                    })
                 }
                 if (plan_ads.includes("show_50_smaller_than_90")) {
-                    $match["tayang"] = {
-                        $gte: 50, $lte: 99
-                    }
+                    // $match["tayang"] = {
+                    //     $gte: 50, $lte: 99
+                    // }
+                    plan_adsFilter.push({
+                        tayang: {
+                            $gte: 50, $lte: 99
+                        }
+                    })
                 }
                 if (plan_ads.includes("show_100_smaller_than_500")) {
-                    $match["tayang"] = {
-                        $gte: 100, $lte: 500
-                    }
+                    // $match["tayang"] = {
+                    //     $gte: 100, $lte: 500
+                    // }
+                    plan_adsFilter.push({
+                        tayang: {
+                            $gte: 100, $lte: 500
+                        }
+                    })
                 }
                 if (plan_ads.includes("show_greater_than_500")) {
-                    $match["tayang"] = {
-                        $gt: 500
-                    }
+                    // $match["tayang"] = {
+                    //     $gt: 500
+                    // }
+                    plan_adsFilter.push({
+                        tayang: {
+                            $gt: 500
+                        }
+                    })
                 }
+                andFilter.push({
+                    $or: plan_adsFilter
+                });
             }
         }
         //------------FILTER STATUS------------
         if (status_list != undefined) {
-            if (status_list.length > 0) {
-                $match["status"] = { $in: status_list };
-            }
+            // if (status_list.length > 0) {
+            //     $match["status"] = { $in: status_list };
+            // }
+            andFilter.push({
+                status: { $in: status_list }
+            });
         }
-        console.log($match);
+        $match["$and"] = andFilter;
+        if (andFilter.length > 0) {
+            paramaggregate.push({ $match });
+        }
+        //console.log($match);
         //------------PUSH MATCH------------
         paramaggregate.push({ $match });
         //------------FACET VIEWED------------
@@ -3917,8 +3973,9 @@ export class AdsService {
         return query;
     }
 
-    async list_reward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], page: number, limit: number, sorting: boolean) {
-        const getReward = await this.AccountbalancesService.getReward(name, start_date, end_date, gender, age, areas, page, limit, sorting);
+    async list_reward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], similarity: any[], page: number, limit: number, sorting: boolean) {
+        similarity
+        const getReward = await this.AccountbalancesService.getReward(name, start_date, end_date, gender, age, areas, similarity, page, limit, sorting);
         return getReward;
     }
 

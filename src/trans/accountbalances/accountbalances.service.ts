@@ -45,12 +45,21 @@ export class AccountbalancesService {
         return query;
     }
 
-    async getReward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], page: number, limit: number, sorting: boolean){
+    async getReward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], similarity: any[], page: number, limit: number, sorting: boolean){
         var paramaggregate = [];
         var $match = {};
 
-        $match["type"] = "rewards";
-        $match["idtrans"] = { $ne: null };
+        var andFilter = [];
+        andFilter.push({
+            type: "rewards"
+        },
+        {
+            idtrans: { $ne: null }
+        });
+
+        $match["$and"] = andFilter;
+        // $match["type"] = "rewards";
+        // $match["idtrans"] = { $ne: null };
         //------------FILTER DATE------------
         if (start_date != undefined && end_date != undefined) {
             start_date = new Date(start_date);
@@ -66,14 +75,20 @@ export class AccountbalancesService {
         //------------PUSH MATCH START------------
         paramaggregate.push({ $match });
 
-
-        $match = {};
+        var andFilter = [];
+        var $match = {};
         //------------FILTER NAME------------
         if (name != undefined) {
-            $match["username"] = {
-                $regex: name,
-                $options: "i"
-            };
+            // $match["username"] = {
+            //     $regex: name,
+            //     $options: "i"
+            // };
+            andFilter.push({
+                username: {
+                    $regex: name,
+                    $options: "i"
+                }
+            });
         }
         //------------FILTER GENDER------------
         if (gender != undefined ) {
@@ -91,38 +106,120 @@ export class AccountbalancesService {
                     console.log("OTHER TRUE", gender);
                     Array_Gender.push("Lainnya", null)
                 }
+                // $match["gender"] = {
+                //     $in: Array_Gender
+                // };
+                andFilter.push({
+                    gender: {
+                        $in: Array_Gender
+                    }
+                });
             }
-            console.log("Array_Gender", Array_Gender);
-            $match["gender"] = {
-                $in: Array_Gender
-            };
         }
         //------------FILTER GENDER------------
         if (age != undefined) {
             if (age.length > 0) {
+                var ageFilter = [];
                 if (age.includes("show_smaller_than_14")) {
-                    $match["age"] = $match["age"] = {
-                        $gt: 0, $lt: 14
-                    }
+                    ageFilter.push({
+                        age: {
+                            $gt: 0, $lt: 14
+                        }
+                    })
+                    // $match["age"] = {
+                    //     $gt: 0, $lt: 14
+                    // }
                 }
                 if (age.includes("show_14_smaller_than_28")) {
-                    $match["age"] = {
-                        $gte: 14, $lte: 28
-                    }
+                    ageFilter.push({
+                        age: {
+                            $gte: 14, $lte: 28
+                        }
+                    })
+                    // $match["age"] = {
+                    //     $gte: 14, $lte: 28
+                    // }
                 }
                 if (age.includes("show_29_smaller_than_43")) {
-                    $match["age"] = {
-                        $gte: 29, $lte: 43
-                    }
+                    ageFilter.push({
+                        age: {
+                            $gte: 29, $lte: 43
+                        }
+                    })
+                    // $match["age"] = {
+                    //     $gte: 29, $lte: 43
+                    // }
                 }
                 if (age.includes("show_greater_than_43")) {
-                    $match["age"] = {
-                        $gt: 43
-                    }
+                    ageFilter.push({
+                        age: {
+                            $gt: 43
+                        }
+                    })
+                    // $match["age"] = {
+                    //     $gt: 43
+                    // }
                 }
                 if (age.includes("other")) {
-                    $match["age"] = 0
+                    ageFilter.push({
+                        age: 0
+                    })
+                    //$match["age"] = 0
                 }
+                //$match["$or"] = ageFilter;
+                andFilter.push({
+                    $or: ageFilter
+                });
+            }
+        }
+        //------------FILTER SIMILARITY------------
+        if (similarity != undefined) {
+            if (similarity.length > 0) {
+                var similarityFilter = [];
+                if (similarity.includes("show_smaller_than_25")) {
+                    similarityFilter.push({
+                        commonality: {
+                            $lt: 25
+                        }
+                    })
+                    // $match["age"] = {
+                    //     $gt: 0, $lt: 14
+                    // }
+                }
+                if (age.includes("show_25_smaller_than_50")) {
+                    similarityFilter.push({
+                        commonality: {
+                            $gte: 25, $lt: 50
+                        }
+                    })
+                    // $match["age"] = {
+                    //     $gte: 14, $lte: 28
+                    // }
+                }
+                if (age.includes("show_50_smaller_than_75")) {
+                    similarityFilter.push({
+                        commonality: {
+                            $gte: 50, $lt: 75
+                        }
+                    })
+                    // $match["age"] = {
+                    //     $gte: 29, $lte: 43
+                    // }
+                }
+                if (age.includes("show_75_smaller_than_100")) {
+                    similarityFilter.push({
+                        commonality: {
+                            $gte: 75, $lte: 100
+                        }
+                    })
+                    // $match["age"] = {
+                    //     $gt: 43
+                    // }
+                }
+                //$match["$or"] = similarityFilter;
+                andFilter.push({
+                    $or: similarityFilter
+                });
             }
         }
         //------------FILTER AREA------------
@@ -131,9 +228,13 @@ export class AccountbalancesService {
                 var area = await Promise.all(areas.map(async (item, index) => {
                     return new mongoose.Types.ObjectId(item);
                 }))
-                $match["lokasiId"] = { $in: area };
+                //$match["lokasiId"] = { $in: area };
+                andFilter.push({
+                    lokasiId: { $in: area }
+                });
             }
         }
+        $match["$and"] = andFilter;
         //------------PUSH MATCH QUERY------------
         paramaggregate.push(
         {
@@ -563,7 +664,7 @@ export class AccountbalancesService {
                                     "vars": {
                                         "tmp": { "$arrayElemAt": ["$userads_data", 0] },
                                     },
-                                    "in": "$$tmp.commonality"
+                                    "in": "$$tmp.scoreTotal"
                                 }
                             }, {
                                 $ne: [{
@@ -571,7 +672,7 @@ export class AccountbalancesService {
                                         "vars": {
                                             "tmp": { "$arrayElemAt": ["$userads_data", 0] },
                                         },
-                                        "in": "$$tmp.commonality"
+                                        "in": "$$tmp.scoreTotal"
                                     }
                                 }, ""]
                             }]
@@ -581,7 +682,7 @@ export class AccountbalancesService {
                                 "vars": {
                                     "tmp": { "$arrayElemAt": ["$userads_data", 0] },
                                 },
-                                "in": "$$tmp.commonality"
+                                "in": "$$tmp.scoreTotal"
                             }
                         },
                         else: 0
@@ -590,7 +691,9 @@ export class AccountbalancesService {
             }
         },);
         //------------PUSH MATCH END------------
-        paramaggregate.push({ $match });
+        if (andFilter.length > 0) {
+            paramaggregate.push({ $match });
+        }
         //------------SORTIR------------
         if (sorting) {
             paramaggregate.push({

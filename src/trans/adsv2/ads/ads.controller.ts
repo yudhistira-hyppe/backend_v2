@@ -373,8 +373,12 @@ export class AdsController {
         }else{
             for (var i = 0; i < AdsDto_.demografisID.length; i++) {
                 let demografisID_Object = AdsDto_.demografisID[i];
-                let demografisID_Object_Dbref = { "$ref": "areas", "$id": new mongoose.Types.ObjectId(demografisID_Object), "$db": "ProdAll" }
-                Array_Demografis.push(demografisID_Object_Dbref);
+                if (demografisID_Object == "Lainnya") {
+                    Array_Demografis.push("LAINNYA");
+                } else {
+                    let demografisID_Object_Dbref = { "$ref": "areas", "$id": new mongoose.Types.ObjectId(demografisID_Object), "$db": "ProdAll" }
+                    Array_Demografis.push(demografisID_Object_Dbref);
+                }
             }
             AdsDto_.demografisID = Array_Demografis;
         }
@@ -388,8 +392,12 @@ export class AdsController {
         } else {
             for (var i = 0; i < AdsDto_.interestID.length; i++) {
                 let interestID_Object = AdsDto_.interestID[i];
-                let interestID_Object_Dbref = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(interestID_Object), "$db": "ProdAll" }
-                Array_Interest.push(interestID_Object_Dbref);
+                if (interestID_Object == "Lainnya") {
+                    Array_Demografis.push("LAINNYA");
+                } else {
+                    let interestID_Object_Dbref = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(interestID_Object), "$db": "ProdAll" }
+                    Array_Interest.push(interestID_Object_Dbref);
+                }
             }
             AdsDto_.interestID = Array_Interest;
         } 
@@ -449,12 +457,12 @@ export class AdsController {
         }
 
         //VALIDASI PARAM idApsara
-        var ceck_idApsara = await this.utilsService.validateParam("idApsara", AdsDto_.idApsara, "string")
-        if (ceck_idApsara != "") {
-            await this.errorHandler.generateBadRequestException(
-                ceck_idApsara,
-            );
-        }
+        // var ceck_idApsara = await this.utilsService.validateParam("idApsara", AdsDto_.idApsara, "string")
+        // if (ceck_idApsara != "") {
+        //     await this.errorHandler.generateBadRequestException(
+        //         ceck_idApsara,
+        //     );
+        // }
 
         //VALIDASI PARAM urlLink
         var ceck_urlLink = await this.utilsService.validateParam("urlLink", AdsDto_.urlLink, "string")
@@ -1049,7 +1057,7 @@ export class AdsController {
         body.type_ads = array_type_ads;
 
         try {
-            const ads_dashboard = await this.adsService.list(body.name_ads, body.start_date, body.end_date, body.type_ads, body.plan_ads, body.status_list, body.page, body.limit, body.sorting);
+            const ads_dashboard = await this.adsService.list(body.userId, body.name_ads, body.start_date, body.end_date, body.type_ads, body.plan_ads, body.status_list, body.page, body.limit, body.sorting);
 
             return await this.errorHandler.generateAcceptResponseCodeWithData(
                 "Get Ads List succesfully", ads_dashboard, ads_dashboard.length, body.page
@@ -1090,7 +1098,7 @@ export class AdsController {
         body.type_ads = array_type_ads;
 
         try {
-            const ads_dashboard = await this.adsService.list_reward(body.name, body.startdate, body.enddate, body.gender, body.age, body.areas, body.page, body.limit, body.sorting); 
+            const ads_dashboard = await this.adsService.list_reward(body.name, body.startdate, body.enddate, body.gender, body.age, body.areas, body.similarity, body.page, body.limit, body.sorting); 
 
             return await this.errorHandler.generateAcceptResponseCodeWithData(
                 "Get Ads List succesfully", ads_dashboard, ads_dashboard.length, body.page
@@ -1163,6 +1171,11 @@ export class AdsController {
                 CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_ads[0].typeAdsID);
                 CreateUserAdsDto_.nameType = data_ads[0].adsType;
                 CreateUserAdsDto_.isActive = true;
+                CreateUserAdsDto_.scoreAge = data_ads[0].scoreUmur;
+                CreateUserAdsDto_.scoreGender = data_ads[0].scoreKelamin;
+                CreateUserAdsDto_.scoreGeografis = data_ads[0].scoreGeografis;
+                CreateUserAdsDto_.scoreInterest = data_ads[0].scoreMinat;
+                CreateUserAdsDto_.scoreTotal = data_ads[0].scoreTotal;
                 this.userAdsService.create(CreateUserAdsDto_);
             }
             var get_profilePict = null;
