@@ -3387,11 +3387,6 @@ export class subChallengeService {
                                 "$project":
                                 {
                                     postChallengess: "$postChallenges",
-                                    objectChallenge: "$challenges.objectChallenge",
-                                    leaderBoard: "$challenges.leaderBoard.bannerLeaderboard",
-                                    bannerSearch: "$challenges.bannerSearch.image",
-                                    popUp: "$challenges.popUp.image",
-                                    description: "$challenges.description",
                                     idUser: 1,
                                     score: 1,
                                     ranking: 1,
@@ -4610,21 +4605,6 @@ export class subChallengeService {
                     "session": 1,
                     "timenow": 1,
                     "getlastrank": 1,
-                    "objectChallenge": {
-                        $arrayElemAt: ["$getlastrank.objectChallenge", 0]
-                    },
-                    "leaderBoard": {
-                        $arrayElemAt: ["$getlastrank.leaderBoard", 0]
-                    },
-                    "bannerSearch": {
-                        $arrayElemAt: ["$getlastrank.bannerSearch", 0]
-                    },
-                    "popUp": {
-                        $arrayElemAt: ["$getlastrank.popUp", 0]
-                    },
-                    "description": {
-                        $arrayElemAt: ["$getlastrank.description", 0]
-                    },
                     "status": {
                         $cond: {
                             if: {
@@ -4717,35 +4697,14 @@ export class subChallengeService {
                 }
             },
             {
-                $project:
-                {
-                    "_id": 1,
-                    "challengeId": 1,
-                    "startDatetime": 1,
-                    "endDatetime": 1,
-                    "isActive": 1,
-                    "session": 1,
-                    "timenow": 1,
-                    "getlastrank": 1,
-                    "objectChallenge": {
-                        $arrayElemAt: ["$objectChallenge", 0]
-                    },
-                    "leaderBoard": {
-                        $arrayElemAt: ["$leaderBoard", 0]
-                    },
-                    "bannerSearch": {
-                        $arrayElemAt: ["$bannerSearch", 0]
-                    },
-                    "popUp": {
-                        $arrayElemAt: ["$popUp", 0]
-                    },
-                    "description": {
-                        $arrayElemAt: ["$description", 0]
-                    },
-                    "status": 1,
-                    "joined": 1,
+                $lookup: {
+                    from: 'challenge',
+                    localField: 'challengeId',
+                    foreignField: '_id',
+                    as: 'challenge_data',
 
-                }
+                },
+
             },
             {
                 $project:
@@ -4758,19 +4717,9 @@ export class subChallengeService {
                     "session": 1,
                     "timenow": 1,
                     "getlastrank": 1,
-                    "objectChallenge": 1,
-                    "leaderBoard": {
-                        $arrayElemAt: ["$leaderBoard", 0]
-                    },
-                    "bannerSearch": {
-                        $arrayElemAt: ["$bannerSearch", 0]
-                    },
-                    "popUp": {
-                        $arrayElemAt: ["$popUp", 0]
-                    },
-                    "description": 1,
                     "status": 1,
                     "joined": 1,
+                    "challenge_data": 1
 
                 }
             },
