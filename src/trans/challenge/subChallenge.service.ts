@@ -3511,6 +3511,50 @@ export class subChallengeService {
                                             default: "Anda Kurang Beruntung.. COBA LAGI !!!"
                                         }
                                     },
+                                    winnerBadgeOther:
+                                    {
+                                        "$switch":
+                                        {
+                                            branches:
+                                                [
+                                                    {
+                                                        case:
+                                                        {
+                                                            $eq: ["$ranking", 1]
+                                                        },
+                                                        then: {
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$challenges.winner1.badgeOther", 0]
+                                                            }, 0]
+                                                        }
+                                                    },
+                                                    {
+                                                        case:
+                                                        {
+                                                            $eq: ["$ranking", 2]
+                                                        },
+                                                        then: {
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$challenges.winner2.badgeOther", 0]
+                                                            }, 0]
+                                                        }
+                                                    },
+                                                    {
+                                                        case:
+                                                        {
+                                                            $eq: ["$ranking", 3]
+                                                        },
+                                                        then: {
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$challenges.winner3.badgeOther", 0]
+                                                            }, 0]
+                                                        }
+                                                    },
+
+                                                ],
+                                            default: "Anda Kurang Beruntung.. COBA LAGI !!!"
+                                        }
+                                    },
 
                                 }
                             },
