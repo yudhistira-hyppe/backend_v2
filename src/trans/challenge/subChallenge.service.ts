@@ -2737,30 +2737,30 @@ export class subChallengeService {
                             {
                                 challengeId: new Types.ObjectId(idchallenge)
                             },
-                            // {
-                            //     $expr:
-                            //     {
-                            //         $lte:
-                            //             [
-                            //                 "$timenow",
-                            //                 "$endDatetime",
+                            {
+                                $expr:
+                                {
+                                    $lte:
+                                        [
+                                            "$timenow",
+                                            "$endDatetime",
 
-                            //             ]
-                            //     },
+                                        ]
+                                },
 
-                            // },
-                            // {
-                            //     $expr:
-                            //     {
-                            //         $gte:
-                            //             [
-                            //                 "$timenow",
-                            //                 "$startDatetime",
+                            },
+                            {
+                                $expr:
+                                {
+                                    $gte:
+                                        [
+                                            "$timenow",
+                                            "$startDatetime",
 
-                            //             ]
-                            //     },
+                                        ]
+                                },
 
-                            // }
+                            }
                         ]
                 }
             },
