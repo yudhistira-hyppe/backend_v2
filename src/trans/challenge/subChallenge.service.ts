@@ -2734,9 +2734,9 @@ export class subChallengeService {
                 {
                     "$and":
                         [
-                            //                {
-                            //                    challengeId: ObjectId("6486f6d4b8ab34f61602f85a")
-                            //                },
+                            {
+                                challengeId: new Types.ObjectId(idchallenge)
+                            },
                             {
                                 $expr:
                                 {
