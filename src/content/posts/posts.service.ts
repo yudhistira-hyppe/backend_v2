@@ -813,7 +813,7 @@ export class PostsService {
     var CreatePostsDto_ = await this.PostsModel.findOne({ postID: postID }).exec();
     if (await this.utilsService.ceckData(CreatePostsDto_)) {
 
-      if (CreatePostsDto_.postType == 'vid') {
+      if (CreatePostsDto_.postType == 'vid' || CreatePostsDto_.postType == 'video') {
         datacontent = 'mediavideos';
       } else if (CreatePostsDto_.postType == 'pict') {
         datacontent = 'mediapicts';
@@ -852,32 +852,36 @@ export class PostsService {
   async findOnepostID2(postID: string): Promise<Object> {
     var datacontent = null;
     var CreatePostsDto_ = await this.PostsModel.findOne({ postID: postID }).exec();
-    if (CreatePostsDto_.postType == 'vid') {
-      datacontent = 'mediavideos';
-    } else if (CreatePostsDto_.postType == 'pict') {
-      datacontent = 'mediapicts';
-    } else if (CreatePostsDto_.postType == 'diary') {
-      datacontent = 'mediadiaries';
-    } else if (CreatePostsDto_.postType == 'story') {
-      datacontent = 'mediastories';
-    }
+    if (await this.utilsService.ceckData(CreatePostsDto_)) {
+      if (CreatePostsDto_.postType == 'vid' || CreatePostsDto_.postType == 'video') {
+        datacontent = 'mediavideos';
+      } else if (CreatePostsDto_.postType == 'pict') {
+        datacontent = 'mediapicts';
+      } else if (CreatePostsDto_.postType == 'diary') {
+        datacontent = 'mediadiaries';
+      } else if (CreatePostsDto_.postType == 'story') {
+        datacontent = 'mediastories';
+      }
 
-    const query = await this.PostsModel.aggregate([
-      {
-        $match: {
-          postID: postID
-        }
-      },
-      {
-        $lookup: {
-          from: datacontent,
-          localField: "postID",
-          foreignField: "postID",
-          as: "datacontent"
-        }
-      },
-    ]);
-    return query;
+      const query = await this.PostsModel.aggregate([
+        {
+          $match: {
+            postID: postID
+          }
+        },
+        {
+          $lookup: {
+            from: datacontent,
+            localField: "postID",
+            foreignField: "postID",
+            as: "datacontent"
+          }
+        },
+      ]);
+      return query;
+    } else {
+      return null;
+    }
   }
 
   async updateView(email: string, postID: string) {
@@ -45959,7 +45963,7 @@ export class PostsService {
                 }
               },
               {
-                $project: {
+                "$project": {
                   "fullName": 1,
                   "profilePict": 1,
                   "isCelebrity": 1,
@@ -45967,7 +45971,66 @@ export class PostsService {
                   "isPrivate": 1,
                   "isFollowPrivate": 1,
                   "isPostPrivate": 1,
-
+                  "urluserBadge":
+                  {
+                    "$filter":
+                    {
+                      "input":"$userBadge",
+                      "as":"listBadge",
+                      "cond":
+                      {
+                        "$and":
+                        [
+                          {
+                            "$eq":
+                            [
+                              "$$listBadge.isActive", true
+                            ]
+                          },
+                          {
+                            "$lte": [
+                              {
+                                "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                    "$add": [
+                                      new Date(),
+                                      25200000
+                                    ]
+                                  }
+                                }
+                              },
+                              "$$listBadge.endDatetime"
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "$project": {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "isCelebrity": 1,
+                  "isIdVerified": 1,
+                  "isPrivate": 1,
+                  "isFollowPrivate": 1,
+                  "isPostPrivate": 1,
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                    [
+                      {
+                        "$arrayElemAt":
+                        [
+                          "$urluserBadge", 0
+                        ]
+                      },
+                      null
+                    ]
+                  }
                 }
               }
             ],
@@ -46349,6 +46412,7 @@ export class PostsService {
             "fullName": "$userBasic.fullName",
             "username": "$username.username",
             "avatar": 1,
+            "urluserBadge":"$userBasic.urluserBadge",
             "statusCB": 1,
             "privacy": {
               "isCelebrity": "$userBasic.isCelebrity",
@@ -46491,6 +46555,7 @@ export class PostsService {
             "fullName": 1,
             "username": 1,
             "avatar": 1,
+            "urluserBadge":1,
             "statusCB": 1,
             "privacy": 1,
             "mediaThumUri": 1,
@@ -47337,7 +47402,7 @@ export class PostsService {
                 }
               },
               {
-                $project: {
+                "$project": {
                   "fullName": 1,
                   "profilePict": 1,
                   "isCelebrity": 1,
@@ -47345,7 +47410,66 @@ export class PostsService {
                   "isPrivate": 1,
                   "isFollowPrivate": 1,
                   "isPostPrivate": 1,
-
+                  "urluserBadge":
+                  {
+                    "$filter":
+                    {
+                      "input":"$userBadge",
+                      "as":"listBadge",
+                      "cond":
+                      {
+                        "$and":
+                        [
+                          {
+                            "$eq":
+                            [
+                              "$$listBadge.isActive", true
+                            ]
+                          },
+                          {
+                            "$lte": [
+                              {
+                                "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                    "$add": [
+                                      new Date(),
+                                      25200000
+                                    ]
+                                  }
+                                }
+                              },
+                              "$$listBadge.endDatetime"
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "$project": {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "isCelebrity": 1,
+                  "isIdVerified": 1,
+                  "isPrivate": 1,
+                  "isFollowPrivate": 1,
+                  "isPostPrivate": 1,
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                    [
+                      {
+                        "$arrayElemAt":
+                        [
+                          "$urluserBadge", 0
+                        ]
+                      },
+                      null
+                    ]
+                  }
                 }
               }
             ],
@@ -47725,6 +47849,7 @@ export class PostsService {
             "fullName": "$userBasic.fullName",
             "username": "$username.username",
             "avatar": 1,
+            "urluserBadge":"$userBasic.urluserBadge",
             "statusCB": 1,
             "privacy": {
               "isCelebrity": "$userBasic.isCelebrity",
@@ -47866,6 +47991,7 @@ export class PostsService {
             "fullName": 1,
             "username": 1,
             "avatar": 1,
+            "urluserBadge":1,
             "statusCB": 1,
             "privacy": 1,
 
@@ -48711,7 +48837,7 @@ export class PostsService {
                 }
               },
               {
-                $project: {
+                "$project": {
                   "fullName": 1,
                   "profilePict": 1,
                   "isCelebrity": 1,
@@ -48719,7 +48845,66 @@ export class PostsService {
                   "isPrivate": 1,
                   "isFollowPrivate": 1,
                   "isPostPrivate": 1,
-
+                  "urluserBadge":
+                  {
+                    "$filter":
+                    {
+                      "input":"$userBadge",
+                      "as":"listBadge",
+                      "cond":
+                      {
+                        "$and":
+                        [
+                          {
+                            "$eq":
+                            [
+                              "$$listBadge.isActive", true
+                            ]
+                          },
+                          {
+                            "$lte": [
+                              {
+                                "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                    "$add": [
+                                      new Date(),
+                                      25200000
+                                    ]
+                                  }
+                                }
+                              },
+                              "$$listBadge.endDatetime"
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "$project": {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "isCelebrity": 1,
+                  "isIdVerified": 1,
+                  "isPrivate": 1,
+                  "isFollowPrivate": 1,
+                  "isPostPrivate": 1,
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                    [
+                      {
+                        "$arrayElemAt":
+                        [
+                          "$urluserBadge", 0
+                        ]
+                      },
+                      null
+                    ]
+                  }
                 }
               }
             ],
@@ -49099,6 +49284,7 @@ export class PostsService {
             "fullName": "$userBasic.fullName",
             "username": "$username.username",
             "avatar": 1,
+            "urluserBadge":"$userBasic.urluserBadge",
             "statusCB": 1,
             "privacy": {
               "isCelebrity": "$userBasic.isCelebrity",
@@ -49240,6 +49426,7 @@ export class PostsService {
             "fullName": 1,
             "username": 1,
             "avatar": 1,
+            "urluserBadge":1,
             "statusCB": 1,
             "privacy": 1,
 
