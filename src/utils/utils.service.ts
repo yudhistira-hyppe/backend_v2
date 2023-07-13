@@ -361,6 +361,7 @@ export class UtilsService {
           priority: "high",
           contentAvailable: true
         }
+        console.log("NOTIFICTION ------------------------------------------------------------------->",notification);
 
         // if (profile_regsrc == "android") {
         //   notification = {
