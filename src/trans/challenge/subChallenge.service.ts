@@ -2735,9 +2735,9 @@ export class subChallengeService {
                 {
                     "$and":
                         [
-                            {
-                                challengeId: new Types.ObjectId(idchallenge)
-                            },
+                            // {
+                            //     challengeId: new Types.ObjectId(idchallenge)
+                            // },
                             //{
                             //		session:3	
                             //}

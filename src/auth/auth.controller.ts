@@ -63,7 +63,7 @@ import { OssService } from '../stream/oss/oss.service';
 import { CreateMediaprofilepictsDto } from 'src/content/mediaprofilepicts/dto/create-mediaprofilepicts.dto';
 import { FriendListService } from 'src/content/friend_list/friend_list.service';
 import { CreateUserauthDto } from 'src/trans/userauths/dto/create-userauth.dto';
-
+import { ConfigService } from '@nestjs/config';
 const sharp = require('sharp');
 const convert = require('heic-convert');
 
@@ -95,7 +95,7 @@ export class AuthController {
     private userbankaccountsService: UserbankaccountsService,
     private userticketdetailsService: UserticketdetailsService,
     private friendListService: FriendListService,
-
+    private readonly configService: ConfigService
   ) { }
 
   // @UseGuards(LocalAuthGuard)
@@ -871,10 +871,10 @@ export class AuthController {
             } else {
               CreateUserauthDto_.loginSrc = "android";
             }
-          }else{
+          } else {
             CreateUserauthDto_.loginSrc = "android";
           }
-        }else{
+        } else {
           CreateUserauthDto_.loginSrc = LoginRequest_.regSrc.toString();
         }
         this.userauthsService.update2(data_userauths._id.toString(), CreateUserauthDto_);
@@ -1927,12 +1927,13 @@ export class AuthController {
 
             if (datathummb !== null && datathummb !== undefined && datathummb.length > 0) {
               var mediaThumb = mediaproofpicts.mediaSupportUriThumb[index].toString();
-              // mediaThumb = mediaThumb.replace("http://be-production.oss-ap-southeast-5.aliyuncs.com/", "");
-              mediaThumb = mediaThumb.replace("http://be-staging.oss-ap-southeast-5.aliyuncs.com/", "");
+              mediaThumb = mediaThumb.replace(this.configService.get("SUPPORT_FILE"), "");
               data2 = await this.ossService.readFile(mediaThumb);
             } else {
               data2 = await this.ossService.readFile(mediaproofpicts.SupportfsTargetUri[index].toString());
             }
+
+
 
             if (data2 != null) {
               response.set("Content-Type", "image/jpeg");
@@ -2344,7 +2345,7 @@ export class AuthController {
       //Ceck User Userbasics
       const data_userbasics = await this.userbasicsService.findOne(SearchUserbasicDto_.search.toString());
       if (await this.utilsService.ceckData(data_userbasics)) {
-        
+
         var user_view = headers['x-auth-user'];
         await this.authService.viewProfile(SearchUserbasicDto_.search.toString(), user_view);
         var Data = await this.utilsService.generateProfile(SearchUserbasicDto_.search.toString(), 'PROFILE');

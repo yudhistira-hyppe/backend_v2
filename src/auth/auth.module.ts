@@ -39,8 +39,10 @@ import { UserbankaccountsModule } from '../trans/userbankaccounts/userbankaccoun
 import { FriendListModule } from 'src/content/friend_list/friend_list.module';
 import { ChallengeModule } from '../trans/challenge/challenge.module';
 import { UserchallengesModule } from '../trans/userchallenges/userchallenges.module';
+import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     ChallengeModule,
     UserchallengesModule,
     UserbankaccountsModule,
