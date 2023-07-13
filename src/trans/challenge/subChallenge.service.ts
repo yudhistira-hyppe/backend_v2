@@ -2713,56 +2713,84 @@ export class subChallengeService {
     async getListUserChallenge(idchallenge: string, iduser: string, status: string, session: number) {
         var pipeline = [];
 
-        pipeline.push({
-            $set: {
-                "timenow":
-                {
-                    "$dateToString": {
-                        "format": "%Y-%m-%d %H:%M:%S",
-                        "date": {
-                            $add: [
-                                new Date(),
-                                25200000
-                            ]
+        pipeline.push(
+            {
+                $set: {
+                    "timenow":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25200000
+                                ]
+                            }
                         }
                     }
                 }
-            }
-        },
+            },
             {
                 "$match":
                 {
-                    "$and":
+                    $or:
                         [
                             {
-                                challengeId: new Types.ObjectId(idchallenge)
+                                "$and":
+                                    [
+                                        {
+                                            challengeId: new Types.ObjectId(idchallenge)
+                                        },
+                                        {
+                                            $expr:
+                                            {
+                                                $lte:
+                                                    [
+                                                        "$timenow",
+                                                        "$endDatetime",
+                                                    ]
+                                            },
+
+                                        },
+                                        {
+                                            $expr:
+                                            {
+                                                $gte:
+                                                    [
+                                                        "$timenow",
+                                                        "$startDatetime",
+
+                                                    ]
+                                            },
+
+                                        }
+                                    ]
                             },
                             {
-                                $expr:
-                                {
-                                    $lte:
-                                        [
-                                            "$timenow",
-                                            "$endDatetime",
+                                "$and":
+                                    [
+                                        {
+                                            challengeId: new Types.ObjectId(idchallenge)
+                                        },
+                                        {
+                                            $expr:
+                                            {
+                                                $lte:
+                                                    [
+                                                        "$timenow",
+                                                        "$startDatetime",
 
-                                        ]
-                                },
+                                                    ]
+                                            },
 
+                                        },
+
+                                    ]
                             },
-                            {
-                                $expr:
-                                {
-                                    $gte:
-                                        [
-                                            "$timenow",
-                                            "$startDatetime",
 
-                                        ]
-                                },
-
-                            }
                         ]
-                }
+                },
+
             },
             {
                 "$lookup":
@@ -2823,7 +2851,7 @@ export class subChallengeService {
                                                             }
                                                         },
                                                         {
-                                                            idUser: new Types.ObjectId(iduser),
+                                                            idUser: new Types.ObjectId(iduser)
 
                                                         },
                                                         {
@@ -2861,7 +2889,7 @@ export class subChallengeService {
                             },
                             {
                                 $set: {
-                                    userID: new Types.ObjectId(iduser),
+                                    userID: new Types.ObjectId(iduser)
 
                                 }
                             },
@@ -3501,7 +3529,7 @@ export class subChallengeService {
                     from: "userbasics",
                     as: "joinUser",
                     let: {
-                        localID: new Types.ObjectId(iduser),
+                        localID: new Types.ObjectId(iduser)
 
                     },
                     pipeline: [
@@ -3527,7 +3555,7 @@ export class subChallengeService {
                     from: "challenge",
                     as: "peserta",
                     let: {
-                        localID: new Types.ObjectId(idchallenge),
+                        localID: new Types.ObjectId(idchallenge)
 
                     },
                     pipeline: [
@@ -4681,6 +4709,17 @@ export class subChallengeService {
                         {
                             $set:
                             {
+                                tahun:
+                                {
+                                    $year: {
+                                        $toDate: "$startDatetime"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set:
+                            {
                                 bulan:
                                 {
                                     $month: {
@@ -4691,10 +4730,44 @@ export class subChallengeService {
                         },
                         {
                             $group: {
-                                _id: "$bulan",
-                                "subChalange": {
+                                _id: {
+                                    bulan: "$bulan",
+                                    tahun: "$tahun"
+                                },
+                                "detail": {
                                     $push: "$$ROOT"
                                 },
+
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$_id"
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: "$kampret",
+                                bulan: "$_id.bulan",
+                                tahun: "$_id.tahun",
+                                detail: "$detail",
+
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$tahun",
+                                "detail": {
+                                    $push: "$$ROOT"
+                                },
+
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: "$kampret",
+                                tahun: "$_id",
+                                detail: "$detail",
 
                             }
                         },
@@ -4722,7 +4795,7 @@ export class subChallengeService {
                     "status": 1,
                     "joined": 1,
                     "challenge_data": 1,
-                    "subChallenges": 1,
+                    subChallenges: 1,
 
                 }
             },
