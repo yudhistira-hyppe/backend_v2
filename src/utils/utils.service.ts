@@ -361,7 +361,7 @@ export class UtilsService {
           priority: "high",
           contentAvailable: true
         }
-        console.log("NOTIFICTION ------------------------------------------------------------------->",notification);
+        console.log("NOTIFICTION ------------------------------------------------------------------->", notification);
 
         // if (profile_regsrc == "android") {
         //   notification = {
@@ -1288,7 +1288,7 @@ export class UtilsService {
     return DateTime.substring(0, DateTime.lastIndexOf('.'));
   }
 
-  async consvertDateTimeString(date:Date): Promise<string> {
+  async consvertDateTimeString(date: Date): Promise<string> {
     var DateTime = new Date(date).toISOString().replace('T', ' ');
     return DateTime.substring(0, 10);
   }
@@ -1519,7 +1519,7 @@ export class UtilsService {
   }
 
   async generateProfile(email: string, datafor: string): Promise<ProfileDTO> {
-    var get_userbasic = await this.userbasicsService.findOne(email);
+    var get_userbasic = await this.userbasicsService.findone_(email);
     var get_userauth = await this.userauthsService.findOne(email);
 
     var get_languages = null;
@@ -1719,26 +1719,7 @@ export class UtilsService {
           ProfileDTO_.status = get_userbasic.status;
         }
 
-        ProfileDTO_.urluserBadge = null;
-        var tempbadge = get_userbasic.userBadge;
-        if(tempbadge.length != 0)
-        {
-          for(var loopingbadge = 0; loopingbadge < tempbadge.length; loopingbadge++)
-          {
-            var getstatus = tempbadge[loopingbadge].isActive;
-            var getfromdb = new Date(tempbadge[loopingbadge].endDatetime);
-            getfromdb.setHours(getfromdb.getHours() + 7);
-            var convertnow = new Date();
-            convertnow.setHours(convertnow.getHours() + 7);
-            var datediff = getfromdb.getTime() - convertnow.getTime();
-            if (getstatus == true && datediff >= 0) 
-            {
-              ProfileDTO_.urluserBadge = tempbadge[loopingbadge];
-              break;
-            }
-          }
-        }
-
+        ProfileDTO_.urluserBadge = get_userbasic.urluserBadge;
         ProfileDTO_.pin_create = pin_create;
         ProfileDTO_.pin_verified = otppinVerified;
         ProfileDTO_.iduser = get_userbasic._id;

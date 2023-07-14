@@ -2337,7 +2337,7 @@ export class PostContentService {
     if (post.certified) {
       this.generateCertificate(postID, 'id');
     }
-    
+
     if (body.tagPeople != undefined && body.tagPeople.length > 1) {
       var obj = body.tagPeople;
       var cats = obj.split(",");
@@ -3117,7 +3117,7 @@ export class PostContentService {
     let type = 'GET_POST';
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    var profile = await this.userService.findOne(auth.email);
+    var profile = await this.userService.findone_(auth.email);
     if (profile == null) {
       let res = new PostResponseApps();
       let msg = new Messages
@@ -4001,7 +4001,7 @@ export class PostContentService {
       }
     }
     var ceck_data_FOLLOW = await this.contentEventService.ceckData(String(iam.email), "FOLLOWING", "ACCEPT", "", iam2.email, "", true);
-    if (await this.utilService.ceckData(ceck_data_FOLLOW)){
+    if (await this.utilService.ceckData(ceck_data_FOLLOW)) {
       getFollowing = true;
     }
     let pd = Array<PostData>();
@@ -4077,13 +4077,13 @@ export class PostContentService {
                 username: senderComment.username.toString(),
               }
               dataComment.push(json);
-            } 
+            }
             pa.comment = dataComment;
           } else {
             pa.comment = [];
           }
           pa.comments = discusLogCount.length;
-        }else{
+        } else {
           pa.comment = [];
           pa.comments = 0;
         }
@@ -4170,13 +4170,16 @@ export class PostContentService {
           if (ps.userProfile?.namespace) {
             let oid = String(ps.userProfile.oid);
             let ua = await this.userService.findbyid(oid.toString());
+
             if (ua != undefined) {
+              let ubadge = await this.userService.findone_(ua.email.toString());
               let ub = await this.userAuthService.findOneByEmail(ua.email);
               if (ub != undefined) {
                 pa.username = ub.username;
               }
               pa.isIdVerified = ua.isIdVerified;
               pa.avatar = await this.getProfileAvatar(ua);
+              pa.urluserBadge = ubadge.urluserBadge;
             } else {
               this.logger.log('oid: ' + oid + ' error');
             }
@@ -4213,6 +4216,7 @@ export class PostContentService {
         pa.saleAmount = ps.saleAmount;
         pa.saleLike = ps.saleLike;
         pa.saleView = ps.saleView;
+
 
 
         if (ps.tagPeople != undefined && ps.tagPeople.length > 0) {
@@ -4283,7 +4287,7 @@ export class PostContentService {
         privacy.isPostPrivate = false;
         privacy.isPrivate = false;
         privacy.isCelebrity = false;
-        privacy.isIdVerified = getVerified; 
+        privacy.isIdVerified = getVerified;
         pa.privacy = privacy;
 
         if (body.tags != undefined) {
@@ -4458,9 +4462,9 @@ export class PostContentService {
                   //if (drns == 'userbasics') {
                   //let vw = await this.userService.findbyid(drns.oid);
                   if (drt == iam.email) {
-                      pa.isViewed = true;
-                      break;
-                    }
+                    pa.isViewed = true;
+                    break;
+                  }
                   //}
                 }
               }
@@ -6339,8 +6343,8 @@ export class PostContentService {
     var date = new Date();
     var timeEndDate = null;
     date.setDate(date.getDate() + 1);
-    if (timeEnd.toString().length>1){
-      timeEndDate = Date.parse(date.toISOString().substring(0, 10) + " " + timeEnd.toString()+":00:00");
+    if (timeEnd.toString().length > 1) {
+      timeEndDate = Date.parse(date.toISOString().substring(0, 10) + " " + timeEnd.toString() + ":00:00");
     } else {
       timeEndDate = Date.parse(date.toISOString().substring(0, 10) + " 0" + timeEnd.toString() + ":00:00");
     }
@@ -6348,11 +6352,11 @@ export class PostContentService {
 
     for (var i = 0; i < Mediapicts_.length; i++) {
       var dateCurrent = await this.utilService.getDateTime();
-      console.log("------------------------------ START MIGRATION PICT INDEX NUMBER " + i +" ------------------------------");
+      console.log("------------------------------ START MIGRATION PICT INDEX NUMBER " + i + " ------------------------------");
       console.log("------------------------------ CURRENT DATE " + dateCurrent + " ------------------------------");
       console.log("------------------------------ CURRENT DATE " + dateCurrent.getTime() + " ------------------------------");
       console.log("------------------------------ POST ID " + Mediapicts_[i].postID.toString() + " ------------------------------");
-      if (dateCurrent.getTime() >= timeEndDate){
+      if (dateCurrent.getTime() >= timeEndDate) {
         break;
       }
       // if (i == 1) {
@@ -6413,7 +6417,7 @@ export class PostContentService {
       var video = await this.getSeaweedFile(Mediavideos_[i].fsSourceUri.toString());
       if (video != null) {
         var mime = Mediavideos_[i].mediaMime.toString().replace("video/", "");
-        var _id = Mediavideos_[i]._id.toString(); 
+        var _id = Mediavideos_[i]._id.toString();
         var postID = Mediavideos_[i].postID.toString();
         var originalName = (Mediavideos_[i].originalName != undefined) ? Mediavideos_[i].originalName.toString() : postID + "." + mime;
         console.log("PROCCESS MIGRATION");
@@ -6465,7 +6469,7 @@ export class PostContentService {
     }
   }
 
-  async prossesMigrationPict(file: any, _id: string, postID: string, userId: string, postType: string, format: string){
+  async prossesMigrationPict(file: any, _id: string, postID: string, userId: string, postType: string, format: string) {
     try {
       console.log(typeof file);
       //GENERATE FILE

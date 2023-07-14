@@ -1620,37 +1620,14 @@ export class PostsController {
               tp1.email = String(ua.email);
               tp1.username = String(ua.username);
 
-              let ub = await this.userbasicsService.findOne(String(ua.email));
+              let ub = await this.userbasicsService.findone_(String(ua.email));
               if (ub != undefined) {
                 tp1.avatar = await this.postContentService.getProfileAvatar(ub);
 
-                if(await this.utilsService.ceckData(ub.userBadge))
-                {
-                  var getbadge = ub.userBadge;
-                  if(getbadge.length != 0)
-                  {
-                    for(var i = 0; i < getbadge.length; i++)
-                    {
-                      var getstatus = getbadge[i].isActive;
-                      var getfromdb = new Date(getbadge[i].endDatetime);
-                      getfromdb.setHours(getfromdb.getHours() + 7);
-                      var convertnow = new Date();
-                      convertnow.setHours(convertnow.getHours() + 7);
-                      var datediff = getfromdb.getTime() - convertnow.getTime();
-                      if (getstatus == true && datediff >= 0) 
-                      {
-                        tp1.urluserBadge = getbadge[i];
-                        break;
-                      }
-                    }
-                  }
-                  else
-                  {
-                    tp1.urluserBadge = null;
-                  }
+                if (await this.utilsService.ceckData(ub.userBadge)) {
+                  tp1.urluserBadge = ub.urluserBadge;
                 }
-                else
-                {
+                else {
                   tp1.urluserBadge = null;
                 }
               }
@@ -1932,7 +1909,7 @@ export class PostsController {
         "flowIsDone": contenteventsService_data[i].flowIsDone,
         "eventType": contenteventsService_data[i].eventType,
         avatar,
-        "urluserBadge":getProfile_.urluserBadge,
+        "urluserBadge": getProfile_.urluserBadge,
         "event": contenteventsService_data[i].event,
         "senderOrReceiver": (contenteventsService_data[i].senderParty != undefined) ? contenteventsService_data[i].senderParty : contenteventsService_data[i].receiverParty,
         "email": contenteventsService_data[i].email
@@ -2807,7 +2784,7 @@ export class PostsController {
   }
 
   @Post('api/posts/vid/seaweed/migration/one')
-  async mediavidSeaweedMigrationOne(@Body('postID') postID: string): Promise<any>{
+  async mediavidSeaweedMigrationOne(@Body('postID') postID: string): Promise<any> {
     var Mediavid_ = await this.postContentService.getDataMediavidSeaweedOne(postID);
     console.log(Mediavid_.length);
     console.log(postID);

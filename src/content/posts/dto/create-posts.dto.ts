@@ -161,7 +161,7 @@ export class PostData {
     comment: any[];
     comments: number;
     following: boolean;
-
+    urluserBadge: any[];
 
 }
 
