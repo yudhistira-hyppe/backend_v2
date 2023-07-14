@@ -266,6 +266,7 @@ export class GetcontenteventsController {
                         ProfileDTO_.fullName = data_profile.fullName;
                         ProfileDTO_.email = data_profile.email;
                         ProfileDTO_.username = data_profile.username;
+                        ProfileDTO_.urluserBadge = data_profile.urluserBadge;
                         var AvatarDTO_ = new AvatarDTO();
                         if (data_profile.avatar != undefined) {
                             if (data_profile.avatar.mediaBasePath != undefined) {
