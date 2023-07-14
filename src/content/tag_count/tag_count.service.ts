@@ -2687,7 +2687,42 @@ export class TagCountService {
                                                     "isPrivate": 1,
                                                     "isFollowPrivate": 1,
                                                     "isPostPrivate": 1,
-
+                                                    "urluserBadge":
+                                                    {
+                                                        "$filter":
+                                                        {
+                                                            input:"$userBadge",
+                                                            as:"listbadge",
+                                                            cond:
+                                                            {
+                                                            "$and":
+                                                            [
+                                                                {
+                                                                "$eq":
+                                                                [
+                                                                    "$$listbadge.isActive", true
+                                                                ]
+                                                                },
+                                                                {
+                                                                "$lte": [
+                                                                    {
+                                                                    "$dateToString": {
+                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                        "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                        }
+                                                                    }
+                                                                    },
+                                                                    "$$listbadge.endDatetime"
+                                                                ]
+                                                                }
+                                                            ]
+                                                            }
+                                                        }
+                                                    },
                                                 }
                                             }
                                         ],
@@ -3073,6 +3108,19 @@ export class TagCountService {
                                         "fullName": "$userBasic.fullName",
                                         "username": "$username.username",
                                         "avatar": 1,
+                                        "urluserBadge":
+                                        {
+                                            "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$userBasic.urluserBadge",0
+                                                    ]
+                                                },
+                                                null
+                                            ]
+                                        },
                                         isLiked: {
                                             $ifNull: [{
                                                 $arrayElemAt: ["$isLike.isLiked", 0]
@@ -3431,7 +3479,42 @@ export class TagCountService {
                                                     "isPrivate": 1,
                                                     "isFollowPrivate": 1,
                                                     "isPostPrivate": 1,
-
+                                                    "urluserBadge":
+                                                    {
+                                                        "$filter":
+                                                        {
+                                                            input:"$userBadge",
+                                                            as:"listbadge",
+                                                            cond:
+                                                            {
+                                                            "$and":
+                                                            [
+                                                                {
+                                                                "$eq":
+                                                                [
+                                                                    "$$listbadge.isActive", true
+                                                                ]
+                                                                },
+                                                                {
+                                                                "$lte": [
+                                                                    {
+                                                                    "$dateToString": {
+                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                        "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                        }
+                                                                    }
+                                                                    },
+                                                                    "$$listbadge.endDatetime"
+                                                                ]
+                                                                }
+                                                            ]
+                                                            }
+                                                        }
+                                                    },
                                                 }
                                             }
                                         ],
@@ -3817,6 +3900,19 @@ export class TagCountService {
                                         "fullName": "$userBasic.fullName",
                                         "username": "$username.username",
                                         "avatar": 1,
+                                        "urluserBadge":
+                                        {
+                                            "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$userBasic.urluserBadge",0
+                                                    ]
+                                                },
+                                                null
+                                            ]
+                                        },
                                         isLiked: {
                                             $ifNull: [{
                                                 $arrayElemAt: ["$isLike.isLiked", 0]
@@ -4172,7 +4268,42 @@ export class TagCountService {
                                                     "isPrivate": 1,
                                                     "isFollowPrivate": 1,
                                                     "isPostPrivate": 1,
-
+                                                    "urluserBadge":
+                                                    {
+                                                        "$filter":
+                                                        {
+                                                            input:"$userBadge",
+                                                            as:"listbadge",
+                                                            cond:
+                                                            {
+                                                            "$and":
+                                                            [
+                                                                {
+                                                                "$eq":
+                                                                [
+                                                                    "$$listbadge.isActive", true
+                                                                ]
+                                                                },
+                                                                {
+                                                                "$lte": [
+                                                                    {
+                                                                    "$dateToString": {
+                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                        "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                        }
+                                                                    }
+                                                                    },
+                                                                    "$$listbadge.endDatetime"
+                                                                ]
+                                                                }
+                                                            ]
+                                                            }
+                                                        }
+                                                    },
                                                 }
                                             }
                                         ],
@@ -4558,6 +4689,19 @@ export class TagCountService {
                                         "fullName": "$userBasic.fullName",
                                         "username": "$username.username",
                                         "avatar": 1,
+                                        "urluserBadge":
+                                        {
+                                            "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$userBasic.urluserBadge",0
+                                                    ]
+                                                },
+                                                null
+                                            ]
+                                        },
                                         isLiked: {
                                             $ifNull: [{
                                                 $arrayElemAt: ["$isLike.isLiked", 0]
@@ -4918,7 +5062,42 @@ export class TagCountService {
                                                     "isPrivate": 1,
                                                     "isFollowPrivate": 1,
                                                     "isPostPrivate": 1,
-
+                                                    "urluserBadge":
+                                                    {
+                                                        "$filter":
+                                                        {
+                                                            input:"$userBadge",
+                                                            as:"listbadge",
+                                                            cond:
+                                                            {
+                                                            "$and":
+                                                            [
+                                                                {
+                                                                "$eq":
+                                                                [
+                                                                    "$$listbadge.isActive", true
+                                                                ]
+                                                                },
+                                                                {
+                                                                "$lte": [
+                                                                    {
+                                                                    "$dateToString": {
+                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                        "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                        }
+                                                                    }
+                                                                    },
+                                                                    "$$listbadge.endDatetime"
+                                                                ]
+                                                                }
+                                                            ]
+                                                            }
+                                                        }
+                                                    },
                                                 }
                                             }
                                         ],
@@ -5304,6 +5483,19 @@ export class TagCountService {
                                         "fullName": "$userBasic.fullName",
                                         "username": "$username.username",
                                         "avatar": 1,
+                                        "urluserBadge":
+                                        {
+                                            "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$userBasic.urluserBadge",0
+                                                    ]
+                                                },
+                                                null
+                                            ]
+                                        },
                                         isLiked: {
                                             $ifNull: [{
                                                 $arrayElemAt: ["$isLike.isLiked", 0]
@@ -5641,7 +5833,42 @@ export class TagCountService {
                                                     "isPrivate": 1,
                                                     "isFollowPrivate": 1,
                                                     "isPostPrivate": 1,
-
+                                                    "urluserBadge":
+                                                    {
+                                                        "$filter":
+                                                        {
+                                                            input:"$userBadge",
+                                                            as:"listbadge",
+                                                            cond:
+                                                            {
+                                                            "$and":
+                                                            [
+                                                                {
+                                                                "$eq":
+                                                                [
+                                                                    "$$listbadge.isActive", true
+                                                                ]
+                                                                },
+                                                                {
+                                                                "$lte": [
+                                                                    {
+                                                                    "$dateToString": {
+                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                        "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                        }
+                                                                    }
+                                                                    },
+                                                                    "$$listbadge.endDatetime"
+                                                                ]
+                                                                }
+                                                            ]
+                                                            }
+                                                        }
+                                                    },
                                                 }
                                             }
                                         ],
@@ -6027,6 +6254,19 @@ export class TagCountService {
                                         "fullName": "$userBasic.fullName",
                                         "username": "$username.username",
                                         "avatar": 1,
+                                        "urluserBadge":
+                                        {
+                                            "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$userBasic.urluserBadge",0
+                                                    ]
+                                                },
+                                                null
+                                            ]
+                                        },
                                         isLiked: {
                                             $ifNull: [{
                                                 $arrayElemAt: ["$isLike.isLiked", 0]
@@ -6386,7 +6626,42 @@ export class TagCountService {
                                                     "isPrivate": 1,
                                                     "isFollowPrivate": 1,
                                                     "isPostPrivate": 1,
-
+                                                    "urluserBadge":
+                                                    {
+                                                        "$filter":
+                                                        {
+                                                            input:"$userBadge",
+                                                            as:"listbadge",
+                                                            cond:
+                                                            {
+                                                            "$and":
+                                                            [
+                                                                {
+                                                                "$eq":
+                                                                [
+                                                                    "$$listbadge.isActive", true
+                                                                ]
+                                                                },
+                                                                {
+                                                                "$lte": [
+                                                                    {
+                                                                    "$dateToString": {
+                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                        "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                        }
+                                                                    }
+                                                                    },
+                                                                    "$$listbadge.endDatetime"
+                                                                ]
+                                                                }
+                                                            ]
+                                                            }
+                                                        }
+                                                    },
                                                 }
                                             }
                                         ],
@@ -6772,6 +7047,19 @@ export class TagCountService {
                                         "fullName": "$userBasic.fullName",
                                         "username": "$username.username",
                                         "avatar": 1,
+                                        "urluserBadge":
+                                        {
+                                            "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$userBasic.urluserBadge",0
+                                                    ]
+                                                },
+                                                null
+                                            ]
+                                        },
                                         isLiked: {
                                             $ifNull: [{
                                                 $arrayElemAt: ["$isLike.isLiked", 0]
@@ -7109,7 +7397,42 @@ export class TagCountService {
                                                     "isPrivate": 1,
                                                     "isFollowPrivate": 1,
                                                     "isPostPrivate": 1,
-
+                                                    "urluserBadge":
+                                                    {
+                                                        "$filter":
+                                                        {
+                                                            input:"$userBadge",
+                                                            as:"listbadge",
+                                                            cond:
+                                                            {
+                                                            "$and":
+                                                            [
+                                                                {
+                                                                "$eq":
+                                                                [
+                                                                    "$$listbadge.isActive", true
+                                                                ]
+                                                                },
+                                                                {
+                                                                "$lte": [
+                                                                    {
+                                                                    "$dateToString": {
+                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                        "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                        }
+                                                                    }
+                                                                    },
+                                                                    "$$listbadge.endDatetime"
+                                                                ]
+                                                                }
+                                                            ]
+                                                            }
+                                                        }
+                                                    },
                                                 }
                                             }
                                         ],
@@ -7495,6 +7818,19 @@ export class TagCountService {
                                         "fullName": "$userBasic.fullName",
                                         "username": "$username.username",
                                         "avatar": 1,
+                                        "urluserBadge":
+                                        {
+                                            "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$userBasic.urluserBadge",0
+                                                    ]
+                                                },
+                                                null
+                                            ]
+                                        },
                                         isLiked: {
                                             $ifNull: [{
                                                 $arrayElemAt: ["$isLike.isLiked", 0]
@@ -7830,7 +8166,42 @@ export class TagCountService {
                                                     "isPrivate": 1,
                                                     "isFollowPrivate": 1,
                                                     "isPostPrivate": 1,
-
+                                                    "urluserBadge":
+                                                    {
+                                                        "$filter":
+                                                        {
+                                                            input:"$userBadge",
+                                                            as:"listbadge",
+                                                            cond:
+                                                            {
+                                                            "$and":
+                                                            [
+                                                                {
+                                                                "$eq":
+                                                                [
+                                                                    "$$listbadge.isActive", true
+                                                                ]
+                                                                },
+                                                                {
+                                                                "$lte": [
+                                                                    {
+                                                                    "$dateToString": {
+                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                        "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                        }
+                                                                    }
+                                                                    },
+                                                                    "$$listbadge.endDatetime"
+                                                                ]
+                                                                }
+                                                            ]
+                                                            }
+                                                        }
+                                                    },
                                                 }
                                             }
                                         ],
@@ -8216,6 +8587,19 @@ export class TagCountService {
                                         "fullName": "$userBasic.fullName",
                                         "username": "$username.username",
                                         "avatar": 1,
+                                        "urluserBadge":
+                                        {
+                                            "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$userBasic.urluserBadge",0
+                                                    ]
+                                                },
+                                                null
+                                            ]
+                                        },
                                         isLiked: {
                                             $ifNull: [{
                                                 $arrayElemAt: ["$isLike.isLiked", 0]
@@ -8575,7 +8959,42 @@ export class TagCountService {
                                                     "isPrivate": 1,
                                                     "isFollowPrivate": 1,
                                                     "isPostPrivate": 1,
-
+                                                    "urluserBadge":
+                                                    {
+                                                        "$filter":
+                                                        {
+                                                            input:"$userBadge",
+                                                            as:"listbadge",
+                                                            cond:
+                                                            {
+                                                            "$and":
+                                                            [
+                                                                {
+                                                                "$eq":
+                                                                [
+                                                                    "$$listbadge.isActive", true
+                                                                ]
+                                                                },
+                                                                {
+                                                                "$lte": [
+                                                                    {
+                                                                    "$dateToString": {
+                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                        "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                        }
+                                                                    }
+                                                                    },
+                                                                    "$$listbadge.endDatetime"
+                                                                ]
+                                                                }
+                                                            ]
+                                                            }
+                                                        }
+                                                    },
                                                 }
                                             }
                                         ],
@@ -8961,6 +9380,19 @@ export class TagCountService {
                                         "fullName": "$userBasic.fullName",
                                         "username": "$username.username",
                                         "avatar": 1,
+                                        "urluserBadge":
+                                        {
+                                            "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$userBasic.urluserBadge",0
+                                                    ]
+                                                },
+                                                null
+                                            ]
+                                        },
                                         isLiked: {
                                             $ifNull: [{
                                                 $arrayElemAt: ["$isLike.isLiked", 0]
@@ -9298,7 +9730,42 @@ export class TagCountService {
                                                     "isPrivate": 1,
                                                     "isFollowPrivate": 1,
                                                     "isPostPrivate": 1,
-
+                                                    "urluserBadge":
+                                                    {
+                                                        "$filter":
+                                                        {
+                                                            input:"$userBadge",
+                                                            as:"listbadge",
+                                                            cond:
+                                                            {
+                                                            "$and":
+                                                            [
+                                                                {
+                                                                "$eq":
+                                                                [
+                                                                    "$$listbadge.isActive", true
+                                                                ]
+                                                                },
+                                                                {
+                                                                "$lte": [
+                                                                    {
+                                                                    "$dateToString": {
+                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                        "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                        }
+                                                                    }
+                                                                    },
+                                                                    "$$listbadge.endDatetime"
+                                                                ]
+                                                                }
+                                                            ]
+                                                            }
+                                                        }
+                                                    },
                                                 }
                                             }
                                         ],
@@ -9684,6 +10151,19 @@ export class TagCountService {
                                         "fullName": "$userBasic.fullName",
                                         "username": "$username.username",
                                         "avatar": 1,
+                                        "urluserBadge":
+                                        {
+                                            "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$userBasic.urluserBadge",0
+                                                    ]
+                                                },
+                                                null
+                                            ]
+                                        },
                                         isLiked: {
                                             $ifNull: [{
                                                 $arrayElemAt: ["$isLike.isLiked", 0]
@@ -10043,7 +10523,42 @@ export class TagCountService {
                                                     "isPrivate": 1,
                                                     "isFollowPrivate": 1,
                                                     "isPostPrivate": 1,
-
+                                                    "urluserBadge":
+                                                    {
+                                                        "$filter":
+                                                        {
+                                                            input:"$userBadge",
+                                                            as:"listbadge",
+                                                            cond:
+                                                            {
+                                                            "$and":
+                                                            [
+                                                                {
+                                                                "$eq":
+                                                                [
+                                                                    "$$listbadge.isActive", true
+                                                                ]
+                                                                },
+                                                                {
+                                                                "$lte": [
+                                                                    {
+                                                                    "$dateToString": {
+                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                        "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                        }
+                                                                    }
+                                                                    },
+                                                                    "$$listbadge.endDatetime"
+                                                                ]
+                                                                }
+                                                            ]
+                                                            }
+                                                        }
+                                                    },
                                                 }
                                             }
                                         ],
@@ -10429,6 +10944,19 @@ export class TagCountService {
                                         "fullName": "$userBasic.fullName",
                                         "username": "$username.username",
                                         "avatar": 1,
+                                        "urluserBadge":
+                                        {
+                                            "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$userBasic.urluserBadge",0
+                                                    ]
+                                                },
+                                                null
+                                            ]
+                                        },
                                         isLiked: {
                                             $ifNull: [{
                                                 $arrayElemAt: ["$isLike.isLiked", 0]
@@ -10757,7 +11285,42 @@ export class TagCountService {
                                                     "isPrivate": 1,
                                                     "isFollowPrivate": 1,
                                                     "isPostPrivate": 1,
-
+                                                    "urluserBadge":
+                                                    {
+                                                        "$filter":
+                                                        {
+                                                            input:"$userBadge",
+                                                            as:"listbadge",
+                                                            cond:
+                                                            {
+                                                            "$and":
+                                                            [
+                                                                {
+                                                                "$eq":
+                                                                [
+                                                                    "$$listbadge.isActive", true
+                                                                ]
+                                                                },
+                                                                {
+                                                                "$lte": [
+                                                                    {
+                                                                    "$dateToString": {
+                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                        "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                        }
+                                                                    }
+                                                                    },
+                                                                    "$$listbadge.endDatetime"
+                                                                ]
+                                                                }
+                                                            ]
+                                                            }
+                                                        }
+                                                    },
                                                 }
                                             }
                                         ],
@@ -11143,6 +11706,19 @@ export class TagCountService {
                                         "fullName": "$userBasic.fullName",
                                         "username": "$username.username",
                                         "avatar": 1,
+                                        "urluserBadge":
+                                        {
+                                            "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$userBasic.urluserBadge",0
+                                                    ]
+                                                },
+                                                null
+                                            ]
+                                        },
                                         isLiked: {
                                             $ifNull: [{
                                                 $arrayElemAt: ["$isLike.isLiked", 0]
