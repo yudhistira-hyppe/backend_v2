@@ -186,7 +186,7 @@ export class ChallengeController {
         "Aktivitas": false,
         "Interaksi": true,
         "AktivitasAkun": [],
-        "InteraksiKonten": setinteraksikonten
+        "InteraksiKonten": [setinteraksikonten]
       }
     }
 
@@ -769,7 +769,7 @@ export class ChallengeController {
           "Aktivitas": false,
           "Interaksi": true,
           "AktivitasAkun": [],
-          "InteraksiKonten": setinteraksikonten
+          "InteraksiKonten": [setinteraksikonten]
         }
       }
 
