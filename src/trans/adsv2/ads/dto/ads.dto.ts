@@ -84,4 +84,10 @@ export class AdsDto {
     endAge: number;
     startAge: number;
     remark: string;
+    mediaBasePath: string;
+    mediaUri: string;
+    mediaThumBasePath: string;
+    mediaThumUri: string;
+    width: string;
+    height: string;
 }

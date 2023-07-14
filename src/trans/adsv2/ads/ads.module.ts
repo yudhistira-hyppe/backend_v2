@@ -12,9 +12,9 @@ import { AdsSettingModule } from '../adssetting/adssetting.module';
 import { UserAdsModule } from '../../../trans/userads/userads.module';
 import { PostsModule } from '../../../content/posts/posts.module';
 import { AccountbalancesModule } from '../../../trans/accountbalances/accountbalances.module';
-import { MediaprofilepictsModule } from 'src/content/mediaprofilepicts/mediaprofilepicts.module';
-import { AdsplacesModule } from 'src/trans/adsplaces/adsplaces.module';
-import { AdstypesModule } from 'src/trans/adstypes/adstypes.module';
+import { MediaprofilepictsModule } from '../../../content/mediaprofilepicts/mediaprofilepicts.module';
+import { AdsplacesModule } from '../../../trans/adsplaces/adsplaces.module';
+import { AdstypesModule } from '../../../trans/adstypes/adstypes.module';
 
 @Module({
     imports: [
