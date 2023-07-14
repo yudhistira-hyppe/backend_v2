@@ -2996,20 +2996,23 @@ export class UserAdsService {
         return query;
     }
 
-    async campaignDashboard(start_date: any, end_date: any){
+    async campaignDashboard(userId: string,start_date: any, end_date: any){
         var pipelineMatch = [];
         if (start_date != null && end_date != null) {
             start_date = new Date(start_date);
             end_date = new Date(end_date);
             end_date.setDate(end_date.getDate() + 1);
+            var andExpr = [];
+            andExpr.push({ $gte: ["$timestamp", start_date.toISOString()] });
+            andExpr.push({ $lte: ["$timestamp", end_date.toISOString()] });
+            if (userId != undefined) {
+                andExpr.push({ $eq: [ "$userID", new mongoose.Types.ObjectId(userId) ] });
+            }
             pipelineMatch.push({
                 $match:
                 {
                     $expr: {
-                        $and: [
-                            { $gte: ["$timestamp", start_date.toISOString()] },
-                            { $lte: ["$timestamp", end_date.toISOString()] }
-                        ]
+                        $and: andExpr
                     }
                 },
             })
@@ -3548,7 +3551,7 @@ export class UserAdsService {
                 }
             });
 
-        let query = await this.userAdsModel.aggregate([
+        console.log(JSON.stringify([
             {
                 $addFields: {
                     dateStart: start_date,
@@ -3569,7 +3572,7 @@ export class UserAdsService {
                 }
             },
             {
-                $facet: 
+                $facet:
                 {
                     viewed: viewedFacet,
                     reach: reachFacet,
@@ -3597,7 +3600,7 @@ export class UserAdsService {
                 }
             },
             {
-                $project:{
+                $project: {
                     statusIklan: {
                         "$arrayElemAt": [{
                             "$let": {
@@ -3626,7 +3629,7 @@ export class UserAdsService {
                                     onNull: 0
                                 }
                             }
-                        ] 
+                        ]
                     },
                     Totalimpresi: {
                         "$let": {
@@ -3657,7 +3660,155 @@ export class UserAdsService {
                     CTA: 1
                 }
             }
-        ]);
+        ]))
+        var aggregateData = [];
+        aggregateData.push(
+            {
+                $addFields: {
+                    dateStart: start_date,
+                    dateEnd: end_date
+                }
+            },
+            {
+                $lookup:
+                {
+                    from: "ads",
+                    as: "ads_data",
+                    let:
+                    {
+                        dateStart_: "$dateStart",
+                        dateEnd_: "$dateEnd"
+                    },
+                    pipeline: pipelineMatch
+                }
+            },);
+        if (userId != undefined) {
+            aggregateData.push({
+                $lookup:
+                {
+                    from: "ads",
+                    as: "adsUSer",
+                    let:
+                    {
+                        adsID: '$adsID',
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ['$_id', '$$adsID'] }
+                            }
+                        },
+                    ]
+                }
+            },
+                {
+                    $addFields: {
+                        userIdCreate: {
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$adsUSer", 0] },
+                                },
+                                "in": "$$tmp.userID"
+                            }
+                        }
+                    }
+                },
+                {
+                    $match: {
+                        userIdCreate: new mongoose.Types.ObjectId(userId)
+                    }
+                },);
+        }
+        aggregateData.push({
+            $facet:
+            {
+                viewed: viewedFacet,
+                reach: reachFacet,
+                impresi: impresiFacet,
+                CTA: CTAFacet,
+                CTACount: CTACountFacet,
+                viewTime: viewTimeFacet,
+                clickTime: clickTimeFacet,
+                status: [
+                    {
+                        $group: {
+                            _id: "$ads_data",
+                            count: { $sum: 1 }
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            data: {
+                                "$first": "$_id"
+                            },
+                        }
+                    },
+                ],
+            }
+        },
+            {
+                $project: {
+                    statusIklan: {
+                        "$arrayElemAt": [{
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$status", 0] },
+                                },
+                                "in": "$$tmp.data.status"
+                            }
+                        }, 0]
+                    },
+                    saldoKredit: {
+                        $sum: [
+                            {
+                                $convert: {
+                                    input: { "$arrayElemAt": ['$viewTime.count', 0] },
+                                    to: "int",
+                                    onError: 0,
+                                    onNull: 0
+                                }
+                            },
+                            {
+                                $convert: {
+                                    input: { "$arrayElemAt": ['$clickTime.count', 0] },
+                                    to: "int",
+                                    onError: 0,
+                                    onNull: 0
+                                }
+                            }
+                        ]
+                    },
+                    Totalimpresi: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$viewed", 0] },
+                            },
+                            "in": "$$tmp.impresi"
+                        }
+                    },
+                    Totalreach: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$viewed", 0] },
+                            },
+                            "in": "$$tmp.reach"
+                        }
+                    },
+                    TotalCTA: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$CTACount", 0] },
+                            },
+                            "in": "$$tmp.CTACount"
+                        }
+                    },
+                    impresi: 1,
+                    reach: 1,
+                    CTA: 1
+                }
+            });
+        let query = await this.userAdsModel.aggregate(aggregateData);
         return query;
     }
 

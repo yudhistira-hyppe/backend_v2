@@ -473,8 +473,8 @@ export class AdsService {
 
     }
 
-    async campaignDashboard(start_date: any, end_date: any): Promise<any> {
-        return await this.userAdsService.campaignDashboard(start_date, end_date);
+    async campaignDashboard(userId:string, start_date: any, end_date: any): Promise<any> {
+        return await this.userAdsService.campaignDashboard(userId, start_date, end_date);
     }
 
     async campaignDetail(adsId: string): Promise<any> {

@@ -739,7 +739,7 @@ export class AdsController {
         }
 
         try {
-            let ads_campaign_dashboard = await this.adsService.campaignDashboard(start_date, end_date);
+            let ads_campaign_dashboard = await this.adsService.campaignDashboard(body.userId,start_date, end_date);
             if (await this.utilsService.ceckData(ads_campaign_dashboard)){
                 if (ads_campaign_dashboard.length>0){
                     ads_campaign_dashboard = ads_campaign_dashboard[0];
