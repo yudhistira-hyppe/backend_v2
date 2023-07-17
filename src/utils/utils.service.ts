@@ -1520,8 +1520,9 @@ export class UtilsService {
 
   async generateProfile(email: string, datafor: string): Promise<ProfileDTO> {
     var get_userbasic = await this.userbasicsService.findone_(email);
+    // var get_userbasic = await this.userbasicsService.findOne(email);
     var get_userauth = await this.userauthsService.findOne(email);
-
+    
     var get_languages = null;
     var get_insight = null;
     var get_cities = null;
