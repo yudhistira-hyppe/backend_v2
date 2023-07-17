@@ -4671,7 +4671,7 @@ export class subChallengeService {
                                             $arrayElemAt: ["$peserta.peserta.caraGabung", 0]
                                         }, "SEMUA PENGGUNA"]
                                     },
-                                    then:
+                                    else:
                                     {
                                         $cond: {
                                             if: {
@@ -4710,7 +4710,7 @@ export class subChallengeService {
                                         },
 
                                     },
-                                    else: "NOT ALLOWED"
+                                    then: "ALLOWED"
                                 }
                             },
 
