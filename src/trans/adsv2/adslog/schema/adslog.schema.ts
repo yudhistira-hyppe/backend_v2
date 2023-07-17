@@ -18,9 +18,11 @@ export class AdsLogs {
     @Prop()
     dateTime: string;
     @Prop()
-    request: string;
+    requestAds: string;
     @Prop()
-    response: string;
+    responseAds: string;
+    @Prop()
+    endPointAds: string;
     
 }
 export const AdsLogsSchema = SchemaFactory.createForClass(AdsLogs);

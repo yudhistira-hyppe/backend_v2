@@ -13,16 +13,16 @@ import { UserAdsService } from '../../../trans/userads/userads.service';
 import { OssContentPictService } from '../../../content/posts/osscontentpict.service';
 
 @Injectable()
-export class AdsService { 
+export class AdsService {
     private readonly logger = new Logger(AdsService.name);
     constructor(
         @InjectModel(Ads.name, 'SERVER_FULL')
         private readonly adsModel: Model<AdsDocument>,
         private readonly configService: ConfigService,
         private readonly postContentService: PostContentService,
-        private readonly adsBalaceCreditService: AdsBalaceCreditService, 
+        private readonly adsBalaceCreditService: AdsBalaceCreditService,
         private readonly AccountbalancesService: AccountbalancesService,
-        private readonly userAdsService: UserAdsService, 
+        private readonly userAdsService: UserAdsService,
         private readonly ossContentPictService: OssContentPictService,
     ) { }
 
@@ -473,7 +473,7 @@ export class AdsService {
 
     }
 
-    async campaignDashboard(userId:string, start_date: any, end_date: any): Promise<any> {
+    async campaignDashboard(userId: string, start_date: any, end_date: any): Promise<any> {
         return await this.userAdsService.campaignDashboard(userId, start_date, end_date);
     }
 
@@ -502,7 +502,7 @@ export class AdsService {
                 }
             },
             {
-                $project:{
+                $project: {
                     _id: 1,
                     campaignId: 1,
                     name: 1,
@@ -519,7 +519,7 @@ export class AdsService {
                     liveAt: 1,
                     liveEnd: 1,
                     urlLink: 1,
-                    tayang: 1, 
+                    tayang: 1,
                     status: {
                         $switch: {
                             branches: [
@@ -557,10 +557,10 @@ export class AdsService {
                                     case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
                                     then: {
                                         $ifNull:
-                                        [
-                                            "$remark",
-                                            "Iklan sudah selesai"
-                                        ]
+                                            [
+                                                "$remark",
+                                                "Iklan sudah selesai"
+                                            ]
                                         // $cond:
                                         // {
                                         //     if:
@@ -647,7 +647,7 @@ export class AdsService {
                     "foreignField": "_id",
                     "as": "adstypes_data"
                 }
-            }, 
+            },
             {
                 "$lookup": {
                     "from": "adsobjectivitas",
@@ -679,7 +679,7 @@ export class AdsService {
                                             ]
                                     }
                                 },
-                            }, 
+                            },
                             {
                                 "$facet": {
                                     "viewed": [{
@@ -3202,8 +3202,8 @@ export class AdsService {
             },
             {
                 $project: {
-                    _id:0,
-                    adsDetail:{
+                    _id: 0,
+                    adsDetail: {
                         _id: "$_id",
                         name: "$name",
                         campaignId: "$campaignId",
@@ -3258,10 +3258,10 @@ export class AdsService {
                                         case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
                                         then: {
                                             $ifNull:
-                                            [
-                                                "$remark",
-                                                "Iklan sudah selesai"
-                                            ]
+                                                [
+                                                    "$remark",
+                                                    "Iklan sudah selesai"
+                                                ]
                                             // $cond:
                                             // {
                                             //     if:
@@ -3299,7 +3299,7 @@ export class AdsService {
                             },
 
                         },
-                        dayAds: "$dayAds", 
+                        dayAds: "$dayAds",
                         credit: "$credit",
                         audiensFrekuensi: "$audiensFrekuensi",
                         adsObjectivitasId: "$adsObjectivitasId",
@@ -3318,7 +3318,7 @@ export class AdsService {
                                 },
                                 "in": "$$tmp.name_en"
                             }
-                        }, 
+                        },
                         idApsara: "$idApsara",
                     },
                     summary: {
@@ -3379,7 +3379,7 @@ export class AdsService {
         var paramaggregate = [];
         var $match = {};
         var andFilter = [];
-        paramaggregate.push({ $addFields: { date_now: new Date() }});
+        paramaggregate.push({ $addFields: { date_now: new Date() } });
         //$match["adsObjectivitasId"] = { $ne: null };
         if (userID != undefined) {
             andFilter.push({
@@ -3429,7 +3429,7 @@ export class AdsService {
             }
         }
         //------------FILTER TAYANG------------
-        if (plan_ads != undefined){
+        if (plan_ads != undefined) {
             if (plan_ads.length > 0) {
                 var plan_adsFilter = [];
                 if (plan_ads.includes("show_smaller_than_50")) {
@@ -3530,20 +3530,20 @@ export class AdsService {
                 userIDCount: { "$sum": 1 }
             }
         },
-        {
-            $group: {
-                _id: null,
-                reach: { "$sum": 1 },
-                impresi: { "$sum": "$userIDCount" }
-            }
-        },
-        {
-            $project: {
-                _id: 0,
-                reach: 1,
-                impresi: 1
-            }
-        });
+            {
+                $group: {
+                    _id: null,
+                    reach: { "$sum": 1 },
+                    impresi: { "$sum": "$userIDCount" }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    reach: 1,
+                    impresi: 1
+                }
+            });
         //------------FACET CTA------------
         var CTACountFacet = [];
         if (start_date != undefined && end_date != undefined) {
@@ -3585,26 +3585,26 @@ export class AdsService {
                 }
             }
         },
-        {
-            $group:
             {
-                _id: "$clickTime",
-                CTACount:
+                $group:
                 {
-                    "$sum": 1
+                    _id: "$clickTime",
+                    CTACount:
+                    {
+                        "$sum": 1
+                    }
                 }
-            }
-        },
-        {
-            $group:
+            },
             {
-                _id: null,
-                CTACount:
+                $group:
                 {
-                    "$sum": "$CTACount"
+                    _id: null,
+                    CTACount:
+                    {
+                        "$sum": "$CTACount"
+                    }
                 }
-            }
-        });
+            });
         //------------PUSH QUERY------------
         paramaggregate.push(
             {
@@ -3617,28 +3617,28 @@ export class AdsService {
                         "type_fk": "$typeAdsID"
                     },
                     pipeline:
-                    [
-                        {
-                            $match:
+                        [
                             {
-                                $expr:
+                                $match:
                                 {
-                                    $eq:
-                                        [
-                                            "$_id",
-                                            "$$type_fk"
-                                        ]
-                                }
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$_id",
+                                                "$$type_fk"
+                                            ]
+                                    }
+                                },
                             },
-                        },
-                        {
-                            $project:
                             {
-                                nameType: 1,
-                                creditValue: 1,
+                                $project:
+                                {
+                                    nameType: 1,
+                                    creditValue: 1,
+                                }
                             }
-                        }
-                    ]
+                        ]
                 }
             },
             {
@@ -3660,17 +3660,17 @@ export class AdsService {
                                             $expr:
                                             {
                                                 $eq:
-                                                [
-                                                    "$adsID",
-                                                    "$$type_fk"
-                                                ]
+                                                    [
+                                                        "$adsID",
+                                                        "$$type_fk"
+                                                    ]
                                             }
                                         },
                                     ]
                                 },
                             },
                             {
-                                $facet:{
+                                $facet: {
                                     viewed: viewedFacet,
                                     CTACount: CTACountFacet,
                                 }
@@ -3684,16 +3684,16 @@ export class AdsService {
                     _id: 1,
                     campaignId: 1,
                     name: 1,
-                    liveAt: 1, 
+                    liveAt: 1,
                     liveEnd: 1,
                     userID: 1,
                     typesID: 1,
                     adstypes:
                     {
                         "$arrayElemAt":
-                        [
-                            "$type_data.nameType", 0
-                        ]
+                            [
+                                "$type_data.nameType", 0
+                            ]
                     },
                     tayang: 1,
                     totalCredit: 1,
@@ -3709,9 +3709,9 @@ export class AdsService {
                                     then: 'DRAFT',
                                 },
                                 {
-                                    case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] } ] },
+                                    case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
                                     then: 'IN_ACTIVE',
-                                }, 
+                                },
                                 {
                                     case: { $or: [{ $eq: ['$status', 'APPROVE'] }, { $eq: ['$status', 'ACTIVE'] }] },
                                     then: 'ACTIVE',
@@ -3738,10 +3738,10 @@ export class AdsService {
                                     case: { $or: [{ $eq: ['$status', 'FINISH'] }, { $eq: ['$status', 'IN_ACTIVE'] }, { $eq: ['$status', 'REPORTED'] }] },
                                     then: {
                                         $ifNull:
-                                        [
-                                            "$remark",
-                                            "Iklan sudah selesai"
-                                        ]
+                                            [
+                                                "$remark",
+                                                "Iklan sudah selesai"
+                                            ]
                                         // $cond:
                                         // {  
                                         //     if:
@@ -3761,7 +3761,8 @@ export class AdsService {
                                             if: {
                                                 $lte: [{
                                                     $toDate: "$liveAt"
-                                                }, "$date_now"] },
+                                                }, "$date_now"]
+                                            },
                                             then: 'Iklan sedang tayang',
                                             else: 'Sedang menunggu penayangan'
                                         }
@@ -3890,13 +3891,13 @@ export class AdsService {
         //------------SORTIR------------
         if (sorting) {
             paramaggregate.push({
-                "$sort":{
+                "$sort": {
                     timestamp: -1
                 }
             });
         } else {
             paramaggregate.push({
-                "$sort":{
+                "$sort": {
                     timestamp: 1
                 }
             })
@@ -3979,7 +3980,7 @@ export class AdsService {
         return getReward;
     }
 
-    async getAdsUser(email: string, idUser: string, idTypeAds: string): Promise<any>{
+    async getAdsUser(email: string, idUser: string, idTypeAds: string): Promise<any> {
         var query = await this.adsModel.aggregate([
             {
                 $set:
@@ -4308,6 +4309,7 @@ export class AdsService {
                             default: false
                         }
                     },
+
                 }
             },
             {
@@ -4888,6 +4890,21 @@ export class AdsService {
             },
             {
                 $set: {
+                    userMinat:
+                    {
+                        $cond: {
+                            if: {
+                                $eq: ['$userBasic.userInterests', []]
+                            },
+                            then: "LAINNYA",
+                            else: "$userBasic.userInterests"
+                        }
+                    },
+
+                }
+            },
+            {
+                $set: {
                     minat:
                     {
                         $cond: {
@@ -4903,7 +4920,17 @@ export class AdsService {
                                     $setIntersection: ["$interestID.$id", "$userBasic.userInterests.$id"]
                                 }
                             },
-                            else: 0
+                            else:
+                            {
+                                $cond: {
+                                    if: {
+                                        $in: ['$userMinat', "$interestID"]
+                                    },
+                                    then: 1,
+                                    else: 0
+                                }
+                            },
+
                         }
                     },
 
@@ -5143,6 +5170,39 @@ export class AdsService {
             },
             {
                 "$lookup": {
+                    from: "settings",
+                    as: "cta",
+                    let: {
+                        localID: 'CTAButton',
+                        indexs: "$ctaButton"
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr: {
+                                    $eq: ['$jenis', '$$localID']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                jenis: 1,
+                                value: 1,
+
+                            }
+                        }
+                    ],
+
+                }
+            },
+            {
+                $unwind: {
+                    path: "$cta"
+                }
+            },
+            {
+                "$lookup": {
                     from: "adstypes",
                     as: "types",
                     let: {
@@ -5175,8 +5235,12 @@ export class AdsService {
             },
             {
                 $project: {
+                    ctaNames: {
+                        $arrayElemAt: ["$cta.value", "$ctaButton"]
+                    },
                     test: 1,
                     sekarang: 1,
+                    ctaButton: 1,
                     viewed: "$adsUser.viewed",
                     placingID: 1,
                     placingName: 1,
@@ -5207,12 +5271,6 @@ export class AdsService {
                     scoreKelamin: 1,
                     scoreMinat: 1,
                     scoreGeografis: 1,
-                    mediaBasePath: 1,
-                    mediaUri: 1,
-                    mediaThumBasePath: 1,
-                    mediaThumUri: 1,
-                    width: 1,
-                    height: 1,
                     scoreTotal: 1,
                     isValid: 1,
                     objectivitasId: "$objectivitas.name_id",
@@ -5221,7 +5279,7 @@ export class AdsService {
                 }
             },
             {
-                $match:{
+                $match: {
                     typeAdsID: new mongoose.Types.ObjectId(idTypeAds),
                 }
             },

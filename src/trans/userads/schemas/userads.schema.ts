@@ -51,6 +51,8 @@ export class UserAds {
     @Prop()
     clickTime: String[];
     @Prop()
+    timeView: number[];
+    @Prop()
     scoreAge: number;
     @Prop()
     scoreGender: number;
