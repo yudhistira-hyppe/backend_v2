@@ -6897,6 +6897,13 @@ export class UserbasicsService {
           "regSrc": 1,
           "icon": 1,
           "userBadge": 1,
+          "countries":1,
+          "states":1,
+          "cities":1,
+          "idProofNumber":1,
+          "idProofStatus":1,
+          "pin":1,
+          "otppinVerified":1,
           urluserBadge:
           {
             "$filter":
@@ -6971,6 +6978,13 @@ export class UserbasicsService {
           "regSrc": 1,
           "icon": 1,
           "userBadge": 1,
+          "countries":1,
+          "states":1,
+          "cities":1,
+          "idProofNumber":1,
+          "idProofStatus":1,
+          "pin":1,
+          "otppinVerified":1,
           urluserBadge: {
             "$arrayElemAt":
               [
