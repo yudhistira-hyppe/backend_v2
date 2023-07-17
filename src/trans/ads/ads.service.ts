@@ -7171,106 +7171,106 @@ export class AdsService {
             {
                 "$unwind":
                 {
-                    path:"$reportedUser"
+                    path: "$reportedUser"
                 }
             },
             {
                 "$group":
                 {
-                    _id:"$_id",
+                    _id: "$_id",
                     userID:
                     {
-                        "$first":"$userID"
+                        "$first": "$userID"
                     },
-                    idApsara: 
+                    idApsara:
                     {
-                        "$first":"$idApsara"
+                        "$first": "$idApsara"
                     },
-                    name: 
+                    name:
                     {
-                        "$first":"$name"
+                        "$first": "$name"
                     },
-                    type: 
+                    type:
                     {
-                        "$first":"$type"
+                        "$first": "$type"
                     },
-                    status: 
+                    status:
                     {
-                        "$first":"$status"
+                        "$first": "$status"
                     },
-                    isActive: 
+                    isActive:
                     {
-                        "$first":"$isActive"
+                        "$first": "$isActive"
                     },
-                    timestamp: 
+                    timestamp:
                     {
-                        "$first":"$timestamp"
+                        "$first": "$timestamp"
                     },
-                    totalUsedCredit: 
+                    totalUsedCredit:
                     {
-                        "$first":"$totalUsedCredit"
+                        "$first": "$totalUsedCredit"
                     },
-                    tayang: 
+                    tayang:
                     {
-                        "$first":"$tayang"
+                        "$first": "$tayang"
                     },
-                    usedCredit: 
+                    usedCredit:
                     {
-                        "$first":"$usedCredit"
+                        "$first": "$usedCredit"
                     },
-                    usedCreditFree: 
+                    usedCreditFree:
                     {
-                        "$first":"$usedCreditFree"
+                        "$first": "$usedCreditFree"
                     },
-                    creditFree: 
+                    creditFree:
                     {
-                        "$first":"$creditFree"
+                        "$first": "$creditFree"
                     },
-                    creditValue: 
+                    creditValue:
                     {
-                        "$first":"$creditValue"
+                        "$first": "$creditValue"
                     },
-                    totalCredit: 
+                    totalCredit:
                     {
-                        "$first":"$totalCredit"
+                        "$first": "$totalCredit"
                     },
-                    contentModeration: 
+                    contentModeration:
                     {
-                        "$first":"$contentModeration"
+                        "$first": "$contentModeration"
                     },
-                    contentModerationResponse: 
+                    contentModerationResponse:
                     {
-                        "$first":"$contentModerationResponse"
+                        "$first": "$contentModerationResponse"
                     },
-                    reportedStatus: 
+                    reportedStatus:
                     {
-                        "$first":"$reportedStatus"
+                        "$first": "$reportedStatus"
                     },
-                    reportedUser: 
+                    reportedUser:
                     {
-                        "$push":"$reportedUser"
+                        "$push": "$reportedUser"
                     },
-                    reportedUserCount: 
+                    reportedUserCount:
                     {
                         "$sum":
                         {
-                          "$cond":
-                          {
-                            if:
+                            "$cond":
                             {
-                              "$eq":
-                              [
-                                "$reportedUser.active", true
-                              ]
-                            },
-                            then:1,
-                            else:0
-                          }
+                                if:
+                                {
+                                    "$eq":
+                                        [
+                                            "$reportedUser.active", true
+                                        ]
+                                },
+                                then: 1,
+                                else: 0
+                            }
                         }
                     },
-                    reportedUserHandle: 
+                    reportedUserHandle:
                     {
-                        "$first":"$reportedUserHandle"
+                        "$first": "$reportedUserHandle"
                     },
                 }
             },
@@ -8310,8 +8310,8 @@ export class AdsService {
     }
 
 
-    async find200(): Promise<Ads[]> {
-        return this.adsModel.find({ reportedUserCount: { $gte: 200 } }).exec();
+    async find200(value: number): Promise<Ads[]> {
+        return this.adsModel.find({ reportedUserCount: { $gte: value } }).exec();
     }
     async countReportStatus(startdate: string, enddate: string) {
         try {
@@ -8405,7 +8405,7 @@ export class AdsService {
                             {
                                 "$unwind":
                                 {
-                                    path:"$reportedUser"
+                                    path: "$reportedUser"
                                 }
                             },
                             {
@@ -8435,25 +8435,25 @@ export class AdsService {
                                 }
                             },
                             {
-                                $match: 
+                                $match:
                                 {
-                                  "$and":
-                                  [
-                                    {
-                                      reportedUser: {
-                                        $ne: null
-                                      },
-                                    },
-                                    {
-                                      "reportedUser.active":true
-                                    },
-                                    {
-                                      isActive: true,
-                                    },
-                                    // {
-                                    //   contentModeration: false
-                                    // }
-                                  ]
+                                    "$and":
+                                        [
+                                            {
+                                                reportedUser: {
+                                                    $ne: null
+                                                },
+                                            },
+                                            {
+                                                "reportedUser.active": true
+                                            },
+                                            {
+                                                isActive: true,
+                                            },
+                                            // {
+                                            //   contentModeration: false
+                                            // }
+                                        ]
                                 }
                             },
                             // {
@@ -8631,7 +8631,7 @@ export class AdsService {
                             {
                                 "$unwind":
                                 {
-                                    path:"$reportedUser"
+                                    path: "$reportedUser"
                                 }
                             },
                             {
@@ -8661,25 +8661,25 @@ export class AdsService {
                                 }
                             },
                             {
-                                $match: 
+                                $match:
                                 {
-                                  "$and":
-                                  [
-                                    {
-                                      reportedUser: {
-                                        $ne: null
-                                      },
-                                    },
-                                    {
-                                      "reportedUser.active":true
-                                    },
-                                    {
-                                        isActive: true,
-                                    },
-                                    // {
-                                    //   contentModeration: false
-                                    // }
-                                  ]
+                                    "$and":
+                                        [
+                                            {
+                                                reportedUser: {
+                                                    $ne: null
+                                                },
+                                            },
+                                            {
+                                                "reportedUser.active": true
+                                            },
+                                            {
+                                                isActive: true,
+                                            },
+                                            // {
+                                            //   contentModeration: false
+                                            // }
+                                        ]
                                 }
                             },
                             // {

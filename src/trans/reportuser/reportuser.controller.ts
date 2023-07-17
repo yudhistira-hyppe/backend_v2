@@ -22,6 +22,7 @@ import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.
 import { UtilsService } from '../../utils/utils.service';
 import { GetusercontentsService } from '../getusercontents/getusercontents.service';
 import { UserbankaccountsService } from '../userbankaccounts/userbankaccounts.service';
+import { SettingsService } from '../settings/settings.service';
 @Controller('api/reportuser')
 export class ReportuserController {
 
@@ -41,6 +42,7 @@ export class ReportuserController {
         private readonly mediaproofpictsService: MediaproofpictsService,
         private readonly getusercontentsService: GetusercontentsService,
         private readonly userbankaccountsService: UserbankaccountsService,
+        private readonly settingsService: SettingsService,
     ) { }
     @UseGuards(JwtAuthGuard)
     @Get('all')
@@ -704,48 +706,48 @@ export class ReportuserController {
 
                 }
 
-                if (reportCount >= 200) {
-                    throw new BadRequestException("Appeal tidak bisa diajukan...!");
-                }
-                else {
-                    if (lengreporthandle > 0) {
-                        for (let i = 0; i < lengreporthandle; i++) {
+                // if (reportCount >= 200) {
+                //     throw new BadRequestException("Appeal tidak bisa diajukan...!");
+                // }
+                // else {
+                if (lengreporthandle > 0) {
+                    for (let i = 0; i < lengreporthandle; i++) {
 
-                            let status = reportedUserHandle[i].status;
-                            let remark = reportedUserHandle[i].remark;
-                            let reason = reportedUserHandle[i].reason;
-                            // let typeAppeal = reportedUserHandle[i].typeAppeal;
-                            objreporthandle = {
+                        let status = reportedUserHandle[i].status;
+                        let remark = reportedUserHandle[i].remark;
+                        let reason = reportedUserHandle[i].reason;
+                        // let typeAppeal = reportedUserHandle[i].typeAppeal;
+                        objreporthandle = {
 
-                                "reason": reason,
-                                "remark": remark,
-                                "reasonAdmin": "",
-                                "reasonId": null,
-                                "createdAt": dt.toISOString(),
-                                "updatedAt": dt.toISOString(),
-                                "status": status
-                            };
-                            arrayreportedHandle.push(objreporthandle);
-                        }
-                    } else {
-
+                            "reason": reason,
+                            "remark": remark,
+                            "reasonAdmin": "",
+                            "reasonId": null,
+                            "createdAt": dt.toISOString(),
+                            "updatedAt": dt.toISOString(),
+                            "status": status
+                        };
+                        arrayreportedHandle.push(objreporthandle);
                     }
+                } else {
 
-
-                    createUserbasicDto.reportedStatus = reportedStatus;
-
-
-                    if (arrayreportedHandle.length > 0) {
-                        createUserbasicDto.reportedUserHandle = arrayreportedHandle;
-                    } else {
-
-                    }
-                    this.userbasicsService.update(postID, createUserbasicDto);
-
-
-                    var data = request_json;
-                    return { response_code: 202, data, messages };
                 }
+
+
+                createUserbasicDto.reportedStatus = reportedStatus;
+
+
+                if (arrayreportedHandle.length > 0) {
+                    createUserbasicDto.reportedUserHandle = arrayreportedHandle;
+                } else {
+
+                }
+                this.userbasicsService.update(postID, createUserbasicDto);
+
+
+                var data = request_json;
+                return { response_code: 202, data, messages };
+                // }
 
 
             } else {
@@ -1076,6 +1078,8 @@ export class ReportuserController {
         var reasonAppeal = null;
         var username = null;
         var jenis = null;
+        var valuemax = null;
+        var idmax = "64b4e15ef578000070003532";
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -1112,6 +1116,14 @@ export class ReportuserController {
         username = request_json["username"];
         email = request_json["email"];
 
+        var datamaxreport = null;
+
+        try {
+            datamaxreport = await this.settingsService.findOne(idmax);
+        } catch (e) {
+            datamaxreport = null;
+        }
+
         if (type === "content") {
 
             let datacount200 = null;
@@ -1119,9 +1131,15 @@ export class ReportuserController {
             dt.setHours(dt.getHours() + 7); // timestamp
             dt = new Date(dt);
 
+            if (datamaxreport !== null) {
+                valuemax = datamaxreport.value;
+            } else {
+                valuemax = 0;
+            }
+
             try {
 
-                datacount200 = await this.postsService.find200();
+                datacount200 = await this.postsService.find200(valuemax);
 
 
             } catch (e) {
@@ -1184,10 +1202,16 @@ export class ReportuserController {
             let dt = new Date(Date.now());
             dt.setHours(dt.getHours() + 7); // timestamp
             dt = new Date(dt);
+            if (datamaxreport !== null) {
+                valuemax = datamaxreport.value;
+            } else {
+                valuemax = 0;
+            }
+
 
             try {
 
-                datacount200 = await this.adsService.find200();
+                datacount200 = await this.adsService.find200(valuemax);
 
 
             } catch (e) {
