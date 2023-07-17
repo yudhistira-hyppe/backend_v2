@@ -1231,14 +1231,15 @@ export class ContenteventsController {
             let idevent1 = ceck_data_DONE._id;
             let event1 = ceck_data_DONE.eventType.toString();
             await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
-            const databasic = await this.userbasicsService.findOne(
-              email_receiverParty
-            );
-            var iduser = null;
-            if (databasic !== null) {
-              iduser = databasic._id;
-              this.userChallengeUnLike(iduser.toString(), idevent1.toString(), "contentevents", "UNLIKE", request.body.postID);
-            }
+            // const databasic = await this.userbasicsService.findOne(
+            //   email_receiverParty
+            // );
+            // var iduser = null;
+            // if (databasic !== null) {
+            //   iduser = databasic._id;
+            //   this.userChallengeUnLike(iduser.toString(), idevent1.toString(), "contentevents", "UNLIKE", request.body.postID);
+            // }
+            this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, ' +
@@ -1277,14 +1278,15 @@ export class ContenteventsController {
           let idevent1 = ceck_data_DONE._id;
           await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
 
-          const databasic = await this.userbasicsService.findOne(
-            email_receiverParty
-          );
-          var iduser = null;
-          if (databasic !== null) {
-            iduser = databasic._id;
-            this.userChallengeUnLike(iduser.toString(), idevent1.toString(), "contentevents", "UNLIKE", request.body.postID);
-          }
+          // const databasic = await this.userbasicsService.findOne(
+          //   email_receiverParty
+          // );
+          // var iduser = null;
+          // if (databasic !== null) {
+          //   iduser = databasic._id;
+          //   this.userChallengeUnLike(iduser.toString(), idevent1.toString(), "contentevents", "UNLIKE", request.body.postID);
+          // }
+          this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
@@ -1303,14 +1305,16 @@ export class ContenteventsController {
 
               let idevent1 = ceck_data_DONE._id;
               await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
-              const databasic = await this.userbasicsService.findOne(
-                email_receiverParty
-              );
-              var iduser = null;
-              if (databasic !== null) {
-                iduser = databasic._id;
-                this.userChallengeUnLike(iduser.toString(), idevent1.toString(), "contentevents", "UNLIKE", request.body.postID);
-              }
+              // const databasic = await this.userbasicsService.findOne(
+              //   email_receiverParty
+              // );
+              // var iduser = null;
+              // if (databasic !== null) {
+              //   iduser = databasic._id;
+              //   this.userChallengeUnLike(iduser.toString(), idevent1.toString(), "contentevents", "UNLIKE", request.body.postID);
+              // }
+
+              this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, ' +
@@ -3007,10 +3011,7 @@ export class ContenteventsController {
           }
         }
 
-
-
       }
-
 
     }
 
@@ -3221,7 +3222,7 @@ export class ContenteventsController {
             }
           }
           try {
-            datauserchall = await this.userchallengesService.userChallengebyIdChall(iduser, idChallenge);
+            datauserchall = await this.userchallengesService.userChallengebyIdChall(iduser.toString(), idChallenge);
           } catch (e) {
             datauserchall = null;
           }
@@ -3347,6 +3348,12 @@ export class ContenteventsController {
       for (let i = 0; i < lengchal; i++) {
         var idChallenge = datachallenge[i]._id.toString();
         try {
+          objectChallenge = datachallenge[i].objectChallenge;
+        } catch (e) {
+          objectChallenge = null;
+        }
+
+        try {
           poinViewVid = datachallenge[i].buatKonten[0].HyppeVid;
         } catch (e) {
           poinViewVid = 0;
@@ -3377,6 +3384,22 @@ export class ContenteventsController {
             datatag = null;
           }
 
+          if (objectChallenge == "AKUN") {
+            try {
+              databasic = await this.userbasicsService.findOne(emailuser);
+              iduser = databasic._id;
+            } catch (e) {
+              databasic = null;
+            }
+
+          } else {
+            try {
+              databasic = await this.userbasicsService.findOne(emailreceiver);
+              iduser = databasic._id;
+            } catch (e) {
+              databasic = null;
+            }
+          }
           if (datatag != null && datatag.length > 0) {
 
             for (let i = 0; i < datatag.length; i++) {
@@ -3474,9 +3497,24 @@ export class ContenteventsController {
 
         }
         else {
+          if (objectChallenge == "AKUN") {
+            try {
+              databasic = await this.userbasicsService.findOne(emailuser);
+              iduser = databasic._id;
+            } catch (e) {
+              databasic = null;
+            }
 
+          } else {
+            try {
+              databasic = await this.userbasicsService.findOne(emailreceiver);
+              iduser = databasic._id;
+            } catch (e) {
+              databasic = null;
+            }
+          }
           try {
-            datauserchall = await this.userchallengesService.userChallengebyIdChall(iduser, idChallenge);
+            datauserchall = await this.userchallengesService.userChallengebyIdChall(iduser.toString(), idChallenge);
           } catch (e) {
             datauserchall = null;
           }
