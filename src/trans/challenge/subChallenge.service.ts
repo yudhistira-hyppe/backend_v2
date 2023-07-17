@@ -4652,7 +4652,25 @@ export class subChallengeService {
                                 ]
                             },
                             then: "BERLANGSUNG",
-                            else: "BERAKHIR"
+                            else:
+                            {
+                                $cond: {
+                                    if: {
+                                        $and: [
+                                            {
+                                                $lt:
+                                                    [
+                                                        "$endDatetime",
+                                                        "$timenow",
+                                                    ]
+                                            },
+
+                                        ]
+                                    },
+                                    else: "AKAN DATANG",
+                                    then: "BERAKHIR"
+                                }
+                            },
                         }
                     },
                     "joined":
