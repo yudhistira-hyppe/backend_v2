@@ -91,3 +91,9 @@ export class AdsDto {
     width: string;
     height: string;
 }
+
+export class AdsAction {
+    watchingTime: number;
+    adsId: mongoose.Types.ObjectId;
+    useradsId: mongoose.Types.ObjectId;
+}

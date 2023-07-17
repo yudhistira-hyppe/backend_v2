@@ -9,7 +9,23 @@ export class Adstypes {
     @Prop()
     nameType: string;
     @Prop()
-    creditValue: number;
+    rewards: number;
+    @Prop()
+    durationMax: number;
+    @Prop()
+    durationMin: number;
+    @Prop()
+    descType: string;
+
+    @Prop()
+    CPV: number;
+    @Prop()
+    CPA: number;
+    @Prop()
+    skipMax: number;
+    @Prop()
+    skipMin: number;
+
     @Prop()
     mediaType: string;
     @Prop([])
@@ -17,29 +33,25 @@ export class Adstypes {
     @Prop([])
     formatType: [];
     @Prop()
-    descType: string;
-    @Prop()
-    AdsSkip: number;
-    @Prop()
-    rewards: number;
-    @Prop()
-    conterImpression: number;
-    @Prop()
-    descriptionMax: number;
-    @Prop()
-    durationMax: number;
-    @Prop()
-    durationMin: number;
-    @Prop()
     sizeMax: number;
+
     @Prop()
     titleMax: number;
+    @Prop()
+    descriptionMax: number;
     @Prop()
     distanceArea: number;
     @Prop()
     intervalAds: number;
     @Prop()
+    conterImpression: number;
+    @Prop()
     servingMultiplier: number;
+
+    @Prop()
+    creditValue: number;
+    @Prop()
+    AdsSkip: number;
 
 }
 

@@ -9,6 +9,7 @@ export class AdsLogsDto {
     desc: string;
     type: string;
     dateTime: string;
-    request: string;
-    response: string;
+    requestAds: string;
+    responseAds: string;
+    endPointAds: string;
 }

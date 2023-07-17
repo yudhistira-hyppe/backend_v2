@@ -136,8 +136,10 @@ export class DisqusController {
           }
           let xres = await this.buildComments(ContentDto_, true);
           if (ContentDto_.tagComment != undefined) {
+            console.log("TAG COMMAND =============================================> ", ContentDto_.tagComment_);
             if (ContentDto_.tagComment_.length>0){
-              for (var n = 0; n < ContentDto_.tagComment_.length;n++){
+              for (var n = 0; n < ContentDto_.tagComment_.length; n++) {
+                console.log("TAG COMMAND " + n + "=============================================> ", ContentDto_.tagComment_[n]);
                 var userAuth = await this.userauthsService.findByUsername(ContentDto_.tagComment_[n]);
                 if (await this.utilsService.ceckData(userAuth)) {
                   var UserEmail = userAuth.email.toString();

@@ -34,4 +34,7 @@ export class AdsTypeDto {
     intervalAds: number;
     conterImpression: number;
     servingMultiplier: number;
+
+    creditValue: number;
+    AdsSkip: number;
 }
