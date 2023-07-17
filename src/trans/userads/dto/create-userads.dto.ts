@@ -24,6 +24,7 @@ export class CreateUserAdsDto {
     isActive: boolean;
     updateAt: String[];
     clickTime: String[];
+    timeView: number[];
     scoreAge: number;
     scoreGender: number;
     scoreInterest: number;

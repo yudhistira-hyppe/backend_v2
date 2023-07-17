@@ -47,5 +47,10 @@ export class AdsType {
     servingMultiplier: number;
     @Prop()
     conterImpression: number;
+
+    @Prop()
+    creditValue: number;
+    @Prop()
+    AdsSkip: number;
 }
 export const AdsTypeSchema = SchemaFactory.createForClass(AdsType);

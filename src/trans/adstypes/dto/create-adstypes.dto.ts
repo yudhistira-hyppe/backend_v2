@@ -3,21 +3,29 @@ export class CreateAdstypesDto {
 
     readonly _id: { oid: String; };
     nameType: string;
-    creditValue: number;
+    rewards: number;
+    durationMax: number;
+    durationMin: number;
+    descType: string;
+
+    CPV: number;
+    CPA: number;
+    skipMax: number;
+    skipMin: number;
+
     mediaType: string;
     sizeType: [];
     formatType: [];
-    descType: string;
-    rewards: number;
-    AdsSkip: number;
-    conterImpression: number;
-    descriptionMax: number;
-    durationMax: number;
-    durationMin: number;
     sizeMax: number;
+
     titleMax: number;
+    descriptionMax: number;
     distanceArea: number;
     intervalAds: number;
+    conterImpression: number;
     servingMultiplier: number;
+
+    creditValue: number;
+    AdsSkip: number;
 
 }

@@ -15,10 +15,11 @@ import { AccountbalancesModule } from '../../../trans/accountbalances/accountbal
 import { MediaprofilepictsModule } from '../../../content/mediaprofilepicts/mediaprofilepicts.module';
 import { AdsplacesModule } from '../../../trans/adsplaces/adsplaces.module';
 import { AdstypesModule } from '../../../trans/adstypes/adstypes.module';
+import { AdslogsModule } from '../adslog/adslogs.module';
 
 @Module({
     imports: [
-        AdstypesModule,
+        AdslogsModule,
         AdsplacesModule,
         MediaprofilepictsModule,
         UserAdsModule,
