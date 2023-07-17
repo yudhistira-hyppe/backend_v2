@@ -4861,6 +4861,14 @@ export class subChallengeService {
 
                 }
             },
+            {
+                $sort: {
+                    session: -1
+                }
+            },
+            {
+                $limit: 1
+            }
         );
 
         if (status !== undefined) {
