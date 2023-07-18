@@ -40,14 +40,10 @@ export class BanksController {
 
         if (request_json["page"] !== undefined) {
           page = request_json["page"];
-        } else {
-          throw new BadRequestException("Unabled to proceed. page field required");
         }
 
         if (request_json["limit"] !== undefined) {
           limit = request_json["limit"];
-        } else {
-          throw new BadRequestException("Unabled to proceed. limit field is required");
         }
 
         let data = await this.banksService.listingAll(bankname, page, limit);
