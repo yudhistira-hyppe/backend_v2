@@ -4858,11 +4858,44 @@ export class subChallengeService {
                     "joined": 1,
                     "challenge_data": 1,
                     subChallenges: 1,
+                    testColi: "$getlastrank.isUserLogin",
+                    scoreStatus:
+                    {
+                        "$switch":
+                        {
+                            branches:
+                                [
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$status", "AKAN DATANG"]
+                                        },
+                                        then: 1
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$status", "BERLANGSUNG"]
+                                        },
+                                        then: 2
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$status", "BERAKHIR"]
+                                        },
+                                        then: 0
+                                    },
 
+                                ],
+                            default: 0
+                        }
+                    },
                 }
             },
             {
                 $sort: {
+                    scoreStatus: -1,
                     session: -1
                 }
             },
