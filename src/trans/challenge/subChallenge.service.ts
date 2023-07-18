@@ -3395,10 +3395,16 @@ export class subChallengeService {
                                             {
                                                 $project: {
                                                     postID: "$posted.postID",
+                                                    description: "$posted.description",
                                                     postType: "$posted.postType",
                                                     apsaraId: "$posted.apsaraId",
+                                                    mediaThumbEndpoint: {
+                                                        "$concat": ["/thumb/", "$posted.postID"]
+                                                    },
+                                                    mediaThumbUri: "$mediaThumb",
                                                     apsaraThumbId: "$posted.apsaraThumbId",
                                                     index: "$index.numbers",
+
 
                                                 }
                                             },
