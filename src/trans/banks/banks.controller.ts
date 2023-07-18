@@ -32,6 +32,7 @@ export class BanksController {
         var bankname = null;
         var page = null;
         var limit = null;
+        var isactive = null
 
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["bankname"] !== undefined) {
@@ -46,7 +47,11 @@ export class BanksController {
           limit = request_json["limit"];
         }
 
-        let data = await this.banksService.listingAll(bankname, page, limit);
+        if (request_json["activestatus"] !== undefined) {
+          isactive = request_json["activestatus"];
+        }
+
+        let data = await this.banksService.listingAll(bankname, isactive, page, limit);
 
         return { response_code: 202, data, messages };
     }

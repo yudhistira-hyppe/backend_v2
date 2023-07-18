@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateBanksDto } from './dto/create-banks.dto';
 import { Banks, BanksDocument } from './schemas/banks.schema';
-import { first } from 'rxjs';
 
 @Injectable()
 export class BanksService {
@@ -17,7 +16,7 @@ export class BanksService {
         return this.settingsModel.find().exec();
     }
 
-    async listingAll(bankname: string, page:number, limit:number): Promise<any> {
+    async listingAll(bankname: string, active:string, page:number, limit:number): Promise<any> {
         var pipeline = [];
         var firstmatch = [];
 
@@ -34,20 +33,26 @@ export class BanksService {
             );
         }
 
-        firstmatch.push(
-            {
-                isActive:true
-            }
-        );
-
-        pipeline.push(
-            {
-                "$match":
+        if(active != undefined && active != null)
+        {
+            firstmatch.push(
                 {
-                    "$and":firstmatch
+                    isActive:active
                 }
-            }
-        )
+            );
+        }
+
+        if(firstmatch.length != 0)
+        {
+            pipeline.push(
+                {
+                    "$match":
+                    {
+                        "$and":firstmatch
+                    }
+                }
+            )
+        }
 
         if (page > 0) {
             pipeline.push({ $skip: (page * limit) });
