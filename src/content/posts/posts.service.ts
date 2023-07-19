@@ -9690,7 +9690,7 @@ export class PostsService {
                           }
                         }
                       },
-
+                      
                     ],
 
                   }
@@ -9777,6 +9777,64 @@ export class PostsService {
                       }
                     },
                     //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                        "$filter":
+                        {
+                            input: "$userBasic.userBadge",
+                            as: "listbadge",
+                            cond:
+                            {
+                                "$and":
+                                    [
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$$listbadge.isActive", true
+                                                ]
+                                        },
+                                        {
+                                            "$lte": [
+                                                {
+                                                    "$dateToString": {
+                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                        "date": {
+                                                            "$add": [
+                                                                new Date(),
+                                                                25200000
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "$$listbadge.endDatetime"
+                                            ]
+                                        }
+                                    ]
+                            }
+                        }
+                    },
+                  }
+                },
+                {
+                  $project: {
+                    "fullName": 1,
+                    "profilePict": 1,
+                    "username": 1,
+                    "email": 1,
+                    "avatar": 1,
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                          [
+                            "$urluserBadge",0
+                          ]
+                        },
+                        null
+                      ]
+                    }
                   }
                 },
                 {
@@ -9929,7 +9987,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
-
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
                         }
                       },
                       {
@@ -9978,7 +10077,19 @@ export class PostsService {
                             },
 
                           },
-
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge", 0
+                                ]
+                              },
+                              null
+                            ]
+                          }
                         }
                       },
                       {
@@ -10005,7 +10116,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
-
+                          "urluserBadge":1
                         }
                       },
                     ],
@@ -10140,6 +10251,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
@@ -10346,6 +10465,64 @@ export class PostsService {
                       }
                     },
                     //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                        "$filter":
+                        {
+                            input: "$userBasic.userBadge",
+                            as: "listbadge",
+                            cond:
+                            {
+                                "$and":
+                                    [
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$$listbadge.isActive", true
+                                                ]
+                                        },
+                                        {
+                                            "$lte": [
+                                                {
+                                                    "$dateToString": {
+                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                        "date": {
+                                                            "$add": [
+                                                                new Date(),
+                                                                25200000
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "$$listbadge.endDatetime"
+                                            ]
+                                        }
+                                    ]
+                            }
+                        }
+                    },
+                  }
+                },
+                {
+                  $project: {
+                    "fullName": 1,
+                    "profilePict": 1,
+                    "username": 1,
+                    "email": 1,
+                    "avatar": 1,
+                    //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                        "$ifNull":
+                        [
+                          {
+                            "$arrayElemAt":
+                            [
+                              "$urluserBadge",0
+                            ]
+                          }, null
+                        ]
+                    },
                   }
                 },
                 {
@@ -10498,7 +10675,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
-
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
                         }
                       },
                       {
@@ -10547,7 +10765,19 @@ export class PostsService {
                             },
 
                           },
-
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
                         }
                       },
                       {
@@ -10574,6 +10804,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
+                          "urluserBadge": 1
 
                         }
                       },
@@ -10709,6 +10940,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    } ,
                     "monetize":
                     {
                       $cond: {
@@ -10915,6 +11154,65 @@ export class PostsService {
                       }
                     },
                     //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                        "$filter":
+                        {
+                            input: "$userBasic.userBadge",
+                            as: "listbadge",
+                            cond:
+                            {
+                                "$and":
+                                    [
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$$listbadge.isActive", true
+                                                ]
+                                        },
+                                        {
+                                            "$lte": [
+                                                {
+                                                    "$dateToString": {
+                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                        "date": {
+                                                            "$add": [
+                                                                new Date(),
+                                                                25200000
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "$$listbadge.endDatetime"
+                                            ]
+                                        }
+                                    ]
+                            }
+                        }
+                    },
+                  }
+                },
+                {
+                  $project: {
+                    "fullName": 1,
+                    "profilePict": 1,
+                    "username": 1,
+                    "email": 1,
+                    "avatar":1,
+                    //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                        "$ifNull":
+                        [
+                          {
+                            "$arrayElemAt":
+                            [
+                              "$urluserBadge",0
+                            ]
+                          },
+                          null
+                        ]
+                    },
                   }
                 },
                 {
@@ -11066,7 +11364,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
-
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
                         }
                       },
                       {
@@ -11115,7 +11454,19 @@ export class PostsService {
                             },
 
                           },
-
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
                         }
                       },
                       {
@@ -11142,7 +11493,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
-
+                          "urluserBadge":1
                         }
                       },
 
@@ -11277,6 +11628,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
@@ -11483,6 +11842,64 @@ export class PostsService {
                       }
                     },
                     //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                        "$filter":
+                        {
+                            input: "$userBasic.userBadge",
+                            as: "listbadge",
+                            cond:
+                            {
+                                "$and":
+                                    [
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$$listbadge.isActive", true
+                                                ]
+                                        },
+                                        {
+                                            "$lte": [
+                                                {
+                                                    "$dateToString": {
+                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                        "date": {
+                                                            "$add": [
+                                                                new Date(),
+                                                                25200000
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "$$listbadge.endDatetime"
+                                            ]
+                                        }
+                                    ]
+                            }
+                        }
+                    },
+                  }
+                },
+                {
+                  $project: {
+                    "fullName": 1,
+                    "profilePict": 1,
+                    "username": 1,
+                    "email": 1,
+                    "avatar": 1,
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                          [
+                            "$urluserBadge", 0
+                          ]
+                        },
+                        null
+                      ]
+                    }
                   }
                 },
                 {
@@ -11635,6 +12052,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
 
                         }
                       },
@@ -11684,6 +12143,19 @@ export class PostsService {
                             },
 
                           },
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
 
                         }
                       },
@@ -11711,6 +12183,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
+                          "urluserBadge":1
 
                         }
                       },
@@ -11846,6 +12319,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
@@ -12047,6 +12528,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
 
                         }
                       },
@@ -12096,6 +12619,19 @@ export class PostsService {
                             },
 
                           },
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
 
                         }
                       },
@@ -12123,6 +12659,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
+                          "urluserBadge":1
 
                         }
                       },
@@ -12258,6 +12795,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
@@ -12466,6 +13011,65 @@ export class PostsService {
                       }
                     },
                     //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                        "$filter":
+                        {
+                            input: "$userBasic.userBadge",
+                            as: "listbadge",
+                            cond:
+                            {
+                                "$and":
+                                    [
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$$listbadge.isActive", true
+                                                ]
+                                        },
+                                        {
+                                            "$lte": [
+                                                {
+                                                    "$dateToString": {
+                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                        "date": {
+                                                            "$add": [
+                                                                new Date(),
+                                                                25200000
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "$$listbadge.endDatetime"
+                                            ]
+                                        }
+                                    ]
+                            }
+                        }
+                    },
+                  }
+                },
+                {
+                  $project: {
+                    "fullName": 1,
+                    "profilePict": 1,
+                    "username": 1,
+                    "email": 1,
+                    "avatar":1,
+                    //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                          [
+                            "$urluserBadge",0
+                          ]
+                        },
+                        null
+                      ]
+                    }
                   }
                 },
                 {
@@ -12618,6 +13222,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
 
                         }
                       },
@@ -12667,6 +13313,19 @@ export class PostsService {
                             },
 
                           },
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
 
                         }
                       },
@@ -12694,6 +13353,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
+                          "urluserBadge":1
 
                         }
                       },
@@ -12829,6 +13489,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
@@ -13031,6 +13699,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
 
                         }
                       },
@@ -13080,6 +13790,19 @@ export class PostsService {
                             },
 
                           },
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
 
                         }
                       },
@@ -13107,6 +13830,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
+                          "urluserBadge":1
 
                         }
                       },
@@ -13242,6 +13966,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
@@ -13447,6 +14179,71 @@ export class PostsService {
                       }
                     },
                     //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                        "$filter":
+                        {
+                            input: 
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$basicdata.userBadge",0
+                              ]
+                            },
+                            as: "listbadge",
+                            cond:
+                            {
+                                "$and":
+                                    [
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$$listbadge.isActive", true
+                                                ]
+                                        },
+                                        {
+                                            "$lte": [
+                                                {
+                                                    "$dateToString": {
+                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                        "date": {
+                                                            "$add": [
+                                                                new Date(),
+                                                                25200000
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "$$listbadge.endDatetime"
+                                            ]
+                                        }
+                                    ]
+                            }
+                        }
+                    },
+                  }
+                },
+                {
+                  $project: {
+                    "fullName": 1,
+                    "profilePict": 1,
+                    "username": 1,
+                    "email": 1,
+                    "avatar": 1,
+                    //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                          [
+                            "$urluserBadge",0
+                          ]
+                        },
+                        null
+                      ]
+                    }
                   }
                 },
                 {
@@ -13599,6 +14396,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
 
                         }
                       },
@@ -13648,6 +14487,19 @@ export class PostsService {
                             },
 
                           },
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
 
                         }
                       },
@@ -13675,6 +14527,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
+                          "urluserBadge":1
 
                         }
                       },
@@ -13810,6 +14663,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
@@ -14012,6 +14873,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
 
                         }
                       },
@@ -14061,6 +14964,19 @@ export class PostsService {
                             },
 
                           },
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
 
                         }
                       },
@@ -14088,6 +15004,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
+                          "urluserBadge":1
 
                         }
                       },
@@ -14223,6 +15140,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
@@ -14429,6 +15354,71 @@ export class PostsService {
                       }
                     },
                     //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                        "$filter":
+                        {
+                            input: 
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$basicdata.userBadge",0
+                              ]
+                            },
+                            as: "listbadge",
+                            cond:
+                            {
+                                "$and":
+                                    [
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$$listbadge.isActive", true
+                                                ]
+                                        },
+                                        {
+                                            "$lte": [
+                                                {
+                                                    "$dateToString": {
+                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                        "date": {
+                                                            "$add": [
+                                                                new Date(),
+                                                                25200000
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "$$listbadge.endDatetime"
+                                            ]
+                                        }
+                                    ]
+                            }
+                        }
+                    },
+                  }
+                },
+                {
+                  $project: {
+                    "fullName": 1,
+                    "profilePict": 1,
+                    "username": 1,
+                    "email": 1,
+                    "avatar": 1,
+                    //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                          [
+                            "$urluserBadge",0
+                          ]
+                        },
+                        null
+                      ]
+                    }
                   }
                 },
                 {
@@ -14581,6 +15571,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
 
                         }
                       },
@@ -14630,6 +15662,19 @@ export class PostsService {
                             },
 
                           },
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
 
                         }
                       },
@@ -14657,6 +15702,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
+                          "urluserBadge":1
 
                         }
                       },
@@ -14792,6 +15838,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
@@ -14993,6 +16047,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
 
                         }
                       },
@@ -15042,6 +16138,19 @@ export class PostsService {
                             },
 
                           },
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
 
                         }
                       },
@@ -15069,6 +16178,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
+                          "urluserBadge":1
 
                         }
                       },
@@ -15204,6 +16314,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
@@ -15406,6 +16524,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
 
                         }
                       },
@@ -15455,6 +16615,19 @@ export class PostsService {
                             },
 
                           },
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
 
                         }
                       },
@@ -15482,6 +16655,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
+                          "urluserBadge":1
 
                         }
                       },
@@ -15617,6 +16791,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
@@ -15823,6 +17005,65 @@ export class PostsService {
                       }
                     },
                     //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                        "$filter":
+                        {
+                            input: "$userBasic.userBadge",
+                            as: "listbadge",
+                            cond:
+                            {
+                                "$and":
+                                    [
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$$listbadge.isActive", true
+                                                ]
+                                        },
+                                        {
+                                            "$lte": [
+                                                {
+                                                    "$dateToString": {
+                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                        "date": {
+                                                            "$add": [
+                                                                new Date(),
+                                                                25200000
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "$$listbadge.endDatetime"
+                                            ]
+                                        }
+                                    ]
+                            }
+                        }
+                    },
+                  }
+                },
+                {
+                  $project: {
+                    "fullName": 1,
+                    "profilePict": 1,
+                    "username": 1,
+                    "email": 1,
+                    "avatar": 1,
+                    //"idUserAuth": "$userAuth._id",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                          [
+                            "$urluserBadge",0
+                          ]
+                        },
+                        null
+                      ]
+                    }
                   }
                 },
                 {
@@ -15985,6 +17226,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
 
                         }
                       },
@@ -16034,6 +17317,19 @@ export class PostsService {
                             },
 
                           },
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
 
                         }
                       },
@@ -16061,6 +17357,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
+                          "urluserBadge":1
 
                         }
                       },
@@ -16196,6 +17493,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
@@ -16408,6 +17713,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
 
                         }
                       },
@@ -16457,6 +17804,19 @@ export class PostsService {
                             },
 
                           },
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
 
                         }
                       },
@@ -16484,6 +17844,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
+                          "urluserBadge":1
 
                         }
                       },
@@ -16619,6 +17980,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
@@ -16832,6 +18201,48 @@ export class PostsService {
                           'profilepictid': {
                             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                           },
+                          "urluserBadge":
+                          {
+                              "$filter":
+                              {
+                                  input: 
+                                  {
+                                    "$arrayElemAt":
+                                    [
+                                      "$basicdata.userBadge",0
+                                    ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                          [
+                                              {
+                                                  "$eq":
+                                                      [
+                                                          "$$listbadge.isActive", true
+                                                      ]
+                                              },
+                                              {
+                                                  "$lte": [
+                                                      {
+                                                          "$dateToString": {
+                                                              "format": "%Y-%m-%d %H:%M:%S",
+                                                              "date": {
+                                                                  "$add": [
+                                                                      new Date(),
+                                                                      25200000
+                                                                  ]
+                                                              }
+                                                          }
+                                                      },
+                                                      "$$listbadge.endDatetime"
+                                                  ]
+                                              }
+                                          ]
+                                  }
+                              }
+                          },
 
                         }
                       },
@@ -16881,6 +18292,19 @@ export class PostsService {
                             },
 
                           },
+                          "urluserBadge":
+                          {
+                            "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                [
+                                  "$urluserBadge",0
+                                ]
+                              },
+                              null
+                            ]
+                          }
 
                         }
                       },
@@ -16908,6 +18332,7 @@ export class PostsService {
                           "certified": 1,
                           "username": 1,
                           "avatar": 1,
+                          "urluserBadge":1
 
                         }
                       },
@@ -17043,6 +18468,14 @@ export class PostsService {
                     "certified": "$pict.certified",
                     "username": "$pict.username",
                     "avatar": "$pict.avatar",
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                    },
                     "monetize":
                     {
                       $cond: {
