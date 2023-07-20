@@ -109,6 +109,8 @@ export class UserchallengesService {
                     "isActive": 1,
                     "activity": 1,
                     "history": 1,
+                    "ranking": 1,
+                    "score": 1,
                     "session": {
                         $arrayElemAt: ["$subChallenge_data.session", 0]
                     },

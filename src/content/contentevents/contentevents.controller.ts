@@ -1203,7 +1203,7 @@ export class ContenteventsController {
           await this.contenteventsService.create(CreateContenteventsDto2);
           await this.insightsService.updateLike(email_receiverParty);
           await this.postsService.updateLike(email_receiverParty, request.body.postID);
-          // this.sendInteractiveFCM(email_receiverParty, "LIKE", request.body.postID, email_user);
+          this.sendInteractiveFCM(email_receiverParty, "LIKE", request.body.postID, email_user);
           // const databasic = await this.userbasicsService.findOne(
           //   email_receiverParty
           // );
@@ -1849,9 +1849,9 @@ export class ContenteventsController {
                   let idChallenges2 = datauschall[x].idChallenge;
                   let rank = x + 1;
 
-                  if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                    await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                  }
+                  // if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                  await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                  // }
 
                 }
               }
@@ -2709,9 +2709,9 @@ export class ContenteventsController {
                   let idChallenges2 = datauschall[x].idChallenge;
                   let rank = x + 1;
 
-                  if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                    await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                  }
+                  // if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                  await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                  // }
 
                 }
               }
@@ -2895,9 +2895,9 @@ export class ContenteventsController {
                           let idChallenges2 = datauschall[x].idChallenge;
                           let rank = x + 1;
 
-                          if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                            await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                          }
+                          //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                          await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                          //}
 
                         }
                       }
@@ -2999,9 +2999,9 @@ export class ContenteventsController {
                     let idChallenges2 = datauschall[x].idChallenge;
                     let rank = x + 1;
 
-                    if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                      await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                    }
+                    // if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                    await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                    // }
 
                   }
                 }
@@ -3183,9 +3183,9 @@ export class ContenteventsController {
                           let idChallenges2 = datauschall[x].idChallenge;
                           let rank = x + 1;
 
-                          if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                            await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                          }
+                          //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                          await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                          // }
 
                         }
                       }
@@ -3288,9 +3288,9 @@ export class ContenteventsController {
                     let idChallenges2 = datauschall[x].idChallenge;
                     let rank = x + 1;
 
-                    if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                      await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                    }
+                    // if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                    await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                    // }
 
                   }
                 }
@@ -3475,9 +3475,9 @@ export class ContenteventsController {
                           let idChallenges2 = datauschall[x].idChallenge;
                           let rank = x + 1;
 
-                          if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                            await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                          }
+                          //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                          await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                          //}
 
                         }
                       }
@@ -3580,9 +3580,9 @@ export class ContenteventsController {
                     let idChallenges2 = datauschall[x].idChallenge;
                     let rank = x + 1;
 
-                    if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                      await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                    }
+                    // if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                    await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                    //}
 
                   }
                 }
