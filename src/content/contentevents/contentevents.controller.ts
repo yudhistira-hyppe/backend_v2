@@ -1203,7 +1203,7 @@ export class ContenteventsController {
           await this.contenteventsService.create(CreateContenteventsDto2);
           await this.insightsService.updateLike(email_receiverParty);
           await this.postsService.updateLike(email_receiverParty, request.body.postID);
-          this.sendInteractiveFCM(email_receiverParty, "LIKE", request.body.postID, email_user);
+          // this.sendInteractiveFCM(email_receiverParty, "LIKE", request.body.postID, email_user);
           // const databasic = await this.userbasicsService.findOne(
           //   email_receiverParty
           // );
@@ -2779,13 +2779,13 @@ export class ContenteventsController {
         }
 
         try {
-          poinViewVid = datachallenge[i].buatKonten[0].HyppeVid;
+          poinViewVid = datachallenge[i].tonton[0].HyppeVid;
         } catch (e) {
           poinViewVid = 0;
         }
 
         try {
-          poinViewDiary = datachallenge[i].buatKonten[0].HyppeDiary;
+          poinViewDiary = datachallenge[i].tonton[0].HyppeDiary;
         } catch (e) {
           poinViewDiary = 0;
         }
@@ -3063,18 +3063,18 @@ export class ContenteventsController {
         }
 
         try {
-          poinViewVid = datachallenge[i].buatKonten[0].HyppeVid;
+          poinViewVid = datachallenge[i].suka[0].HyppeVid;
         } catch (e) {
           poinViewVid = 0;
         }
 
         try {
-          poinViewDiary = datachallenge[i].buatKonten[0].HyppeDiary;
+          poinViewDiary = datachallenge[i].suka[0].HyppeDiary;
         } catch (e) {
           poinViewDiary = 0;
         }
         try {
-          poinPict = datachallenge[i].buatKonten[0].HyppePic;
+          poinPict = datachallenge[i].suka[0].HyppePic;
         } catch (e) {
           poinPict = 0;
         }
@@ -3354,18 +3354,18 @@ export class ContenteventsController {
         }
 
         try {
-          poinViewVid = datachallenge[i].buatKonten[0].HyppeVid;
+          poinViewVid = datachallenge[i].suka[0].HyppeVid;
         } catch (e) {
           poinViewVid = 0;
         }
 
         try {
-          poinViewDiary = datachallenge[i].buatKonten[0].HyppeDiary;
+          poinViewDiary = datachallenge[i].suka[0].HyppeDiary;
         } catch (e) {
           poinViewDiary = 0;
         }
         try {
-          poinPict = datachallenge[i].buatKonten[0].HyppePic;
+          poinPict = datachallenge[i].suka[0].HyppePic;
         } catch (e) {
           poinPict = 0;
         }
