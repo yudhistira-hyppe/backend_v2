@@ -29,11 +29,13 @@ import { LanguagesModule } from '../../infra/languages/languages.module';
 import { AdsModule } from '../ads/ads.module';
 import { HttpModule } from '@nestjs/axios';
 import { AdsBalaceCreditModule } from '../adsv2/adsbalacecredit/adsbalacecredit.module';
+import { VoucherpromoModule } from '../adsv2/voucherpromo/voucherpromo.module';
 
 
 @Module({
 
     imports: [
+        VoucherpromoModule,
         AdsBalaceCreditModule,
         HttpModule,
         BoostintervalModule,

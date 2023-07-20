@@ -495,7 +495,6 @@ export class AdsController {
             AdsDto_.endAge = 0;
             AdsDto_.totalView = 0; 
             AdsDto_.isActive = false;
-            console.log(AdsDto_);
             let data = await this.adsService.create(AdsDto_);
             if (AdsDto_.status == "UNDER_REVIEW"){
                 //--------------------INSERT BALANCE DEBET--------------------
@@ -1179,6 +1178,7 @@ export class AdsController {
 
         try {
             const data_ads = await this.adsService.getAdsUser(headers['x-auth-user'], data_userbasic._id.toString(), id);
+            console.log(data_ads);
             if (await this.utilsService.ceckData(data_ads)) {
                 var ceckData = await this.userAdsService.findAdsIDUserID(data_userbasic._id.toString(), data_ads[0]._id.toString());
                 if (!(await this.utilsService.ceckData(ceckData))) {
@@ -1197,7 +1197,7 @@ export class AdsController {
                     CreateUserAdsDto_.liveAt = data_ads[0].liveAt;
                     CreateUserAdsDto_.liveTypeuserads = data_ads[0].liveTypeAds;
                     CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_ads[0].typeAdsID);
-                    CreateUserAdsDto_.nameType = data_ads[0].adsType;
+                    CreateUserAdsDto_.nameType = data_ads[0].nameType;
                     CreateUserAdsDto_.isActive = true;
                     CreateUserAdsDto_.scoreAge = data_ads[0].scoreUmur;
                     CreateUserAdsDto_.scoreGender = data_ads[0].scoreKelamin;
@@ -1220,8 +1220,9 @@ export class AdsController {
                 //Create Response
                 var data_response = {};
                 data_response['adsId'] = data_ads[0]._id.toString();
-                data_response['adsUrlLink'] = data_ads[0].urlLink;
+                data_response['adsUrlLink'] = data_ads[0].urlLink; 
                 data_response['adsDescription'] = data_ads[0].description;
+                data_response['name'] = data_ads[0].description;
                 if (await this.utilsService.ceckData(ceckData)) {
                     data_response['useradsId'] = ceckData._id.toString();
                 } else {
@@ -1246,7 +1247,7 @@ export class AdsController {
                 data_response['adsType'] = (await this.adsTypeService.findOne(data_ads[0].typeAdsID.toString())).nameType;
                 data_response['adsSkip'] = (data_ads[0].skipTime != undefined) ? data_ads[0].skipTime : (await this.adsTypeService.findOne(data_ads[0].typeAdsID.toString())).AdsSkip;
                 data_response['mediaType'] = data_ads[0].type;
-                data_response['ctaButton'] = data_ads[0].ctaButton;
+                data_response['ctaButton'] = data_ads[0].ctaNames;
                 data_response['videoId'] = data_ads[0].idApsara; 
                 data_response['duration'] = data_ads[0].duration;
                 data_response['mediaBasePath'] = data_ads[0].mediaBasePath;
@@ -1381,11 +1382,24 @@ export class AdsController {
             );
         }
 
-        //Get CPP
-        try{
-            var CreateUserAdsDto_ = new CreateUserAdsDto();
+        //Get CPV
+        if (dataTypeAds.CPV == undefined || dataTypeAds.CPV == undefined) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed typeAds CPV not found' });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed typeAds CPV not found'
+            );
+        }
 
-            // CreateUserAdsDto_.statusView = true;
+        try{
+            var dataUpdateUserAds = {
+                timeViewSecond: Number(AdsAction_.watchingTime),
+                $inc: { 'viewed': 1 } ,
+                $push: { "updateAt": current_date, 'timeView': Number(AdsAction_.watchingTime) },
+            }
+            if (((dataAdsUser.viewed != undefined ? dataAdsUser.viewed : 0) + 1) == (dataAds.audiensFrekuensi != undefined ? dataAds.audiensFrekuensi : 0)){
+                dataUpdateUserAds["isActive"] = false;
+            }
             // CreateUserAdsDto_.clickAt = current_date;
             // CreateUserAdsDto_.viewedUnder = userAds_viewedUnder + 1;
             // CreateUserAdsDto_.timeViewSecond = watching_time;

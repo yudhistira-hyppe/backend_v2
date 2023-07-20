@@ -161,8 +161,8 @@ export class Ads {
     @Prop()
     mediaThumUri: string;
     @Prop()
-    width: string;
+    width: number;
     @Prop()
-    height: string;
+    height: number;
 }
 export const AdsSchema = SchemaFactory.createForClass(Ads);

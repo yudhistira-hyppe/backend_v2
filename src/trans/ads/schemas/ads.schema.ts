@@ -162,6 +162,19 @@ export class Ads {
     updatedAt: string;
     @Prop()
     remark: string;
+    
+    @Prop()
+    mediaBasePath: string;
+    @Prop()
+    mediaUri: string;
+    @Prop()
+    mediaThumBasePath: string;
+    @Prop()
+    mediaThumUri: string;
+    @Prop()
+    width: number;
+    @Prop()
+    height: number;
 }
 
 export const AdsSchema = SchemaFactory.createForClass(Ads);
