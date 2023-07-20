@@ -88,8 +88,8 @@ export class AdsDto {
     mediaUri: string;
     mediaThumBasePath: string;
     mediaThumUri: string;
-    width: string;
-    height: string;
+    width: number;
+    height: number;
 }
 
 export class AdsAction {
