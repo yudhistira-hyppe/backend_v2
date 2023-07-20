@@ -108,8 +108,551 @@ export class PostsService {
   }
 
   async findByMusicId(musicId: string) {
-    var ObjectId_ = new mongoose.Types.ObjectId(musicId);
     const query = await this.PostsModel.aggregate([
+      {
+        $match: {
+          $expr:
+          {
+            $eq: ["$musicId", new mongoose.Types.ObjectId(musicId)]
+          },
+
+        }
+      },
+      //{
+      //    $match: {
+      //        $expr: 
+      //        {
+      //            $eq: ["$postID", "70846f25-9094-91aa-db6b-25261a66674f"]
+      //        },
+      //        
+      //    }
+      //},
+      {
+        $project: {
+          _id: "sean",
+          postID: 1
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          postMusic: {
+            $push: "$postID"
+          },
+
+        }
+      },
+      {
+        $facet: {
+          user: [
+            {
+              "$lookup": {
+                "from": "contentevents",
+                "let": {
+                  "postID": "$postMusic"
+                },
+                as: "event",
+                "pipeline": [
+                  {
+                    "$match": {
+                      "$expr": {
+                        "$and": [
+                          {
+                            "$in": ["$postID", "$$postID"]
+                          },
+                          {
+                            "$eq": ["$eventType", "VIEW"]
+                          },
+                          {
+                            "$eq": ["$event", "ACCEPT"]
+                          }
+                        ]
+                      }
+                    }
+                  },
+
+                ]
+              }
+            },
+            {
+              $project: {
+                _id: "$kampret",
+                email: "$event.senderParty"
+              }
+            },
+            {
+              $unwind: {
+                path: "$email"
+              }
+            },
+            {
+              $group: {
+                _id: "$email",
+                "totEmail": {
+                  "$sum": 1
+                }
+              }
+            },
+            {
+              "$lookup": {
+                "from": "userbasics",
+                "as": "userbasics_data",
+                "let": {
+                  "local_id": "$_id"
+                },
+                "pipeline": [
+                  {
+                    "$match": {
+                      "$expr": {
+                        "$eq": ["$email", "$$local_id"]
+                      }
+                    }
+                  },
+                  {
+                    "$project": {
+                      "_id": 1,
+                      "email": 1,
+                      "fullName": 1,
+                      "gender": {
+                        "$cond": {
+                          "if": {
+                            "$ne": ["$gender", null]
+                          },
+                          "then": {
+                            "$switch": {
+                              "branches": [{
+                                "case": {
+                                  "$or": [{
+                                    "$eq": ["$gender", "Male"]
+                                  }, {
+                                    "$eq": ["$gender", "Laki-laki"]
+                                  }, {
+                                    "$eq": ["$gender", "MALE"]
+                                  }]
+                                },
+                                "then": "FEMALE"
+                              }, {
+                                "case": {
+                                  "$or": [{
+                                    "$eq": ["$gender", " Perempuan"]
+                                  }, {
+                                    "$eq": ["$gender", "Perempuan"]
+                                  }, {
+                                    "$eq": ["$gender", "PEREMPUAN"]
+                                  }, {
+                                    "$eq": ["$gender", "FEMALE"]
+                                  }, {
+                                    "$eq": ["$gender", " FEMALE"]
+                                  }]
+                                },
+                                "then": "MALE"
+                              }, {
+                                "case": {
+                                  "$or": [{
+                                    "$eq": ["$gender", null]
+                                  }]
+                                },
+                                "then": "OTHER"
+                              }],
+                              "default": "OTHER"
+                            }
+                          },
+                          "else": "OTHER"
+                        }
+                      },
+                      "age": {
+                        "$cond": {
+                          "if": {
+                            "$and": ["$dob", {
+                              "$ne": ["$dob", ""]
+                            }]
+                          },
+                          "then": {
+                            "$toInt": {
+                              "$divide": [{
+                                "$subtract": [new Date(), {
+                                  "$toDate": "$dob"
+                                }]
+                              }, 31536000000]
+                            }
+                          },
+                          "else": 0
+                        }
+                      },
+                      "ageQualication": {
+                        "$switch": {
+                          "branches": [{
+                            "case": {
+                              "$and": [{
+                                "$gte": [{
+                                  "$cond": {
+                                    "if": {
+                                      "$and": ["$dob", {
+                                        "$ne": ["$dob", ""]
+                                      }]
+                                    },
+                                    "then": {
+                                      "$toInt": {
+                                        "$divide": [{
+                                          "$subtract": [new Date(), {
+                                            "$toDate": "$dob"
+                                          }]
+                                        }, 31536000000]
+                                      }
+                                    },
+                                    "else": 0
+                                  }
+                                }, 1]
+                              }, {
+                                "$lte": [{
+                                  "$cond": {
+                                    "if": {
+                                      "$and": ["$dob", {
+                                        "$ne": ["$dob", ""]
+                                      }]
+                                    },
+                                    "then": {
+                                      "$toInt": {
+                                        "$divide": [{
+                                          "$subtract": [new Date(), {
+                                            "$toDate": "$dob"
+                                          }]
+                                        }, 31536000000]
+                                      }
+                                    },
+                                    "else": 0
+                                  }
+                                }, 14]
+                              }]
+                            },
+                            "then": "< 14 Tahun"
+                          }, {
+                            "case": {
+                              "$and": [{
+                                "$gte": [{
+                                  "$cond": {
+                                    "if": {
+                                      "$and": ["$dob", {
+                                        "$ne": ["$dob", ""]
+                                      }]
+                                    },
+                                    "then": {
+                                      "$toInt": {
+                                        "$divide": [{
+                                          "$subtract": [new Date(), {
+                                            "$toDate": "$dob"
+                                          }]
+                                        }, 31536000000]
+                                      }
+                                    },
+                                    "else": 0
+                                  }
+                                }, 14]
+                              }, {
+                                "$lte": [{
+                                  "$cond": {
+                                    "if": {
+                                      "$and": ["$dob", {
+                                        "$ne": ["$dob", ""]
+                                      }]
+                                    },
+                                    "then": {
+                                      "$toInt": {
+                                        "$divide": [{
+                                          "$subtract": [new Date(), {
+                                            "$toDate": "$dob"
+                                          }]
+                                        }, 31536000000]
+                                      }
+                                    },
+                                    "else": 0
+                                  }
+                                }, 24]
+                              }]
+                            },
+                            "then": "14 - 24 Tahun"
+                          }, {
+                            "case": {
+                              "$and": [{
+                                "$gte": [{
+                                  "$cond": {
+                                    "if": {
+                                      "$and": ["$dob", {
+                                        "$ne": ["$dob", ""]
+                                      }]
+                                    },
+                                    "then": {
+                                      "$toInt": {
+                                        "$divide": [{
+                                          "$subtract": [new Date(), {
+                                            "$toDate": "$dob"
+                                          }]
+                                        }, 31536000000]
+                                      }
+                                    },
+                                    "else": 0
+                                  }
+                                }, 25]
+                              }, {
+                                "$lte": [{
+                                  "$cond": {
+                                    "if": {
+                                      "$and": ["$dob", {
+                                        "$ne": ["$dob", ""]
+                                      }]
+                                    },
+                                    "then": {
+                                      "$toInt": {
+                                        "$divide": [{
+                                          "$subtract": [new Date(), {
+                                            "$toDate": "$dob"
+                                          }]
+                                        }, 31536000000]
+                                      }
+                                    },
+                                    "else": 0
+                                  }
+                                }, 35]
+                              }]
+                            },
+                            "then": "24 - 35 Tahun"
+                          }, {
+                            "case": {
+                              "$and": [{
+                                "$gte": [{
+                                  "$cond": {
+                                    "if": {
+                                      "$and": ["$dob", {
+                                        "$ne": ["$dob", ""]
+                                      }]
+                                    },
+                                    "then": {
+                                      "$toInt": {
+                                        "$divide": [{
+                                          "$subtract": [new Date(), {
+                                            "$toDate": "$dob"
+                                          }]
+                                        }, 31536000000]
+                                      }
+                                    },
+                                    "else": 0
+                                  }
+                                }, 35]
+                              }, {
+                                "$lte": [{
+                                  "$cond": {
+                                    "if": {
+                                      "$and": ["$dob", {
+                                        "$ne": ["$dob", ""]
+                                      }]
+                                    },
+                                    "then": {
+                                      "$toInt": {
+                                        "$divide": [{
+                                          "$subtract": [new Date(), {
+                                            "$toDate": "$dob"
+                                          }]
+                                        }, 31536000000]
+                                      }
+                                    },
+                                    "else": 0
+                                  }
+                                }, 44]
+                              }]
+                            },
+                            "then": "35 - 44 Tahun"
+                          }, {
+                            "case": {
+                              "$gt": [{
+                                "$cond": {
+                                  "if": {
+                                    "$and": ["$dob", {
+                                      "$ne": ["$dob", ""]
+                                    }]
+                                  },
+                                  "then": {
+                                    "$toInt": {
+                                      "$divide": [{
+                                        "$subtract": [new Date(), {
+                                          "$toDate": "$dob"
+                                        }]
+                                      }, 31536000000]
+                                    }
+                                  },
+                                  "else": 0
+                                }
+                              }, 43]
+                            },
+                            "then": "> 44 Tahun"
+                          }],
+                          "default": "OTHER"
+                        }
+                      },
+                      "userInterests_array": {
+                        "$map": {
+                          "input": {
+                            "$map": {
+                              "input": "$userInterests",
+                              "in": {
+                                "$arrayElemAt": [{
+                                  "$objectToArray": "$$this"
+                                }, 1]
+                              }
+                            }
+                          },
+                          "in": "$$this.v"
+                        }
+                      },
+                      "states": 1
+                    }
+                  },
+                  {
+                    "$lookup": {
+                      "from": "interests_repo",
+                      "localField": "userInterests_array",
+                      "foreignField": "_id",
+                      "as": "interests"
+                    }
+                  },
+                  {
+                    "$lookup": {
+                      "from": "areas",
+                      "as": "areas",
+                      "let": {
+                        "local_id": "$states.$id"
+                      },
+                      "pipeline": [
+                        {
+                          "$match": {
+                            "$expr": {
+                              "$eq": ["$_id", "$$local_id"]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+
+            },
+            {
+              "$project": {
+                _id: "$kampret",
+                email: "$_id",
+                totEmail: 1,
+                "senderParty": 1,
+                "gender": {
+                  "$ifNull": [{
+                    "$let": {
+                      "vars": {
+                        "tmp": {
+                          "$arrayElemAt": ["$userbasics_data", 0]
+                        }
+                      },
+                      "in": "$$tmp.gender"
+                    }
+                  }, "OTHER"]
+                },
+                "ageQualication": {
+                  "$ifNull": [{
+                    "$let": {
+                      "vars": {
+                        "tmp": {
+                          "$arrayElemAt": ["$userbasics_data", 0]
+                        }
+                      },
+                      "in": "$$tmp.ageQualication"
+                    }
+                  }, "OTHER"]
+                },
+                "interest": {
+                  "$map": {
+                    "input": {
+                      "$map": {
+                        "input": {
+                          "$let": {
+                            "vars": {
+                              "tmp": {
+                                "$arrayElemAt": ["$userbasics_data", 0]
+                              }
+                            },
+                            "in": "$$tmp.interests"
+                          }
+                        },
+                        "in": {
+                          "$arrayElemAt": [{
+                            "$objectToArray": "$$this"
+                          }, 1]
+                        }
+                      }
+                    },
+                    "in": "$$this.v"
+                  }
+                },
+                "areas": {
+                  "$ifNull": [{
+                    "$let": {
+                      "vars": {
+                        "userauths": {
+                          "$arrayElemAt": [{
+                            "$let": {
+                              "vars": {
+                                "tmp": {
+                                  "$arrayElemAt": ["$userbasics_data", 0]
+                                }
+                              },
+                              "in": "$$tmp.areas"
+                            }
+                          }, 0]
+                        }
+                      },
+                      "in": "$$userauths.stateName"
+                    }
+                  }, "OTHER"]
+                }
+              }
+            }
+          ],
+        }
+      },
+      {
+        "$unwind": {
+          "path": "$user"
+        }
+      },
+      {
+        "$facet": {
+          "wilayah": [{
+            "$group": {
+              "_id": "$user.areas",
+              "count": {
+                "$sum": "$user.totEmail"
+              },
+              //tot:{ $push: "$user.totEmail"},
+              //emaik:{ $push: "$user.email"}
+            }
+          }],
+          "gender": [{
+            "$group": {
+              "_id": "$user.gender",
+              "count": {
+                "$sum": "$user.totEmail"
+              },
+              //tot:{ $push: "$user.totEmail"}
+            }
+          }],
+          "age": [{
+            "$group": {
+              "_id": "$user.ageQualication",
+              "count": {
+                "$sum": "$user.totEmail"
+              },
+              //tot:{ $push: "$user.totEmail"}
+            }
+          }]
+        }
+      }
     ]);
     return query;
   }
