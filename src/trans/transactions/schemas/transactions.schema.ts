@@ -61,6 +61,10 @@ export class Transactions {
     detail: [];
     @Prop({ type: Object })
     response: {}
+    @Prop([])
+    voucherpromo: any[];
+    @Prop([])
+    datavoucherpromo: any[];
 
 
 }

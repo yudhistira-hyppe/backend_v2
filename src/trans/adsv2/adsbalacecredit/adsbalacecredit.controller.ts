@@ -5,7 +5,7 @@ import { UtilsService } from "../../../utils/utils.service";
 import { ErrorHandler } from "../../../utils/error.handler";
 import { AdsBalaceCreditDto } from "./dto/adsbalacecredit.dto";
 import mongoose from "mongoose";
-import { UserbasicsService } from "src/trans/userbasics/userbasics.service";
+import { UserbasicsService } from "../../../trans/userbasics/userbasics.service";
 
 @Controller('api/adsv2/balance')
 export class AdsPurposesController {

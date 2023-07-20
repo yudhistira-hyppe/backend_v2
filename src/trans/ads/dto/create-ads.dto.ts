@@ -52,6 +52,13 @@ export class CreateAdsDto {
     updatedAt: string;
     skipTime: number;
     remark: string;
+    
+    mediaBasePath: string;
+    mediaUri: string;
+    mediaThumBasePath: string;
+    mediaThumUri: string;
+    width: number;
+    height: number;
 }
 
 export class MediaimageadsDto {

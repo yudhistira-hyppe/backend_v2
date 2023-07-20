@@ -27,6 +27,7 @@ export class AdsService {
     ) { }
 
     async create(AdsDto_: AdsDto): Promise<Ads> {
+        console.log(AdsDto_);
         const _AdsDto_ = await this.adsModel.create(AdsDto_);
         return _AdsDto_;
     }
@@ -4031,6 +4032,16 @@ export class AdsService {
             },
             {
                 $set: {
+                    "tayang": {
+                        $concat: [
+                            "$liveAt",
+                            " 00:00:00"
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
                     hariCount: {
                         $isoDayOfWeek: {
                             $add: [new Date(), 25200000]
@@ -4620,7 +4631,11 @@ export class AdsService {
                                     $ne: "$idUser"
                                 }
                             },
-
+                            {
+                                $expr: {
+                                    $lt: ["$tayang", "$testDate"]
+                                }
+                            },
                         ]
                     },]
                 }
@@ -5273,6 +5288,12 @@ export class AdsService {
                     scoreGeografis: 1,
                     scoreTotal: 1,
                     isValid: 1,
+                    width: 1,
+                    height: 1,
+                    mediaBasePath: 1,
+                    mediaUri: 1,
+                    mediaThumBasePath: 1,
+                    mediaThumUri: 1,
                     objectivitasId: "$objectivitas.name_id",
                     objectivitasEn: "$objectivitas.name_en",
 
@@ -5283,7 +5304,7 @@ export class AdsService {
                     typeAdsID: new mongoose.Types.ObjectId(idTypeAds),
                 }
             },
-            { $limit: 1 }
+            //{ $limit: 1 }
         ]);
         return query;
     }

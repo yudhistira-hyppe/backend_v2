@@ -39,6 +39,7 @@ import { Templates } from 'src/infra/templates/schemas/templates.schema';
 import { Console } from 'console';
 import { AdsBalaceCreditDto } from '../adsv2/adsbalacecredit/dto/adsbalacecredit.dto';
 import { AdsBalaceCreditService } from '../adsv2/adsbalacecredit/adsbalacecredit.service';
+import { VoucherpromoService } from '../adsv2/voucherpromo/voucherpromo.service';
 
 const cheerio = require('cheerio');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -70,7 +71,8 @@ export class TransactionsController {
         private readonly mediapictsService: MediapictsService,
         private readonly languagesService: LanguagesService,
         private readonly adsService: AdsService, 
-        private readonly adsBalaceCreditService: AdsBalaceCreditService,
+        private readonly adsBalaceCreditService: AdsBalaceCreditService, 
+        private readonly voucherpromoService: VoucherpromoService,
     ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -798,6 +800,38 @@ export class TransactionsController {
                             CreateTransactionsDto.detail = arrayDetailvc;
                             CreateTransactionsDto.postid = postidTRvoucer.toString();
                             CreateTransactionsDto.response = datareqva;
+
+                            //VOUCHER PROMO
+                            if (CreateTransactionsDto.voucherpromo!=undefined){
+                                if (CreateTransactionsDto.voucherpromo.length > 0) {
+                                    var valueAllPromo = 0;
+                                    var dataVoucherPromo = [];
+                                    for (var i = 0; 1 < CreateTransactionsDto.voucherpromo.length; i++) {
+                                        var voucherPending = 0;
+                                        var dataVoucher = await this.voucherpromoService.findOneActive(CreateTransactionsDto.voucherpromo[i]);
+                                        if (dataVoucher.quantity != undefined){
+                                            if (dataVoucher.quantity > 0) {
+                                                var ceckPromoUsedPending = await this.transactionsService.findCodePromoUsedPending(CreateTransactionsDto.voucherpromo[i]);
+                                                if (await this.utilsService.ceckData(ceckPromoUsedPending)) {
+                                                    voucherPending += ceckPromoUsedPending.length;
+                                                }
+                                                if ((dataVoucher.quantity - voucherPending) > 0) {
+                                                    if (await this.utilsService.ceckData(dataVoucher)) {
+                                                        if (dataVoucher.value != undefined) {
+                                                            valueAllPromo += Number(dataVoucher.value);
+                                                            dataVoucherPromo.push(dataVoucher);
+                                                        }
+                                                    }
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                    CreateTransactionsDto.datavoucherpromo = dataVoucherPromo;
+                                    CreateTransactionsDto.totalamount = (totalamount - valueAllPromo);
+                                }
+                            }
+
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
                             this.notifbuyvoucher(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, no);
                             //var lengArrDetail = arrayDetailvc.length;
@@ -1458,6 +1492,15 @@ export class TransactionsController {
                             // await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml), (pendingUsed - jml));
                             await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
                             await this.insertBalanceCredit(iduserbuy.toString(), 0, all_total_credit_voucher, "TOPUP", "PURCHASING VOUCHERS", idtransaction.toString());
+                        }
+
+                        //UPDATE VOUCHER PROMO
+                        if (datatransaksi.voucherpromo!=undefined) {
+                            if (datatransaksi.voucherpromo.length>0) {
+                                for (var i = 0; i < datatransaksi.voucherpromo.length;i++){
+                                    this.voucherpromoService.updateQuantity(datatransaksi.voucherpromo[i]);
+                                }
+                            }
                         }
 
                         return res.status(HttpStatus.OK).json({

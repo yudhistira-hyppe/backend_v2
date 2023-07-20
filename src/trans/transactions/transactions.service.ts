@@ -90,6 +90,10 @@ export class TransactionsService {
         return this.transactionsModel.findOne({ noinvoice: noinvoice }).exec();
     }
 
+    async findCodePromoUsedPending(voucherPromoId: string): Promise<Transactions[]> {
+        return this.transactionsModel.find({ status:"WAITING_PAYMENT",datavoucherpromo: { $elemMatch: { _id: new mongoose.Types.ObjectId(voucherPromoId) } } }).exec();
+    }
+
     async create(CreateTransactionsDto: CreateTransactionsDto): Promise<Transactions> {
         let data = await this.transactionsModel.create(CreateTransactionsDto);
 

@@ -109,680 +109,1216 @@ export class PostsService {
 
   async findByMusicId(musicId: string) {
     var ObjectId_ = new mongoose.Types.ObjectId(musicId);
-    const query = await this.PostsModel.aggregate([
-      {
-        $match:
+    const query = await this.PostsModel.aggregate(
+      [
         {
-          "musicId": ObjectId_
-        },
-      },
-      {
-        $lookup: {
-          from: 'contentevents',
-          let: {
-            "postID": "$postID"
-          },
-          pipeline: [
+          $match: {
+            $expr:
             {
-              $match: {
-                $expr: {
-                  $and:[
-                    { $eq: ["$postID", "$$postID"] },
-                    { $eq: ["$eventType", "VIEW"] },
-                    { $eq: ["$event", "ACCEPT"] }
-                  ]
-                },
-              },
+              $eq: ["$musicId", new mongoose.Types.ObjectId(musicId)]
             },
-            {
-              $lookup: {
-                from: 'userbasics',
-                as: 'userbasics_data',
-                let: {
-                  local_id: "$senderParty"
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-                      $expr: {
-                        $eq: ['$email', '$$local_id']
-                      }
-                    }
+
+          }
+        },
+        {
+          $project: {
+            _id: "sean",
+            postID: 1
+          }
+        },
+        {
+          $group: {
+            _id: "$_id",
+            postMusic: {
+              $push: "$postID"
+            },
+
+          }
+        },
+        {
+          $facet: {
+            user: [
+              {
+                "$lookup": {
+                  "from": "contentevents",
+                  "let": {
+                    "postID": "$postMusic"
                   },
-                  {
-                    $project: {
-                      _id: 1,
-                      email: 1,
-                      fullName: 1,
-                      gender: {
-                        $switch: {
-                          branches: [
+                  as: "event",
+                  "pipeline": [
+                    {
+                      "$match": {
+                        "$expr": {
+                          "$and": [
                             {
-                              case: {
-                                $or: [
-                                  { $eq: ["$gender", "Male"] },
-                                  { $eq: ["$gender", "Laki-laki"] },
-                                  { $eq: ["$gender", "MALE"] }
-                                ]
-                              }, then: "Laki-laki"
+                              "$in": ["$postID", "$$postID"]
                             },
                             {
-                              case: {
-                                $or: [
-                                  { $eq: ["$gender", " Perempuan"] },
-                                  { $eq: ["$gender", "Perempuan"] },
-                                  { $eq: ["$gender", "PEREMPUAN"] },
-                                  { $eq: ["$gender", "FEMALE"] },
-                                  { $eq: ["$gender", " FEMALE"] }
-                                ]
-                              }, then: "Perempuan"
-                            }
-                          ],
-                          "default": "Lainnya"
-                        }
-                      },
-                      age: {
-                        $cond: {
-                          if: {
-                            $and: ['$dob', {
-                              $ne: ["$dob", ""]
-                            }]
-                          },
-                          then: {
-                            $toInt: {
-                              $divide: [{
-                                $subtract: [new Date(), {
-                                  $toDate: "$dob"
-                                }]
-                              }, (365 * 24 * 60 * 60 * 1000)]
-                            }
-                          },
-                          else: 0
-                        }
-                      },
-                      ageQualication: {
-                        $switch: {
-                          branches: [
+                              "$eq": ["$eventType", "VIEW"]
+                            },
                             {
-                              case: {
-                                $and: [{
-                                  $gte: [{
-                                    $cond: {
-                                      if: {
-                                        $and: ['$dob', {
-                                          $ne: ["$dob", ""]
+                              "$eq": ["$event", "ACCEPT"]
+                            }
+                          ]
+                        }
+                      }
+                    },
+
+                  ]
+                }
+              },
+              {
+                $project: {
+                  _id: "$kampret",
+                  email: "$event.email"
+                }
+              },
+              {
+                $unwind: {
+                  path: "$email"
+                }
+              },
+              {
+                $group: {
+                  _id: "$email",
+                  "totEmail": {
+                    "$sum": 1
+                  }
+                }
+              },
+              {
+                "$lookup": {
+                  "from": "userbasics",
+                  "as": "userbasics_data",
+                  "let": {
+                    "local_id": "$_id"
+                  },
+                  "pipeline": [
+                    {
+                      "$match": {
+                        "$expr": {
+                          "$eq": ["$email", "$$local_id"]
+                        }
+                      }
+                    },
+                    {
+                      "$project": {
+                        "_id": 1,
+                        "email": 1,
+                        "fullName": 1,
+                        "gender": {
+                          "$cond": {
+                            "if": {
+                              "$ne": ["$gender", null]
+                            },
+                            "then": {
+                              "$switch": {
+                                "branches": [{
+                                  "case": {
+                                    "$or": [{
+                                      "$eq": ["$gender", "Male"]
+                                    }, {
+                                      "$eq": ["$gender", "Laki-laki"]
+                                    }, {
+                                      "$eq": ["$gender", "MALE"]
+                                    }]
+                                  },
+                                  "then": "FEMALE"
+                                }, {
+                                  "case": {
+                                    "$or": [{
+                                      "$eq": ["$gender", " Perempuan"]
+                                    }, {
+                                      "$eq": ["$gender", "Perempuan"]
+                                    }, {
+                                      "$eq": ["$gender", "PEREMPUAN"]
+                                    }, {
+                                      "$eq": ["$gender", "FEMALE"]
+                                    }, {
+                                      "$eq": ["$gender", " FEMALE"]
+                                    }]
+                                  },
+                                  "then": "MALE"
+                                }, {
+                                  "case": {
+                                    "$or": [{
+                                      "$eq": ["$gender", null]
+                                    }]
+                                  },
+                                  "then": "OTHER"
+                                }],
+                                "default": "OTHER"
+                              }
+                            },
+                            "else": "OTHER"
+                          }
+                        },
+                        "age": {
+                          "$cond": {
+                            "if": {
+                              "$and": ["$dob", {
+                                "$ne": ["$dob", ""]
+                              }]
+                            },
+                            "then": {
+                              "$toInt": {
+                                "$divide": [{
+                                  "$subtract": [new Date(), {
+                                    "$toDate": "$dob"
+                                  }]
+                                }, 31536000000]
+                              }
+                            },
+                            "else": 0
+                          }
+                        },
+                        "ageQualication": {
+                          "$switch": {
+                            "branches": [{
+                              "case": {
+                                "$and": [{
+                                  "$gte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
                                         }]
                                       },
-                                      then: {
-                                        $toInt: {
-                                          $divide: [{
-                                            $subtract: [new Date(), {
-                                              $toDate: "$dob"
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
                                             }]
-                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                          }, 31536000000]
                                         }
                                       },
-                                      else: 0
+                                      "else": 0
                                     }
                                   }, 1]
                                 }, {
-                                  $lte: [{
-                                    $cond: {
-                                      if: {
-                                        $and: ['$dob', {
-                                          $ne: ["$dob", ""]
+                                  "$lte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
                                         }]
                                       },
-                                      then: {
-                                        $toInt: {
-                                          $divide: [{
-                                            $subtract: [new Date(), {
-                                              $toDate: "$dob"
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
                                             }]
-                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                          }, 31536000000]
                                         }
                                       },
-                                      else: 0
+                                      "else": 0
                                     }
                                   }, 14]
                                 }]
                               },
-                              then: "< 14 Tahun"
-                            },
-                            {
-                              case: {
-                                $and: [{
-                                  $gte: [{
-                                    $cond: {
-                                      if: {
-                                        $and: ['$dob', {
-                                          $ne: ["$dob", ""]
+                              "then": "< 14 Tahun"
+                            }, {
+                              "case": {
+                                "$and": [{
+                                  "$gte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
                                         }]
                                       },
-                                      then: {
-                                        $toInt: {
-                                          $divide: [{
-                                            $subtract: [new Date(), {
-                                              $toDate: "$dob"
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
                                             }]
-                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                          }, 31536000000]
                                         }
                                       },
-                                      else: 0
+                                      "else": 0
                                     }
                                   }, 14]
                                 }, {
-                                  $lte: [{
-                                    $cond: {
-                                      if: {
-                                        $and: ['$dob', {
-                                          $ne: ["$dob", ""]
+                                  "$lte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
                                         }]
                                       },
-                                      then: {
-                                        $toInt: {
-                                          $divide: [{
-                                            $subtract: [new Date(), {
-                                              $toDate: "$dob"
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
                                             }]
-                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                          }, 31536000000]
                                         }
                                       },
-                                      else: 0
+                                      "else": 0
                                     }
                                   }, 24]
                                 }]
                               },
-                              then: "14 - 24 Tahun"
-                            },
-                            {
-                              case: {
-                                $and: [{
-                                  $gte: [{
-                                    $cond: {
-                                      if: {
-                                        $and: ['$dob', {
-                                          $ne: ["$dob", ""]
+                              "then": "14 - 24 Tahun"
+                            }, {
+                              "case": {
+                                "$and": [{
+                                  "$gte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
                                         }]
                                       },
-                                      then: {
-                                        $toInt: {
-                                          $divide: [{
-                                            $subtract: [new Date(), {
-                                              $toDate: "$dob"
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
                                             }]
-                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                          }, 31536000000]
                                         }
                                       },
-                                      else: 0
+                                      "else": 0
                                     }
                                   }, 25]
                                 }, {
-                                  $lte: [{
-                                    $cond: {
-                                      if: {
-                                        $and: ['$dob', {
-                                          $ne: ["$dob", ""]
+                                  "$lte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
                                         }]
                                       },
-                                      then: {
-                                        $toInt: {
-                                          $divide: [{
-                                            $subtract: [new Date(), {
-                                              $toDate: "$dob"
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
                                             }]
-                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                          }, 31536000000]
                                         }
                                       },
-                                      else: 0
+                                      "else": 0
                                     }
                                   }, 35]
                                 }]
                               },
-                              then: "24 - 35 Tahun"
-                            },
-                            {
-                              case: {
-                                $and: [{
-                                  $gte: [{
-                                    $cond: {
-                                      if: {
-                                        $and: ['$dob', {
-                                          $ne: ["$dob", ""]
+                              "then": "24 - 35 Tahun"
+                            }, {
+                              "case": {
+                                "$and": [{
+                                  "$gte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
                                         }]
                                       },
-                                      then: {
-                                        $toInt: {
-                                          $divide: [{
-                                            $subtract: [new Date(), {
-                                              $toDate: "$dob"
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
                                             }]
-                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                          }, 31536000000]
                                         }
                                       },
-                                      else: 0
+                                      "else": 0
                                     }
                                   }, 35]
                                 }, {
-                                  $lte: [{
-                                    $cond: {
-                                      if: {
-                                        $and: ['$dob', {
-                                          $ne: ["$dob", ""]
+                                  "$lte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
                                         }]
                                       },
-                                      then: {
-                                        $toInt: {
-                                          $divide: [{
-                                            $subtract: [new Date(), {
-                                              $toDate: "$dob"
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
                                             }]
-                                          }, (365 * 24 * 60 * 60 * 1000)]
+                                          }, 31536000000]
                                         }
                                       },
-                                      else: 0
+                                      "else": 0
                                     }
                                   }, 44]
                                 }]
                               },
-                              then: "35 - 44 Tahun"
-                            },
-                            {
-                              case: {
-                                $gt: [{
-                                  $cond: {
-                                    if: {
-                                      $and: ['$dob', {
-                                        $ne: ["$dob", ""]
+                              "then": "35 - 44 Tahun"
+                            }, {
+                              "case": {
+                                "$gt": [{
+                                  "$cond": {
+                                    "if": {
+                                      "$and": ["$dob", {
+                                        "$ne": ["$dob", ""]
                                       }]
                                     },
-                                    then: {
-                                      $toInt: {
-                                        $divide: [{
-                                          $subtract: [new Date(), {
-                                            $toDate: "$dob"
+                                    "then": {
+                                      "$toInt": {
+                                        "$divide": [{
+                                          "$subtract": [new Date(), {
+                                            "$toDate": "$dob"
                                           }]
-                                        }, (365 * 24 * 60 * 60 * 1000)]
+                                        }, 31536000000]
                                       }
                                     },
-                                    else: 0
+                                    "else": 0
                                   }
                                 }, 43]
                               },
-                              then: "> 44 Tahun"
-                            },
-                          ],
-                          "default": "Other"
-                        }
-                      },
-                      userInterests_array: {
-                        $map: {
-                          input: {
-                            $map: {
-                              input: "$userInterests",
-                              in: {
-                                $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
-                              },
-                            }
-                          },
-                          in: "$$this.v"
-                        }
-                      },
-                      states: 1,
-                    }
-                  },
-                  {
-                    $lookup: {
-                      from: "interests_repo",
-                      localField: "userInterests_array",
-                      foreignField: "_id",
-                      as: "interests"
-                    }
-                  },
-                  {
-                    $lookup: {
-                      from: 'areas',
-                      as: 'areas',
-                      let: {
-                        local_id: "$states.$id"
-                      },
-                      pipeline: [
-                        {
-                          $match:
-                          {
-                            $expr: {
-                              $eq: ['$_id', '$$local_id']
-                            }
+                              "then": "> 44 Tahun"
+                            }],
+                            "default": "OTHER"
                           }
                         },
-                      ]
-                    }
-                  },
-                ],
-              },
-            },
-            {
-              $project: {
-                senderParty:1,
-                gender: {
-                  $ifNull: [
+                        "userInterests_array": {
+                          "$map": {
+                            "input": {
+                              "$map": {
+                                "input": "$userInterests",
+                                "in": {
+                                  "$arrayElemAt": [{
+                                    "$objectToArray": "$$this"
+                                  }, 1]
+                                }
+                              }
+                            },
+                            "in": "$$this.v"
+                          }
+                        },
+                        "states": 1
+                      }
+                    },
                     {
+                      "$lookup": {
+                        "from": "interests_repo",
+                        "localField": "userInterests_array",
+                        "foreignField": "_id",
+                        "as": "interests"
+                      }
+                    },
+                    {
+                      "$lookup": {
+                        "from": "areas",
+                        "as": "areas",
+                        "let": {
+                          "local_id": "$states.$id"
+                        },
+                        "pipeline": [
+                          {
+                            "$match": {
+                              "$expr": {
+                                "$eq": ["$_id", "$$local_id"]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+
+              },
+              {
+                "$project": {
+                  _id: "$kampret",
+                  email: "$_id",
+                  totEmail: 1,
+                  "senderParty": 1,
+                  "gender": {
+                    "$ifNull": [{
                       "$let": {
                         "vars": {
-                          "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                          "tmp": {
+                            "$arrayElemAt": ["$userbasics_data", 0]
+                          }
                         },
                         "in": "$$tmp.gender"
                       }
-                    }, "Lainnya"]
-                },
-                ageQualication: {
-                  "$let": {
-                    "vars": {
-                      "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                    },
-                    "in": "$$tmp.ageQualication"
-                  }
-                },
-                interest: {
-                  $map: {
-                    input: {
-                      $map: {
-                        input: {
-                          "$let": {
-                            "vars": {
-                              "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                            },
-                            "in": "$$tmp.interests"
+                    }, "OTHER"]
+                  },
+                  "ageQualication": {
+                    "$ifNull": [{
+                      "$let": {
+                        "vars": {
+                          "tmp": {
+                            "$arrayElemAt": ["$userbasics_data", 0]
                           }
                         },
-                        in: {
-                          $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
-                        },
+                        "in": "$$tmp.ageQualication"
                       }
-                    },
-                    in: "$$this.v"
-                  }
-                },
-                areas: {
-                  $let: {
-                    "vars": {
-                      userauths: {
-                        "$arrayElemAt": [{
-                          "$let": {
-                            "vars": {
-                              "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                            },
-                            "in": "$$tmp.areas"
+                    }, "OTHER"]
+                  },
+                  "interest": {
+                    "$map": {
+                      "input": {
+                        "$map": {
+                          "input": {
+                            "$let": {
+                              "vars": {
+                                "tmp": {
+                                  "$arrayElemAt": ["$userbasics_data", 0]
+                                }
+                              },
+                              "in": "$$tmp.interests"
+                            }
+                          },
+                          "in": {
+                            "$arrayElemAt": [{
+                              "$objectToArray": "$$this"
+                            }, 1]
                           }
-                        }, 0]
+                        }
+                      },
+                      "in": "$$this.v"
+                    }
+                  },
+                  "areas": {
+                    "$ifNull": [{
+                      "$let": {
+                        "vars": {
+                          "userauths": {
+                            "$arrayElemAt": [{
+                              "$let": {
+                                "vars": {
+                                  "tmp": {
+                                    "$arrayElemAt": ["$userbasics_data", 0]
+                                  }
+                                },
+                                "in": "$$tmp.areas"
+                              }
+                            }, 0]
+                          }
+                        },
+                        "in": "$$userauths.stateName"
                       }
-                    },
-                    "in": "$$userauths.stateName"
+                    }, "OTHER"]
                   }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$user"
+          }
+        },
+        {
+          "$facet": {
+            "wilayah": [{
+              "$group": {
+                "_id": "$user.areas",
+                "count": {
+                  "$sum": "$user.totEmail"
                 },
+                //tot:{ $push: "$user.totEmail"}
               }
-            },
-          ],
-          as: 'contentevents_data'
+            }],
+            "gender": [{
+              "$group": {
+                "_id": "$user.gender",
+                "count": {
+                  "$sum": "$user.totEmail"
+                }
+              }
+            }],
+            "age": [{
+              "$group": {
+                "_id": "$user.ageQualication",
+                "count": {
+                  "$sum": "$user.totEmail"
+                }
+              }
+            }]
+          }
         }
-      },
-      {
-        $unwind: {
-          path: "$contentevents_data",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $facet: {
-          wilayah: [
-            {
-              $group: {
-                _id: "$contentevents_data.areas",
-                count: {
-                  $sum: 1
-                }
-              }
-            },
-          ],
-          gender: [
-            {
-              $group: {
-                _id: "$contentevents_data.gender",
-                count: {
-                  $sum: 1
-                }
-              }
-            }
-          ],
-          used: [
-            {
-              $group: {
-                _id: "$postID",
-                count: {
-                  $sum: 1
-                }
-              }
-            }
-          ],
-          view: [
-            {
-              $group: {
-                _id: "$postID",
-                count: {
-                  $sum: 1
-                }
-              }
-            }
-          ],
-          age: [
-            {
-              $group: {
-                _id: "$postID",
-                count: {
-                  $sum: 1
-                }
-              }
-            }
-          ]
-        }
-      }
-      // {
-      //   $unwind: {
-      //     path: "$contentevents_data",
-      //     preserveNullAndEmptyArrays: true
-      //   }
-      // },
-      // {
-      //   $facet: {
-      //     "musicId": [
-      //       {
-      //         "$group": {
-      //           "_id": "$musicId",
+      ]
+    //   [
+    //   {
+    //     $match:
+    //     {
+    //       "musicId": ObjectId_
+    //     },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: 'contentevents',
+    //       let: {
+    //         "postID": "$postID"
+    //       },
+    //       pipeline: [
+    //         {
+    //           $match: {
+    //             $expr: {
+    //               $and:[
+    //                 { $eq: ["$postID", "$$postID"] },
+    //                 { $eq: ["$eventType", "VIEW"] },
+    //                 { $eq: ["$event", "ACCEPT"] }
+    //               ]
+    //             },
+    //           },
+    //         },
+    //         {
+    //           $lookup: {
+    //             from: 'userbasics',
+    //             as: 'userbasics_data',
+    //             let: {
+    //               local_id: "$senderParty"
+    //             },
+    //             pipeline: [
+    //               {
+    //                 $match:
+    //                 {
+    //                   $expr: {
+    //                     $eq: ['$email', '$$local_id']
+    //                   }
+    //                 }
+    //               },
+    //               {
+    //                 $project: {
+    //                   _id: 1,
+    //                   email: 1,
+    //                   fullName: 1,
+    //                   gender: {
+    //                     $switch: {
+    //                       branches: [
+    //                         {
+    //                           case: {
+    //                             $or: [
+    //                               { $eq: ["$gender", "Male"] },
+    //                               { $eq: ["$gender", "Laki-laki"] },
+    //                               { $eq: ["$gender", "MALE"] }
+    //                             ]
+    //                           }, then: "Laki-laki"
+    //                         },
+    //                         {
+    //                           case: {
+    //                             $or: [
+    //                               { $eq: ["$gender", " Perempuan"] },
+    //                               { $eq: ["$gender", "Perempuan"] },
+    //                               { $eq: ["$gender", "PEREMPUAN"] },
+    //                               { $eq: ["$gender", "FEMALE"] },
+    //                               { $eq: ["$gender", " FEMALE"] }
+    //                             ]
+    //                           }, then: "Perempuan"
+    //                         }
+    //                       ],
+    //                       "default": "Lainnya"
+    //                     }
+    //                   },
+    //                   age: {
+    //                     $cond: {
+    //                       if: {
+    //                         $and: ['$dob', {
+    //                           $ne: ["$dob", ""]
+    //                         }]
+    //                       },
+    //                       then: {
+    //                         $toInt: {
+    //                           $divide: [{
+    //                             $subtract: [new Date(), {
+    //                               $toDate: "$dob"
+    //                             }]
+    //                           }, (365 * 24 * 60 * 60 * 1000)]
+    //                         }
+    //                       },
+    //                       else: 0
+    //                     }
+    //                   },
+    //                   ageQualication: {
+    //                     $switch: {
+    //                       branches: [
+    //                         {
+    //                           case: {
+    //                             $and: [{
+    //                               $gte: [{
+    //                                 $cond: {
+    //                                   if: {
+    //                                     $and: ['$dob', {
+    //                                       $ne: ["$dob", ""]
+    //                                     }]
+    //                                   },
+    //                                   then: {
+    //                                     $toInt: {
+    //                                       $divide: [{
+    //                                         $subtract: [new Date(), {
+    //                                           $toDate: "$dob"
+    //                                         }]
+    //                                       }, (365 * 24 * 60 * 60 * 1000)]
+    //                                     }
+    //                                   },
+    //                                   else: 0
+    //                                 }
+    //                               }, 1]
+    //                             }, {
+    //                               $lte: [{
+    //                                 $cond: {
+    //                                   if: {
+    //                                     $and: ['$dob', {
+    //                                       $ne: ["$dob", ""]
+    //                                     }]
+    //                                   },
+    //                                   then: {
+    //                                     $toInt: {
+    //                                       $divide: [{
+    //                                         $subtract: [new Date(), {
+    //                                           $toDate: "$dob"
+    //                                         }]
+    //                                       }, (365 * 24 * 60 * 60 * 1000)]
+    //                                     }
+    //                                   },
+    //                                   else: 0
+    //                                 }
+    //                               }, 14]
+    //                             }]
+    //                           },
+    //                           then: "< 14 Tahun"
+    //                         },
+    //                         {
+    //                           case: {
+    //                             $and: [{
+    //                               $gte: [{
+    //                                 $cond: {
+    //                                   if: {
+    //                                     $and: ['$dob', {
+    //                                       $ne: ["$dob", ""]
+    //                                     }]
+    //                                   },
+    //                                   then: {
+    //                                     $toInt: {
+    //                                       $divide: [{
+    //                                         $subtract: [new Date(), {
+    //                                           $toDate: "$dob"
+    //                                         }]
+    //                                       }, (365 * 24 * 60 * 60 * 1000)]
+    //                                     }
+    //                                   },
+    //                                   else: 0
+    //                                 }
+    //                               }, 14]
+    //                             }, {
+    //                               $lte: [{
+    //                                 $cond: {
+    //                                   if: {
+    //                                     $and: ['$dob', {
+    //                                       $ne: ["$dob", ""]
+    //                                     }]
+    //                                   },
+    //                                   then: {
+    //                                     $toInt: {
+    //                                       $divide: [{
+    //                                         $subtract: [new Date(), {
+    //                                           $toDate: "$dob"
+    //                                         }]
+    //                                       }, (365 * 24 * 60 * 60 * 1000)]
+    //                                     }
+    //                                   },
+    //                                   else: 0
+    //                                 }
+    //                               }, 24]
+    //                             }]
+    //                           },
+    //                           then: "14 - 24 Tahun"
+    //                         },
+    //                         {
+    //                           case: {
+    //                             $and: [{
+    //                               $gte: [{
+    //                                 $cond: {
+    //                                   if: {
+    //                                     $and: ['$dob', {
+    //                                       $ne: ["$dob", ""]
+    //                                     }]
+    //                                   },
+    //                                   then: {
+    //                                     $toInt: {
+    //                                       $divide: [{
+    //                                         $subtract: [new Date(), {
+    //                                           $toDate: "$dob"
+    //                                         }]
+    //                                       }, (365 * 24 * 60 * 60 * 1000)]
+    //                                     }
+    //                                   },
+    //                                   else: 0
+    //                                 }
+    //                               }, 25]
+    //                             }, {
+    //                               $lte: [{
+    //                                 $cond: {
+    //                                   if: {
+    //                                     $and: ['$dob', {
+    //                                       $ne: ["$dob", ""]
+    //                                     }]
+    //                                   },
+    //                                   then: {
+    //                                     $toInt: {
+    //                                       $divide: [{
+    //                                         $subtract: [new Date(), {
+    //                                           $toDate: "$dob"
+    //                                         }]
+    //                                       }, (365 * 24 * 60 * 60 * 1000)]
+    //                                     }
+    //                                   },
+    //                                   else: 0
+    //                                 }
+    //                               }, 35]
+    //                             }]
+    //                           },
+    //                           then: "24 - 35 Tahun"
+    //                         },
+    //                         {
+    //                           case: {
+    //                             $and: [{
+    //                               $gte: [{
+    //                                 $cond: {
+    //                                   if: {
+    //                                     $and: ['$dob', {
+    //                                       $ne: ["$dob", ""]
+    //                                     }]
+    //                                   },
+    //                                   then: {
+    //                                     $toInt: {
+    //                                       $divide: [{
+    //                                         $subtract: [new Date(), {
+    //                                           $toDate: "$dob"
+    //                                         }]
+    //                                       }, (365 * 24 * 60 * 60 * 1000)]
+    //                                     }
+    //                                   },
+    //                                   else: 0
+    //                                 }
+    //                               }, 35]
+    //                             }, {
+    //                               $lte: [{
+    //                                 $cond: {
+    //                                   if: {
+    //                                     $and: ['$dob', {
+    //                                       $ne: ["$dob", ""]
+    //                                     }]
+    //                                   },
+    //                                   then: {
+    //                                     $toInt: {
+    //                                       $divide: [{
+    //                                         $subtract: [new Date(), {
+    //                                           $toDate: "$dob"
+    //                                         }]
+    //                                       }, (365 * 24 * 60 * 60 * 1000)]
+    //                                     }
+    //                                   },
+    //                                   else: 0
+    //                                 }
+    //                               }, 44]
+    //                             }]
+    //                           },
+    //                           then: "35 - 44 Tahun"
+    //                         },
+    //                         {
+    //                           case: {
+    //                             $gt: [{
+    //                               $cond: {
+    //                                 if: {
+    //                                   $and: ['$dob', {
+    //                                     $ne: ["$dob", ""]
+    //                                   }]
+    //                                 },
+    //                                 then: {
+    //                                   $toInt: {
+    //                                     $divide: [{
+    //                                       $subtract: [new Date(), {
+    //                                         $toDate: "$dob"
+    //                                       }]
+    //                                     }, (365 * 24 * 60 * 60 * 1000)]
+    //                                   }
+    //                                 },
+    //                                 else: 0
+    //                               }
+    //                             }, 43]
+    //                           },
+    //                           then: "> 44 Tahun"
+    //                         },
+    //                       ],
+    //                       "default": "Other"
+    //                     }
+    //                   },
+    //                   userInterests_array: {
+    //                     $map: {
+    //                       input: {
+    //                         $map: {
+    //                           input: "$userInterests",
+    //                           in: {
+    //                             $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+    //                           },
+    //                         }
+    //                       },
+    //                       in: "$$this.v"
+    //                     }
+    //                   },
+    //                   states: 1,
+    //                 }
+    //               },
+    //               {
+    //                 $lookup: {
+    //                   from: "interests_repo",
+    //                   localField: "userInterests_array",
+    //                   foreignField: "_id",
+    //                   as: "interests"
+    //                 }
+    //               },
+    //               {
+    //                 $lookup: {
+    //                   from: 'areas',
+    //                   as: 'areas',
+    //                   let: {
+    //                     local_id: "$states.$id"
+    //                   },
+    //                   pipeline: [
+    //                     {
+    //                       $match:
+    //                       {
+    //                         $expr: {
+    //                           $eq: ['$_id', '$$local_id']
+    //                         }
+    //                       }
+    //                     },
+    //                   ]
+    //                 }
+    //               },
+    //             ],
+    //           },
+    //         },
+    //         {
+    //           $project: {
+    //             senderParty:1,
+    //             gender: {
+    //               $ifNull: [
+    //                 {
+    //                   "$let": {
+    //                     "vars": {
+    //                       "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+    //                     },
+    //                     "in": "$$tmp.gender"
+    //                   }
+    //                 }, "Lainnya"]
+    //             },
+    //             ageQualication: {
+    //               "$let": {
+    //                 "vars": {
+    //                   "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+    //                 },
+    //                 "in": "$$tmp.ageQualication"
+    //               }
+    //             },
+    //             interest: {
+    //               $map: {
+    //                 input: {
+    //                   $map: {
+    //                     input: {
+    //                       "$let": {
+    //                         "vars": {
+    //                           "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+    //                         },
+    //                         "in": "$$tmp.interests"
+    //                       }
+    //                     },
+    //                     in: {
+    //                       $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+    //                     },
+    //                   }
+    //                 },
+    //                 in: "$$this.v"
+    //               }
+    //             },
+    //             areas: {
+    //               $let: {
+    //                 "vars": {
+    //                   userauths: {
+    //                     "$arrayElemAt": [{
+    //                       "$let": {
+    //                         "vars": {
+    //                           "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+    //                         },
+    //                         "in": "$$tmp.areas"
+    //                       }
+    //                     }, 0]
+    //                   }
+    //                 },
+    //                 "in": "$$userauths.stateName"
+    //               }
+    //             },
+    //           }
+    //         },
+    //       ],
+    //       as: 'contentevents_data'
+    //     }
+    //   },
+    //   {
+    //     $unwind: {
+    //       path: "$contentevents_data",
+    //       preserveNullAndEmptyArrays: true
+    //     }
+    //   },
+    //   {
+    //     $facet: {
+    //       wilayah: [
+    //         {
+    //           $group: {
+    //             _id: "$contentevents_data.areas",
+    //             count: {
+    //               $sum: 1
+    //             }
+    //           }
+    //         },
+    //       ],
+    //       gender: [
+    //         {
+    //           $group: {
+    //             _id: "$contentevents_data.gender",
+    //             count: {
+    //               $sum: 1
+    //             }
+    //           }
+    //         }
+    //       ],
+    //       used: [
+    //         {
+    //           $group: {
+    //             _id: "$postID",
+    //             count: {
+    //               $sum: 1
+    //             }
+    //           }
+    //         }
+    //       ],
+    //       view: [
+    //         {
+    //           $group: {
+    //             _id: "$postID",
+    //             count: {
+    //               $sum: 1
+    //             }
+    //           }
+    //         }
+    //       ],
+    //       age: [
+    //         {
+    //           $group: {
+    //             _id: "$postID",
+    //             count: {
+    //               $sum: 1
+    //             }
+    //           }
+    //         }
+    //       ]
+    //     }
+    //   }
+    //   // {
+    //   //   $unwind: {
+    //   //     path: "$contentevents_data",
+    //   //     preserveNullAndEmptyArrays: true
+    //   //   }
+    //   // },
+    //   // {
+    //   //   $facet: {
+    //   //     "musicId": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$musicId",
 
-      //         }
-      //       }
-      //     ],
-      //     "musicTitle": [
-      //       {
-      //         "$group": {
-      //           "_id": "$mediamusic_data.musicTitle",
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "musicTitle": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$mediamusic_data.musicTitle",
 
-      //         }
-      //       }
-      //     ],
-      //     "isActive": [
-      //       {
-      //         "$group": {
-      //           "_id": "$mediamusic_data.isActive",
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "isActive": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$mediamusic_data.isActive",
 
-      //         }
-      //       }
-      //     ],
-      //     "artistName": [
-      //       {
-      //         "$group": {
-      //           "_id": "$mediamusic_data.artistName",
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "artistName": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$mediamusic_data.artistName",
 
-      //         }
-      //       }
-      //     ],
-      //     "albumName": [
-      //       {
-      //         "$group": {
-      //           "_id": "$mediamusic_data.albumName",
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "albumName": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$mediamusic_data.albumName",
 
-      //         }
-      //       }
-      //     ],
-      //     "genre": [
-      //       {
-      //         "$group": {
-      //           "_id": "$mediamusic_data.genre",
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "genre": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$mediamusic_data.genre",
 
-      //         }
-      //       }
-      //     ],
-      //     "theme": [
-      //       {
-      //         "$group": {
-      //           "_id": "$mediamusic_data.theme",
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "theme": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$mediamusic_data.theme",
 
-      //         }
-      //       }
-      //     ],
-      //     "mood": [
-      //       {
-      //         "$group": {
-      //           "_id": "$mediamusic_data.mood",
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "mood": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$mediamusic_data.mood",
 
-      //         }
-      //       }
-      //     ],
-      //     "releaseDate": [
-      //       {
-      //         "$group": {
-      //           "_id": "$mediamusic_data.releaseDate",
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "releaseDate": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$mediamusic_data.releaseDate",
 
-      //         }
-      //       }
-      //     ],
-      //     "apsaraMusic": [
-      //       {
-      //         "$group": {
-      //           "_id": "$mediamusic_data.apsaraMusic",
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "apsaraMusic": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$mediamusic_data.apsaraMusic",
 
-      //         }
-      //       }
-      //     ],
-      //     "apsaraThumnail": [
-      //       {
-      //         "$group": {
-      //           "_id": "$mediamusic_data.apsaraThumnail",
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "apsaraThumnail": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$mediamusic_data.apsaraThumnail",
 
-      //         }
-      //       }
-      //     ],
-      //     "wilayah": [
-      //       {
-      //         "$group": {
-      //           "_id": "$contentevents_data.areas",
-      //           "count": {
-      //             "$sum": 1
-      //           }
-      //         }
-      //       }
-      //     ],
-      //     "gender": [
-      //       {
-      //         "$group": {
-      //           "_id": "$contentevents_data.gender",
-      //           "count": {
-      //             "$sum": 1
-      //           }
-      //         }
-      //       }
-      //     ],
-      //     "used": [
-      //       {
-      //         "$group": {
-      //           "_id": "$postID",
-      //           "count": {
-      //             "$sum": 1
-      //           }
-      //         }
-      //       }
-      //     ],
-      //     "view": [
-      //       {
-      //         "$group": {
-      //           "_id": "$contentevents_data._id",
-      //           "count": {
-      //             "$sum": 1
-      //           }
-      //         }
-      //       }
-      //     ],
-      //     "age": [
-      //       {
-      //         "$group": {
-      //           "_id": "$contentevents_data.ageQualication",
-      //           "count": {
-      //             "$sum": 1
-      //           }
-      //         }
-      //       }
-      //     ]
-      //   }
-      // },
-      // {
-      //   $project: {
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "wilayah": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$contentevents_data.areas",
+    //   //           "count": {
+    //   //             "$sum": 1
+    //   //           }
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "gender": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$contentevents_data.gender",
+    //   //           "count": {
+    //   //             "$sum": 1
+    //   //           }
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "used": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$postID",
+    //   //           "count": {
+    //   //             "$sum": 1
+    //   //           }
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "view": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$contentevents_data._id",
+    //   //           "count": {
+    //   //             "$sum": 1
+    //   //           }
+    //   //         }
+    //   //       }
+    //   //     ],
+    //   //     "age": [
+    //   //       {
+    //   //         "$group": {
+    //   //           "_id": "$contentevents_data.ageQualication",
+    //   //           "count": {
+    //   //             "$sum": 1
+    //   //           }
+    //   //         }
+    //   //       }
+    //   //     ]
+    //   //   }
+    //   // },
+    //   // {
+    //   //   $project: {
 
-      //     postID: {
-      //       $arrayElemAt: ['$postID._id', 0]
-      //     },
-      //     musicTitle: {
-      //       $arrayElemAt: ['$musicTitle', 0]
-      //     },
-      //     artistName: {
-      //       $arrayElemAt: ['$artistName', 0]
-      //     },
-      //     albumName: {
-      //       $arrayElemAt: ['$albumName', 0]
-      //     },
-      //     isActive: {
-      //       $arrayElemAt: ['$isActive', 0]
-      //     },
-      //     genre: {
-      //       $arrayElemAt: ['$genre', 0]
-      //     },
-      //     theme: {
-      //       $arrayElemAt: ['$theme', 0]
-      //     },
-      //     mood: {
-      //       $arrayElemAt: ['$mood', 0]
-      //     },
-      //     releaseDate: {
-      //       $arrayElemAt: ['$releaseDate', 0]
-      //     },
-      //     apsaraMusic: {
-      //       $arrayElemAt: ['$apsaraMusic', 0]
-      //     },
-      //     apsaraThumnail: {
-      //       $arrayElemAt: ['$apsaraThumnail', 0]
-      //     },
-      //     view: {
-      //       $size: '$view'
-      //     },
-      //     used: {
-      //       $size: '$used'
-      //     },
-      //     gender: 1,
-      //     wilayah: 1,
-      //     age: 1,
-      //   }
-      // },
-    ]);
+    //   //     postID: {
+    //   //       $arrayElemAt: ['$postID._id', 0]
+    //   //     },
+    //   //     musicTitle: {
+    //   //       $arrayElemAt: ['$musicTitle', 0]
+    //   //     },
+    //   //     artistName: {
+    //   //       $arrayElemAt: ['$artistName', 0]
+    //   //     },
+    //   //     albumName: {
+    //   //       $arrayElemAt: ['$albumName', 0]
+    //   //     },
+    //   //     isActive: {
+    //   //       $arrayElemAt: ['$isActive', 0]
+    //   //     },
+    //   //     genre: {
+    //   //       $arrayElemAt: ['$genre', 0]
+    //   //     },
+    //   //     theme: {
+    //   //       $arrayElemAt: ['$theme', 0]
+    //   //     },
+    //   //     mood: {
+    //   //       $arrayElemAt: ['$mood', 0]
+    //   //     },
+    //   //     releaseDate: {
+    //   //       $arrayElemAt: ['$releaseDate', 0]
+    //   //     },
+    //   //     apsaraMusic: {
+    //   //       $arrayElemAt: ['$apsaraMusic', 0]
+    //   //     },
+    //   //     apsaraThumnail: {
+    //   //       $arrayElemAt: ['$apsaraThumnail', 0]
+    //   //     },
+    //   //     view: {
+    //   //       $size: '$view'
+    //   //     },
+    //   //     used: {
+    //   //       $size: '$used'
+    //   //     },
+    //   //     gender: 1,
+    //   //     wilayah: 1,
+    //   //     age: 1,
+    //   //   }
+    //   // },
+    // ]
+    );
     return query;
   }
 

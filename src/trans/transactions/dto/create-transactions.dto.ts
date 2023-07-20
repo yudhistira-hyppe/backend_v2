@@ -25,6 +25,8 @@ export class CreateTransactionsDto {
     detail: any[];
     response: {};
     updatedAt: string;
+    voucherpromo: any[];
+    datavoucherpromo: any[];
 
 }
 export class Uservoucher {
