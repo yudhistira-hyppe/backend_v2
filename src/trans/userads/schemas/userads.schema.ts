@@ -35,6 +35,8 @@ export class UserAds {
     @Prop()
     viewed: number;
     @Prop()
+    cliked: number;
+    @Prop()
     viewedUnder: number;
     @Prop()
     liveTypeuserads: boolean;

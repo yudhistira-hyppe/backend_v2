@@ -22,6 +22,8 @@ import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { OssContentPictService } from '../../../content/posts/osscontentpict.service';
 import { AdsLogsDto } from '../adslog/dto/adslog.dto';
 import { AdslogsService } from '../adslog/adslog.service';
+import { AccountbalancesService } from 'src/trans/accountbalances/accountbalances.service';
+import { CreateAccountbalancesDto } from 'src/trans/accountbalances/dto/create-accountbalances.dto';
 const sharp = require('sharp');
 
 @Controller('api/adsv2/ads')
@@ -41,7 +43,8 @@ export class AdsController {
         private adsplacesService: AdsplacesService,
         private mediaprofilepictsService: MediaprofilepictsService,
         private readonly ossContentPictService: OssContentPictService, 
-        private readonly adslogsService: AdslogsService, 
+        private readonly adslogsService: AdslogsService,
+        private accountbalancesService: AccountbalancesService,
         private readonly adsService: AdsService) {
         this.locks = new Map();
     }
@@ -1288,7 +1291,10 @@ export class AdsController {
     @Post('/viewads')
     @HttpCode(HttpStatus.ACCEPTED)
     async adsView(@Body() AdsAction_: AdsAction, @Headers() headers) {
+        //Current Date
         var current_date = await this.utilsService.getDateTimeString();
+
+        //Create Ads Logs
         var AdsLogsDto_ = new AdsLogsDto();
         var logRequest = {
             header: headers,
@@ -1338,14 +1344,6 @@ export class AdsController {
                 'Unabled to proceed param adsId is reqired',
             );
         }
-        const dataAds = await this.adsService.findOneActive(AdsAction_.adsId.toString());
-        if (!(await this.utilsService.ceckData(dataAds))) {
-            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed Ads not found' });
-            await this.adslogsService.create(AdsLogsDto_);
-            await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Ads not found',
-            );
-        }
         if (AdsAction_.useradsId == undefined) {
             AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed param useradsId is reqired' });
             await this.adslogsService.create(AdsLogsDto_);
@@ -1353,6 +1351,8 @@ export class AdsController {
                 'Unabled to proceed param useradsId is reqired',
             );
         }
+
+        //Ceck Data User Ads
         const dataAdsUser = await this.userAdsService.getAdsUser(AdsAction_.useradsId.toString());
         if (!(await this.utilsService.ceckData(dataAdsUser))) {
             AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed UserAds not found' });
@@ -1362,7 +1362,7 @@ export class AdsController {
             );
         }
 
-        //Validasi User
+        //Ceck Data User
         const data_userbasic = await this.userbasicsService.findOne(headers['x-auth-user']);
         if (!(await this.utilsService.ceckData(data_userbasic))) {
             AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed User not found' });
@@ -1372,7 +1372,17 @@ export class AdsController {
             );
         }
 
-        //Validasi AdsType
+        //Ceck Data Ads
+        const dataAds = await this.adsService.findOneActive(AdsAction_.adsId.toString());
+        if (!(await this.utilsService.ceckData(dataAds))) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed Ads not found' });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Ads not found',
+            );
+        }
+
+        //Ceck Data AdsType
         const dataTypeAds = await this.adsTypeService.findOne(dataAds.typeAdsID.toString());
         if (!(await this.utilsService.ceckData(dataTypeAds))) {
             AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed typeAds not found' });
@@ -1392,19 +1402,46 @@ export class AdsController {
         }
 
         try{
-            var dataUpdateUserAds = {
-                timeViewSecond: Number(AdsAction_.watchingTime),
-                $inc: { 'viewed': 1 } ,
+            //Update User Ads
+            var data_Update_UserAds = {
+                statusView:true,
+                timeViewSecond: Number(AdsAction_.watchingTime), 
+                $inc: { 'viewed': 1 },
                 $push: { "updateAt": current_date, 'timeView': Number(AdsAction_.watchingTime) },
             }
-            if (((dataAdsUser.viewed != undefined ? dataAdsUser.viewed : 0) + 1) == (dataAds.audiensFrekuensi != undefined ? dataAds.audiensFrekuensi : 0)){
-                dataUpdateUserAds["isActive"] = false;
+            if (((dataAdsUser.viewed != undefined ? dataAdsUser.viewed : 0) + 1) == (dataAds.audiensFrekuensi != undefined ? dataAds.audiensFrekuensi : 0)) {
+                data_Update_UserAds["isActive"] = false;
             }
-            // CreateUserAdsDto_.clickAt = current_date;
-            // CreateUserAdsDto_.viewedUnder = userAds_viewedUnder + 1;
-            // CreateUserAdsDto_.timeViewSecond = watching_time;
-        } catch(e){
+            await this.userAdsService.updateData(AdsAction_.useradsId.toString(), data_Update_UserAds)
 
+            //update Ads
+            var data_Update_Ads = {}
+            if ((dataAds.totalView + 1) <= dataAds.tayang) {
+                data_Update_Ads["$inc"] = { 'usedCredit': Number(dataTypeAds.CPV), 'totalView': 1 };
+            }
+            if (dataAds.tayang == (dataAds.totalView + 1)) {
+                data_Update_Ads["status"] = "IN_ACTIVE";
+                data_Update_Ads["isActive"] = false;
+            }
+            await this.adsService.updateData(AdsAction_.adsId.toString(), data_Update_Ads)
+
+            //Set Response
+            var response = {
+                response_code: 202,
+                messages: {
+                    info: ['successfully'],
+                },
+            };
+            AdsLogsDto_.responseAds = JSON.stringify(response);
+            await this.adslogsService.create(AdsLogsDto_);
+
+            return response;
+        } catch (e) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed User Ads not found' });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed User Ads not found',
+            );
         }
     }
 
@@ -1412,14 +1449,186 @@ export class AdsController {
     @Post('/clickads')
     @HttpCode(HttpStatus.ACCEPTED)
     async adsClick(@Body() AdsAction_: AdsAction, @Headers() headers) {
+        //Current Date
+        var current_date_string = await this.utilsService.getDateTimeString();
+        var current_date = await this.utilsService.getDateTime();
+
+        //Create Ads Logs
+        var AdsLogsDto_ = new AdsLogsDto();
+        var logRequest = {
+            header: headers,
+            request: AdsAction_
+        }
+        AdsLogsDto_.requestAds = JSON.stringify(logRequest);
+        AdsLogsDto_.endPointAds = "api/adsv2/ads/clickads/";
+        AdsLogsDto_.type = "VIEWS ADS";
+        AdsLogsDto_.dateTime = await this.utilsService.getDateTimeString();
+        AdsLogsDto_.nameActivitas = ["ViewAds"];
+
+        //Validasi Token
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: "Unauthorized" });
+            await this.adslogsService.create(AdsLogsDto_);
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
         }
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: "Unabled to proceed email header dan token not match" });
+            await this.adslogsService.create(AdsLogsDto_);
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email header dan token not match',
+            );
+        }
+
+        //Validasi Param
+        if (AdsAction_.watchingTime == undefined) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: "Unabled to proceed param watchingTime is reqired" });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed param watchingTime is reqired',
+            );
+        }
+        if (typeof AdsAction_.watchingTime != 'number') {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed param watchingTime invalid format ' + typeof AdsAction_.watchingTime });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed param watchingTime invalid format ' + typeof AdsAction_.watchingTime,
+            );
+        }
+        if (AdsAction_.adsId == undefined) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed param adsId is reqired' });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed param adsId is reqired',
+            );
+        }
+        if (AdsAction_.useradsId == undefined) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed param useradsId is reqired' });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed param useradsId is reqired',
+            );
+        }
+
+        //Ceck Data User Ads
+        const dataAdsUser = await this.userAdsService.getAdsUser(AdsAction_.useradsId.toString());
+        if (!(await this.utilsService.ceckData(dataAdsUser))) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed UserAds not found' });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed UserAds not found',
+            );
+        }
+
+        //Ceck Data User
+        const data_userbasic = await this.userbasicsService.findOne(headers['x-auth-user']);
+        if (!(await this.utilsService.ceckData(data_userbasic))) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed User not found' });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed User not found'
+            );
+        }
+
+        //Ceck Data Ads
+        const dataAds = await this.adsService.findOneActive(AdsAction_.adsId.toString());
+        if (!(await this.utilsService.ceckData(dataAds))) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed Ads not found' });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Ads not found',
+            );
+        }
+
+        //Ceck Data AdsType
+        const dataTypeAds = await this.adsTypeService.findOne(dataAds.typeAdsID.toString());
+        if (!(await this.utilsService.ceckData(dataTypeAds))) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed typeAds not found' });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed typeAds not found'
+            );
+        }
+
+        //Get CPA
+        if (dataTypeAds.CPA == undefined || dataTypeAds.CPA == undefined) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed typeAds CPA not found' });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed typeAds CPA not found'
+            );
+        }
+
+        //Get Reward
+        if (dataTypeAds.rewards == undefined || dataTypeAds.rewards == undefined) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed typeAds rewards not found' });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed typeAds rewards not found'
+            );
+        }
+
+        try {
+            //Update User Ads
+            var data_Update_UserAds = {
+                statusClick: true,
+                timeViewSecond: Number(AdsAction_.watchingTime),
+                $inc: { 'viewed': 1, 'cliked': 1 },
+                $push: { "updateAt": current_date_string, 'timeView': Number(AdsAction_.watchingTime), "clickTime": current_date_string, },
+            }
+            if (((dataAdsUser.viewed != undefined ? dataAdsUser.viewed : 0) + 1) == (dataAds.audiensFrekuensi != undefined ? dataAds.audiensFrekuensi : 0)) {
+                data_Update_UserAds["isActive"] = false;
+            }
+            await this.userAdsService.updateData(AdsAction_.useradsId.toString(), data_Update_UserAds)
+
+            //update Ads
+            var data_Update_Ads = {}
+            if ((dataAds.totalView + 1) <= dataAds.tayang) {
+                data_Update_Ads["$inc"] = { 'usedCredit': Number(dataTypeAds.CPA), 'totalView': 1 };
+            }
+            if (dataAds.tayang == (dataAds.totalView + 1)) {
+                data_Update_Ads["status"] = "IN_ACTIVE";
+                data_Update_Ads["isActive"] = false;
+            }
+            await this.adsService.updateData(AdsAction_.adsId.toString(), data_Update_Ads)
+
+            //Update Account Balace
+            var CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
+            CreateAccountbalancesDto_.iduser = data_userbasic._id;
+            CreateAccountbalancesDto_.debet = 0;
+            CreateAccountbalancesDto_.kredit = dataTypeAds.rewards;
+            CreateAccountbalancesDto_.type = "rewards";
+            CreateAccountbalancesDto_.timestamp = current_date.toISOString();
+            CreateAccountbalancesDto_.description = "rewards form ads view";
+            CreateAccountbalancesDto_.idtrans = new mongoose.Types.ObjectId(AdsAction_.adsId.toString());
+            await this.accountbalancesService.create(CreateAccountbalancesDto_);
+
+            //Send Fcm
+            var eventType = "TRANSACTION";
+            var event = "ADS VIEW";
+            await this.utilsService.sendFcmV2(data_userbasic.email.toString(), data_userbasic.email.toString(), eventType, event, "REWARDS", null, null, null, dataTypeAds.rewards.toString());
+
+            //Set Response
+            var response = {
+                response_code: 202,
+                data: {
+                    nominal: dataTypeAds.rewards,
+                    rewards: true,
+                },
+                messages: {
+                    info: ['successfully'],
+                },
+            };
+            AdsLogsDto_.responseAds = JSON.stringify(response);
+            await this.adslogsService.create(AdsLogsDto_);
+
+            return response;
+        } catch (e) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed User Ads not found' });
+            await this.adslogsService.create(AdsLogsDto_);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed User Ads not found',
             );
         }
     }

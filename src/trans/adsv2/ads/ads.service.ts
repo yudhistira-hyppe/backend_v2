@@ -40,6 +40,14 @@ export class AdsService {
         return data;
     }
 
+    async updateData(_id: string, AdsDto_: any) {
+        let data = await this.adsModel.findByIdAndUpdate(
+            _id,
+            AdsDto_,
+            { new: true });
+        return data;
+    }
+
     async findOne(id: string): Promise<Ads> {
         return await this.adsModel.findOne({ _id: Object(id) }).exec();
     }
