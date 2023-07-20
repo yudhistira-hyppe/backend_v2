@@ -54,7 +54,7 @@ export class UserAdsService {
     }
 
     async getAdsUser(id: string): Promise<UserAds> {
-        return this.userAdsModel.findOne({ _id: new ObjectId(id) }).exec();
+        return this.userAdsModel.findOne({ _id: new ObjectId(id), isActive:true }).exec();
     }
 
     async findOneByuserIDAds(userID: string, adsId: string): Promise<UserAds> {
@@ -77,12 +77,13 @@ export class UserAdsService {
         ]);
         return query;
     }
-    async update(
-        adsID: string,
-        createUserAdsDto: CreateUserAdsDto,
+
+    async updateData(
+        _id: string,
+        createUserAdsDto: any,
     ): Promise<UserAds> {
         let data = await this.userAdsModel.findByIdAndUpdate(
-            adsID,
+            _id,
             createUserAdsDto,
             { new: true },
         );
@@ -92,6 +93,23 @@ export class UserAdsService {
         }
         return data;
     }
+
+    async update(
+        _id: string,
+        createUserAdsDto: CreateUserAdsDto,
+    ): Promise<UserAds> {
+        let data = await this.userAdsModel.findByIdAndUpdate(
+            _id,
+            createUserAdsDto,
+            { new: true },
+        );
+
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
+        return data;
+    }
+
     async updatesdata(adsID: Types.ObjectId, createUserAdsDto: CreateUserAdsDto): Promise<Object> {
         let data = await this.userAdsModel.updateOne({ "adsID": adsID },
             { $set: { "statusClick": createUserAdsDto.statusClick, "statusView": createUserAdsDto.statusView, "viewAt": createUserAdsDto.viewAt, "viewed": createUserAdsDto.viewed, "clickAt": createUserAdsDto.clickAt } });
