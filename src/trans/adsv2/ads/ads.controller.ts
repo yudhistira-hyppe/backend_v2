@@ -1583,7 +1583,7 @@ export class AdsController {
             if (((dataAdsUser.viewed != undefined ? dataAdsUser.viewed : 0) + 1) == (dataAds.audiensFrekuensi != undefined ? dataAds.audiensFrekuensi : 0)) {
                 data_Update_UserAds["isActive"] = false;
             }
-            await this.userAdsService.updateData(AdsAction_.useradsId.toString(), data_Update_UserAds)
+            this.userAdsService.updateData(AdsAction_.useradsId.toString(), data_Update_UserAds)
 
             //update Ads
             var data_Update_Ads = {}
@@ -1594,7 +1594,7 @@ export class AdsController {
                 data_Update_Ads["status"] = "IN_ACTIVE";
                 data_Update_Ads["isActive"] = false;
             }
-            await this.adsService.updateData(AdsAction_.adsId.toString(), data_Update_Ads)
+            this.adsService.updateData(AdsAction_.adsId.toString(), data_Update_Ads)
 
             //Update Account Balace
             var CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
@@ -1605,12 +1605,12 @@ export class AdsController {
             CreateAccountbalancesDto_.timestamp = current_date.toISOString();
             CreateAccountbalancesDto_.description = "rewards form ads view";
             CreateAccountbalancesDto_.idtrans = new mongoose.Types.ObjectId(AdsAction_.adsId.toString());
-            await this.accountbalancesService.create(CreateAccountbalancesDto_);
+            this.accountbalancesService.create(CreateAccountbalancesDto_);
 
             //Send Fcm
             var eventType = "TRANSACTION";
             var event = "ADS VIEW";
-            await this.utilsService.sendFcmV2(data_userbasic.email.toString(), data_userbasic.email.toString(), eventType, event, "REWARDS", null, null, null, dataTypeAds.rewards.toString());
+            this.utilsService.sendFcmV2(data_userbasic.email.toString(), data_userbasic.email.toString(), eventType, event, "REWARDS", null, null, null, dataTypeAds.rewards.toString());
 
             //Set Response
             var response = {
