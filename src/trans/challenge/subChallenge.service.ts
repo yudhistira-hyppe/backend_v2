@@ -2880,7 +2880,8 @@ export class subChallengeService {
                                         $ifNull:
                                             [
                                                 {
-                                                    $arrayElemAt: ["$history.ranking", 0]
+                                                    //$arrayElemAt: ["$history.ranking", 0] 
+                                                    $last: "$history.ranking"
                                                 },
                                                 0
                                             ]
