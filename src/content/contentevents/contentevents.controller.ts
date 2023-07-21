@@ -1132,7 +1132,12 @@ export class ContenteventsController {
             );
           }
         } else {
-          this.userChallengeViewv3("", "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+
+          var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEWCHALLENGE", "DONE", email_receiverParty, "", request.body.postID);
+          var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEWCHALLENGE", "ACCEPT", "", email_user, request.body.postID);
+          if (!(await this.utilsService.ceckData(ceck_data_DONE)) && !(await this.utilsService.ceckData(ceck_data_ACCEPT))) {
+            this.userChallengeViewv3("", "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+          }
 
         }
       }
