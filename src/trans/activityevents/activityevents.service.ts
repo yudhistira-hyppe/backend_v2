@@ -551,8 +551,81 @@ export class ActivityeventsService {
               },]
             },
           },
-          lastlogin: "$createdAt"
-
+          lastlogin: "$createdAt",
+          urluserBadge:
+          {
+              "$filter":
+              {
+                input:
+                { 
+                  $arrayElemAt: 
+                  [
+                    "$user.userBadge", 0
+                  ] 
+                },
+                as:"listbadge",
+                cond:
+                {
+                  "$and":
+                  [
+                    {
+                      "$eq":
+                      [
+                        "$$listbadge.isActive", true
+                      ]
+                    },
+                    {
+                      "$lte": [
+                        {
+                          "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                              "$add": [
+                                new Date(),
+                                25200000
+                              ]
+                            }
+                          }
+                        },
+                        "$$listbadge.endDatetime"
+                      ]
+                    }
+                  ]
+                }
+              }
+          },
+        }
+      },
+      {
+        $project: {
+          iduser: 1,
+          jenis: 1,
+          age: 1,
+          email: 1,
+          createdAt: 1,
+          fullName: 1,
+          gender: 1,
+          username: 1,
+          role: 1,
+          countries: 1,
+          cities: 1,
+          areas: 1,
+          areasId: 1,
+          avatar: 1,
+          lastlogin: 1,
+          urluserBadge:
+          {
+            "$ifNull":
+            [
+              {
+                "$arrayElemAt":
+                [
+                  "$urluserBadge",0
+                ]
+              },
+              null
+            ]
+          },
         }
       },
       {
