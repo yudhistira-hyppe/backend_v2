@@ -333,6 +333,43 @@ export class GetuserprofilesService {
             medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
           },
+          urluserBadge:
+          {
+              "$filter":
+              {
+                  input: "$userBadge",
+                  as: "listbadge",
+                  cond:
+                  {
+                    "$and":
+                    [
+                        {
+                            "$eq":
+                                [
+                                    "$$listbadge.isActive",
+                                    true
+                                ]
+                        },
+                        {
+                            "$lte": [
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            "$add": [
+                                                new Date(),
+                                                25200000
+                                            ]
+                                        }
+                                    }
+                                },
+                                "$$listbadge.endDatetime"
+                            ]
+                        }
+                    ]
+                  }
+              }
+          },
         },
       },
       {
@@ -355,6 +392,19 @@ export class GetuserprofilesService {
             mediaEndpoint: { $concat: ["$concat", "/", "$profilpict.mediaID"] },
 
           },
+          urluserBadge:
+          {
+            "$ifNull":
+            [
+              {
+                "$arrayElemAt":
+                [
+                  "$urluserBadge",0
+                ]
+              },
+              null
+            ]
+          }
         },
       },
 
