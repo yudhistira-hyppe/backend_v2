@@ -1613,7 +1613,7 @@ export class AdsController {
             var response = {
                 response_code: 202,
                 data: {
-                    nominal: dataTypeAds.rewards,
+                    nominal: Number(dataTypeAds.rewards),
                     rewards: true,
                 },
                 messages: {
