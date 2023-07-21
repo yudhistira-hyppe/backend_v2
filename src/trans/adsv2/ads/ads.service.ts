@@ -3990,6 +3990,9 @@ export class AdsService {
     }
 
     async getAdsUser(email: string, idUser: string, idTypeAds: string): Promise<any> {
+        console.log(email);
+        console.log(idUser);
+        console.log(idTypeAds);
         var query = await this.adsModel.aggregate(
             [
                 {
@@ -5171,7 +5174,10 @@ export class AdsService {
                                 {
                                     $lte: ['$adsUser.viewed', '$audiensFrekuensi']
                                 },
+                                {
+                                    "isActive": true,
 
+                                },
                             ]
                         }
                     }
@@ -5328,7 +5334,7 @@ export class AdsService {
                 },
                 {
                     $project: {
-                        userBasic: 1,
+                        //userBasic:1,
                         username: "$userBasic.userName",
                         avatar: "$userBasic.avatar",
                         email: "$userBasic.email",
@@ -5339,7 +5345,7 @@ export class AdsService {
                         sekarang: 1,
                         ctaButton: 1,
                         viewed: "$adsUser.viewed",
-                        adsUser: "$adsUser",
+                        isAdsActive: "$adsUser.isActive",
                         placingID: 1,
                         placingName: 1,
                         timestamps: 1,
@@ -5374,6 +5380,12 @@ export class AdsService {
                         isValid: 1,
                         objectivitasId: "$objectivitas.name_id",
                         objectivitasEn: "$objectivitas.name_en",
+                        mediaBasePath: 1,
+                        mediaUri: 1,
+                        mediaThumBasePath: 1,
+                        mediaThumUri: 1,
+                        width: 1,
+                        height: 1,
 
                     }
                 },

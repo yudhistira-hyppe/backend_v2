@@ -1227,8 +1227,10 @@ export class AdsController {
                 data_response['adsDescription'] = data_ads[0].description;
                 data_response['name'] = data_ads[0].description;
                 if (await this.utilsService.ceckData(ceckData)) {
+                    console.log("ada", ceckData._id.toString());
                     data_response['useradsId'] = ceckData._id.toString();
                 } else {
+                    console.log("tidak ada", genIdUserAds.toString());
                     data_response['useradsId'] = genIdUserAds.toString();
                 }
                 data_response['idUser'] = data_userbasic_ads._id.toString();
@@ -1254,6 +1256,7 @@ export class AdsController {
                 data_response['videoId'] = data_ads[0].idApsara; 
                 data_response['duration'] = data_ads[0].duration;
                 data_response['mediaBasePath'] = data_ads[0].mediaBasePath;
+                data_response['username'] = data_ads[0].username;
                 data_response['mediaUri'] = data_ads[0].mediaUri;
                 data_response['mediaThumBasePath'] = data_ads[0].mediaThumBasePath;
                 data_response['mediaThumUri'] = data_ads[0].mediaThumUri;
