@@ -1386,50 +1386,67 @@ export class ChallengeController {
     var request_json = JSON.parse(JSON.stringify(request.body));
     var getsubid = request_json['idChallenge'];
 
-    var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
-
-    var listjoin = [];
-    for (var i = 0; i < getsubdata.length; i++) {
-      var getdatenow = await this.util.getDateTimeString();
-      var convertnow = new Date(getdatenow);
-
-      var getfromdb = new Date(getsubdata[i].endDatetime);
-
-      var datediff = getfromdb.getTime() - convertnow.getTime();
-      if (datediff >= 0) {
-        var createdata = new Userchallenges();
-        var mongo = require('mongoose');
-        createdata._id = mongo.Types.ObjectId();
-        createdata.idChallenge = new mongo.Types.ObjectId(request_json['idChallenge']);
-        createdata.idUser = new mongo.Types.ObjectId(request_json['idUser']);
-        createdata.idSubChallenge = new mongo.Types.ObjectId(getsubdata[i]._id);
-        createdata.isActive = true;
-        createdata.ranking = getsubdata[i].lastrank;
-        createdata.startDatetime = getsubdata[i].startDatetime;
-        createdata.endDatetime = getsubdata[i].endDatetime;
-        createdata.createdAt = await this.util.getDateTimeString();
-        createdata.updatedAt = await this.util.getDateTimeString();
-        createdata.activity = [];
-        createdata.history = [];
-
-        await this.userchallengeSS.create(createdata);
-        listjoin.push(createdata);
+    var checkdata = await this.userchallengeSS.checkUserjoinchallenge(request_json['idChallenge'], request_json['idUser']);
+    if(checkdata == true)
+    {
+      var getuserbasic = await this.userbasicsSS.findbyid(request_json['idUser']);
+      var languages_json = JSON.parse(JSON.stringify(getuserbasic.languages));
+      if(languages_json.$id == '6152481690f7b2293d0bf653')
+      {
+        throw new BadRequestException("user already registered"); 
+      }
+      else
+      {
+        throw new BadRequestException("pengguna telah melakukan pendaftaran"); 
       }
     }
+    else
+    {
+      var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
 
-    const messages = {
-      "info": ["The create successful"],
-    };
+      var listjoin = [];
+      for (var i = 0; i < getsubdata.length; i++) {
+        var getdatenow = await this.util.getDateTimeString();
+        var convertnow = new Date(getdatenow);
 
-    const messagesEror = {
-      "info": ["Todo is not found!"],
-    };
+        var getfromdb = new Date(getsubdata[i].endDatetime);
 
-    return res.status(HttpStatus.OK).json({
-      response_code: 202,
-      "data": listjoin,
-      "message": messages
-    });
+        var datediff = getfromdb.getTime() - convertnow.getTime();
+        if (datediff >= 0) {
+          var createdata = new Userchallenges();
+          var mongo = require('mongoose');
+          createdata._id = mongo.Types.ObjectId();
+          createdata.idChallenge = new mongo.Types.ObjectId(request_json['idChallenge']);
+          createdata.idUser = new mongo.Types.ObjectId(request_json['idUser']);
+          createdata.idSubChallenge = new mongo.Types.ObjectId(getsubdata[i]._id);
+          createdata.isActive = true;
+          createdata.ranking = getsubdata[i].lastrank;
+          createdata.startDatetime = getsubdata[i].startDatetime;
+          createdata.endDatetime = getsubdata[i].endDatetime;
+          createdata.createdAt = await this.util.getDateTimeString();
+          createdata.updatedAt = await this.util.getDateTimeString();
+          createdata.activity = [];
+          createdata.history = [];
+
+          await this.userchallengeSS.create(createdata);
+          listjoin.push(createdata);
+        }
+      }
+
+      const messages = {
+        "info": ["The create successful"],
+      };
+
+      const messagesEror = {
+        "info": ["Todo is not found!"],
+      };
+
+      return res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "data": listjoin,
+        "message": messages
+      });
+    }
   }
 
   // @Delete(':id')
