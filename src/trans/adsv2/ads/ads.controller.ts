@@ -151,8 +151,8 @@ export class AdsController {
                     mediaUri: url_filename,
                     mediaThumBasePath: path_file_thumb,
                     mediaThumUri: url_filename_thum,
-                    height: New_height,
-                    width: New_width
+                    height: Number(New_height),
+                    width: Number(New_width)
                 }
             ); 
         }
@@ -1446,7 +1446,7 @@ export class AdsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post('/clickads')
+    @Post('/clicked')
     @HttpCode(HttpStatus.ACCEPTED)
     async adsClick(@Body() AdsAction_: AdsAction, @Headers() headers) {
         //Current Date
@@ -1613,7 +1613,7 @@ export class AdsController {
             var response = {
                 response_code: 202,
                 data: {
-                    nominal: dataTypeAds.rewards,
+                    nominal: Number(dataTypeAds.rewards),
                     rewards: true,
                 },
                 messages: {
