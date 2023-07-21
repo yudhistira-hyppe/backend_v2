@@ -3458,14 +3458,14 @@ export class subChallengeService {
                                                         {
                                                             $gt: ["$ranking", "$lastRank"]
                                                         },
-                                                        then: "UP"
+                                                        then: "DOWN"
                                                     },
                                                     {
                                                         case:
                                                         {
                                                             "$gt": ["$lastRank", "$ranking"]
                                                         },
-                                                        then: "DOWN"
+                                                        then: "UP"
                                                     },
 
                                                 ],
