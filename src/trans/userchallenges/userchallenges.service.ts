@@ -312,4 +312,52 @@ export class UserchallengesService {
         var query = await this.UserchallengesModel.aggregate(pipeline);
         return query;
     }
+
+    async checkUserjoinchallenge(challenge:string, userid:string)
+    {
+        var mongo = require('mongoose');
+        var konvertchallenge = mongo.Types.ObjectId(challenge);
+        var konvertid = mongo.Types.ObjectId(userid);
+
+        var query = await this.UserchallengesModel.aggregate([
+            {
+                "$match":
+                {
+                    "$and":
+                    [
+                        {
+                            "$expr":
+                            {
+                                "$eq":
+                                [
+                                    "$idChallenge", konvertchallenge
+                                ]
+                            }
+                        },
+                        {
+                            "$expr":
+                            {
+                                "$eq":
+                                [
+                                    "$idUser", konvertid
+                                ]
+                            }
+                        }, 
+                    ]
+                }
+            },
+            {
+                "$limit":1
+            },
+        ]);
+
+        if(query.length == 1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
