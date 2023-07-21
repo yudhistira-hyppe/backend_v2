@@ -1131,6 +1131,9 @@ export class ContenteventsController {
               error,
             );
           }
+        } else {
+          this.userChallengeViewv3("", "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+
         }
       }
       var datapost = await this.NewpostsService.updatePostviewer(request.body.postID, email_user);
@@ -3597,6 +3600,380 @@ export class ContenteventsController {
 
       }
 
+
+    }
+
+  }
+
+  async userChallengeViewv3(idref: string, nametable: string, action: string, postID: string, emailuser: string, emailreceiver: string) {
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+    var lengchal = null;
+    var datauserchall = null;
+    var datachallenge = null;
+    var arrdata = [];
+    var objintr = {};
+    var datasubchallenge = null;
+    var poin = null;
+    var datatag = null;
+    var poinViewVid = null;
+    var poinViewDiary = null;
+    var poinPict = null;
+    var tagar = null;
+    var datapostchall = null;
+    var idpostchall = null;
+    var databasic = null;
+    var objectChallenge = null;
+    var iduser = null;
+    try {
+      datachallenge = await this.challengeService.challengeKonten();
+    } catch (e) {
+      datachallenge = null;
+    }
+
+    if (datachallenge !== null && datachallenge.length > 0) {
+      lengchal = datachallenge.length;
+
+      for (let i = 0; i < lengchal; i++) {
+        var idChallenge = datachallenge[i]._id.toString();
+        try {
+          objectChallenge = datachallenge[i].objectChallenge;
+        } catch (e) {
+          objectChallenge = null;
+        }
+
+        try {
+          poinViewVid = datachallenge[i].tonton[0].HyppeVid;
+        } catch (e) {
+          poinViewVid = 0;
+        }
+
+        try {
+          poinViewDiary = datachallenge[i].tonton[0].HyppeDiary;
+        } catch (e) {
+          poinViewDiary = 0;
+        }
+
+        try {
+          tagar = datachallenge[i].tagar;
+        } catch (e) {
+          tagar = "";
+        }
+        if (tagar != undefined && tagar != "") {
+
+          try {
+            datatag = await this.tagCountService.listag(tagar.toLowerCase());
+          } catch (e) {
+            datatag = null;
+          }
+
+          if (objectChallenge == "AKUN") {
+            try {
+              databasic = await this.userbasicsService.findOne(emailuser);
+              iduser = databasic._id;
+            } catch (e) {
+              databasic = null;
+            }
+
+          } else {
+            try {
+              databasic = await this.userbasicsService.findOne(emailreceiver);
+              iduser = databasic._id;
+            } catch (e) {
+              databasic = null;
+            }
+          }
+
+          if (datatag != null && datatag.length > 0) {
+
+            for (let i = 0; i < datatag.length; i++) {
+              var postIDpost = datatag[i].postID;
+              var postType = datatag[i].postType;
+
+              if (postIDpost == postID) {
+                try {
+                  datauserchall = await this.userchallengesService.userChallengebyIdChall(iduser.toString(), idChallenge);
+                } catch (e) {
+                  datauserchall = null;
+                }
+
+                if (datauserchall.length > 0) {
+
+
+                  for (let y = 0; y < datauserchall.length; y++) {
+
+                    var iduserchall = datauserchall[y]._id;
+                    var idsubchallenge = datauserchall[y].idSubChallenge;
+                    var idChallenges = datauserchall[y].idChallenge;
+                    var start = new Date(datauserchall[y].startDatetime);
+                    var end = new Date(datauserchall[y].endDatetime);
+                    var datenow = new Date(Date.now());
+
+                    if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
+
+                      var obj = {};
+
+                      obj = {
+                        "updatedAt": datauserchall[y].updatedAt,
+                        "score": datauserchall[y].score,
+                        "ranking": datauserchall[y].ranking,
+                      }
+
+                      if (postType == "vid") {
+                        poin = poinViewVid;
+                      } else if (postType == "diary") {
+                        poin = poinViewDiary;
+                      }
+
+                      var _id_1 = (await this.utilsService.generateId());
+                      var _id_2 = (await this.utilsService.generateId());
+                      var CreateContenteventsDto1 = new CreateContenteventsDto();
+                      CreateContenteventsDto1._id = _id_1
+                      CreateContenteventsDto1.contentEventID = _id_1
+                      CreateContenteventsDto1.email = emailuser
+                      CreateContenteventsDto1.eventType = "VIEWCHALLENGE"
+                      CreateContenteventsDto1.active = true
+                      CreateContenteventsDto1.event = "DONE"
+                      CreateContenteventsDto1.createdAt = timedate
+                      CreateContenteventsDto1.updatedAt = timedate
+                      CreateContenteventsDto1.sequenceNumber = 1
+                      CreateContenteventsDto1.flowIsDone = true
+                      CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
+                      CreateContenteventsDto1.receiverParty = emailreceiver
+                      CreateContenteventsDto1.postID = postID
+
+                      var CreateContenteventsDto2 = new CreateContenteventsDto();
+                      CreateContenteventsDto2._id = _id_2
+                      CreateContenteventsDto2.contentEventID = _id_2
+                      CreateContenteventsDto2.email = emailreceiver
+                      CreateContenteventsDto2.eventType = "VIEWCHALLENGE"
+                      CreateContenteventsDto2.active = true
+                      CreateContenteventsDto2.event = "ACCEPT"
+                      CreateContenteventsDto2.createdAt = timedate
+                      CreateContenteventsDto2.updatedAt = timedate
+                      CreateContenteventsDto2.sequenceNumber = 1
+                      CreateContenteventsDto2.flowIsDone = true
+                      CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+                      CreateContenteventsDto2.senderParty = emailuser
+                      CreateContenteventsDto2.postID = postID
+
+                      try {
+                        const resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
+                        var idevent1 = resultdata1._id;
+                        var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
+
+
+                      } catch (error) {
+                        await this.errorHandler.generateNotAcceptableException(
+                          'Unabled to proceed, ' +
+                          error,
+                        );
+                      }
+                      await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                      await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+                      var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                      var activity = detail.activity;
+                      objintr = { "type": nametable, "id": idevent1.toString(), "desc": action }
+                      console.log(objintr)
+                      activity.push(objintr)
+                      await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                      try {
+                        datapostchall = await this.postchallengeService.findBypostID(postID);
+                      } catch (e) {
+                        datapostchall = null;
+                      }
+                      if (datapostchall != null) {
+                        idpostchall = datapostchall._id.toString();
+                      }
+                      try {
+                        await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                      } catch (e) {
+
+                      }
+
+
+                      var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
+
+                      if (datauschall.length > 0) {
+                        for (let x = 0; x < datauschall.length; x++) {
+
+                          let iducall = datauschall[x]._id;
+                          let start = new Date(datauschall[x].startDatetime);
+                          let end = new Date(datauschall[x].endDatetime);
+                          let datenow = new Date(Date.now());
+                          let idChallenges2 = datauschall[x].idChallenge;
+                          let rank = x + 1;
+
+                          //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                          await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                          //}
+
+                        }
+                      }
+
+
+                    }
+                  }
+
+
+                }
+              }
+
+
+            }
+
+          }
+
+        }
+        else {
+          if (objectChallenge == "AKUN") {
+            try {
+              databasic = await this.userbasicsService.findOne(emailuser);
+              iduser = databasic._id;
+            } catch (e) {
+              databasic = null;
+            }
+
+          } else {
+            try {
+              databasic = await this.userbasicsService.findOne(emailreceiver);
+              iduser = databasic._id;
+            } catch (e) {
+              databasic = null;
+            }
+          }
+          try {
+            datauserchall = await this.userchallengesService.userChallengebyIdChall(iduser.toString(), idChallenge);
+          } catch (e) {
+            datauserchall = null;
+          }
+
+          if (datauserchall !== null && datauserchall.length > 0) {
+
+
+            for (let y = 0; y < datauserchall.length; y++) {
+
+              var iduserchall = datauserchall[y]._id;
+              var idsubchallenge = datauserchall[y].idSubChallenge;
+              var idChallenges = datauserchall[y].idChallenge;
+              var start = new Date(datauserchall[y].startDatetime);
+              var end = new Date(datauserchall[y].endDatetime);
+              var datenow = new Date(Date.now());
+
+              if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
+
+                var obj = {};
+
+                obj = {
+                  "updatedAt": datauserchall[y].updatedAt,
+                  "score": datauserchall[y].score,
+                  "ranking": datauserchall[y].ranking,
+                }
+
+                if (postType == "vid") {
+                  poin = poinViewVid;
+                } else if (postType == "diary") {
+                  poin = poinViewDiary;
+                }
+                var _id_1 = (await this.utilsService.generateId());
+                var _id_2 = (await this.utilsService.generateId());
+                var CreateContenteventsDto1 = new CreateContenteventsDto();
+                CreateContenteventsDto1._id = _id_1
+                CreateContenteventsDto1.contentEventID = _id_1
+                CreateContenteventsDto1.email = emailuser
+                CreateContenteventsDto1.eventType = "VIEWCHALLENGE"
+                CreateContenteventsDto1.active = true
+                CreateContenteventsDto1.event = "DONE"
+                CreateContenteventsDto1.createdAt = timedate
+                CreateContenteventsDto1.updatedAt = timedate
+                CreateContenteventsDto1.sequenceNumber = 1
+                CreateContenteventsDto1.flowIsDone = true
+                CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
+                CreateContenteventsDto1.receiverParty = emailreceiver
+                CreateContenteventsDto1.postID = postID
+
+                var CreateContenteventsDto2 = new CreateContenteventsDto();
+                CreateContenteventsDto2._id = _id_2
+                CreateContenteventsDto2.contentEventID = _id_2
+                CreateContenteventsDto2.email = emailreceiver
+                CreateContenteventsDto2.eventType = "VIEWCHALLENGE"
+                CreateContenteventsDto2.active = true
+                CreateContenteventsDto2.event = "ACCEPT"
+                CreateContenteventsDto2.createdAt = timedate
+                CreateContenteventsDto2.updatedAt = timedate
+                CreateContenteventsDto2.sequenceNumber = 1
+                CreateContenteventsDto2.flowIsDone = true
+                CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+                CreateContenteventsDto2.senderParty = emailuser
+                CreateContenteventsDto2.postID = postID
+
+                try {
+                  const resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
+                  var idevent1 = resultdata1._id;
+                  var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
+
+
+                } catch (error) {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, ' +
+                    error,
+                  );
+                }
+                await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+                var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                var activity = detail.activity;
+                objintr = { "type": nametable, "id": idref, "desc": action }
+                console.log(objintr)
+                activity.push(objintr)
+                await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                try {
+                  datapostchall = await this.postchallengeService.findBypostID(postID);
+                } catch (e) {
+                  datapostchall = null;
+                }
+                if (datapostchall != null) {
+                  idpostchall = datapostchall._id.toString();
+                }
+                try {
+                  await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                } catch (e) {
+
+                }
+                var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
+
+                if (datauschall.length > 0) {
+                  for (let x = 0; x < datauschall.length; x++) {
+
+                    let iducall = datauschall[x]._id;
+                    let start = new Date(datauschall[x].startDatetime);
+                    let end = new Date(datauschall[x].endDatetime);
+                    let datenow = new Date(Date.now());
+                    let idChallenges2 = datauschall[x].idChallenge;
+                    let rank = x + 1;
+
+                    // if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                    await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                    // }
+
+                  }
+                }
+              }
+            }
+
+          }
+        }
+
+      }
 
     }
 
