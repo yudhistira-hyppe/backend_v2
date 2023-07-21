@@ -2880,7 +2880,8 @@ export class subChallengeService {
                                         $ifNull:
                                             [
                                                 {
-                                                    $arrayElemAt: ["$history.ranking", 0]
+                                                    //$arrayElemAt: ["$history.ranking", 0] 
+                                                    $last: "$history.ranking"
                                                 },
                                                 0
                                             ]
@@ -3458,14 +3459,14 @@ export class subChallengeService {
                                                         {
                                                             $gt: ["$ranking", "$lastRank"]
                                                         },
-                                                        then: "UP"
+                                                        then: "DOWN"
                                                     },
                                                     {
                                                         case:
                                                         {
                                                             "$gt": ["$lastRank", "$ranking"]
                                                         },
-                                                        then: "DOWN"
+                                                        then: "UP"
                                                     },
 
                                                 ],
