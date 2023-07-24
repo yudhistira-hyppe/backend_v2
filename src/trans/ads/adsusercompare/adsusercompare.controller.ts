@@ -557,7 +557,7 @@ export class AdsUserCompareController {
                                                 if (await this.utilsService.ceckData(ceck_rewars)) {
                                                     rewards = false;
                                                 } else {
-                                                    if (Saldo <= 49000) {
+                                                    if (Saldo < 49000) {
                                                         rewards = true;
                                                     } else {
                                                         rewards = false;
@@ -849,7 +849,7 @@ export class AdsUserCompareController {
                                         if (await this.utilsService.ceckData(ceck_rewars)) {
                                             rewards = false;
                                         } else {
-                                            if (Saldo <= 49000) {
+                                            if (Saldo < 49000) {
                                                 rewards = true;
                                             } else {
                                                 rewards = false;
