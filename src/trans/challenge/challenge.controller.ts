@@ -1390,21 +1390,17 @@ export class ChallengeController {
     var getsubid = request_json['idChallenge'];
 
     var checkdata = await this.userchallengeSS.checkUserjoinchallenge(request_json['idChallenge'], request_json['idUser']);
-    if(checkdata == true)
-    {
+    if (checkdata == true) {
       var getuserbasic = await this.userbasicsSS.findbyid(request_json['idUser']);
       var languages_json = JSON.parse(JSON.stringify(getuserbasic.languages));
-      if(languages_json.$id == '6152481690f7b2293d0bf653')
-      {
-        throw new BadRequestException("user already registered"); 
+      if (languages_json.$id == '6152481690f7b2293d0bf653') {
+        throw new BadRequestException("user already registered");
       }
-      else
-      {
-        throw new BadRequestException("pengguna telah melakukan pendaftaran"); 
+      else {
+        throw new BadRequestException("pengguna telah melakukan pendaftaran");
       }
     }
-    else
-    {
+    else {
       var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
 
       var listjoin = [];
@@ -1617,7 +1613,7 @@ export class ChallengeController {
     var session = null;
     var nameChallenge = null;
     var userID = null;
-
+    var lenguser = null;
 
     try {
       datauserchall = await this.userchallengeSS.listUserChallenge(idChallenge);
@@ -1635,6 +1631,8 @@ export class ChallengeController {
         session = datauserchall[i].session;
         nameChallenge = datauserchall[i].nameChallenge;
         userID = datauserchall[i].userID;
+        lenguser = userID.length;
+
         if (notifikasiPush !== undefined && notifikasiPush.length > 0) {
           let dataAkandatang = null;
           let datachallengeDimulai = null;
@@ -1662,6 +1660,10 @@ export class ChallengeController {
             let splitdate = repdate.split('.');
             let timedate = splitdate[0];
 
+            // for(let i=0;i<lenguser;){
+
+            // }
+            userID.message = descriptionAkandatang;
             let notifChallenge_ = new notifChallenge();
 
             notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
@@ -1691,7 +1693,7 @@ export class ChallengeController {
             unitchallengeDimulai = datachallengeDimulai[0].unit;
             aturWaktuchallengeDimulai = datachallengeDimulai[0].aturWaktu;
             let timedate = startTime;
-
+            userID.message = descriptionchallengeDimulai;
             let notifChallenge_ = new notifChallenge();
 
             notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
@@ -1730,6 +1732,7 @@ export class ChallengeController {
               let repdate = strdate.replace('T', ' ');
               let splitdate = repdate.split('.');
               let timedate = splitdate[0];
+              userID.message = descriptionupdateLeaderboard;
               let notifChallenge_ = new notifChallenge();
 
               notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
@@ -1767,7 +1770,7 @@ export class ChallengeController {
             let repdate = strdate.replace('T', ' ');
             let splitdate = repdate.split('.');
             let timedate = splitdate[0];
-
+            userID.message = descriptionchallengeAkanBerakhir;
             let notifChallenge_ = new notifChallenge();
 
             notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
@@ -1803,7 +1806,7 @@ export class ChallengeController {
             let repdate = strdate.replace('T', ' ');
             let splitdate = repdate.split('.');
             let timedate = splitdate[0];
-
+            userID.message = descriptionchallengeBerakhir;
             let notifChallenge_ = new notifChallenge();
 
             notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
@@ -1840,7 +1843,7 @@ export class ChallengeController {
             let repdate = strdate.replace('T', ' ');
             let splitdate = repdate.split('.');
             let timedate = splitdate[0];
-
+            userID.message = descriptionuntukPemenang;
             let notifChallenge_ = new notifChallenge();
 
             notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
@@ -2110,6 +2113,27 @@ export class ChallengeController {
 
     //this.userbadge();
     this.updateUserbadge();
+
+    const messages = {
+      "info": ["The proses successful"],
+    };
+
+    return {
+      response_code: 202,
+      "message": messages
+    }
+  }
+
+  @Post('notif')
+  async notif(@Req() request: Request) {
+    var challengeid = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["challengeId"] !== undefined) {
+      challengeid = request_json['challengeId'];
+    } else {
+      throw new BadRequestException("Unabled to proceed, challenge field is required");
+    }
+    this.notifchallenge(challengeid);
 
     const messages = {
       "info": ["The proses successful"],

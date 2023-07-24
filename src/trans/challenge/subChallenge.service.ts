@@ -4903,7 +4903,7 @@ export class subChallengeService {
             {
                 $sort: {
                     scoreStatus: -1,
-                    session: -1
+                    session: 1
                 }
             },
             {
