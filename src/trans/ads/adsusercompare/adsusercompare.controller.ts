@@ -518,6 +518,15 @@ export class AdsUserCompareController {
                             var used_credit = data_adsService.usedCredit;
                             var used_credit_free = data_adsService.usedCreditFree;
 
+                            //GetSaldo
+                            let Saldo = 0;
+                            var GetSaldo = await this.accountbalancesService.findwallettotalsaldo(data_userbasicsService._id);
+                            if (await this.utilsService.ceckData(GetSaldo)){
+                                if (GetSaldo.length>0){
+                                    Saldo += GetSaldo[0].totalsaldo;
+                                }
+                            }
+
                             if ((ads_totalView + 1) <= ads_tayang) {
                                 const sisa_credit = credit - (used_credit + credit_view);
                                 const sisa_credit_free = credit_free - (used_credit_free + credit_view);
@@ -535,7 +544,11 @@ export class AdsUserCompareController {
                                                 if (await this.utilsService.ceckData(ceck_rewars)) {
                                                     rewards = false;
                                                 } else {
-                                                    rewards = true;
+                                                    if (Saldo < 49000) {
+                                                        rewards = true;
+                                                    } else {
+                                                        rewards = false;
+                                                    }
                                                 }
                                             }
                                         } else {
@@ -544,7 +557,11 @@ export class AdsUserCompareController {
                                                 if (await this.utilsService.ceckData(ceck_rewars)) {
                                                     rewards = false;
                                                 } else {
-                                                    rewards = true;
+                                                    if (Saldo < 49000) {
+                                                        rewards = true;
+                                                    } else {
+                                                        rewards = false;
+                                                    }
                                                 }
                                             }
                                             //rewards = true;
@@ -793,6 +810,15 @@ export class AdsUserCompareController {
                     var used_credit = data_adsService.usedCredit;
                     var used_credit_free = data_adsService.usedCreditFree;
 
+                    //GetSaldo
+                    let Saldo = 0;
+                    var GetSaldo = await this.accountbalancesService.findwallettotalsaldo(data_userbasicsService._id);
+                    if (await this.utilsService.ceckData(GetSaldo)) {
+                        if (GetSaldo.length > 0) {
+                            Saldo += GetSaldo[0].totalsaldo;
+                        }
+                    }
+
                     if ((ads_totalView + 1) <= ads_tayang) {
                         const sisa_credit = credit - (used_credit + credit_view);
                         const sisa_credit_free = credit_free - (used_credit_free + credit_view);
@@ -810,7 +836,11 @@ export class AdsUserCompareController {
                                         if (await this.utilsService.ceckData(ceck_rewars)) {
                                             rewards = false;
                                         } else {
-                                            rewards = true;
+                                            if (Saldo < 49000) {
+                                                rewards = true;
+                                            } else {
+                                                rewards = false;
+                                            }
                                         }
                                     }
                                 } else {
@@ -819,7 +849,11 @@ export class AdsUserCompareController {
                                         if (await this.utilsService.ceckData(ceck_rewars)) {
                                             rewards = false;
                                         } else {
-                                            rewards = true;
+                                            if (Saldo < 49000) {
+                                                rewards = true;
+                                            } else {
+                                                rewards = false;
+                                            }
                                         }
                                     }
                                     //rewards = true;

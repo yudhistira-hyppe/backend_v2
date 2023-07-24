@@ -4007,7 +4007,7 @@ export class AdsService {
                     {
                         idUser: new mongoose.Types.ObjectId(idUser)
                     }
-                },
+                }, 
                 {
                     $set:
                     {
@@ -4611,64 +4611,6 @@ export class AdsService {
                     }
                 },
                 {
-                    $match:
-                    {
-                        $or: [{
-                            $and: [
-                                {
-                                    "status": "ACTIVE"
-                                },
-                                {
-                                    $expr: {
-                                        $lt: ["$tayang", "$testDate"]
-                                    }
-                                },
-                                //{
-                                //    "_id": {
-                                //        $not: {
-                                //            $in: ["$adsUser.adsID"]
-                                //        }
-                                //    }
-                                //},
-                                {
-                                    "waktu": true,
-
-                                },
-                                {
-                                    "hari": true,
-
-                                },
-                                {
-                                    "isActive": true,
-
-                                },
-                                {
-                                    "reportedUser":
-                                    {
-                                        $ne: "$email"
-                                    }
-                                },
-                                {
-                                    "userID":
-                                    {
-                                        $ne: "$idUser"
-                                    }
-                                },
-                                {
-                                    $expr: {
-                                        $lt: ["$tayang", "$testDate"]
-                                    }
-                                },
-                                {
-                                    $expr: {
-                                        $gte: ["$tayangEnd", "$testDate"]
-                                    }
-                                },
-                            ]
-                        },]
-                    }
-                },
-                {
                     "$lookup": {
                         from: "userbasics",
                         as: "userBasic",
@@ -4709,11 +4651,13 @@ export class AdsService {
                                                                             "$$basic_fk"
                                                                         ]
                                                                 },
+
                                                             },
 
                                                         ]
                                                 }
                                             },
+
                                         ]
                                 }
                             },
@@ -5110,6 +5054,46 @@ export class AdsService {
                     }
                 },
                 {
+                    $match:
+                    {
+                        $or: [{
+                            $and: [
+                                {
+                                    "status": "ACTIVE"
+                                },
+                                {
+                                    $expr: {
+                                        $lt: ["$tayang", "$testDate"]
+                                    }
+                                },
+                                {
+                                    "reportedUser":
+                                    {
+                                        $ne: "$email"
+                                    }
+                                },
+                                {
+                                    "userID":
+                                    {
+                                        $ne: "$idUser"
+                                    }
+                                },
+                                {
+                                    $expr: {
+                                        $lt: ["$tayang", "$testDate"]
+                                    }
+                                },
+                                {
+                                    $expr: {
+                                        $gte: ["$tayangEnd", "$testDate"]
+                                    }
+                                },
+
+                            ]
+                        },]
+                    }
+                },
+                {
                     "$lookup": {
                         from: "userads",
                         as: "adsUser",
@@ -5123,24 +5107,24 @@ export class AdsService {
                                 $match:
                                 {
                                     $and: [
-                                        //{
-                                        //    $expr: {
-                                        //        $eq: ['$userID', '$$localID']
-                                        //    }
-                                        //},
+                                        {
+                                            $expr: {
+                                                $eq: ['$userID', '$$localID']
+                                            }
+                                        },
                                         {
                                             $expr: {
                                                 $eq: ['$adsID', '$$idAds']
                                             }
                                         },
-                                        //{
-                                        //    $expr: {
-                                        //        $lte: ['$viewed', '$$frekwensi']
-                                        //    }
-                                        //},
-                                        //{
-                                        //				isActive:true
-                                        //},
+                                        {
+                                            $expr: {
+                                                $lte: ['$viewed', '$$frekwensi']
+                                            }
+                                        },
+                                        {
+                                            isActive: true
+                                        },
                                     ]
                                 },
 
@@ -5153,34 +5137,13 @@ export class AdsService {
                                     },
                                     userID: 1,
                                     viewed: "$viewed",
+                                    isActive: 1,
 
                                 }
                             },
 
                         ],
 
-                    }
-                },
-                {
-                    $addFields: {
-                        isValid:
-                        {
-                            $and: [
-                                {
-                                    $in: [
-                                        "$_id",
-                                        "$adsUser.adsID"
-                                    ]
-                                },
-                                {
-                                    $lte: ['$adsUser.viewed', '$audiensFrekuensi']
-                                },
-                                {
-                                    "isActive": true,
-
-                                },
-                            ]
-                        }
                     }
                 },
                 {
@@ -5247,10 +5210,15 @@ export class AdsService {
                     }
                 },
                 {
-                    $sort: {
-                        sorts: - 1,
-                        priority: 1,
-                        scoreTotal: - 1
+                    $unwind: {
+                        path: "$adsUser"
+                    }
+                },
+                {
+                    $set: {
+                        isValid: {
+                            $ifNull: ["$adsUser.isActive", true]
+                        }
                     }
                 },
                 {
@@ -5258,15 +5226,22 @@ export class AdsService {
                         $and: [
                             {
                                 $expr: {
-                                    $eq: ['$isValid', false]
+                                    $eq: ['$sorts', true]
                                 }
                             },
                             {
                                 $expr: {
-                                    $eq: ['$sorts', true]
+                                    $eq: ['$isValid', true]
                                 }
                             }
                         ]
+                    }
+                },
+                {
+                    $sort: {
+                        sorts: - 1,
+                        priority: 1,
+                        scoreTotal: - 1
                     }
                 },
                 {
@@ -5331,6 +5306,7 @@ export class AdsService {
                 {
                     $unwind: {
                         path: "$types",
+
                     }
                 },
                 {
@@ -5365,6 +5341,7 @@ export class AdsService {
                         tayang: 1,
                         tayangEnd: 1,
                         adsUserId: 1,
+                        adsUser: 1,
                         liveTypeAds: 1,
                         typeAdsID: 1,
                         description: 1,
@@ -5390,12 +5367,12 @@ export class AdsService {
 
                     }
                 },
-            {
-                $match: {
-                    typeAdsID: new mongoose.Types.ObjectId(idTypeAds),
-                }
-            },
-            { $limit: 1 }
+                {
+                    $match: {
+                        typeAdsID: new mongoose.Types.ObjectId(idTypeAds),
+                    }
+                },
+                { $limit: 1 }
             ]
         );
         return query;
