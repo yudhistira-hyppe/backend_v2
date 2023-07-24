@@ -3588,7 +3588,7 @@ export class PostBoostService {
           const resultdata1 = await this.contentEventsService.create(CreateContenteventsDto1);
           let idevent1 = resultdata1._id;
           let event1 = resultdata1.eventType.toString();
-          await this.utilService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
+          // await this.utilService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
           await this.contentEventsService.create(CreateContenteventsDto2);
           await this.postxService.updateView(receiver, postid);
         } catch (error) {
