@@ -4830,7 +4830,7 @@ export class GetusercontentsController {
                         boostCount = 0;
                         boosted = [];
                     }
-                    this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
+                    //  this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
 
                     picts.push(data[i]);
                 }
@@ -4896,7 +4896,7 @@ export class GetusercontentsController {
                         boostCount = 0;
                         boosted = [];
                     }
-                    this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
+                    // this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
 
 
                     picts.push(data[i]);

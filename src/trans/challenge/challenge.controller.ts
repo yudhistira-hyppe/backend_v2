@@ -1613,7 +1613,7 @@ export class ChallengeController {
     var session = null;
     var nameChallenge = null;
     var userID = null;
-    var lenguser = null;
+
 
     try {
       datauserchall = await this.userchallengeSS.listUserChallenge(idChallenge);
@@ -1631,7 +1631,6 @@ export class ChallengeController {
         session = datauserchall[i].session;
         nameChallenge = datauserchall[i].nameChallenge;
         userID = datauserchall[i].userID;
-        lenguser = userID.length;
 
         if (notifikasiPush !== undefined && notifikasiPush.length > 0) {
           let dataAkandatang = null;
@@ -1660,10 +1659,6 @@ export class ChallengeController {
             let splitdate = repdate.split('.');
             let timedate = splitdate[0];
 
-            // for(let i=0;i<lenguser;){
-
-            // }
-            userID.message = descriptionAkandatang;
             let notifChallenge_ = new notifChallenge();
 
             notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
@@ -1693,7 +1688,7 @@ export class ChallengeController {
             unitchallengeDimulai = datachallengeDimulai[0].unit;
             aturWaktuchallengeDimulai = datachallengeDimulai[0].aturWaktu;
             let timedate = startTime;
-            userID.message = descriptionchallengeDimulai;
+
             let notifChallenge_ = new notifChallenge();
 
             notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
@@ -1732,7 +1727,7 @@ export class ChallengeController {
               let repdate = strdate.replace('T', ' ');
               let splitdate = repdate.split('.');
               let timedate = splitdate[0];
-              userID.message = descriptionupdateLeaderboard;
+
               let notifChallenge_ = new notifChallenge();
 
               notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
@@ -1770,7 +1765,6 @@ export class ChallengeController {
             let repdate = strdate.replace('T', ' ');
             let splitdate = repdate.split('.');
             let timedate = splitdate[0];
-            userID.message = descriptionchallengeAkanBerakhir;
             let notifChallenge_ = new notifChallenge();
 
             notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
@@ -1806,7 +1800,6 @@ export class ChallengeController {
             let repdate = strdate.replace('T', ' ');
             let splitdate = repdate.split('.');
             let timedate = splitdate[0];
-            userID.message = descriptionchallengeBerakhir;
             let notifChallenge_ = new notifChallenge();
 
             notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
@@ -1843,7 +1836,6 @@ export class ChallengeController {
             let repdate = strdate.replace('T', ' ');
             let splitdate = repdate.split('.');
             let timedate = splitdate[0];
-            userID.message = descriptionuntukPemenang;
             let notifChallenge_ = new notifChallenge();
 
             notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
