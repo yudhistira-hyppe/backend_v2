@@ -4007,7 +4007,7 @@ export class AdsService {
                     {
                         idUser: new mongoose.Types.ObjectId(idUser)
                     }
-                },
+                }, 
                 {
                     $set:
                     {
@@ -5144,28 +5144,6 @@ export class AdsService {
 
                         ],
 
-                    }
-                },
-                {
-                    $addFields: {
-                        isValid:
-                        {
-                            $and: [
-                                {
-                                    $in: [
-                                        "$_id",
-                                        "$adsUser.adsID"
-                                    ]
-                                },
-                                {
-                                    $lte: ['$adsUser.viewed', '$audiensFrekuensi']
-                                },
-                                {
-                                    "isActive": true,
-
-                                },
-                            ]
-                        }
                     }
                 },
                 {
