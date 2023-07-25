@@ -3684,6 +3684,16 @@ export class ContenteventsController {
     var databasic = null;
     var objectChallenge = null;
     var iduser = null;
+    var datapost = null;
+    var createAt = null;
+    try {
+      datapost = await this.postsService.findByPostId(postID);
+    } catch (e) {
+      datapost = null;
+    }
+    if (datapost !== null) {
+      createAt = datapost.createdAt;
+    }
     try {
       datachallenge = await this.challengeService.challengeKonten();
     } catch (e) {
@@ -3768,67 +3778,71 @@ export class ContenteventsController {
                     var end = new Date(datauserchall[y].endDatetime);
                     var datenow = new Date(Date.now());
 
-                    if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
 
-                      var obj = {};
+                    if (new Date(createAt) >= start && new Date(createAt) <= end) {
+                      if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
 
-                      obj = {
-                        "updatedAt": datauserchall[y].updatedAt,
-                        "score": datauserchall[y].score,
-                        "ranking": datauserchall[y].ranking,
-                      }
+                        var obj = {};
 
-                      if (postType == "vid") {
-                        poin = poinViewVid;
-                      } else if (postType == "diary") {
-                        poin = poinViewDiary;
-                      }
+                        obj = {
+                          "updatedAt": datauserchall[y].updatedAt,
+                          "score": datauserchall[y].score,
+                          "ranking": datauserchall[y].ranking,
+                        }
 
-
-                      await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                      await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
-                      var detail = await this.userchallengesService.findOne(iduserchall.toString());
-                      var activity = detail.activity;
-                      objintr = { "type": nametable, "id": idref, "desc": action }
-                      console.log(objintr)
-                      activity.push(objintr)
-                      await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
-                      try {
-                        datapostchall = await this.postchallengeService.findBypostID(postID);
-                      } catch (e) {
-                        datapostchall = null;
-                      }
-                      if (datapostchall != null) {
-                        idpostchall = datapostchall._id.toString();
-                      }
-                      try {
-                        await this.postchallengeService.updatePostchallenge(idpostchall, poin);
-                      } catch (e) {
-
-                      }
+                        if (postType == "vid") {
+                          poin = poinViewVid;
+                        } else if (postType == "diary") {
+                          poin = poinViewDiary;
+                        }
 
 
-                      var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
-
-                      if (datauschall.length > 0) {
-                        for (let x = 0; x < datauschall.length; x++) {
-
-                          let iducall = datauschall[x]._id;
-                          let start = new Date(datauschall[x].startDatetime);
-                          let end = new Date(datauschall[x].endDatetime);
-                          let datenow = new Date(Date.now());
-                          let idChallenges2 = datauschall[x].idChallenge;
-                          let rank = x + 1;
-
-                          //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                          await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                          //}
+                        await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                        await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+                        var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                        var activity = detail.activity;
+                        objintr = { "type": nametable, "id": idref, "desc": action }
+                        console.log(objintr)
+                        activity.push(objintr)
+                        await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                        try {
+                          datapostchall = await this.postchallengeService.findBypostID(postID);
+                        } catch (e) {
+                          datapostchall = null;
+                        }
+                        if (datapostchall != null) {
+                          idpostchall = datapostchall._id.toString();
+                        }
+                        try {
+                          await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                        } catch (e) {
 
                         }
+
+
+                        var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
+
+                        if (datauschall.length > 0) {
+                          for (let x = 0; x < datauschall.length; x++) {
+
+                            let iducall = datauschall[x]._id;
+                            let start = new Date(datauschall[x].startDatetime);
+                            let end = new Date(datauschall[x].endDatetime);
+                            let datenow = new Date(Date.now());
+                            let idChallenges2 = datauschall[x].idChallenge;
+                            let rank = x + 1;
+
+                            //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                            await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                            //}
+
+                          }
+                        }
+
+
                       }
-
-
                     }
+
                   }
 
 
