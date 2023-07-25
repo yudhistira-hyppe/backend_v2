@@ -994,7 +994,7 @@ export class ContenteventsController {
           const resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
           let idevent1 = resultdata1._id;
           let event1 = resultdata1.eventType.toString();
-          await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
+          // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
           await this.contenteventsService.create(CreateContenteventsDto2);
           await this.insightsService.updateFollower(email_receiverParty);
           await this.insightsService.updateFollowing(email_user);
@@ -1023,7 +1023,7 @@ export class ContenteventsController {
           this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
           let idevent1 = ceck_data_FOLLOWING._id;
           let event1 = ceck_data_FOLLOWING.eventType.toString();
-          await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
+          //  await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
 
           const databasic = await this.userbasicsService.findOne(
             email_user
@@ -1112,7 +1112,7 @@ export class ContenteventsController {
             const resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
             let idevent1 = resultdata1._id;
             let event1 = resultdata1.eventType.toString();
-            await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
+            //await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
             var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
             const databasic = await this.userbasicsService.findOne(
               email_receiverParty
@@ -1136,7 +1136,52 @@ export class ContenteventsController {
           let ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEWCHALLENGE", "DONE", email_receiverParty, "", request.body.postID);
           let ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEWCHALLENGE", "ACCEPT", "", email_user, request.body.postID);
           if (!(await this.utilsService.ceckData(ceck_data_DONE)) && !(await this.utilsService.ceckData(ceck_data_ACCEPT))) {
-            this.userChallengeViewv3("", "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+
+            var _id_1 = (await this.utilsService.generateId());
+            var _id_2 = (await this.utilsService.generateId());
+            var CreateContenteventsDto1 = new CreateContenteventsDto();
+            CreateContenteventsDto1._id = _id_1
+            CreateContenteventsDto1.contentEventID = _id_1
+            CreateContenteventsDto1.email = email_user
+            CreateContenteventsDto1.eventType = "VIEWCHALLENGE"
+            CreateContenteventsDto1.active = true
+            CreateContenteventsDto1.event = "DONE"
+            CreateContenteventsDto1.createdAt = current_date
+            CreateContenteventsDto1.updatedAt = current_date
+            CreateContenteventsDto1.sequenceNumber = 1
+            CreateContenteventsDto1.flowIsDone = true
+            CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
+            CreateContenteventsDto1.receiverParty = email_receiverParty
+            CreateContenteventsDto1.postID = request.body.postID
+
+            var CreateContenteventsDto2 = new CreateContenteventsDto();
+            CreateContenteventsDto2._id = _id_2
+            CreateContenteventsDto2.contentEventID = _id_2
+            CreateContenteventsDto2.email = email_receiverParty
+            CreateContenteventsDto2.eventType = "VIEWCHALLENGE"
+            CreateContenteventsDto2.active = true
+            CreateContenteventsDto2.event = "ACCEPT"
+            CreateContenteventsDto2.createdAt = current_date
+            CreateContenteventsDto2.updatedAt = current_date
+            CreateContenteventsDto2.sequenceNumber = 1
+            CreateContenteventsDto2.flowIsDone = true
+            CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+            CreateContenteventsDto2.senderParty = email_user
+            CreateContenteventsDto2.postID = request.body.postID
+
+            try {
+              var resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
+              var idevent1 = resultdata1._id;
+              var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
+
+
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, ' +
+                error,
+              );
+            }
+            this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
           }
 
         }
@@ -1207,7 +1252,7 @@ export class ContenteventsController {
           const resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
           let idevent1 = resultdata1._id;
           let event1 = resultdata1.eventType.toString();
-          await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
+          // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
           await this.contenteventsService.create(CreateContenteventsDto2);
           await this.insightsService.updateLike(email_receiverParty);
           await this.postsService.updateLike(email_receiverParty, request.body.postID);
@@ -1238,7 +1283,7 @@ export class ContenteventsController {
 
             let idevent1 = ceck_data_DONE._id;
             let event1 = ceck_data_DONE.eventType.toString();
-            await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
+            //  await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
             // const databasic = await this.userbasicsService.findOne(
             //   email_receiverParty
             // );
@@ -1263,7 +1308,7 @@ export class ContenteventsController {
 
             let idevent1 = ceck_data_DONE._id;
             let event1 = ceck_data_DONE.eventType.toString();
-            await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
+            // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
             this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           } catch (error) {
@@ -1285,7 +1330,7 @@ export class ContenteventsController {
           await this.postsService.updateUnLike(email_receiverParty, request.body.postID);
 
           let idevent1 = ceck_data_DONE._id;
-          await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
+          // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
 
           // const databasic = await this.userbasicsService.findOne(
           //   email_receiverParty
@@ -1313,7 +1358,7 @@ export class ContenteventsController {
               await this.postsService.updateUnLike(email_receiverParty, request.body.postID);
 
               let idevent1 = ceck_data_DONE._id;
-              await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
+              // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
               // const databasic = await this.userbasicsService.findOne(
               //   email_receiverParty
               // );
@@ -1338,7 +1383,7 @@ export class ContenteventsController {
               await this.postsService.updateLike(email_receiverParty, request.body.postID);
 
               let idevent1 = ceck_data_DONE._id;
-              await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "LIKE", userbasic1._id);
+              // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "LIKE", userbasic1._id);
               // const databasic = await this.userbasicsService.findOne(
               //   email_receiverParty
               // );
@@ -1370,7 +1415,7 @@ export class ContenteventsController {
           await this.insightsService.updateUnFollow(email_user);
 
           let idevent1 = ceck_data_FOLLOWING._id;
-          await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNFOLLOW", userbasic1._id);
+          //await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNFOLLOW", userbasic1._id);
 
           const databasic = await this.userbasicsService.findOne(
             email_user
@@ -1683,7 +1728,7 @@ export class ContenteventsController {
         const resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
         let idevent1 = resultdata1._id;
         let event1 = resultdata1.eventType.toString();
-        await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
+        // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
         await this.contenteventsService.create(CreateContenteventsDto2);
         await this.postsService.updateReaction(email_receiverParty, request.body.postID);
         await this.insightsService.updateReactions(email_user);
@@ -3739,55 +3784,12 @@ export class ContenteventsController {
                         poin = poinViewDiary;
                       }
 
-                      var _id_1 = (await this.utilsService.generateId());
-                      var _id_2 = (await this.utilsService.generateId());
-                      var CreateContenteventsDto1 = new CreateContenteventsDto();
-                      CreateContenteventsDto1._id = _id_1
-                      CreateContenteventsDto1.contentEventID = _id_1
-                      CreateContenteventsDto1.email = emailuser
-                      CreateContenteventsDto1.eventType = "VIEWCHALLENGE"
-                      CreateContenteventsDto1.active = true
-                      CreateContenteventsDto1.event = "DONE"
-                      CreateContenteventsDto1.createdAt = timedate
-                      CreateContenteventsDto1.updatedAt = timedate
-                      CreateContenteventsDto1.sequenceNumber = 1
-                      CreateContenteventsDto1.flowIsDone = true
-                      CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
-                      CreateContenteventsDto1.receiverParty = emailreceiver
-                      CreateContenteventsDto1.postID = postID
 
-                      var CreateContenteventsDto2 = new CreateContenteventsDto();
-                      CreateContenteventsDto2._id = _id_2
-                      CreateContenteventsDto2.contentEventID = _id_2
-                      CreateContenteventsDto2.email = emailreceiver
-                      CreateContenteventsDto2.eventType = "VIEWCHALLENGE"
-                      CreateContenteventsDto2.active = true
-                      CreateContenteventsDto2.event = "ACCEPT"
-                      CreateContenteventsDto2.createdAt = timedate
-                      CreateContenteventsDto2.updatedAt = timedate
-                      CreateContenteventsDto2.sequenceNumber = 1
-                      CreateContenteventsDto2.flowIsDone = true
-                      CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
-                      CreateContenteventsDto2.senderParty = emailuser
-                      CreateContenteventsDto2.postID = postID
-
-                      try {
-                        var resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
-                        var idevent1 = resultdata1._id;
-                        var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
-
-
-                      } catch (error) {
-                        await this.errorHandler.generateNotAcceptableException(
-                          'Unabled to proceed, ' +
-                          error,
-                        );
-                      }
                       await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                       await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
                       var detail = await this.userchallengesService.findOne(iduserchall.toString());
                       var activity = detail.activity;
-                      objintr = { "type": nametable, "id": idevent1.toString(), "desc": action }
+                      objintr = { "type": nametable, "id": idref, "desc": action }
                       console.log(objintr)
                       activity.push(objintr)
                       await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
@@ -3889,55 +3891,12 @@ export class ContenteventsController {
                 } else if (postType == "diary") {
                   poin = poinViewDiary;
                 }
-                var _id_1 = (await this.utilsService.generateId());
-                var _id_2 = (await this.utilsService.generateId());
-                var CreateContenteventsDto1 = new CreateContenteventsDto();
-                CreateContenteventsDto1._id = _id_1
-                CreateContenteventsDto1.contentEventID = _id_1
-                CreateContenteventsDto1.email = emailuser
-                CreateContenteventsDto1.eventType = "VIEWCHALLENGE"
-                CreateContenteventsDto1.active = true
-                CreateContenteventsDto1.event = "DONE"
-                CreateContenteventsDto1.createdAt = timedate
-                CreateContenteventsDto1.updatedAt = timedate
-                CreateContenteventsDto1.sequenceNumber = 1
-                CreateContenteventsDto1.flowIsDone = true
-                CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
-                CreateContenteventsDto1.receiverParty = emailreceiver
-                CreateContenteventsDto1.postID = postID
 
-                var CreateContenteventsDto2 = new CreateContenteventsDto();
-                CreateContenteventsDto2._id = _id_2
-                CreateContenteventsDto2.contentEventID = _id_2
-                CreateContenteventsDto2.email = emailreceiver
-                CreateContenteventsDto2.eventType = "VIEWCHALLENGE"
-                CreateContenteventsDto2.active = true
-                CreateContenteventsDto2.event = "ACCEPT"
-                CreateContenteventsDto2.createdAt = timedate
-                CreateContenteventsDto2.updatedAt = timedate
-                CreateContenteventsDto2.sequenceNumber = 1
-                CreateContenteventsDto2.flowIsDone = true
-                CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
-                CreateContenteventsDto2.senderParty = emailuser
-                CreateContenteventsDto2.postID = postID
-
-                try {
-                  const resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
-                  var idevent1 = resultdata1._id;
-                  var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
-
-
-                } catch (error) {
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed, ' +
-                    error,
-                  );
-                }
                 await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                 await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
                 var detail = await this.userchallengesService.findOne(iduserchall.toString());
                 var activity = detail.activity;
-                objintr = { "type": nametable, "id": idref, "desc": action }
+                let objintr = { "type": nametable, "id": idref, "desc": action }
                 console.log(objintr)
                 activity.push(objintr)
                 await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);

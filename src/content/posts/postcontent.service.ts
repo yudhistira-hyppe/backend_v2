@@ -491,7 +491,7 @@ export class PostContentService {
     ce.sequenceNumber = 0;
     ce._class = 'io.melody.hyppe.content.domain.ContentEvent';
     this.contentEventService.create(ce);
-    this.createUserscore(ce, auth.email);
+    // this.createUserscore(ce, auth.email);
     return post;
   }
 
