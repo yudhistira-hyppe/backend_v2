@@ -1075,11 +1075,11 @@ export class PostsController {
     const databasic = await this.userbasicsService.findOne(
       email
     );
-    var iduser = null;
-    if (databasic !== null) {
-      iduser = databasic._id;
-      this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
-    }
+    // var iduser = null;
+    // if (databasic !== null) {
+    //   iduser = databasic._id;
+    //   this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+    // }
 
     //Tags
 

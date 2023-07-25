@@ -1000,14 +1000,14 @@ export class ContenteventsController {
           await this.insightsService.updateFollowing(email_user);
           this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
           //  this.sendInteractiveFCM(email_user, "FOLLOWING", "", email_receiverParty);
-          const databasic = await this.userbasicsService.findOne(
-            email_user
-          );
-          var iduser = null;
-          if (databasic !== null) {
-            iduser = databasic._id;
-            this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
-          }
+          // const databasic = await this.userbasicsService.findOne(
+          //   email_user
+          // );
+          // var iduser = null;
+          // if (databasic !== null) {
+          //   iduser = databasic._id;
+          //   this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
+          // }
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
@@ -1025,14 +1025,14 @@ export class ContenteventsController {
           let event1 = ceck_data_FOLLOWING.eventType.toString();
           //  await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
 
-          const databasic = await this.userbasicsService.findOne(
-            email_user
-          );
-          var iduser = null;
-          if (databasic !== null) {
-            iduser = databasic._id;
-            this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
-          }
+          // const databasic = await this.userbasicsService.findOne(
+          //   email_user
+          // );
+          // var iduser = null;
+          // if (databasic !== null) {
+          //   iduser = databasic._id;
+          //   this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
+          // }
 
 
         }
@@ -1114,15 +1114,15 @@ export class ContenteventsController {
             let event1 = resultdata1.eventType.toString();
             //await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
             var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
-            const databasic = await this.userbasicsService.findOne(
-              email_receiverParty
-            );
+            // const databasic = await this.userbasicsService.findOne(
+            //   email_receiverParty
+            // );
             // var iduser = null;
             // if (databasic !== null) {
             //   iduser = databasic._id;
             //   this.userChallengeView(iduser.toString(), idevent1.toString(), "contentevents", "VIEW", request.body.postID);
             // }
-            this.userChallengeViewv2(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+            //  this.userChallengeViewv2(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
             await this.postsService.updateView(email_receiverParty, request.body.postID);
             await this.insightsService.updateViews(email_receiverParty);
           } catch (error) {
@@ -1181,7 +1181,7 @@ export class ContenteventsController {
                 error,
               );
             }
-            this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+            //this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
           }
 
         }
@@ -1265,7 +1265,7 @@ export class ContenteventsController {
           //   iduser = databasic._id;
           //   this.userChallengeLike(iduser.toString(), idevent1.toString(), "contentevents", "LIKE", request.body.postID);
           // }
-          this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+          //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
@@ -1292,7 +1292,7 @@ export class ContenteventsController {
             //   iduser = databasic._id;
             //   this.userChallengeUnLike(iduser.toString(), idevent1.toString(), "contentevents", "UNLIKE", request.body.postID);
             // }
-            this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+            // this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, ' +
@@ -1309,7 +1309,7 @@ export class ContenteventsController {
             let idevent1 = ceck_data_DONE._id;
             let event1 = ceck_data_DONE.eventType.toString();
             // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
-            this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+            // this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
@@ -1340,7 +1340,7 @@ export class ContenteventsController {
           //   iduser = databasic._id;
           //   this.userChallengeUnLike(iduser.toString(), idevent1.toString(), "contentevents", "UNLIKE", request.body.postID);
           // }
-          this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+          //this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
@@ -1368,7 +1368,7 @@ export class ContenteventsController {
               //   this.userChallengeUnLike(iduser.toString(), idevent1.toString(), "contentevents", "UNLIKE", request.body.postID);
               // }
 
-              this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+              //this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, ' +
@@ -1393,7 +1393,7 @@ export class ContenteventsController {
               //   this.userChallengeLike2( idevent1.toString(), "contentevents", "LIKE", request.body.postID);
               // }
 
-              this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+              //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, ' +
@@ -1417,14 +1417,14 @@ export class ContenteventsController {
           let idevent1 = ceck_data_FOLLOWING._id;
           //await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNFOLLOW", userbasic1._id);
 
-          const databasic = await this.userbasicsService.findOne(
-            email_user
-          );
-          var iduser = null;
-          if (databasic !== null) {
-            iduser = databasic._id;
-            this.userChallengeUnFollow(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW");
-          }
+          // const databasic = await this.userbasicsService.findOne(
+          //   email_user
+          // );
+          // var iduser = null;
+          // if (databasic !== null) {
+          //   iduser = databasic._id;
+          //   this.userChallengeUnFollow(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW");
+          // }
 
           this.checkFriendbasedString(email_user, email_receiverParty, "delete");
         } catch (error) {
