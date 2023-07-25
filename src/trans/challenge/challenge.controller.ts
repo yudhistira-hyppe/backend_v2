@@ -2414,5 +2414,61 @@ export class ChallengeController {
 
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('listleaderboard2')
+  async listleaderboaard2(@Req() request: Request) {
+    var idchallenge = null;
+    var iduser = null;
+    var status = null;
+    var session = null;
+    var datasession = null;
+    var data = null;
+    var totalSession = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
 
+    if (request_json["idchallenge"] !== undefined) {
+      idchallenge = request_json['idchallenge'];
+    } else {
+      throw new BadRequestException("Unabled to proceed, challenge field is required");
+    }
+
+    if (request_json["iduser"] !== undefined) {
+      iduser = request_json['iduser'];
+    } else {
+      throw new BadRequestException("Unabled to proceed, ascending field is required");
+    }
+    status = request_json['status'];
+    session = request_json['session'];
+
+
+    try {
+      data = await this.subchallenge.getListUserChallengekedua(idchallenge, iduser, status, session);
+    } catch (e) {
+      data = [];
+    }
+    if (data !== null && data.length > 0) {
+      try {
+        datasession = await this.subchallenge.getcount(idchallenge);
+      } catch (e) {
+        datasession = [];
+      }
+      if (datasession !== null && datasession.length > 0) {
+        totalSession = datasession[0].totalSession;
+      } else {
+        totalSession = 0;
+      }
+      data[0].totalSession = totalSession;
+
+    }
+
+    const messages = {
+      "info": ["The proses successful"],
+    };
+
+    return {
+      response_code: 202,
+      "data": data,
+      "message": messages
+    }
+  }
 }
