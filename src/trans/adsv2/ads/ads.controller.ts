@@ -1179,115 +1179,107 @@ export class AdsController {
         }
         AdsLogsDto_.iduser = new mongoose.Types.ObjectId(data_userbasic._id.toString());
 
-        try {
-            const data_ads = await this.adsService.getAdsUser(headers['x-auth-user'], data_userbasic._id.toString(), id);
-            console.log(data_ads);
-            if (await this.utilsService.ceckData(data_ads)) {
-                var ceckData = await this.userAdsService.findAdsIDUserID(data_userbasic._id.toString(), data_ads[0]._id.toString());
-                if (!(await this.utilsService.ceckData(ceckData))) {
-                    var CreateUserAdsDto_ = new CreateUserAdsDto();
-                    CreateUserAdsDto_._id = genIdUserAds;
-                    CreateUserAdsDto_.adsID = new mongoose.Types.ObjectId(data_ads[0]._id);
-                    CreateUserAdsDto_.userID = new mongoose.Types.ObjectId(data_userbasic._id.toString());
-                    CreateUserAdsDto_.priority = data_ads[0].priority;
-                    if (data_ads[0].description != undefined) {
-                        CreateUserAdsDto_.description = data_ads[0].description;
-                    }
-                    CreateUserAdsDto_.createdAt = current_date;
-                    CreateUserAdsDto_.statusClick = false;
-                    CreateUserAdsDto_.statusView = false;
-                    CreateUserAdsDto_.viewed = 0;
-                    CreateUserAdsDto_.liveAt = data_ads[0].liveAt;
-                    CreateUserAdsDto_.liveTypeuserads = data_ads[0].liveTypeAds;
-                    CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_ads[0].typeAdsID);
-                    CreateUserAdsDto_.nameType = data_ads[0].nameType;
-                    CreateUserAdsDto_.isActive = true;
-                    CreateUserAdsDto_.scoreAge = data_ads[0].scoreUmur;
-                    CreateUserAdsDto_.scoreGender = data_ads[0].scoreKelamin;
-                    CreateUserAdsDto_.scoreGeografis = data_ads[0].scoreGeografis;
-                    CreateUserAdsDto_.scoreInterest = data_ads[0].scoreMinat;
-                    CreateUserAdsDto_.scoreTotal = data_ads[0].scoreTotal;
-                    this.userAdsService.create(CreateUserAdsDto_);
+        const data_ads = await this.adsService.getAdsUser(headers['x-auth-user'], data_userbasic._id.toString(), id);
+        console.log("data_ads",data_ads);
+        if (await this.utilsService.ceckData(data_ads)) {
+            var ceckData = await this.userAdsService.findAdsIDUserID(data_userbasic._id.toString(), data_ads[0]._id.toString());
+            if (!(await this.utilsService.ceckData(ceckData))) {
+                var CreateUserAdsDto_ = new CreateUserAdsDto();
+                CreateUserAdsDto_._id = genIdUserAds;
+                CreateUserAdsDto_.adsID = new mongoose.Types.ObjectId(data_ads[0]._id);
+                CreateUserAdsDto_.userID = new mongoose.Types.ObjectId(data_userbasic._id.toString());
+                CreateUserAdsDto_.priority = data_ads[0].priority;
+                if (data_ads[0].description != undefined) {
+                    CreateUserAdsDto_.description = data_ads[0].description;
                 }
+                CreateUserAdsDto_.createdAt = current_date;
+                CreateUserAdsDto_.statusClick = false;
+                CreateUserAdsDto_.statusView = false;
+                CreateUserAdsDto_.viewed = 0;
+                CreateUserAdsDto_.liveAt = data_ads[0].liveAt;
+                CreateUserAdsDto_.liveTypeuserads = data_ads[0].liveTypeAds;
+                CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_ads[0].typeAdsID);
+                CreateUserAdsDto_.nameType = data_ads[0].nameType;
+                CreateUserAdsDto_.isActive = true;
+                CreateUserAdsDto_.scoreAge = data_ads[0].scoreUmur;
+                CreateUserAdsDto_.scoreGender = data_ads[0].scoreKelamin;
+                CreateUserAdsDto_.scoreGeografis = data_ads[0].scoreGeografis;
+                CreateUserAdsDto_.scoreInterest = data_ads[0].scoreMinat;
+                CreateUserAdsDto_.scoreTotal = data_ads[0].scoreTotal;
+                this.userAdsService.create(CreateUserAdsDto_);
+            }
 
-                //Get Pict User Ads
-                var get_profilePict = null;
-                const data_userbasic_ads = await this.userbasicsService.findbyid(data_ads[0].userID.toString());
-                if (data_userbasic_ads.profilePict != undefined) {
-                    if (data_userbasic_ads.profilePict != null) {
-                        var mediaprofilepicts_json = JSON.parse(JSON.stringify(data_userbasic_ads.profilePict));
-                        get_profilePict = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
-                    }
+            //Get Pict User Ads
+            var get_profilePict = null;
+            const data_userbasic_ads = await this.userbasicsService.findbyid(data_ads[0].userID.toString());
+            if (data_userbasic_ads.profilePict != undefined) {
+                if (data_userbasic_ads.profilePict != null) {
+                    var mediaprofilepicts_json = JSON.parse(JSON.stringify(data_userbasic_ads.profilePict));
+                    get_profilePict = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
                 }
+            }
 
-                //Create Response
-                var data_response = {};
-                data_response['adsId'] = data_ads[0]._id.toString();
-                data_response['adsUrlLink'] = data_ads[0].urlLink; 
-                data_response['adsDescription'] = data_ads[0].description;
-                data_response['name'] = data_ads[0].description;
-                if (await this.utilsService.ceckData(ceckData)) {
-                    console.log("ada", ceckData._id.toString());
-                    data_response['useradsId'] = ceckData._id.toString();
-                } else {
-                    console.log("tidak ada", genIdUserAds.toString());
-                    data_response['useradsId'] = genIdUserAds.toString();
-                }
-                data_response['idUser'] = data_userbasic_ads._id.toString();
-                data_response['fullName'] = data_userbasic_ads.fullName;
-                data_response['email'] = data_userbasic_ads.email;
-                if (await this.utilsService.ceckData(get_profilePict)) {
-                    data_response['avartar'] = {
-                        mediaBasePath: (get_profilePict.mediaBasePath != undefined) ? get_profilePict.mediaBasePath : null,
-                        mediaUri: (get_profilePict.mediaUri != undefined) ? get_profilePict.mediaUri : null,
-                        mediaType: (get_profilePict.mediaType != undefined) ? get_profilePict.mediaType : null,
-                        mediaEndpoint: (get_profilePict.mediaID != undefined) ? '/profilepict/' + get_profilePict.mediaID : null,
-                    }
-                }
-                data_response['placingID'] = data_ads[0].placingID.toString();
-                var dataPlace = await this.adsplacesService.findOne(data_ads[0].placingID.toString());
-                if (await this.utilsService.ceckData(dataPlace)) {
-                    data_response['adsPlace'] = dataPlace.namePlace;
-                }
-                data_response['adsType'] = (await this.adsTypeService.findOne(data_ads[0].typeAdsID.toString())).nameType;
-                data_response['adsSkip'] = (data_ads[0].skipTime != undefined) ? data_ads[0].skipTime : (await this.adsTypeService.findOne(data_ads[0].typeAdsID.toString())).AdsSkip;
-                data_response['mediaType'] = data_ads[0].type;
-                data_response['ctaButton'] = data_ads[0].ctaNames;
-                data_response['videoId'] = data_ads[0].idApsara; 
-                data_response['duration'] = data_ads[0].duration;
-                data_response['mediaBasePath'] = data_ads[0].mediaBasePath;
-                data_response['username'] = data_ads[0].username;
-                data_response['mediaUri'] = data_ads[0].mediaUri;
-                data_response['mediaThumBasePath'] = data_ads[0].mediaThumBasePath;
-                data_response['mediaThumUri'] = data_ads[0].mediaThumUri;
-                data_response['width'] = data_ads[0].width;
-                data_response['height'] = data_ads[0].height;
-
-                AdsLogsDto_.responseAds = JSON.stringify(data_response);
-                await this.adslogsService.create(AdsLogsDto_);
-                return {
-                    "response_code": 202,
-                    "data": data_response,
-                    "messages": {
-                        "info": [
-                            "The process successfuly"
-                        ]
-                    }
-                };
+            //Create Response
+            var data_response = {};
+            data_response['adsId'] = data_ads[0]._id.toString();
+            data_response['adsUrlLink'] = data_ads[0].urlLink; 
+            data_response['adsDescription'] = data_ads[0].description;
+            data_response['name'] = data_ads[0].description;
+            if (await this.utilsService.ceckData(ceckData)) {
+                console.log("ada", ceckData._id.toString());
+                data_response['useradsId'] = ceckData._id.toString();
             } else {
-                AdsLogsDto_.responseAds = JSON.stringify({ response: "Unabled to proceed Ads not found" });
-                await this.adslogsService.create(AdsLogsDto_);
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Ads not found'
-                );
-            } 
-        } catch (e) {
-            AdsLogsDto_.responseAds = JSON.stringify({ response: "Unabled to proceed "+e });
+                console.log("tidak ada", genIdUserAds.toString());
+                data_response['useradsId'] = genIdUserAds.toString();
+            }
+            data_response['idUser'] = data_userbasic_ads._id.toString();
+            data_response['fullName'] = data_userbasic_ads.fullName;
+            data_response['email'] = data_userbasic_ads.email;
+            if (await this.utilsService.ceckData(get_profilePict)) {
+                data_response['avartar'] = {
+                    mediaBasePath: (get_profilePict.mediaBasePath != undefined) ? get_profilePict.mediaBasePath : null,
+                    mediaUri: (get_profilePict.mediaUri != undefined) ? get_profilePict.mediaUri : null,
+                    mediaType: (get_profilePict.mediaType != undefined) ? get_profilePict.mediaType : null,
+                    mediaEndpoint: (get_profilePict.mediaID != undefined) ? '/profilepict/' + get_profilePict.mediaID : null,
+                }
+            }
+            data_response['placingID'] = data_ads[0].placingID.toString();
+            var dataPlace = await this.adsplacesService.findOne(data_ads[0].placingID.toString());
+            if (await this.utilsService.ceckData(dataPlace)) {
+                data_response['adsPlace'] = dataPlace.namePlace;
+            }
+            data_response['adsType'] = (await this.adsTypeService.findOne(data_ads[0].typeAdsID.toString())).nameType;
+            data_response['adsSkip'] = (data_ads[0].skipTime != undefined) ? data_ads[0].skipTime : (await this.adsTypeService.findOne(data_ads[0].typeAdsID.toString())).AdsSkip;
+            data_response['mediaType'] = data_ads[0].type;
+            data_response['ctaButton'] = data_ads[0].ctaNames;
+            data_response['videoId'] = data_ads[0].idApsara; 
+            data_response['duration'] = data_ads[0].duration;
+            data_response['mediaBasePath'] = data_ads[0].mediaBasePath;
+            data_response['username'] = data_ads[0].username;
+            data_response['mediaUri'] = data_ads[0].mediaUri;
+            data_response['mediaThumBasePath'] = data_ads[0].mediaThumBasePath;
+            data_response['mediaThumUri'] = data_ads[0].mediaThumUri;
+            data_response['width'] = data_ads[0].width;
+            data_response['height'] = data_ads[0].height;
+
+            AdsLogsDto_.responseAds = JSON.stringify(data_response);
+            await this.adslogsService.create(AdsLogsDto_);
+            return {
+                "response_code": 202,
+                "data": data_response,
+                "messages": {
+                    "info": [
+                        "The process successfuly"
+                    ]
+                }
+            };
+        } else {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: "Unabled to proceed Ads not found" });
             await this.adslogsService.create(AdsLogsDto_);
             await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed '+e
+                'Unabled to proceed Ads not found'
             );
-        } 
+        }
     }
 
     @UseGuards(JwtAuthGuard)
