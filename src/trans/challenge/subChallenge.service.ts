@@ -4824,6 +4824,13 @@ export class subChallengeService {
                             }
                         },
                         {
+                            $sort: {
+
+                                'detail.bulan': 1
+
+                            }
+                        },
+                        {
                             $group: {
                                 _id: "$tahun",
                                 "detail": {
@@ -4842,7 +4849,8 @@ export class subChallengeService {
                         },
                         {
                             $sort: {
-                                _id: 1
+                                tahun: 1,
+
                             }
                         },
 
@@ -7644,6 +7652,13 @@ export class subChallengeService {
                             }
                         },
                         {
+                            $sort: {
+
+                                'detail.bulan': 1
+
+                            }
+                        },
+                        {
                             $group: {
                                 _id: "$tahun",
                                 "detail": {
@@ -7662,7 +7677,8 @@ export class subChallengeService {
                         },
                         {
                             $sort: {
-                                _id: 1
+                                tahun: 1,
+
                             }
                         },
 
