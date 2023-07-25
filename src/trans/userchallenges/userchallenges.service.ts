@@ -87,6 +87,22 @@ export class UserchallengesService {
                 }
             },
             {
+                $set: {
+                    "timenow":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25200000
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
                 $lookup: {
                     from: 'subChallenge',
                     localField: 'idSubChallenge',
@@ -114,9 +130,60 @@ export class UserchallengesService {
                     "session": {
                         $arrayElemAt: ["$subChallenge_data.session", 0]
                     },
+                    "timenow": 1,
+                    "status": {
+                        $cond: {
+                            if: {
+                                $and: [
+                                    {
+                                        $lte:
+                                            [
+                                                "$timenow",
+                                                "$endDatetime",
+
+                                            ]
+                                    },
+                                    {
+                                        $gte:
+                                            [
+                                                "$timenow",
+                                                "$startDatetime",
+
+                                            ]
+                                    },
+
+                                ]
+                            },
+                            then: "BERLANGSUNG",
+                            else:
+                            {
+                                $cond: {
+                                    if: {
+                                        $and: [
+                                            {
+                                                $lt:
+                                                    [
+                                                        "$endDatetime",
+                                                        "$timenow",
+                                                    ]
+                                            },
+
+                                        ]
+                                    },
+                                    else: "AKAN DATANG",
+                                    then: "BERAKHIR"
+                                }
+                            },
+                        }
+                    },
 
                 }
-            }
+            },
+            {
+                $match: {
+                    "status": "BERLANGSUNG"
+                }
+            },
         ]);
         return query;
     }
@@ -313,8 +380,7 @@ export class UserchallengesService {
         return query;
     }
 
-    async checkUserjoinchallenge(challenge:string, userid:string)
-    {
+    async checkUserjoinchallenge(challenge: string, userid: string) {
         var mongo = require('mongoose');
         var konvertchallenge = mongo.Types.ObjectId(challenge);
         var konvertid = mongo.Types.ObjectId(userid);
@@ -324,39 +390,37 @@ export class UserchallengesService {
                 "$match":
                 {
                     "$and":
-                    [
-                        {
-                            "$expr":
+                        [
                             {
-                                "$eq":
-                                [
-                                    "$idChallenge", konvertchallenge
-                                ]
-                            }
-                        },
-                        {
-                            "$expr":
+                                "$expr":
+                                {
+                                    "$eq":
+                                        [
+                                            "$idChallenge", konvertchallenge
+                                        ]
+                                }
+                            },
                             {
-                                "$eq":
-                                [
-                                    "$idUser", konvertid
-                                ]
-                            }
-                        }, 
-                    ]
+                                "$expr":
+                                {
+                                    "$eq":
+                                        [
+                                            "$idUser", konvertid
+                                        ]
+                                }
+                            },
+                        ]
                 }
             },
             {
-                "$limit":1
+                "$limit": 1
             },
         ]);
 
-        if(query.length == 1)
-        {
+        if (query.length == 1) {
             return true;
         }
-        else
-        {
+        else {
             return false;
         }
     }
