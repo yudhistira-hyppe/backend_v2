@@ -738,27 +738,27 @@ export class PostsService {
             ]
           }
         },
-        // {
-        //   $project: {
-        //     wilayah: 1,
-        //     gender: 1,
-        //     age: 1,
-        //     view: {
-        //       $size: '$view'
-        //     },
-        //     used: {
-        //       "$let": {
-        //         "vars": {
-        //           "tmp": {
-        //             "$arrayElemAt": ["$used", 0]
-        //           }
-        //         },
-        //         "in": "$$tmp.count"
-        //       }
-        //     },
-        //   }
+        {
+          $project: {
+            wilayah: 1,
+            gender: 1,
+            age: 1,
+            view: {
+              $size: '$view'
+            },
+            used: {
+              "$let": {
+                "vars": {
+                  "tmp": {
+                    "$arrayElemAt": ["$used", 0]
+                  }
+                },
+                "in": "$$tmp.count"
+              }
+            },
+          }
 
-        // }
+        }
       ]);
     return query;
   }
