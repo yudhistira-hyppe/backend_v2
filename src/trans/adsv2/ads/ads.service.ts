@@ -5211,7 +5211,9 @@ export class AdsService {
                 },
                 {
                     $unwind: {
-                        path: "$adsUser"
+                        path: "$adsUser",
+                        preserveNullAndEmptyArrays: true
+
                     }
                 },
                 {
