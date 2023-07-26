@@ -1221,10 +1221,9 @@ export class AdsService {
     }
 
 
-    async findAds(email: string, nameType: string) {
+    async findAds(email: string, idUser:string, nameType: string) {
         console.log(email);
         console.log(nameType);
-        // var query = await this.adsModel.aggregate([
         //     {
         //         $set:
         //         {
@@ -2410,14 +2409,6 @@ export class AdsService {
                                         {
                                             "isActive": true
                                         },
-                                        //{
-                                        //    $or: [
-                                        //        {
-                                        //            "liveTypeuserads": true
-                                        //        },
-                                        //        
-                                        //    ]
-                                        //}
                                     ]
                                 },
 
@@ -2449,12 +2440,84 @@ export class AdsService {
                     }
                 },
                 {
+                    "$lookup": {
+                        from: "accountbalances",
+                        as: "balances",
+                        let: {
+                            localID: new mongoose.Types.ObjectId(idUser)
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $expr: {
+                                        $eq: ['$iduser', '$$localID']
+                                    }
+                                }
+                            },
+                            {
+                                $facet: {
+                                    kredit: [{
+                                        $group: {
+                                            _id: "$iduser",
+                                            tot: {
+                                                $sum: "$kredit",
+                                            },
+                                        }
+                                    }],
+                                    debet: [{
+                                        $group: {
+                                            _id: "$iduser",
+                                            tot: {
+                                                $sum: "$debet",
+                                            },
+                                        }
+                                    }],
+                                }
+                            },
+                            //{
+                            //		$sort:{
+                            //				timestamp:-1
+                            //		}
+                            //},
+                            //{
+                            //		$limit:1
+                            //},
+                            {
+                                $project: {
+                                    debet:
+                                    {
+                                        $arrayElemAt: ["$debet.tot", 0]
+                                    },
+                                    kredit:
+                                    {
+                                        $arrayElemAt: ["$kredit.tot", 0]
+                                    },
+                                    total:
+                                    {
+                                        $subtract: [
+                                            {
+                                                $arrayElemAt: ["$kredit.tot", 0]
+                                            },
+                                            {
+                                                $arrayElemAt: ["$debet.tot", 0]
+                                            },
+                                        ]
+                                    },
+
+                                }
+                            }
+                        ],
+
+                    }
+                },
+                {
                     $match:
                     {
                         $or: [{
                             $and: [
                                 {
-                                    "status": "APPROVE"
+                                    "status": "ACTIVE"
                                 },
                                 {
                                     $expr: {
@@ -2489,6 +2552,12 @@ export class AdsService {
                                 {
                                     "userID":
                                     {
+                                        $ne: new mongoose.Types.ObjectId(idUser)
+                                    }
+                                },
+                                {
+                                    "userID":
+                                    {
                                         $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                     }
                                 },
@@ -2503,7 +2572,7 @@ export class AdsService {
                                     }
                                 },
                                 {
-                                    "status": "APPROVE"
+                                    "status": "ACTIVE"
                                 },
                                 {
                                     $expr: {
@@ -2536,15 +2605,29 @@ export class AdsService {
                                     }
                                 },
                                 {
+                                    "userID": {
+                                        $ne: new mongoose.Types.ObjectId(idUser)
+                                    }
+                                },
+                                {
                                     "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                 },
-
+                                {
+                                    $expr: {
+                                        $lt: [
+                                            {
+                                                $arrayElemAt: ["$balances.total", 0]
+                                            },
+                                            49000]
+                                    }
+                                },
                             ]
                         },]
                     }
                 },
                 {
                     $project: {
+                        balances: 1,
                         sekarang: 1,
                         isValid: 1,
                         userBasic: 1,
@@ -2755,6 +2838,7 @@ export class AdsService {
                 },
                 {
                     $project: {
+                        balances: 1,
                         test: 1,
                         sekarang: 1,
                         viewed: "$viewed",
@@ -2850,6 +2934,7 @@ export class AdsService {
                 },
                 {
                     $project: {
+                        balances: 1,
                         test: 1,
                         sekarang: 1,
                         viewed: 1,
