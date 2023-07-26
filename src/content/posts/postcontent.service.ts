@@ -1666,6 +1666,7 @@ export class PostContentService {
     pd.email = String(dataPost.email);
     CreatePostResponse_.data = pd;
 
+    console.log('============================================== CREATE POST END ==============================================', JSON.stringify(CreatePostResponse_));
     return CreatePostResponse_;
   }
 
@@ -3127,7 +3128,6 @@ export class PostContentService {
     //Post Ceck Moderation
     this.cmodService.cmodImage(Posts_.postID.toString(), url_filename);
 
-
     //Create Response
     let CreatePostResponse_ = new CreatePostResponse();
     let Messages_ = new Messages();
@@ -3139,6 +3139,7 @@ export class PostContentService {
     pd.email = String(dataPost.email);
     CreatePostResponse_.data = pd;
 
+    console.log('============================================== CREATE POST END ==============================================', JSON.stringify(CreatePostResponse_));
     return CreatePostResponse_;
   }
 
