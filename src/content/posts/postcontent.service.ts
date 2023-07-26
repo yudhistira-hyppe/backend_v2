@@ -50,6 +50,8 @@ import ffmpeg from "fluent-ffmpeg";
 import { OssContentPictService } from './osscontentpict.service';
 import { DisqusService } from '../disqus/disqus.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
+import { TagCountService } from '../tag_count/tag_count.service';
+import { TagCountDto } from '../tag_count/dto/create-tag_count.dto';
 
 const webp = require('webp-converter');
 const sharp = require('sharp');
@@ -89,6 +91,7 @@ export class PostContentService {
     private mediamusicService: MediamusicService,
     private ossContentPictService: OssContentPictService,
     private disqusService: DisqusService,
+    private readonly tagCountService: TagCountService,
     private disqusLogService: DisquslogsService,
   ) { }
 
@@ -102,6 +105,74 @@ export class PostContentService {
       maxBodyLength: Infinity,
       headers: { 'Content-Type': 'multipart/form-data' }
     });
+  }
+
+  async createNewPostV5(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    //Create Response
+    let CreatePostResponse_ = new CreatePostResponse();
+    let Messages_ = new Messages();
+    CreatePostResponse_.response_code = 204;
+    
+    //Generate postID
+    const postID = await this.utilService.generateId();
+    body.postID = postID;
+
+    //Tag
+    if (body.tags != undefined && body.tags != ""){
+      if (!(Array.isArray(body.tags))) {
+        const ArrayTags = []
+        const tag_split = (body.tags).split(',');
+        for (let tgs = 0; tgs < tag_split.length; tgs++) {
+          let tag_data = tag_split[tgs].replace(/"/g, "");
+          ArrayTags.push(tag_data);
+          //Update Tag Count
+          let ceckDataCount = await this.tagCountService.findOneById(tag_data);
+          let tagCountDto_ = new TagCountDto();
+          if (await this.utilService.ceckData(ceckDataCount)) {
+            const UpdateCountData = {
+              $inc: { total: 1 },
+              $push: { listdata: { postID: postID } }
+            }
+            this.tagCountService.updateData(tag_data, UpdateCountData);
+          } else {
+            tagCountDto_._id = tag_data;
+            tagCountDto_.total = 1;
+            tagCountDto_.listdata = [{ "postID": postID }];
+            this.tagCountService.create(tagCountDto_);
+          }
+        }
+        body.tags = ArrayTags;
+      }
+    }
+
+    //Get Email
+    const email = JSON.parse(Buffer.from((headers['x-auth-token']).split('.')[1], 'base64').toString()).email;
+
+    //Get userbasics
+    const data_userbasics = await this.userService.findOne(email);
+    if (!(await this.utilService.ceckData(data_userbasics))) {
+      Messages_.info = ["Email unknown"];
+      CreatePostResponse_.messages = Messages_;
+      return CreatePostResponse_;
+    }
+
+    //Validasi isIdVerified
+    if (body.certified && body.certified == "true") {
+      if (data_userbasics.isIdVerified != true) {
+        Messages_.info = ["The user ID has not been verified"];
+        CreatePostResponse_.messages = Messages_;
+        return CreatePostResponse_;
+      }
+    }
+
+    const mime = file.mimetype;
+    if (mime.startsWith('video')) {
+      console.log('============================================== CREATE POST TYPE ==============================================', mime);
+      return this.createNewPostVideoV5(file, body, data_userbasics);
+    } else {
+      console.log('============================================== CREATE POST TYPE ==============================================', mime);
+      return this.createNewPostPictV5(file, body, data_userbasics);
+    }
   }
 
   async createNewPostV4(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
@@ -493,6 +564,166 @@ export class PostContentService {
     this.contentEventService.create(ce);
     // this.createUserscore(ce, auth.email);
     return post;
+  }
+
+  private async buildPost_(body: any, data_userbasics: Userbasic): Promise<Posts> {
+    //Current Date
+    const currentDate = await this.utilService.getDateTimeString();
+
+    //Generate Expired
+    const generateExpired = BigInt(this.utilService.generateAddExpirationFromToday(1));
+
+    //Generate Post
+    let Posts_ = new Posts();
+    Posts_._id = body.postID;
+    Posts_.postID = body.postID;
+    Posts_.postType = body.postType;
+    Posts_.active = true;
+    Posts_.email = data_userbasics.email;
+    Posts_.createdAt = currentDate;
+    Posts_.updatedAt = currentDate;
+    Posts_.expiration = Long.fromBigInt(generateExpired);
+    if (body.musicId != undefined) {
+      Posts_.musicId = new mongoose.Types.ObjectId(body.musicId);
+    }
+    if (body.description != undefined) {
+      Posts_.description = body.description;
+    }
+    if (body.tags != undefined) {
+      Posts_.tags = body.tags;
+    }
+    if (body.visibility != undefined) {
+      Posts_.visibility = body.visibility;
+    } else {
+      Posts_.visibility = 'PUBLIC';
+    }
+    if (body.location != undefined) {
+      Posts_.location = body.location;
+    }
+    if (body.lat != undefined) {
+      Posts_.lat = body.lat;
+    }
+    if (body.lon != undefined) {
+      Posts_.lon = body.lon;
+    }
+    if (body.saleAmount != undefined) {
+      Posts_.saleAmount = body.saleAmount;
+    } else {
+      Posts_.saleAmount = null;
+    }
+    if (body.saleLike != undefined) {
+      Posts_.saleLike = body.saleLike;
+    } else {
+      Posts_.saleLike = false;
+    }
+    if (body.saleView != undefined) {
+      Posts_.saleView = body.saleView;
+    } else {
+      Posts_.saleView = false;
+    }
+    if (body.allowComments != undefined) {
+      Posts_.allowComments = body.allowComments;
+    } else {
+      Posts_.allowComments = true;
+    }
+    if (body.isSafe != undefined) {
+      Posts_.isSafe = body.isSafe;
+    } else {
+      Posts_.isSafe = false;
+    }
+    if (body.isOwned != undefined) {
+      Posts_.isOwned = body.isOwned;
+    } else {
+      Posts_.isOwned = false;
+    }
+    if (body.certified != undefined) {
+      Posts_.certified = <boolean>body.certified;
+    } else {
+      Posts_.certified = false;
+    }
+    Posts_._class = 'io.melody.hyppe.content.domain.ContentPost';
+    const userIdObject = { "$ref": "userbasics", "$id": new mongoose.Types.ObjectId(data_userbasics._id.toString()), "$db": "hyppe_trans_db" };
+    Posts_.userProfile = userIdObject;
+    if (body.cats != undefined && body.cats.length > 1) {
+      const catsSplit = (body.cats).split(",");
+      let interests_array = [];
+      for (var i = 0; i < catsSplit.length; i++) {
+        interests_array.push({ "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(catsSplit[i]), "$db": "hyppe_infra_db" });
+      }
+      Posts_.category = interests_array;
+    }
+    Posts_.likes = Long.fromInt(0);
+    Posts_.views = Long.fromInt(0);
+    Posts_.shares = Long.fromInt(0);
+    if (body.tagPeople != undefined && body.tagPeople.length > 1) {
+      const tagPeopleSplit = (body.tagPeople).split(",");
+      let tagPeople_array = [];
+      for (var i = 0; i < tagPeopleSplit.length; i++) {
+        let getUserauth = await this.userAuthService.findOneUsername(tagPeopleSplit[i].toString());
+        if (await this.utilService.ceckData(getUserauth)) {
+          tagPeople_array.push({ "$ref": "userauths", "$id": new mongoose.Types.ObjectId(getUserauth._id.toString()), "$db": "hyppe_trans_db" });
+        }
+      }
+      Posts_.tagPeople = tagPeople_array;
+    }
+    if (body.tagDescription != undefined && body.tagDescription.length > 0) {
+      const tagDescriptionSplit = (body.tagDescription).split(",");
+      let tagDescription_array = [];
+      for (var i = 0; i < tagDescriptionSplit.length; i++) {
+        let getUserauth = await this.userAuthService.findOneUsername(tagDescriptionSplit[i].toString());
+        if (await this.utilService.ceckData(getUserauth)) {
+          tagDescription_array.push({ "$ref": "userauths", "$id": new mongoose.Types.ObjectId(getUserauth._id.toString()), "$db": "hyppe_trans_db" });
+        }
+      }
+      Posts_.tagDescription = tagDescription_array;
+    }
+    Posts_.active = false;
+    if (body.isShared == undefined) {
+      Posts_.isShared = true;
+    } else {
+      Posts_.isShared = body.isShared;
+    }
+
+    //Update Insight
+    let data_insight = await this.insightService.findemail(data_userbasics.email.toString());
+    if (!(await this.utilService.ceckData(data_insight))) {
+      data_insight = new Insights();
+      data_insight._id = await this.utilService.generateId();
+      data_insight.insightID = data_insight._id;
+      data_insight.active = true;
+      data_insight.email = data_userbasics.email.toString();
+      data_insight.createdAt = currentDate;
+      data_insight.updatedAt = currentDate;
+      data_insight._class = 'io.melody.hyppe.content.domain.Insight';
+
+      if (Posts_.postType != 'story') {
+        data_insight.posts = new Long(1);
+      }
+    } else {
+      if (Posts_.postType != 'story') {
+        let prevPost = data_insight.posts;
+        let nextPost = Number(prevPost) + 1;
+        data_insight.posts = new Long(nextPost);
+      }
+
+    }
+    this.insightService.create(data_insight);
+
+    //Create Contentevents
+    var Contentevents_ = new Contentevents();
+    Contentevents_._id = await this.utilService.generateId();
+    Contentevents_.contentEventID = Contentevents_._id;
+    Contentevents_.eventType = 'POST';
+    Contentevents_.createdAt = currentDate;
+    Contentevents_.updatedAt = currentDate;
+    Contentevents_.active = true;
+    Contentevents_.event = 'ACCEPT';
+    Contentevents_.flowIsDone = true;
+    Contentevents_.email = data_userbasics.email.toString();
+    Contentevents_.sequenceNumber = 0;
+    Contentevents_._class = 'io.melody.hyppe.content.domain.ContentEvent';
+    this.contentEventService.create(Contentevents_);
+    return Posts_;
   }
 
   private async createNewPostVideoV1(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
@@ -1087,6 +1318,357 @@ export class PostContentService {
     return res;
   }
 
+  private async createNewPostVideoV4(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    this.logger.log('createNewPostVideo >>> start: ' + JSON.stringify(body));
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+
+    var postID = await this.utilService.generateId();
+    let post = await this.buildPost(body, headers, postID);
+
+    let postType = body.postType;
+    let isShared = null;
+
+    if (body.isShared === undefined) {
+      isShared = true;
+    } else {
+      isShared = body.isShared;
+    }
+    var cm = [];
+
+    let mediaId = "";
+    if (postType == 'vid') {
+      var width_ = 0;
+      var height_ = 0;
+      if (body.width != undefined) {
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+      post.metadata = metadata;
+
+      var med = new Mediavideos();
+      med._id = await this.utilService.generateId();
+      med.mediaID = med._id;
+      med.postID = post.postID;
+      med.active = false;
+      med.createdAt = await this.utilService.getDateTimeString();
+      med.updatedAt = await this.utilService.getDateTimeString();
+      med.mediaMime = file.mimetype;
+      med.mediaType = 'video';
+      med.originalName = file.originalname;
+      med.apsara = true;
+      med._class = 'io.melody.hyppe.content.domain.MediaVideo';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retd = await this.videoService.create(med);
+
+      this.logger.log('createNewPostVideo >>> ' + retd);
+
+      var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retd.mediaID);
+    } else if (postType == 'advertise') {
+
+    } else if (postType == 'story') {
+
+      var mime = file.mimetype;
+      if (mime.startsWith('video')) {
+        var width_ = 0;
+        var height_ = 0;
+        if (body.width != undefined) {
+          width_ = parseInt(body.width.toString());
+        }
+        if (body.height != undefined) {
+          height_ = parseInt(body.height.toString());
+        }
+        let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+        post.metadata = metadata;
+      }
+
+      var mes = new Mediastories();
+      mes._id = await this.utilService.generateId();
+      mes.mediaID = mes._id;
+      mes.postID = post.postID;
+      mes.active = false;
+      mes.createdAt = await this.utilService.getDateTimeString();
+      mes.updatedAt = await this.utilService.getDateTimeString();
+      mes.mediaMime = file.mimetype;
+      mes.mediaType = 'video';
+      mes.originalName = file.originalname;
+      mes.apsara = true;
+      mes._class = 'io.melody.hyppe.content.domain.MediaStory';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var rets = await this.storyService.create(mes);
+
+      this.logger.log('createNewPostVideo >>> ' + rets);
+
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
+      cm.push(stories);
+
+      mediaId = String(rets.mediaID);
+
+    } else if (postType == 'diary') {
+      var width_ = 0;
+      var height_ = 0;
+      if (body.width != undefined) {
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'diary', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+      post.metadata = metadata;
+
+      var mer = new Mediadiaries();
+      mer._id = await this.utilService.generateId();
+      mer.mediaID = mer._id;
+      mer.postID = post.postID;
+      mer.active = false;
+      mer.createdAt = await this.utilService.getDateTimeString();
+      mer.updatedAt = await this.utilService.getDateTimeString();
+      mer.mediaMime = file.mimetype;
+      mer.mediaType = 'video';
+      mer.originalName = file.originalname;
+      mer.apsara = true;
+      mer._class = 'io.melody.hyppe.content.domain.MediaDiary';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retr = await this.diaryService.create(mer);
+
+      this.logger.log('createNewPostVideo >>> ' + retr);
+
+      var diaries = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
+      cm.push(diaries);
+
+      mediaId = String(retr.mediaID);
+    } else if (postType == 'pict') {
+
+      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
+      post.metadata = metadata;
+
+      var medx = new Mediapicts();
+      medx._id = await this.utilService.generateId();
+      medx.mediaID = medx._id;
+      medx.postID = post.postID;
+      medx.active = false;
+      medx.createdAt = await this.utilService.getDateTimeString();
+      medx.updatedAt = await this.utilService.getDateTimeString();
+      medx.mediaMime = file.mimetype;
+      medx.mediaType = 'video';
+      medx.originalName = file.originalname;
+      medx.apsara = true;
+      medx._class = 'io.melody.hyppe.content.domain.MediaPict';
+
+      this.logger.log('createNewPostVideo >>> prepare save music');
+      var retdx = await this.picService.create(medx);
+
+      this.logger.log('createNewPostVideo >>> ' + retdx);
+
+      var vids = { "$ref": "mediapicts", "$id": retdx.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retdx.mediaID);
+    }
+
+    post.contentMedias = cm;
+    post.isShared = isShared;
+    let apost = await this.PostsModel.create(post);
+    if (body.musicId != undefined) {
+      await this.mediamusicService.updateUsed(body.musicId);
+    }
+
+    // const form = new FormData();
+    // form.append('file', file.buffer, { filename: file.originalname });
+    // form.append('postID', post._id);
+    // console.log(form);
+    // axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V2"), form, {
+    //   maxContentLength: Infinity,
+    //   maxBodyLength: Infinity,
+    //   headers: { 'Content-Type': 'multipart/form-data' }
+    // });
+    var postUpload = await this.uploadJavaV4(file, post._id.toString());
+    if (postUpload.data.status) {
+      postUpload.data.email = auth.email;
+      await this.updateNewPostData4(postUpload.data);
+    }
+
+    var res = new CreatePostResponse();
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+    res.data = pd;
+
+    return res;
+  }
+
+  private async createNewPostVideoV5(file: Express.Multer.File, body: any, data_userbasics: Userbasic): Promise<CreatePostResponse> {
+    //Current Date
+    const currentDate = await this.utilService.getDateTimeString();
+
+    //Build Post
+    let Posts_: Posts = await this.buildPost_(body, data_userbasics);
+    let contentMedias_ = [];
+    if (Posts_.postType == 'vid') {
+      //Set Metadata
+      let width_ = 0;
+      let height_ = 0;
+      if (body.width != undefined) {
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'vid', duration: 0, postID: Posts_._id, email: data_userbasics.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+      Posts_.metadata = metadata;
+
+      //Set Mediavideos
+      let Mediavideos_ = new Mediavideos();
+      Mediavideos_._id = await this.utilService.generateId();
+      Mediavideos_.mediaID = Mediavideos_._id;
+      Mediavideos_.postID = Posts_.postID;
+      Mediavideos_.active = false;
+      Mediavideos_.createdAt = currentDate;
+      Mediavideos_.updatedAt = currentDate;
+      Mediavideos_.mediaMime = file.mimetype;
+      Mediavideos_.mediaType = 'video';
+      Mediavideos_.originalName = file.originalname;
+      Mediavideos_.apsara = true;
+      Mediavideos_._class = 'io.melody.hyppe.content.domain.MediaVideo';
+      this.videoService.create(Mediavideos_);
+
+      //Set contentMedias
+      const vids = { "$ref": "mediavideos", "$id": Mediavideos_.mediaID, "$db": "hyppe_content_db" };
+      contentMedias_.push(vids);
+    } else if (Posts_.postType == 'story') {
+      //Set Metadata
+      const mime = file.mimetype;
+      if (mime.startsWith('video')) {
+        let width_ = 0;
+        let height_ = 0;
+        if (body.width != undefined) {
+          width_ = parseInt(body.width.toString());
+        }
+        if (body.height != undefined) {
+          height_ = parseInt(body.height.toString());
+        }
+        let metadata = { postType: 'story', duration: 0, postID: Posts_._id, email: data_userbasics.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+        Posts_.metadata = metadata;
+      }
+
+      //Set Mediastories
+      let Mediastories_ = new Mediastories();
+      Mediastories_._id = await this.utilService.generateId();
+      Mediastories_.mediaID = Mediastories_._id;
+      Mediastories_.postID = Posts_.postID;
+      Mediastories_.active = false;
+      Mediastories_.createdAt = currentDate;
+      Mediastories_.updatedAt = currentDate;
+      Mediastories_.mediaMime = file.mimetype;
+      Mediastories_.mediaType = 'video';
+      Mediastories_.originalName = file.originalname;
+      Mediastories_.apsara = true;
+      Mediastories_._class = 'io.melody.hyppe.content.domain.MediaStory';
+      this.storyService.create(Mediastories_);
+
+      //Set contentMedias
+      const stories = { "$ref": "mediastories", "$id": Mediastories_.mediaID, "$db": "hyppe_content_db" };
+      contentMedias_.push(stories);
+    } else if (Posts_.postType == 'diary') {
+      //Set Metadata
+      var width_ = 0;
+      var height_ = 0;
+      if (body.width != undefined) {
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'diary', duration: 0, postID: Posts_._id, email: data_userbasics.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
+      Posts_.metadata = metadata;
+
+      //Set Mediadiaries
+      let Mediadiaries_ = new Mediadiaries();
+      Mediadiaries_._id = await this.utilService.generateId();
+      Mediadiaries_.mediaID = Mediadiaries_._id;
+      Mediadiaries_.postID = Posts_.postID;
+      Mediadiaries_.active = false;
+      Mediadiaries_.createdAt = currentDate;
+      Mediadiaries_.updatedAt = currentDate;
+      Mediadiaries_.mediaMime = file.mimetype;
+      Mediadiaries_.mediaType = 'video';
+      Mediadiaries_.originalName = file.originalname;
+      Mediadiaries_.apsara = true;
+      Mediadiaries_._class = 'io.melody.hyppe.content.domain.MediaDiary';
+      this.diaryService.create(Mediadiaries_);
+
+      const diaries = { "$ref": "mediadiaries", "$id": Mediadiaries_.mediaID, "$db": "hyppe_content_db" };
+      contentMedias_.push(diaries);
+    } else if (Posts_.postType == 'pict') {
+      //Set Metadata
+      let metadata = { postType: 'vid', duration: 0, postID: Posts_._id, email: data_userbasics.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
+      Posts_.metadata = metadata;
+
+      //Set Mediapicts
+      let Mediapicts_ = new Mediapicts();
+      Mediapicts_._id = await this.utilService.generateId();
+      Mediapicts_.mediaID = Mediapicts_._id;
+      Mediapicts_.postID = Posts_.postID;
+      Mediapicts_.active = false;
+      Mediapicts_.createdAt = await this.utilService.getDateTimeString();
+      Mediapicts_.updatedAt = await this.utilService.getDateTimeString();
+      Mediapicts_.mediaMime = file.mimetype;
+      Mediapicts_.mediaType = 'video';
+      Mediapicts_.originalName = file.originalname;
+      Mediapicts_.apsara = true;
+      Mediapicts_._class = 'io.melody.hyppe.content.domain.MediaPict';
+      this.picService.create(Mediapicts_);
+
+      const pict = { "$ref": "mediapicts", "$id": Mediapicts_.mediaID, "$db": "hyppe_content_db" };
+      contentMedias_.push(pict);
+    }
+    Posts_.contentMedias = contentMedias_;
+
+    //Create Post
+    let dataPost = await this.PostsModel.create(Posts_);
+
+    //Update Music
+    if (body.musicId != undefined) {
+      await this.mediamusicService.updateUsed(body.musicId);
+    }
+
+    //Upload File
+    const postUpload = await this.uploadJavaV3(file, Posts_._id.toString());
+
+    //Update Post
+    if (postUpload.data.status) {
+      postUpload.data.email = data_userbasics.email.toString();
+      await this.updateNewPostData5(postUpload.data, Posts_);
+    }
+
+    //Create Response
+    let CreatePostResponse_ = new CreatePostResponse();
+    let Messages_ = new Messages();
+    Messages_.info = ["The process successful"];
+    CreatePostResponse_.messages = Messages_;
+    CreatePostResponse_.response_code = 202;
+    var pd = new PostData();
+    pd.postID = String(dataPost.postID);
+    pd.email = String(dataPost.email);
+    CreatePostResponse_.data = pd;
+
+    return CreatePostResponse_;
+  }
+
   async uploadJavaV3_buffer(file: any, postId: string, originalname: string): Promise<any> {
     var Url = this.configService.get("APSARA_UPLOADER_VIDEO_V3");
     return new Promise(async function (resolve, reject) {
@@ -1376,197 +1958,150 @@ export class PostContentService {
     //this.postService.generateUserPlaylist(playlist);
   }
 
-  private async createNewPostVideoV4(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
-    this.logger.log('createNewPostVideo >>> start: ' + JSON.stringify(body));
-    var token = headers['x-auth-token'];
-    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    var profile = await this.userService.findOne(auth.email);
-
-    var postID = await this.utilService.generateId();
-    let post = await this.buildPost(body, headers, postID);
-
-    let postType = body.postType;
-    let isShared = null;
-
-    if (body.isShared === undefined) {
-      isShared = true;
-    } else {
-      isShared = body.isShared;
-    }
-    var cm = [];
-
-    let mediaId = "";
-    if (postType == 'vid') {
-      var width_ = 0;
-      var height_ = 0;
-      if (body.width != undefined) {
-        width_ = parseInt(body.width.toString());
+  async updateNewPostData5(body: any, Posts_: Posts) {
+    let contentMedias_ = Posts_.contentMedias[0];
+    let namespace_ = contentMedias_.namespace;
+    if (namespace_ == 'mediavideos') {
+      //Update Post mediavideos
+      let vid = await this.videoService.findOne(contentMedias_.oid);
+      if (!(await this.utilService.ceckData(vid))) {
+        return;
       }
-      if (body.height != undefined) {
-        height_ = parseInt(body.height.toString());
+      vid.apsaraId = body.videoId;
+      vid.active = true;
+      this.videoService.create(vid);
+
+      //Get Video Apsara
+      let getApsara = await this.getVideoApsaraSingleNoDefinition(body.videoId);
+      if (getApsara != undefined && getApsara.PlayUrl != undefined && getApsara.PlayUrl.length > 0) {
+        let aim = getApsara.PlayUrl;
+        //Post Ceck Moderation 
+        this.cmodService.cmodVideo(body.postID, aim);
       }
-      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
-      post.metadata = metadata;
 
-      var med = new Mediavideos();
-      med._id = await this.utilService.generateId();
-      med.mediaID = med._id;
-      med.postID = post.postID;
-      med.active = false;
-      med.createdAt = await this.utilService.getDateTimeString();
-      med.updatedAt = await this.utilService.getDateTimeString();
-      med.mediaMime = file.mimetype;
-      med.mediaType = 'video';
-      med.originalName = file.originalname;
-      med.apsara = true;
-      med._class = 'io.melody.hyppe.content.domain.MediaVideo';
+      //Update Post 
+      let meta = Posts_.metadata;
+      let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: Posts_._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: body.width, height: body.height };
+      Posts_.metadata = metadata;
+      Posts_.active = true;
+      await this.postService.create(Posts_);
+    } else if (namespace_ == 'mediapicts') {
+      //Update Post mediapicts
+      let pict = await this.picService.findOne(contentMedias_.oid);
+      if (!(await this.utilService.ceckData(pict))) {
+        return;
+      }
+      pict.apsaraId = body.videoId;
+      pict.apsaraThumbId = body.thId;
+      pict.active = true;
+      this.picService.create(pict);
 
-      this.logger.log('createNewPostVideo >>> prepare save');
-      var retd = await this.videoService.create(med);
+      //Get Pict Apsara
+      let videoIdArray: string[] = [];
+      videoIdArray.push(body.videoId);
+      let getApsara = await this.getImageApsara(videoIdArray);
+      if (getApsara != undefined && getApsara.ImageInfo != undefined && getApsara.ImageInfo.length > 0) {
+        let aim = getApsara.ImageInfo[0];
+        //Post Ceck Moderation
+        this.cmodService.cmodImage(body.postID, aim.URL);
+      }
 
-      this.logger.log('createNewPostVideo >>> ' + retd);
+      //Update Post
+      Posts_.active = true;
+      await this.postService.create(Posts_);
+    } else if (namespace_ == 'mediastories') {
+      //Update Post mediastories
+      let story = await this.storyService.findOne(contentMedias_.oid);
+      if (!(await this.utilService.ceckData(story))) {
+        return;
+      }
+      story.apsaraId = body.videoId;
+      story.active = true;
+      this.storyService.create(story);
 
-      var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
-      cm.push(vids);
+      //Update Post 
+      if (story.mediaType == 'video') {
+        let meta = Posts_.metadata;
+        let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: Posts_._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: meta.width, height: meta.height };
+        Posts_.metadata = metadata;
+      }
+      Posts_.active = true;
+      await this.postService.create(Posts_);
 
-      mediaId = String(retd.mediaID);
-    } else if (postType == 'advertise') {
-
-    } else if (postType == 'story') {
-
-      var mime = file.mimetype;
-      if (mime.startsWith('video')) {
-        var width_ = 0;
-        var height_ = 0;
-        if (body.width != undefined) {
-          width_ = parseInt(body.width.toString());
+      if (story.mediaType == 'video') {
+        //Get Video Apsara
+        let getApsara = await this.getVideoApsaraSingleNoDefinition(body.videoId);
+        if (getApsara != undefined && getApsara.PlayUrl != undefined && getApsara.PlayUrl.length > 0) {
+          let aim = getApsara.PlayUrl;
+        //Post Ceck Moderation
+          this.cmodService.cmodVideo(body.postID, aim);
         }
-        if (body.height != undefined) {
-          height_ = parseInt(body.height.toString());
+      } else {
+        //Get Video Apsara
+        let videoIdArray: string[] = [];
+        videoIdArray.push(body.videoId);
+        let getApsara = await this.getImageApsara(videoIdArray);
+        if (getApsara != undefined && getApsara.ImageInfo != undefined && getApsara.ImageInfo.length > 0) {
+          let aim = getApsara.ImageInfo[0];
+        //Post Ceck Moderation
+          this.cmodService.cmodImage(body.postID, aim.URL);
         }
-        let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
-        post.metadata = metadata;
       }
-
-      var mes = new Mediastories();
-      mes._id = await this.utilService.generateId();
-      mes.mediaID = mes._id;
-      mes.postID = post.postID;
-      mes.active = false;
-      mes.createdAt = await this.utilService.getDateTimeString();
-      mes.updatedAt = await this.utilService.getDateTimeString();
-      mes.mediaMime = file.mimetype;
-      mes.mediaType = 'video';
-      mes.originalName = file.originalname;
-      mes.apsara = true;
-      mes._class = 'io.melody.hyppe.content.domain.MediaStory';
-
-      this.logger.log('createNewPostVideo >>> prepare save');
-      var rets = await this.storyService.create(mes);
-
-      this.logger.log('createNewPostVideo >>> ' + rets);
-
-      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
-      cm.push(stories);
-
-      mediaId = String(rets.mediaID);
-
-    } else if (postType == 'diary') {
-      var width_ = 0;
-      var height_ = 0;
-      if (body.width != undefined) {
-        width_ = parseInt(body.width.toString());
+    } else if (namespace_ == 'mediadiaries') {
+      //Update Post mediadiaries
+      let diaries = await this.diaryService.findOne(contentMedias_.oid);
+      if (!(await this.utilService.ceckData(diaries))) {
+        return;
       }
-      if (body.height != undefined) {
-        height_ = parseInt(body.height.toString());
+      diaries.apsaraId = body.videoId;
+      diaries.active = true;
+      this.diaryService.create(diaries);
+
+      //Update Post 
+      let meta = Posts_.metadata;
+      let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: Posts_._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: meta.width, height: meta.height };
+      Posts_.metadata = metadata;
+      Posts_.active = true;
+      await this.postService.create(Posts_);
+
+      //Get Video Apsara
+      let getApsara = await this.getVideoApsaraSingleNoDefinition(body.videoId);
+      if (getApsara != undefined && getApsara.PlayUrl != undefined && getApsara.PlayUrl.length > 0) {
+        let aim = getApsara.PlayUrl;
+        //Post Ceck Moderation
+        this.cmodService.cmodVideo(body.postID, aim);
       }
-      let metadata = { postType: 'diary', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
-      post.metadata = metadata;
-
-      var mer = new Mediadiaries();
-      mer._id = await this.utilService.generateId();
-      mer.mediaID = mer._id;
-      mer.postID = post.postID;
-      mer.active = false;
-      mer.createdAt = await this.utilService.getDateTimeString();
-      mer.updatedAt = await this.utilService.getDateTimeString();
-      mer.mediaMime = file.mimetype;
-      mer.mediaType = 'video';
-      mer.originalName = file.originalname;
-      mer.apsara = true;
-      mer._class = 'io.melody.hyppe.content.domain.MediaDiary';
-
-      this.logger.log('createNewPostVideo >>> prepare save');
-      var retr = await this.diaryService.create(mer);
-
-      this.logger.log('createNewPostVideo >>> ' + retr);
-
-      var diaries = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
-      cm.push(diaries);
-
-      mediaId = String(retr.mediaID);
-    } else if (postType == 'pict') {
-
-      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
-      post.metadata = metadata;
-
-      var medx = new Mediapicts();
-      medx._id = await this.utilService.generateId();
-      medx.mediaID = medx._id;
-      medx.postID = post.postID;
-      medx.active = false;
-      medx.createdAt = await this.utilService.getDateTimeString();
-      medx.updatedAt = await this.utilService.getDateTimeString();
-      medx.mediaMime = file.mimetype;
-      medx.mediaType = 'video';
-      medx.originalName = file.originalname;
-      medx.apsara = true;
-      medx._class = 'io.melody.hyppe.content.domain.MediaPict';
-
-      this.logger.log('createNewPostVideo >>> prepare save music');
-      var retdx = await this.picService.create(medx);
-
-      this.logger.log('createNewPostVideo >>> ' + retdx);
-
-      var vids = { "$ref": "mediapicts", "$id": retdx.mediaID, "$db": "hyppe_content_db" };
-      cm.push(vids);
-
-      mediaId = String(retdx.mediaID);
     }
 
-    post.contentMedias = cm;
-    post.isShared = isShared;
-    let apost = await this.PostsModel.create(post);
-    if (body.musicId != undefined) {
-      await this.mediamusicService.updateUsed(body.musicId);
+    //Get lang User
+    const lang = await this.utilService.getUserlanguages(Posts_.email.toString());
+
+    //Generate Certified
+    if (Posts_.certified) {
+      this.generateCertificate(String(body.postID), lang.toString());
+    } 
+
+    //Send FCM Tag
+    let tag = Posts_.tagPeople;
+    if (tag != undefined && tag.length > 0) {
+      tag.forEach(el => {
+        let oid = el.oid;
+        this.userAuthService.findById(oid).then((as) => {
+          this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString());
+        });
+      });
     }
 
-    // const form = new FormData();
-    // form.append('file', file.buffer, { filename: file.originalname });
-    // form.append('postID', post._id);
-    // console.log(form);
-    // axios.post(this.configService.get("APSARA_UPLOADER_VIDEO_V2"), form, {
-    //   maxContentLength: Infinity,
-    //   maxBodyLength: Infinity,
-    //   headers: { 'Content-Type': 'multipart/form-data' }
-    // });
-    var postUpload = await this.uploadJavaV4(file, post._id.toString());
-    if (postUpload.data.status) {
-      postUpload.data.email = auth.email;
-      await this.updateNewPostData4(postUpload.data);
+    //Send FCM Tag Description
+    let tagdescription = Posts_.tagDescription;
+    if (tagdescription != undefined && tagdescription.length > 0) {
+      tagdescription.forEach(el => {
+        let oid = el.oid;
+        this.userAuthService.findById(oid).then((as) => {
+          this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString())
+        });
+      });
     }
-
-    var res = new CreatePostResponse();
-    res.response_code = 202;
-    let msg = new Messages();
-    msg.info = ["The process successful"];
-    res.messages = msg;
-    var pd = new PostData();
-    pd.postID = String(apost.postID);
-    pd.email = String(apost.email);
-    res.data = pd;
-
-    return res;
   }
 
   async uploadJavaV4(file: any, postId: string): Promise<any> {
@@ -2434,6 +2969,177 @@ export class PostContentService {
     res.data = pd;
 
     return res;
+  }
+
+  private async createNewPostPictV5(file: Express.Multer.File, body: any, data_userbasics: Userbasic): Promise<CreatePostResponse> {
+    //Current Date
+    const currentDate = await this.utilService.getDateTimeString();
+
+    //Set Extension
+    var extension = "jpg";
+
+    //Set File Name
+    var filename = body.postID + "." + extension;
+    var filename_thum = body.postID + "_thum." + extension;
+    var filename_original = body.postID + "_original." + extension;
+
+    //Generate File Upload
+    var file_upload = await this.generate_upload(file, extension);
+    var file_thumnail = await this.generate_thumnail(file, extension);
+
+    //Upload File OSS
+    var upload_file_upload = await this.uploadOss(file_upload, body.postID, filename, data_userbasics._id.toString(), body.postType);
+    var upload_file_thumnail = await this.uploadOss(file_thumnail, body.postID, filename_thum, data_userbasics._id.toString(), body.postType);
+    this.uploadOss(file.buffer, body.postID, filename_original, data_userbasics._id.toString(), body.postType);
+
+    //Get Url Image
+    var url_filename = "";
+    var url_filename_thum = "";
+    if (upload_file_upload != undefined) {
+      if (upload_file_upload.res != undefined) {
+        if (upload_file_upload.res.statusCode != undefined) {
+          if (upload_file_upload.res.statusCode == 200) {
+            url_filename = upload_file_upload.res.requestUrls[0];
+          }
+        }
+      }
+    }
+    if (upload_file_thumnail != undefined) {
+      if (upload_file_thumnail.res != undefined) {
+        if (upload_file_thumnail.res.statusCode != undefined) {
+          if (upload_file_thumnail.res.statusCode == 200) {
+            url_filename_thum = upload_file_thumnail.res.requestUrls[0];
+          }
+        }
+      }
+    }
+
+    //Build Post
+    let Posts_: Posts = await this.buildPost_(body, data_userbasics);
+
+    let contentMedias_ = [];
+    if (Posts_.postType == 'pict') {
+      //Set Mediapicts
+      let Mediapicts_ = new Mediapicts();
+      Mediapicts_._id = await this.utilService.generateId();
+      Mediapicts_.mediaID = Mediapicts_._id;
+      Mediapicts_.postID = Posts_.postID;
+      Mediapicts_.active = true;
+      Mediapicts_.mediaType = 'image';
+      Mediapicts_.originalName = file.originalname;
+      Mediapicts_.mediaMime = file.mimetype;
+      Mediapicts_.mediaBasePath = data_userbasics._id.toString() + "/post/" + Posts_.postType + "/" + Posts_.postID + "/" + filename;
+      Mediapicts_.mediaUri = filename;
+      Mediapicts_.fsSourceUri = url_filename;
+      Mediapicts_.fsSourceName = filename;
+      Mediapicts_.fsTargetUri = url_filename;
+      Mediapicts_.createdAt = currentDate;
+      Mediapicts_.updatedAt = currentDate;
+      Mediapicts_.apsara = false;
+      Mediapicts_.uploadSource = "OSS";
+      Mediapicts_.mediaThumName = filename_thum;
+      Mediapicts_.mediaThumBasePath = data_userbasics._id.toString() + "/post/" + Posts_.postType + "/" + Posts_.postID + "/" + filename_thum;
+      Mediapicts_.mediaThumUri = url_filename_thum;
+      Mediapicts_._class = 'io.melody.hyppe.content.domain.MediaPict';
+      this.picService.create(Mediapicts_);
+
+      var vids = { "$ref": "mediapicts", "$id": Mediapicts_.mediaID, "$db": "hyppe_content_db" };
+      contentMedias_.push(vids);
+    } else if (Posts_.postType == 'story') {
+      //Set Metadata
+      let metadata = { postType: 'story', duration: 0, postID: Posts_._id, email: data_userbasics.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
+      Posts_.metadata = metadata;
+
+      //Set Mediastories
+      let Mediastories_ = new Mediastories();
+      Mediastories_._id = await this.utilService.generateId();
+      Mediastories_.mediaID = Mediastories_._id;
+      Mediastories_.postID = Posts_.postID;
+      Mediastories_.active = true;
+      Mediastories_.mediaType = 'image';
+      Mediastories_.originalName = file.originalname;
+      Mediastories_.mediaMime = file.mimetype;
+      Mediastories_.mediaBasePath = data_userbasics._id.toString() + "/post/" + Posts_.postType + "/" + Posts_.postID + "/" + filename;
+      Mediastories_.mediaUri = filename;
+      Mediastories_.fsSourceUri = url_filename;
+      Mediastories_.fsSourceName = filename;
+      Mediastories_.fsTargetUri = url_filename;
+      Mediastories_.createdAt = currentDate;
+      Mediastories_.updatedAt = currentDate;
+      Mediastories_.apsara = false;
+      Mediastories_._class = 'io.melody.hyppe.content.domain.MediaPict';
+      Mediastories_.uploadSource = "OSS";
+      Mediastories_.mediaThumName = filename_thum;
+      Mediastories_.mediaThumBasePath = data_userbasics._id.toString() + "/post/" + Posts_.postType + "/" + Posts_.postID + "/" + filename_thum;
+      Mediastories_.mediaThumUri = url_filename_thum;
+      Mediastories_._class = 'io.melody.hyppe.content.domain.MediaStory';
+      this.storyService.create(Mediastories_);
+
+      var stories = { "$ref": "mediastories", "$id": Mediastories_.mediaID, "$db": "hyppe_content_db" };
+      contentMedias_.push(stories);
+    }
+    Posts_.contentMedias = contentMedias_;
+    Posts_.active = true;
+
+    //Generate Certified
+    if (Posts_.certified) {
+      this.generateCertificate(Posts_.postID.toString(), 'id');
+    }
+
+    //Send FCM Tag
+    let tag = Posts_.tagPeople;
+    if (tag != undefined && tag.length > 0) {
+      tag.forEach(el => {
+        let oid = el.oid;
+        this.userAuthService.findById(oid).then((as) => {
+          this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString());
+        });
+      });
+    }
+
+    //Send FCM Tag Description
+    let tagdescription = Posts_.tagDescription;
+    if (tagdescription != undefined && tagdescription.length > 0) {
+      tagdescription.forEach(el => {
+        let oid = el.oid;
+        this.userAuthService.findById(oid).then((as) => {
+          this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString())
+        });
+      });
+    }
+
+    //Get lang User
+    const lang = await this.utilService.getUserlanguages(Posts_.email.toString());
+
+    //Generate Certified
+    if (Posts_.certified) {
+      this.generateCertificate(Posts_.postID.toString(), lang.toString());
+    } 
+
+    //Create Post
+    let dataPost = await this.PostsModel.create(Posts_);
+
+    //Update Music
+    if (body.musicId != undefined) {
+      await this.mediamusicService.updateUsed(body.musicId);
+    }
+
+    //Post Ceck Moderation
+    this.cmodService.cmodImage(Posts_.postID.toString(), url_filename);
+
+
+    //Create Response
+    let CreatePostResponse_ = new CreatePostResponse();
+    let Messages_ = new Messages();
+    Messages_.info = ["The process successful"];
+    CreatePostResponse_.messages = Messages_;
+    CreatePostResponse_.response_code = 202;
+    var pd = new PostData();
+    pd.postID = String(dataPost.postID);
+    pd.email = String(dataPost.email);
+    CreatePostResponse_.data = pd;
+
+    return CreatePostResponse_;
   }
 
   async uploadOss(buffer: Buffer, postId: string, filename: string, userId: string, mediaTipe: string) {
