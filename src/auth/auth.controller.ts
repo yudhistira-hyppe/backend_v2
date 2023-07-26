@@ -639,7 +639,7 @@ export class AuthController {
             let idevent = event._id;
             let eventType = event.event.toString();
 
-            await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
+            //await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, Failed create Activity events Child. Error:' + error,
@@ -731,7 +731,7 @@ export class AuthController {
             let idevent = event._id;
             let eventType = event.event.toString();
 
-            await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
+            //await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, Failed create activity events parent. Error:' +
@@ -774,7 +774,7 @@ export class AuthController {
             let idevent = event._id;
             let eventType = event.event.toString();
 
-            await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
+            // await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, Failed create Activity events Child. Error:' + error,
@@ -1110,7 +1110,7 @@ export class AuthController {
           let idevent = event._id;
           let eventType = event.event.toString();
 
-          await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, user_userbasics._id);
+          // await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, user_userbasics._id);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity Event Child. Error:' + error,
@@ -1316,7 +1316,7 @@ export class AuthController {
           let idevent = event._id;
           let eventType = event.event.toString();
 
-          await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, user_userbasics._id);
+          //await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, user_userbasics._id);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity Event Child. Error:' + error,
