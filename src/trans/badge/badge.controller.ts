@@ -1,15 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, BadRequestException, Req, UseInterceptors, UploadedFiles, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, BadRequestException, Req, UseInterceptors, UploadedFiles, Res, HttpStatus, Headers } from '@nestjs/common';
 import { BadgeService } from './badge.service';
 import { CreateBadgeDto } from './dto/create-badge.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { badge } from './schemas/badge.schema';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express/multer';
 import { OssService } from 'src/stream/oss/oss.service';
+import { UtilsService } from 'src/utils/utils.service';
+import { LogapisService } from '../logapis/logapis.service';
 
 @Controller('api/badge')
 export class BadgeController {
   constructor(private readonly badgeService: BadgeService,
-    private readonly ossservices : OssService) {}
+    private readonly ossservices : OssService,
+    private readonly utilservice : UtilsService,
+    private readonly logAPISS : LogapisService,
+    ) {}
 
   // @UseGuards(JwtAuthGuard)
   // @Post()
@@ -97,8 +102,10 @@ export class BadgeController {
     },
     @Body() request,
     @Res() res,
+    @Headers() headers
   ) {
-
+    var timestamps_start = await this.utilservice.getDateTimeString();
+    var fullurl = headers.host + "/api/badge";
     const messages = {
       "info": ["The process successful"],
     };
@@ -110,6 +117,10 @@ export class BadgeController {
     try
     {
       var data = await this.badgeService.create(files.badge_general, files.badge_profile, request);
+      var timestamps_end = await this.utilservice.getDateTimeString();
+      request['badge_general'] = files.badge_general;
+      request['badge_profile'] = files.badge_profile;
+      this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request);
       return res.status(HttpStatus.OK).json({
           response_code: 202,
           "data": data,
@@ -118,6 +129,10 @@ export class BadgeController {
     }
     catch(e)
     {
+      var timestamps_end = await this.utilservice.getDateTimeString();
+      request['badge_general'] = files.badge_general;
+      request['badge_profile'] = files.badge_profile;
+      this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request);
       return res.status(HttpStatus.BAD_REQUEST).json({
         "message": messagesEror
       });

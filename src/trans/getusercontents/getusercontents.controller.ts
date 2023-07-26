@@ -20,6 +20,7 @@ import { ContenteventsService } from '../../content/contentevents/contentevents.
 import { TagCountService } from '../../content/tag_count/tag_count.service';
 import { InterestCountService } from '../../content/interest_count/interest_count.service';
 import { UtilsService } from '../../utils/utils.service';
+import { LogapisService } from '../logapis/logapis.service';
 @Controller()
 export class GetusercontentsController {
     constructor(private readonly getusercontentsService: GetusercontentsService,
@@ -38,6 +39,7 @@ export class GetusercontentsController {
         private readonly tagCountService: TagCountService,
         private utilsService: UtilsService,
         private readonly interestCountService: InterestCountService,
+        private readonly logapiSS: LogapisService,
     ) { }
 
     @Post('api/getusercontents/all')
@@ -272,6 +274,7 @@ export class GetusercontentsController {
     @UseGuards(JwtAuthGuard)
     async contentmanagemen2(@Req() request: Request): Promise<any> {
 
+        var timestamps_start = await this.utilsService.getDateTimeString();
         var data = null;
         var email = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
@@ -287,6 +290,11 @@ export class GetusercontentsController {
         };
         data = await this.getusercontentsService.detaildasbor(email);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+
+        var fullurl = request.get("Host") + request.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request.body);
         return { response_code: 202, data, messages };
     }
 

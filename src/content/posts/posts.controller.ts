@@ -47,6 +47,7 @@ import { UserchallengesService } from 'src/trans/userchallenges/userchallenges.s
 import { ChallengeService } from 'src/trans/challenge/challenge.service';
 import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
 import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.schema';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -73,7 +74,8 @@ export class PostsController {
     private readonly userchallengesService: UserchallengesService,
     private readonly challengeService: ChallengeService,
     private readonly postchallengeService: PostchallengeService,
-    private readonly methodepaymentsService: MethodepaymentsService) { }
+    private readonly methodepaymentsService: MethodepaymentsService,
+    private readonly logapiSS: LogapisService) { }
 
   @Post()
   async create(@Body() CreatePostsDto: CreatePostsDto) {
@@ -1774,7 +1776,8 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getnotification2')
   @UseInterceptors(FileInterceptor('postContent'))
-  async getNotification2(@Body() body, @Headers('x-auth-user') email: string) {
+  async getNotification2(@Body() body, @Headers('x-auth-user') email: string, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
     this.logger.log("getNotification >>> start: " + JSON.stringify(body));
     var eventType = null;
     var pageRow = null;
@@ -2006,6 +2009,9 @@ export class PostsController {
       data = [];
     }
 
+    var fullurl = headers.host + "/api/posts/getnotification2";
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, body);
 
     return { response_code: 202, data, messages };
   }
