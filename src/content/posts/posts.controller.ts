@@ -745,6 +745,12 @@ export class PostsController {
         endDatetime = datapostchallenge.endDatetime;
 
         if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime)) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed, content is participating in the challenge',
+          );
+
+
+        } else {
           if (tags.length > 0) {
             const stringSet = new Set(tags);
             const uniqstring = [...stringSet];
@@ -828,11 +834,6 @@ export class PostsController {
           }
           return data;
 
-        } else {
-
-          await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed, content is participating in the challenge',
-          );
         }
       }
 
@@ -1165,6 +1166,12 @@ export class PostsController {
         endDatetime = datapostchallenge.endDatetime;
 
         if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime) && saleAmount == 0) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed, content is participating in the challenge',
+          );
+        } else {
+
+
           if (tags.length > 0) {
             if (body.tags !== undefined && body.tags !== "") {
               var tag = body.tags;
@@ -1464,10 +1471,6 @@ export class PostsController {
             //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
           }
           return data;
-        } else {
-          await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed, content is participating in the challenge',
-          );
         }
       }
 
