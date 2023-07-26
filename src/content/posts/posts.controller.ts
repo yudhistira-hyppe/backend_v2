@@ -1165,7 +1165,7 @@ export class PostsController {
         startDatetime = datapostchallenge.startDatetime;
         endDatetime = datapostchallenge.endDatetime;
 
-        if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime) && saleAmount == 0) {
+        if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime) && saleAmount > 0) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, content is participating in the challenge',
           );
