@@ -627,7 +627,7 @@ export class PostsController {
     } catch (e) {
       datapostchallenge = null;
     }
-    if (datapostchallenge !== null) {
+    if (datapostchallenge == null) {
       if (body.active == 'false') {
 
 
