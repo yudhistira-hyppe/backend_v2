@@ -4889,96 +4889,7 @@ export class PostsService {
 
 
     pipeline = [
-      {
-        "$unwind":
-        {
-          path: "$reportedUser"
-        }
-      },
-      {
-        "$group":
-        {
-          _id: "$_id",
-          postID:
-          {
-            "$first": "$postID"
-          },
-          email:
-          {
-            "$first": "$email"
-          },
-          postType:
-          {
-            "$first": "$postType"
-          },
-          description:
-          {
-            "$first": "$description"
-          },
-          active:
-          {
-            "$first": "$active"
-          },
-          createdAt:
-          {
-            "$first": "$createdAt"
-          },
-          updatedAt:
-          {
-            "$first": "$updatedAt"
-          },
-          metadata:
-          {
-            "$first": "$metadata"
-          },
-          userProfile:
-          {
-            "$first": "$userProfile"
-          },
-          contentMedias:
-          {
-            "$first": "$contentMedias"
-          },
-          contentModeration:
-          {
-            "$first": "$contentModeration"
-          },
-          contentModerationResponse:
-          {
-            "$first": "$contentModerationResponse"
-          },
-          reportedStatus:
-          {
-            "$first": "$reportedStatus"
-          },
-          reportedUser:
-          {
-            "$push": "$reportedUser"
-          },
-          reportedUserHandle:
-          {
-            "$first": "$reportedUserHandle"
-          },
-          reportedUserCount:
-          {
-            "$sum":
-            {
-              "$cond":
-              {
-                if:
-                {
-                  "$eq":
-                    [
-                      "$reportedUser.active", true
-                    ]
-                },
-                then: 1,
-                else: 0
-              }
-            }
-          }
-        }
-      },
+
       {
         $lookup: {
           from: 'userbasics',
@@ -5046,7 +4957,24 @@ export class PostsService {
           contentModeration: 1,
           contentModerationResponse: 1,
           reportedStatus: 1,
-          reportedUserCount: 1,
+          reportedUserCount:
+          {
+            "$sum":
+            {
+              "$cond":
+              {
+                if:
+                {
+                  "$eq":
+                    [
+                      "$reportedUser.active", true
+                    ]
+                },
+                then: 1,
+                else: 0
+              }
+            }
+          },
           reportedUserHandle: 1,
           reportedUser: 1,
           fullName: '$basic.fullName',
@@ -5436,14 +5364,12 @@ export class PostsService {
           lastAppeal: {
             $cond: {
               if: {
-                $or: [{
-                  $eq: ["$reportedUserHandle", null]
+                $and: [{
+                  $eq: ["$reportedUserHandle.reason", null]
                 }, {
-                  $eq: ["$reportedUserHandle", ""]
+                  $eq: ["$reportedUserHandle.reason", ""]
                 }, {
-                  $eq: ["$reportedUserHandle", []]
-                }, {
-                  $eq: ["$reportedUserHandle", "Lainnya"]
+                  $eq: ["$reportedUserHandle.reason", "Lainnya"]
                 }]
               },
               then: "Lainnya",
@@ -5595,7 +5521,6 @@ export class PostsService {
         }
       },
 
-
     ];
 
     if (jenis === "report") {
@@ -5625,13 +5550,13 @@ export class PostsService {
           $and: [
             {
               reportedUserHandle: {
-                $ne: null
-              }, active: true
+                $ne: []
+              },
             },
             {
               reportedUserHandle: {
-                $ne: []
-              }, active: true
+                $ne: null
+              },
             },
 
           ]
@@ -5790,6 +5715,7 @@ export class PostsService {
 
     return query;
   }
+
 
 
   async findreportdetail(postID: string, iduser: string) {
