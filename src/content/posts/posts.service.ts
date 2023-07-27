@@ -4957,7 +4957,24 @@ export class PostsService {
           contentModeration: 1,
           contentModerationResponse: 1,
           reportedStatus: 1,
-          reportedUserCount: 1,
+          reportedUserCount:
+          {
+            "$sum":
+            {
+              "$cond":
+              {
+                if:
+                {
+                  "$eq":
+                    [
+                      "$reportedUser.active", true
+                    ]
+                },
+                then: 1,
+                else: 0
+              }
+            }
+          },
           reportedUserHandle: 1,
           reportedUser: 1,
           fullName: '$basic.fullName',

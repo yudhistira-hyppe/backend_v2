@@ -7168,112 +7168,7 @@ export class AdsService {
         var ObjectId = require('mongodb').ObjectId;
         var pipeline = [];
         pipeline = [
-            {
-                "$unwind":
-                {
-                    path: "$reportedUser"
-                }
-            },
-            {
-                "$group":
-                {
-                    _id: "$_id",
-                    userID:
-                    {
-                        "$first": "$userID"
-                    },
-                    idApsara:
-                    {
-                        "$first": "$idApsara"
-                    },
-                    name:
-                    {
-                        "$first": "$name"
-                    },
-                    type:
-                    {
-                        "$first": "$type"
-                    },
-                    status:
-                    {
-                        "$first": "$status"
-                    },
-                    isActive:
-                    {
-                        "$first": "$isActive"
-                    },
-                    timestamp:
-                    {
-                        "$first": "$timestamp"
-                    },
-                    totalUsedCredit:
-                    {
-                        "$first": "$totalUsedCredit"
-                    },
-                    tayang:
-                    {
-                        "$first": "$tayang"
-                    },
-                    usedCredit:
-                    {
-                        "$first": "$usedCredit"
-                    },
-                    usedCreditFree:
-                    {
-                        "$first": "$usedCreditFree"
-                    },
-                    creditFree:
-                    {
-                        "$first": "$creditFree"
-                    },
-                    creditValue:
-                    {
-                        "$first": "$creditValue"
-                    },
-                    totalCredit:
-                    {
-                        "$first": "$totalCredit"
-                    },
-                    contentModeration:
-                    {
-                        "$first": "$contentModeration"
-                    },
-                    contentModerationResponse:
-                    {
-                        "$first": "$contentModerationResponse"
-                    },
-                    reportedStatus:
-                    {
-                        "$first": "$reportedStatus"
-                    },
-                    reportedUser:
-                    {
-                        "$push": "$reportedUser"
-                    },
-                    reportedUserCount:
-                    {
-                        "$sum":
-                        {
-                            "$cond":
-                            {
-                                if:
-                                {
-                                    "$eq":
-                                        [
-                                            "$reportedUser.active", true
-                                        ]
-                                },
-                                then: 1,
-                                else: 0
-                            }
-                        }
-                    },
-                    reportedUserHandle:
-                    {
-                        "$first": "$reportedUserHandle"
-                    },
-                }
-            },
+
             {
                 $lookup: {
                     from: 'userbasics',
@@ -7371,7 +7266,24 @@ export class AdsService {
                     contentModeration: 1,
                     contentModerationResponse: 1,
                     reportedStatus: 1,
-                    reportedUserCount: 1,
+                    reportedUserCount:
+                    {
+                        "$sum":
+                        {
+                            "$cond":
+                            {
+                                if:
+                                {
+                                    "$eq":
+                                        [
+                                            "$reportedUser.active", true
+                                        ]
+                                },
+                                then: 1,
+                                else: 0
+                            }
+                        }
+                    },
                     reportedUser: 1,
                     reportedUserHandle: 1,
                     reportReasonIdLast: {
@@ -7436,14 +7348,12 @@ export class AdsService {
                     lastAppeal: {
                         $cond: {
                             if: {
-                                $or: [{
-                                    $eq: ["$reportedUserHandle", null]
+                                $and: [{
+                                    $eq: ["$reportedUserHandle.reason", null]
                                 }, {
-                                    $eq: ["$reportedUserHandle", ""]
+                                    $eq: ["$reportedUserHandle.reason", ""]
                                 }, {
-                                    $eq: ["$reportedUserHandle", []]
-                                }, {
-                                    $eq: ["$reportedUserHandle", "Lainnya"]
+                                    $eq: ["$reportedUserHandle.reason", "Lainnya"]
                                 }]
                             },
                             then: "Lainnya",
