@@ -744,7 +744,14 @@ export class PostsService {
             gender: 1,
             age: 1,
             view: {
-              $size: '$view'
+              "$let": {
+                "vars": {
+                  "tmp": {
+                    "$arrayElemAt": ["$view", 0]
+                  }
+                },
+                "in": "$$tmp.count"
+              }
             },
             used: {
               "$let": {

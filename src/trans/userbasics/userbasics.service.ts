@@ -608,6 +608,10 @@ export class UserbasicsService {
     return this.userbasicModel.find().where('email').in(username).exec();
   }
 
+  async findByProfileId(mediaprofilepicts: any): Promise<Userbasic> {
+    return this.userbasicModel.findOne({ "profilePict": mediaprofilepicts }).exec();
+  }
+
   async delete(id: string) {
     const deletedCat = await this.userbasicModel
       .findByIdAndRemove({ _id: id })

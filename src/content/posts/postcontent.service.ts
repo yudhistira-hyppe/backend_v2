@@ -50,6 +50,7 @@ import ffmpeg from "fluent-ffmpeg";
 import { OssContentPictService } from './osscontentpict.service';
 import { DisqusService } from '../disqus/disqus.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
+import { Mediaprofilepicts } from '../mediaprofilepicts/schemas/mediaprofilepicts.schema';
 
 const webp = require('webp-converter');
 const sharp = require('sharp');
@@ -2441,6 +2442,11 @@ export class PostContentService {
     return result;
   }
 
+  async uploadOssProfile(buffer: Buffer, filename: string, userId: string) {
+    var result = await this.ossContentPictService.uploadFileBuffer(buffer, userId + "/profilePict/" + filename); 
+    return result;
+  }
+
   async uploadJava(postId: string, filename_: string, buffer: Buffer) {
     //Get Image Information
     var image_information = await sharp(buffer).metadata();
@@ -2556,6 +2562,72 @@ export class PostContentService {
     //   console.log("The file was saved!");
     // });
     return file_commpress;
+  }
+
+  async generate_upload_profile(file: Buffer) {
+    var image_information = await sharp(file).metadata();
+    var image_format = image_information.format;
+    var image_height = image_information.height;
+    var image_width = image_information.width;
+    var image_orientation = image_information.orientation;
+
+    //Get Image Mode
+    var image_mode = await this.utilService.getImageMode(image_width, image_height);
+    console.log("IMAGE MODE", image_mode);
+
+    //Get Ceck Mode
+    var New_height = 0;
+    var New_width = 0;
+
+    if (image_mode == "LANDSCAPE") {
+      New_height = image_height;
+      New_width = image_width;
+    } else if (image_mode == "POTRET") {
+      New_height = image_height;
+      New_width = image_width;
+    }
+
+    var file_convert = null;
+    if (image_format == "heif") {
+      const outputBuffer = await convert({
+        buffer: file,
+        format: 'JPEG',
+        quality: 1
+      });
+      console.log("outputBuffer", await sharp(outputBuffer).metadata());
+      file_convert = await sharp(outputBuffer).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
+    } else {
+      file_convert = await sharp(file, { failOnError: false }).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
+    }
+
+    var image_information2 = await sharp(file_convert).metadata();
+    console.log("image_information2", image_information2);
+
+    var image_orientation2 = image_information2.orientation;
+    console.log("image_orientation2", image_orientation2);
+
+    var thumnail = null;
+    var ori = null;
+    try {
+      if (image_orientation2 == 1) {
+        thumnail = await sharp(file_convert).resize(100, 100).toBuffer();
+        ori = await sharp(file_convert).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
+      } else if (image_orientation2 == 6) {
+        thumnail = await sharp(file_convert).rotate(90).resize(100, 100).toBuffer();
+        ori = await sharp(file_convert).rotate(90).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+      } else if (image_orientation2 == 8) {
+        thumnail = await sharp(file_convert).rotate(270).resize(100, 100).toBuffer();
+        ori = await sharp(file_convert).rotate(270).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+      } else {
+        thumnail = await sharp(file_convert).resize(100, 100).toBuffer();
+        ori = file_convert;
+      }
+      console.log(typeof thumnail);
+    } catch (e) {
+      console.log("THUMNAIL", "FAILED TO CREATE THUMNAIL");
+    }
+
+    return [ori, thumnail];
   }
 
   async generate_upload_buffer(file: Buffer, format: string) {
@@ -6329,6 +6401,10 @@ export class PostContentService {
     return await this.diaryService.getDataMediadiariesSeaweed();
   }
 
+  async getDataMediaProfileSeaweed(): Promise<Mediaprofilepicts[]> {
+    return await this.profilePictService.getDataMediaProfileSeaweed();
+  }
+
   // async getDataMediavidSeaweedOne(postID: string): Promise<Mediavideos[]> {
   //   return await this.videoService.getDataMediavideosSeaweedOne(postID);
   // }
@@ -6337,6 +6413,64 @@ export class PostContentService {
     var data = await this.seaweedfsService.read(media.replace('/localrepo', ''));
     return data;
   }
+
+  // async runMigrationProfile(Mediaprofilepicts_: Mediaprofilepicts[]) {
+  //   var timeEnd = await this.utilService.getSetting_("6323d7ca3325000002003f72");
+  //   var date = new Date();
+  //   var timeEndDate = null;
+  //   date.setDate(date.getDate() + 1);
+  //   if (timeEnd.toString().length > 1) {
+  //     timeEndDate = Date.parse(date.toISOString().substring(0, 10) + " " + timeEnd.toString() + ":00:00");
+  //   } else {
+  //     timeEndDate = Date.parse(date.toISOString().substring(0, 10) + " 0" + timeEnd.toString() + ":00:00");
+  //   }
+  //   console.log("------------------------------ DATA LENGTH " + Mediaprofilepicts_.length + " ------------------------------");
+
+  //   for (var i = 0; i < Mediaprofilepicts_.length; i++) {
+  //     var dateCurrent = await this.utilService.getDateTime();
+  //     console.log("------------------------------ START MIGRATION PICT INDEX NUMBER " + i + " ------------------------------");
+  //     console.log("------------------------------ CURRENT DATE " + dateCurrent + " ------------------------------");
+  //     console.log("------------------------------ CURRENT DATE " + dateCurrent.getTime() + " ------------------------------");
+  //     console.log("------------------------------ POST ID " + Mediaprofilepicts_[i].mediaID.toString() + " ------------------------------");
+  //     if (dateCurrent.getTime() >= timeEndDate) {
+  //       break;
+  //     }
+  //     // if (i == 1) {
+  //     //   break;
+  //     // }
+  //     var data_user = await this.userService.findByProfileId({ "$ref": 'mediaprofilepicts', "$id": Mediaprofilepicts_[i]._id.toString(), "$db": 'hyppe_content_db' });
+  //     if (await this.utilService.ceckData(data_user)) {
+  //       var image = await this.getSeaweedFile(Mediaprofilepicts_[i].fsSourceUri.toString());
+  //       if (image != null) {
+  //         var format = "jpg";
+  //         await this.prossesMigrationProfile(image, _id, Mediaprofilepicts_[i].mediaID, userId, postType, format);
+  //         console.log("GET DATA POST IMAGE");
+  //         var dataPost = await this.postService.findByPostId(Mediaprofilepicts_[i].postID.toString());
+  //         if (await this.utilService.ceckData(dataPost)) {
+  //           var email = dataPost.email.toString();
+  //           console.log("GET DATA USER IMAGE");
+  //           var dataUser = await this.userService.findOne(email);
+  //           if (await this.utilService.ceckData(dataUser)) {
+
+  //             var _id = Mediaprofilepicts_[i]._id.toString();
+  //             var postID = Mediaprofilepicts_[i].postID.toString();
+  //             var userId = dataUser._id.toString();
+  //             var postType = "pict";
+  //             console.log("------------------------------ END MIGRATION PICT INDEX NUMBER " + i + " ------------------------------");
+  //           } else {
+  //             await this.updateDataMigrationProfileLogs(Mediaprofilepicts_[i]._id.toString(), "FAILED", "DATA USER NULL");
+  //           }
+  //         } else {
+  //           await this.updateDataMigrationProfileLogs(Mediaprofilepicts_[i]._id.toString(), "FAILED", "DATA POST NULL");
+  //         }
+  //       } else {
+  //         await this.updateDataMigrationProfileLogs(Mediaprofilepicts_[i]._id.toString(), "FAILED", "IMAGE NULL");
+  //       }
+  //     } else {
+  //       await this.updateDataMigrationProfileLogs(Mediapicts_[i]._id.toString(), "FAILED", "IMAGE NULL");
+  //     }
+  //   }
+  // }
 
   async runMigrationPict(Mediapicts_: Mediapicts[]) {
     var timeEnd = await this.utilService.getSetting_("6323d7ca3325000002003f72");
@@ -6561,6 +6695,68 @@ export class PostContentService {
     }
   }
 
+  // async prossesMigrationProfile(file: any, _id: string, mediaID: string, userId: string, format: string) {
+  //   try {
+  //     console.log(typeof file);
+  //     //GENERATE FILE
+  //     console.log("GENERATE FILE");
+  //     var array_file_upload = await this.generate_upload_profile(file);
+  //     console.log("GENERATE THUMNAIL");
+  //     var file_thumnail = await this.generate_thumnail_buffer(file, format);
+
+  //     var filename = postID + "." + format;
+  //     var filename_thum = postID + "_thum." + format;
+  //     var filename_original = postID + "_original." + format;
+
+  //     var url_filename = "";
+  //     var url_filename_thum = "";
+
+  //     //UPLOAD OSS
+  //     console.log("OSS UPLOAD FILE");
+  //     var upload_file_upload = await this.uploadOssProfile(file_upload, filename, userId);
+  //     console.log("OSS UPLOAD THUMNAIL");
+  //     var upload_file_thumnail = await this.uploadOss(file_thumnail, mediaID, filename_thum, userId, postType);
+  //     console.log("OSS UPLOAD ORIGINAL");
+  //     this.uploadOss(file, mediaID, filename_original, userId, postType);
+
+  //     //GET URL PICT FROM RESPONSE
+  //     if (upload_file_upload != undefined) {
+  //       if (upload_file_upload.res != undefined) {
+  //         if (upload_file_upload.res.statusCode != undefined) {
+  //           if (upload_file_upload.res.statusCode == 200) {
+  //             url_filename = upload_file_upload.res.requestUrls[0];
+  //           }
+  //         }
+  //       }
+  //     }
+
+  //     //GET URL PICT THUMNAIL FROM RESPONSE
+  //     if (upload_file_thumnail != undefined) {
+  //       if (upload_file_thumnail.res != undefined) {
+  //         if (upload_file_thumnail.res.statusCode != undefined) {
+  //           if (upload_file_thumnail.res.statusCode == 200) {
+  //             url_filename_thum = upload_file_thumnail.res.requestUrls[0];
+  //           }
+  //         }
+  //       }
+  //     }
+
+  //     const postData = {
+  //       _id: _id,
+  //       userId: userId,
+  //       postType: postType,
+  //       postID: postID,
+  //       filename: filename,
+  //       url_filename: url_filename,
+  //       filename_thum: filename_thum,
+  //       url_filename_thum: url_filename_thum,
+  //     }
+  //     await this.updateDataMigrationPict(postData);
+  //   } catch (e) {
+  //     await this.updateDataMigrationProfileLogs(_id, "FAILED", e.toString());
+  //   }
+  // }
+
   async updateDataMigrationPict(post: any) {
     var med = new Mediapicts();
     med.mediaBasePath = post.userId + "/post/" + post.postType + "/" + post.postID + "/" + post.filename;
@@ -6621,6 +6817,13 @@ export class PostContentService {
     await this.diaryService.updatebyId(_id, med);
   }
 
+  // async updateDataMigrationProfileLogs(_id: string, statusMigration_: string, descMigration_: string) {
+  //   var med = new Mediaprofilepicts();
+  //   med.statusMigration = statusMigration_;
+  //   med.descMigration = descMigration_;
+  //   await this.profilePictService.updatebyId(_id, med);
+  // }
+
   async cronJobSeaweedPictStart() {
     var Mediapicts_ = await this.getDataMediapictSeaweed();
     console.log(Mediapicts_.length);
@@ -6638,4 +6841,10 @@ export class PostContentService {
     console.log(Mediadiaries_.length);
     this.runMigrationDiary(Mediadiaries_);
   }
+
+  // async cronJobSeaweedProfileStart() {
+  //   var mediaprofilepicts_ = await this.getDataMediaProfileSeaweed();
+  //   console.log(mediaprofilepicts_.length);
+  //   this.runMigrationProfile(mediaprofilepicts_);
+  // }
 }

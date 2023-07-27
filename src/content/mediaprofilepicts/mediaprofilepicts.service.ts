@@ -70,6 +70,10 @@ export class MediaprofilepictsService {
     return deletedCat;
   }
 
+  async getDataMediaProfileSeaweed(): Promise<Mediaprofilepicts[]> {
+    return await this.MediaprofilepictsModel.find({ uploadSource: { $eq: null }, mediaBasePath: { $ne: null } }).exec();
+  }
+
   // async findmediaprofil() {
   //   const query = await this.MediaprofilepictsModel.aggregate([
 
