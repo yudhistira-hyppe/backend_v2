@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, UseGuards, Headers, Post, Body } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, UseGuards, Headers, Post, Body, Req } from '@nestjs/common';
 import { AssetsFilterService } from './assets-filter.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UtilsService } from '../../utils/utils.service';
@@ -6,6 +6,7 @@ import { ErrorHandler } from 'src/utils/error.handler';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import { CreateAssetsFilterDto, UpdateAssetsFilterDto } from './dto/create-assets-filter.dto';
 import mongoose from 'mongoose';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
 
 
 @Controller('api/assets/filter')
@@ -15,6 +16,7 @@ export class AssetsFilterController {
         private readonly utilsService: UtilsService,
         private readonly errorHandler: ErrorHandler,
         private readonly userbasicsService: UserbasicsService,
+        private readonly logapiSS: LogapisService,
     ) {}
 
 
@@ -28,7 +30,8 @@ export class AssetsFilterController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Get('/user')
-    async getfilter(@Headers() headers) {
+    async getfilter(@Headers() headers, @Req() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
@@ -51,9 +54,17 @@ export class AssetsFilterController {
                 return new mongoose.Types.ObjectId(i);
             });
         }
+
+        var data = await this.assetsFilterService.find(assetsUser);
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
         return {
             response_code: 202,
-            data: await this.assetsFilterService.find(assetsUser),
+            data: data,
             messages: {
                 info: ['Get assets successfully'],
             },
@@ -63,7 +74,9 @@ export class AssetsFilterController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('/update')
-    async updateAssets(@Headers() headers, @Body() UpdateAssetsFilterDto_: UpdateAssetsFilterDto) {
+    async updateAssets(@Headers() headers, @Body() UpdateAssetsFilterDto_: UpdateAssetsFilterDto, @Req() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString(); 
+
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
@@ -98,6 +111,12 @@ export class AssetsFilterController {
             return new mongoose.Types.ObjectId(i);
         });
         this.userbasicsService.updateUserAssets(headers['x-auth-user'], _UpdateAssetsFilterDto_.assets)
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(_UpdateAssetsFilterDto_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
 
         return {
             response_code: 202,

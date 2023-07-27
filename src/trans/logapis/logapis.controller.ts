@@ -11,10 +11,10 @@ export class LogapisController {
   //   return this.logapisService.create(createLogapiDto);
   // }
 
-  @Get()
-  findAll() {
-    return this.logapisService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.logapisService.findAll();
+  // }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {
