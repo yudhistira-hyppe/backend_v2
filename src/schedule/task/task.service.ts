@@ -20,8 +20,9 @@ export class TaskService {
   @Cron('0 0 23 * * *')
   seaweedJob() {
     this.logger.debug('SEAWEED JOB START');
-    this.postContentService.cronJobSeaweedPictStart();
-    this.postContentService.cronJobSeaweedVidStart();
-    this.postContentService.cronJobSeaweedDiariesStart();
+    //this.postContentService.cronJobSeaweedProfileStart();
+    //this.postContentService.cronJobSeaweedPictStart();
+    //this.postContentService.cronJobSeaweedVidStart();
+    //this.postContentService.cronJobSeaweedDiariesStart();
   }
 }

@@ -1222,7 +1222,7 @@ export class AdsService {
 
 
 
-    async findAdsOld(email: string, nameType: string) {
+    async findAds(email: string, nameType: string) {
         console.log(email);
         console.log(nameType);
         // var query = await this.adsModel.aggregate([
@@ -3347,7 +3347,7 @@ export class AdsService {
         return query;
     }
 
-    async findAds(email: string, idUser:string, nameType: string) {
+    async findAdsNew(email: string, idUser:string, nameType: string) {
         console.log(email);
         console.log(nameType);
         //     {

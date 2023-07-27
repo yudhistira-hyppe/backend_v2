@@ -43,6 +43,10 @@ export class Mediaprofilepicts {
     mediaThumBasePath: String
     @Prop()
     mediaThumUri: String
+    @Prop()
+    statusMigration: String
+    @Prop()
+    descMigration: String
 }
 
 export const MediaprofilepictsSchema = SchemaFactory.createForClass(Mediaprofilepicts);
