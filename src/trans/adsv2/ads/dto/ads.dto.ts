@@ -4,6 +4,7 @@ import mongoose, { ObjectId } from "mongoose";
 
 export class AdsDto {
     _id: mongoose.Types.ObjectId;
+    adsIdNumber: string;
     adsObjectivitasId: mongoose.Types.ObjectId;
     campaignId: string;
     name: string;

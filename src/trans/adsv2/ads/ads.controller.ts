@@ -189,13 +189,21 @@ export class AdsController {
             AdsDto_.userID = new mongoose.Types.ObjectId(ubasic._id.toString());
         }
 
+        //VALIDASI PARAM adsIdNumber
+        var ceck_adsIdNumber = await this.utilsService.validateParam("adsIdNumber", AdsDto_.adsIdNumber, "string")
+        if (ceck_adsIdNumber != "") {
+            await this.errorHandler.generateBadRequestException(
+                ceck_adsIdNumber,
+            );
+        }
+
         //VALIDASI PARAM adsObjectivitasId
         var ceck_adsObjectivitasId = await this.utilsService.validateParam("adsObjectivitasId", AdsDto_.adsObjectivitasId, "string")
         if (ceck_adsObjectivitasId != "") {
             await this.errorHandler.generateBadRequestException(
                 ceck_adsObjectivitasId,
             );
-        }else{
+        } else {
             AdsDto_.adsObjectivitasId = new mongoose.Types.ObjectId(AdsDto_.adsObjectivitasId.toString());
         }
 
@@ -478,9 +486,11 @@ export class AdsController {
         } 
 
         //--------------------GENERATE CAMPAIG ID--------------------
-        const coutAds = await this.adsService.count();
-        const generateCampaignID = await this.utilsService.generateCampaignID(coutAds+1, AdsDto_.typeAdsID.toString());
-        AdsDto_.campaignId = generateCampaignID;
+        if (AdsDto_.status == "UNDER_REVIEW") {
+            const coutAds = await this.adsService.count();
+            const generateCampaignID = await this.utilsService.generateCampaignID(coutAds + 1, AdsDto_.typeAdsID.toString());
+            AdsDto_.campaignId = generateCampaignID;
+        }
 
         try {
             const currentDate = await this.utilsService.getDateTimeISOString();
@@ -557,6 +567,13 @@ export class AdsController {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, ads not found',
             );
+        }
+
+        //--------------------GENERATE CAMPAIG ID--------------------
+        if (AdsDto_.status == "UNDER_REVIEW") {
+            const coutAds = await this.adsService.count();
+            const generateCampaignID = await this.utilsService.generateCampaignID(coutAds + 1, AdsDto_.typeAdsID.toString());
+            AdsDto_.campaignId = generateCampaignID;
         }
 
         if (AdsDto_.status == "UNDER_REVIEW" || AdsDto_.status == "IN_ACTIVE"){
