@@ -289,27 +289,31 @@ export class AdsController {
         }
 
         //VALIDASI PARAM skipTime
-        var ceck_skipTime = await this.utilsService.validateParam("skipTime", AdsDto_.skipTime, "number")
-        if (ceck_skipTime != "") {
-            await this.errorHandler.generateBadRequestException(
-                ceck_skipTime,
-            );
-        }else{
-            if (!((Number(getAdsType.skipMax) >= Number(AdsDto_.skipTime)) && (Number(AdsDto_.skipTime) >= Number(getAdsType.skipMin)))) {
+        if (AdsDto_.typeAdsID.toString() == this.configService.get("ID_ADS_IN_POPUP") || AdsDto_.typeAdsID.toString() == this.configService.get("ID_ADS_IN_CONTENT")) {
+            var ceck_skipTime = await this.utilsService.validateParam("skipTime", AdsDto_.skipTime, "number")
+            if (ceck_skipTime != "") {
                 await this.errorHandler.generateBadRequestException(
-                    'Unabled to proceed, skipTime required ' + getAdsType.skipMax.toString() + ' > skipTime >' + getAdsType.skipMin.toString(),
+                    ceck_skipTime,
                 );
+            } else {
+                if (!((Number(getAdsType.skipMax) >= Number(AdsDto_.skipTime)) && (Number(AdsDto_.skipTime) >= Number(getAdsType.skipMin)))) {
+                    await this.errorHandler.generateBadRequestException(
+                        'Unabled to proceed, skipTime required ' + getAdsType.skipMax.toString() + ' > skipTime >' + getAdsType.skipMin.toString(),
+                    );
+                }
             }
         }
 
         //VALIDASI PARAM placingID
-        var ceck_placingID = await this.utilsService.validateParam("placingID", AdsDto_.placingID, "string")
-        if (ceck_placingID != "") {
-            await this.errorHandler.generateBadRequestException(
-                ceck_placingID,
-            );
-        }else{
-            AdsDto_.placingID = new mongoose.Types.ObjectId(AdsDto_.placingID.toString());
+        if (AdsDto_.typeAdsID.toString() == this.configService.get("ID_ADS_IN_CONTENT")) {
+            var ceck_placingID = await this.utilsService.validateParam("placingID", AdsDto_.placingID, "string")
+            if (ceck_placingID != "") {
+                await this.errorHandler.generateBadRequestException(
+                    ceck_placingID,
+                );
+            } else {
+                AdsDto_.placingID = new mongoose.Types.ObjectId(AdsDto_.placingID.toString());
+            }
         }
 
         //VALIDASI PARAM liveAt

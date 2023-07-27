@@ -420,7 +420,7 @@ export class AdsSettingController {
                 {
                     Jenis: "CreditPrice",
                     Nilai: (getSetting_CreditPrice.value != undefined) ? getSetting_CreditPrice.value : 0,
-                    Unit: getSetting_AdsPlanMax.remark,
+                    Unit: getSetting_CreditPrice.remark,
                     Aktifitas: (CreditPrice.length > 0) ? CreditPrice[0].userbasics_data[0].fullName : "",
                     Date: (CreditPrice.length > 0) ? CreditPrice[0].dateTime : "-",
                     Desc: _remark_setting_CreditPrice,
@@ -428,7 +428,7 @@ export class AdsSettingController {
                 {
                     Jenis: "AdsDurationMin",
                     Nilai: (getSetting_AdsDurationMin.value != undefined) ? getSetting_AdsDurationMin.value : 0,
-                    Unit: getSetting_AdsPlanMax.remark,
+                    Unit: getSetting_AdsDurationMin.remark,
                     Aktifitas: (AdsDurationMin.length > 0) ? AdsDurationMin[0].userbasics_data[0].fullName : "",
                     Date: (AdsDurationMin.length > 0) ? AdsDurationMin[0].dateTime : "-",
                     Desc: _remark_setting_AdsDurationMin,
@@ -436,7 +436,7 @@ export class AdsSettingController {
                 {
                     Jenis: "AdsDurationMax",
                     Nilai: (getSetting_AdsDurationMax.value != undefined) ? getSetting_AdsDurationMax.value : 0,
-                    Unit: getSetting_AdsPlanMax.remark,
+                    Unit: getSetting_AdsDurationMax.remark,
                     Aktifitas: (AdsDurationMax.length > 0) ? AdsDurationMax[0].userbasics_data[0].fullName : "",
                     Date: (AdsDurationMax.length > 0) ? AdsDurationMax[0].dateTime : "-",
                     Desc: _remark_setting_AdsDurationMax,
@@ -444,7 +444,7 @@ export class AdsSettingController {
                 {
                     Jenis: "AdsPlanMin",
                     Nilai: (getSetting_AdsPlanMin.value != undefined) ? getSetting_AdsPlanMin.value : 0,
-                    Unit: getSetting_AdsPlanMax.remark,
+                    Unit: getSetting_AdsPlanMin.remark,
                     Aktifitas: (AdsPlanMin.length > 0) ? AdsPlanMin[0].userbasics_data[0].fullName : "",
                     Date: (AdsPlanMin.length > 0) ? AdsPlanMin[0].dateTime : "-",
                     Desc: _remark_setting_AdsPlanMin,
