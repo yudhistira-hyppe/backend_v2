@@ -2728,7 +2728,7 @@ export class AdsService {
                         $or: [{
                             $and: [
                                 {
-                                    "status": "ACTIVE"
+                                    "status": "APPROVE"
                                 },
                                 {
                                     $expr: {
@@ -2783,7 +2783,7 @@ export class AdsService {
                                     }
                                 },
                                 {
-                                    "status": "ACTIVE"
+                                    "status": "APPROVE"
                                 },
                                 {
                                     $expr: {
