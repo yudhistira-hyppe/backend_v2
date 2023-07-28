@@ -2620,6 +2620,7 @@ export class AdsService {
                                         {
                                             "isActive": true
                                         },
+
                                     ]
                                 },
 
@@ -2673,7 +2674,9 @@ export class AdsService {
                                             _id: "$iduser",
                                             tot: {
                                                 $sum: "$kredit",
+
                                             },
+
                                         }
                                     }],
                                     debet: [{
@@ -2681,9 +2684,12 @@ export class AdsService {
                                             _id: "$iduser",
                                             tot: {
                                                 $sum: "$debet",
+
                                             },
+
                                         }
                                     }],
+
                                 }
                             },
                             //{
@@ -2713,6 +2719,7 @@ export class AdsService {
                                             {
                                                 $arrayElemAt: ["$debet.tot", 0]
                                             },
+
                                         ]
                                     },
 
@@ -2725,117 +2732,120 @@ export class AdsService {
                 {
                     $match:
                     {
-                        $or: [{
-                            $and: [
-                                {
-                                    "status": "APPROVE"
-                                },
-                                {
-                                    $expr: {
-                                        $lt: ["$totalView", "$tay"]
-                                    }
-                                },
-                                {
-                                    $expr: {
-                                        $lt: ["$tayang", "$testDate"]
-                                    }
-                                },
-                                {
-                                    "_id": {
-                                        $not: {
-                                            $in: ["$adsUser.adsID"]
+                        $or: [
+                            {
+                                $and: [
+                                    {
+                                        "status": "APPROVE"
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$totalView", "$tay"]
                                         }
-                                    }
-                                },
-                                {
-                                    isValid: false
-                                },
-                                {
-                                    "isActive": true,
-
-                                },
-                                {
-                                    "reportedUser":
+                                    },
                                     {
-                                        $ne: "$email"
-                                    }
-                                },
-                                {
-                                    "userID":
-                                    {
-                                        $ne: new mongoose.Types.ObjectId(idUSer)
-                                    }
-                                },
-                                {
-                                    "userID":
-                                    {
-                                        $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
-                                    }
-                                },
-
-                            ]
-                        },
-                        {
-                            $and: [
-                                {
-                                    $expr: {
-                                        $eq: ["$liveAt", "$sekarang"]
-                                    }
-                                },
-                                {
-                                    "status": "APPROVE"
-                                },
-                                {
-                                    $expr: {
-                                        $lt: ["$totalView", "$tay"]
-                                    }
-                                },
-                                {
-                                    $expr: {
-                                        $lt: ["$tayang", "$testDate"]
-                                    }
-                                },
-                                {
-                                    "_id": {
-                                        $not: {
-                                            $in: ["$adsUser.adsID"]
+                                        $expr: {
+                                            $lt: ["$tayang", "$testDate"]
                                         }
-                                    }
-                                },
-                                {
-                                    isValid: false
-                                },
-                                {
-                                    "isActive": true,
-
-                                },
-                                {
-                                    "reportedUser":
+                                    },
                                     {
-                                        $ne: "$email"
-                                    }
-                                },
-                                {
-                                    "userID": {
-                                        $ne: new mongoose.Types.ObjectId(idUSer)
-                                    }
-                                },
-                                {
-                                    "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
-                                },
-                                {
-                                    $expr: {
-                                        $lt: [
-                                            {
-                                                $arrayElemAt: ["$balances.total", 0]
-                                            },
-                                            49000]
-                                    }
-                                },
-                            ]
-                        },]
+                                        "_id": {
+                                            $not: {
+                                                $in: ["$adsUser.adsID"]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        isValid: false
+                                    },
+                                    {
+                                        "isActive": true,
+                                        //
+                                    },
+                                    {
+                                        "reportedUser":
+                                        {
+                                            $ne: "$email"
+                                        }
+                                    },
+                                    {
+                                        "userID":
+                                        {
+                                            $ne: new mongoose.Types.ObjectId(idUSer)
+                                        }
+                                    },
+                                    {
+                                        "userID":
+                                        {
+                                            $ne: new mongoose.Types.ObjectId(idUSer)
+                                        }
+                                    },
+
+                                ]
+                            },
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ["$liveAt", "$sekarang"]
+                                        }
+                                    },
+                                    {
+                                        "status": "APPROVE"
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$totalView", "$tay"]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$tayang", "$testDate"]
+                                        }
+                                    },
+                                    {
+                                        "_id": {
+                                            $not: {
+                                                $in: ["$adsUser.adsID"]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        isValid: false
+                                    },
+                                    {
+                                        "isActive": true,
+                                        //
+                                    },
+                                    {
+                                        "reportedUser":
+                                        {
+                                            $ne: "$email"
+                                        }
+                                    },
+                                    {
+                                        "userID": {
+                                            $ne: new mongoose.Types.ObjectId(idUSer)
+                                        }
+                                    },
+                                    {
+                                        "userID": new mongoose.Types.ObjectId(idUSer)
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: [
+                                                {
+                                                    $arrayElemAt: ["$balances.total", 0]
+                                                },
+                                                49000]
+                                        }
+                                    },
+                                ]
+                            },
+                        ]
                     }
                 },
+
                 {
                     $project: {
                         balances: 1,
@@ -3032,13 +3042,13 @@ export class AdsService {
                 {
                     $unwind: {
                         path: "$ads",
-
+                        preserveNullAndEmptyArrays: true
                     }
                 },
                 {
                     $unwind: {
                         path: "$userBasic",
-
+                        preserveNullAndEmptyArrays: true
                     }
                 },
                 {
@@ -3634,7 +3644,7 @@ export class AdsService {
                     $skip: 0
                 },
                 {
-                    $limit: 5
+                    $limit: 1
                 },
 
             ]
