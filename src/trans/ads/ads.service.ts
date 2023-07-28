@@ -2395,13 +2395,13 @@ export class AdsService {
                 {
                     $set:
                     {
-                        IdUcups: idUSer
+                        idUcups: new mongoose.Types.ObjectId(idUSer)
                     }
                 },
                 {
                     $set:
                     {
-                        IdHyppe: "6214438e602c354635ed7876"
+                        idHyppe: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                     }
                 },
                 {
@@ -2789,7 +2789,7 @@ export class AdsService {
                                     {
                                         "userID":
                                         {
-                                            $ne: "$IdHyppe"
+                                            $ne: "$idHyppe"
                                         }
                                     },
 
@@ -2841,7 +2841,7 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "userID": "$IdHyppe"
+                                        "userID": "$idHyppe"
                                     },
                                     {
                                         $expr: {
