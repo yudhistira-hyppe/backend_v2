@@ -3459,14 +3459,14 @@ export class subChallengeService {
                                                         {
                                                             $gt: ["$ranking", "$lastRank"]
                                                         },
-                                                        then: "DOWN"
+                                                        then: "UP"
                                                     },
                                                     {
                                                         case:
                                                         {
-                                                            "$gt": ["$lastRank", "$ranking"]
+                                                            "$lt": ["$lastRank", "$ranking"]
                                                         },
-                                                        then: "UP"
+                                                        then: "DOWN"
                                                     },
 
                                                 ],
@@ -5613,12 +5613,11 @@ export class subChallengeService {
                 }
             },
             {
-                $match: {
-
+                "$match":
+                {
                     challengeId: new Types.ObjectId(idchallenge)
+                },
 
-
-                }
             },
             {
                 "$lookup":
@@ -6287,14 +6286,14 @@ export class subChallengeService {
                                                         {
                                                             $gt: ["$ranking", "$lastRank"]
                                                         },
-                                                        then: "DOWN"
+                                                        then: "UP"
                                                     },
                                                     {
                                                         case:
                                                         {
-                                                            "$gt": ["$lastRank", "$ranking"]
+                                                            "$lt": ["$lastRank", "$ranking"]
                                                         },
-                                                        then: "UP"
+                                                        then: "DOWN"
                                                     },
 
                                                 ],
@@ -7742,7 +7741,9 @@ export class subChallengeService {
                     session: 1
                 }
             },
-
+            {
+                $limit: 1
+            }
         );
 
         if (status !== undefined) {
@@ -7767,4 +7768,5 @@ export class subChallengeService {
         var query = await this.subChallengeModel.aggregate(pipeline);
         return query;
     }
+
 }
