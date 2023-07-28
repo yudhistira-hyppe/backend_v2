@@ -590,7 +590,7 @@ export class AdsController {
                 if ((ads.status == "DRAFT") && (AdsDto_.status == "UNDER_REVIEW")) {
                     //--------------------INSERT BALANCE DEBET--------------------
                     AdsBalaceCreditDto_.iduser = ads.userID;
-                    AdsBalaceCreditDto_.debet = AdsDto_.credit;
+                    AdsBalaceCreditDto_.debet = ads.credit;
                     AdsBalaceCreditDto_.kredit = 0;
                     AdsBalaceCreditDto_.type = "USE";
                     AdsBalaceCreditDto_.description = "ADS CREATION";
