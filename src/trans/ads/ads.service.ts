@@ -2395,7 +2395,7 @@ export class AdsService {
                 {
                     $set:
                     {
-                        IdUcups: new mongoose.Types.ObjectId(idUSer)
+                        IdUcups: idUSer
                     }
                 },
                 {
