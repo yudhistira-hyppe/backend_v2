@@ -6,6 +6,7 @@ export class CreateAdsDto {
     _id: { oid: String; };
     userID: { oid: String; };
     userIDAssesment: { oid: String; };
+    adsIdNumber: string;
     // demografisID: {
     //     $ref: String;
     //     $id: { oid: String };
