@@ -628,6 +628,7 @@ export class AdsService {
                         }
                     },
                     idApsara: 1,
+                    adsIdNumber: 1
                 }
             }
         ]);
@@ -3894,7 +3895,8 @@ export class AdsService {
                     //         }
                     //     ]
                     // }
-                    timestamp:1
+                    timestamp: 1,
+                    adsIdNumber: 1
                 }
             }
         );
