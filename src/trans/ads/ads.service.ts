@@ -2395,18 +2395,6 @@ export class AdsService {
                 {
                     $set:
                     {
-                        idUcups: new mongoose.Types.ObjectId(idUSer)
-                    }
-                },
-                {
-                    $set:
-                    {
-                        idHyppe: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
-                    }
-                },
-                {
-                    $set:
-                    {
                         tay:
                         {
                             $ifNull: ['$tayang', 0]
@@ -2668,7 +2656,7 @@ export class AdsService {
                         from: "accountbalances",
                         as: "balances",
                         let: {
-                            localID: "$idUcups"
+                            localID: new mongoose.Types.ObjectId(idUSer)
                         },
                         pipeline: [
                             {
@@ -2783,13 +2771,13 @@ export class AdsService {
                                     {
                                         "userID":
                                         {
-                                            $ne: "$idUcups"
+                                            $ne: new mongoose.Types.ObjectId(idUSer)
                                         }
                                     },
                                     {
                                         "userID":
                                         {
-                                            $ne: "$idHyppe"
+                                            $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                         }
                                     },
 
@@ -2837,11 +2825,11 @@ export class AdsService {
                                     },
                                     {
                                         "userID": {
-                                            $ne: "$idUcups"
+                                            $ne: new mongoose.Types.ObjectId(idUSer)
                                         }
                                     },
                                     {
-                                        "userID": "$idHyppe"
+                                        "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                     },
                                     {
                                         $expr: {
@@ -3615,7 +3603,7 @@ export class AdsService {
                             {
                                 $and: [
                                     {
-                                        "nameType": nameType,
+                                        "nameType": "In App Ads",
 
                                     },
                                     {
@@ -3626,7 +3614,7 @@ export class AdsService {
                             {
                                 $and: [
                                     {
-                                        "nameType": nameType,
+                                        "nameType": "In App Ads",
 
                                     },
                                     {
@@ -3672,18 +3660,6 @@ export class AdsService {
                 {
                     $set:
                     {
-                        IdUcups: new mongoose.Types.ObjectId("idUSer")
-                    }
-                },
-                {
-                    $set:
-                    {
-                        IdHyppe: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
-                    }
-                },
-                {
-                    $set:
-                    {
                         tay:
                         {
                             $ifNull: ['$tayang', 0]
@@ -3945,7 +3921,7 @@ export class AdsService {
                         from: "accountbalances",
                         as: "balances",
                         let: {
-                            localID: "$idUcups"
+                            localID: new mongoose.Types.ObjectId(idUSer)
                         },
                         pipeline: [
                             {
@@ -4060,13 +4036,13 @@ export class AdsService {
                                     {
                                         "userID":
                                         {
-                                            $ne: "$idUcups"
+                                            $ne: new mongoose.Types.ObjectId(idUSer)
                                         }
                                     },
                                     {
                                         "userID":
                                         {
-                                            $ne: "$IdHyppe"
+                                            $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                         }
                                     },
 
@@ -4114,11 +4090,11 @@ export class AdsService {
                                     },
                                     {
                                         "userID": {
-                                            $ne: "$idUcups"
+                                            $ne: new mongoose.Types.ObjectId(idUSer)
                                         }
                                     },
                                     {
-                                        "userID": "$IdHyppe"
+                                        "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                     },
                                     {
                                         $expr: {
@@ -4892,7 +4868,7 @@ export class AdsService {
                             {
                                 $and: [
                                     {
-                                        "nameType": nameType,
+                                        "nameType": "In App Ads",
 
                                     },
                                     {
@@ -4903,7 +4879,7 @@ export class AdsService {
                             {
                                 $and: [
                                     {
-                                        "nameType": nameType,
+                                        "nameType": "In App Ads",
 
                                     },
                                     {
