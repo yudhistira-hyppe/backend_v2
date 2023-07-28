@@ -576,7 +576,7 @@ export class AdsController {
         //--------------------GENERATE CAMPAIG ID--------------------
         if (AdsDto_.status == "UNDER_REVIEW") {
             const coutAds = await this.adsService.count();
-            const generateCampaignID = await this.utilsService.generateCampaignID(coutAds + 1, AdsDto_.typeAdsID.toString());
+            const generateCampaignID = await this.utilsService.generateCampaignID(coutAds + 1, ads.typeAdsID.toString());
             AdsDto_.campaignId = generateCampaignID;
         }
 
