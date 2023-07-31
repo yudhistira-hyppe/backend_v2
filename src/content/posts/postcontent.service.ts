@@ -1966,7 +1966,7 @@ export class PostContentService {
   async updateNewPostData5(body: any, Posts_: Posts) {
     let contentMedias_ = Posts_.contentMedias[0];
     console.log('============================================== GET MEDIA ==============================================', JSON.stringify(contentMedias_));
-    let namespace_ = contentMedias_.namespace;
+    let namespace_ = contentMedias_.$ref;
     console.log('============================================== GET namespace_ ==============================================', namespace_);
     if (namespace_ == 'mediavideos') {
       //Update Post mediavideos
