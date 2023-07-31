@@ -118,7 +118,10 @@ export class PostContentService {
     body.postID = postID;
 
     //Tag
-    if (body.tags != undefined && body.tags != ""){
+    console.log("TAGS", body.tags)
+    console.log("body.tags !== undefined && body.tags !== ''", body.tags !== undefined && body.tags !== "")
+    if (body.tags !== undefined && body.tags !== "") {
+      console.log("!(Array.isArray(body.tags))", !(Array.isArray(body.tags)))
       if (!(Array.isArray(body.tags))) {
         const ArrayTags = []
         const tag_split = (body.tags).split(',');
