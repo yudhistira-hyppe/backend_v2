@@ -31,6 +31,22 @@ export class TagCountService {
             .exec();
     }
 
+    async updateData(
+        id: string,
+        tagCountDto: any,
+    ): Promise<TagCount> {
+        let data = await this.tagcountModel.findByIdAndUpdate(
+            id,
+            tagCountDto,
+            { new: true },
+        );
+
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
+        return data;
+    }
+
     async update(
         id: string,
         tagCountDto: TagCountDto,
