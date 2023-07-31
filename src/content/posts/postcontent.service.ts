@@ -1654,7 +1654,7 @@ export class PostContentService {
 
     //Update Post
     if (postUpload.data.status) {
-      console.log('============================================== STATUS UPLOAD POST ==============================================', JSON.stringify(postUpload));
+      console.log('============================================== STATUS UPLOAD POST ==============================================', JSON.stringify(postUpload.data));
       postUpload.data.email = data_userbasics.email.toString();
       await this.updateNewPostData5(postUpload.data, Posts_);
     }
