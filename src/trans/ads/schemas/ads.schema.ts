@@ -10,6 +10,8 @@ export class Ads {
     @Prop({ type: Object })
     adsObjectivitasId: mongoose.Types.ObjectId;
     @Prop()
+    adsIdNumber: string;
+    @Prop()
     campaignId: string;
     @Prop()
     name: string;
