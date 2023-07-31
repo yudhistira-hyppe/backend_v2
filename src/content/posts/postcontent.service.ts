@@ -2020,6 +2020,9 @@ export class PostContentService {
     } else if (namespace_ == 'mediastories') {
       //Update Post mediastories
       let story = await this.storyService.findOne(contentMedias_.oid);
+      console.log('============================================== story ==============================================', story);
+      console.log('============================================== contentMedias_ ==============================================', contentMedias_);
+      console.log('============================================== contentMedias_.oid ==============================================', contentMedias_.oid);
       if (!(await this.utilService.ceckData(story))) {
         return;
       }
