@@ -1651,6 +1651,7 @@ export class PostContentService {
 
     //Update Post
     if (postUpload.data.status) {
+      console.log('============================================== STATUS UPLOAD POST ==============================================', JSON.stringify(postUpload));
       postUpload.data.email = data_userbasics.email.toString();
       await this.updateNewPostData5(postUpload.data, Posts_);
     }
@@ -1961,6 +1962,7 @@ export class PostContentService {
 
   async updateNewPostData5(body: any, Posts_: Posts) {
     let contentMedias_ = Posts_.contentMedias[0];
+    console.log('============================================== GET MEDIA ==============================================', JSON.stringify(contentMedias_));
     let namespace_ = contentMedias_.namespace;
     if (namespace_ == 'mediavideos') {
       //Update Post mediavideos
@@ -1985,6 +1987,7 @@ export class PostContentService {
       let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: Posts_._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: body.width, height: body.height };
       Posts_.metadata = metadata;
       Posts_.active = true;
+      console.log('============================================== UPDATE POST ==============================================', JSON.stringify(Posts_));
       await this.postService.create(Posts_);
     } else if (namespace_ == 'mediapicts') {
       //Update Post mediapicts
