@@ -167,10 +167,10 @@ export class PostContentService {
 
     const mime = file.mimetype;
     if (mime.startsWith('video')) {
-      console.log('============================================== CREATE POST TYPE ==============================================', mime);
+      console.log('============================================== CREATE POST TYPE ' + body._id +' ==============================================', mime);
       return this.createNewPostVideoV5(file, body, data_userbasics);
     } else {
-      console.log('============================================== CREATE POST TYPE ==============================================', mime);
+      console.log('============================================== CREATE POST TYPE ' + body._id +' ==============================================', mime);
       return this.createNewPostPictV5(file, body, data_userbasics);
     }
   }
@@ -1517,6 +1517,7 @@ export class PostContentService {
 
     //Build Post
     let Posts_: Posts = await this.buildPost_(body, data_userbasics);
+    console.log('============================================== BUILD POST ' + Posts_._id +' ==============================================', JSON.stringify(Posts_));
     let contentMedias_ = [];
     if (Posts_.postType == 'vid') {
       //Set Metadata
@@ -1648,9 +1649,9 @@ export class PostContentService {
 
     //Upload File
     const postUpload = await this.uploadJavaV3(file, Posts_._id.toString());
+    console.log('============================================== STATUS UPLOAD POST ==============================================', JSON.stringify(postUpload.data));
 
     //Update Post
-    console.log('============================================== STATUS UPLOAD POST ==============================================', JSON.stringify(postUpload.data));
     if (postUpload.data.status) {
       postUpload.data.email = data_userbasics.email.toString();
       await this.updateNewPostData5(postUpload.data, Posts_);
@@ -1699,14 +1700,12 @@ export class PostContentService {
       const form = new FormData();
       form.append('file', file.buffer, { filename: file.originalname });
       form.append('postID', postId);
-      console.log(form);
 
       await axios.post(Url, form, {
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
         headers: { 'Content-Type': 'multipart/form-data' }
       }).then(response => {
-        console.log("postUpload", response.data);
         return resolve(response);
       }).catch(err => {
         console.error(err);
@@ -1986,7 +1985,7 @@ export class PostContentService {
       let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: Posts_._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: body.width, height: body.height };
       Posts_.metadata = metadata;
       Posts_.active = true;
-      console.log('============================================== UPDATE POST MEDIAVIDEOS ==============================================', JSON.stringify(Posts_));
+      console.log('============================================== UPDATE POST MEDIAVIDEOS ' + Posts_._id +' ==============================================', JSON.stringify(Posts_));
       await this.postService.create(Posts_);
     } else if (namespace_ == 'mediapicts') {
       //Update Post mediapicts
@@ -2011,7 +2010,7 @@ export class PostContentService {
 
       //Update Post
       Posts_.active = true;
-      console.log('============================================== UPDATE POST MEDIAPICTS ==============================================', JSON.stringify(Posts_));
+      console.log('============================================== UPDATE POST MEDIAPICTS ' + Posts_._id +' ==============================================', JSON.stringify(Posts_));
       await this.postService.create(Posts_);
     } else if (namespace_ == 'mediastories') {
       //Update Post mediastories
@@ -2030,7 +2029,7 @@ export class PostContentService {
         Posts_.metadata = metadata;
       }
       Posts_.active = true;
-      console.log('============================================== UPDATE POST MEDIASTORIES ==============================================', JSON.stringify(Posts_));
+      console.log('============================================== UPDATE POST MEDIASTORIES ' + Posts_._id +' ==============================================', JSON.stringify(Posts_));
       await this.postService.create(Posts_);
 
       if (story.mediaType == 'video') {
@@ -2067,7 +2066,7 @@ export class PostContentService {
       let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: Posts_._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: meta.width, height: meta.height };
       Posts_.metadata = metadata;
       Posts_.active = true;
-      console.log('============================================== UPDATE POST MEDIADIARIES ==============================================', JSON.stringify(Posts_));
+      console.log('============================================== UPDATE POST MEDIADIARIES ' + Posts_._id +' ==============================================', JSON.stringify(Posts_));
       await this.postService.create(Posts_);
 
       //Get Video Apsara
