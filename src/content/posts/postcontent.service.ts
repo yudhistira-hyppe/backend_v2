@@ -1963,13 +1963,9 @@ export class PostContentService {
   async updateNewPostData5(body: any, Posts_: Posts) {
     let contentMedias_ = Posts_.contentMedias[0];
     let namespace_ = contentMedias_.$ref.toString();
-    console.log('============================================== MEDIAVIDEOS ==============================================', namespace_ == 'mediavideos');
-    console.log('============================================== MEDIAPICTS ==============================================', namespace_ == 'mediapicts');
-    console.log('============================================== MEDIASTORIES ==============================================', namespace_ == 'mediastories');
-    console.log('============================================== MEDIADIARIES ==============================================', namespace_ == 'mediadiaries');
     if (namespace_ == 'mediavideos') {
       //Update Post mediavideos
-      let vid = await this.videoService.findOne(contentMedias_.oid);
+      let vid = await this.videoService.findOne(contentMedias_.$id.toString());
       if (!(await this.utilService.ceckData(vid))) {
         return;
       }
@@ -1994,7 +1990,7 @@ export class PostContentService {
       await this.postService.create(Posts_);
     } else if (namespace_ == 'mediapicts') {
       //Update Post mediapicts
-      let pict = await this.picService.findOne(contentMedias_.oid);
+      let pict = await this.picService.findOne(contentMedias_.$id.toString());
       if (!(await this.utilService.ceckData(pict))) {
         return;
       }
@@ -2019,10 +2015,7 @@ export class PostContentService {
       await this.postService.create(Posts_);
     } else if (namespace_ == 'mediastories') {
       //Update Post mediastories
-      let story = await this.storyService.findOne(contentMedias_.oid);
-      console.log('============================================== story ==============================================', story);
-      console.log('============================================== contentMedias_ ==============================================', contentMedias_);
-      console.log('============================================== contentMedias_.oid ==============================================', contentMedias_.oid);
+      let story = await this.storyService.findOne(contentMedias_.$id.toString());
       if (!(await this.utilService.ceckData(story))) {
         return;
       }
@@ -2061,7 +2054,7 @@ export class PostContentService {
       }
     } else if (namespace_ == 'mediadiaries') {
       //Update Post mediadiaries
-      let diaries = await this.diaryService.findOne(contentMedias_.oid);
+      let diaries = await this.diaryService.findOne(contentMedias_.$id.toString());
       if (!(await this.utilService.ceckData(diaries))) {
         return;
       }
