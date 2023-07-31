@@ -118,10 +118,7 @@ export class PostContentService {
     body.postID = postID;
 
     //Tag
-    console.log("TAGS", body.tags)
-    console.log("body.tags !== undefined && body.tags !== ''", body.tags !== undefined && body.tags !== "")
     if (body.tags !== undefined && body.tags !== "") {
-      console.log("!(Array.isArray(body.tags))", !(Array.isArray(body.tags)))
       if (!(Array.isArray(body.tags))) {
         const ArrayTags = []
         const tag_split = (body.tags).split(',');
@@ -1653,8 +1650,8 @@ export class PostContentService {
     const postUpload = await this.uploadJavaV3(file, Posts_._id.toString());
 
     //Update Post
+    console.log('============================================== STATUS UPLOAD POST ==============================================', JSON.stringify(postUpload.data));
     if (postUpload.data.status) {
-      console.log('============================================== STATUS UPLOAD POST ==============================================', JSON.stringify(postUpload.data));
       postUpload.data.email = data_userbasics.email.toString();
       await this.updateNewPostData5(postUpload.data, Posts_);
     }
@@ -1965,11 +1962,8 @@ export class PostContentService {
 
   async updateNewPostData5(body: any, Posts_: Posts) {
     let contentMedias_ = Posts_.contentMedias[0];
-    console.log('============================================== GET MEDIA ==============================================', JSON.stringify(contentMedias_));
     let namespace_ = contentMedias_.$ref;
-    console.log('============================================== GET namespace_ ==============================================', namespace_);
     if (namespace_ == 'mediavideos') {
-      console.log('============================================== GET mediavideos ==============================================', namespace_ == 'mediavideos');
       //Update Post mediavideos
       let vid = await this.videoService.findOne(contentMedias_.oid);
       if (!(await this.utilService.ceckData(vid))) {
@@ -1992,7 +1986,7 @@ export class PostContentService {
       let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: Posts_._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: body.width, height: body.height };
       Posts_.metadata = metadata;
       Posts_.active = true;
-      console.log('============================================== UPDATE POST ==============================================', JSON.stringify(Posts_));
+      console.log('============================================== UPDATE POST MEDIAVIDEOS ==============================================', JSON.stringify(Posts_));
       await this.postService.create(Posts_);
     } else if (namespace_ == 'mediapicts') {
       //Update Post mediapicts
@@ -2017,6 +2011,7 @@ export class PostContentService {
 
       //Update Post
       Posts_.active = true;
+      console.log('============================================== UPDATE POST MEDIAPICTS ==============================================', JSON.stringify(Posts_));
       await this.postService.create(Posts_);
     } else if (namespace_ == 'mediastories') {
       //Update Post mediastories
@@ -2035,6 +2030,7 @@ export class PostContentService {
         Posts_.metadata = metadata;
       }
       Posts_.active = true;
+      console.log('============================================== UPDATE POST MEDIASTORIES ==============================================', JSON.stringify(Posts_));
       await this.postService.create(Posts_);
 
       if (story.mediaType == 'video') {
@@ -2071,6 +2067,7 @@ export class PostContentService {
       let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: Posts_._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: meta.width, height: meta.height };
       Posts_.metadata = metadata;
       Posts_.active = true;
+      console.log('============================================== UPDATE POST MEDIADIARIES ==============================================', JSON.stringify(Posts_));
       await this.postService.create(Posts_);
 
       //Get Video Apsara
