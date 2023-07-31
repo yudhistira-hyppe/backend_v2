@@ -1969,6 +1969,7 @@ export class PostContentService {
     let namespace_ = contentMedias_.$ref;
     console.log('============================================== GET namespace_ ==============================================', namespace_);
     if (namespace_ == 'mediavideos') {
+      console.log('============================================== GET mediavideos ==============================================', namespace_ == 'mediavideos');
       //Update Post mediavideos
       let vid = await this.videoService.findOne(contentMedias_.oid);
       if (!(await this.utilService.ceckData(vid))) {
