@@ -1963,6 +1963,7 @@ export class PostContentService {
   async updateNewPostData5(body: any, Posts_: Posts) {
     let contentMedias_ = Posts_.contentMedias[0];
     let namespace_ = contentMedias_.$ref;
+    console.log('============================================== NAMESPACE ==============================================', namespace_);
     if (namespace_ == 'mediavideos') {
       //Update Post mediavideos
       let vid = await this.videoService.findOne(contentMedias_.oid);
