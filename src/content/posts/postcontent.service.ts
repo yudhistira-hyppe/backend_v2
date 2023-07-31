@@ -1640,7 +1640,7 @@ export class PostContentService {
     Posts_.contentMedias = contentMedias_;
 
     //Create Post
-    let dataPost = await this.PostsModel.create(Posts_);
+    //let dataPost = await this.PostsModel.create(Posts_);
 
     //Update Music
     if (body.musicId != undefined) {
@@ -1664,8 +1664,8 @@ export class PostContentService {
     CreatePostResponse_.messages = Messages_;
     CreatePostResponse_.response_code = 202;
     var pd = new PostData();
-    pd.postID = String(dataPost.postID);
-    pd.email = String(dataPost.email);
+    pd.postID = String(Posts_.postID);
+    pd.email = String(Posts_.email);
     CreatePostResponse_.data = pd;
 
     console.log('============================================== CREATE POST END ==============================================', JSON.stringify(CreatePostResponse_));
