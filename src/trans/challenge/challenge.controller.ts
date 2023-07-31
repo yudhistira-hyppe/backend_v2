@@ -1567,8 +1567,6 @@ export class ChallengeController {
     var lengchal = null;
     var datauserchall = null;
     var datachallenge = null;
-    var arrdata = [];
-    var objintr = {};
     var datasubchallenge = null;
     var idsubchallenge = null;
     var notifikasiPush = null;
@@ -1624,6 +1622,7 @@ export class ChallengeController {
     if (datauserchall !== null && datauserchall.length > 0) {
 
       for (let i = 0; i < datauserchall.length; i++) {
+
         idsubchallenge = datauserchall[i].idSubChallenge;
         notifikasiPush = datauserchall[i].notifikasiPush;
         startTime = datauserchall[i].startDatetime;
@@ -1659,20 +1658,39 @@ export class ChallengeController {
             let splitdate = repdate.split('.');
             let timedate = splitdate[0];
 
-            let notifChallenge_ = new notifChallenge();
+            if (includeAkandatang == "YES") {
+              let arrdata = [];
+              if (userID !== undefined && userID.length > 0) {
 
-            notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
-            notifChallenge_.datetime = timedate;
-            notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
-            notifChallenge_.isSend = false;
-            notifChallenge_.session = session;
-            notifChallenge_.title = titleAkandatang;
-            notifChallenge_.description = descriptionAkandatang;
-            notifChallenge_.nameChallenge = nameChallenge;
-            notifChallenge_.type = "akanDatang";
-            notifChallenge_.userID = userID;
+                for (let x = 0; x < userID.length; x++) {
 
-            await this.notifChallengeService.create(notifChallenge_);
+                  let objintr = {
+                    "idUser": userID[x].idUser,
+                    "email": userID[x].email,
+                    "username": userID[x].username,
+                    "ranking": userID[x].ranking,
+                    "title": titleAkandatang,
+                    "notification": descriptionAkandatang
+                  };
+                  arrdata.push(objintr);
+                }
+              }
+              let notifChallenge_ = new notifChallenge();
+              notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
+              notifChallenge_.datetime = timedate;
+              notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
+              notifChallenge_.isSend = false;
+              notifChallenge_.session = session;
+              notifChallenge_.title = titleAkandatang;
+              notifChallenge_.description = descriptionAkandatang;
+              notifChallenge_.nameChallenge = nameChallenge;
+              notifChallenge_.type = "akanDatang";
+              notifChallenge_.userID = arrdata;
+
+              await this.notifChallengeService.create(notifChallenge_);
+            }
+
+
           }
 
 
@@ -1689,20 +1707,38 @@ export class ChallengeController {
             aturWaktuchallengeDimulai = datachallengeDimulai[0].aturWaktu;
             let timedate = startTime;
 
-            let notifChallenge_ = new notifChallenge();
+            if (includechallengeDimulai == "YES") {
+              let arrdata = [];
+              if (userID !== undefined && userID.length > 0) {
 
-            notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
-            notifChallenge_.datetime = timedate;
-            notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
-            notifChallenge_.isSend = false;
-            notifChallenge_.session = session;
-            notifChallenge_.title = titlechallengeDimulai;
-            notifChallenge_.description = descriptionchallengeDimulai;
-            notifChallenge_.nameChallenge = nameChallenge;
-            notifChallenge_.type = "challengeDimulai";
-            notifChallenge_.userID = userID;
+                for (let x = 0; x < userID.length; x++) {
 
-            await this.notifChallengeService.create(notifChallenge_);
+                  let objintr = {
+                    "idUser": userID[x].idUser,
+                    "email": userID[x].email,
+                    "username": userID[x].username,
+                    "ranking": userID[x].ranking,
+                    "title": titlechallengeDimulai,
+                    "notification": descriptionchallengeDimulai
+                  };
+                  arrdata.push(objintr);
+                }
+              }
+              let notifChallenge_ = new notifChallenge();
+
+              notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
+              notifChallenge_.datetime = timedate;
+              notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
+              notifChallenge_.isSend = false;
+              notifChallenge_.session = session;
+              notifChallenge_.title = titlechallengeDimulai;
+              notifChallenge_.description = descriptionchallengeDimulai;
+              notifChallenge_.nameChallenge = nameChallenge;
+              notifChallenge_.type = "challengeDimulai";
+              notifChallenge_.userID = arrdata;
+
+              await this.notifChallengeService.create(notifChallenge_);
+            }
           }
 
           try {
@@ -1718,31 +1754,49 @@ export class ChallengeController {
             aturWaktuupdateLeaderboard = dataupdateLeaderboard[0].aturWaktu;
 
             let lengtime = aturWaktuupdateLeaderboard.length;
+            if (includeupdateLeaderboard == "YES") {
+              let arrdata = [];
+              for (let i = 0; i < lengtime; i++) {
+                let dt = new Date(startTime);
+                dt.setHours(dt.getHours() + 7) + aturWaktuupdateLeaderboard[i]; // timestamp
+                dt = new Date(dt);
+                let strdate = dt.toISOString();
+                let repdate = strdate.replace('T', ' ');
+                let splitdate = repdate.split('.');
+                let timedate = splitdate[0];
 
-            for (let i = 0; i < lengtime; i++) {
-              let dt = new Date(startTime);
-              dt.setHours(dt.getHours() + 7) + aturWaktuupdateLeaderboard[i]; // timestamp
-              dt = new Date(dt);
-              let strdate = dt.toISOString();
-              let repdate = strdate.replace('T', ' ');
-              let splitdate = repdate.split('.');
-              let timedate = splitdate[0];
+                if (userID !== undefined && userID.length > 0) {
 
-              let notifChallenge_ = new notifChallenge();
+                  for (let x = 0; x < userID.length; x++) {
 
-              notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
-              notifChallenge_.datetime = timedate;
-              notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
-              notifChallenge_.isSend = false;
-              notifChallenge_.session = session;
-              notifChallenge_.title = titleupdateLeaderboard;
-              notifChallenge_.description = descriptionupdateLeaderboard;
-              notifChallenge_.nameChallenge = nameChallenge;
-              notifChallenge_.type = "updateLeaderboard";
-              notifChallenge_.userID = userID;
+                    let objintr = {
+                      "idUser": userID[x].idUser,
+                      "email": userID[x].email,
+                      "username": userID[x].username,
+                      "ranking": userID[x].ranking,
+                      "title": titleupdateLeaderboard,
+                      "notification": "Wah!! " + userID[x].username + ", kamu sudah berada di peringkat " + userID[x].ranking + " " + titleupdateLeaderboard + " loh! Naikan Peringkat mu sekarang!"
+                    };
+                    arrdata.push(objintr);
+                  }
+                }
 
-              await this.notifChallengeService.create(notifChallenge_);
+                let notifChallenge_ = new notifChallenge();
 
+                notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
+                notifChallenge_.datetime = timedate;
+                notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
+                notifChallenge_.isSend = false;
+                notifChallenge_.session = session;
+                notifChallenge_.title = titleupdateLeaderboard;
+                notifChallenge_.description = descriptionupdateLeaderboard;
+                notifChallenge_.nameChallenge = nameChallenge;
+                notifChallenge_.type = "updateLeaderboard";
+                notifChallenge_.userID = arrdata;
+
+                await this.notifChallengeService.create(notifChallenge_);
+
+              }
             }
           }
 
@@ -1765,20 +1819,39 @@ export class ChallengeController {
             let repdate = strdate.replace('T', ' ');
             let splitdate = repdate.split('.');
             let timedate = splitdate[0];
-            let notifChallenge_ = new notifChallenge();
 
-            notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
-            notifChallenge_.datetime = timedate;
-            notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
-            notifChallenge_.isSend = false;
-            notifChallenge_.session = session;
-            notifChallenge_.title = titlechallengeAkanBerakhir;
-            notifChallenge_.description = descriptionchallengeAkanBerakhir;
-            notifChallenge_.nameChallenge = nameChallenge;
-            notifChallenge_.type = "challengeAkanBerakhir";
-            notifChallenge_.userID = userID;
+            if (includechallengeAkanBerakhir == "YES") {
+              let arrdata = [];
+              if (userID !== undefined && userID.length > 0) {
 
-            await this.notifChallengeService.create(notifChallenge_);
+                for (let x = 0; x < userID.length; x++) {
+
+                  let objintr = {
+                    "idUser": userID[x].idUser,
+                    "email": userID[x].email,
+                    "username": userID[x].username,
+                    "ranking": userID[x].ranking,
+                    "title": titlechallengeAkanBerakhir,
+                    "notification": descriptionchallengeAkanBerakhir
+                  };
+                  arrdata.push(objintr);
+                }
+              }
+              let notifChallenge_ = new notifChallenge();
+
+              notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
+              notifChallenge_.datetime = timedate;
+              notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
+              notifChallenge_.isSend = false;
+              notifChallenge_.session = session;
+              notifChallenge_.title = titlechallengeAkanBerakhir;
+              notifChallenge_.description = descriptionchallengeAkanBerakhir;
+              notifChallenge_.nameChallenge = nameChallenge;
+              notifChallenge_.type = "challengeAkanBerakhir";
+              notifChallenge_.userID = arrdata;
+
+              await this.notifChallengeService.create(notifChallenge_);
+            }
           }
 
           try {
@@ -1800,20 +1873,39 @@ export class ChallengeController {
             let repdate = strdate.replace('T', ' ');
             let splitdate = repdate.split('.');
             let timedate = splitdate[0];
-            let notifChallenge_ = new notifChallenge();
 
-            notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
-            notifChallenge_.datetime = timedate;
-            notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
-            notifChallenge_.isSend = false;
-            notifChallenge_.session = session;
-            notifChallenge_.title = titlechallengeBerakhir;
-            notifChallenge_.description = descriptionchallengeBerakhir;
-            notifChallenge_.nameChallenge = nameChallenge;
-            notifChallenge_.type = "challengeBerakhir";
-            notifChallenge_.userID = userID;
+            if (includechallengeBerakhir == "YES") {
+              let arrdata = [];
+              if (userID !== undefined && userID.length > 0) {
 
-            await this.notifChallengeService.create(notifChallenge_);
+                for (let x = 0; x < userID.length; x++) {
+
+                  let objintr = {
+                    "idUser": userID[x].idUser,
+                    "email": userID[x].email,
+                    "username": userID[x].username,
+                    "ranking": userID[x].ranking,
+                    "title": titlechallengeBerakhir,
+                    "notification": descriptionchallengeBerakhir
+                  };
+                  arrdata.push(objintr);
+                }
+              }
+              let notifChallenge_ = new notifChallenge();
+
+              notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
+              notifChallenge_.datetime = timedate;
+              notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
+              notifChallenge_.isSend = false;
+              notifChallenge_.session = session;
+              notifChallenge_.title = titlechallengeBerakhir;
+              notifChallenge_.description = descriptionchallengeBerakhir;
+              notifChallenge_.nameChallenge = nameChallenge;
+              notifChallenge_.type = "challengeBerakhir";
+              notifChallenge_.userID = arrdata;
+
+              await this.notifChallengeService.create(notifChallenge_);
+            }
           }
 
 
@@ -1836,23 +1928,45 @@ export class ChallengeController {
             let repdate = strdate.replace('T', ' ');
             let splitdate = repdate.split('.');
             let timedate = splitdate[0];
-            let notifChallenge_ = new notifChallenge();
 
-            notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
-            notifChallenge_.datetime = timedate;
-            notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
-            notifChallenge_.isSend = false;
-            notifChallenge_.session = session;
-            notifChallenge_.title = titleuntukPemenang;
-            notifChallenge_.description = descriptionuntukPemenang;
-            notifChallenge_.nameChallenge = nameChallenge;
-            notifChallenge_.type = "untukPemenang";
-            notifChallenge_.userID = userID;
+            if (includeuntukPemenang == "YES") {
+              let arrdata = [];
+              if (userID !== undefined && userID.length > 0) {
 
-            await this.notifChallengeService.create(notifChallenge_);
+                for (let x = 0; x < userID.length; x++) {
+
+                  let objintr = {
+                    "idUser": userID[x].idUser,
+                    "email": userID[x].email,
+                    "username": userID[x].username,
+                    "ranking": userID[x].ranking,
+                    "title": titleuntukPemenang,
+                    "notification": "Selamat " + userID[x].username + "!!! 🎉Kamu telah berhasil menjadi pemenang challenge " + titleuntukPemenang + " peringkat " + userID[x].ranking
+                  };
+                  arrdata.push(objintr);
+                }
+              }
+              let notifChallenge_ = new notifChallenge();
+
+              notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
+              notifChallenge_.datetime = timedate;
+              notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
+              notifChallenge_.isSend = false;
+              notifChallenge_.session = session;
+              notifChallenge_.title = titleuntukPemenang;
+              notifChallenge_.description = descriptionuntukPemenang;
+              notifChallenge_.nameChallenge = nameChallenge;
+              notifChallenge_.type = "untukPemenang";
+              notifChallenge_.userID = userID;
+
+              await this.notifChallengeService.create(notifChallenge_);
+            }
           }
 
+        } else {
+          console.log(notifikasiPush)
         }
+
       }
 
     }
