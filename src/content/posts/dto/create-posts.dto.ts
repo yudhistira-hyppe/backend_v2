@@ -61,7 +61,7 @@ export class CreatePostsDto {
 export class CreatePostResponse {
     response_code: number;
     messages: Messages;
-    data: PostData;
+    data: any;
 }
 
 export class Metadata {
