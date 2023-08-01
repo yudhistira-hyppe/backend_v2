@@ -1660,15 +1660,12 @@ export class PostContentService {
 
     //Create Response
     let CreatePostResponse_ = new CreatePostResponse();
+    let dataResponse = await this.postService.findByPostId(Posts_._id.toString());
     let Messages_ = new Messages();
     Messages_.info = ["The process successful"];
     CreatePostResponse_.messages = Messages_;
     CreatePostResponse_.response_code = 202;
-    var pd = new PostData();
-    pd.postID = String(Posts_.postID);
-    pd.email = String(Posts_.email);
-    CreatePostResponse_.data = pd;
-
+    CreatePostResponse_.data = dataResponse;
     console.log('============================================== CREATE POST END ==============================================', JSON.stringify(CreatePostResponse_));
     return CreatePostResponse_;
   }
