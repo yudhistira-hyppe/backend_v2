@@ -41,6 +41,17 @@ export class notifChallengeService {
         return data;
     }
 
+    async updateStatussend(id: string, email: string) {
+        let data = await this.notifChallengeModel.updateOne({ "_id": id, "email": email },
+            {
+                $set: {
+                    "isSend": true,
+                },
+
+            });
+        return data;
+    }
+
     async findbyid(id: string) {
         var query = await this.notifChallengeModel.aggregate([
             {
@@ -52,6 +63,48 @@ export class notifChallengeService {
             }
 
         ]);
+        return query;
+    }
+
+    async listnotifchallenge() {
+        var pipeline = [];
+        pipeline.push(
+            {
+                $unwind: {
+                    path: '$userID',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: 'challenge',
+                    localField: 'challengeID',
+                    foreignField: '_id',
+                    as: 'challengedata',
+
+                },
+
+            },
+            {
+                $project: {
+                    "idUser": "$userID.idUser",
+                    "email": "$userID.email",
+                    "username": "$userID.username",
+                    "ranking": "$userID.ranking",
+                    "title": "$userID.title",
+                    "notification": "$userID.notification",
+                    "challengeID": 1,
+                    "subChallengeID": 1,
+                    "type": 1,
+                    "datetime": 1,
+                    "session": 1,
+                    "isSend": 1,
+                    "typeChallenge": { $arrayElemAt: ['$challengedata.objectChallenge', 0] },
+
+                }
+            }
+        );
+        var query = await this.notifChallengeModel.aggregate();
         return query;
     }
 }
