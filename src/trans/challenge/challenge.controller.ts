@@ -89,7 +89,24 @@ export class ChallengeController {
     insertdata.endTime = insertdata.startTime;
     insertdata.tampilStatusPengguna = request_json['tampilStatusPengguna'];
     insertdata.objectChallenge = request_json['objectChallenge'];
-    insertdata.statusChallenge = request_json['statusChallenge'];
+
+    if (request_json['statusChallenge'] == 'PUBLISH') {
+      var getdata = await this.challengeService.findAll(null, request_json['jenisChallenge'], null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+      if ((request_json['jenisChallenge'] == '647055de0435000059003462' && getdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && getdata.length >= 5)) {
+        insertdata.statusChallenge = 'DRAFT';
+      }
+      else {
+        insertdata.statusChallenge = request_json['statusChallenge'];
+      }
+    }
+    else {
+      insertdata.statusChallenge = request_json['statusChallenge'];
+    }
+
+    // return res.status(HttpStatus.OK).json({
+    //   response_code: 202,
+    //   statuschallenge : insertdata.statusChallenge
+    // });
 
     var arraymetrik = [];
     let setmetrik = {};
@@ -646,6 +663,21 @@ export class ChallengeController {
 
     if (request_json['statusChallenge'] == undefined) {
       throw new BadRequestException("Unabled to proceed, status challenge field is required");
+    }
+
+    if (request_json['statusChallenge'] == 'PUBLISH') {
+      var setjenischallenge = null;
+      if (request_json['jenisChallenge'] == null) {
+        setjenischallenge = getdata["jenisChallenge"].toString();
+      }
+      else {
+        setjenischallenge = request_json['jenisChallenge'];
+      }
+
+      var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+      if ((request_json['jenisChallenge'] == '647055de0435000059003462' && cekdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
+        request_json['statusChallenge'] = 'DRAFT';
+      }
     }
 
     if (getdata["statusChallenge"] == 'DRAFT') {
@@ -1208,6 +1240,15 @@ export class ChallengeController {
 
     // var mongo = require('mongoose');
     // setupdatedata._id = new mongo.Types.ObjectId(id);
+
+    if (statusChallenge == 'PUBLISH') {
+      var setjenischallenge = getdata["jenisChallenge"].toString();
+      var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+      if ((setjenischallenge == '647055de0435000059003462' && cekdata.length >= 3) || (setjenischallenge == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
+        statusChallenge = 'DRAFT';
+      }
+    }
+
     getdata.statusChallenge = statusChallenge;
     getdata.updatedAt = await this.util.getDateTimeString();
 
@@ -1552,336 +1593,7 @@ export class ChallengeController {
     // console.log(JSON.stringify(listsubchallenge));
   }
 
-  async notifchallenge(idChallenge: string) {
-    const mongoose = require('mongoose');
-    var ObjectId = require('mongodb').ObjectId;
 
-    var dt = new Date(Date.now());
-    dt.setHours(dt.getHours() + 7); // timestamp
-    dt = new Date(dt);
-
-    var strdate = dt.toISOString();
-    var repdate = strdate.replace('T', ' ');
-    var splitdate = repdate.split('.');
-    var timedate = splitdate[0];
-    var lengchal = null;
-    var datauserchall = null;
-    var datachallenge = null;
-    var arrdata = [];
-    var objintr = {};
-    var datasubchallenge = null;
-    var idsubchallenge = null;
-    var notifikasiPush = null;
-    var includeAkandatang = null;
-    var titleAkandatang = null;
-    var descriptionAkandatang = null;
-    var unitAkandatang = null;
-    var aturWaktuAkandatang = null;
-
-    var includechallengeDimulai = null;
-    var titlechallengeDimulai = null;
-    var descriptionchallengeDimulai = null;
-    var unitchallengeDimulai = null;
-    var aturWaktuchallengeDimulai = null;
-
-    var includeupdateLeaderboard = null;
-    var titleupdateLeaderboard = null;
-    var descriptionupdateLeaderboard = null;
-    var unitupdateLeaderboard = null;
-    var aturWaktuupdateLeaderboard = null;
-
-    var includechallengeAkanBerakhir = null;
-    var titlechallengeAkanBerakhir = null;
-    var descriptionchallengeAkanBerakhir = null;
-    var unitchallengeAkanBerakhir = null;
-    var aturWaktuchallengeAkanBerakhir = null;
-
-    var includeuntukPemenang = null;
-    var titleuntukPemenang = null;
-    var descriptionuntukPemenang = null;
-    var unituntukPemenang = null;
-    var aturWaktuuntukPemenang = null;
-
-    var includechallengeBerakhir = null;
-    var titlechallengeBerakhir = null;
-    var descriptionchallengeBerakhir = null;
-    var unitchallengeBerakhir = null;
-    var aturWaktuchallengeBerakhir = null;
-
-    var startTime = null;
-    var endTime = null;
-    var session = null;
-    var nameChallenge = null;
-    var userID = null;
-
-
-    try {
-      datauserchall = await this.userchallengeSS.listUserChallenge(idChallenge);
-    } catch (e) {
-      datauserchall = null;
-    }
-
-    if (datauserchall !== null && datauserchall.length > 0) {
-
-      for (let i = 0; i < datauserchall.length; i++) {
-        idsubchallenge = datauserchall[i].idSubChallenge;
-        notifikasiPush = datauserchall[i].notifikasiPush;
-        startTime = datauserchall[i].startDatetime;
-        endTime = datauserchall[i].endDatetime;
-        session = datauserchall[i].session;
-        nameChallenge = datauserchall[i].nameChallenge;
-        userID = datauserchall[i].userID;
-
-        if (notifikasiPush !== undefined && notifikasiPush.length > 0) {
-          let dataAkandatang = null;
-          let datachallengeDimulai = null;
-          let dataupdateLeaderboard = null;
-          let datachallengeAkanBerakhir = null;
-          let datachallengeBerakhir = null;
-          let datauntukPemenang = null;
-
-          try {
-            dataAkandatang = notifikasiPush[0].akanDatang;
-          } catch (e) {
-            dataAkandatang = [];
-          }
-          if (dataAkandatang.length > 0) {
-            includeAkandatang = dataAkandatang[0].include;
-            titleAkandatang = dataAkandatang[0].title;
-            descriptionAkandatang = dataAkandatang[0].description;
-            unitAkandatang = dataAkandatang[0].unit;
-            aturWaktuAkandatang = dataAkandatang[0].aturWaktu;
-            let dt = new Date(startTime);
-            dt.setHours(dt.getHours() + 7) + aturWaktuAkandatang; // timestamp
-            dt = new Date(dt);
-            let strdate = dt.toISOString();
-            let repdate = strdate.replace('T', ' ');
-            let splitdate = repdate.split('.');
-            let timedate = splitdate[0];
-
-            let notifChallenge_ = new notifChallenge();
-
-            notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
-            notifChallenge_.datetime = timedate;
-            notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
-            notifChallenge_.isSend = false;
-            notifChallenge_.session = session;
-            notifChallenge_.title = titleAkandatang;
-            notifChallenge_.description = descriptionAkandatang;
-            notifChallenge_.nameChallenge = nameChallenge;
-            notifChallenge_.type = "akanDatang";
-            notifChallenge_.userID = userID;
-
-            await this.notifChallengeService.create(notifChallenge_);
-          }
-
-
-          try {
-            datachallengeDimulai = notifikasiPush[0].challengeDimulai;
-          } catch (e) {
-            datachallengeDimulai = [];
-          }
-          if (datachallengeDimulai.length > 0) {
-            includechallengeDimulai = datachallengeDimulai[0].include;
-            titlechallengeDimulai = datachallengeDimulai[0].title;
-            descriptionchallengeDimulai = datachallengeDimulai[0].description;
-            unitchallengeDimulai = datachallengeDimulai[0].unit;
-            aturWaktuchallengeDimulai = datachallengeDimulai[0].aturWaktu;
-            let timedate = startTime;
-
-            let notifChallenge_ = new notifChallenge();
-
-            notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
-            notifChallenge_.datetime = timedate;
-            notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
-            notifChallenge_.isSend = false;
-            notifChallenge_.session = session;
-            notifChallenge_.title = titlechallengeDimulai;
-            notifChallenge_.description = descriptionchallengeDimulai;
-            notifChallenge_.nameChallenge = nameChallenge;
-            notifChallenge_.type = "challengeDimulai";
-            notifChallenge_.userID = userID;
-
-            await this.notifChallengeService.create(notifChallenge_);
-          }
-
-          try {
-            dataupdateLeaderboard = notifikasiPush[0].updateLeaderboard;
-          } catch (e) {
-            dataupdateLeaderboard = [];
-          }
-          if (dataupdateLeaderboard.length > 0) {
-            includeupdateLeaderboard = dataupdateLeaderboard[0].include;
-            titleupdateLeaderboard = dataupdateLeaderboard[0].title;
-            descriptionupdateLeaderboard = dataupdateLeaderboard[0].description;
-            unitupdateLeaderboard = dataupdateLeaderboard[0].unit;
-            aturWaktuupdateLeaderboard = dataupdateLeaderboard[0].aturWaktu;
-
-            let lengtime = aturWaktuupdateLeaderboard.length;
-
-            for (let i = 0; i < lengtime; i++) {
-              let dt = new Date(startTime);
-              dt.setHours(dt.getHours() + 7) + aturWaktuupdateLeaderboard[i]; // timestamp
-              dt = new Date(dt);
-              let strdate = dt.toISOString();
-              let repdate = strdate.replace('T', ' ');
-              let splitdate = repdate.split('.');
-              let timedate = splitdate[0];
-
-              let notifChallenge_ = new notifChallenge();
-
-              notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
-              notifChallenge_.datetime = timedate;
-              notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
-              notifChallenge_.isSend = false;
-              notifChallenge_.session = session;
-              notifChallenge_.title = titleupdateLeaderboard;
-              notifChallenge_.description = descriptionupdateLeaderboard;
-              notifChallenge_.nameChallenge = nameChallenge;
-              notifChallenge_.type = "updateLeaderboard";
-              notifChallenge_.userID = userID;
-
-              await this.notifChallengeService.create(notifChallenge_);
-
-            }
-          }
-
-          try {
-            datachallengeAkanBerakhir = notifikasiPush[0].challengeAkanBerakhir;
-          } catch (e) {
-            datachallengeAkanBerakhir = [];
-          }
-          if (datachallengeAkanBerakhir.length > 0) {
-            includechallengeAkanBerakhir = datachallengeAkanBerakhir[0].include;
-            titlechallengeAkanBerakhir = datachallengeAkanBerakhir[0].title;
-            descriptionchallengeAkanBerakhir = datachallengeAkanBerakhir[0].description;
-            unitchallengeAkanBerakhir = datachallengeAkanBerakhir[0].unit;
-            aturWaktuchallengeAkanBerakhir = datachallengeAkanBerakhir[0].aturWaktu;
-
-            let dt = new Date(endTime);
-            dt.setHours(dt.getHours() + 7) + aturWaktuchallengeAkanBerakhir; // timestamp
-            dt = new Date(dt);
-            let strdate = dt.toISOString();
-            let repdate = strdate.replace('T', ' ');
-            let splitdate = repdate.split('.');
-            let timedate = splitdate[0];
-            let notifChallenge_ = new notifChallenge();
-
-            notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
-            notifChallenge_.datetime = timedate;
-            notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
-            notifChallenge_.isSend = false;
-            notifChallenge_.session = session;
-            notifChallenge_.title = titlechallengeAkanBerakhir;
-            notifChallenge_.description = descriptionchallengeAkanBerakhir;
-            notifChallenge_.nameChallenge = nameChallenge;
-            notifChallenge_.type = "challengeAkanBerakhir";
-            notifChallenge_.userID = userID;
-
-            await this.notifChallengeService.create(notifChallenge_);
-          }
-
-          try {
-            datachallengeBerakhir = notifikasiPush[0].challengeBerakhir;
-          } catch (e) {
-            datachallengeBerakhir = [];
-          }
-          if (datachallengeBerakhir.length > 0) {
-            includechallengeBerakhir = datachallengeBerakhir[0].include;
-            titlechallengeBerakhir = datachallengeBerakhir[0].title;
-            descriptionchallengeBerakhir = datachallengeBerakhir[0].description;
-            unitchallengeBerakhir = datachallengeBerakhir[0].unit;
-            aturWaktuchallengeBerakhir = datachallengeBerakhir[0].aturWaktu;
-
-            let dt = new Date(endTime);
-            dt.setHours(dt.getHours() + 7) + aturWaktuchallengeBerakhir; // timestamp
-            dt = new Date(dt);
-            let strdate = dt.toISOString();
-            let repdate = strdate.replace('T', ' ');
-            let splitdate = repdate.split('.');
-            let timedate = splitdate[0];
-            let notifChallenge_ = new notifChallenge();
-
-            notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
-            notifChallenge_.datetime = timedate;
-            notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
-            notifChallenge_.isSend = false;
-            notifChallenge_.session = session;
-            notifChallenge_.title = titlechallengeBerakhir;
-            notifChallenge_.description = descriptionchallengeBerakhir;
-            notifChallenge_.nameChallenge = nameChallenge;
-            notifChallenge_.type = "challengeBerakhir";
-            notifChallenge_.userID = userID;
-
-            await this.notifChallengeService.create(notifChallenge_);
-          }
-
-
-          try {
-            datauntukPemenang = notifikasiPush[0].untukPemenang;
-          } catch (e) {
-            datauntukPemenang = [];
-          }
-          if (datauntukPemenang.length > 0) {
-            includeuntukPemenang = datauntukPemenang[0].include;
-            titleuntukPemenang = datauntukPemenang[0].title;
-            descriptionuntukPemenang = datauntukPemenang[0].description;
-            unituntukPemenang = datauntukPemenang[0].unit;
-            aturWaktuuntukPemenang = datauntukPemenang[0].aturWaktu;
-
-            let dt = new Date(endTime);
-            dt.setHours(dt.getHours() + 7) + aturWaktuuntukPemenang; // timestamp
-            dt = new Date(dt);
-            let strdate = dt.toISOString();
-            let repdate = strdate.replace('T', ' ');
-            let splitdate = repdate.split('.');
-            let timedate = splitdate[0];
-            let notifChallenge_ = new notifChallenge();
-
-            notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
-            notifChallenge_.datetime = timedate;
-            notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
-            notifChallenge_.isSend = false;
-            notifChallenge_.session = session;
-            notifChallenge_.title = titleuntukPemenang;
-            notifChallenge_.description = descriptionuntukPemenang;
-            notifChallenge_.nameChallenge = nameChallenge;
-            notifChallenge_.type = "untukPemenang";
-            notifChallenge_.userID = userID;
-
-            await this.notifChallengeService.create(notifChallenge_);
-          }
-
-        }
-      }
-
-    }
-
-  }
-
-  async checknonactivechallenge() {
-    var data = await this.challengeService.find();
-    var panjangdata = data.length;
-
-    for (var i = 0; i < data.length; i++) {
-      var getdata = data[i];
-      if (getdata.statusChallenge == 'DRAFT') {
-        var getdate = getdata.endChallenge + " " + getdata.endTime;
-        var convertold = new Date(getdate);
-        var getnow = await this.util.getDateTimeString();
-        var convertnow = new Date(getnow);
-
-        var datenow = convertold.getTime() - convertnow.getTime();
-        if (datenow < 0) {
-          var mongo = require('mongoose');
-          var konvertid = new mongo.Types.ObjectId(getdata._id);
-          var updatedata = getdata;
-          updatedata.statusChallenge = 'NONACTIVE';
-          await this.challengeService.update(konvertid, updatedata);
-        }
-      }
-    }
-  }
 
   @UseGuards(JwtAuthGuard)
   @Post('listing/userchallenge')
@@ -2470,5 +2182,498 @@ export class ChallengeController {
       "data": data,
       "message": messages
     }
+  }
+
+  async notifchallenge(idChallenge: string) {
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+    var lengchal = null;
+    var datauserchall = null;
+    var datachallenge = null;
+    var datasubchallenge = null;
+    var idsubchallenge = null;
+    var notifikasiPush = null;
+    var includeAkandatang = null;
+    var titleAkandatang = null;
+    var descriptionAkandatang = null;
+    var unitAkandatang = null;
+    var aturWaktuAkandatang = null;
+
+    var includechallengeDimulai = null;
+    var titlechallengeDimulai = null;
+    var descriptionchallengeDimulai = null;
+    var unitchallengeDimulai = null;
+    var aturWaktuchallengeDimulai = null;
+
+    var includeupdateLeaderboard = null;
+    var titleupdateLeaderboard = null;
+    var descriptionupdateLeaderboard = null;
+    var unitupdateLeaderboard = null;
+    var aturWaktuupdateLeaderboard = null;
+
+    var includechallengeAkanBerakhir = null;
+    var titlechallengeAkanBerakhir = null;
+    var descriptionchallengeAkanBerakhir = null;
+    var unitchallengeAkanBerakhir = null;
+    var aturWaktuchallengeAkanBerakhir = null;
+
+    var includeuntukPemenang = null;
+    var titleuntukPemenang = null;
+    var descriptionuntukPemenang = null;
+    var unituntukPemenang = null;
+    var aturWaktuuntukPemenang = null;
+
+    var includechallengeBerakhir = null;
+    var titlechallengeBerakhir = null;
+    var descriptionchallengeBerakhir = null;
+    var unitchallengeBerakhir = null;
+    var aturWaktuchallengeBerakhir = null;
+
+    var startTime = null;
+    var endTime = null;
+    var session = null;
+    var nameChallenge = null;
+    var userID = null;
+
+
+    try {
+      datauserchall = await this.userchallengeSS.listUserChallenge(idChallenge);
+    } catch (e) {
+      datauserchall = null;
+    }
+
+    if (datauserchall !== null && datauserchall.length > 0) {
+
+      for (let i = 0; i < datauserchall.length; i++) {
+
+        idsubchallenge = datauserchall[i].idSubChallenge;
+        notifikasiPush = datauserchall[i].notifikasiPush;
+        startTime = datauserchall[i].startDatetime;
+        endTime = datauserchall[i].endDatetime;
+        session = datauserchall[i].session;
+        nameChallenge = datauserchall[i].nameChallenge;
+        userID = datauserchall[i].userID;
+
+        if (notifikasiPush !== undefined && notifikasiPush.length > 0) {
+          let dataAkandatang = null;
+          let datachallengeDimulai = null;
+          let dataupdateLeaderboard = null;
+          let datachallengeAkanBerakhir = null;
+          let datachallengeBerakhir = null;
+          let datauntukPemenang = null;
+
+          try {
+            dataAkandatang = notifikasiPush[0].akanDatang;
+          } catch (e) {
+            dataAkandatang = [];
+          }
+          if (dataAkandatang.length > 0) {
+            includeAkandatang = dataAkandatang[0].include;
+            titleAkandatang = dataAkandatang[0].title;
+            descriptionAkandatang = dataAkandatang[0].description;
+            unitAkandatang = dataAkandatang[0].unit;
+            aturWaktuAkandatang = dataAkandatang[0].aturWaktu;
+            let dt = new Date(startTime);
+            dt.setHours(dt.getHours() + 7) + aturWaktuAkandatang; // timestamp
+            dt = new Date(dt);
+            let strdate = dt.toISOString();
+            let repdate = strdate.replace('T', ' ');
+            let splitdate = repdate.split('.');
+            let timedate = splitdate[0];
+
+            if (includeAkandatang == "YES") {
+              let arrdata = [];
+              if (userID !== undefined && userID.length > 0) {
+
+                for (let x = 0; x < userID.length; x++) {
+
+                  let objintr = {
+                    "idUser": userID[x].idUser,
+                    "email": userID[x].email,
+                    "username": userID[x].username,
+                    "ranking": userID[x].ranking,
+                    "title": titleAkandatang,
+                    "notification": descriptionAkandatang
+                  };
+                  arrdata.push(objintr);
+                }
+              }
+              let notifChallenge_ = new notifChallenge();
+              notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
+              notifChallenge_.datetime = timedate;
+              notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
+              notifChallenge_.isSend = false;
+              notifChallenge_.session = session;
+              notifChallenge_.title = titleAkandatang;
+              notifChallenge_.description = descriptionAkandatang;
+              notifChallenge_.nameChallenge = nameChallenge;
+              notifChallenge_.type = "akanDatang";
+              notifChallenge_.userID = arrdata;
+
+              await this.notifChallengeService.create(notifChallenge_);
+            }
+
+
+          }
+
+
+          try {
+            datachallengeDimulai = notifikasiPush[0].challengeDimulai;
+          } catch (e) {
+            datachallengeDimulai = [];
+          }
+          if (datachallengeDimulai.length > 0) {
+            includechallengeDimulai = datachallengeDimulai[0].include;
+            titlechallengeDimulai = datachallengeDimulai[0].title;
+            descriptionchallengeDimulai = datachallengeDimulai[0].description;
+            unitchallengeDimulai = datachallengeDimulai[0].unit;
+            aturWaktuchallengeDimulai = datachallengeDimulai[0].aturWaktu;
+            let timedate = startTime;
+
+            if (includechallengeDimulai == "YES") {
+              let arrdata = [];
+              if (userID !== undefined && userID.length > 0) {
+
+                for (let x = 0; x < userID.length; x++) {
+
+                  let objintr = {
+                    "idUser": userID[x].idUser,
+                    "email": userID[x].email,
+                    "username": userID[x].username,
+                    "ranking": userID[x].ranking,
+                    "title": titlechallengeDimulai,
+                    "notification": descriptionchallengeDimulai
+                  };
+                  arrdata.push(objintr);
+                }
+              }
+              let notifChallenge_ = new notifChallenge();
+
+              notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
+              notifChallenge_.datetime = timedate;
+              notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
+              notifChallenge_.isSend = false;
+              notifChallenge_.session = session;
+              notifChallenge_.title = titlechallengeDimulai;
+              notifChallenge_.description = descriptionchallengeDimulai;
+              notifChallenge_.nameChallenge = nameChallenge;
+              notifChallenge_.type = "challengeDimulai";
+              notifChallenge_.userID = arrdata;
+
+              await this.notifChallengeService.create(notifChallenge_);
+            }
+          }
+
+          try {
+            dataupdateLeaderboard = notifikasiPush[0].updateLeaderboard;
+          } catch (e) {
+            dataupdateLeaderboard = [];
+          }
+          if (dataupdateLeaderboard.length > 0) {
+            includeupdateLeaderboard = dataupdateLeaderboard[0].include;
+            titleupdateLeaderboard = dataupdateLeaderboard[0].title;
+            descriptionupdateLeaderboard = dataupdateLeaderboard[0].description;
+            unitupdateLeaderboard = dataupdateLeaderboard[0].unit;
+            aturWaktuupdateLeaderboard = dataupdateLeaderboard[0].aturWaktu;
+
+            let lengtime = aturWaktuupdateLeaderboard.length;
+            if (includeupdateLeaderboard == "YES") {
+              let arrdata = [];
+              for (let i = 0; i < lengtime; i++) {
+                let dt = new Date(startTime);
+                dt.setHours(dt.getHours() + 7) + aturWaktuupdateLeaderboard[i]; // timestamp
+                dt = new Date(dt);
+                let strdate = dt.toISOString();
+                let repdate = strdate.replace('T', ' ');
+                let splitdate = repdate.split('.');
+                let timedate = splitdate[0];
+
+
+
+                if (userID !== undefined && userID.length > 0) {
+
+                  for (let x = 0; x < userID.length; x++) {
+                    let ket1 = descriptionupdateLeaderboard.replace("$username", userID[x].username);
+                    let ket2 = ket1.replace("$ranking", userID[x].ranking);
+                    var ket3 = ket2.replace("$title", titleupdateLeaderboard);
+                    let objintr = {
+                      "idUser": userID[x].idUser,
+                      "email": userID[x].email,
+                      "username": userID[x].username,
+                      "ranking": userID[x].ranking,
+                      "title": titleupdateLeaderboard,
+                      "notification": ket3
+                    };
+                    arrdata.push(objintr);
+                  }
+                }
+
+                let notifChallenge_ = new notifChallenge();
+
+                notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
+                notifChallenge_.datetime = timedate;
+                notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
+                notifChallenge_.isSend = false;
+                notifChallenge_.session = session;
+                notifChallenge_.title = titleupdateLeaderboard;
+                notifChallenge_.description = ket3;
+                notifChallenge_.nameChallenge = nameChallenge;
+                notifChallenge_.type = "updateLeaderboard";
+                notifChallenge_.userID = arrdata;
+
+                await this.notifChallengeService.create(notifChallenge_);
+
+              }
+            }
+          }
+
+          try {
+            datachallengeAkanBerakhir = notifikasiPush[0].challengeAkanBerakhir;
+          } catch (e) {
+            datachallengeAkanBerakhir = [];
+          }
+          if (datachallengeAkanBerakhir.length > 0) {
+            includechallengeAkanBerakhir = datachallengeAkanBerakhir[0].include;
+            titlechallengeAkanBerakhir = datachallengeAkanBerakhir[0].title;
+            descriptionchallengeAkanBerakhir = datachallengeAkanBerakhir[0].description;
+            unitchallengeAkanBerakhir = datachallengeAkanBerakhir[0].unit;
+            aturWaktuchallengeAkanBerakhir = datachallengeAkanBerakhir[0].aturWaktu;
+
+            let dt = new Date(endTime);
+            dt.setHours(dt.getHours() + 7) + aturWaktuchallengeAkanBerakhir; // timestamp
+            dt = new Date(dt);
+            let strdate = dt.toISOString();
+            let repdate = strdate.replace('T', ' ');
+            let splitdate = repdate.split('.');
+            let timedate = splitdate[0];
+
+            if (includechallengeAkanBerakhir == "YES") {
+              let arrdata = [];
+              if (userID !== undefined && userID.length > 0) {
+
+                for (let x = 0; x < userID.length; x++) {
+
+                  let objintr = {
+                    "idUser": userID[x].idUser,
+                    "email": userID[x].email,
+                    "username": userID[x].username,
+                    "ranking": userID[x].ranking,
+                    "title": titlechallengeAkanBerakhir,
+                    "notification": descriptionchallengeAkanBerakhir
+                  };
+                  arrdata.push(objintr);
+                }
+              }
+              let notifChallenge_ = new notifChallenge();
+
+              notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
+              notifChallenge_.datetime = timedate;
+              notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
+              notifChallenge_.isSend = false;
+              notifChallenge_.session = session;
+              notifChallenge_.title = titlechallengeAkanBerakhir;
+              notifChallenge_.description = descriptionchallengeAkanBerakhir;
+              notifChallenge_.nameChallenge = nameChallenge;
+              notifChallenge_.type = "challengeAkanBerakhir";
+              notifChallenge_.userID = arrdata;
+
+              await this.notifChallengeService.create(notifChallenge_);
+            }
+          }
+
+          try {
+            datachallengeBerakhir = notifikasiPush[0].challengeBerakhir;
+          } catch (e) {
+            datachallengeBerakhir = [];
+          }
+          if (datachallengeBerakhir.length > 0) {
+            includechallengeBerakhir = datachallengeBerakhir[0].include;
+            titlechallengeBerakhir = datachallengeBerakhir[0].title;
+            descriptionchallengeBerakhir = datachallengeBerakhir[0].description;
+            unitchallengeBerakhir = datachallengeBerakhir[0].unit;
+            aturWaktuchallengeBerakhir = datachallengeBerakhir[0].aturWaktu;
+
+            let dt = new Date(endTime);
+            dt.setHours(dt.getHours() + 7) + aturWaktuchallengeBerakhir; // timestamp
+            dt = new Date(dt);
+            let strdate = dt.toISOString();
+            let repdate = strdate.replace('T', ' ');
+            let splitdate = repdate.split('.');
+            let timedate = splitdate[0];
+
+            if (includechallengeBerakhir == "YES") {
+              let arrdata = [];
+              if (userID !== undefined && userID.length > 0) {
+
+                for (let x = 0; x < userID.length; x++) {
+
+                  let objintr = {
+                    "idUser": userID[x].idUser,
+                    "email": userID[x].email,
+                    "username": userID[x].username,
+                    "ranking": userID[x].ranking,
+                    "title": titlechallengeBerakhir,
+                    "notification": descriptionchallengeBerakhir
+                  };
+                  arrdata.push(objintr);
+                }
+              }
+              let notifChallenge_ = new notifChallenge();
+
+              notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
+              notifChallenge_.datetime = timedate;
+              notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
+              notifChallenge_.isSend = false;
+              notifChallenge_.session = session;
+              notifChallenge_.title = titlechallengeBerakhir;
+              notifChallenge_.description = descriptionchallengeBerakhir;
+              notifChallenge_.nameChallenge = nameChallenge;
+              notifChallenge_.type = "challengeBerakhir";
+              notifChallenge_.userID = arrdata;
+
+              await this.notifChallengeService.create(notifChallenge_);
+            }
+          }
+
+
+          try {
+            datauntukPemenang = notifikasiPush[0].untukPemenang;
+          } catch (e) {
+            datauntukPemenang = [];
+          }
+          if (datauntukPemenang.length > 0) {
+            includeuntukPemenang = datauntukPemenang[0].include;
+            titleuntukPemenang = datauntukPemenang[0].title;
+            descriptionuntukPemenang = datauntukPemenang[0].description;
+            unituntukPemenang = datauntukPemenang[0].unit;
+            aturWaktuuntukPemenang = datauntukPemenang[0].aturWaktu;
+
+            let dt = new Date(endTime);
+            dt.setHours(dt.getHours() + 7) + aturWaktuuntukPemenang; // timestamp
+            dt = new Date(dt);
+            let strdate = dt.toISOString();
+            let repdate = strdate.replace('T', ' ');
+            let splitdate = repdate.split('.');
+            let timedate = splitdate[0];
+
+            if (includeuntukPemenang == "YES") {
+              let arrdata = [];
+              if (userID !== undefined && userID.length > 0) {
+
+                for (let x = 0; x < userID.length; x++) {
+
+                  let ket1 = descriptionuntukPemenang.replace("$username", userID[x].username);
+                  let ket2 = ket1.replace("$ranking", userID[x].ranking);
+                  var ket3 = ket2.replace("$title", titleuntukPemenang);
+
+                  let objintr = {
+                    "idUser": userID[x].idUser,
+                    "email": userID[x].email,
+                    "username": userID[x].username,
+                    "ranking": userID[x].ranking,
+                    "title": titleuntukPemenang,
+                    "notification": ket3
+                  }
+                  arrdata.push(objintr);
+                }
+              }
+              let notifChallenge_ = new notifChallenge();
+
+              notifChallenge_.challengeID = mongoose.Types.ObjectId(idChallenge);
+              notifChallenge_.datetime = timedate;
+              notifChallenge_.subChallengeID = mongoose.Types.ObjectId(idsubchallenge);
+              notifChallenge_.isSend = false;
+              notifChallenge_.session = session;
+              notifChallenge_.title = titleuntukPemenang;
+              notifChallenge_.description = ket3;
+              notifChallenge_.nameChallenge = nameChallenge;
+              notifChallenge_.type = "untukPemenang";
+              notifChallenge_.userID = userID;
+
+              await this.notifChallengeService.create(notifChallenge_);
+            }
+          }
+
+        } else {
+          console.log(notifikasiPush)
+        }
+
+      }
+
+    }
+
+  }
+
+  async checknonactivechallenge() {
+    var data = await this.challengeService.find();
+    var panjangdata = data.length;
+
+    for (var i = 0; i < data.length; i++) {
+      var getdata = data[i];
+      if (getdata.statusChallenge == 'DRAFT') {
+        var getdate = getdata.endChallenge + " " + getdata.endTime;
+        var convertold = new Date(getdate);
+        var getnow = await this.util.getDateTimeString();
+        var convertnow = new Date(getnow);
+
+        var datenow = convertold.getTime() - convertnow.getTime();
+        if (datenow < 0) {
+          var mongo = require('mongoose');
+          var konvertid = new mongo.Types.ObjectId(getdata._id);
+          var updatedata = getdata;
+          updatedata.statusChallenge = 'NONACTIVE';
+          await this.challengeService.update(konvertid, updatedata);
+        }
+      }
+    }
+  }
+
+  async sendNotifeChallenge() {
+
+    var datanotif = null;
+    var email = null;
+    var body = null;
+    var title = null;
+    var timenow = null;
+    var datetime = null;
+    var challengeID = null;
+    var typeChallenge = null;
+    var id = null;
+    try {
+      datanotif = await this.notifChallengeService.listnotifchallenge();
+    } catch (e) {
+      datanotif = null;
+    }
+    timenow = new Date(Date.now());
+    if (datanotif !== null && datanotif.length > 0) {
+
+      for (let i = 0; i < datanotif.length; i++) {
+        id = datanotif[i]._id;
+        challengeID = datanotif[i].challengeID;
+        email = datanotif[i].email;
+        title = datanotif[i].title;
+        body = datanotif[i].notification;
+        datetime = datanotif[i].datetime;
+        typeChallenge = datanotif[i].typeChallenge;
+        if (timenow == new Date(datetime)) {
+
+          await this.util.sendNotifChallenge(email, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+          await this.notifChallengeService.updateStatussend(id.toString(), email);
+
+        }
+
+      }
+
+    }
+
   }
 }
