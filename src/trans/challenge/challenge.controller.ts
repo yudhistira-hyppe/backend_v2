@@ -423,7 +423,7 @@ export class ChallengeController {
 
     var setnotifikasi = {};
     var listnotifikasipush = ['akanDatang', 'challengeDimulai', 'updateLeaderboard', 'challengeAkanBerakhir', 'challengeBerakhir', 'untukPemenang'];
-    var listvariable = ['include', 'title', 'description', 'unit', 'aturWaktu'];
+    var listvariable = ['include', 'title', 'description', 'descriptionEN', 'unit', 'aturWaktu'];
     for (var i = 0; i < listnotifikasipush.length; i++) {
       var tempnotifikasi = {};
       var getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_include';
@@ -1038,7 +1038,7 @@ export class ChallengeController {
 
       var setnotifikasi = {};
       var listnotifikasipush = ['akanDatang', 'challengeDimulai', 'updateLeaderboard', 'challengeAkanBerakhir', 'challengeBerakhir', 'untukPemenang'];
-      var listvariable = ['include', 'title', 'description', 'unit', 'aturWaktu'];
+      var listvariable = ['include', 'title', 'description', 'descriptionEN', 'unit', 'aturWaktu'];
       for (var i = 0; i < listnotifikasipush.length; i++) {
         var tempnotifikasi = {};
         var getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_include';
