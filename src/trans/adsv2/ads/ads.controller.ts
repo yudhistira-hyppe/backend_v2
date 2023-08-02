@@ -22,8 +22,9 @@ import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { OssContentPictService } from '../../../content/posts/osscontentpict.service';
 import { AdsLogsDto } from '../adslog/dto/adslog.dto';
 import { AdslogsService } from '../adslog/adslog.service';
-import { AccountbalancesService } from 'src/trans/accountbalances/accountbalances.service';
-import { CreateAccountbalancesDto } from 'src/trans/accountbalances/dto/create-accountbalances.dto';
+import { AccountbalancesService } from '../../../trans/accountbalances/accountbalances.service';
+import { CreateAccountbalancesDto } from '../../../trans/accountbalances/dto/create-accountbalances.dto';
+import { AdsBalaceCreditService } from '../adsbalacecredit/adsbalacecredit.service';
 const sharp = require('sharp');
 
 @Controller('api/adsv2/ads')
@@ -45,6 +46,7 @@ export class AdsController {
         private readonly ossContentPictService: OssContentPictService, 
         private readonly adslogsService: AdslogsService,
         private accountbalancesService: AccountbalancesService,
+        private adsBalaceCreditService: AdsBalaceCreditService,
         private readonly adsService: AdsService) {
         this.locks = new Map();
     }
@@ -376,7 +378,20 @@ export class AdsController {
                 AdsDto_.status = "DRAFT";
             }else{
                 if (AdsDto_.status == undefined) {
-                    AdsDto_.status = "UNDER_REVIEW";
+                    var dataBalance = await this.adsBalaceCreditService.findsaldoKredit(ubasic._id);
+                    if (await this.utilsService.ceckData(dataBalance)){
+                        if (dataBalance.length > 0) {
+                            if (dataBalance[0].saldoKredit > AdsDto_.credit) {
+                                AdsDto_.status = "UNDER_REVIEW";
+                            } else {
+                                AdsDto_.status = "DRAFT";
+                            }
+                        } else {
+                            AdsDto_.status = "DRAFT";
+                        }
+                    }else{
+                        AdsDto_.status = "DRAFT";
+                    }
                 }
             }
         }
