@@ -3369,7 +3369,13 @@ export class PostContentService {
         if (ns == 'mediavideos') {
           let video = await this.videoService.findOne(String(med.oid));
           if (video.apsara == true) {
-            vids.push(video.apsaraId);
+            let getApsara = await this.getVideoApsara([video.apsaraId]);
+            if (getApsara != undefined && getApsara.VideoList != undefined && getApsara.VideoList.length > 0) {
+              let vi = getApsara.VideoList[0];
+              if (video.apsaraId == vi.VideoId) {
+                PostData_.mediaThumbEndpoint = vi.CoverURL;
+              }
+            }
             PostData_.apsaraId = String(video.apsaraId);
             PostData_.isApsara = true;
           } else {
@@ -3405,7 +3411,13 @@ export class PostContentService {
         } else if (ns == 'mediadiaries') {
           let diary = await this.diaryService.findOne(String(med.oid));
           if (diary.apsara == true) {
-            vids.push(diary.apsaraId);
+            let getApsara = await this.getVideoApsara([diary.apsaraId]);
+            if (getApsara != undefined && getApsara.VideoList != undefined && getApsara.VideoList.length > 0) {
+              let vi = getApsara.VideoList[0];
+              if (diary.apsaraId == vi.VideoId) {
+                PostData_.mediaThumbEndpoint = vi.CoverURL;
+              }
+            }
             PostData_.apsaraId = String(diary.apsaraId);
             PostData_.isApsara = true;
           } else {
@@ -3420,7 +3432,13 @@ export class PostContentService {
 
           if (story.mediaType == 'video') {
             if (story.apsara == true) {
-              vids.push(story.apsaraId);
+              let getApsara = await this.getVideoApsara([story.apsaraId]);
+              if (getApsara != undefined && getApsara.VideoList != undefined && getApsara.VideoList.length > 0) {
+                let vi = getApsara.VideoList[0];
+                if (story.apsaraId == vi.VideoId) {
+                  PostData_.mediaThumbEndpoint = vi.CoverURL;
+                }
+              }
               PostData_.apsaraId = String(story.apsaraId);
               PostData_.isApsara = true;
             } else {
