@@ -2648,6 +2648,7 @@ export class ChallengeController {
     var challengeID = null;
     var typeChallenge = null;
     var id = null;
+    var type = null;
     try {
       datanotif = await this.notifChallengeService.listnotifchallenge();
     } catch (e) {
@@ -2663,11 +2664,16 @@ export class ChallengeController {
         title = datanotif[i].title;
         body = datanotif[i].notification;
         datetime = datanotif[i].datetime;
+        type = datanotif[i].type;
         typeChallenge = datanotif[i].typeChallenge;
         if (timenow == new Date(datetime)) {
 
-          await this.util.sendNotifChallenge(email, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
-          await this.notifChallengeService.updateStatussend(id.toString(), email);
+          if (type == "untukPemenang") {
+
+          } else {
+            await this.util.sendNotifChallenge(email, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+            await this.notifChallengeService.updateStatussend(id.toString(), email);
+          }
 
         }
 

@@ -131,59 +131,11 @@ export class UserchallengesService {
                         $arrayElemAt: ["$subChallenge_data.session", 0]
                     },
                     "timenow": 1,
-                    // "status": {
-                    //     $cond: {
-                    //         if: {
-                    //             $and: [
-                    //                 {
-                    //                     $lte:
-                    //                         [
-                    //                             "$timenow",
-                    //                             "$endDatetime",
 
-                    //                         ]
-                    //                 },
-                    //                 {
-                    //                     $gte:
-                    //                         [
-                    //                             "$timenow",
-                    //                             "$startDatetime",
-
-                    //                         ]
-                    //                 },
-
-                    //             ]
-                    //         },
-                    //         then: "BERLANGSUNG",
-                    //         else:
-                    //         {
-                    //             $cond: {
-                    //                 if: {
-                    //                     $and: [
-                    //                         {
-                    //                             $lt:
-                    //                                 [
-                    //                                     "$endDatetime",
-                    //                                     "$timenow",
-                    //                                 ]
-                    //                         },
-
-                    //                     ]
-                    //                 },
-                    //                 else: "AKAN DATANG",
-                    //                 then: "BERAKHIR"
-                    //             }
-                    //         },
-                    //     }
-                    // },
 
                 }
             },
-            // {
-            //     $match: {
-            //         "status": "BERLANGSUNG"
-            //     }
-            // },
+
         ]);
         return query;
     }
