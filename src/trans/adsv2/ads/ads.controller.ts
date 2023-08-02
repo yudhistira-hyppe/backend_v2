@@ -1145,7 +1145,7 @@ export class AdsController {
         body.type_ads = array_type_ads;
 
         try {
-            const ads_dashboard = await this.adsService.list_reward(body.name, body.startdate, body.enddate, body.gender, body.age, body.areas, body.similarity, body.page, body.limit, body.sorting); 
+            const ads_dashboard = await this.adsService.list_reward(body.name, body.startdate, body.enddate, body.gender, body.age, body.areas, body.similarity, body.page, body.limit, body.sorting, body.adsId); 
 
             return await this.errorHandler.generateAcceptResponseCodeWithData(
                 "Get Ads List succesfully", ads_dashboard, ads_dashboard.length, body.page
