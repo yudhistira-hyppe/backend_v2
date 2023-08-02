@@ -72,6 +72,9 @@ export class Challenge {
     
     @Prop([{ type: Object }])
     notifikasiPush: any[];
+
+    @Prop([])
+    listParticipant: [];
 }
 
 export const ChallengeSchema = SchemaFactory.createForClass(Challenge);
