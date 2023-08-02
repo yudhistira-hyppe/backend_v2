@@ -167,10 +167,10 @@ export class PostContentService {
 
     const mime = file.mimetype;
     if (mime.startsWith('video')) {
-      console.log('============================================== CREATE POST TYPE ' + body._id +' ==============================================', mime);
+      console.log('============================================== CREATE POST TYPE ' + body.postID +' ==============================================', mime);
       return this.createNewPostVideoV5(file, body, data_userbasics);
     } else {
-      console.log('============================================== CREATE POST TYPE ' + body._id +' ==============================================', mime);
+      console.log('============================================== CREATE POST TYPE ' + body.postID +' ==============================================', mime);
       return this.createNewPostPictV5(file, body, data_userbasics);
     }
   }
@@ -3139,7 +3139,7 @@ export class PostContentService {
     } 
 
     //Create Post
-    let dataPost = await this.PostsModel.create(Posts_);
+    await this.PostsModel.create(Posts_);
 
     //Update Music
     if (body.musicId != undefined) {
@@ -3150,28 +3150,310 @@ export class PostContentService {
     this.cmodService.cmodImage(Posts_.postID.toString(), url_filename);
 
     //Create Response
+    let dataPosts = await this.postService.findByPostId(Posts_._id.toString());
+    var dataResponseGenerate = await this.genrateDataPost(dataPosts, data_userbasics);
     let CreatePostResponse_ = new CreatePostResponse();
     let Messages_ = new Messages();
     Messages_.info = ["The process successful"];
     CreatePostResponse_.messages = Messages_;
     CreatePostResponse_.response_code = 202;
-    let dataResponse = await this.postService.findByPostId(Posts_._id.toString());
-    var avatar = await this.utilService.getAvatarUser(Posts_.email.toString());
-    var username = await this.utilService.getUsertname(Posts_.email.toString());
-    dataResponse["username"] = username;
-    dataResponse["avatar"] = avatar;
-    dataResponse["isLiked"] = false;
-    dataResponse["privacy"] = {
-      isCelebrity: (data_userbasics.isCelebrity != undefined) ? data_userbasics.isCelebrity : false,
-      isIdVerified: (data_userbasics.isIdVerified != undefined) ? data_userbasics.isIdVerified : false,
-      isPrivate: (data_userbasics.isPrivate != undefined) ? data_userbasics.isPrivate : false,
-      isFollowPrivate: (data_userbasics.isFollowPrivate != undefined) ? data_userbasics.isFollowPrivate : false,
-      isPostPrivate: (data_userbasics.isPostPrivate != undefined) ? data_userbasics.isPostPrivate : false,
-    };
-    CreatePostResponse_.data = dataResponse;
-
+    CreatePostResponse_.data = dataResponseGenerate;
     console.log('============================================== CREATE POST END ==============================================', JSON.stringify(CreatePostResponse_));
     return CreatePostResponse_;
+  }
+
+  async genrateDataPost(Posts_: Posts, data_userbasics: Userbasic) {
+    let PostData_ = new PostData();
+    PostData_.isLiked = false;
+    PostData_.active = Posts_.active;
+    PostData_.allowComments = Posts_.allowComments;
+    PostData_.certified = Posts_.certified;
+    PostData_.createdAt = Posts_.createdAt.toString();
+    PostData_.updatedAt = Posts_.updatedAt.toString();
+    PostData_.description = Posts_.description.toString();
+    PostData_.email = Posts_.email.toString();
+    PostData_.comment = [];
+    PostData_.comments = 0;
+
+    //PRIPACY
+    let privacy = new Privacy();
+    privacy.isPostPrivate = false;
+    privacy.isPrivate = false;
+    privacy.isCelebrity = false;
+    var getVerified = false;
+    if (data_userbasics.statusKyc != undefined) {
+      if (data_userbasics.statusKyc.toString() == "verified") {
+        getVerified = true;
+      }
+    }
+    privacy.isIdVerified = getVerified;
+    PostData_.privacy = privacy;
+
+    //INSIGHT
+    let InsightPost_ = new InsightPost();
+    InsightPost_.likes = Number(Posts_.likes);
+    InsightPost_.views = Number(Posts_.views);
+    InsightPost_.shares = Number(Posts_.shares);
+    InsightPost_.comments = Number(Posts_.comments);
+    PostData_.insight = InsightPost_;
+
+    //BOOSTED
+    var boostedRes = [];
+    if (Posts_.boosted != undefined) {
+      if (Posts_.boosted.length > 0) {
+        PostData_.boosted = Posts_.boosted;
+        PostData_.isBoost = Posts_.isBoost;
+        for (var p = 0; p < Posts_.boosted.length; p++) {
+          var CurrentDate = new Date(await (await this.utilService.getDateTime()).toISOString());
+          var DateBoostStart = new Date(Posts_.boosted[p].boostSession.start.split(" ")[0] + "T" + Posts_.boosted[p].boostSession.start.split(" ")[1] + ".000Z")
+          var DateBoostEnd = new Date(Posts_.boosted[p].boostSession.end.split(" ")[0] + "T" + Posts_.boosted[p].boostSession.end.split(" ")[1] + ".000Z")
+          var boostedData = {};
+          var boostedStatus = "TIDAK ADA";
+          if ((DateBoostStart < CurrentDate) && (CurrentDate < DateBoostEnd)) {
+            boostedStatus = "BERLANGSUNG";
+            boostedData["type"] = Posts_.boosted[p].type
+            boostedData["boostDate"] = Posts_.boosted[p].boostDate
+            boostedData["boostInterval"] = Posts_.boosted[p].boostInterval
+            boostedData["boostSession"] = Posts_.boosted[p].boostSession
+            boostedData["boostViewer"] = Posts_.boosted[p].boostViewer
+          } else if ((DateBoostStart > CurrentDate) && (DateBoostEnd > CurrentDate)) {
+            boostedStatus = "AKAN DATANG";
+            boostedData["type"] = Posts_.boosted[p].type
+            boostedData["boostDate"] = Posts_.boosted[p].boostDate
+            boostedData["boostInterval"] = Posts_.boosted[p].boostInterval
+            boostedData["boostSession"] = Posts_.boosted[p].boostSession
+            boostedData["boostViewer"] = Posts_.boosted[p].boostViewer
+          }
+          if (Object.keys(boostedData).length > 0) {
+            boostedRes.push(boostedData);
+          }
+        }
+        PostData_.boosted = boostedRes;
+        if (boostedRes.length > 0) {
+          PostData_.boostJangkauan = (boostedRes[0].boostViewer != undefined) ? boostedRes[0].boostViewer.length : 0;
+        }
+        PostData_.statusBoost = boostedStatus;
+      }
+    }
+    if (PostData_.reportedStatus != undefined) {
+      PostData_.reportedStatus = Posts_.reportedStatus;
+    }
+    if (PostData_.reportedUserCount != undefined) {
+      PostData_.reportedUserCount = Number(Posts_.reportedUserCount);
+    }
+
+    //MUSIC
+    var music = {}
+    let thumnail_data: string[] = [];
+    if (Posts_.musicId != undefined) {
+      var dataMusic = await this.mediamusicService.findOneMusic(Posts_.musicId.toString());
+      if (await this.utilService.ceckData(dataMusic)) {
+        if (dataMusic.apsaraThumnail != undefined && dataMusic.apsaraThumnail != "" && dataMusic.apsaraThumnail != null) {
+          thumnail_data.push(dataMusic.apsaraThumnail.toString());
+        }
+      }
+      var dataApsaraThumnail = await this.mediamusicService.getImageApsara(thumnail_data);
+      if (await this.utilService.ceckData(dataMusic)) {
+        music["_id"] = Posts_.musicId.toString()
+        music["musicTitle"] = dataMusic.musicTitle;
+        music["artistName"] = dataMusic.artistName;
+        music["albumName"] = dataMusic.albumName;
+        music["apsaraMusic"] = dataMusic.apsaraMusic;
+        music["apsaraThumnail"] = dataMusic.apsaraThumnail;
+        console.log(dataMusic.apsaraThumnail)
+        if (dataMusic.apsaraThumnail != undefined && dataMusic.apsaraThumnail != "" && dataMusic.apsaraThumnail != null) {
+          music["apsaraThumnailUrl"] = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == dataMusic.apsaraThumnail).URL;
+        }
+      }
+    }
+    PostData_.music = music;
+
+    //USER
+    let ub = await this.userAuthService.findOneByEmail(data_userbasics.email);
+    let ubadge = await this.userService.findone_(data_userbasics.email.toString());
+    PostData_.isIdVerified = data_userbasics.isIdVerified;
+    PostData_.avatar = await this.getProfileAvatar2(data_userbasics);
+    PostData_.username = ub.username;
+    PostData_.urluserBadge = ubadge.urluserBadge;
+
+    PostData_.isApsara = false;
+    PostData_.location = Posts_.location;
+    PostData_.visibility = String(Posts_.visibility);
+    if (Posts_.metadata != undefined) {
+      let md = Posts_.metadata;
+      let md1 = new Metadata();
+      md1.duration = Number(md.duration);
+      md1.email = String(md.email);
+      md1.midRoll = Number(md.midRoll);
+      md1.postID = String(md.postID);
+      md1.postRoll = Number(md.postRoll);
+      md1.postType = String(md.postType);
+      md1.preRoll = Number(md.preRoll);
+      md1.width = (md.width != undefined) ? Number(md.width) : 0;
+      md1.height = (md.height != undefined) ? Number(md.height) : 0;
+      PostData_.metadata = md1;
+    }
+
+    if (Posts_.isShared != undefined) {
+      PostData_.isShared = Posts_.isShared;
+    } else {
+      PostData_.isShared = true;
+    }
+    PostData_.postID = String(Posts_.postID);
+    PostData_.postType = String(Posts_.postType);
+    PostData_.saleAmount = Posts_.saleAmount;
+    PostData_.saleLike = Posts_.saleLike;
+    PostData_.saleView = Posts_.saleView;
+
+    let following = await this.contentEventService.findFollowing(PostData_.email);
+    if (Posts_.tagPeople != undefined && Posts_.tagPeople.length > 0) {
+      let atp = Posts_.tagPeople;
+      let atp1 = Array<TagPeople>();
+      for (let x = 0; x < atp.length; x++) {
+        let tp = atp[x];
+        if (tp?.namespace) {
+          let oid = tp.oid;
+          let ua = await this.userAuthService.findById(oid.toString());
+          if (ua != undefined) {
+            let tp1 = new TagPeople();
+            tp1.email = String(ua.email);
+            tp1.username = String(ua.username);
+            let ub = await this.userService.findOne(String(ua.email));
+            if (ub != undefined) {
+              tp1.avatar = await this.getProfileAvatar(ub);
+            }
+
+            tp1.status = 'TOFOLLOW';
+            if (tp1.email == PostData_.email) {
+              tp1.status = "UNLINK";
+            } else {
+              for (let i = 0; i < following.length; i++) {
+                let fol = following[i];
+                if (fol.email == tp1.email) {
+                  tp1.status = "FOLLOWING";
+                }
+              }
+            }
+            atp1.push(tp1);
+          }
+        }
+      }
+      PostData_.tagPeople = atp1;
+    }
+    if (Posts_.category != undefined && Posts_.category.length > 0) {
+      let atp = Posts_.category;
+      let atp1 = Array<Cat>();
+      for (let x = 0; x < atp.length; x++) {
+        let tp = atp[x];
+        console.log(JSON.stringify(tp));
+        if (tp?.namespace) {
+          let oid = tp.oid;
+          let ua = await this.interestService.findOne(oid.toString());
+          if (ua != undefined) {
+            let tp1 = new Cat();
+            tp1._id = String(ua._id);
+            tp1.interestName = String(ua.interestName);
+            tp1.langIso = String(ua.langIso);
+            tp1.icon = String(ua.icon);
+            tp1.createdAt = String(ua.createdAt);
+            tp1.updatedAt = String(ua.updatedAt);
+
+            atp1.push(tp1);
+          }
+        }
+      }
+      PostData_.cats = atp1;
+    }
+
+    //MEDIA
+    let vids: String[] = [];
+    let pics: String[] = [];
+    let pics_thumnail: String[] = [];
+    let meds = Posts_.contentMedias;
+    if (meds != undefined) {
+      for (let i = 0; i < meds.length; i++) {
+        let med = meds[i];
+        let ns = med.namespace;
+        if (ns == 'mediavideos') {
+          let video = await this.videoService.findOne(String(med.oid));
+          if (video.apsara == true) {
+            vids.push(video.apsaraId);
+            PostData_.apsaraId = String(video.apsaraId);
+            PostData_.isApsara = true;
+          } else {
+            PostData_.mediaThumbUri = video.mediaThumb;
+            PostData_.mediaEndpoint = '/stream/' + video.postID;
+            PostData_.mediaThumbEndpoint = '/thumb/' + video.postID;
+          }
+          PostData_.mediaType = 'video';
+          PostData_.isViewed = false;
+        } else if (ns == 'mediapicts') {
+          let pic = await this.picService.findOne(String(med.oid));
+          if (pic.apsara == true) {
+            pics.push(pic.apsaraId);
+            if (pic.apsaraThumbId != undefined) {
+              pics_thumnail.push(pic.apsaraThumbId);
+            } else {
+              pics_thumnail.push(pic.apsaraId);
+            }
+            PostData_.apsaraId = String(pic.apsaraId);
+            PostData_.isApsara = true;
+            if (pic.apsaraThumbId != undefined) {
+              PostData_.apsaraThumbId = String(pic.apsaraThumbId);
+            } else {
+              PostData_.apsaraThumbId = String(pic.apsaraId);
+            }
+          } else {
+            PostData_.mediaThumbEndpoint = '/thumb/' + pic.postID;
+            PostData_.mediaEndpoint = '/pict/' + pic.postID;
+            PostData_.mediaUri = pic.mediaUri;
+          }
+          PostData_.mediaType = 'image';
+          PostData_.isViewed = false;
+        } else if (ns == 'mediadiaries') {
+          let diary = await this.diaryService.findOne(String(med.oid));
+          if (diary.apsara == true) {
+            vids.push(diary.apsaraId);
+            PostData_.apsaraId = String(diary.apsaraId);
+            PostData_.isApsara = true;
+          } else {
+            PostData_.mediaThumbUri = diary.mediaThumb;
+            PostData_.mediaEndpoint = '/stream/' + diary.postID;
+            PostData_.mediaThumbEndpoint = '/thumb/' + diary.postID;
+          }
+          PostData_.mediaType = 'video';
+          PostData_.isViewed = false;
+        } else if (ns == 'mediastories') {
+          let story = await this.storyService.findOne(String(med.oid));
+
+          if (story.mediaType == 'video') {
+            if (story.apsara == true) {
+              vids.push(story.apsaraId);
+              PostData_.apsaraId = String(story.apsaraId);
+              PostData_.isApsara = true;
+            } else {
+              PostData_.mediaThumbUri = story.mediaThumb;
+              PostData_.mediaEndpoint = '/stream/' + story.postID;
+              PostData_.mediaThumbEndpoint = '/thumb/' + story.postID;
+            }
+            PostData_.mediaType = 'video';
+          } else {
+            if (story.apsara == true) {
+              pics.push(story.apsaraId);
+              PostData_.apsaraId = String(story.apsaraId);
+              PostData_.isApsara = true;
+            } else {
+              PostData_.mediaThumbUri = story.mediaThumb;
+              PostData_.mediaEndpoint = '/pict/' + story.postID;
+              PostData_.mediaThumbEndpoint = '/thumb/' + story.postID;
+            }
+            PostData_.mediaType = 'image';
+          }
+          PostData_.isViewed = false;
+        }
+      }
+    }
+    return PostData_;
   }
 
   async uploadOss(buffer: Buffer, postId: string, filename: string, userId: string, mediaTipe: string) {
@@ -5950,15 +6232,33 @@ export class PostContentService {
     return res;
   }
 
+  public async getProfileAvatar2(profile: Userbasic) {
+    console.log(profile);
+    let AvatarDTO_ = new Avatar();
+    var get_profilePict = null;
+    if (profile.profilePict != null) {
+      var mediaprofilepicts_json = JSON.parse(JSON.stringify(profile.profilePict));
+      get_profilePict = await this.profilePictService.findOne(mediaprofilepicts_json.$id);
+    }
+
+    if (await this.utilService.ceckData(get_profilePict)) {
+      AvatarDTO_.mediaBasePath = get_profilePict.mediaBasePath;
+      AvatarDTO_.mediaUri = get_profilePict.mediaUri;
+      AvatarDTO_.mediaType = get_profilePict.mediaType;
+      AvatarDTO_.mediaEndpoint = '/profilepict/' + get_profilePict.mediaID;
+    }
+    return AvatarDTO_;
+  }
+
   public async getProfileAvatar(profile: Userbasic) {
     if (profile == undefined || profile.profilePict == undefined) {
       return undefined;
     }
 
     let cm = profile.profilePict;
-    let ns = cm.namespace;
+    let ns = cm.na;
     if (ns == 'mediaprofilepicts') {
-      let pp = await this.profilePictService.findOne(cm.oid);
+      let pp = await this.profilePictService.findOne(cm.$id.toString());
       if (pp == undefined) {
         return;
       }
