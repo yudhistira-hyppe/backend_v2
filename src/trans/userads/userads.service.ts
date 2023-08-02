@@ -3826,6 +3826,7 @@ export class UserAdsService {
                     CTA: 1
                 }
             });
+        console.log(JSON.stringify(aggregateData));
         let query = await this.userAdsModel.aggregate(aggregateData);
         return query;
     }
