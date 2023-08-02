@@ -376,23 +376,24 @@ export class AdsController {
             const minPembelianCredit = (getAdsType.CPV * AdsDto_.tayang) + (getAdsType.CPA * AdsDto_.tayang);
             if (minPembelianCredit != AdsDto_.credit) {
                 AdsDto_.status = "DRAFT";
-            }else{
-                if (AdsDto_.status == undefined) {
-                    var dataBalance = await this.adsBalaceCreditService.findsaldoKredit(ubasic._id);
-                    if (await this.utilsService.ceckData(dataBalance)){
-                        if (dataBalance.length > 0) {
-                            if (dataBalance[0].saldoKredit > AdsDto_.credit) {
-                                AdsDto_.status = "UNDER_REVIEW";
-                            } else {
-                                AdsDto_.status = "DRAFT";
-                            }
-                        } else {
-                            AdsDto_.status = "DRAFT";
-                        }
-                    }else{
-                        AdsDto_.status = "DRAFT";
-                    }
-                }
+            } else {
+                AdsDto_.status = "DRAFT";
+                // if (AdsDto_.status == undefined) {
+                //     var dataBalance = await this.adsBalaceCreditService.findsaldoKredit(ubasic._id);
+                //     if (await this.utilsService.ceckData(dataBalance)){
+                //         if (dataBalance.length > 0) {
+                //             if (dataBalance[0].saldoKredit > AdsDto_.credit) {
+                //                 AdsDto_.status = "UNDER_REVIEW";
+                //             } else {
+                //                 AdsDto_.status = "DRAFT";
+                //             }
+                //         } else {
+                //             AdsDto_.status = "DRAFT";
+                //         }
+                //     }else{
+                //         AdsDto_.status = "DRAFT";
+                //     }
+                // }
             }
         }
 
@@ -480,12 +481,10 @@ export class AdsController {
             }
         } 
 
-        //VALIDASI PARAM ctaButton
-        var ceck_ctaButton = await this.utilsService.validateParam("ctaButton", AdsDto_.ctaButton, "number")
-        if (ceck_ctaButton != "") {
-            await this.errorHandler.generateBadRequestException(
-                ceck_ctaButton,
-            );
+        //VALIDASI PARAM status
+        var ceck_status = await this.utilsService.validateParam("status", AdsDto_.status, "string")
+        if (ceck_status != "") {
+            AdsDto_.status = "DRAFT";
         }
 
         //VALIDASI PARAM idApsara
@@ -502,14 +501,22 @@ export class AdsController {
             await this.errorHandler.generateBadRequestException(
                 ceck_urlLink,
             );
+        }
+
+        //VALIDASI PARAM urlLink
+        var ceck_urlLink = await this.utilsService.validateParam("urlLink", AdsDto_.urlLink, "string")
+        if (ceck_urlLink != "") {
+            await this.errorHandler.generateBadRequestException(
+                ceck_urlLink,
+            );
         } 
 
         //--------------------GENERATE CAMPAIG ID--------------------
-        if (AdsDto_.status == "UNDER_REVIEW") {
-            const coutAds = await this.adsService.count();
-            const generateCampaignID = await this.utilsService.generateCampaignID(coutAds + 1, AdsDto_.typeAdsID.toString());
-            AdsDto_.campaignId = generateCampaignID;
-        }
+        // if (AdsDto_.status == "UNDER_REVIEW") {
+        //     const coutAds = await this.adsService.count();
+        //     const generateCampaignID = await this.utilsService.generateCampaignID(coutAds + 1, AdsDto_.typeAdsID.toString());
+        //     AdsDto_.campaignId = generateCampaignID;
+        // }
 
         try {
             const currentDate = await this.utilsService.getDateTimeISOString();
