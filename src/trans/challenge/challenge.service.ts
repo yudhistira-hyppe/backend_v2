@@ -700,6 +700,7 @@ export class ChallengeService {
                 null
               ]
           },
+          listParticipant:1
         }
       },
       {
@@ -1889,6 +1890,26 @@ export class ChallengeService {
             {
                 "$last": "$session.session"
             },
+            listParticipant:1,
+						// listParticipant:
+						// {
+						// 		"$reduce": 
+						// 		{
+            //         input: "$listParticipant",
+            //         initialValue: "",
+            //         in: 
+						// 				{ 
+						// 					$concat: 
+						// 					[ 
+						// 						"$$value",
+						// 						{
+						// 							"$toString":"$$this"
+						// 						},
+						// 						","
+						// 					] 
+						// 				}
+            //     }
+						// },
             session: 1
         }
       }
