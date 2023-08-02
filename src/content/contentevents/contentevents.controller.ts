@@ -1256,7 +1256,7 @@ export class ContenteventsController {
           await this.contenteventsService.create(CreateContenteventsDto2);
           await this.insightsService.updateLike(email_receiverParty);
           await this.postsService.updateLike(email_receiverParty, request.body.postID);
-          // this.sendInteractiveFCM(email_receiverParty, "LIKE", request.body.postID, email_user);
+          this.sendInteractiveFCM(email_receiverParty, "LIKE", request.body.postID, email_user);
           // const databasic = await this.userbasicsService.findOne(
           //   email_receiverParty
           // );
@@ -1292,7 +1292,7 @@ export class ContenteventsController {
             //   iduser = databasic._id;
             //   this.userChallengeUnLike(iduser.toString(), idevent1.toString(), "contentevents", "UNLIKE", request.body.postID);
             // }
-            //   this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+            this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, ' +
@@ -1309,7 +1309,7 @@ export class ContenteventsController {
             let idevent1 = ceck_data_DONE._id;
             let event1 = ceck_data_DONE.eventType.toString();
             // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
-            // this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+            this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
