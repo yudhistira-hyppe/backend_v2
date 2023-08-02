@@ -1594,7 +1594,7 @@ export class ChallengeController {
         await this.subchallenge.create(insertsub);
       }
 
-      //this.notifchallenge(parentdata._id.toString());
+      this.notifchallenge(parentdata._id.toString());
     }
   }
 
