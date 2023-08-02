@@ -1481,7 +1481,7 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/posts/createpost')
+  @Post('api/posts/createpost/backup')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPostV3new(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("createPost >>> start");
@@ -1513,11 +1513,11 @@ export class PostsController {
     const databasic = await this.userbasicsService.findOne(
       email
     );
-    var iduser = null;
-    if (databasic !== null) {
-      iduser = databasic._id;
-      this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
-    }
+    // var iduser = null;
+    // if (databasic !== null) {
+    //   iduser = databasic._id;
+    //   this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+    // }
 
     //Tags
 
@@ -1716,6 +1716,16 @@ export class PostsController {
 
       }
     }
+    return data;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/createpost')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async createPostV4new(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    console.log('============================================== CREATE POST HEADERS ==============================================', JSON.stringify(headers));
+    console.log('============================================== CREATE POST BODY ==============================================', JSON.stringify(body));
+    var data = await this.postContentService.createNewPostV5(file, body, headers);
     return data;
   }
 

@@ -1169,6 +1169,13 @@ export class ChallengeService {
                                     "$notifikasiPush.akanDatang.description",0
                                 ]
                             },
+                            "descriptionEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.akanDatang.descriptionEN",0
+                                ]
+                            },
                             "unit":
                             {
                                 "$arrayElemAt":
@@ -1276,6 +1283,13 @@ export class ChallengeService {
                                     "$notifikasiPush.challengeDimulai.description",0
                                 ]
                             },
+                            "descriptionEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.challengeDimulai.descriptionEN",0
+                                ]
+                            },
                             "unit":
                             {
                                 "$arrayElemAt":
@@ -1343,6 +1357,13 @@ export class ChallengeService {
                                 "$arrayElemAt":
                                 [
                                     "$notifikasiPush.updateLeaderboard.description",0
+                                ]
+                            },
+                            "descriptionEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.updateLeaderboard.descriptionEN",0
                                 ]
                             },
                             "unit":
@@ -1543,6 +1564,13 @@ export class ChallengeService {
                                     "$notifikasiPush.challengeAkanBerakhir.description",0
                                 ]
                             },
+                            "descriptionEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.challengeAkanBerakhir.descriptionEN",0
+                                ]
+                            },
                             "unit":
                             {
                                 "$arrayElemAt":
@@ -1650,6 +1678,13 @@ export class ChallengeService {
                                     "$notifikasiPush.challengeBerakhir.description",0
                                 ]
                             },
+                            "descriptionEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.challengeBerakhir.descriptionEN",0
+                                ]
+                            },
                             "unit":
                             {
                                 "$arrayElemAt":
@@ -1755,6 +1790,13 @@ export class ChallengeService {
                                 "$arrayElemAt":
                                 [
                                     "$notifikasiPush.untukPemenang.description",0
+                                ]
+                            },
+                            "descriptionEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.untukPemenang.descriptionEN",0
                                 ]
                             },
                             "unit":
