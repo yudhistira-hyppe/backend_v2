@@ -3153,6 +3153,7 @@ export class PostContentService {
 
   async genrateDataPost(Posts_: Posts, data_userbasics: Userbasic) {
     let PostData_ = new PostData();
+    PostData_._id = Posts_._id.toString();
     PostData_.isLiked = false;
     PostData_.active = Posts_.active;
     PostData_.allowComments = Posts_.allowComments;
