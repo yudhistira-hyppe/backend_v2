@@ -786,10 +786,12 @@ export class AdsController {
         }
 
         try {
-            let ads_campaign_dashboard = await this.adsService.campaignDashboard(body.userId,start_date, end_date);
+            let ads_campaign_dashboard = await this.adsService.campaignDashboard(body.userId, start_date, end_date);
+            let ads_status_campaign_dashboard = await this.adsService.getAdsSatus(start_date, end_date);
             if (await this.utilsService.ceckData(ads_campaign_dashboard)){
                 if (ads_campaign_dashboard.length>0){
                     ads_campaign_dashboard = ads_campaign_dashboard[0];
+                    ads_campaign_dashboard.statusIklan = ads_status_campaign_dashboard;
                 }
             }
             for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {

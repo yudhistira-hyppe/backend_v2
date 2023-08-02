@@ -3385,6 +3385,74 @@ export class AdsService {
         return query;
     }
 
+    async getAdsSatus(start_date: any, end_date: any) {
+        var query = await this.adsModel.aggregate([{
+            "$match": {
+                "$expr": {
+                    "$and": [{
+                        "$gte": ["$timestamp", start_date.toISOString()]
+                    }, {
+                        "$lte": ["$timestamp", end_date.toISOString()]
+                    }]
+                }
+            }
+        }, {
+            "$project": {
+                "status": {
+                    "$switch": {
+                        "branches": [{
+                            "case": {
+                                "$eq": ["$status", "DRAFT"]
+                            },
+                            "then": "DRAFT"
+                        }, {
+                            "case": {
+                                "$or": [{
+                                    "$eq": ["$status", "FINISH"]
+                                }, {
+                                    "$eq": ["$status", "IN_ACTIVE"]
+                                }, {
+                                    "$eq": ["$status", "REPORTED"]
+                                }]
+                            },
+                            "then": "IN_ACTIVE"
+                        }, {
+                            "case": {
+                                "$or": [{
+                                    "$eq": ["$status", "APPROVE"]
+                                }, {
+                                    "$eq": ["$status", "ACTIVE"]
+                                }]
+                            },
+                            "then": "ACTIVE"
+                        }, {
+                            "case": {
+                                "$eq": ["$status", "UNDER_REVIEW"]
+                            },
+                            "then": "UNDER_REVIEW"
+                        }],
+                        "default": "OTHER"
+                    }
+                }
+            }
+        }, {
+            "$facet": {
+                "status": [{
+                    "$group": {
+                        "_id": "$status",
+                        "status": {
+                            "$first": "$status"
+                        },
+                        "count": {
+                            "$sum": 1
+                        }
+                    }
+                }]
+            }
+        }]);
+        return query;
+    }
+
     async list(userID: string, name_ads: string, start_date: any, end_date: any, type_ads: any[], plan_ads: any[], status_list: any[], page: number, limit: number, sorting: boolean) {
         var paramaggregate = [];
         var $match = {};

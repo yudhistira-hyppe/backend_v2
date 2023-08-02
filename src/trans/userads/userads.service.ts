@@ -3767,16 +3767,16 @@ export class UserAdsService {
         },
             {
                 $project: {
-                    statusIklan: {
-                        "$arrayElemAt": [{
-                            "$let": {
-                                "vars": {
-                                    "tmp": { "$arrayElemAt": ["$status", 0] },
-                                },
-                                "in": "$$tmp.data.status"
-                            }
-                        }, 0]
-                    },
+                    // statusIklan: {
+                    //     "$arrayElemAt": [{
+                    //         "$let": {
+                    //             "vars": {
+                    //                 "tmp": { "$arrayElemAt": ["$status", 0] },
+                    //             },
+                    //             "in": "$$tmp.data.status"
+                    //         }
+                    //     }, 0]
+                    // },
                     saldoKredit: {
                         $sum: [
                             {
