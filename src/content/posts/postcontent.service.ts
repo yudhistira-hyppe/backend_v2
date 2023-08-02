@@ -3162,7 +3162,8 @@ export class PostContentService {
     PostData_.description = Posts_.description.toString();
     PostData_.email = Posts_.email.toString();
     PostData_.comment = [];
-    PostData_.comments = 0;
+    PostData_.comments = 0; 
+    PostData_.reportedStatus = Posts_.reportedStatus;
 
     //PRIPACY
     let privacy = new Privacy();
