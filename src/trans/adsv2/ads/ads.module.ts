@@ -19,6 +19,7 @@ import { AdslogsModule } from '../adslog/adslogs.module';
 
 @Module({
     imports: [
+        AdsBalaceCreditModule,
         AdslogsModule,
         AdsplacesModule,
         MediaprofilepictsModule,

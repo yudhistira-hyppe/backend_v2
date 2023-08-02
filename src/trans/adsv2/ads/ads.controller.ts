@@ -22,8 +22,9 @@ import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { OssContentPictService } from '../../../content/posts/osscontentpict.service';
 import { AdsLogsDto } from '../adslog/dto/adslog.dto';
 import { AdslogsService } from '../adslog/adslog.service';
-import { AccountbalancesService } from 'src/trans/accountbalances/accountbalances.service';
-import { CreateAccountbalancesDto } from 'src/trans/accountbalances/dto/create-accountbalances.dto';
+import { AccountbalancesService } from '../../../trans/accountbalances/accountbalances.service';
+import { CreateAccountbalancesDto } from '../../../trans/accountbalances/dto/create-accountbalances.dto';
+import { AdsBalaceCreditService } from '../adsbalacecredit/adsbalacecredit.service';
 const sharp = require('sharp');
 
 @Controller('api/adsv2/ads')
@@ -45,6 +46,7 @@ export class AdsController {
         private readonly ossContentPictService: OssContentPictService, 
         private readonly adslogsService: AdslogsService,
         private accountbalancesService: AccountbalancesService,
+        private adsBalaceCreditService: AdsBalaceCreditService,
         private readonly adsService: AdsService) {
         this.locks = new Map();
     }
@@ -374,10 +376,24 @@ export class AdsController {
             const minPembelianCredit = (getAdsType.CPV * AdsDto_.tayang) + (getAdsType.CPA * AdsDto_.tayang);
             if (minPembelianCredit != AdsDto_.credit) {
                 AdsDto_.status = "DRAFT";
-            }else{
-                if (AdsDto_.status == undefined) {
-                    AdsDto_.status = "UNDER_REVIEW";
-                }
+            } else {
+                AdsDto_.status = "DRAFT";
+                // if (AdsDto_.status == undefined) {
+                //     var dataBalance = await this.adsBalaceCreditService.findsaldoKredit(ubasic._id);
+                //     if (await this.utilsService.ceckData(dataBalance)){
+                //         if (dataBalance.length > 0) {
+                //             if (dataBalance[0].saldoKredit > AdsDto_.credit) {
+                //                 AdsDto_.status = "UNDER_REVIEW";
+                //             } else {
+                //                 AdsDto_.status = "DRAFT";
+                //             }
+                //         } else {
+                //             AdsDto_.status = "DRAFT";
+                //         }
+                //     }else{
+                //         AdsDto_.status = "DRAFT";
+                //     }
+                // }
             }
         }
 
@@ -465,12 +481,10 @@ export class AdsController {
             }
         } 
 
-        //VALIDASI PARAM ctaButton
-        var ceck_ctaButton = await this.utilsService.validateParam("ctaButton", AdsDto_.ctaButton, "number")
-        if (ceck_ctaButton != "") {
-            await this.errorHandler.generateBadRequestException(
-                ceck_ctaButton,
-            );
+        //VALIDASI PARAM status
+        var ceck_status = await this.utilsService.validateParam("status", AdsDto_.status, "string")
+        if (ceck_status != "") {
+            AdsDto_.status = "DRAFT";
         }
 
         //VALIDASI PARAM idApsara
@@ -487,14 +501,22 @@ export class AdsController {
             await this.errorHandler.generateBadRequestException(
                 ceck_urlLink,
             );
+        }
+
+        //VALIDASI PARAM urlLink
+        var ceck_urlLink = await this.utilsService.validateParam("urlLink", AdsDto_.urlLink, "string")
+        if (ceck_urlLink != "") {
+            await this.errorHandler.generateBadRequestException(
+                ceck_urlLink,
+            );
         } 
 
         //--------------------GENERATE CAMPAIG ID--------------------
-        if (AdsDto_.status == "UNDER_REVIEW") {
-            const coutAds = await this.adsService.count();
-            const generateCampaignID = await this.utilsService.generateCampaignID(coutAds + 1, AdsDto_.typeAdsID.toString());
-            AdsDto_.campaignId = generateCampaignID;
-        }
+        // if (AdsDto_.status == "UNDER_REVIEW") {
+        //     const coutAds = await this.adsService.count();
+        //     const generateCampaignID = await this.utilsService.generateCampaignID(coutAds + 1, AdsDto_.typeAdsID.toString());
+        //     AdsDto_.campaignId = generateCampaignID;
+        // }
 
         try {
             const currentDate = await this.utilsService.getDateTimeISOString();
@@ -1123,7 +1145,7 @@ export class AdsController {
         body.type_ads = array_type_ads;
 
         try {
-            const ads_dashboard = await this.adsService.list_reward(body.name, body.startdate, body.enddate, body.gender, body.age, body.areas, body.similarity, body.page, body.limit, body.sorting); 
+            const ads_dashboard = await this.adsService.list_reward(body.name, body.startdate, body.enddate, body.gender, body.age, body.areas, body.similarity, body.page, body.limit, body.sorting, body.adsId); 
 
             return await this.errorHandler.generateAcceptResponseCodeWithData(
                 "Get Ads List succesfully", ads_dashboard, ads_dashboard.length, body.page
@@ -1199,9 +1221,8 @@ export class AdsController {
             );
         }
         AdsLogsDto_.iduser = new mongoose.Types.ObjectId(data_userbasic._id.toString());
-
         const data_ads = await this.adsService.getAdsUser(headers['x-auth-user'], data_userbasic._id.toString(), id);
-        console.log("data_ads",data_ads);
+        console.log(data_ads);
         if (await this.utilsService.ceckData(data_ads)) {
             var ceckData = await this.userAdsService.findAdsIDUserID(data_userbasic._id.toString(), data_ads[0]._id.toString());
             if (!(await this.utilsService.ceckData(ceckData))) {
@@ -1247,10 +1268,8 @@ export class AdsController {
             data_response['adsDescription'] = data_ads[0].description;
             data_response['name'] = data_ads[0].description;
             if (await this.utilsService.ceckData(ceckData)) {
-                console.log("ada", ceckData._id.toString());
                 data_response['useradsId'] = ceckData._id.toString();
             } else {
-                console.log("tidak ada", genIdUserAds.toString());
                 data_response['useradsId'] = genIdUserAds.toString();
             }
             data_response['idUser'] = data_userbasic_ads._id.toString();
@@ -1276,7 +1295,6 @@ export class AdsController {
             data_response['videoId'] = data_ads[0].idApsara; 
             data_response['duration'] = data_ads[0].duration;
             data_response['mediaBasePath'] = data_ads[0].mediaBasePath;
-            data_response['username'] = data_ads[0].username;
             data_response['mediaUri'] = data_ads[0].mediaUri;
             data_response['mediaThumBasePath'] = data_ads[0].mediaThumBasePath;
             data_response['mediaThumUri'] = data_ads[0].mediaThumUri;

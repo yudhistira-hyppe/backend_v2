@@ -3986,9 +3986,9 @@ export class AdsService {
         return query;
     }
 
-    async list_reward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], similarity: any[], page: number, limit: number, sorting: boolean) {
+    async list_reward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], similarity: any[], page: number, limit: number, sorting: boolean, idtransaction: string) {
         similarity
-        const getReward = await this.AccountbalancesService.getReward(name, start_date, end_date, gender, age, areas, similarity, page, limit, sorting);
+        const getReward = await this.AccountbalancesService.getReward(name, start_date, end_date, gender, age, areas, similarity, page, limit, sorting, idtransaction);
         return getReward;
     }
 
