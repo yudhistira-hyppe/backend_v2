@@ -3227,6 +3227,8 @@ export class PostContentService {
     }
     if (PostData_.reportedStatus != undefined) {
       PostData_.reportedStatus = Posts_.reportedStatus;
+    } else {
+      PostData_.reportedStatus = "ALL";
     }
     if (PostData_.reportedUserCount != undefined) {
       PostData_.reportedUserCount = Number(Posts_.reportedUserCount);
