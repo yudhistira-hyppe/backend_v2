@@ -10,8 +10,6 @@ export class AssetsFilter {
     namafile: string;
     @Prop()
     descFile: string;
-    @Prop()
-    iconFile: string;
 
     @Prop()
     fileAssetName: String;
