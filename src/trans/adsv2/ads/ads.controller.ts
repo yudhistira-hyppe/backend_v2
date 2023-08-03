@@ -427,8 +427,8 @@ export class AdsController {
         } else {
             for (var i = 0; i < AdsDto_.interestID.length; i++) {
                 let interestID_Object = AdsDto_.interestID[i];
-                if (interestID_Object == "LAINNYA") {
-                    Array_Demografis.push("LAINNYA");
+                if (interestID_Object == "Lainnya") {
+                    Array_Interest.push("LAINNYA");
                 } else {
                     let interestID_Object_Dbref = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(interestID_Object), "$db": "ProdAll" }
                     Array_Interest.push(interestID_Object_Dbref);
