@@ -57,8 +57,9 @@ export class AdsService {
     }
 
     async count(): Promise<number> {
-        const _AdsDto_ = await this.adsModel.countDocuments();
-        return _AdsDto_;
+        const _AdsDto_ = await this.adsModel.find({ status: { $in: ["UNDER_REVIEW", "ACTIVE"] } }).exec();
+        //const _AdsDto_ = await this.adsModel.countDocuments();
+        return _AdsDto_.length;
     }
 
     async insertBalaceDebit(adsBalaceCreditDto: AdsBalaceCreditDto): Promise<AdsBalaceCredit> {
