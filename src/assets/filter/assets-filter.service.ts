@@ -22,4 +22,8 @@ export class AssetsFilterService {
         return this.sourceFilterModel.find({ _id: { $nin: assetsUser } });
     }
 
+    async findOne(id: string): Promise<AssetsFilter> {
+        return await this.sourceFilterModel.findOne({ _id: Object(id) }).exec();
+    }
+
 }
