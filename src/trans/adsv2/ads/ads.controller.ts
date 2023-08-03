@@ -793,7 +793,7 @@ export class AdsController {
             if (await this.utilsService.ceckData(ads_campaign_dashboard)){
                 if (ads_campaign_dashboard.length>0){
                     ads_campaign_dashboard = ads_campaign_dashboard[0];
-                    ads_campaign_dashboard.statusIklan = ads_status_campaign_dashboard;
+                    ads_campaign_dashboard.statusIklan = ads_status_campaign_dashboard[0].status;
                 }
             }
             for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {
