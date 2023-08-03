@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, UseGuards, Headers, Post, Body } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, UseGuards, Headers, Post, Body, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { AssetsFilterService } from './assets-filter.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UtilsService } from '../../utils/utils.service';
@@ -6,6 +6,7 @@ import { ErrorHandler } from 'src/utils/error.handler';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import { CreateAssetsFilterDto, UpdateAssetsFilterDto } from './dto/create-assets-filter.dto';
 import mongoose from 'mongoose';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 
 @Controller('api/assets/filter')
@@ -18,10 +19,41 @@ export class AssetsFilterController {
     ) {}
 
 
+    @UseGuards(JwtAuthGuard)
     @Post('/create')
-    async createfilter(@Body() CreateAssetsFilterDto_: CreateAssetsFilterDto) {
-        console.log(CreateAssetsFilterDto_);
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'imageFile', maxCount: 1 }, { name: 'fileAsset', maxCount: 1 }]))
+    @HttpCode(HttpStatus.ACCEPTED)
+    async createfilter(
+        @UploadedFiles() files: {
+            fileAsset?: Express.Multer.File[],
+            imageFile?: Express.Multer.File[]
+        }, @Body() CreateAssetsFilterDto_: CreateAssetsFilterDto,
+        @Headers() headers) {
+        if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unauthorized',
+            );
+        }
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed email header dan token not match',
+            );
+        }
+        if (CreateAssetsFilterDto_.namafile == undefined || CreateAssetsFilterDto_.namafile == "") {
+            await this.errorHandler.generateBadRequestException(
+                'Param namafile is required',
+            );
+        }
+
         CreateAssetsFilterDto_._id = new mongoose.Types.ObjectId();
+        if (files.fileAsset != undefined) {
+            // var result = await this.ossService.uploadFileBuffer(Buffer.from(ori), userId + "/profilePict/" + fileName);
+            // var result_thum = await this.ossService.uploadFileBuffer(Buffer.from(thumnail), userId + "/profilePict/" + userId + "_thum" + extension);
+        }
+
+        if (files.imageFile != undefined) {
+
+        }
         return await this.assetsFilterService.create(CreateAssetsFilterDto_);
     }
 
