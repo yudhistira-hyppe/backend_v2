@@ -95507,8 +95507,8 @@ export class PostsService {
                     $arrayElemAt: ["$all.email", "$index"]
                   },]
                 },
-                then: "$following",
-                else: "$kon"
+                then: "$following.following",
+                else: false
               }
             },
             "insight":
@@ -97215,8 +97215,8 @@ export class PostsService {
                     $arrayElemAt: ["$all.email", "$index"]
                   },]
                 },
-                then: "$following",
-                else: "$kon"
+                then: "$following.following",
+                else: false
               }
             },
             "insight":
@@ -98922,8 +98922,8 @@ export class PostsService {
                     $arrayElemAt: ["$all.email", "$index"]
                   },]
                 },
-                then: "$following",
-                else: "$kon"
+                then: "$following.following",
+                else: false
               }
             },
             "insight":
