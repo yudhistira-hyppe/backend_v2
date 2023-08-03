@@ -4744,15 +4744,53 @@ export class subChallengeService {
 
                 }
             },
+
             {
-                $lookup: {
-                    from: 'challenge',
-                    localField: 'challengeId',
-                    foreignField: '_id',
-                    as: 'challenge_data',
+                "$lookup": {
+                    "from": "challenge",
+                    "as": "challenge_data",
+                    "let": {
+                        "local_id": "$challengeId"
+                    },
+                    "pipeline": [
+                        {
+                            "$match": {
+                                "$expr": {
+                                    "$eq": ["$_id", "$$local_id"]
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "_id": 1,
+                                "nameChallenge": 1,
+                                "jenisChallenge": 1,
+                                "description": 1,
+                                "createdAt": 1,
+                                "updatedAt": 1,
+                                "durasi": 1,
+                                "startChallenge": 1,
+                                "endChallenge": 1,
+                                "startTime": 1,
+                                "endTime": 1,
+                                "jenisDurasi": 1,
+                                "tampilStatusPengguna": 1,
+                                "objectChallenge": 1,
+                                "statusChallenge": 1,
+                                "metrik": 1,
+                                "peserta": 1,
+                                "leaderBoard": 1,
+                                "ketentuanHadiah": 1,
+                                "hadiahPemenang": 1,
+                                "bannerSearch": 1,
+                                "popUp": 1,
+                                "notifikasiPush": 1
 
-                },
+                            }
+                        }
 
+                    ]
+                }
             },
             {
                 "$lookup": {
@@ -7572,14 +7610,51 @@ export class subChallengeService {
                 }
             },
             {
-                $lookup: {
-                    from: 'challenge',
-                    localField: 'challengeId',
-                    foreignField: '_id',
-                    as: 'challenge_data',
+                "$lookup": {
+                    "from": "challenge",
+                    "as": "challenge_data",
+                    "let": {
+                        "local_id": "$challengeId"
+                    },
+                    "pipeline": [
+                        {
+                            "$match": {
+                                "$expr": {
+                                    "$eq": ["$_id", "$$local_id"]
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "_id": 1,
+                                "nameChallenge": 1,
+                                "jenisChallenge": 1,
+                                "description": 1,
+                                "createdAt": 1,
+                                "updatedAt": 1,
+                                "durasi": 1,
+                                "startChallenge": 1,
+                                "endChallenge": 1,
+                                "startTime": 1,
+                                "endTime": 1,
+                                "jenisDurasi": 1,
+                                "tampilStatusPengguna": 1,
+                                "objectChallenge": 1,
+                                "statusChallenge": 1,
+                                "metrik": 1,
+                                "peserta": 1,
+                                "leaderBoard": 1,
+                                "ketentuanHadiah": 1,
+                                "hadiahPemenang": 1,
+                                "bannerSearch": 1,
+                                "popUp": 1,
+                                "notifikasiPush": 1
 
-                },
+                            }
+                        }
 
+                    ]
+                }
             },
             {
                 "$lookup": {
