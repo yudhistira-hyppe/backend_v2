@@ -33,17 +33,30 @@ export class AssetsFilterController {
     async getfilter(@Headers() headers, @Req() req) {
         var timestamps_start = await this.utilsService.getDateTimeString();
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
         }
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email header dan token not match',
             );
         }
         var profile = await this.userbasicsService.findOne(headers['x-auth-user']);
         if (!(await this.utilsService.ceckData(profile))) {
+
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed user not found',
             );
@@ -78,17 +91,29 @@ export class AssetsFilterController {
         var timestamps_start = await this.utilsService.getDateTimeString(); 
 
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
         }
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email header dan token not match',
             );
         }
         var profile = await this.userbasicsService.findOne(headers['x-auth-user']);
         if (!(await this.utilsService.ceckData(profile))) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed user not found',
             );
@@ -96,11 +121,19 @@ export class AssetsFilterController {
 
         if (UpdateAssetsFilterDto_.assets!=undefined){
             if (UpdateAssetsFilterDto_.assets.length < 0) {
+                var fullurl = req.get("Host") + req.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+                
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, Param assets is required',
                 );
             } 
         } else {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, Param assets is required',
             );

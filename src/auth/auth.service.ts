@@ -42,6 +42,7 @@ import { ChallengeService } from '../trans/challenge/challenge.service';
 import { UserchallengesService } from '../trans/userchallenges/userchallenges.service';
 import { Userchallenges } from '../trans/userchallenges/schemas/userchallenges.schema';
 import { subChallengeService } from '../trans/challenge/subChallenge.service';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
 
 @Injectable()
 export class AuthService {
@@ -73,7 +74,8 @@ export class AuthService {
     private postsService: PostsService,
     private challengeService: ChallengeService,
     private userchallengesService: UserchallengesService,
-    private subChallengeService: subChallengeService
+    private subChallengeService: subChallengeService,
+    private readonly logapiSS: LogapisService
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -3795,12 +3797,19 @@ export class AuthService {
   }
 
   async recoverpasswordV2(req: any): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
     console.log("Request BODY >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", JSON.stringify(req.body));
     if (
       req.body.email == undefined ||
       req.body.event == undefined ||
       req.body.status == undefined
     ) {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(req.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
       throw new NotAcceptableException({
         response_code: 406,
         messages: {
@@ -3840,11 +3849,21 @@ export class AuthService {
 
     if (login_source != "MANUAL") {
       if (lang == "en") {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
         await this.errorHandler.generateResponseCode(
           800,
           "Your account is already registered. Please sign in using your Gmail account."
         );
       } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
         await this.errorHandler.generateResponseCode(
           800,
           "Akun Kamu Telah Terdaftar. Silakan masuk menggunakan akun Gmail."
@@ -3972,6 +3991,11 @@ export class AuthService {
                       data_CreateActivityeventsDto_child,
                     );
                   } catch (error) {
+                    var fullurl = req.get("Host") + req.originalUrl;
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    var reqbody = JSON.parse(JSON.stringify(req.body));
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException(
                       'Unabled to proceed Create Activity events Child. Error:' +
                       error,
@@ -3998,6 +4022,11 @@ export class AuthService {
                         },
                       );
                   } catch (error) {
+                    var fullurl = req.get("Host") + req.originalUrl;
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    var reqbody = JSON.parse(JSON.stringify(req.body));
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException(
                       'Unabled to proceed Update Activity events Parent. Error:' +
                       error,
@@ -4022,6 +4051,11 @@ export class AuthService {
                     messages = "Verifikasi OTP berhasil";
                   }
 
+                  var fullurl = req.get("Host") + req.originalUrl;
+                  var timestamps_end = await this.utilsService.getDateTimeString();
+                  var reqbody = JSON.parse(JSON.stringify(req.body));
+                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                   return {
                     response_code: 202,
                     messages: {
@@ -4042,15 +4076,30 @@ export class AuthService {
                       });
                     }
                     if (lang == "en") {
+                      var fullurl = req.get("Host") + req.originalUrl;
+                      var timestamps_end = await this.utilsService.getDateTimeString();
+                      var reqbody = JSON.parse(JSON.stringify(req.body));
+                      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                       await this.errorHandler.generateNotAcceptableException(
                         'The OTP code you entered is incorrect, please check again.',
                       );
                     } else {
+                      var fullurl = req.get("Host") + req.originalUrl;
+                      var timestamps_end = await this.utilsService.getDateTimeString();
+                      var reqbody = JSON.parse(JSON.stringify(req.body));
+                      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                       await this.errorHandler.generateNotAcceptableException(
                         'Kode OTP yang kamu masukan salah, silahkan cek kembali.',
                       );
                     }
                   } else {
+                    var fullurl = req.get("Host") + req.originalUrl;
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    var reqbody = JSON.parse(JSON.stringify(req.body));
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException(
                       'Unabled to proceed',
                     );
@@ -4110,6 +4159,11 @@ export class AuthService {
                       data_CreateActivityeventsDto_child,
                     );
                   } catch (error) {
+                    var fullurl = req.get("Host") + req.originalUrl;
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    var reqbody = JSON.parse(JSON.stringify(req.body));
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException(
                       'Unabled to proceed Create Activity events Child. Error: ' +
                       error,
@@ -4135,6 +4189,11 @@ export class AuthService {
                       },
                     );
                   } catch (error) {
+                    var fullurl = req.get("Host") + req.originalUrl;
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    var reqbody = JSON.parse(JSON.stringify(req.body));
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException(
                       'Unabled to proceed Update Activity events Parent. Error:' +
                       error,
@@ -4166,6 +4225,11 @@ export class AuthService {
                     messages = "Permintaan kata sandi pemulihan berhasil";
                   }
 
+                  var fullurl = req.get("Host") + req.originalUrl;
+                  var timestamps_end = await this.utilsService.getDateTimeString();
+                  var reqbody = JSON.parse(JSON.stringify(req.body));
+                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                   return {
                     response_code: 202,
                     messages: {
@@ -4174,12 +4238,22 @@ export class AuthService {
                   };
                 } else {
                   if (lang == "en") {
+                    var fullurl = req.get("Host") + req.originalUrl;
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    var reqbody = JSON.parse(JSON.stringify(req.body));
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException(
                       'OTP max attempt exceeded, please try after ' +
                       process.env.OTP_NEXT_ALLOW_MINUTE +
                       ' minute',
                     );
                   } else {
+                    var fullurl = req.get("Host") + req.originalUrl;
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    var reqbody = JSON.parse(JSON.stringify(req.body));
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException(
                       'Upaya maksimal OTP terlampaui, silakan coba setelah ' + process.env.OTP_NEXT_ALLOW_MINUTE +
                       ' menit',
@@ -4189,10 +4263,20 @@ export class AuthService {
               }
             } else {
               if (lang == "en") {
+                var fullurl = req.get("Host") + req.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                var reqbody = JSON.parse(JSON.stringify(req.body));
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                   'No users were found. Please check again.',
                 );
               } else {
+                var fullurl = req.get("Host") + req.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                var reqbody = JSON.parse(JSON.stringify(req.body));
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                   'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
                 );
@@ -4208,10 +4292,20 @@ export class AuthService {
               user_password = req.body.new_password;
             } else {
               if (lang == "en") {
+                var fullurl = req.get("Host") + req.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                var reqbody = JSON.parse(JSON.stringify(req.body));
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                   'Kata sandi baru diperlukan',
                 );
               } else {
+                var fullurl = req.get("Host") + req.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                var reqbody = JSON.parse(JSON.stringify(req.body));
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                   'New password is required',
                 );
@@ -4268,6 +4362,11 @@ export class AuthService {
                 data_CreateActivityeventsDto_child,
               );
             } catch (error) {
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(req.body));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create Activity events Child. Error:' +
                 error,
@@ -4302,6 +4401,11 @@ export class AuthService {
                 },
               );
             } catch (error) {
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(req.body));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Update Activity Event Parent. Error:' +
                 error,
@@ -4314,6 +4418,11 @@ export class AuthService {
                 user_activityevents[0].activityEventID,
               );
             } catch (error) {
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(req.body));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Update ActivityEvent All Child True. Error:' +
                 error,
@@ -4326,6 +4435,11 @@ export class AuthService {
             } else {
               messages = "Ganti Kata Sandi berhasil";
             }
+
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
 
             return {
               response_code: 202,
@@ -4379,6 +4493,11 @@ export class AuthService {
                 data_CreateActivityeventsDto_child,
               );
             } catch (error) {
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(req.body));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create Activity events Child. Error: ' +
                 error,
@@ -4404,6 +4523,11 @@ export class AuthService {
                 },
               );
             } catch (error) {
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(req.body));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Update Activity events Parent. Error:' +
                 error,
@@ -4432,6 +4556,11 @@ export class AuthService {
             } else {
               messages = "Permintaan kata sandi pemulihan berhasil";
             }
+
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
 
             return {
               response_code: 202,
@@ -4480,6 +4609,11 @@ export class AuthService {
                 data_CreateActivityeventsDto_child,
               );
             } catch (error) {
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(req.body));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create Activity events Child. Error: ' +
                 error,
@@ -4505,6 +4639,11 @@ export class AuthService {
                 },
               );
             } catch (error) {
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(req.body));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Update Activity events Parent. Error:' +
                 error,
@@ -4533,6 +4672,11 @@ export class AuthService {
             } else {
               messages = "Permintaan kata sandi pemulihan berhasil";
             }
+
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
 
             return {
               response_code: 202,
@@ -4588,6 +4732,11 @@ export class AuthService {
               data_CreateActivityeventsDto_parent,
             );
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Create Activity events Parent. Error: ' +
               error,
@@ -4633,6 +4782,11 @@ export class AuthService {
               data_CreateActivityeventsDto_child,
             );
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Create Activity events Child. Error: ' +
               error,
@@ -4665,6 +4819,11 @@ export class AuthService {
               messages = "Permintaan kata sandi pemulihan berhasil";
             }
 
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
             return {
               response_code: 202,
               messages: {
@@ -4672,6 +4831,11 @@ export class AuthService {
               },
             };
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Gnerate OTP. Error: ' + error,
             );
@@ -4679,10 +4843,20 @@ export class AuthService {
         }
       } else {
         if (lang == "en") {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'No users were found. Please check again.',
           );
         } else {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
           );
@@ -4690,11 +4864,21 @@ export class AuthService {
       }
     } else {
       if (lang == "en") {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
         await this.errorHandler.generateResponseCode(
           801,
           'No users were found. Please check again.',
         );
       } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, req.body.email, null, null, reqbody);
+
         await this.errorHandler.generateResponseCode(
           801,
           'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
@@ -5128,6 +5312,8 @@ export class AuthService {
   }
 
   async referralcount(req: any, head: any): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
     if (await this.utilsService.validasiTokenEmail(head)) {
       var user_email = head['x-auth-user'];
 
@@ -5145,6 +5331,10 @@ export class AuthService {
         try {
           var data_referral = await this.referralService.findAllByParent(user_email);
           var data_referral_parent = await this.referralService.findAllByChildren(user_email);
+          
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, null);
 
           return {
             parent: (await this.utilsService.ceckData(data_referral_parent)) ? data_referral_parent[0].parent : "",
@@ -5156,16 +5346,28 @@ export class AuthService {
             list: data_referral
           }
         } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, null);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed',
           );
         }
       } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, null);
+
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed',
         );
       }
     } else {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, null);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',
       );
@@ -5406,13 +5608,25 @@ export class AuthService {
   }
 
   async referralqrcode(req: any, head: any): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
     if (await this.utilsService.validasiTokenEmail(head)) {
       if (head['x-auth-user'] == undefined) {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed auth-user undefined',
         );
       }
       if (req.body.refCode == undefined) {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed refCode undefined',
         );
@@ -5461,13 +5675,29 @@ export class AuthService {
           image_profile: mediaprofilepicts_fsSourceUri,
         }
         var html_data = await this.utilsService.generateReferralImage(data);
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, reqbody);
+
         return html_data;
       } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed user not found',
         );
       }
     } else {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(req.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed email not match',
       );
@@ -5753,6 +5983,8 @@ export class AuthService {
   }
 
   async signupsosmed(req: any) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
     this.logger.log("signupsosmed >>> start: ");
     var user_email = null;
     var user_socmedSource = null;
@@ -5763,11 +5995,23 @@ export class AuthService {
     var user_imei = null;
 
     if (req.body.email == undefined) {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(req.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
+
       await this.errorHandler.generateNotAcceptableException(
         'Email is mandatory',
       );
     } else {
       if (req.body.email == '') {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
+
         await this.errorHandler.generateNotAcceptableException(
           'Email is mandatory',
         );
@@ -5777,11 +6021,21 @@ export class AuthService {
     }
 
     if (req.body.socmedSource == undefined) {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(req.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Socmed is mandatory',
       );
     } else {
       if (req.body.socmedSource == '') {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           'Socmed is mandatory',
         );
@@ -5811,6 +6065,11 @@ export class AuthService {
     }
 
     if (!(await this.utilsService.validasiEmail(user_email.trim()))) {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(req.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
       throw new NotAcceptableException({
         response_code: 406,
         messages: {
@@ -5930,6 +6189,11 @@ export class AuthService {
               data_CreateActivityeventsDto_child,
             );
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Create Activity events Child. Error:' + error,
             );
@@ -5955,6 +6219,11 @@ export class AuthService {
                 },
               );
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Update Activity events Parent. Error:' +
               error,
@@ -6003,6 +6272,11 @@ export class AuthService {
               data_CreateActivityeventsDto_parent,
             );
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Create Activity events Parent. Error:' +
               error,
@@ -6046,6 +6320,11 @@ export class AuthService {
               data_CreateActivityeventsDto_child,
             );
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Create Activity events Child. Error:' + error,
             );
@@ -6065,6 +6344,11 @@ export class AuthService {
                 );
                 ID_device = datauserdevicesService._id;
               } catch (error) {
+                var fullurl = req.get("Host") + req.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                var reqbody = JSON.parse(JSON.stringify(req.body));
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                   'Unabled to proceed Get Userdevices. Error:' + error,
                 );
@@ -6084,6 +6368,11 @@ export class AuthService {
                 //Insert User Userdevices
                 await this.userdevicesService.create(data_CreateUserdeviceDto);
               } catch (error) {
+                var fullurl = req.get("Host") + req.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                var reqbody = JSON.parse(JSON.stringify(req.body));
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                   'Unabled to proceed Create Userdevices. Error:' + error,
                 );
@@ -6119,6 +6408,11 @@ export class AuthService {
               });
             }
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Update Devices Userauths. Error:' + error,
             );
@@ -6133,6 +6427,12 @@ export class AuthService {
         const datajwtrefreshtoken_data = await this.jwtrefreshtokenService.findOne(
           user_email,
         );
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
 
         return {
           response_code: 202,
@@ -6173,6 +6473,12 @@ export class AuthService {
           },
         };
       } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
+
         await this.errorHandler.generateNotAcceptableException(
           'User not found',
         );
@@ -6226,6 +6532,11 @@ export class AuthService {
               }
             }
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Get Id Language. Error: ' + error,
             );
@@ -6257,6 +6568,11 @@ export class AuthService {
           //Insert Insights
           await this.insightsService.create(data_CreateInsightsDto);
         } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Insights. Error: ' + error,
           );
@@ -6276,6 +6592,11 @@ export class AuthService {
               );
               ID_device = datauserdevicesService._id;
             } catch (error) {
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(req.body));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Get Userdevices. Error:' + error,
               );
@@ -6295,6 +6616,11 @@ export class AuthService {
               //Insert User Userdevices
               await this.userdevicesService.create(data_CreateUserdeviceDto);
             } catch (error) {
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(req.body));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create Userdevices. Error:' + error,
               );
@@ -6335,6 +6661,11 @@ export class AuthService {
           //Insert UserAuth
           await this.userauthsService.create(data_CreateUserauthDto);
         } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create UserAuth. Error: ' + error,
           );
@@ -6383,6 +6714,11 @@ export class AuthService {
           //Insert UserBasic
           await this.userbasicsService.create(data_CreateUserbasicDto);
         } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create UserBasic. Error: ' + error,
           );
@@ -6436,6 +6772,11 @@ export class AuthService {
             data_CreateActivityeventsDto_parent,
           );
         } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity events Parent. Error: ' +
             error,
@@ -6510,6 +6851,11 @@ export class AuthService {
                 await this.insightsService.updateFollower(req.body.referral);
                 await this.insightsService.updateFollowing(req.body.email);
               } catch (error) {
+                var fullurl = req.get("Host") + req.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                var reqbody = JSON.parse(JSON.stringify(req.body));
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                   'Unabled to proceed Create Refferal. Error:' +
                   error,
@@ -6576,6 +6922,11 @@ export class AuthService {
             data_CreateActivityeventsDto_child,
           );
         } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity events Child. Error: ' +
             error,
@@ -6619,11 +6970,22 @@ export class AuthService {
             data_CreateActivityeventsDto_parent,
           );
         } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity events Parent. Error:' +
             error,
           );
         }
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
 
         return {
           response_code: 202,
@@ -6664,6 +7026,11 @@ export class AuthService {
           },
         };
       } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           'Sorry! This email already registered',
         );
@@ -7197,6 +7564,8 @@ export class AuthService {
   // }
 
   async signsosmed(req: any) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
     this.logger.log("signsosmed >>> start: " + JSON.stringify(req.body));
     var user_email = req.body.email;
     var user_socmedSource = req.body.socmedSource;
@@ -7327,6 +7696,11 @@ export class AuthService {
 
           await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, datauserbasicsService._id);
         } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity events Child. Error:' + error,
           );
@@ -7352,6 +7726,11 @@ export class AuthService {
               },
             );
         } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Update Activity events Parent. Error:' +
             error,
@@ -7412,6 +7791,11 @@ export class AuthService {
 
           await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, datauserbasicsService._id);
         } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity events Parent. Error:' +
             error,
@@ -7460,6 +7844,11 @@ export class AuthService {
 
           await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, datauserbasicsService._id);
         } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity events Child. Error:' + error,
           );
@@ -7491,6 +7880,11 @@ export class AuthService {
             }
             ID_user_userdevicesService = user_userdevicesService._id;
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Get Userdevices. Error:' + error,
             );
@@ -7517,6 +7911,11 @@ export class AuthService {
             //Insert User Userdevices
             await this.userdevicesService.create(data_CreateUserdeviceDto);
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Create Userdevices. Error:' + error,
             );
@@ -7552,6 +7951,11 @@ export class AuthService {
             });
           }
         } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Update Devices Userauths. Error:' + error,
           );
@@ -7711,6 +8115,12 @@ export class AuthService {
       data["status"] = datauserbasicsService.status;
       data["refreshToken"] = datajwtrefreshtoken.refresh_token_id;
       data["devicetype"] = (getdevicedata != null ? getdevicedata : user_devicetype);
+
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(req.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
 
       return {
         response_code: 202,
@@ -8336,6 +8746,8 @@ export class AuthService {
   }
 
   async referral2(req: any, head: any): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
     var user_email_parent = null;
     var user_username_parent = null;
     var user_imei_children = null;
@@ -8345,6 +8757,11 @@ export class AuthService {
     var current_date = await this.utilsService.getDateTimeString();
 
     if (head['x-auth-user'] == undefined) {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(req.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, required param email header',
       );
@@ -8353,6 +8770,11 @@ export class AuthService {
     }
 
     if (req.body.imei == undefined) {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(req.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, required param imei',
       );
@@ -8365,6 +8787,11 @@ export class AuthService {
         email_ceck = true;
         user_username_parent = req.body.username;
       } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed, required param email or username',
         );
@@ -8398,6 +8825,12 @@ export class AuthService {
       } else {
         errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
       }
+
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(req.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         errorMessages,
       );
@@ -8416,6 +8849,12 @@ export class AuthService {
         } else {
           errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
         }
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           errorMessages,
         );
@@ -8431,6 +8870,12 @@ export class AuthService {
         } else {
           errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
         }
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           errorMessages,
         );
@@ -8544,6 +8989,12 @@ export class AuthService {
           } else {
             errorMessages = "Selamat kode referral berhasil digunakan";
           }
+
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
           return {
             "response_code": 202,
             "messages": {
@@ -8560,6 +9011,12 @@ export class AuthService {
           } else {
             errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
           }
+
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             errorMessages,
           );
@@ -8572,6 +9029,12 @@ export class AuthService {
         } else {
           errorMessages = "Referral Tidak Berhasil, Username telah terdaftar sebagai referral kamu, silahkan ganti dengan username lainnya";
         }
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           errorMessages,
         );
