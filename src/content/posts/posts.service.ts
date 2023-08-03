@@ -95469,9 +95469,9 @@ export class PostsService {
               $arrayElemAt: ["$isLike.isLiked", "$indexLike"]
             },
             comment:
-            {
-              $arrayElemAt: ["$comment", "$indexComment"]
-            },
+              [{
+                $arrayElemAt: ["$comment", "$indexComment"]
+              }],
             //userInterest:"$userInterest.userInterests",
             interest: {
               $filter: {
@@ -97177,9 +97177,9 @@ export class PostsService {
               $arrayElemAt: ["$isLike.isLiked", "$indexLike"]
             },
             comment:
-            {
-              $arrayElemAt: ["$comment", "$indexComment"]
-            },
+              [{
+                $arrayElemAt: ["$comment", "$indexComment"]
+              }],
             //userInterest:"$userInterest.userInterests",
             interest: {
               $filter: {
@@ -98884,9 +98884,9 @@ export class PostsService {
               $arrayElemAt: ["$isLike.isLiked", "$indexLike"]
             },
             comment:
-            {
-              $arrayElemAt: ["$comment", "$indexComment"]
-            },
+              [{
+                $arrayElemAt: ["$comment", "$indexComment"]
+              }],
             //userInterest:"$userInterest.userInterests",
             interest: {
               $filter: {
