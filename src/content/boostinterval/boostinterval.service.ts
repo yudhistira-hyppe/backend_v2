@@ -22,7 +22,7 @@ export class BoostintervalService {
   }
 
   async findWhere(BoostintervalDto_: BoostintervalDto): Promise<Boostinterval[]> {
-    return this.BoostintervalModel.find(BoostintervalDto_).exec();
+    return this.BoostintervalModel.find(BoostintervalDto_).sort({ value: 1 }).exec();
   }
 
   async findById(_id:String): Promise<Boostinterval> {

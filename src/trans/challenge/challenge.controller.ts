@@ -490,16 +490,14 @@ export class ChallengeController {
       var checkpartisipan = request_json['list_partisipan_challenge'];
       var checkjoinchallenge = request_json['caraGabung'];
       var checkstatusChallenge = request_json['statusChallenge'];
-      if (checkstatusChallenge != 'DRAFT' && checkstatusChallenge != 'NONACTIVE') {
-        if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined) {
+      if (checkstatusChallenge != 'NONACTIVE') {
+        if (checkpartisipan != null && checkpartisipan != undefined) {
           this.insertchildofchallenge(insertdata, request_json['list_partisipan_challenge']);
         }
         else {
           this.insertchildofchallenge(insertdata, null);
         }
       }
-
-      // console.log(JSON.stringify(listsubchallenge));
 
       return res.status(HttpStatus.OK).json({
         response_code: 202,
@@ -1090,14 +1088,13 @@ export class ChallengeController {
       }
 
       insertdata.notifikasiPush = [setnotifikasi];
-
+      
 
       var checkpartisipan = request_json['list_partisipan_challenge'];
       var checkjoinchallenge = request_json['caraGabung'];
       var checkstatusChallenge = request_json['statusChallenge'];
-      if (checkstatusChallenge != 'DRAFT' && checkstatusChallenge != 'NONACTIVE') {
-        // if(insertdata.startChallenge != getdata['startChallenge'] || insertdata.endChallenge != getdata['endChallenge'] || insertdata.startTime != getdata['startTime'] || insertdata.endTime != getdata['endTime'] || insertdata.durasi != getdata['durasi'] || insertdata.jumlahSiklusdurasi != getdata['jumlahSiklusdurasi'])
-        if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined) {
+      if (checkstatusChallenge != 'NONACTIVE') {
+        if (checkpartisipan != null && checkpartisipan != undefined) {
           this.insertchildofchallenge(insertdata, request_json['list_partisipan_challenge']);
         }
         else {
@@ -1441,7 +1438,9 @@ export class ChallengeController {
         throw new BadRequestException("pengguna telah melakukan pendaftaran");
       }
     }
-    else {
+    else
+    {
+      var parentdata = await this.challengeService.detailchallenge(getsubid);
       var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
 
       var listjoin = [];
@@ -1463,6 +1462,7 @@ export class ChallengeController {
           createdata.ranking = getsubdata[i].lastrank;
           createdata.startDatetime = getsubdata[i].startDatetime;
           createdata.endDatetime = getsubdata[i].endDatetime;
+          createdata.objectChallenge = parentdata.objectChallenge;
           createdata.createdAt = await this.util.getDateTimeString();
           createdata.updatedAt = await this.util.getDateTimeString();
           createdata.activity = [];
@@ -1494,103 +1494,98 @@ export class ChallengeController {
   //   return this.challengeService.remove(id);
   // }
 
-  async insertchildofchallenge(parentdata, partisipan) {
-    var satuanhari = parentdata.durasi - 1;
-    // if (parentdata.jenisDurasi == 'WEEK') {
-    //   satuanhari = parentdata.durasi * 7;
-    // }
-    // else {
-    //   satuanhari = parentdata.durasi;
-    // }
-
-    var listtanggal = [];
-    var getvalue = parentdata.startChallenge;
-    var temptanggal = new Date(getvalue.split(" ")[0] + " " + parentdata.startTime);
-    temptanggal.setHours(temptanggal.getHours() + 7);
-    var getvalue = parentdata.endChallenge;
-    var endtanggal = new Date(getvalue.split(" ")[0] + " " + parentdata.startTime);
-    endtanggal.setHours(endtanggal.getHours() + 7);
-
-    for (var i = 0; i < parentdata.jumlahSiklusdurasi; i++) {
-      var pecahdata = temptanggal.toISOString().split("T");
-      var startdatetime = pecahdata[0] + " " + parentdata.startTime;
-
-      if (satuanhari == 0) {
-        temptanggal.setDate(temptanggal.getDate() + 1);
+  async insertchildofchallenge(parentdata, participant) {
+    if(participant != null)
+    {
+      var setparticipantchallenge = [];
+      if(participant = "ALL")
+      {
+        var getalluserbasic = await this.userbasicsSS.findAll();
+        for(var loopuser = 0; loopuser < getalluserbasic.length; loopuser++)
+        {
+          setparticipantchallenge.push(getalluserbasic[loopuser]._id.toString());
+        }
       }
-      else {
-        temptanggal.setDate(temptanggal.getDate() + satuanhari);
+      else
+      {
+        var partisipan = participant;
+        setparticipantchallenge = partisipan.toString().split(",");
       }
 
-      var pecahdata = temptanggal.toISOString().split("T");
-      var enddatetime = pecahdata[0] + " " + parentdata.startTime;
-
-      temptanggal = new Date(temptanggal);
-
-      var datediff = endtanggal.getTime() - temptanggal.getTime();
-      // console.log(datediff);
-
-      if (datediff >= 0) {
-        listtanggal.push([startdatetime, enddatetime]);
+      var tempparticipant = [];
+      for(var loopparticipant = 0; loopparticipant < setparticipantchallenge.length; loopparticipant++)
+      {
+        var importlibpart = require('mongoose');
+        var setparticipantid = importlibpart.Types.ObjectId(loopparticipant[i]);
+        tempparticipant.push(setparticipantid);
       }
+
+      parentdata.listParticipant = tempparticipant;
+    }
+    else
+    {
+      parentdata.listParticipant = [];
     }
 
-    var checkviainvite = false;
-    var getuserpartisipan = null;
-    if (partisipan != null && partisipan != undefined && parentdata.statusChallenge == 'PUBLISH') {
-      if (partisipan == 'ALL') {
-        getuserpartisipan = await this.userbasicsSS.findAll();
-      }
-      else {
-        getuserpartisipan = partisipan.toString().split(",");
-      }
-      checkviainvite = true;
-    }
+    var konvertstring = parentdata._id;
+    await this.challengeService.update(konvertstring.toString(), parentdata);
 
-    var listsubchallenge = [];
-    for (var i = 0; i < listtanggal.length; i++) {
-      var insertsub = new CreateSubChallengeDto();
-      var mongoose = require('mongoose');
-      insertsub._id = new mongoose.Types.ObjectId();
-      insertsub.startDatetime = listtanggal[i][0];
-      insertsub.endDatetime = listtanggal[i][1];
-      insertsub.isActive = true;
-      insertsub.challengeId = parentdata._id;
-      insertsub.session = i + 1;
-      await this.subchallenge.create(insertsub);
+    if(parentdata.statusChallenge == "PUBLISH")
+    {
+      var satuanhari = parentdata.durasi - 1;
+      // if (parentdata.jenisDurasi == 'WEEK') {
+      //   satuanhari = parentdata.durasi * 7;
+      // }
+      // else {
+      //   satuanhari = parentdata.durasi;
+      // }
 
-      // console.log(insertsub);
-      // console.log(getuserpartisipan);
+      var listtanggal = [];
+      var getvalue = parentdata.startChallenge;
+      var temptanggal = new Date(getvalue.split(" ")[0] + " " + parentdata.startTime);
+      temptanggal.setHours(temptanggal.getHours() + 7);
+      var getvalue = parentdata.endChallenge;
+      var endtanggal = new Date(getvalue.split(" ")[0] + " " + parentdata.startTime);
+      endtanggal.setHours(endtanggal.getHours() + 7);
 
-      var checkpartisipan = [];
-      if (checkviainvite == true) {
-        for (var j = 0; j < getuserpartisipan.length; j++) {
-          var insertuserchallenge = new Userchallenges();
-          insertuserchallenge._id = new mongoose.Types.ObjectId();
-          insertuserchallenge.idChallenge = new mongoose.Types.ObjectId(parentdata._id);
-          insertuserchallenge.idUser = new mongoose.Types.ObjectId(getuserpartisipan[j]);
-          insertuserchallenge.idSubChallenge = new mongoose.Types.ObjectId(insertsub._id);
-          insertuserchallenge.objectChallenge = parentdata.objectChallenge;
-          insertuserchallenge.startDatetime = insertsub.startDatetime;
-          insertuserchallenge.endDatetime = insertsub.endDatetime;
-          insertuserchallenge.isActive = true;
-          insertuserchallenge.createdAt = await this.util.getDateTimeString();
-          insertuserchallenge.updatedAt = await this.util.getDateTimeString();
-          insertuserchallenge.activity = [];
-          insertuserchallenge.history = [];
+      for (var i = 0; i < parentdata.jumlahSiklusdurasi; i++) {
+        var pecahdata = temptanggal.toISOString().split("T");
+        var startdatetime = pecahdata[0] + " " + parentdata.startTime;
 
-          await this.userchallengeSS.create(insertuserchallenge);
+        if (satuanhari == 0) {
+          temptanggal.setDate(temptanggal.getDate() + 1);
+        }
+        else {
+          temptanggal.setDate(temptanggal.getDate() + satuanhari);
+        }
 
-          checkpartisipan.push(insertuserchallenge);
+        var pecahdata = temptanggal.toISOString().split("T");
+        var enddatetime = pecahdata[0] + " " + parentdata.startTime;
+
+        temptanggal = new Date(temptanggal);
+
+        var datediff = endtanggal.getTime() - temptanggal.getTime();
+        // console.log(datediff);
+
+        if (datediff >= 0) {
+          listtanggal.push([startdatetime, enddatetime]);
         }
       }
 
-      listsubchallenge.push([insertsub, checkpartisipan]);
+      for (var i = 0; i < listtanggal.length; i++) {
+        var insertsub = new CreateSubChallengeDto();
+        var mongoose = require('mongoose');
+        insertsub._id = new mongoose.Types.ObjectId();
+        insertsub.startDatetime = listtanggal[i][0];
+        insertsub.endDatetime = listtanggal[i][1];
+        insertsub.isActive = true;
+        insertsub.challengeId = parentdata._id;
+        insertsub.session = i + 1;
+        await this.subchallenge.create(insertsub);
+      }
+
+      this.notifchallenge(parentdata._id.toString());
     }
-
-    this.notifchallenge(parentdata._id.toString());
-
-    // console.log(JSON.stringify(listsubchallenge));
   }
 
 
