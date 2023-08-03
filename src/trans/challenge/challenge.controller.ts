@@ -19,6 +19,7 @@ import { notifChallenge } from './schemas/notifChallenge.schema';
 import { notifChallengeService } from './notifChallenge.service';
 import { UserbadgeService } from '../userbadge/userbadge.service';
 import { Userbadge } from '../userbadge/schemas/userbadge.schema';
+import { LanguagesService } from '../../infra/languages/languages.service';
 import { session } from 'passport';
 
 @Controller('api/challenge')
@@ -31,6 +32,7 @@ export class ChallengeController {
     private readonly userchallengeSS: UserchallengesService,
     private readonly notifChallengeService: notifChallengeService,
     private readonly userbadgeService: UserbadgeService,
+    private readonly languagesService: LanguagesService,
     private readonly userbasicsSS: UserbasicsService) { }
 
   @UseGuards(JwtAuthGuard)
@@ -1088,7 +1090,7 @@ export class ChallengeController {
       }
 
       insertdata.notifikasiPush = [setnotifikasi];
-      
+
 
       var checkpartisipan = request_json['list_partisipan_challenge'];
       var checkjoinchallenge = request_json['caraGabung'];
@@ -1438,8 +1440,7 @@ export class ChallengeController {
         throw new BadRequestException("pengguna telah melakukan pendaftaran");
       }
     }
-    else
-    {
+    else {
       var parentdata = await this.challengeService.detailchallenge(getsubid);
       var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
 
@@ -1495,26 +1496,21 @@ export class ChallengeController {
   // }
 
   async insertchildofchallenge(parentdata, participant) {
-    if(participant != null)
-    {
+    if (participant != null) {
       var setparticipantchallenge = [];
-      if(participant = "ALL")
-      {
+      if (participant = "ALL") {
         var getalluserbasic = await this.userbasicsSS.findAll();
-        for(var loopuser = 0; loopuser < getalluserbasic.length; loopuser++)
-        {
+        for (var loopuser = 0; loopuser < getalluserbasic.length; loopuser++) {
           setparticipantchallenge.push(getalluserbasic[loopuser]._id.toString());
         }
       }
-      else
-      {
+      else {
         var partisipan = participant;
         setparticipantchallenge = partisipan.toString().split(",");
       }
 
       var tempparticipant = [];
-      for(var loopparticipant = 0; loopparticipant < setparticipantchallenge.length; loopparticipant++)
-      {
+      for (var loopparticipant = 0; loopparticipant < setparticipantchallenge.length; loopparticipant++) {
         var importlibpart = require('mongoose');
         var setparticipantid = importlibpart.Types.ObjectId(loopparticipant[i]);
         tempparticipant.push(setparticipantid);
@@ -1522,16 +1518,14 @@ export class ChallengeController {
 
       parentdata.listParticipant = tempparticipant;
     }
-    else
-    {
+    else {
       parentdata.listParticipant = [];
     }
 
     var konvertstring = parentdata._id;
     await this.challengeService.update(konvertstring.toString(), parentdata);
 
-    if(parentdata.statusChallenge == "PUBLISH")
-    {
+    if (parentdata.statusChallenge == "PUBLISH") {
       var satuanhari = parentdata.durasi - 1;
       // if (parentdata.jenisDurasi == 'WEEK') {
       //   satuanhari = parentdata.durasi * 7;
@@ -2199,37 +2193,49 @@ export class ChallengeController {
     var notifikasiPush = null;
     var includeAkandatang = null;
     var titleAkandatang = null;
+    var titleAkandatangEN = null;
     var descriptionAkandatang = null;
+    var descriptionAkandatangEN = null;
     var unitAkandatang = null;
     var aturWaktuAkandatang = null;
 
     var includechallengeDimulai = null;
     var titlechallengeDimulai = null;
+    var titlechallengeDimulaiEN = null;
     var descriptionchallengeDimulai = null;
+    var descriptionchallengeDimulaiEN = null;
     var unitchallengeDimulai = null;
     var aturWaktuchallengeDimulai = null;
 
     var includeupdateLeaderboard = null;
     var titleupdateLeaderboard = null;
+    var titleupdateLeaderboardEN = null;
     var descriptionupdateLeaderboard = null;
+    var descriptionupdateLeaderboardEN = null;
     var unitupdateLeaderboard = null;
     var aturWaktuupdateLeaderboard = null;
 
     var includechallengeAkanBerakhir = null;
     var titlechallengeAkanBerakhir = null;
+    var titlechallengeAkanBerakhirEN = null;
     var descriptionchallengeAkanBerakhir = null;
+    var descriptionchallengeAkanBerakhirEN = null;
     var unitchallengeAkanBerakhir = null;
     var aturWaktuchallengeAkanBerakhir = null;
 
     var includeuntukPemenang = null;
     var titleuntukPemenang = null;
+    var titleuntukPemenangEN = null;
     var descriptionuntukPemenang = null;
+    var descriptionuntukPemenangEN = null;
     var unituntukPemenang = null;
     var aturWaktuuntukPemenang = null;
 
     var includechallengeBerakhir = null;
     var titlechallengeBerakhir = null;
+    var titlechallengeBerakhirEN = null;
     var descriptionchallengeBerakhir = null;
+    var descriptionchallengeBerakhirEN = null;
     var unitchallengeBerakhir = null;
     var aturWaktuchallengeBerakhir = null;
 
@@ -2274,7 +2280,9 @@ export class ChallengeController {
           if (dataAkandatang.length > 0) {
             includeAkandatang = dataAkandatang[0].include;
             titleAkandatang = dataAkandatang[0].title;
+            titleAkandatangEN = dataAkandatang[0].titleEN;
             descriptionAkandatang = dataAkandatang[0].description;
+            descriptionAkandatangEN = dataAkandatang[0].descriptionEN;
             unitAkandatang = dataAkandatang[0].unit;
             aturWaktuAkandatang = dataAkandatang[0].aturWaktu;
             let dt = new Date(startTime);
@@ -2297,7 +2305,9 @@ export class ChallengeController {
                     "username": userID[x].username,
                     "ranking": userID[x].ranking,
                     "title": titleAkandatang,
-                    "notification": descriptionAkandatang
+                    "titleEN": titleAkandatangEN,
+                    "notification": descriptionAkandatang,
+                    "notificationEN": descriptionAkandatangEN
                   };
                   arrdata.push(objintr);
                 }
@@ -2329,7 +2339,9 @@ export class ChallengeController {
           if (datachallengeDimulai.length > 0) {
             includechallengeDimulai = datachallengeDimulai[0].include;
             titlechallengeDimulai = datachallengeDimulai[0].title;
+            titlechallengeDimulaiEN = datachallengeDimulai[0].titleEN;
             descriptionchallengeDimulai = datachallengeDimulai[0].description;
+            descriptionchallengeDimulaiEN = datachallengeDimulai[0].descriptionEN;
             unitchallengeDimulai = datachallengeDimulai[0].unit;
             aturWaktuchallengeDimulai = datachallengeDimulai[0].aturWaktu;
             let timedate = startTime;
@@ -2346,7 +2358,9 @@ export class ChallengeController {
                     "username": userID[x].username,
                     "ranking": userID[x].ranking,
                     "title": titlechallengeDimulai,
-                    "notification": descriptionchallengeDimulai
+                    "titleEN": titlechallengeDimulaiEN,
+                    "notification": descriptionchallengeDimulai,
+                    "notificationEN": descriptionchallengeDimulaiEN
                   };
                   arrdata.push(objintr);
                 }
@@ -2376,7 +2390,9 @@ export class ChallengeController {
           if (dataupdateLeaderboard.length > 0) {
             includeupdateLeaderboard = dataupdateLeaderboard[0].include;
             titleupdateLeaderboard = dataupdateLeaderboard[0].title;
+            titleupdateLeaderboardEN = dataupdateLeaderboard[0].titleEN;
             descriptionupdateLeaderboard = dataupdateLeaderboard[0].description;
+            descriptionupdateLeaderboardEN = dataupdateLeaderboard[0].descriptionEN;
             unitupdateLeaderboard = dataupdateLeaderboard[0].unit;
             aturWaktuupdateLeaderboard = dataupdateLeaderboard[0].aturWaktu;
 
@@ -2400,13 +2416,19 @@ export class ChallengeController {
                     let ket1 = descriptionupdateLeaderboard.replace("$username", userID[x].username);
                     let ket2 = ket1.replace("$ranking", userID[x].ranking);
                     var ket3 = ket2.replace("$title", titleupdateLeaderboard);
+
+                    let ket1EN = descriptionupdateLeaderboardEN.replace("$username", userID[x].username);
+                    let ket2EN = ket1EN.replace("$ranking", userID[x].ranking);
+                    var ket3EN = ket2EN.replace("$title", titleupdateLeaderboardEN);
                     let objintr = {
                       "idUser": userID[x].idUser,
                       "email": userID[x].email,
                       "username": userID[x].username,
                       "ranking": userID[x].ranking,
                       "title": titleupdateLeaderboard,
-                      "notification": ket3
+                      "titleEN": titleupdateLeaderboardEN,
+                      "notification": ket3,
+                      "notificationEN": ket3EN
                     };
                     arrdata.push(objintr);
                   }
@@ -2439,7 +2461,9 @@ export class ChallengeController {
           if (datachallengeAkanBerakhir.length > 0) {
             includechallengeAkanBerakhir = datachallengeAkanBerakhir[0].include;
             titlechallengeAkanBerakhir = datachallengeAkanBerakhir[0].title;
+            titlechallengeAkanBerakhirEN = datachallengeAkanBerakhir[0].titleEN;
             descriptionchallengeAkanBerakhir = datachallengeAkanBerakhir[0].description;
+            descriptionchallengeAkanBerakhirEN = datachallengeAkanBerakhir[0].descriptionEN;
             unitchallengeAkanBerakhir = datachallengeAkanBerakhir[0].unit;
             aturWaktuchallengeAkanBerakhir = datachallengeAkanBerakhir[0].aturWaktu;
 
@@ -2463,7 +2487,9 @@ export class ChallengeController {
                     "username": userID[x].username,
                     "ranking": userID[x].ranking,
                     "title": titlechallengeAkanBerakhir,
-                    "notification": descriptionchallengeAkanBerakhir
+                    "titleEN": titlechallengeAkanBerakhirEN,
+                    "notification": descriptionchallengeAkanBerakhir,
+                    "notificationEN": descriptionchallengeAkanBerakhirEN
                   };
                   arrdata.push(objintr);
                 }
@@ -2493,7 +2519,9 @@ export class ChallengeController {
           if (datachallengeBerakhir.length > 0) {
             includechallengeBerakhir = datachallengeBerakhir[0].include;
             titlechallengeBerakhir = datachallengeBerakhir[0].title;
+            titlechallengeBerakhirEN = datachallengeBerakhir[0].titleEN;
             descriptionchallengeBerakhir = datachallengeBerakhir[0].description;
+            descriptionchallengeBerakhirEN = datachallengeBerakhir[0].descriptionEN;
             unitchallengeBerakhir = datachallengeBerakhir[0].unit;
             aturWaktuchallengeBerakhir = datachallengeBerakhir[0].aturWaktu;
 
@@ -2517,7 +2545,9 @@ export class ChallengeController {
                     "username": userID[x].username,
                     "ranking": userID[x].ranking,
                     "title": titlechallengeBerakhir,
-                    "notification": descriptionchallengeBerakhir
+                    "titleEN": titlechallengeBerakhirEN,
+                    "notification": descriptionchallengeBerakhir,
+                    "notificationEN": descriptionchallengeBerakhirEN
                   };
                   arrdata.push(objintr);
                 }
@@ -2548,7 +2578,9 @@ export class ChallengeController {
           if (datauntukPemenang.length > 0) {
             includeuntukPemenang = datauntukPemenang[0].include;
             titleuntukPemenang = datauntukPemenang[0].title;
+            titleuntukPemenangEN = datauntukPemenang[0].titleEN;
             descriptionuntukPemenang = datauntukPemenang[0].description;
+            descriptionuntukPemenangEN = datauntukPemenang[0].descriptionEN;
             unituntukPemenang = datauntukPemenang[0].unit;
             aturWaktuuntukPemenang = datauntukPemenang[0].aturWaktu;
 
@@ -2570,13 +2602,20 @@ export class ChallengeController {
                   let ket2 = ket1.replace("$ranking", userID[x].ranking);
                   var ket3 = ket2.replace("$title", titleuntukPemenang);
 
+
+                  let ket1EN = descriptionuntukPemenangEN.replace("$username", userID[x].username);
+                  let ket2EN = ket1EN.replace("$ranking", userID[x].ranking);
+                  var ket3EN = ket2EN.replace("$title", titleuntukPemenangEN);
+
                   let objintr = {
                     "idUser": userID[x].idUser,
                     "email": userID[x].email,
                     "username": userID[x].username,
                     "ranking": userID[x].ranking,
                     "title": titleuntukPemenang,
-                    "notification": ket3
+                    "titleEN": titleuntukPemenangEN,
+                    "notification": ket3,
+                    "notificationEN": ket3EN
                   }
                   arrdata.push(objintr);
                 }
@@ -2637,13 +2676,22 @@ export class ChallengeController {
     var datanotif = null;
     var email = null;
     var body = null;
+    var bodyEN = null;
     var title = null;
+    var titleEN = null;
     var timenow = null;
     var datetime = null;
     var challengeID = null;
     var typeChallenge = null;
+    var databasic = null;
     var id = null;
     var type = null;
+    var languages = null;
+    var idlanguages = null;
+    var datalanguage = null;
+    var langIso = null;
+    var datapemenang = null;
+    var getlastrank = null;
     try {
       datanotif = await this.notifChallengeService.listnotifchallenge();
     } catch (e) {
@@ -2657,17 +2705,81 @@ export class ChallengeController {
         challengeID = datanotif[i].challengeID;
         email = datanotif[i].email;
         title = datanotif[i].title;
+        titleEN = datanotif[i].titleEN;
         body = datanotif[i].notification;
+        bodyEN = datanotif[i].notificationEN;
         datetime = datanotif[i].datetime;
         type = datanotif[i].type;
         typeChallenge = datanotif[i].typeChallenge;
+
+        try {
+          databasic = await this.userbasicsSS.findOne(email);
+        } catch (e) {
+          databasic = null;
+        }
+
+        if (databasic !== null) {
+          try {
+            languages = databasic.languages;
+            idlanguages = languages.oid.toString();
+            datalanguage = await this.languagesService.findOne(idlanguages)
+            langIso = datalanguage.langIso;
+
+            console.log(idlanguages)
+          } catch (e) {
+            languages = null;
+            idlanguages = "";
+            datalanguage = null;
+            langIso = "";
+          }
+
+        }
+
         if (timenow == new Date(datetime)) {
 
           if (type == "untukPemenang") {
+            try {
+              datapemenang = await this.subchallenge.getpemenang(challengeID.toString());
+            } catch (e) {
+              datapemenang = null;
+            }
+            if (datapemenang !== null && datapemenang.length > 0) {
+
+              try {
+                getlastrank = datapemenang[0].getlastrank;
+              } catch (e) {
+                getlastrank = null;
+              }
+              if (getlastrank !== null && getlastrank.length > 0) {
+                for (let i = 0; i < getlastrank.length; i++) {
+                  let emailmenang = getlastrank[i].email
+
+                  if (langIso == "id") {
+                    await this.util.sendNotifChallenge(emailmenang, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                    await this.notifChallengeService.updateStatussend(id.toString(), email);
+                  } else {
+                    await this.util.sendNotifChallenge(emailmenang, titleEN, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                    await this.notifChallengeService.updateStatussend(id.toString(), email);
+                  }
+
+
+                }
+
+              }
+
+            }
+
 
           } else {
-            await this.util.sendNotifChallenge(email, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
-            await this.notifChallengeService.updateStatussend(id.toString(), email);
+
+            if (langIso == "id") {
+              await this.util.sendNotifChallenge(email, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            } else {
+              await this.util.sendNotifChallenge(email, titleEN, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            }
+
           }
 
         }
