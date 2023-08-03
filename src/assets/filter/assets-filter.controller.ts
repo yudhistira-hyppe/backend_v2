@@ -198,6 +198,56 @@ export class AssetsFilterController {
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
+    @Get('/list')
+    async getList(@Headers() headers) {
+        if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unauthorized',
+            );
+        }
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed email header dan token not match',
+            );
+        }
+        var profile = await this.userbasicsService.findOne(headers['x-auth-user']);
+        if (!(await this.utilsService.ceckData(profile))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed user not found',
+            );
+        }
+        const dataAssets = await this.assetsFilterService.findGet();
+        const data_ = await Promise.all(dataAssets.map(async (item, index) => {
+            var fileAssetUri = "assets/filter/file/" + item._id;
+            var mediaUri = "assets/filter/image/" + item._id;
+            var mediaThumUri = "assets/filter/image/thum/" + item._id;
+            return {
+                _id: item._id,
+                namafile: item.namafile,
+                descFile: item.descFile,
+                fileAssetName: item.fileAssetName,
+                fileAssetBasePath: item.fileAssetBasePath,
+                fileAssetUri: fileAssetUri,
+                mediaName: item.mediaName,
+                mediaBasePath: item.mediaBasePath,
+                mediaUri: mediaUri,
+                mediaThumName: item.mediaThumUri,
+                mediaThumBasePath: item.mediaThumUri,
+                mediaThumUri: mediaThumUri,
+                status: item.status,
+            }
+        }));
+        return {
+            response_code: 202,
+            data: data_,
+            messages: {
+                info: ['Get assets successfully'],
+            },
+        };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
     @Get('/user')
     async getfilter(@Headers() headers) {
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
