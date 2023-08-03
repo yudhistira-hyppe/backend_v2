@@ -95255,16 +95255,16 @@ export class PostsService {
         },
         {
           $set: {
-            testLogs:
-            {
-              $ifNull: [
-                {
-                  $arrayElemAt: ["$countLogs", "$indexLogs"]
-                }
-                ,
-                []
-              ]
-            }
+            testLogs: [
+              {
+                $ifNull: [
+                  {
+                    $arrayElemAt: ["$countLogs", "$indexLogs"]
+                  }
+                  ,
+                  []
+                ]
+              }]
           }
         },
         {
@@ -95853,28 +95853,15 @@ export class PostsService {
           },
 
         },
-        {
-          $sort: {
-            "official": - 1,
-            "selfContent": - 1,
-            "isBoost": - 1,
-            "intScore": - 1,
-            "likes": - 1,
-            "comments": - 1,
-            "views": - 1,
-            "friend": - 1,
-            "following": - 1,
-            "verified": - 1
-          }
-        },
+
 
       );
 
-      // pipeline.push(
-      //   {
-      //     $sort: sortObject
-      //   },
-      // );
+      pipeline.push(
+        {
+          $sort: sortObject
+        },
+      );
     }
     else if (type == "vid") {
       try {
@@ -95890,7 +95877,8 @@ export class PostsService {
       pipeline.push(
         {
           $sort: {
-            createdAt: -1,
+            createdAt: - 1,
+
           }
         },
         {
@@ -96003,19 +95991,6 @@ export class PostsService {
         },
         {
           $set: {
-            "storyDate":
-            {
-              "$dateToString": {
-                "format": "%Y-%m-%d %H:%M:%S",
-                "date": {
-                  $add: [new Date(), - 61200000]
-                }
-              }
-            }
-          }
-        },
-        {
-          $set: {
             oldDate:
             {
               "$dateToString": {
@@ -96089,27 +96064,28 @@ export class PostsService {
 
           }
         },
-        {
-          $set: {
-            viewerCount:
-            {
-              $cond: {
-                if: {
-                  $isArray: "$mailViewer"
-                },
-                then: {
-                  $subtract: [
-                    {
-                      $size: "$mailViewer"
-                    }, 1
-                  ]
-                },
-                else: 0
-              }
-            },
-
-          }
-        },
+        //    {
+        //        $set: {
+        //            viewerCount: 
+        //            {
+        //                $cond: {
+        //                    if : {
+        //                        $isArray: "$mailViewer"
+        //                    },
+        //                    then: {
+        //                        $subtract: [
+        //                            {
+        //                                $size: "$mailViewer"
+        //                            },
+        //                            1
+        //                        ]
+        //                    },
+        //                    else : 0
+        //                }
+        //            },
+        //            
+        //        }
+        //    },
         {
           $match:
           {
@@ -96151,13 +96127,11 @@ export class PostsService {
                     }
                   },
                   {
-
                     "timeStart": {
                       $ne: null
                     }
                   },
                   {
-
                     "timeEnd": {
                       $ne: null
                     }
@@ -96263,9 +96237,10 @@ export class PostsService {
         {
           $sort: {
             viewerCount: 1,
-            selfContents: -1,
-            isBoost: -1,
-            createdAt: -1,
+            selfContents: - 1,
+            isBoost: - 1,
+            createdAt: - 1,
+
           }
         },
         {
@@ -96273,6 +96248,45 @@ export class PostsService {
         },
         {
           $limit: limit
+        },
+        {
+          $group: {
+            _id: "$postType",
+            postID: {
+              $push: "$postID"
+            },
+            all: {
+              $push: "$$ROOT"
+            },
+            email: {
+              $push: "$email"
+            },
+            categories: {
+              $push: "$category.$id"
+            },
+            tagPeople: {
+              $push: '$tagPeople.$id'
+            },
+            mailViewer: {
+              $push: '$mailViewer'
+            },
+            musicId: {
+              $push: '$musicId'
+            },
+            oldDate: {
+              $push: '$oldDate'
+            },
+            testDate: {
+              $push: '$testDate'
+            },
+            selfContents: {
+              $push: '$selfContents'
+            },
+            userProfile: {
+              $push: '$userProfile'
+            },
+
+          }
         },
         {
           "$lookup": {
@@ -96289,7 +96303,7 @@ export class PostsService {
                   $and: [
                     {
                       $expr: {
-                        $eq: ['$postID', '$$localID']
+                        $in: ['$postID', '$$localID']
                       }
                     },
                     {
@@ -96364,7 +96378,7 @@ export class PostsService {
                       $and: [
                         {
                           $expr: {
-                            $eq: ['$email', '$$localID']
+                            $in: ['$email', '$$localID']
                           }
                         },
                         {
@@ -96389,6 +96403,7 @@ export class PostsService {
               },
               {
                 $project: {
+                  email: 1,
                   friend:
                   {
                     $cond: {
@@ -96409,62 +96424,6 @@ export class PostsService {
           },
 
         },
-        // {
-        //   "$lookup": {
-        //     from: "contentevents",
-        //     as: "follower",
-        //     let: {
-        //       localID: '$email',
-        //       user: email
-        //     },
-        //     pipeline: [
-        //       {
-        //         $match:
-        //         {
-        //           $and: [
-        //             {
-        //               $expr: {
-        //                 $eq: ['$receiverParty', '$$localID']
-        //               }
-        //             },
-        //             {
-        //               "email": email
-        //             },
-        //             {
-        //               "eventType": "FOLLOWER",
-
-        //             },
-        //             {
-        //               "event": "ACCEPT"
-        //             },
-        //             {
-        //               "active": true
-        //             },
-
-        //           ]
-        //         }
-        //       },
-        //       {
-        //         $project: {
-        //           follower:
-        //           {
-        //             $cond: {
-        //               if: {
-        //                 $gt: [{
-        //                   $strLenCP: "$email"
-        //                 }, 0]
-        //               },
-        //               then: 1,
-        //               else: 0
-        //             }
-        //           },
-
-        //         }
-        //       }
-        //     ]
-        //   },
-
-        // },
         {
           "$lookup": {
             from: "contentevents",
@@ -96480,7 +96439,7 @@ export class PostsService {
                   $and: [
                     {
                       $expr: {
-                        $eq: ['$senderParty', '$$localID']
+                        $in: ['$senderParty', '$$localID']
                       }
                     },
                     {
@@ -96502,6 +96461,7 @@ export class PostsService {
               },
               {
                 $project: {
+                  senderParty: 1,
                   following:
                   {
                     $cond: {
@@ -96568,11 +96528,27 @@ export class PostsService {
 
         },
         {
+          $addFields: {
+            category: {
+              "$reduce": {
+                "input": "$categories",
+                "initialValue": [],
+                "in": {
+                  "$concatArrays": [
+                    "$$this",
+                    "$$value"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
           "$lookup": {
             from: "interests_repo",
             as: "cats",
             let: {
-              localID: '$category.$id'
+              localID: '$category'
             },
             pipeline: [
               {
@@ -96638,7 +96614,7 @@ export class PostsService {
             from: "userauths",
             as: "userTag",
             let: {
-              localID: '$tagPeople.$id'
+              localID: '$tagPeople'
             },
             pipeline: [
               {
@@ -96675,7 +96651,7 @@ export class PostsService {
 
 
                   $expr: {
-                    $eq: ['$email', '$$localID']
+                    $in: ['$email', '$$localID']
                   }
                 }
               },
@@ -96701,12 +96677,12 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $eq: ['$email', '$$localID']
+                    $in: ['$email', '$$localID']
                   }
                 }
               },
               {
-                "$project": {
+                $project: {
                   "fullName": 1,
                   "profilePict": 1,
                   "isCelebrity": 1,
@@ -96714,52 +96690,11 @@ export class PostsService {
                   "isPrivate": 1,
                   "isFollowPrivate": 1,
                   "isPostPrivate": 1,
-                  "urluserBadge":
-                  {
-                    "$filter":
-                    {
-                      "input": "$userBadge",
-                      "as": "listBadge",
-                      "cond":
-                      {
-                        "$and":
-                          [
-                            {
-                              "$eq":
-                                [
-                                  "$$listBadge.isActive", true
-                                ]
-                            },
-                            {
-                              "$lte": [
-                                {
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      "$add": [
-                                        new Date(),
-                                        25200000
-                                      ]
-                                    }
-                                  }
-                                },
-                                "$$listBadge.endDatetime"
-                              ]
-                            }
-                          ]
-                      }
-                    }
-                  }
+
                 }
-              },
+              }
             ],
 
-          }
-        },
-        {
-          $unwind: {
-            path: "$userBasic",
-            preserveNullAndEmptyArrays: true
           }
         },
         {
@@ -96781,7 +96716,7 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $eq: ['$mediaID', "$$localID"]
+                    $in: ['$mediaID', "$$localID"]
                   }
                 }
               },
@@ -96804,12 +96739,6 @@ export class PostsService {
           }
         },
         {
-          $unwind: {
-            path: "$avatar",
-            preserveNullAndEmptyArrays: true
-          }
-        },
-        {
           "$lookup": {
             from: "mediamusic",
             as: "music",
@@ -96821,7 +96750,7 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $eq: ['$_id', '$$localID']
+                    $in: ['$_id', '$$localID']
                   }
                 }
               },
@@ -96861,30 +96790,6 @@ export class PostsService {
           }
         },
         {
-          $unwind: {
-            path: "$media",
-            preserveNullAndEmptyArrays: true
-          }
-        },
-        {
-          $unwind: {
-            path: "$username",
-            preserveNullAndEmptyArrays: true
-          }
-        },
-        {
-          $unwind: {
-            path: "$music",
-            preserveNullAndEmptyArrays: true
-          }
-        },
-        {
-          $unwind: {
-            path: "$userInterest",
-            preserveNullAndEmptyArrays: true
-          }
-        },
-        {
           "$lookup": {
             from: "contentevents",
             as: "isLike",
@@ -96899,7 +96804,7 @@ export class PostsService {
                   $and: [
                     {
                       $expr: {
-                        $eq: ['$postID', '$$picts']
+                        $in: ['$postID', '$$picts']
                       }
                     },
                     {
@@ -96913,9 +96818,12 @@ export class PostsService {
                     },
                     {
                       "email": email,
+
                     },
+
                   ]
                 },
+
               },
               {
                 $set: {
@@ -96959,7 +96867,7 @@ export class PostsService {
                   $and: [
                     {
                       $expr: {
-                        $eq: ['$postID', '$$localID']
+                        $in: ['$postID', '$$localID']
                       }
                     },
                     {
@@ -96975,17 +96883,271 @@ export class PostsService {
 
         },
         {
+          $unwind: {
+            path: "$postID"
+          }
+        },
+        {
+          $unwind: {
+            path: "$userInterest",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $unwind: {
+            path: "$friend",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        //{
+        //    $unwind: {
+        //        path: "$categories",
+        //        preserveNullAndEmptyArrays: true
+        //    }
+        //},
+        {
+          $unwind: {
+            path: "$following",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $set: {
+            index: {
+              $indexOfArray: ["$all.postID", "$postID"]
+            }
+          }
+        },
+        {
+          $set: {
+            indexMedia: {
+              $indexOfArray: ["$media.postID", "$postID"]
+            }
+          }
+        },
+        {
+          $set: {
+            indexComment: {
+              $indexOfArray: ["$comment.postID", "$postID"]
+            }
+          }
+        },
+        {
+          $set: {
+            indexMusic: {
+              $indexOfArray: ["$music._id", "$musicId"]
+            }
+          }
+        },
+        {
+          $set: {
+            indexLike: {
+              $indexOfArray: ["$isLike.postID", "$postID"]
+            }
+          }
+        },
+        {
+          $set: {
+            indexTag: {
+              $indexOfArray: ["$userTag._id", "$tagPeople"]
+            }
+          }
+        },
+        {
+          $set: {
+            indexLogs: {
+              $indexOfArray: ["$countLogs.postID", "$postID"]
+            }
+          }
+        },
+        {
+          $set: {
+            testLogs: [
+              {
+                $ifNull: [
+                  {
+                    $arrayElemAt: ["$countLogs", "$indexLogs"]
+                  }
+                  ,
+                  []
+                ]
+              }
+            ]
+          }
+        },
+        {
           $project: {
-            mailViewer: 1,
-            viewerCount: 1,
-            viewer: 1,
-            oldDate: 1,
-            selfContents: 1,
+            _id: "$postID",
+            //countLogs:1,
+            //:1,
+            musicTitle:
+            {
+              $arrayElemAt: ["$music.musicTitle", "$indexMusic"]
+            },
+            "postID": 1,
+            "artistName":
+            {
+              $arrayElemAt: ["$music.artistName", "$indexMusic"]
+            },
+            "albumName":
+            {
+              $arrayElemAt: ["$music.albumName", "$indexMusic"]
+            },
+            "apsaraMusic":
+            {
+              $arrayElemAt: ["$music.apsaraMusic", "$indexMusic"]
+            },
+            "apsaraThumnail":
+            {
+              $arrayElemAt: ["$music.apsaraThumnail", "$indexMusic"]
+            },
+            "genre":
+            {
+              $arrayElemAt: ["$music.genre.name", "$indexMusic"]
+            },
+            "theme":
+            {
+              $arrayElemAt: ["$music.theme.name", "$indexMusic"]
+            },
+            "mood":
+            {
+              $arrayElemAt: ["$music.mood.name", "$indexMusic"]
+            },
+            "testDate":
+            {
+              $arrayElemAt: ["$testDate", 0]
+            },
+            //"musicId": 1,
+            "tagPeople":
+            {
+              $arrayElemAt: ["$userTag.username", "$indexTag"]
+            },
+            "mediaType":
+            {
+              $arrayElemAt: ["$media.mediaType", "$indexTag"]
+            },
+            // "email": 1,
+            "postType":
+            {
+              $arrayElemAt: ["$all.postType", "$index"]
+            },
+            "description":
+            {
+              $arrayElemAt: ["$all.description", "$index"]
+            },
+            "active":
+            {
+              $arrayElemAt: ["$all.active", "$index"]
+            },
+            "createdAt":
+            {
+              $arrayElemAt: ["$all.createdAt", "$index"]
+            },
+            "updatedAt":
+            {
+              $arrayElemAt: ["$all.updatedAt", "$index"]
+            },
+            "expiration":
+            {
+              $arrayElemAt: ["$all.expiration", "$index"]
+            },
+            "visibility":
+            {
+              $arrayElemAt: ["$all.visibility", "$index"]
+            },
+            "location":
+            {
+              $arrayElemAt: ["$all.location", "$index"]
+            },
+            "tags":
+            {
+              $arrayElemAt: ["$all.tags", "$index"]
+            },
+            "allowComments":
+            {
+              $arrayElemAt: ["$all.allowComments", "$index"]
+            },
+            "isSafe": {
+              $arrayElemAt: ["$all.isSafe", "$index"]
+            },
+            "isOwned":
+            {
+              $arrayElemAt: ["$all.isOwned", "$index"]
+            },
+            "certified":
+            {
+              $arrayElemAt: ["$all.certified", "$index"]
+            },
+            "saleAmount": {
+              $arrayElemAt: ["$all.saleAmount", "$index"]
+            },
+            "saleLike":
+            {
+              $arrayElemAt: ["$all.saleLike", "$index"]
+            },
+            "saleView":
+            {
+              $arrayElemAt: ["$all.saleView", "$index"]
+            },
+            "isShared":
+            {
+              $arrayElemAt: ["$all.isShared", "$index"]
+            },
+            "likes":
+            {
+              $arrayElemAt: ["$all.likes", "$index"]
+            },
+            "views":
+            {
+              $arrayElemAt: ["$all.views", "$index"]
+            },
+            "shares":
+            {
+              $arrayElemAt: ["$all.shares", "$index"]
+            },
+            "uploadSource":
+            {
+              $arrayElemAt: ["$media.uploadSource", "$indexMedia"]
+            },
+            comments:
+            {
+              $size: "$testLogs"
+            },
+            email:
+            {
+              $arrayElemAt: ["$all.email", "$index"]
+            },
+            viewer:
+            {
+              $arrayElemAt: ["$all.viewer", "$index"]
+            },
+            viewerCount:
+            {
+              $size: //"$mailViewer"
+              {
+                $arrayElemAt: ["$mailViewer", "$index"]
+              },
+
+            },
+            oldDate:
+            {
+              $arrayElemAt: ["$oldDate", 0]
+            },
+            selfContents:
+            {
+              $arrayElemAt: ["$selfContents", "$index"]
+            },
             selfContent:
             {
               $cond: {
                 if: {
-                  $eq: ["$email", email]
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    }
+                    ,
+                    email
+                  ]
                 },
                 then: 1,
                 else: 0
@@ -96995,24 +97157,37 @@ export class PostsService {
             {
               $cond: {
                 if: {
-                  $eq: ["$email", "hyppers@hyppe.id"]
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },
+                    "hyppers@hyppe.id"
+                  ]
                 },
                 then: 1,
                 else: 0
               }
             },
-            musik: 1,
-            isLike: {
-              $arrayElemAt: ["$isLike.isLiked", 0]
+            musik:
+            {
+              $arrayElemAt: ["$musicId", "$indexMusic"]
             },
-            comment: 1,
+            isLike:
+            {
+              $arrayElemAt: ["$isLike.isLiked", "$indexLike"]
+            },
+            comment:
+            {
+              $arrayElemAt: ["$comment", "$indexComment"]
+            },
+            //userInterest:"$userInterest.userInterests",
             interest: {
               $filter: {
                 input: "$category",
                 as: "stud",
                 cond: {
                   $in: [
-                    "$$stud.$id",
+                    "$$stud",
                     {
                       $ifNull: ["$userInterest.userInterests", []]
                     }
@@ -97020,81 +97195,107 @@ export class PostsService {
                 }
               }
             },
-            friend: {
-              $ifNull: [{
-                $arrayElemAt: ["$friend.friend", 0]
-              }, 0]
+            friends:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$friend.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
+                },
+                then: "$friend",
+                else: "$kon"
+              }
             },
-            // "follower": {
-            //   $ifNull: [{
-            //     $arrayElemAt: ["$follower.follower", 0]
-            //   }, 0]
-            // },
-            "following": {
-              $ifNull: [{
-                $arrayElemAt: ["$following.following", 0]
-              }, false]
-            },
-            "musicTitle": "$music.musicTitle",
-            "postID": 1,
-            "artistName": "$music.artistName",
-            "albumName": "$music.albumName",
-            "apsaraMusic": "$music.apsaraMusic",
-            "apsaraThumnail": "$music.apsaraThumnail",
-            "genre": "$music.genre.name",
-            "theme": "$music.theme.name",
-            "mood": "$music.mood.name",
-            "testDate": 1,
-            "musicId": 1,
-            "music": 1,
-            "tagPeople": "$userTag",
-            "mediaType": "$media.mediaType",
-            "email": 1,
-            "postType": 1,
-            "description": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "expiration": 1,
-            "visibility": 1,
-            "location": 1,
-            "tags": 1,
-            "allowComments": 1,
-            "isSafe": 1,
-            "isOwned": 1,
-            "certified": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            "isShared": 1,
-            "likes": "$likes",
-            "views": "$views",
-            "shares": "$shares",
-            "comments": {
-              $size: "$countLogs"
+            "following":
+            {
+              $cond: {
+                if: {
+                  $eq: ["$following.senderParty", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
+                },
+                then: "$following",
+                else: "$kon"
+              }
             },
             "insight":
             {
-              "likes": "$likes",
-              "views": "$views",
-              "shares": "$shares",
-              "comments": "$comments",
+              "likes":
+              {
+                $arrayElemAt: ["$all.likes", "$index"]
+              },
+              "views":
+              {
+                $arrayElemAt: ["$all.views", "$index"]
+              },
+              "shares":
+              {
+                $arrayElemAt: ["$all.shares", "$index"]
+              },
+              "comments":
+              {
+                $arrayElemAt: ["$all.comments", "$index"]
+              },
 
-            }
-            ,
-            "userProfile": 1,
-            "contentMedias": 1,
-            "cats": "$cats",
-            "tagDescription": 1,
-            "metadata": 1,
-            "boostDate": 1,
-            "end": "$boosted.boostSession.end",
-            "start": "$boosted.boostSession.start",
-            "isBoost": {
-              $ifNull: ["$isBoost", 0]
             },
-            "boostViewer": 1,
-            "boostCount": 1,
+            "userProfile":
+            {
+              $arrayElemAt: ["$all.userProfile", "$index"]
+            },
+            "contentMedias":
+            {
+              $arrayElemAt: ["$all.contentMedias", "$index"]
+            },
+            "cats":
+            {
+              $filter: {
+                input: "$cats",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok._id", {
+                    $arrayElemAt: ["$categories", "$index"]
+                  },]
+                }
+              }
+            },
+            "tagDescription":
+            {
+              $arrayElemAt: ["$all.tagDescription", "$index"]
+            },
+            "metadata":
+            {
+              $arrayElemAt: ["$all.metadata", "$index"]
+            },
+            "boostDate":
+            {
+              $arrayElemAt: ["$all.boostDate", "$index"]
+            },
+            "end":
+            {
+              $arrayElemAt: ["$all.boosted.boostSession.end", "$index"]
+            },
+            "start":
+            {
+              $arrayElemAt: ["$all.boosted.boostSession.start", "$index"]
+            },
+            "isBoost": {
+              $ifNull: [
+                {
+                  $arrayElemAt: ["$all.isBoost", "$index"]
+                },
+                ,
+                0
+              ]
+            },
+            "boostViewer":
+            {
+              $arrayElemAt: ["$all.boostViewer", "$index"]
+            },
+            "boostCount":
+            {
+              $arrayElemAt: ["$all.boostCount", "$index"]
+            },
             "boosted":
               [{
                 $cond: {
@@ -97106,52 +97307,119 @@ export class PostsService {
                           $add: [new Date(), 25200000]
                         }
                       }
-                    }, "$boosted.boostSession.end"]
+                    }, {
+                      $arrayElemAt: ["$all.boosted.boostSession.end", "$index"]
+                    },]
                   },
                   then: "$kosong",
-                  else: '$boosted'
+                  else:
+                  {
+                    $arrayElemAt: ["$all.boosted", "$index"]
+                  }
                 }
               }],
-            "contentModeration": 1,
-            "reportedStatus": 1,
-            "reportedUserCount": 1,
-            "contentModerationResponse": 1,
-            "reportedUser": 1,
-            "timeStart": 1,
-            "timeEnd": 1,
-            "isApsara": "$media.isApsara",
-            "apsaraId": "$media.apsaraId",
-            "apsaraThumbId": "$media.apsaraThumbId",
-            "mediaEndpoint": "$media.mediaEndpoint",
-            "mediaUri": "$media.mediaUri",
-            "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
-            "mediaThumbUri": "$media.mediaThumbUri",
-            "fullName": "$userBasic.fullName",
-            "username": "$username.username",
-            "avatar": 1,
-            "urluserBadge":
+            "contentModeration":
             {
-              "$ifNull":
-                [
-                  {
-                    "$arrayElemAt":
-                      [
-                        "$userBasic.urluserBadge", 0
-                      ]
-                  },
-                  null
-                ]
+              $arrayElemAt: ["$all.contentModeration", "$index"]
             },
-            "statusCB": 1,
+            "reportedStatus":
+            {
+              $arrayElemAt: ["$all.reportedStatus", "$index"]
+            },
+            "reportedUserCount":
+            {
+              $arrayElemAt: ["$all.reportedUserCount", "$index"]
+            },
+            "contentModerationResponse":
+            {
+              $arrayElemAt: ["$all.contentModerationResponse", "$index"]
+            },
+            "reportedUser":
+            {
+              $arrayElemAt: ["$all.reportedUser", "$index"]
+            },
+            "timeStart":
+            {
+              $arrayElemAt: ["$all.timeStart", "$index"]
+            },
+            "timeEnd":
+            {
+              $arrayElemAt: ["$all.timeEnd", "$index"]
+            },
+            "isApsara":
+            {
+              $arrayElemAt: ["$media.isApsara", "$indexMedia"]
+            },
+            "apsaraId":
+            {
+              $arrayElemAt: ["$media.apsaraId", "$indexMedia"]
+            },
+
+            "apsaraThumbId":
+            {
+              $arrayElemAt: ["$media.apsaraThumbId", "$indexMedia"]
+            },
+            "mediaEndpoint":
+            {
+              $arrayElemAt: ["$media.mediaEndpoint", "$indexMedia"]
+            },
+            "mediaUri":
+            {
+              $arrayElemAt: ["$media.mediaUri", "$indexMedia"]
+            },
+            "mediaThumbEndpoint":
+            {
+              $arrayElemAt: ["$media.mediaThumbEndpoint", "$indexMedia"]
+            },
+            "mediaThumbUri":
+            {
+              $arrayElemAt: ["$media.mediaThumbUri", "$indexMedia"]
+            },
+            "mediaThumUri":
+            {
+              $arrayElemAt: ["$media.mediaThumUri", "$indexMedia"]
+            },
+            "fullName":
+            {
+              $arrayElemAt: ["$userBasic.fullName", "$index"]
+            },
+            "username":
+            {
+              $arrayElemAt: ["$username.username", "$index"]
+            },
+            "avatar":
+            {
+              $arrayElemAt: ["$avatar", "$index"]
+            },
+            //"statusCB": 1,
             "privacy": {
-              "isCelebrity": "$userBasic.isCelebrity",
-              "isIdVerified": "$userBasic.isIdVerified",
-              "isPrivate": "$userBasic.isPrivate",
-              "isFollowPrivate": "$userBasic.isFollowPrivate",
-              "isPostPrivate": "$userBasic.isPostPrivate",
+              "isCelebrity":
+              {
+                $arrayElemAt: ["$userBasic.isCelebrity", "$index"]
+              },
+              "isIdVerified":
+              {
+                $arrayElemAt: ["$userBasic.isIdVerified", "$index"]
+              },
+              "isPrivate":
+              {
+                $arrayElemAt: ["$userBasic.isPrivate", "$index"]
+              },
+              "isFollowPrivate":
+              {
+                $arrayElemAt: ["$userBasic.isFollowPrivate", "$index"]
+              },
+              "isPostPrivate":
+              {
+                $arrayElemAt: ["$userBasic.isPostPrivate", "$index"]
+              },
 
             },
-            "verified": "$userBasic.isIdVerified",
+            "verified":
+            {
+              $arrayElemAt: ["$userBasic.isIdVerified", "$index"]
+            },
+            userInterested: "$userInterest.userInterests"
           },
 
         },
@@ -97163,9 +97431,10 @@ export class PostsService {
               {
                 $match:
                 {
-                  "_id": new Types.ObjectId("62bbdb4ba7520000050077a7"),
+                  "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
                 }
               },
+
             ]
           }
         },
@@ -97254,6 +97523,7 @@ export class PostsService {
             "isBoost": 1,
             "boostViewer": 1,
             "boostCount": 1,
+            "uploadSource": 1,
             "boosted":
             {
               $cond: {
@@ -97283,10 +97553,11 @@ export class PostsService {
             "fullName": 1,
             "username": 1,
             "avatar": 1,
-            "urluserBadge": 1,
             "statusCB": 1,
             "privacy": 1,
-
+            "mediaThumUri": 1,
+            category: 1,
+            userInterested: 1
           },
 
         },
@@ -97313,7 +97584,8 @@ export class PostsService {
       pipeline.push(
         {
           $sort: {
-            createdAt: -1,
+            createdAt: - 1,
+
           }
         },
         {
@@ -97426,19 +97698,6 @@ export class PostsService {
         },
         {
           $set: {
-            "storyDate":
-            {
-              "$dateToString": {
-                "format": "%Y-%m-%d %H:%M:%S",
-                "date": {
-                  $add: [new Date(), - 61200000]
-                }
-              }
-            }
-          }
-        },
-        {
-          $set: {
             oldDate:
             {
               "$dateToString": {
@@ -97512,27 +97771,28 @@ export class PostsService {
 
           }
         },
-        {
-          $set: {
-            viewerCount:
-            {
-              $cond: {
-                if: {
-                  $isArray: "$mailViewer"
-                },
-                then: {
-                  $subtract: [
-                    {
-                      $size: "$mailViewer"
-                    }, 1
-                  ]
-                },
-                else: 0
-              }
-            },
-
-          }
-        },
+        //    {
+        //        $set: {
+        //            viewerCount: 
+        //            {
+        //                $cond: {
+        //                    if : {
+        //                        $isArray: "$mailViewer"
+        //                    },
+        //                    then: {
+        //                        $subtract: [
+        //                            {
+        //                                $size: "$mailViewer"
+        //                            },
+        //                            1
+        //                        ]
+        //                    },
+        //                    else : 0
+        //                }
+        //            },
+        //            
+        //        }
+        //    },
         {
           $match:
           {
@@ -97574,13 +97834,11 @@ export class PostsService {
                     }
                   },
                   {
-
                     "timeStart": {
                       $ne: null
                     }
                   },
                   {
-
                     "timeEnd": {
                       $ne: null
                     }
@@ -97686,9 +97944,10 @@ export class PostsService {
         {
           $sort: {
             viewerCount: 1,
-            selfContents: -1,
-            isBoost: -1,
-            createdAt: -1,
+            selfContents: - 1,
+            isBoost: - 1,
+            createdAt: - 1,
+
           }
         },
         {
@@ -97696,6 +97955,45 @@ export class PostsService {
         },
         {
           $limit: limit
+        },
+        {
+          $group: {
+            _id: "$postType",
+            postID: {
+              $push: "$postID"
+            },
+            all: {
+              $push: "$$ROOT"
+            },
+            email: {
+              $push: "$email"
+            },
+            categories: {
+              $push: "$category.$id"
+            },
+            tagPeople: {
+              $push: '$tagPeople.$id'
+            },
+            mailViewer: {
+              $push: '$mailViewer'
+            },
+            musicId: {
+              $push: '$musicId'
+            },
+            oldDate: {
+              $push: '$oldDate'
+            },
+            testDate: {
+              $push: '$testDate'
+            },
+            selfContents: {
+              $push: '$selfContents'
+            },
+            userProfile: {
+              $push: '$userProfile'
+            },
+
+          }
         },
         {
           "$lookup": {
@@ -97712,7 +98010,7 @@ export class PostsService {
                   $and: [
                     {
                       $expr: {
-                        $eq: ['$postID', '$$localID']
+                        $in: ['$postID', '$$localID']
                       }
                     },
                     {
@@ -97787,7 +98085,7 @@ export class PostsService {
                       $and: [
                         {
                           $expr: {
-                            $eq: ['$email', '$$localID']
+                            $in: ['$email', '$$localID']
                           }
                         },
                         {
@@ -97812,6 +98110,7 @@ export class PostsService {
               },
               {
                 $project: {
+                  email: 1,
                   friend:
                   {
                     $cond: {
@@ -97832,62 +98131,6 @@ export class PostsService {
           },
 
         },
-        // {
-        //   "$lookup": {
-        //     from: "contentevents",
-        //     as: "follower",
-        //     let: {
-        //       localID: '$email',
-        //       user: email
-        //     },
-        //     pipeline: [
-        //       {
-        //         $match:
-        //         {
-        //           $and: [
-        //             {
-        //               $expr: {
-        //                 $eq: ['$receiverParty', '$$localID']
-        //               }
-        //             },
-        //             {
-        //               "email": email
-        //             },
-        //             {
-        //               "eventType": "FOLLOWER",
-
-        //             },
-        //             {
-        //               "event": "ACCEPT"
-        //             },
-        //             {
-        //               "active": true
-        //             },
-
-        //           ]
-        //         }
-        //       },
-        //       {
-        //         $project: {
-        //           follower:
-        //           {
-        //             $cond: {
-        //               if: {
-        //                 $gt: [{
-        //                   $strLenCP: "$email"
-        //                 }, 0]
-        //               },
-        //               then: 1,
-        //               else: 0
-        //             }
-        //           },
-
-        //         }
-        //       }
-        //     ]
-        //   },
-
-        // },
         {
           "$lookup": {
             from: "contentevents",
@@ -97903,7 +98146,7 @@ export class PostsService {
                   $and: [
                     {
                       $expr: {
-                        $eq: ['$senderParty', '$$localID']
+                        $in: ['$senderParty', '$$localID']
                       }
                     },
                     {
@@ -97925,6 +98168,7 @@ export class PostsService {
               },
               {
                 $project: {
+                  senderParty: 1,
                   following:
                   {
                     $cond: {
@@ -97991,11 +98235,27 @@ export class PostsService {
 
         },
         {
+          $addFields: {
+            category: {
+              "$reduce": {
+                "input": "$categories",
+                "initialValue": [],
+                "in": {
+                  "$concatArrays": [
+                    "$$this",
+                    "$$value"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
           "$lookup": {
             from: "interests_repo",
             as: "cats",
             let: {
-              localID: '$category.$id'
+              localID: '$category'
             },
             pipeline: [
               {
@@ -98061,7 +98321,7 @@ export class PostsService {
             from: "userauths",
             as: "userTag",
             let: {
-              localID: '$tagPeople.$id'
+              localID: '$tagPeople'
             },
             pipeline: [
               {
@@ -98098,7 +98358,7 @@ export class PostsService {
 
 
                   $expr: {
-                    $eq: ['$email', '$$localID']
+                    $in: ['$email', '$$localID']
                   }
                 }
               },
@@ -98124,12 +98384,12 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $eq: ['$email', '$$localID']
+                    $in: ['$email', '$$localID']
                   }
                 }
               },
               {
-                "$project": {
+                $project: {
                   "fullName": 1,
                   "profilePict": 1,
                   "isCelebrity": 1,
@@ -98137,52 +98397,11 @@ export class PostsService {
                   "isPrivate": 1,
                   "isFollowPrivate": 1,
                   "isPostPrivate": 1,
-                  "urluserBadge":
-                  {
-                    "$filter":
-                    {
-                      "input": "$userBadge",
-                      "as": "listBadge",
-                      "cond":
-                      {
-                        "$and":
-                          [
-                            {
-                              "$eq":
-                                [
-                                  "$$listBadge.isActive", true
-                                ]
-                            },
-                            {
-                              "$lte": [
-                                {
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      "$add": [
-                                        new Date(),
-                                        25200000
-                                      ]
-                                    }
-                                  }
-                                },
-                                "$$listBadge.endDatetime"
-                              ]
-                            }
-                          ]
-                      }
-                    }
-                  }
+
                 }
-              },
+              }
             ],
 
-          }
-        },
-        {
-          $unwind: {
-            path: "$userBasic",
-            preserveNullAndEmptyArrays: true
           }
         },
         {
@@ -98204,7 +98423,7 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $eq: ['$mediaID', "$$localID"]
+                    $in: ['$mediaID', "$$localID"]
                   }
                 }
               },
@@ -98227,12 +98446,6 @@ export class PostsService {
           }
         },
         {
-          $unwind: {
-            path: "$avatar",
-            preserveNullAndEmptyArrays: true
-          }
-        },
-        {
           "$lookup": {
             from: "mediamusic",
             as: "music",
@@ -98244,7 +98457,7 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $eq: ['$_id', '$$localID']
+                    $in: ['$_id', '$$localID']
                   }
                 }
               },
@@ -98284,30 +98497,6 @@ export class PostsService {
           }
         },
         {
-          $unwind: {
-            path: "$media",
-            preserveNullAndEmptyArrays: true
-          }
-        },
-        {
-          $unwind: {
-            path: "$username",
-            preserveNullAndEmptyArrays: true
-          }
-        },
-        {
-          $unwind: {
-            path: "$music",
-            preserveNullAndEmptyArrays: true
-          }
-        },
-        {
-          $unwind: {
-            path: "$userInterest",
-            preserveNullAndEmptyArrays: true
-          }
-        },
-        {
           "$lookup": {
             from: "contentevents",
             as: "isLike",
@@ -98322,7 +98511,7 @@ export class PostsService {
                   $and: [
                     {
                       $expr: {
-                        $eq: ['$postID', '$$picts']
+                        $in: ['$postID', '$$picts']
                       }
                     },
                     {
@@ -98336,9 +98525,12 @@ export class PostsService {
                     },
                     {
                       "email": email,
+
                     },
+
                   ]
                 },
+
               },
               {
                 $set: {
@@ -98382,7 +98574,7 @@ export class PostsService {
                   $and: [
                     {
                       $expr: {
-                        $eq: ['$postID', '$$localID']
+                        $in: ['$postID', '$$localID']
                       }
                     },
                     {
@@ -98398,17 +98590,271 @@ export class PostsService {
 
         },
         {
+          $unwind: {
+            path: "$postID"
+          }
+        },
+        {
+          $unwind: {
+            path: "$userInterest",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $unwind: {
+            path: "$friend",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        //{
+        //    $unwind: {
+        //        path: "$categories",
+        //        preserveNullAndEmptyArrays: true
+        //    }
+        //},
+        {
+          $unwind: {
+            path: "$following",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $set: {
+            index: {
+              $indexOfArray: ["$all.postID", "$postID"]
+            }
+          }
+        },
+        {
+          $set: {
+            indexMedia: {
+              $indexOfArray: ["$media.postID", "$postID"]
+            }
+          }
+        },
+        {
+          $set: {
+            indexComment: {
+              $indexOfArray: ["$comment.postID", "$postID"]
+            }
+          }
+        },
+        {
+          $set: {
+            indexMusic: {
+              $indexOfArray: ["$music._id", "$musicId"]
+            }
+          }
+        },
+        {
+          $set: {
+            indexLike: {
+              $indexOfArray: ["$isLike.postID", "$postID"]
+            }
+          }
+        },
+        {
+          $set: {
+            indexTag: {
+              $indexOfArray: ["$userTag._id", "$tagPeople"]
+            }
+          }
+        },
+        {
+          $set: {
+            indexLogs: {
+              $indexOfArray: ["$countLogs.postID", "$postID"]
+            }
+          }
+        },
+        {
+          $set: {
+            testLogs: [
+              {
+                $ifNull: [
+                  {
+                    $arrayElemAt: ["$countLogs", "$indexLogs"]
+                  }
+                  ,
+                  []
+                ]
+              }
+            ]
+          }
+        },
+        {
           $project: {
-            mailViewer: 1,
-            viewerCount: 1,
-            viewer: 1,
-            oldDate: 1,
-            selfContents: 1,
+            _id: "$postID",
+            //countLogs:1,
+            //:1,
+            musicTitle:
+            {
+              $arrayElemAt: ["$music.musicTitle", "$indexMusic"]
+            },
+            "postID": 1,
+            "artistName":
+            {
+              $arrayElemAt: ["$music.artistName", "$indexMusic"]
+            },
+            "albumName":
+            {
+              $arrayElemAt: ["$music.albumName", "$indexMusic"]
+            },
+            "apsaraMusic":
+            {
+              $arrayElemAt: ["$music.apsaraMusic", "$indexMusic"]
+            },
+            "apsaraThumnail":
+            {
+              $arrayElemAt: ["$music.apsaraThumnail", "$indexMusic"]
+            },
+            "genre":
+            {
+              $arrayElemAt: ["$music.genre.name", "$indexMusic"]
+            },
+            "theme":
+            {
+              $arrayElemAt: ["$music.theme.name", "$indexMusic"]
+            },
+            "mood":
+            {
+              $arrayElemAt: ["$music.mood.name", "$indexMusic"]
+            },
+            "testDate":
+            {
+              $arrayElemAt: ["$testDate", 0]
+            },
+            //"musicId": 1,
+            "tagPeople":
+            {
+              $arrayElemAt: ["$userTag.username", "$indexTag"]
+            },
+            "mediaType":
+            {
+              $arrayElemAt: ["$media.mediaType", "$indexTag"]
+            },
+            // "email": 1,
+            "postType":
+            {
+              $arrayElemAt: ["$all.postType", "$index"]
+            },
+            "description":
+            {
+              $arrayElemAt: ["$all.description", "$index"]
+            },
+            "active":
+            {
+              $arrayElemAt: ["$all.active", "$index"]
+            },
+            "createdAt":
+            {
+              $arrayElemAt: ["$all.createdAt", "$index"]
+            },
+            "updatedAt":
+            {
+              $arrayElemAt: ["$all.updatedAt", "$index"]
+            },
+            "expiration":
+            {
+              $arrayElemAt: ["$all.expiration", "$index"]
+            },
+            "visibility":
+            {
+              $arrayElemAt: ["$all.visibility", "$index"]
+            },
+            "location":
+            {
+              $arrayElemAt: ["$all.location", "$index"]
+            },
+            "tags":
+            {
+              $arrayElemAt: ["$all.tags", "$index"]
+            },
+            "allowComments":
+            {
+              $arrayElemAt: ["$all.allowComments", "$index"]
+            },
+            "isSafe": {
+              $arrayElemAt: ["$all.isSafe", "$index"]
+            },
+            "isOwned":
+            {
+              $arrayElemAt: ["$all.isOwned", "$index"]
+            },
+            "certified":
+            {
+              $arrayElemAt: ["$all.certified", "$index"]
+            },
+            "saleAmount": {
+              $arrayElemAt: ["$all.saleAmount", "$index"]
+            },
+            "saleLike":
+            {
+              $arrayElemAt: ["$all.saleLike", "$index"]
+            },
+            "saleView":
+            {
+              $arrayElemAt: ["$all.saleView", "$index"]
+            },
+            "isShared":
+            {
+              $arrayElemAt: ["$all.isShared", "$index"]
+            },
+            "likes":
+            {
+              $arrayElemAt: ["$all.likes", "$index"]
+            },
+            "views":
+            {
+              $arrayElemAt: ["$all.views", "$index"]
+            },
+            "shares":
+            {
+              $arrayElemAt: ["$all.shares", "$index"]
+            },
+            "uploadSource":
+            {
+              $arrayElemAt: ["$media.uploadSource", "$indexMedia"]
+            },
+            comments:
+            {
+              $size: "$testLogs"
+            },
+            email:
+            {
+              $arrayElemAt: ["$all.email", "$index"]
+            },
+            viewer:
+            {
+              $arrayElemAt: ["$all.viewer", "$index"]
+            },
+            viewerCount:
+            {
+              $size: //"$mailViewer"
+              {
+                $arrayElemAt: ["$mailViewer", "$index"]
+              },
+
+            },
+            oldDate:
+            {
+              $arrayElemAt: ["$oldDate", 0]
+            },
+            selfContents:
+            {
+              $arrayElemAt: ["$selfContents", "$index"]
+            },
             selfContent:
             {
               $cond: {
                 if: {
-                  $eq: ["$email", email]
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    }
+                    ,
+                    email
+                  ]
                 },
                 then: 1,
                 else: 0
@@ -98418,24 +98864,37 @@ export class PostsService {
             {
               $cond: {
                 if: {
-                  $eq: ["$email", "hyppers@hyppe.id"]
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },
+                    "hyppers@hyppe.id"
+                  ]
                 },
                 then: 1,
                 else: 0
               }
             },
-            musik: 1,
-            isLike: {
-              $arrayElemAt: ["$isLike.isLiked", 0]
+            musik:
+            {
+              $arrayElemAt: ["$musicId", "$indexMusic"]
             },
-            comment: 1,
+            isLike:
+            {
+              $arrayElemAt: ["$isLike.isLiked", "$indexLike"]
+            },
+            comment:
+            {
+              $arrayElemAt: ["$comment", "$indexComment"]
+            },
+            //userInterest:"$userInterest.userInterests",
             interest: {
               $filter: {
                 input: "$category",
                 as: "stud",
                 cond: {
                   $in: [
-                    "$$stud.$id",
+                    "$$stud",
                     {
                       $ifNull: ["$userInterest.userInterests", []]
                     }
@@ -98443,81 +98902,107 @@ export class PostsService {
                 }
               }
             },
-            friend: {
-              $ifNull: [{
-                $arrayElemAt: ["$friend.friend", 0]
-              }, 0]
+            friends:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$friend.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
+                },
+                then: "$friend",
+                else: "$kon"
+              }
             },
-            // "follower": {
-            //   $ifNull: [{
-            //     $arrayElemAt: ["$follower.follower", 0]
-            //   }, 0]
-            // },
-            "following": {
-              $ifNull: [{
-                $arrayElemAt: ["$following.following", 0]
-              }, false]
-            },
-            "musicTitle": "$music.musicTitle",
-            "postID": 1,
-            "artistName": "$music.artistName",
-            "albumName": "$music.albumName",
-            "apsaraMusic": "$music.apsaraMusic",
-            "apsaraThumnail": "$music.apsaraThumnail",
-            "genre": "$music.genre.name",
-            "theme": "$music.theme.name",
-            "mood": "$music.mood.name",
-            "testDate": 1,
-            "musicId": 1,
-            "music": 1,
-            "tagPeople": "$userTag",
-            "mediaType": "$media.mediaType",
-            "email": 1,
-            "postType": 1,
-            "description": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "expiration": 1,
-            "visibility": 1,
-            "location": 1,
-            "tags": 1,
-            "allowComments": 1,
-            "isSafe": 1,
-            "isOwned": 1,
-            "certified": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            "isShared": 1,
-            "likes": "$likes",
-            "views": "$views",
-            "shares": "$shares",
-            "comments": {
-              $size: "$countLogs"
+            "following":
+            {
+              $cond: {
+                if: {
+                  $eq: ["$following.senderParty", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
+                },
+                then: "$following",
+                else: "$kon"
+              }
             },
             "insight":
             {
-              "likes": "$likes",
-              "views": "$views",
-              "shares": "$shares",
-              "comments": "$comments",
+              "likes":
+              {
+                $arrayElemAt: ["$all.likes", "$index"]
+              },
+              "views":
+              {
+                $arrayElemAt: ["$all.views", "$index"]
+              },
+              "shares":
+              {
+                $arrayElemAt: ["$all.shares", "$index"]
+              },
+              "comments":
+              {
+                $arrayElemAt: ["$all.comments", "$index"]
+              },
 
-            }
-            ,
-            "userProfile": 1,
-            "contentMedias": 1,
-            "cats": "$cats",
-            "tagDescription": 1,
-            "metadata": 1,
-            "boostDate": 1,
-            "end": "$boosted.boostSession.end",
-            "start": "$boosted.boostSession.start",
-            "isBoost": {
-              $ifNull: ["$isBoost", 0]
             },
-            "boostViewer": 1,
-            "boostCount": 1,
+            "userProfile":
+            {
+              $arrayElemAt: ["$all.userProfile", "$index"]
+            },
+            "contentMedias":
+            {
+              $arrayElemAt: ["$all.contentMedias", "$index"]
+            },
+            "cats":
+            {
+              $filter: {
+                input: "$cats",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok._id", {
+                    $arrayElemAt: ["$categories", "$index"]
+                  },]
+                }
+              }
+            },
+            "tagDescription":
+            {
+              $arrayElemAt: ["$all.tagDescription", "$index"]
+            },
+            "metadata":
+            {
+              $arrayElemAt: ["$all.metadata", "$index"]
+            },
+            "boostDate":
+            {
+              $arrayElemAt: ["$all.boostDate", "$index"]
+            },
+            "end":
+            {
+              $arrayElemAt: ["$all.boosted.boostSession.end", "$index"]
+            },
+            "start":
+            {
+              $arrayElemAt: ["$all.boosted.boostSession.start", "$index"]
+            },
+            "isBoost": {
+              $ifNull: [
+                {
+                  $arrayElemAt: ["$all.isBoost", "$index"]
+                },
+                ,
+                0
+              ]
+            },
+            "boostViewer":
+            {
+              $arrayElemAt: ["$all.boostViewer", "$index"]
+            },
+            "boostCount":
+            {
+              $arrayElemAt: ["$all.boostCount", "$index"]
+            },
             "boosted":
               [{
                 $cond: {
@@ -98529,52 +99014,119 @@ export class PostsService {
                           $add: [new Date(), 25200000]
                         }
                       }
-                    }, "$boosted.boostSession.end"]
+                    }, {
+                      $arrayElemAt: ["$all.boosted.boostSession.end", "$index"]
+                    },]
                   },
                   then: "$kosong",
-                  else: '$boosted'
+                  else:
+                  {
+                    $arrayElemAt: ["$all.boosted", "$index"]
+                  }
                 }
               }],
-            "contentModeration": 1,
-            "reportedStatus": 1,
-            "reportedUserCount": 1,
-            "contentModerationResponse": 1,
-            "reportedUser": 1,
-            "timeStart": 1,
-            "timeEnd": 1,
-            "isApsara": "$media.isApsara",
-            "apsaraId": "$media.apsaraId",
-            "apsaraThumbId": "$media.apsaraThumbId",
-            "mediaEndpoint": "$media.mediaEndpoint",
-            "mediaUri": "$media.mediaUri",
-            "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
-            "mediaThumbUri": "$media.mediaThumbUri",
-            "fullName": "$userBasic.fullName",
-            "username": "$username.username",
-            "avatar": 1,
-            "urluserBadge":
+            "contentModeration":
             {
-              "$ifNull":
-                [
-                  {
-                    "$arrayElemAt":
-                      [
-                        "$userBasic.urluserBadge", 0
-                      ]
-                  },
-                  null
-                ]
+              $arrayElemAt: ["$all.contentModeration", "$index"]
             },
-            "statusCB": 1,
+            "reportedStatus":
+            {
+              $arrayElemAt: ["$all.reportedStatus", "$index"]
+            },
+            "reportedUserCount":
+            {
+              $arrayElemAt: ["$all.reportedUserCount", "$index"]
+            },
+            "contentModerationResponse":
+            {
+              $arrayElemAt: ["$all.contentModerationResponse", "$index"]
+            },
+            "reportedUser":
+            {
+              $arrayElemAt: ["$all.reportedUser", "$index"]
+            },
+            "timeStart":
+            {
+              $arrayElemAt: ["$all.timeStart", "$index"]
+            },
+            "timeEnd":
+            {
+              $arrayElemAt: ["$all.timeEnd", "$index"]
+            },
+            "isApsara":
+            {
+              $arrayElemAt: ["$media.isApsara", "$indexMedia"]
+            },
+            "apsaraId":
+            {
+              $arrayElemAt: ["$media.apsaraId", "$indexMedia"]
+            },
+
+            "apsaraThumbId":
+            {
+              $arrayElemAt: ["$media.apsaraThumbId", "$indexMedia"]
+            },
+            "mediaEndpoint":
+            {
+              $arrayElemAt: ["$media.mediaEndpoint", "$indexMedia"]
+            },
+            "mediaUri":
+            {
+              $arrayElemAt: ["$media.mediaUri", "$indexMedia"]
+            },
+            "mediaThumbEndpoint":
+            {
+              $arrayElemAt: ["$media.mediaThumbEndpoint", "$indexMedia"]
+            },
+            "mediaThumbUri":
+            {
+              $arrayElemAt: ["$media.mediaThumbUri", "$indexMedia"]
+            },
+            "mediaThumUri":
+            {
+              $arrayElemAt: ["$media.mediaThumUri", "$indexMedia"]
+            },
+            "fullName":
+            {
+              $arrayElemAt: ["$userBasic.fullName", "$index"]
+            },
+            "username":
+            {
+              $arrayElemAt: ["$username.username", "$index"]
+            },
+            "avatar":
+            {
+              $arrayElemAt: ["$avatar", "$index"]
+            },
+            //"statusCB": 1,
             "privacy": {
-              "isCelebrity": "$userBasic.isCelebrity",
-              "isIdVerified": "$userBasic.isIdVerified",
-              "isPrivate": "$userBasic.isPrivate",
-              "isFollowPrivate": "$userBasic.isFollowPrivate",
-              "isPostPrivate": "$userBasic.isPostPrivate",
+              "isCelebrity":
+              {
+                $arrayElemAt: ["$userBasic.isCelebrity", "$index"]
+              },
+              "isIdVerified":
+              {
+                $arrayElemAt: ["$userBasic.isIdVerified", "$index"]
+              },
+              "isPrivate":
+              {
+                $arrayElemAt: ["$userBasic.isPrivate", "$index"]
+              },
+              "isFollowPrivate":
+              {
+                $arrayElemAt: ["$userBasic.isFollowPrivate", "$index"]
+              },
+              "isPostPrivate":
+              {
+                $arrayElemAt: ["$userBasic.isPostPrivate", "$index"]
+              },
 
             },
-            "verified": "$userBasic.isIdVerified",
+            "verified":
+            {
+              $arrayElemAt: ["$userBasic.isIdVerified", "$index"]
+            },
+            userInterested: "$userInterest.userInterests"
           },
 
         },
@@ -98586,9 +99138,10 @@ export class PostsService {
               {
                 $match:
                 {
-                  "_id": new Types.ObjectId("62bbdb4ba7520000050077a7"),
+                  "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
                 }
               },
+
             ]
           }
         },
@@ -98677,6 +99230,7 @@ export class PostsService {
             "isBoost": 1,
             "boostViewer": 1,
             "boostCount": 1,
+            "uploadSource": 1,
             "boosted":
             {
               $cond: {
@@ -98706,13 +99260,15 @@ export class PostsService {
             "fullName": 1,
             "username": 1,
             "avatar": 1,
-            "urluserBadge": 1,
             "statusCB": 1,
             "privacy": 1,
-
+            "mediaThumUri": 1,
+            category: 1,
+            userInterested: 1
           },
 
         },
+
 
       );
       pipeline.push(
