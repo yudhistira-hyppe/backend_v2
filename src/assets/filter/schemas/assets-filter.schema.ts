@@ -7,11 +7,33 @@ export type AssetsFilterDocument = AssetsFilter & Document;
 export class AssetsFilter {
     _id: mongoose.Types.ObjectId;
     @Prop()
-    namafile: string
+    namafile: string;
     @Prop()
-    thumnail: string
+    descFile: string;
     @Prop()
-    link: string;
+    iconFile: string;
+
+    @Prop()
+    fileAssetName: String;
+    @Prop()
+    fileAssetBasePath: String;
+    @Prop()
+    fileAssetUri: String;
+
+    @Prop()
+    mediaName: String;
+    @Prop()
+    mediaBasePath: String;
+    @Prop()
+    mediaUri: String;
+
+    @Prop()
+    mediaThumName: String;
+    @Prop()
+    mediaThumBasePath: String;
+    @Prop()
+    mediaThumUri: String;
+
     @Prop()
     status: boolean;
 }

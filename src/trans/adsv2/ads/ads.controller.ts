@@ -223,10 +223,10 @@ export class AdsController {
             var _id_InContentAds = this.configService.get("ID_ADS_IN_CONTENT");
             getAdsType = await this.adsTypeService.findOne(_id_InContentAds);
         } else if (AdsDto_.typeAdsID.toString() == this.configService.get("ID_ADS_IN_BETWEEN")) {
-            var _id_InBetweenAds = this.configService.get("ID_ADS_IN_CONTENT");
+            var _id_InBetweenAds = this.configService.get("ID_ADS_IN_BETWEEN");
             getAdsType = await this.adsTypeService.findOne(_id_InBetweenAds);
         } else if (AdsDto_.typeAdsID.toString() == this.configService.get("ID_ADS_IN_POPUP")) {
-            var _id_PopUpAds = this.configService.get("ID_ADS_IN_CONTENT");
+            var _id_PopUpAds = this.configService.get("ID_ADS_IN_POPUP");
             getAdsType = await this.adsTypeService.findOne(_id_PopUpAds);
         } else {
             await this.errorHandler.generateBadRequestException(
@@ -298,6 +298,8 @@ export class AdsController {
                     ceck_skipTime,
                 );
             } else {
+                console.log((Number(getAdsType.skipMax) >= Number(AdsDto_.skipTime)));
+                console.log((Number(AdsDto_.skipTime) >= Number(getAdsType.skipMin)))
                 if (!((Number(getAdsType.skipMax) >= Number(AdsDto_.skipTime)) && (Number(AdsDto_.skipTime) >= Number(getAdsType.skipMin)))) {
                     await this.errorHandler.generateBadRequestException(
                         'Unabled to proceed, skipTime required ' + getAdsType.skipMax.toString() + ' > skipTime >' + getAdsType.skipMin.toString(),
