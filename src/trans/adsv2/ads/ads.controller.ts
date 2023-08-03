@@ -223,10 +223,10 @@ export class AdsController {
             var _id_InContentAds = this.configService.get("ID_ADS_IN_CONTENT");
             getAdsType = await this.adsTypeService.findOne(_id_InContentAds);
         } else if (AdsDto_.typeAdsID.toString() == this.configService.get("ID_ADS_IN_BETWEEN")) {
-            var _id_InBetweenAds = this.configService.get("ID_ADS_IN_CONTENT");
+            var _id_InBetweenAds = this.configService.get("ID_ADS_IN_BETWEEN");
             getAdsType = await this.adsTypeService.findOne(_id_InBetweenAds);
         } else if (AdsDto_.typeAdsID.toString() == this.configService.get("ID_ADS_IN_POPUP")) {
-            var _id_PopUpAds = this.configService.get("ID_ADS_IN_CONTENT");
+            var _id_PopUpAds = this.configService.get("ID_ADS_IN_POPUP");
             getAdsType = await this.adsTypeService.findOne(_id_PopUpAds);
         } else {
             await this.errorHandler.generateBadRequestException(
@@ -298,6 +298,8 @@ export class AdsController {
                     ceck_skipTime,
                 );
             } else {
+                console.log((Number(getAdsType.skipMax) >= Number(AdsDto_.skipTime)));
+                console.log((Number(AdsDto_.skipTime) >= Number(getAdsType.skipMin)))
                 if (!((Number(getAdsType.skipMax) >= Number(AdsDto_.skipTime)) && (Number(AdsDto_.skipTime) >= Number(getAdsType.skipMin)))) {
                     await this.errorHandler.generateBadRequestException(
                         'Unabled to proceed, skipTime required ' + getAdsType.skipMax.toString() + ' > skipTime >' + getAdsType.skipMin.toString(),
@@ -426,7 +428,7 @@ export class AdsController {
             for (var i = 0; i < AdsDto_.interestID.length; i++) {
                 let interestID_Object = AdsDto_.interestID[i];
                 if (interestID_Object == "Lainnya") {
-                    Array_Demografis.push("LAINNYA");
+                    Array_Interest.push("LAINNYA");
                 } else {
                     let interestID_Object_Dbref = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(interestID_Object), "$db": "ProdAll" }
                     Array_Interest.push(interestID_Object_Dbref);
@@ -786,10 +788,12 @@ export class AdsController {
         }
 
         try {
-            let ads_campaign_dashboard = await this.adsService.campaignDashboard(body.userId,start_date, end_date);
+            let ads_campaign_dashboard = await this.adsService.campaignDashboard(body.userId, start_date, end_date);
+            let ads_status_campaign_dashboard = await this.adsService.getAdsSatus(start_date, end_date);
             if (await this.utilsService.ceckData(ads_campaign_dashboard)){
                 if (ads_campaign_dashboard.length>0){
                     ads_campaign_dashboard = ads_campaign_dashboard[0];
+                    ads_campaign_dashboard.statusIklan = ads_status_campaign_dashboard;
                 }
             }
             for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {
