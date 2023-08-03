@@ -94363,28 +94363,28 @@ export class PostsService {
 
           }
         },
-        {
-          $set: {
-            viewerCount:
-            {
-              $cond: {
-                if: {
-                  $isArray: "$mailViewer"
-                },
-                then: {
-                  $subtract: [
-                    {
-                      $size: "$mailViewer"
-                    },
-                    1
-                  ]
-                },
-                else: 0
-              }
-            },
+        // {
+        //   $set: {
+        //     viewerCount:
+        //     {
+        //       $cond: {
+        //         if: {
+        //           $isArray: "$mailViewer"
+        //         },
+        //         then: {
+        //           $subtract: [
+        //             {
+        //               $size: "$mailViewer"
+        //             },
+        //             1
+        //           ]
+        //         },
+        //         else: 0
+        //       }
+        //     },
 
-          }
-        },
+        //   }
+        // },
         {
           $match:
           {
