@@ -425,7 +425,7 @@ export class ChallengeController {
 
     var setnotifikasi = {};
     var listnotifikasipush = ['akanDatang', 'challengeDimulai', 'updateLeaderboard', 'challengeAkanBerakhir', 'challengeBerakhir', 'untukPemenang'];
-    var listvariable = ['include', 'title', 'description', 'descriptionEN', 'unit', 'aturWaktu'];
+    var listvariable = ['include', 'title', 'titleEN', 'description', 'descriptionEN', 'unit', 'aturWaktu'];
     for (var i = 0; i < listnotifikasipush.length; i++) {
       var tempnotifikasi = {};
       var getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_include';
@@ -1038,7 +1038,7 @@ export class ChallengeController {
 
       var setnotifikasi = {};
       var listnotifikasipush = ['akanDatang', 'challengeDimulai', 'updateLeaderboard', 'challengeAkanBerakhir', 'challengeBerakhir', 'untukPemenang'];
-      var listvariable = ['include', 'title', 'description', 'descriptionEN', 'unit', 'aturWaktu'];
+      var listvariable = ['include', 'title', 'titleEn', 'description', 'descriptionEN', 'unit', 'aturWaktu'];
       for (var i = 0; i < listnotifikasipush.length; i++) {
         var tempnotifikasi = {};
         var getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_include';
@@ -1496,12 +1496,29 @@ export class ChallengeController {
   // }
 
   async insertchildofchallenge(parentdata, participant) {
-    if (participant != null) {
+    if(participant != null)
+    {
+      var timestamp_start = await this.util.getDateTimeString();
+      // console.log(timestamp_start);
       var setparticipantchallenge = [];
-      if (participant = "ALL") {
-        var getalluserbasic = await this.userbasicsSS.findAll();
-        for (var loopuser = 0; loopuser < getalluserbasic.length; loopuser++) {
-          setparticipantchallenge.push(getalluserbasic[loopuser]._id.toString());
+      if(participant = "ALL")
+      {
+        var totaldata = await this.userbasicsSS.getcount();
+        var setpagination = parseInt(totaldata[0].totalpost) / 200;
+        var ceksisa = (parseInt(totaldata[0].totalpost) % 200);
+        if (ceksisa > 0 && ceksisa < 5) 
+        {
+            setpagination = setpagination + 1;
+        }
+
+        for(var looppagination = 0; looppagination < setpagination; looppagination++)
+        {
+          var getalluserbasic = await this.userbasicsSS.getuser(looppagination, 200);
+
+          for(var loopuser = 0; loopuser < getalluserbasic.length; loopuser++)
+          {
+            setparticipantchallenge.push(getalluserbasic[loopuser]._id.toString());
+          }
         }
       }
       else {
@@ -1512,10 +1529,12 @@ export class ChallengeController {
       var tempparticipant = [];
       for (var loopparticipant = 0; loopparticipant < setparticipantchallenge.length; loopparticipant++) {
         var importlibpart = require('mongoose');
-        var setparticipantid = importlibpart.Types.ObjectId(loopparticipant[i]);
+        var setparticipantid = importlibpart.Types.ObjectId(setparticipantchallenge[loopparticipant]);
         tempparticipant.push(setparticipantid);
       }
 
+      var timestamp_end = await this.util.getDateTimeString();
+      // console.log(timestamp_end);
       parentdata.listParticipant = tempparticipant;
     }
     else {
