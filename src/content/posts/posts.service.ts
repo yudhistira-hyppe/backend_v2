@@ -98129,10 +98129,10 @@ export class PostsService {
                 {
                   $concatArrays: [
                     '$viewer',
-                    [email]
+                    [email, email]
                   ]
                 },
-                else: [email]
+                else: [email, email]
               }
             }
           }
@@ -98152,7 +98152,7 @@ export class PostsService {
         },
         {
           $set: {
-            viewerCount:
+            viewerCounts:
             {
               $cond: {
                 if: {
@@ -98322,7 +98322,7 @@ export class PostsService {
         },
         {
           $sort: {
-            viewerCount: 1,
+            viewerCounts: 1,
             selfContents: - 1,
             isBoost: - 1,
             createdAt: - 1,
@@ -98578,16 +98578,9 @@ export class PostsService {
               {
                 $match:
                 {
-                  $and: [
-                    {
-                      $expr: {
-                        $eq: ['$postID', '$$localID']
-                      }
-                    },
-                    {
-                      "apsara": true
-                    }
-                  ]
+                  $expr: {
+                    $in: ['$postID', '$$localID']
+                  }
                 }
               },
               {
@@ -98605,7 +98598,8 @@ export class PostsService {
                   },
                   "mediaThumbUri": "$mediaThumb",
                   "mediaType": 1,
-
+                  "uploadSource": 1,
+                  "mediaThumUri": 1
                 }
               }
             ],
