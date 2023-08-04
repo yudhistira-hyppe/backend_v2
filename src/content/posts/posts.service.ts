@@ -94363,27 +94363,6 @@ export class PostsService {
 
           }
         },
-        //{
-        //    $set: {
-        //        viewerCount: 
-        //        {
-        //            $cond: {
-        //                if : {
-        //                    $isArray: "$mailViewer"
-        //                },
-        //                then: {
-        //                    $subtract: [
-        //                        {
-        //                            $size: "$mailViewer"
-        //                        },1
-        //                    ]
-        //                },
-        //                else : 0
-        //            }
-        //        },
-        //        
-        //    }
-        //},
         {
           $match:
           {
@@ -95210,6 +95189,13 @@ export class PostsService {
             }
           }
         },
+        //{
+        //    $set: {
+        //        indexUser: {
+        //            $indexOfArray: ["$all.email", "$email"]
+        //        }
+        //    }
+        //},
         {
           $set: {
             testLogs: [
@@ -95774,132 +95760,51 @@ export class PostsService {
             },
             "apsaraId":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.apsaraId", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.apsaraId", "$index"]
             },
             "isApsara":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.isApsara", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.isApsara", "$index"]
             },
             "apsaraThumbId":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.apsaraThumbId", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.apsaraThumbId", "$index"]
             },
             "mediaEndpoint":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.mediaEndpoint", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.mediaEndpoint", "$index"]
             },
             "mediaUri":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.mediaUrl", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.mediaUrl", "$index"]
             },
             "mediaThumbEndpoint":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.mediaThumbEndpoint", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.mediaThumbEndpoint", "$index"]
             },
             "mediaThumbUri":
-
             {
               $arrayElemAt: ["$media.mediaThumbUri", "$index"]
             },
             "fullName":
             {
-              $arrayElemAt: ["$userBasic.fullName", "$index"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$userBasic.email", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$userBasic.fullname", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "username":
             {
@@ -95966,137 +95871,6 @@ export class PostsService {
             path: "$setting"
           }
         },
-        {
-          $project: {
-            //commentar:1,
-            mailViewer: 1,
-            viewerCount: 1,
-            viewer: 1,
-            version: "$setting.value",
-            oldDate: 1,
-            selfContents: 1,
-            official: 1,
-            selfContent: 1,
-            musik: 1,
-            isLiked: {
-              $ifNull: ["$isLike", false]
-            },
-            comment:
-            {
-              $cond: {
-                if: {
-                  $eq: ["$comment", [
-                    null
-                  ]]
-                },
-                then: [],
-                else: "$comment"
-              }
-            },
-            intScore:
-            {
-              $cond: {
-                if: {
-                  $isArray: "$interest"
-                },
-                then:
-                {
-                  $size: "$interest"
-                },
-                else: 0
-              }
-            },
-            "verified": 1,
-            "friend": 1,
-            // "follower": 1,
-            "following": 1,
-            "musicTitle": 1,
-            "postID": 1,
-            "artistName": 1,
-            "albumName": 1,
-            "apsaraMusic": 1,
-            "apsaraThumnail": 1,
-            "genre": 1,
-            "theme": 1,
-            "mood": 1,
-            "testDate": 1,
-            "musicId": 1,
-            "music": 1,
-            "tagPeople": 1,
-            "mediaType": 1,
-            "email": 1,
-            "postType": 1,
-            "description": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "expiration": 1,
-            "visibility": 1,
-            "location": 1,
-            "tags": 1,
-            "allowComments": 1,
-            "isSafe": 1,
-            "isOwned": 1,
-            "certified": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            "isShared": 1,
-            "likes": 1,
-            "views": 1,
-            "shares": 1,
-            "comments": 1,
-            "insight": 1,
-            "userProfile": 1,
-            "contentMedias": 1,
-            "cats": "$cats",
-            "tagDescription": 1,
-            "metadata": 1,
-            "boostDate": 1,
-            "end": 1,
-            "start": 1,
-            "isBoost": 1,
-            "boostViewer": 1,
-            "boostCount": 1,
-            "uploadSource": 1,
-            "boosted":
-            {
-              $cond: {
-                if: {
-                  $gt: [{
-                    $size: "$boosted.boostSession"
-                  }, 0]
-                },
-                else: [],
-                then: '$boosted'
-              }
-            },
-            "contentModeration": 1,
-            "reportedStatus": 1,
-            "reportedUserCount": 1,
-            "contentModerationResponse": 1,
-            "reportedUser": 1,
-            "timeStart": 1,
-            "timeEnd": 1,
-            "isApsara": 1,
-            "apsaraId": 1,
-            "apsaraThumbId": 1,
-            "mediaEndpoint": 1,
-            "mediaUri": 1,
-            "mediaThumbEndpoint": 1,
-            "mediaThumbUri": 1,
-            "fullName": 1,
-            "username": 1,
-            "avatar": 1,
-            "statusCB": 1,
-            "privacy": 1,
-            "mediaThumUri": 1,
-            category: 1,
-            userInterested: 1
-          },
-
-        },
-
 
       );
 
@@ -96307,27 +96081,6 @@ export class PostsService {
 
           }
         },
-        //{
-        //    $set: {
-        //        viewerCount: 
-        //        {
-        //            $cond: {
-        //                if : {
-        //                    $isArray: "$mailViewer"
-        //                },
-        //                then: {
-        //                    $subtract: [
-        //                        {
-        //                            $size: "$mailViewer"
-        //                        },1
-        //                    ]
-        //                },
-        //                else : 0
-        //            }
-        //        },
-        //        
-        //    }
-        //},
         {
           $match:
           {
@@ -97154,6 +96907,13 @@ export class PostsService {
             }
           }
         },
+        //{
+        //    $set: {
+        //        indexUser: {
+        //            $indexOfArray: ["$all.email", "$email"]
+        //        }
+        //    }
+        //},
         {
           $set: {
             testLogs: [
@@ -97718,132 +97478,51 @@ export class PostsService {
             },
             "apsaraId":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.apsaraId", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.apsaraId", "$index"]
             },
             "isApsara":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.isApsara", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.isApsara", "$index"]
             },
             "apsaraThumbId":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.apsaraThumbId", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.apsaraThumbId", "$index"]
             },
             "mediaEndpoint":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.mediaEndpoint", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.mediaEndpoint", "$index"]
             },
             "mediaUri":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.mediaUrl", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.mediaUrl", "$index"]
             },
             "mediaThumbEndpoint":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.mediaThumbEndpoint", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.mediaThumbEndpoint", "$index"]
             },
             "mediaThumbUri":
-
             {
               $arrayElemAt: ["$media.mediaThumbUri", "$index"]
             },
             "fullName":
             {
-              $arrayElemAt: ["$userBasic.fullName", "$index"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$userBasic.email", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$userBasic.fullname", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "username":
             {
@@ -97909,136 +97588,6 @@ export class PostsService {
           $unwind: {
             path: "$setting"
           }
-        },
-        {
-          $project: {
-            //commentar:1,
-            mailViewer: 1,
-            viewerCount: 1,
-            viewer: 1,
-            version: "$setting.value",
-            oldDate: 1,
-            selfContents: 1,
-            official: 1,
-            selfContent: 1,
-            musik: 1,
-            isLiked: {
-              $ifNull: ["$isLike", false]
-            },
-            comment:
-            {
-              $cond: {
-                if: {
-                  $eq: ["$comment", [
-                    null
-                  ]]
-                },
-                then: [],
-                else: "$comment"
-              }
-            },
-            intScore:
-            {
-              $cond: {
-                if: {
-                  $isArray: "$interest"
-                },
-                then:
-                {
-                  $size: "$interest"
-                },
-                else: 0
-              }
-            },
-            "verified": 1,
-            "friend": 1,
-            // "follower": 1,
-            "following": 1,
-            "musicTitle": 1,
-            "postID": 1,
-            "artistName": 1,
-            "albumName": 1,
-            "apsaraMusic": 1,
-            "apsaraThumnail": 1,
-            "genre": 1,
-            "theme": 1,
-            "mood": 1,
-            "testDate": 1,
-            "musicId": 1,
-            "music": 1,
-            "tagPeople": 1,
-            "mediaType": 1,
-            "email": 1,
-            "postType": 1,
-            "description": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "expiration": 1,
-            "visibility": 1,
-            "location": 1,
-            "tags": 1,
-            "allowComments": 1,
-            "isSafe": 1,
-            "isOwned": 1,
-            "certified": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            "isShared": 1,
-            "likes": 1,
-            "views": 1,
-            "shares": 1,
-            "comments": 1,
-            "insight": 1,
-            "userProfile": 1,
-            "contentMedias": 1,
-            "cats": "$cats",
-            "tagDescription": 1,
-            "metadata": 1,
-            "boostDate": 1,
-            "end": 1,
-            "start": 1,
-            "isBoost": 1,
-            "boostViewer": 1,
-            "boostCount": 1,
-            "uploadSource": 1,
-            "boosted":
-            {
-              $cond: {
-                if: {
-                  $gt: [{
-                    $size: "$boosted.boostSession"
-                  }, 0]
-                },
-                else: [],
-                then: '$boosted'
-              }
-            },
-            "contentModeration": 1,
-            "reportedStatus": 1,
-            "reportedUserCount": 1,
-            "contentModerationResponse": 1,
-            "reportedUser": 1,
-            "timeStart": 1,
-            "timeEnd": 1,
-            "isApsara": 1,
-            "apsaraId": 1,
-            "apsaraThumbId": 1,
-            "mediaEndpoint": 1,
-            "mediaUri": 1,
-            "mediaThumbEndpoint": 1,
-            "mediaThumbUri": 1,
-            "fullName": 1,
-            "username": 1,
-            "avatar": 1,
-            "statusCB": 1,
-            "privacy": 1,
-            "mediaThumUri": 1,
-            category: 1,
-            userInterested: 1
-          },
-
         },
 
       );
@@ -98250,27 +97799,6 @@ export class PostsService {
 
           }
         },
-        //{
-        //    $set: {
-        //        viewerCount: 
-        //        {
-        //            $cond: {
-        //                if : {
-        //                    $isArray: "$mailViewer"
-        //                },
-        //                then: {
-        //                    $subtract: [
-        //                        {
-        //                            $size: "$mailViewer"
-        //                        },1
-        //                    ]
-        //                },
-        //                else : 0
-        //            }
-        //        },
-        //        
-        //    }
-        //},
         {
           $match:
           {
@@ -99103,6 +98631,13 @@ export class PostsService {
             }
           }
         },
+        //{
+        //    $set: {
+        //        indexUser: {
+        //            $indexOfArray: ["$all.email", "$email"]
+        //        }
+        //    }
+        //},
         {
           $set: {
             testLogs: [
@@ -99667,132 +99202,51 @@ export class PostsService {
             },
             "apsaraId":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.apsaraId", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.apsaraId", "$index"]
             },
             "isApsara":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.isApsara", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.isApsara", "$index"]
             },
             "apsaraThumbId":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.apsaraThumbId", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.apsaraThumbId", "$index"]
             },
             "mediaEndpoint":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.mediaEndpoint", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.mediaEndpoint", "$index"]
             },
             "mediaUri":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.mediaUrl", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.mediaUrl", "$index"]
             },
             "mediaThumbEndpoint":
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.mediaThumbEndpoint", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.mediaThumbEndpoint", "$index"]
             },
             "mediaThumbUri":
-
             {
               $arrayElemAt: ["$media.mediaThumbUri", "$index"]
             },
             "fullName":
             {
-              $arrayElemAt: ["$userBasic.fullName", "$index"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$userBasic.email", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$userBasic.fullname", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "username":
             {
@@ -99858,136 +99312,6 @@ export class PostsService {
           $unwind: {
             path: "$setting"
           }
-        },
-        {
-          $project: {
-            //commentar:1,
-            mailViewer: 1,
-            viewerCount: 1,
-            viewer: 1,
-            version: "$setting.value",
-            oldDate: 1,
-            selfContents: 1,
-            official: 1,
-            selfContent: 1,
-            musik: 1,
-            isLiked: {
-              $ifNull: ["$isLike", false]
-            },
-            comment:
-            {
-              $cond: {
-                if: {
-                  $eq: ["$comment", [
-                    null
-                  ]]
-                },
-                then: [],
-                else: "$comment"
-              }
-            },
-            intScore:
-            {
-              $cond: {
-                if: {
-                  $isArray: "$interest"
-                },
-                then:
-                {
-                  $size: "$interest"
-                },
-                else: 0
-              }
-            },
-            "verified": 1,
-            "friend": 1,
-            // "follower": 1,
-            "following": 1,
-            "musicTitle": 1,
-            "postID": 1,
-            "artistName": 1,
-            "albumName": 1,
-            "apsaraMusic": 1,
-            "apsaraThumnail": 1,
-            "genre": 1,
-            "theme": 1,
-            "mood": 1,
-            "testDate": 1,
-            "musicId": 1,
-            "music": 1,
-            "tagPeople": 1,
-            "mediaType": 1,
-            "email": 1,
-            "postType": 1,
-            "description": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "expiration": 1,
-            "visibility": 1,
-            "location": 1,
-            "tags": 1,
-            "allowComments": 1,
-            "isSafe": 1,
-            "isOwned": 1,
-            "certified": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            "isShared": 1,
-            "likes": 1,
-            "views": 1,
-            "shares": 1,
-            "comments": 1,
-            "insight": 1,
-            "userProfile": 1,
-            "contentMedias": 1,
-            "cats": "$cats",
-            "tagDescription": 1,
-            "metadata": 1,
-            "boostDate": 1,
-            "end": 1,
-            "start": 1,
-            "isBoost": 1,
-            "boostViewer": 1,
-            "boostCount": 1,
-            "uploadSource": 1,
-            "boosted":
-            {
-              $cond: {
-                if: {
-                  $gt: [{
-                    $size: "$boosted.boostSession"
-                  }, 0]
-                },
-                else: [],
-                then: '$boosted'
-              }
-            },
-            "contentModeration": 1,
-            "reportedStatus": 1,
-            "reportedUserCount": 1,
-            "contentModerationResponse": 1,
-            "reportedUser": 1,
-            "timeStart": 1,
-            "timeEnd": 1,
-            "isApsara": 1,
-            "apsaraId": 1,
-            "apsaraThumbId": 1,
-            "mediaEndpoint": 1,
-            "mediaUri": 1,
-            "mediaThumbEndpoint": 1,
-            "mediaThumbUri": 1,
-            "fullName": 1,
-            "username": 1,
-            "avatar": 1,
-            "statusCB": 1,
-            "privacy": 1,
-            "mediaThumUri": 1,
-            category: 1,
-            userInterested: 1
-          },
-
         },
 
       );
