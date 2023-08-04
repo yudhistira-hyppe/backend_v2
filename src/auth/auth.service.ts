@@ -9926,26 +9926,60 @@ export class AuthService {
             },
           };
         } else {
+          var messages = 'Maaf! Email ini sudah terdaftar.';
           if (lang == "en") {
-            await this.errorHandler.generateNotAcceptableException(
-              'Sorry! This email already registered.',
-            );
+            messages = 'Sorry! This email already registered.';
           } else {
-            await this.errorHandler.generateNotAcceptableException(
-              'Maaf! Email ini sudah terdaftar.',
-            );
+            messages = 'Maaf! Email ini sudah terdaftar.';
           }
+          var response = {
+            response_code: 202,
+            data: {
+              email: datauserauthsService_.email,
+              isEmailVerified: datauserauthsService_.isEmailVerified
+            },
+            messages: {
+              info: [messages],
+            },
+          }
+          return response;
+          // if (lang == "en") {
+          //   await this.errorHandler.generateNotAcceptableException(
+          //     'Sorry! This email already registered.',
+          //   );
+          // } else {
+          //   await this.errorHandler.generateNotAcceptableException(
+          //     'Maaf! Email ini sudah terdaftar.',
+          //   );
+          // }
         }
       } else {
+        var messages = 'Maaf! Email ini sudah terdaftar.';
         if (lang == "en") {
-          await this.errorHandler.generateNotAcceptableException(
-            'Sorry! This email already registered.',
-          );
+          messages = 'Sorry! This email already registered.';
         } else {
-          await this.errorHandler.generateNotAcceptableException(
-            'Maaf! Email ini sudah terdaftar.',
-          );
+          messages = 'Maaf! Email ini sudah terdaftar.';
         }
+        var response = {
+          response_code: 202,
+          data: {
+            email: datauserauthsService_.email,
+            isEmailVerified: datauserauthsService_.isEmailVerified
+          },
+          messages: {
+            info: [messages],
+          },
+        }
+        return response;
+        // if (lang == "en") {
+        //   await this.errorHandler.generateNotAcceptableException(
+        //     'Sorry! This email already registered.',
+        //   );
+        // } else {
+        //   await this.errorHandler.generateNotAcceptableException(
+        //     'Maaf! Email ini sudah terdaftar.',
+        //   );
+        // }
       }
     }
   }
