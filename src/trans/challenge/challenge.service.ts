@@ -700,7 +700,7 @@ export class ChallengeService {
                 null
               ]
           },
-          listParticipant:1
+          // listParticipant:1
         }
       },
       {
@@ -1163,6 +1163,13 @@ export class ChallengeService {
                                     "$notifikasiPush.akanDatang.title",0
                                 ]
                             },
+                            "titleEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.akanDatang.titleEN",0
+                                ]
+                            },
                             "description":
                             {
                                 "$arrayElemAt":
@@ -1277,6 +1284,13 @@ export class ChallengeService {
                                     "$notifikasiPush.challengeDimulai.title",0
                                 ]
                             },
+                            "titleEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.challengeDimulai.titleEN",0
+                                ]
+                            },
                             "description":
                             {
                                 "$arrayElemAt":
@@ -1351,6 +1365,13 @@ export class ChallengeService {
                                 "$arrayElemAt":
                                 [
                                     "$notifikasiPush.updateLeaderboard.title",0
+                                ]
+                            },
+                            "titleEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.updateLeaderboard.titleEN",0
                                 ]
                             },
                             "description":
@@ -1558,6 +1579,13 @@ export class ChallengeService {
                                     "$notifikasiPush.challengeAkanBerakhir.title",0
                                 ]
                             },
+                            "titleEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.challengeAkanBerakhir.titleEN",0
+                                ]
+                            },
                             "description":
                             {
                                 "$arrayElemAt":
@@ -1670,6 +1698,13 @@ export class ChallengeService {
                                 "$arrayElemAt":
                                 [
                                     "$notifikasiPush.challengeBerakhir.title",0
+                                ]
+                            },
+                            "titleEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.challengeBerakhir.titleEN",0
                                 ]
                             },
                             "description":
@@ -1786,6 +1821,13 @@ export class ChallengeService {
                                     "$notifikasiPush.untukPemenang.title",0
                                 ]
                             },
+                            "titleEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.untukPemenang.titleEN",0
+                                ]
+                            },
                             "description":
                             {
                                 "$arrayElemAt":
@@ -1890,7 +1932,7 @@ export class ChallengeService {
             {
                 "$last": "$session.session"
             },
-            listParticipant:1,
+            //listParticipant:1,
 						// listParticipant:
 						// {
 						// 		"$reduce": 
