@@ -3387,23 +3387,18 @@ export class AdsService {
     }
 
     async getAdsSatus(userId: string, start_date: any, end_date: any) {
-        var $and = [];
+        var $match = {};
         if (userId != undefined) {
-            $and.push({ $eq: ["$userID", new mongoose.Types.ObjectId(userId)] })
+            $match['userID'] = new mongoose.Types.ObjectId(userId);
         }
-        $and.push({
-            "$gte": ["$timestamp", start_date.toISOString()]
-        })
-        $and.push({
-            "$lte": ["$timestamp", end_date.toISOString()]
-        })
+        $match['adsObjectivitasId'] = { $ne: null };
+        $match['timestamp'] = {
+            $gte: start_date.toISOString(),
+            $lte: end_date.toISOString()
+        };
         var query = await this.adsModel.aggregate(
             [{
-            "$match": {
-                "$expr": {
-                    $and
-                }
-            }
+                $match
         }, {
             "$project": {
                 "status": {
@@ -3460,11 +3455,7 @@ export class AdsService {
         }]
         );
         console.log(JSON.stringify([{
-            "$match": {
-                "$expr": {
-                    $and
-                }
-            }
+            $match
         }, {
             "$project": {
                 "status": {

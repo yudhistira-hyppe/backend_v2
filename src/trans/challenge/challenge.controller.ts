@@ -429,7 +429,7 @@ export class ChallengeController {
     for (var i = 0; i < listnotifikasipush.length; i++) {
       var tempnotifikasi = {};
       var getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_include';
-      if (request_json[getvarname] != undefined && request_json[getvarname] != null) {
+      if (request_json[getvarname] != undefined && request_json[getvarname] != null && request_json[getvarname] == 'YES'){
         for (var j = 0; j < listvariable.length; j++) {
           getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_' + listvariable[j];
           if (getvarname == 'notifikasiPush_updateLeaderboard_aturWaktu') {
@@ -493,7 +493,7 @@ export class ChallengeController {
       var checkjoinchallenge = request_json['caraGabung'];
       var checkstatusChallenge = request_json['statusChallenge'];
       if (checkstatusChallenge != 'NONACTIVE') {
-        if (checkpartisipan != null && checkpartisipan != undefined) {
+        if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined) {
           this.insertchildofchallenge(insertdata, request_json['list_partisipan_challenge']);
         }
         else {
@@ -1038,11 +1038,11 @@ export class ChallengeController {
 
       var setnotifikasi = {};
       var listnotifikasipush = ['akanDatang', 'challengeDimulai', 'updateLeaderboard', 'challengeAkanBerakhir', 'challengeBerakhir', 'untukPemenang'];
-      var listvariable = ['include', 'title', 'titleEn', 'description', 'descriptionEN', 'unit', 'aturWaktu'];
+      var listvariable = ['include', 'title', 'titleEN', 'description', 'descriptionEN', 'unit', 'aturWaktu'];
       for (var i = 0; i < listnotifikasipush.length; i++) {
         var tempnotifikasi = {};
         var getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_include';
-        if (request_json[getvarname] != undefined && request_json[getvarname] != null) {
+        if (request_json[getvarname] != undefined && request_json[getvarname] != null && request_json[getvarname] == 'YES') {
           for (var j = 0; j < listvariable.length; j++) {
             getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_' + listvariable[j];
             if (getvarname == 'notifikasiPush_updateLeaderboard_aturWaktu') {
@@ -1096,7 +1096,7 @@ export class ChallengeController {
       var checkjoinchallenge = request_json['caraGabung'];
       var checkstatusChallenge = request_json['statusChallenge'];
       if (checkstatusChallenge != 'NONACTIVE') {
-        if (checkpartisipan != null && checkpartisipan != undefined) {
+        if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkjoinchallenge == checkpartisipan != null && checkpartisipan != undefined) {
           this.insertchildofchallenge(insertdata, request_json['list_partisipan_challenge']);
         }
         else {
