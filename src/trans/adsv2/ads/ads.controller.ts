@@ -600,7 +600,7 @@ export class AdsController {
         //--------------------GENERATE CAMPAIG ID--------------------
         if (AdsDto_.status == "UNDER_REVIEW") {
             const coutAds = await this.adsService.count();
-            const generateCampaignID = await this.utilsService.generateCampaignID(coutAds + 1, ads.typeAdsID.toString());
+            const generateCampaignID = await this.utilsService.generateCampaignID(coutAds + 1, ads.typeAdsID.toString(), ads.adsObjectivitasId.toString());
             AdsDto_.campaignId = generateCampaignID;
         }
 
@@ -789,11 +789,11 @@ export class AdsController {
 
         try {
             let ads_campaign_dashboard = await this.adsService.campaignDashboard(body.userId, start_date, end_date);
-            let ads_status_campaign_dashboard = await this.adsService.getAdsSatus(start_date, end_date);
+            let ads_status_campaign_dashboard = await this.adsService.getAdsSatus(body.userId, start_date, end_date);
             if (await this.utilsService.ceckData(ads_campaign_dashboard)){
                 if (ads_campaign_dashboard.length>0){
                     ads_campaign_dashboard = ads_campaign_dashboard[0];
-                    ads_campaign_dashboard.statusIklan = ads_status_campaign_dashboard;
+                    ads_campaign_dashboard.statusIklan = ads_status_campaign_dashboard[0].status;
                 }
             }
             for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {

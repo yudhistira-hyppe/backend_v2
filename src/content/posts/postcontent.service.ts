@@ -6267,9 +6267,9 @@ export class PostContentService {
     }
 
     let cm = profile.profilePict;
-    let ns = cm.na;
+    let ns = cm.namespace;
     if (ns == 'mediaprofilepicts') {
-      let pp = await this.profilePictService.findOne(cm.$id.toString());
+      let pp = await this.profilePictService.findOne(cm.oid);
       if (pp == undefined) {
         return;
       }
