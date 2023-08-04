@@ -94295,7 +94295,6 @@ export class PostsService {
                 "format": "%Y-%m-%d %H:%M:%S",
                 "date": {
                   $add: [new Date(), - 30600000]
-                  //$add: [new Date(), - 579600000]
                 }
               }
             }
@@ -94325,11 +94324,10 @@ export class PostsService {
         },
         {
           $set: {
-            kancut: //'dodolipet'
+            kancut:
             {
               $cond: {
                 if: {
-                  //$eq: ['$dodolipet', 0]
                   $filter: {
                     input: "$viewer",
                     cond: {
@@ -94357,6 +94355,28 @@ export class PostsService {
                 cond: {
                   $eq: ["$$this", email]
                 }
+              }
+            },
+
+          }
+        },
+        {
+          $set: {
+            viewerCount:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$mailViewer"
+                },
+                then: {
+                  $subtract: [
+                    {
+                      $size: "$mailViewer"
+                    },
+                    1
+                  ]
+                },
+                else: 0
               }
             },
 
@@ -94665,13 +94685,13 @@ export class PostsService {
                     {
                       $and: [
                         {
-                          $expr: {
-                            $eq: ['$email', '$$user']
-                          }
+                          "email": email
                         },
                         {
-                          "friendlist.email": '$.email'
-                        }
+                          $expr: {
+                            $in: ['$friendlist.email', '$$localID']
+                          }
+                        },
                       ]
                     }
                   ]
@@ -95123,24 +95143,12 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-        {
-          $unwind: {
-            path: "$friend",
-            preserveNullAndEmptyArrays: true
-          }
-        },
         //{
         //    $unwind: {
         //        path: "$categories",
         //        preserveNullAndEmptyArrays: true
         //    }
         //},
-        {
-          $unwind: {
-            path: "$following",
-            preserveNullAndEmptyArrays: true
-          }
-        },
         {
           $set: {
             index: {
@@ -95206,15 +95214,95 @@ export class PostsService {
             },
           }
         },
+        {
+          $set:
+          {
+            followings:
+            {
+              $filter: {
+                input: "$following",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.senderParty",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+        {
+          $set:
+          {
+            uName:
+            {
+              $filter: {
+                input: "$username",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.email",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+        {
+          $set:
+          {
+            friendster:
+            {
+              $filter: {
+                input: "$friend",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.email",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+        {
+          $set:
+          {
+            mediaPost:
+            {
+              $filter: {
+                input: "$media",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID",
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
 
         {
           $unwind: {
-            path: "$user"
+            path: "$user",
+            preserveNullAndEmptyArrays: true
           }
         },
         {
           $unwind: {
-            path: "$uName"
+            path: "$uName",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $unwind: {
+            path: "$mediaPost",
+            preserveNullAndEmptyArrays: true
           }
         },
 
@@ -95262,7 +95350,8 @@ export class PostsService {
 
         {
           $unwind: {
-            path: "$avatar"
+            path: "$avatar",
+            preserveNullAndEmptyArrays: true
           }
         },
 
@@ -95418,7 +95507,6 @@ export class PostsService {
             {
               $arrayElemAt: ["$testDate", 0]
             },
-            //"musicId": 1,
             "tagPeople":
             {
               $cond: {
@@ -95441,7 +95529,6 @@ export class PostsService {
             {
               $arrayElemAt: ["$media.mediaType", "$index"]
             },
-            // "email": 1,
             "postType":
             {
               $arrayElemAt: ["$all.postType", "$index"]
@@ -95539,11 +95626,10 @@ export class PostsService {
             },
             viewerCount:
             {
-              $size: //"$mailViewer"
+              $size:
               {
                 $arrayElemAt: ["$all.mailViewer", "$index"]
               },
-
             },
             oldDate:
             {
@@ -95584,7 +95670,6 @@ export class PostsService {
                 else: 0
               }
             },
-            //music:1,
             musik:
             {
               $cond: {
@@ -95623,7 +95708,6 @@ export class PostsService {
                 else: false
               }
             },
-            //testComment:"$comment",
             comment:
               [
                 {
@@ -95647,7 +95731,6 @@ export class PostsService {
                 },
 
               ],
-            //userInterest:"$userInterest.userInterests",
             interest: {
               $filter: {
                 input: "$category",
@@ -95662,30 +95745,8 @@ export class PostsService {
                 }
               }
             },
-            friends:
-            {
-              $cond: {
-                if: {
-                  $eq: ["$friend.email", {
-                    $arrayElemAt: ["$all.email", "$index"]
-                  },]
-                },
-                then: "$friend",
-                else: "$kon"
-              }
-            },
-            "following":
-            {
-              $cond: {
-                if: {
-                  $eq: ["$following.senderParty", {
-                    $arrayElemAt: ["$all.email", "$index"]
-                  },]
-                },
-                then: "$following.following",
-                else: false
-              }
-            },
+            friends: { $arrayElemAt: ["$friendster.friend", 0] },
+            "following": { $arrayElemAt: ["$followings.following", 0] },
             "insight":
             {
               "likes":
@@ -95720,7 +95781,7 @@ export class PostsService {
                 input: "$cats",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok._id", {
+                  $in: ["$$nonok._id", {
                     $arrayElemAt: ["$categories", "$index"]
                   },]
                 }
@@ -95813,38 +95874,16 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.timeEnd", "$index"]
             },
-            "apsaraId":
-            {
-              $arrayElemAt: ["$media.apsaraId", "$index"]
-            },
-            "isApsara":
-            {
-              $arrayElemAt: ["$media.isApsara", "$index"]
-            },
-            "apsaraThumbId":
-            {
-              $arrayElemAt: ["$media.apsaraThumbId", "$index"]
-            },
-            "mediaEndpoint":
-            {
-              $arrayElemAt: ["$media.mediaEndpoint", "$index"]
-            },
-            "mediaUri":
-            {
-              $arrayElemAt: ["$media.mediaUrl", "$index"]
-            },
-            "mediaThumbEndpoint":
-            {
-              $arrayElemAt: ["$media.mediaThumbEndpoint", "$index"]
-            },
-            "mediaThumbUri":
-            {
-              $arrayElemAt: ["$media.mediaThumbUri", "$index"]
-            },
+            "apsaraId": "$mediaPost.apsaraId",
+            "isApsara": "$mediaPost.isApsara",
+            "apsaraThumbId": "$mediaPost.apsaraThumbId",
+            "mediaEndpoint": "$mediaPost.mediaEndpoint",
+            "mediaUri": "$mediaPost.mediaUri",
+            "mediaThumbEndpoint": "$mediaPost.mediaThumbEndpoint",
+            "mediaThumbUri": "$mediaPost.mediaThumbUri",
             "fullName": "$user.fullName",
             "username": "$uName.username",
             "avatar": "$avatar",
-            //"statusCB": 1,
             "privacy": {
               "isCelebrity": "$user.isCelebrity",
               "isIdVerified": "$user.isIdVerified",
@@ -95859,7 +95898,6 @@ export class PostsService {
               $arrayElemAt: ["$all.mailViewer", "$index"]
             },
             userInterested: "$userInterest.userInterests",
-            //all: 1,
           },
 
         },
@@ -95885,7 +95923,6 @@ export class PostsService {
         },
         {
           $project: {
-            //commentar:1,
             mailViewer: 1,
             viewerCount: 1,
             viewer: 1,
@@ -95925,7 +95962,6 @@ export class PostsService {
             },
             "verified": 1,
             "friend": 1,
-            // "follower": 1,
             "following": 1,
             "musicTitle": 1,
             "postID": 1,
@@ -96011,7 +96047,6 @@ export class PostsService {
             category: 1,
             userInterested: 1
           },
-
         },
       );
 
@@ -96022,6 +96057,7 @@ export class PostsService {
       );
     }
     else if (type == "vid") {
+
       try {
         dataseting = await this.settingsService.findOneByJenis("VidLandingPage");
         sortObject = dataseting.sortObject;
@@ -96033,6 +96069,7 @@ export class PostsService {
       }
 
       pipeline.push(
+
         {
           $sort: {
             createdAt: - 1,
@@ -96154,7 +96191,6 @@ export class PostsService {
                 "format": "%Y-%m-%d %H:%M:%S",
                 "date": {
                   $add: [new Date(), - 30600000]
-                  //$add: [new Date(), - 579600000]
                 }
               }
             }
@@ -96184,11 +96220,10 @@ export class PostsService {
         },
         {
           $set: {
-            kancut: //'dodolipet'
+            kancut:
             {
               $cond: {
                 if: {
-                  //$eq: ['$dodolipet', 0]
                   $filter: {
                     input: "$viewer",
                     cond: {
@@ -96216,6 +96251,28 @@ export class PostsService {
                 cond: {
                   $eq: ["$$this", email]
                 }
+              }
+            },
+
+          }
+        },
+        {
+          $set: {
+            viewerCount:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$mailViewer"
+                },
+                then: {
+                  $subtract: [
+                    {
+                      $size: "$mailViewer"
+                    },
+                    1
+                  ]
+                },
+                else: 0
               }
             },
 
@@ -96524,13 +96581,13 @@ export class PostsService {
                     {
                       $and: [
                         {
-                          $expr: {
-                            $eq: ['$email', '$$user']
-                          }
+                          "email": email
                         },
                         {
-                          "friendlist.email": '$.email'
-                        }
+                          $expr: {
+                            $in: ['$friendlist.email', '$$localID']
+                          }
+                        },
                       ]
                     }
                   ]
@@ -96982,24 +97039,12 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-        {
-          $unwind: {
-            path: "$friend",
-            preserveNullAndEmptyArrays: true
-          }
-        },
         //{
         //    $unwind: {
         //        path: "$categories",
         //        preserveNullAndEmptyArrays: true
         //    }
         //},
-        {
-          $unwind: {
-            path: "$following",
-            preserveNullAndEmptyArrays: true
-          }
-        },
         {
           $set: {
             index: {
@@ -97065,15 +97110,95 @@ export class PostsService {
             },
           }
         },
+        {
+          $set:
+          {
+            followings:
+            {
+              $filter: {
+                input: "$following",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.senderParty",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+        {
+          $set:
+          {
+            uName:
+            {
+              $filter: {
+                input: "$username",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.email",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+        {
+          $set:
+          {
+            friendster:
+            {
+              $filter: {
+                input: "$friend",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.email",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+        {
+          $set:
+          {
+            mediaPost:
+            {
+              $filter: {
+                input: "$media",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID",
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
 
         {
           $unwind: {
-            path: "$user"
+            path: "$user",
+            preserveNullAndEmptyArrays: true
           }
         },
         {
           $unwind: {
-            path: "$uName"
+            path: "$uName",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $unwind: {
+            path: "$mediaPost",
+            preserveNullAndEmptyArrays: true
           }
         },
 
@@ -97121,7 +97246,8 @@ export class PostsService {
 
         {
           $unwind: {
-            path: "$avatar"
+            path: "$avatar",
+            preserveNullAndEmptyArrays: true
           }
         },
 
@@ -97277,7 +97403,6 @@ export class PostsService {
             {
               $arrayElemAt: ["$testDate", 0]
             },
-            //"musicId": 1,
             "tagPeople":
             {
               $cond: {
@@ -97300,7 +97425,6 @@ export class PostsService {
             {
               $arrayElemAt: ["$media.mediaType", "$index"]
             },
-            // "email": 1,
             "postType":
             {
               $arrayElemAt: ["$all.postType", "$index"]
@@ -97398,11 +97522,10 @@ export class PostsService {
             },
             viewerCount:
             {
-              $size: //"$mailViewer"
+              $size:
               {
                 $arrayElemAt: ["$all.mailViewer", "$index"]
               },
-
             },
             oldDate:
             {
@@ -97443,7 +97566,6 @@ export class PostsService {
                 else: 0
               }
             },
-            //music:1,
             musik:
             {
               $cond: {
@@ -97482,7 +97604,6 @@ export class PostsService {
                 else: false
               }
             },
-            //testComment:"$comment",
             comment:
               [
                 {
@@ -97506,7 +97627,6 @@ export class PostsService {
                 },
 
               ],
-            //userInterest:"$userInterest.userInterests",
             interest: {
               $filter: {
                 input: "$category",
@@ -97521,30 +97641,8 @@ export class PostsService {
                 }
               }
             },
-            friends:
-            {
-              $cond: {
-                if: {
-                  $eq: ["$friend.email", {
-                    $arrayElemAt: ["$all.email", "$index"]
-                  },]
-                },
-                then: "$friend",
-                else: "$kon"
-              }
-            },
-            "following":
-            {
-              $cond: {
-                if: {
-                  $eq: ["$following.senderParty", {
-                    $arrayElemAt: ["$all.email", "$index"]
-                  },]
-                },
-                then: "$following.following",
-                else: false
-              }
-            },
+            friends: { $arrayElemAt: ["$friendster.friend", 0] },
+            "following": { $arrayElemAt: ["$followings.following", 0] },
             "insight":
             {
               "likes":
@@ -97579,7 +97677,7 @@ export class PostsService {
                 input: "$cats",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok._id", {
+                  $in: ["$$nonok._id", {
                     $arrayElemAt: ["$categories", "$index"]
                   },]
                 }
@@ -97672,38 +97770,16 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.timeEnd", "$index"]
             },
-            "apsaraId":
-            {
-              $arrayElemAt: ["$media.apsaraId", "$index"]
-            },
-            "isApsara":
-            {
-              $arrayElemAt: ["$media.isApsara", "$index"]
-            },
-            "apsaraThumbId":
-            {
-              $arrayElemAt: ["$media.apsaraThumbId", "$index"]
-            },
-            "mediaEndpoint":
-            {
-              $arrayElemAt: ["$media.mediaEndpoint", "$index"]
-            },
-            "mediaUri":
-            {
-              $arrayElemAt: ["$media.mediaUrl", "$index"]
-            },
-            "mediaThumbEndpoint":
-            {
-              $arrayElemAt: ["$media.mediaThumbEndpoint", "$index"]
-            },
-            "mediaThumbUri":
-            {
-              $arrayElemAt: ["$media.mediaThumbUri", "$index"]
-            },
+            "apsaraId": "$mediaPost.apsaraId",
+            "isApsara": "$mediaPost.isApsara",
+            "apsaraThumbId": "$mediaPost.apsaraThumbId",
+            "mediaEndpoint": "$mediaPost.mediaEndpoint",
+            "mediaUri": "$mediaPost.mediaUri",
+            "mediaThumbEndpoint": "$mediaPost.mediaThumbEndpoint",
+            "mediaThumbUri": "$mediaPost.mediaThumbUri",
             "fullName": "$user.fullName",
             "username": "$uName.username",
             "avatar": "$avatar",
-            //"statusCB": 1,
             "privacy": {
               "isCelebrity": "$user.isCelebrity",
               "isIdVerified": "$user.isIdVerified",
@@ -97718,7 +97794,6 @@ export class PostsService {
               $arrayElemAt: ["$all.mailViewer", "$index"]
             },
             userInterested: "$userInterest.userInterests",
-            //all: 1,
           },
 
         },
@@ -97744,7 +97819,6 @@ export class PostsService {
         },
         {
           $project: {
-            //commentar:1,
             mailViewer: 1,
             viewerCount: 1,
             viewer: 1,
@@ -97784,7 +97858,6 @@ export class PostsService {
             },
             "verified": 1,
             "friend": 1,
-            // "follower": 1,
             "following": 1,
             "musicTitle": 1,
             "postID": 1,
@@ -97870,9 +97943,7 @@ export class PostsService {
             category: 1,
             userInterested: 1
           },
-
         },
-
       );
 
       pipeline.push(
@@ -98014,7 +98085,6 @@ export class PostsService {
                 "format": "%Y-%m-%d %H:%M:%S",
                 "date": {
                   $add: [new Date(), - 30600000]
-                  //$add: [new Date(), - 579600000]
                 }
               }
             }
@@ -98044,11 +98114,10 @@ export class PostsService {
         },
         {
           $set: {
-            kancut: //'dodolipet'
+            kancut:
             {
               $cond: {
                 if: {
-                  //$eq: ['$dodolipet', 0]
                   $filter: {
                     input: "$viewer",
                     cond: {
@@ -98076,6 +98145,28 @@ export class PostsService {
                 cond: {
                   $eq: ["$$this", email]
                 }
+              }
+            },
+
+          }
+        },
+        {
+          $set: {
+            viewerCount:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$mailViewer"
+                },
+                then: {
+                  $subtract: [
+                    {
+                      $size: "$mailViewer"
+                    },
+                    1
+                  ]
+                },
+                else: 0
               }
             },
 
@@ -98384,13 +98475,13 @@ export class PostsService {
                     {
                       $and: [
                         {
-                          $expr: {
-                            $eq: ['$email', '$$user']
-                          }
+                          "email": email
                         },
                         {
-                          "friendlist.email": '$.email'
-                        }
+                          $expr: {
+                            $in: ['$friendlist.email', '$$localID']
+                          }
+                        },
                       ]
                     }
                   ]
@@ -98848,24 +98939,12 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-        {
-          $unwind: {
-            path: "$friend",
-            preserveNullAndEmptyArrays: true
-          }
-        },
         //{
         //    $unwind: {
         //        path: "$categories",
         //        preserveNullAndEmptyArrays: true
         //    }
         //},
-        {
-          $unwind: {
-            path: "$following",
-            preserveNullAndEmptyArrays: true
-          }
-        },
         {
           $set: {
             index: {
@@ -98931,15 +99010,95 @@ export class PostsService {
             },
           }
         },
+        {
+          $set:
+          {
+            followings:
+            {
+              $filter: {
+                input: "$following",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.senderParty",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+        {
+          $set:
+          {
+            uName:
+            {
+              $filter: {
+                input: "$username",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.email",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+        {
+          $set:
+          {
+            friendster:
+            {
+              $filter: {
+                input: "$friend",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.email",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+        {
+          $set:
+          {
+            mediaPost:
+            {
+              $filter: {
+                input: "$media",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID",
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
 
         {
           $unwind: {
-            path: "$user"
+            path: "$user",
+            preserveNullAndEmptyArrays: true
           }
         },
         {
           $unwind: {
-            path: "$uName"
+            path: "$uName",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $unwind: {
+            path: "$mediaPost",
+            preserveNullAndEmptyArrays: true
           }
         },
 
@@ -98987,7 +99146,8 @@ export class PostsService {
 
         {
           $unwind: {
-            path: "$avatar"
+            path: "$avatar",
+            preserveNullAndEmptyArrays: true
           }
         },
 
@@ -99143,7 +99303,6 @@ export class PostsService {
             {
               $arrayElemAt: ["$testDate", 0]
             },
-            //"musicId": 1,
             "tagPeople":
             {
               $cond: {
@@ -99166,7 +99325,6 @@ export class PostsService {
             {
               $arrayElemAt: ["$media.mediaType", "$index"]
             },
-            // "email": 1,
             "postType":
             {
               $arrayElemAt: ["$all.postType", "$index"]
@@ -99264,11 +99422,10 @@ export class PostsService {
             },
             viewerCount:
             {
-              $size: //"$mailViewer"
+              $size:
               {
                 $arrayElemAt: ["$all.mailViewer", "$index"]
               },
-
             },
             oldDate:
             {
@@ -99309,7 +99466,6 @@ export class PostsService {
                 else: 0
               }
             },
-            //music:1,
             musik:
             {
               $cond: {
@@ -99348,7 +99504,6 @@ export class PostsService {
                 else: false
               }
             },
-            //testComment:"$comment",
             comment:
               [
                 {
@@ -99372,7 +99527,6 @@ export class PostsService {
                 },
 
               ],
-            //userInterest:"$userInterest.userInterests",
             interest: {
               $filter: {
                 input: "$category",
@@ -99387,30 +99541,8 @@ export class PostsService {
                 }
               }
             },
-            friends:
-            {
-              $cond: {
-                if: {
-                  $eq: ["$friend.email", {
-                    $arrayElemAt: ["$all.email", "$index"]
-                  },]
-                },
-                then: "$friend",
-                else: "$kon"
-              }
-            },
-            "following":
-            {
-              $cond: {
-                if: {
-                  $eq: ["$following.senderParty", {
-                    $arrayElemAt: ["$all.email", "$index"]
-                  },]
-                },
-                then: "$following.following",
-                else: false
-              }
-            },
+            friends: { $arrayElemAt: ["$friendster.friend", 0] },
+            "following": { $arrayElemAt: ["$followings.following", 0] },
             "insight":
             {
               "likes":
@@ -99445,7 +99577,7 @@ export class PostsService {
                 input: "$cats",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok._id", {
+                  $in: ["$$nonok._id", {
                     $arrayElemAt: ["$categories", "$index"]
                   },]
                 }
@@ -99538,38 +99670,16 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.timeEnd", "$index"]
             },
-            "apsaraId":
-            {
-              $arrayElemAt: ["$media.apsaraId", "$index"]
-            },
-            "isApsara":
-            {
-              $arrayElemAt: ["$media.isApsara", "$index"]
-            },
-            "apsaraThumbId":
-            {
-              $arrayElemAt: ["$media.apsaraThumbId", "$index"]
-            },
-            "mediaEndpoint":
-            {
-              $arrayElemAt: ["$media.mediaEndpoint", "$index"]
-            },
-            "mediaUri":
-            {
-              $arrayElemAt: ["$media.mediaUrl", "$index"]
-            },
-            "mediaThumbEndpoint":
-            {
-              $arrayElemAt: ["$media.mediaThumbEndpoint", "$index"]
-            },
-            "mediaThumbUri":
-            {
-              $arrayElemAt: ["$media.mediaThumbUri", "$index"]
-            },
+            "apsaraId": "$mediaPost.apsaraId",
+            "isApsara": "$mediaPost.isApsara",
+            "apsaraThumbId": "$mediaPost.apsaraThumbId",
+            "mediaEndpoint": "$mediaPost.mediaEndpoint",
+            "mediaUri": "$mediaPost.mediaUri",
+            "mediaThumbEndpoint": "$mediaPost.mediaThumbEndpoint",
+            "mediaThumbUri": "$mediaPost.mediaThumbUri",
             "fullName": "$user.fullName",
             "username": "$uName.username",
             "avatar": "$avatar",
-            //"statusCB": 1,
             "privacy": {
               "isCelebrity": "$user.isCelebrity",
               "isIdVerified": "$user.isIdVerified",
@@ -99584,7 +99694,6 @@ export class PostsService {
               $arrayElemAt: ["$all.mailViewer", "$index"]
             },
             userInterested: "$userInterest.userInterests",
-            //all: 1,
           },
 
         },
@@ -99610,7 +99719,6 @@ export class PostsService {
         },
         {
           $project: {
-            //commentar:1,
             mailViewer: 1,
             viewerCount: 1,
             viewer: 1,
@@ -99650,7 +99758,6 @@ export class PostsService {
             },
             "verified": 1,
             "friend": 1,
-            // "follower": 1,
             "following": 1,
             "musicTitle": 1,
             "postID": 1,
@@ -99736,7 +99843,6 @@ export class PostsService {
             category: 1,
             userInterested: 1
           },
-
         },
 
       );
