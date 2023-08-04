@@ -94363,28 +94363,27 @@ export class PostsService {
 
           }
         },
-        // {
-        //   $set: {
-        //     viewerCount:
-        //     {
-        //       $cond: {
-        //         if: {
-        //           $isArray: "$mailViewer"
-        //         },
-        //         then: {
-        //           $subtract: [
-        //             {
-        //               $size: "$mailViewer"
-        //             },
-        //             1
-        //           ]
-        //         },
-        //         else: 0
-        //       }
-        //     },
-
-        //   }
-        // },
+        //{
+        //    $set: {
+        //        viewerCount: 
+        //        {
+        //            $cond: {
+        //                if : {
+        //                    $isArray: "$mailViewer"
+        //                },
+        //                then: {
+        //                    $subtract: [
+        //                        {
+        //                            $size: "$mailViewer"
+        //                        },1
+        //                    ]
+        //                },
+        //                else : 0
+        //            }
+        //        },
+        //        
+        //    }
+        //},
         {
           $match:
           {
@@ -95213,97 +95212,166 @@ export class PostsService {
         },
         {
           $set: {
-            indexMedia: {
-              $indexOfArray: ["$media.postID", "$postID"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexComment: {
-              $indexOfArray: ["$comment.postID", "$postID"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexMusic: {
-              $indexOfArray: ["$music._id", "$musicId"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexLike: {
-              $indexOfArray: ["$isLike.postID", "$postID"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexTag: {
-              $indexOfArray: ["$userTag._id", "$tagPeople"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexLogs: {
-              $indexOfArray: ["$countLogs.postID", "$postID"]
-            }
-          }
-        },
-        {
-          $set: {
             testLogs: [
               {
                 $ifNull: [
                   {
-                    $arrayElemAt: ["$countLogs", "$indexLogs"]
+                    $arrayElemAt: ["$countLogs._id", "$indexLogs"]
                   }
                   ,
                   []
                 ]
-              }]
+              }
+            ]
           }
         },
         {
           $project: {
             _id: "$postID",
-            //countLogs:1,
-            //:1,
             musicTitle:
             {
-              $arrayElemAt: ["$music.musicTitle", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.musicTitle", "$index"]
+                }
+              }
             },
             "postID": 1,
             "artistName":
             {
-              $arrayElemAt: ["$music.artistName", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.artistName", "$index"]
+                }
+              }
             },
             "albumName":
             {
-              $arrayElemAt: ["$music.albumName", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.albumName", "$index"]
+                }
+              }
             },
             "apsaraMusic":
             {
-              $arrayElemAt: ["$music.apsaraMusic", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.apsaraMusic", "$index"]
+                }
+              }
             },
             "apsaraThumnail":
             {
-              $arrayElemAt: ["$music.apsaraThumnail", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.apsaraThumnail", "$index"]
+                }
+              }
             },
             "genre":
             {
-              $arrayElemAt: ["$music.genre.name", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.genre.name", "$index"]
+                }
+              }
             },
             "theme":
             {
-              $arrayElemAt: ["$music.theme.name", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.theme.name", "$index"]
+                }
+              }
             },
             "mood":
             {
-              $arrayElemAt: ["$music.mood.name", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.mood.name", "$index"]
+                }
+              }
             },
             "testDate":
             {
@@ -95312,11 +95380,25 @@ export class PostsService {
             //"musicId": 1,
             "tagPeople":
             {
-              $arrayElemAt: ["$userTag.username", "$indexTag"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.tagPeople", "$index"]
+                    },
+                    []
+                  ]
+                },
+                then: [],
+                else:
+                {
+                  $arrayElemAt: ["$userTag.username", "$index"]
+                }
+              }
             },
             "mediaType":
             {
-              $arrayElemAt: ["$media.mediaType", "$indexTag"]
+              $arrayElemAt: ["$media.mediaType", "$index"]
             },
             // "email": 1,
             "postType":
@@ -95370,7 +95452,8 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.certified", "$index"]
             },
-            "saleAmount": {
+            "saleAmount":
+            {
               $arrayElemAt: ["$all.saleAmount", "$index"]
             },
             "saleLike":
@@ -95399,7 +95482,7 @@ export class PostsService {
             },
             "uploadSource":
             {
-              $arrayElemAt: ["$media.uploadSource", "$indexMedia"]
+              $arrayElemAt: ["$media.uploadSource", "$index"]
             },
             comments:
             {
@@ -95417,7 +95500,7 @@ export class PostsService {
             {
               $size: //"$mailViewer"
               {
-                $arrayElemAt: ["$mailViewer", "$index"]
+                $arrayElemAt: ["$all.mailViewer", "$index"]
               },
 
             },
@@ -95460,18 +95543,69 @@ export class PostsService {
                 else: 0
               }
             },
+            //music:1,
             musik:
             {
-              $arrayElemAt: ["$musicId", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music", "$index"]
+                }
+              }
             },
             isLike:
             {
-              $arrayElemAt: ["$isLike.isLiked", "$indexLike"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$isLike.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$isLike.isLiked", "$index"]
+                },
+                else: false
+              }
             },
+            //testComment:"$comment",
             comment:
-              [{
-                $arrayElemAt: ["$comment", "$indexComment"]
-              }],
+              [
+                {
+                  $cond: {
+                    if: {
+                      $eq: [
+                        {
+                          $arrayElemAt: ["$comment.postID", "$index"]
+                        },
+                        {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        }
+                      ]
+                    },
+                    then:
+                    {
+                      $arrayElemAt: ["$comment", "$index"]
+                    },
+                    else: "$lemah"
+                  }
+                },
+
+              ],
             //userInterest:"$userInterest.userInterests",
             interest: {
               $filter: {
@@ -95603,7 +95737,7 @@ export class PostsService {
                       $arrayElemAt: ["$all.boosted.boostSession.end", "$index"]
                     },]
                   },
-                  then: "$kosong",
+                  then: "$ilang",
                   else:
                   {
                     $arrayElemAt: ["$all.boosted", "$index"]
@@ -95638,38 +95772,145 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.timeEnd", "$index"]
             },
-            "isApsara":
-            {
-              $arrayElemAt: ["$media.isApsara", "$indexMedia"]
-            },
             "apsaraId":
             {
-              $arrayElemAt: ["$media.apsaraId", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.apsaraId", "$index"]
+                },
+                else: "$lemah"
+              }
             },
-
+            "isApsara":
+            {
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.isApsara", "$index"]
+                },
+                else: "$lemah"
+              }
+            },
             "apsaraThumbId":
             {
-              $arrayElemAt: ["$media.apsaraThumbId", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.apsaraThumbId", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "mediaEndpoint":
             {
-              $arrayElemAt: ["$media.mediaEndpoint", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.mediaEndpoint", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "mediaUri":
             {
-              $arrayElemAt: ["$media.mediaUri", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.mediaUrl", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "mediaThumbEndpoint":
             {
-              $arrayElemAt: ["$media.mediaThumbEndpoint", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.mediaThumbEndpoint", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "mediaThumbUri":
             {
-              $arrayElemAt: ["$media.mediaThumbUri", "$indexMedia"]
-            },
-            "mediaThumUri":
-            {
-              $arrayElemAt: ["$media.mediaThumUri", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.mediaThumbUri", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "fullName":
             {
@@ -95711,7 +95952,12 @@ export class PostsService {
             {
               $arrayElemAt: ["$userBasic.isIdVerified", "$index"]
             },
-            userInterested: "$userInterest.userInterests"
+            mailViewer:
+            {
+              $arrayElemAt: ["$all.mailViewer", "$index"]
+            },
+            userInterested: "$userInterest.userInterests",
+            //all: 1,
           },
 
         },
@@ -95737,6 +95983,7 @@ export class PostsService {
         },
         {
           $project: {
+            //commentar:1,
             mailViewer: 1,
             viewerCount: 1,
             viewer: 1,
@@ -95749,7 +95996,18 @@ export class PostsService {
             isLiked: {
               $ifNull: ["$isLike", false]
             },
-            comment: 1,
+            comment:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$comment", [
+                    null
+                  ]]
+                },
+                then: [],
+                else: "$comment"
+              }
+            },
             intScore:
             {
               $cond: {
@@ -96064,28 +96322,27 @@ export class PostsService {
 
           }
         },
-        //    {
-        //        $set: {
-        //            viewerCount: 
-        //            {
-        //                $cond: {
-        //                    if : {
-        //                        $isArray: "$mailViewer"
-        //                    },
-        //                    then: {
-        //                        $subtract: [
-        //                            {
-        //                                $size: "$mailViewer"
-        //                            },
-        //                            1
-        //                        ]
-        //                    },
-        //                    else : 0
-        //                }
-        //            },
-        //            
-        //        }
-        //    },
+        //{
+        //    $set: {
+        //        viewerCount: 
+        //        {
+        //            $cond: {
+        //                if : {
+        //                    $isArray: "$mailViewer"
+        //                },
+        //                then: {
+        //                    $subtract: [
+        //                        {
+        //                            $size: "$mailViewer"
+        //                        },1
+        //                    ]
+        //                },
+        //                else : 0
+        //            }
+        //        },
+        //        
+        //    }
+        //},
         {
           $match:
           {
@@ -96492,16 +96749,9 @@ export class PostsService {
               {
                 $match:
                 {
-                  $and: [
-                    {
-                      $expr: {
-                        $eq: ['$postID', '$$localID']
-                      }
-                    },
-                    {
-                      "apsara": true
-                    }
-                  ]
+                  $expr: {
+                    $in: ['$postID', '$$localID']
+                  }
                 }
               },
               {
@@ -96519,7 +96769,8 @@ export class PostsService {
                   },
                   "mediaThumbUri": "$mediaThumb",
                   "mediaType": 1,
-
+                  "uploadSource": 1,
+                  "mediaThumUri": 1
                 }
               }
             ],
@@ -96920,53 +97171,11 @@ export class PostsService {
         },
         {
           $set: {
-            indexMedia: {
-              $indexOfArray: ["$media.postID", "$postID"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexComment: {
-              $indexOfArray: ["$comment.postID", "$postID"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexMusic: {
-              $indexOfArray: ["$music._id", "$musicId"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexLike: {
-              $indexOfArray: ["$isLike.postID", "$postID"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexTag: {
-              $indexOfArray: ["$userTag._id", "$tagPeople"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexLogs: {
-              $indexOfArray: ["$countLogs.postID", "$postID"]
-            }
-          }
-        },
-        {
-          $set: {
             testLogs: [
               {
                 $ifNull: [
                   {
-                    $arrayElemAt: ["$countLogs", "$indexLogs"]
+                    $arrayElemAt: ["$countLogs._id", "$indexLogs"]
                   }
                   ,
                   []
@@ -96978,40 +97187,150 @@ export class PostsService {
         {
           $project: {
             _id: "$postID",
-            //countLogs:1,
-            //:1,
             musicTitle:
             {
-              $arrayElemAt: ["$music.musicTitle", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.musicTitle", "$index"]
+                }
+              }
             },
             "postID": 1,
             "artistName":
             {
-              $arrayElemAt: ["$music.artistName", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.artistName", "$index"]
+                }
+              }
             },
             "albumName":
             {
-              $arrayElemAt: ["$music.albumName", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.albumName", "$index"]
+                }
+              }
             },
             "apsaraMusic":
             {
-              $arrayElemAt: ["$music.apsaraMusic", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.apsaraMusic", "$index"]
+                }
+              }
             },
             "apsaraThumnail":
             {
-              $arrayElemAt: ["$music.apsaraThumnail", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.apsaraThumnail", "$index"]
+                }
+              }
             },
             "genre":
             {
-              $arrayElemAt: ["$music.genre.name", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.genre.name", "$index"]
+                }
+              }
             },
             "theme":
             {
-              $arrayElemAt: ["$music.theme.name", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.theme.name", "$index"]
+                }
+              }
             },
             "mood":
             {
-              $arrayElemAt: ["$music.mood.name", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.mood.name", "$index"]
+                }
+              }
             },
             "testDate":
             {
@@ -97020,11 +97339,25 @@ export class PostsService {
             //"musicId": 1,
             "tagPeople":
             {
-              $arrayElemAt: ["$userTag.username", "$indexTag"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.tagPeople", "$index"]
+                    },
+                    []
+                  ]
+                },
+                then: [],
+                else:
+                {
+                  $arrayElemAt: ["$userTag.username", "$index"]
+                }
+              }
             },
             "mediaType":
             {
-              $arrayElemAt: ["$media.mediaType", "$indexTag"]
+              $arrayElemAt: ["$media.mediaType", "$index"]
             },
             // "email": 1,
             "postType":
@@ -97078,7 +97411,8 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.certified", "$index"]
             },
-            "saleAmount": {
+            "saleAmount":
+            {
               $arrayElemAt: ["$all.saleAmount", "$index"]
             },
             "saleLike":
@@ -97107,7 +97441,7 @@ export class PostsService {
             },
             "uploadSource":
             {
-              $arrayElemAt: ["$media.uploadSource", "$indexMedia"]
+              $arrayElemAt: ["$media.uploadSource", "$index"]
             },
             comments:
             {
@@ -97125,7 +97459,7 @@ export class PostsService {
             {
               $size: //"$mailViewer"
               {
-                $arrayElemAt: ["$mailViewer", "$index"]
+                $arrayElemAt: ["$all.mailViewer", "$index"]
               },
 
             },
@@ -97168,18 +97502,69 @@ export class PostsService {
                 else: 0
               }
             },
+            //music:1,
             musik:
             {
-              $arrayElemAt: ["$musicId", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music", "$index"]
+                }
+              }
             },
             isLike:
             {
-              $arrayElemAt: ["$isLike.isLiked", "$indexLike"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$isLike.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$isLike.isLiked", "$index"]
+                },
+                else: false
+              }
             },
+            //testComment:"$comment",
             comment:
-              [{
-                $arrayElemAt: ["$comment", "$indexComment"]
-              }],
+              [
+                {
+                  $cond: {
+                    if: {
+                      $eq: [
+                        {
+                          $arrayElemAt: ["$comment.postID", "$index"]
+                        },
+                        {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        }
+                      ]
+                    },
+                    then:
+                    {
+                      $arrayElemAt: ["$comment", "$index"]
+                    },
+                    else: "$lemah"
+                  }
+                },
+
+              ],
             //userInterest:"$userInterest.userInterests",
             interest: {
               $filter: {
@@ -97311,7 +97696,7 @@ export class PostsService {
                       $arrayElemAt: ["$all.boosted.boostSession.end", "$index"]
                     },]
                   },
-                  then: "$kosong",
+                  then: "$ilang",
                   else:
                   {
                     $arrayElemAt: ["$all.boosted", "$index"]
@@ -97346,38 +97731,145 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.timeEnd", "$index"]
             },
-            "isApsara":
-            {
-              $arrayElemAt: ["$media.isApsara", "$indexMedia"]
-            },
             "apsaraId":
             {
-              $arrayElemAt: ["$media.apsaraId", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.apsaraId", "$index"]
+                },
+                else: "$lemah"
+              }
             },
-
+            "isApsara":
+            {
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.isApsara", "$index"]
+                },
+                else: "$lemah"
+              }
+            },
             "apsaraThumbId":
             {
-              $arrayElemAt: ["$media.apsaraThumbId", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.apsaraThumbId", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "mediaEndpoint":
             {
-              $arrayElemAt: ["$media.mediaEndpoint", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.mediaEndpoint", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "mediaUri":
             {
-              $arrayElemAt: ["$media.mediaUri", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.mediaUrl", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "mediaThumbEndpoint":
             {
-              $arrayElemAt: ["$media.mediaThumbEndpoint", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.mediaThumbEndpoint", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "mediaThumbUri":
             {
-              $arrayElemAt: ["$media.mediaThumbUri", "$indexMedia"]
-            },
-            "mediaThumUri":
-            {
-              $arrayElemAt: ["$media.mediaThumUri", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.mediaThumbUri", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "fullName":
             {
@@ -97419,7 +97911,12 @@ export class PostsService {
             {
               $arrayElemAt: ["$userBasic.isIdVerified", "$index"]
             },
-            userInterested: "$userInterest.userInterests"
+            mailViewer:
+            {
+              $arrayElemAt: ["$all.mailViewer", "$index"]
+            },
+            userInterested: "$userInterest.userInterests",
+            //all: 1,
           },
 
         },
@@ -97445,6 +97942,7 @@ export class PostsService {
         },
         {
           $project: {
+            //commentar:1,
             mailViewer: 1,
             viewerCount: 1,
             viewer: 1,
@@ -97457,7 +97955,18 @@ export class PostsService {
             isLiked: {
               $ifNull: ["$isLike", false]
             },
-            comment: 1,
+            comment:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$comment", [
+                    null
+                  ]]
+                },
+                then: [],
+                else: "$comment"
+              }
+            },
             intScore:
             {
               $cond: {
@@ -97771,28 +98280,27 @@ export class PostsService {
 
           }
         },
-        //    {
-        //        $set: {
-        //            viewerCount: 
-        //            {
-        //                $cond: {
-        //                    if : {
-        //                        $isArray: "$mailViewer"
-        //                    },
-        //                    then: {
-        //                        $subtract: [
-        //                            {
-        //                                $size: "$mailViewer"
-        //                            },
-        //                            1
-        //                        ]
-        //                    },
-        //                    else : 0
-        //                }
-        //            },
-        //            
-        //        }
-        //    },
+        //{
+        //    $set: {
+        //        viewerCount: 
+        //        {
+        //            $cond: {
+        //                if : {
+        //                    $isArray: "$mailViewer"
+        //                },
+        //                then: {
+        //                    $subtract: [
+        //                        {
+        //                            $size: "$mailViewer"
+        //                        },1
+        //                    ]
+        //                },
+        //                else : 0
+        //            }
+        //        },
+        //        
+        //    }
+        //},
         {
           $match:
           {
@@ -98627,53 +99135,11 @@ export class PostsService {
         },
         {
           $set: {
-            indexMedia: {
-              $indexOfArray: ["$media.postID", "$postID"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexComment: {
-              $indexOfArray: ["$comment.postID", "$postID"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexMusic: {
-              $indexOfArray: ["$music._id", "$musicId"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexLike: {
-              $indexOfArray: ["$isLike.postID", "$postID"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexTag: {
-              $indexOfArray: ["$userTag._id", "$tagPeople"]
-            }
-          }
-        },
-        {
-          $set: {
-            indexLogs: {
-              $indexOfArray: ["$countLogs.postID", "$postID"]
-            }
-          }
-        },
-        {
-          $set: {
             testLogs: [
               {
                 $ifNull: [
                   {
-                    $arrayElemAt: ["$countLogs", "$indexLogs"]
+                    $arrayElemAt: ["$countLogs._id", "$indexLogs"]
                   }
                   ,
                   []
@@ -98685,40 +99151,150 @@ export class PostsService {
         {
           $project: {
             _id: "$postID",
-            //countLogs:1,
-            //:1,
             musicTitle:
             {
-              $arrayElemAt: ["$music.musicTitle", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.musicTitle", "$index"]
+                }
+              }
             },
             "postID": 1,
             "artistName":
             {
-              $arrayElemAt: ["$music.artistName", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.artistName", "$index"]
+                }
+              }
             },
             "albumName":
             {
-              $arrayElemAt: ["$music.albumName", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.albumName", "$index"]
+                }
+              }
             },
             "apsaraMusic":
             {
-              $arrayElemAt: ["$music.apsaraMusic", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.apsaraMusic", "$index"]
+                }
+              }
             },
             "apsaraThumnail":
             {
-              $arrayElemAt: ["$music.apsaraThumnail", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.apsaraThumnail", "$index"]
+                }
+              }
             },
             "genre":
             {
-              $arrayElemAt: ["$music.genre.name", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.genre.name", "$index"]
+                }
+              }
             },
             "theme":
             {
-              $arrayElemAt: ["$music.theme.name", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.theme.name", "$index"]
+                }
+              }
             },
             "mood":
             {
-              $arrayElemAt: ["$music.mood.name", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music.mood.name", "$index"]
+                }
+              }
             },
             "testDate":
             {
@@ -98727,11 +99303,25 @@ export class PostsService {
             //"musicId": 1,
             "tagPeople":
             {
-              $arrayElemAt: ["$userTag.username", "$indexTag"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.tagPeople", "$index"]
+                    },
+                    []
+                  ]
+                },
+                then: [],
+                else:
+                {
+                  $arrayElemAt: ["$userTag.username", "$index"]
+                }
+              }
             },
             "mediaType":
             {
-              $arrayElemAt: ["$media.mediaType", "$indexTag"]
+              $arrayElemAt: ["$media.mediaType", "$index"]
             },
             // "email": 1,
             "postType":
@@ -98785,7 +99375,8 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.certified", "$index"]
             },
-            "saleAmount": {
+            "saleAmount":
+            {
               $arrayElemAt: ["$all.saleAmount", "$index"]
             },
             "saleLike":
@@ -98814,7 +99405,7 @@ export class PostsService {
             },
             "uploadSource":
             {
-              $arrayElemAt: ["$media.uploadSource", "$indexMedia"]
+              $arrayElemAt: ["$media.uploadSource", "$index"]
             },
             comments:
             {
@@ -98832,7 +99423,7 @@ export class PostsService {
             {
               $size: //"$mailViewer"
               {
-                $arrayElemAt: ["$mailViewer", "$index"]
+                $arrayElemAt: ["$all.mailViewer", "$index"]
               },
 
             },
@@ -98875,18 +99466,69 @@ export class PostsService {
                 else: 0
               }
             },
+            //music:1,
             musik:
             {
-              $arrayElemAt: ["$musicId", "$indexMusic"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$all.musicId", "$index"]
+                    },
+                    null
+                  ]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $arrayElemAt: ["$music", "$index"]
+                }
+              }
             },
             isLike:
             {
-              $arrayElemAt: ["$isLike.isLiked", "$indexLike"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$isLike.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$isLike.isLiked", "$index"]
+                },
+                else: false
+              }
             },
+            //testComment:"$comment",
             comment:
-              [{
-                $arrayElemAt: ["$comment", "$indexComment"]
-              }],
+              [
+                {
+                  $cond: {
+                    if: {
+                      $eq: [
+                        {
+                          $arrayElemAt: ["$comment.postID", "$index"]
+                        },
+                        {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        }
+                      ]
+                    },
+                    then:
+                    {
+                      $arrayElemAt: ["$comment", "$index"]
+                    },
+                    else: "$lemah"
+                  }
+                },
+
+              ],
             //userInterest:"$userInterest.userInterests",
             interest: {
               $filter: {
@@ -99018,7 +99660,7 @@ export class PostsService {
                       $arrayElemAt: ["$all.boosted.boostSession.end", "$index"]
                     },]
                   },
-                  then: "$kosong",
+                  then: "$ilang",
                   else:
                   {
                     $arrayElemAt: ["$all.boosted", "$index"]
@@ -99053,38 +99695,145 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.timeEnd", "$index"]
             },
-            "isApsara":
-            {
-              $arrayElemAt: ["$media.isApsara", "$indexMedia"]
-            },
             "apsaraId":
             {
-              $arrayElemAt: ["$media.apsaraId", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.apsaraId", "$index"]
+                },
+                else: "$lemah"
+              }
             },
-
+            "isApsara":
+            {
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.isApsara", "$index"]
+                },
+                else: "$lemah"
+              }
+            },
             "apsaraThumbId":
             {
-              $arrayElemAt: ["$media.apsaraThumbId", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.apsaraThumbId", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "mediaEndpoint":
             {
-              $arrayElemAt: ["$media.mediaEndpoint", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.mediaEndpoint", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "mediaUri":
             {
-              $arrayElemAt: ["$media.mediaUri", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.mediaUrl", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "mediaThumbEndpoint":
             {
-              $arrayElemAt: ["$media.mediaThumbEndpoint", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.mediaThumbEndpoint", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "mediaThumbUri":
             {
-              $arrayElemAt: ["$media.mediaThumbUri", "$indexMedia"]
-            },
-            "mediaThumUri":
-            {
-              $arrayElemAt: ["$media.mediaThumUri", "$indexMedia"]
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$media.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$media.mediaThumbUri", "$index"]
+                },
+                else: "$lemah"
+              }
             },
             "fullName":
             {
@@ -99126,7 +99875,12 @@ export class PostsService {
             {
               $arrayElemAt: ["$userBasic.isIdVerified", "$index"]
             },
-            userInterested: "$userInterest.userInterests"
+            mailViewer:
+            {
+              $arrayElemAt: ["$all.mailViewer", "$index"]
+            },
+            userInterested: "$userInterest.userInterests",
+            //all: 1,
           },
 
         },
@@ -99152,6 +99906,7 @@ export class PostsService {
         },
         {
           $project: {
+            //commentar:1,
             mailViewer: 1,
             viewerCount: 1,
             viewer: 1,
@@ -99164,7 +99919,18 @@ export class PostsService {
             isLiked: {
               $ifNull: ["$isLike", false]
             },
-            comment: 1,
+            comment:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$comment", [
+                    null
+                  ]]
+                },
+                then: [],
+                else: "$comment"
+              }
+            },
             intScore:
             {
               $cond: {
@@ -99268,7 +100034,6 @@ export class PostsService {
           },
 
         },
-
 
       );
       pipeline.push(
