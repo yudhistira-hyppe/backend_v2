@@ -95893,24 +95893,9 @@ export class PostsService {
               }
             },
             "mediaThumbUri":
+
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.mediaThumbUri", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.mediaThumbUri", "$index"]
             },
             "fullName":
             {
@@ -97852,24 +97837,9 @@ export class PostsService {
               }
             },
             "mediaThumbUri":
+
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.mediaThumbUri", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.mediaThumbUri", "$index"]
             },
             "fullName":
             {
@@ -99816,24 +99786,9 @@ export class PostsService {
               }
             },
             "mediaThumbUri":
+
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$media.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$media.mediaThumbUri", "$index"]
-                },
-                else: "$lemah"
-              }
+              $arrayElemAt: ["$media.mediaThumbUri", "$index"]
             },
             "fullName":
             {
