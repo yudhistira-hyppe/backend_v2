@@ -94177,7 +94177,6 @@ export class PostsService {
         {
           $sort: {
             createdAt: - 1,
-
           }
         },
         {
@@ -94928,7 +94927,7 @@ export class PostsService {
               },
               {
                 $project: {
-
+                  email: 1,
                   "username": 1
                 }
               }
@@ -94961,48 +94960,8 @@ export class PostsService {
                   "isPrivate": 1,
                   "isFollowPrivate": 1,
                   "isPostPrivate": 1,
+                  email: 1,
 
-                }
-              }
-            ],
-
-          }
-        },
-        {
-          $set: {
-            kosong: {
-              $ifNull: ['$userBasic.profilePict.$id', "kancut"]
-            }
-          }
-        },
-        {
-          "$lookup": {
-            from: "mediaprofilepicts",
-            as: "avatar",
-            let: {
-              localID: '$kosong'
-            },
-            pipeline: [
-              {
-                $match:
-                {
-                  $expr: {
-                    $in: ['$mediaID', "$$localID"]
-                  }
-                }
-              },
-              {
-                $project: {
-                  "mediaBasePath": 1,
-                  "mediaUri": 1,
-                  "originalName": 1,
-                  "fsSourceUri": 1,
-                  "fsSourceName": 1,
-                  "fsTargetUri": 1,
-                  "mediaType": 1,
-                  "mediaEndpoint": {
-                    "$concat": ["/profilepict/", "$mediaID"]
-                  }
                 }
               }
             ],
@@ -95211,6 +95170,102 @@ export class PostsService {
             ]
           }
         },
+        {
+          $set:
+          {
+            user:
+            {
+              $filter: {
+                input: "$userBasic",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.email",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+        {
+          $set:
+          {
+            uName:
+            {
+              $filter: {
+                input: "$username",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.email",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+
+        {
+          $unwind: {
+            path: "$user"
+          }
+        },
+        {
+          $unwind: {
+            path: "$uName"
+          }
+        },
+
+        {
+          $set: {
+            kosong: {
+              $ifNull: ['$user.profilePict.$id', "kancut"]
+            }
+          }
+        },
+        {
+          "$lookup": {
+            from: "mediaprofilepicts",
+            as: "avatar",
+            let: {
+              localID: '$kosong'
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$mediaID', "$$localID"]
+                  }
+                }
+              },
+              {
+                $project: {
+                  "mediaBasePath": 1,
+                  "mediaUri": 1,
+                  "originalName": 1,
+                  "fsSourceUri": 1,
+                  "fsSourceName": 1,
+                  "fsTargetUri": 1,
+                  "mediaType": 1,
+                  "mediaEndpoint": {
+                    "$concat": ["/profilepict/", "$mediaID"]
+                  }
+                }
+              }
+            ],
+
+          }
+        },
+
+        {
+          $unwind: {
+            path: "$avatar"
+          }
+        },
+
         {
           $project: {
             _id: "$postID",
@@ -95786,62 +95841,19 @@ export class PostsService {
             {
               $arrayElemAt: ["$media.mediaThumbUri", "$index"]
             },
-            "fullName":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$userBasic.email", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$userBasic.fullname", "$index"]
-                },
-                else: "$lemah"
-              }
-            },
-            "username":
-            {
-              $arrayElemAt: ["$username.username", "$index"]
-            },
-            "avatar":
-            {
-              $arrayElemAt: ["$avatar", "$index"]
-            },
+            "fullName": "$user.fullName",
+            "username": "$uName.username",
+            "avatar": "$avatar",
             //"statusCB": 1,
             "privacy": {
-              "isCelebrity":
-              {
-                $arrayElemAt: ["$userBasic.isCelebrity", "$index"]
-              },
-              "isIdVerified":
-              {
-                $arrayElemAt: ["$userBasic.isIdVerified", "$index"]
-              },
-              "isPrivate":
-              {
-                $arrayElemAt: ["$userBasic.isPrivate", "$index"]
-              },
-              "isFollowPrivate":
-              {
-                $arrayElemAt: ["$userBasic.isFollowPrivate", "$index"]
-              },
-              "isPostPrivate":
-              {
-                $arrayElemAt: ["$userBasic.isPostPrivate", "$index"]
-              },
+              "isCelebrity": "$user.isCelebrity",
+              "isIdVerified": "$user.isIdVerified",
+              "isPrivate": "$user.isPrivate",
+              "isFollowPrivate": "$user.isFollowPrivate",
+              "isPostPrivate": "$user.isPostPrivate",
 
             },
-            "verified":
-            {
-              $arrayElemAt: ["$userBasic.isIdVerified", "$index"]
-            },
+            "verified": "$user.fullName",
             mailViewer:
             {
               $arrayElemAt: ["$all.mailViewer", "$index"]
@@ -95871,7 +95883,136 @@ export class PostsService {
             path: "$setting"
           }
         },
+        {
+          $project: {
+            //commentar:1,
+            mailViewer: 1,
+            viewerCount: 1,
+            viewer: 1,
+            version: "$setting.value",
+            oldDate: 1,
+            selfContents: 1,
+            official: 1,
+            selfContent: 1,
+            musik: 1,
+            isLiked: {
+              $ifNull: ["$isLike", false]
+            },
+            comment:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$comment", [
+                    null
+                  ]]
+                },
+                then: [],
+                else: "$comment"
+              }
+            },
+            intScore:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$interest"
+                },
+                then:
+                {
+                  $size: "$interest"
+                },
+                else: 0
+              }
+            },
+            "verified": 1,
+            "friend": 1,
+            // "follower": 1,
+            "following": 1,
+            "musicTitle": 1,
+            "postID": 1,
+            "artistName": 1,
+            "albumName": 1,
+            "apsaraMusic": 1,
+            "apsaraThumnail": 1,
+            "genre": 1,
+            "theme": 1,
+            "mood": 1,
+            "testDate": 1,
+            "musicId": 1,
+            "music": 1,
+            "tagPeople": 1,
+            "mediaType": 1,
+            "email": 1,
+            "postType": 1,
+            "description": 1,
+            "active": 1,
+            "createdAt": 1,
+            "updatedAt": 1,
+            "expiration": 1,
+            "visibility": 1,
+            "location": 1,
+            "tags": 1,
+            "allowComments": 1,
+            "isSafe": 1,
+            "isOwned": 1,
+            "certified": 1,
+            "saleAmount": 1,
+            "saleLike": 1,
+            "saleView": 1,
+            "isShared": 1,
+            "likes": 1,
+            "views": 1,
+            "shares": 1,
+            "comments": 1,
+            "insight": 1,
+            "userProfile": 1,
+            "contentMedias": 1,
+            "cats": "$cats",
+            "tagDescription": 1,
+            "metadata": 1,
+            "boostDate": 1,
+            "end": 1,
+            "start": 1,
+            "isBoost": 1,
+            "boostViewer": 1,
+            "boostCount": 1,
+            "uploadSource": 1,
+            "boosted":
+            {
+              $cond: {
+                if: {
+                  $gt: [{
+                    $size: "$boosted.boostSession"
+                  }, 0]
+                },
+                else: [],
+                then: '$boosted'
+              }
+            },
+            "contentModeration": 1,
+            "reportedStatus": 1,
+            "reportedUserCount": 1,
+            "contentModerationResponse": 1,
+            "reportedUser": 1,
+            "timeStart": 1,
+            "timeEnd": 1,
+            "isApsara": 1,
+            "apsaraId": 1,
+            "apsaraThumbId": 1,
+            "mediaEndpoint": 1,
+            "mediaUri": 1,
+            "mediaThumbEndpoint": 1,
+            "mediaThumbUri": 1,
+            "fullName": 1,
+            "username": 1,
+            "avatar": 1,
+            "statusCB": 1,
+            "privacy": 1,
+            "mediaThumUri": 1,
+            category: 1,
+            userInterested: 1
+          },
 
+        },
       );
 
       pipeline.push(
@@ -95895,7 +96036,6 @@ export class PostsService {
         {
           $sort: {
             createdAt: - 1,
-
           }
         },
         {
@@ -96646,7 +96786,7 @@ export class PostsService {
               },
               {
                 $project: {
-
+                  email: 1,
                   "username": 1
                 }
               }
@@ -96679,48 +96819,8 @@ export class PostsService {
                   "isPrivate": 1,
                   "isFollowPrivate": 1,
                   "isPostPrivate": 1,
+                  email: 1,
 
-                }
-              }
-            ],
-
-          }
-        },
-        {
-          $set: {
-            kosong: {
-              $ifNull: ['$userBasic.profilePict.$id', "kancut"]
-            }
-          }
-        },
-        {
-          "$lookup": {
-            from: "mediaprofilepicts",
-            as: "avatar",
-            let: {
-              localID: '$kosong'
-            },
-            pipeline: [
-              {
-                $match:
-                {
-                  $expr: {
-                    $in: ['$mediaID', "$$localID"]
-                  }
-                }
-              },
-              {
-                $project: {
-                  "mediaBasePath": 1,
-                  "mediaUri": 1,
-                  "originalName": 1,
-                  "fsSourceUri": 1,
-                  "fsSourceName": 1,
-                  "fsTargetUri": 1,
-                  "mediaType": 1,
-                  "mediaEndpoint": {
-                    "$concat": ["/profilepict/", "$mediaID"]
-                  }
                 }
               }
             ],
@@ -96929,6 +97029,102 @@ export class PostsService {
             ]
           }
         },
+        {
+          $set:
+          {
+            user:
+            {
+              $filter: {
+                input: "$userBasic",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.email",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+        {
+          $set:
+          {
+            uName:
+            {
+              $filter: {
+                input: "$username",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.email",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+
+        {
+          $unwind: {
+            path: "$user"
+          }
+        },
+        {
+          $unwind: {
+            path: "$uName"
+          }
+        },
+
+        {
+          $set: {
+            kosong: {
+              $ifNull: ['$user.profilePict.$id', "kancut"]
+            }
+          }
+        },
+        {
+          "$lookup": {
+            from: "mediaprofilepicts",
+            as: "avatar",
+            let: {
+              localID: '$kosong'
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$mediaID', "$$localID"]
+                  }
+                }
+              },
+              {
+                $project: {
+                  "mediaBasePath": 1,
+                  "mediaUri": 1,
+                  "originalName": 1,
+                  "fsSourceUri": 1,
+                  "fsSourceName": 1,
+                  "fsTargetUri": 1,
+                  "mediaType": 1,
+                  "mediaEndpoint": {
+                    "$concat": ["/profilepict/", "$mediaID"]
+                  }
+                }
+              }
+            ],
+
+          }
+        },
+
+        {
+          $unwind: {
+            path: "$avatar"
+          }
+        },
+
         {
           $project: {
             _id: "$postID",
@@ -97504,62 +97700,19 @@ export class PostsService {
             {
               $arrayElemAt: ["$media.mediaThumbUri", "$index"]
             },
-            "fullName":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$userBasic.email", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$userBasic.fullname", "$index"]
-                },
-                else: "$lemah"
-              }
-            },
-            "username":
-            {
-              $arrayElemAt: ["$username.username", "$index"]
-            },
-            "avatar":
-            {
-              $arrayElemAt: ["$avatar", "$index"]
-            },
+            "fullName": "$user.fullName",
+            "username": "$uName.username",
+            "avatar": "$avatar",
             //"statusCB": 1,
             "privacy": {
-              "isCelebrity":
-              {
-                $arrayElemAt: ["$userBasic.isCelebrity", "$index"]
-              },
-              "isIdVerified":
-              {
-                $arrayElemAt: ["$userBasic.isIdVerified", "$index"]
-              },
-              "isPrivate":
-              {
-                $arrayElemAt: ["$userBasic.isPrivate", "$index"]
-              },
-              "isFollowPrivate":
-              {
-                $arrayElemAt: ["$userBasic.isFollowPrivate", "$index"]
-              },
-              "isPostPrivate":
-              {
-                $arrayElemAt: ["$userBasic.isPostPrivate", "$index"]
-              },
+              "isCelebrity": "$user.isCelebrity",
+              "isIdVerified": "$user.isIdVerified",
+              "isPrivate": "$user.isPrivate",
+              "isFollowPrivate": "$user.isFollowPrivate",
+              "isPostPrivate": "$user.isPostPrivate",
 
             },
-            "verified":
-            {
-              $arrayElemAt: ["$userBasic.isIdVerified", "$index"]
-            },
+            "verified": "$user.fullName",
             mailViewer:
             {
               $arrayElemAt: ["$all.mailViewer", "$index"]
@@ -97589,6 +97742,136 @@ export class PostsService {
             path: "$setting"
           }
         },
+        {
+          $project: {
+            //commentar:1,
+            mailViewer: 1,
+            viewerCount: 1,
+            viewer: 1,
+            version: "$setting.value",
+            oldDate: 1,
+            selfContents: 1,
+            official: 1,
+            selfContent: 1,
+            musik: 1,
+            isLiked: {
+              $ifNull: ["$isLike", false]
+            },
+            comment:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$comment", [
+                    null
+                  ]]
+                },
+                then: [],
+                else: "$comment"
+              }
+            },
+            intScore:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$interest"
+                },
+                then:
+                {
+                  $size: "$interest"
+                },
+                else: 0
+              }
+            },
+            "verified": 1,
+            "friend": 1,
+            // "follower": 1,
+            "following": 1,
+            "musicTitle": 1,
+            "postID": 1,
+            "artistName": 1,
+            "albumName": 1,
+            "apsaraMusic": 1,
+            "apsaraThumnail": 1,
+            "genre": 1,
+            "theme": 1,
+            "mood": 1,
+            "testDate": 1,
+            "musicId": 1,
+            "music": 1,
+            "tagPeople": 1,
+            "mediaType": 1,
+            "email": 1,
+            "postType": 1,
+            "description": 1,
+            "active": 1,
+            "createdAt": 1,
+            "updatedAt": 1,
+            "expiration": 1,
+            "visibility": 1,
+            "location": 1,
+            "tags": 1,
+            "allowComments": 1,
+            "isSafe": 1,
+            "isOwned": 1,
+            "certified": 1,
+            "saleAmount": 1,
+            "saleLike": 1,
+            "saleView": 1,
+            "isShared": 1,
+            "likes": 1,
+            "views": 1,
+            "shares": 1,
+            "comments": 1,
+            "insight": 1,
+            "userProfile": 1,
+            "contentMedias": 1,
+            "cats": "$cats",
+            "tagDescription": 1,
+            "metadata": 1,
+            "boostDate": 1,
+            "end": 1,
+            "start": 1,
+            "isBoost": 1,
+            "boostViewer": 1,
+            "boostCount": 1,
+            "uploadSource": 1,
+            "boosted":
+            {
+              $cond: {
+                if: {
+                  $gt: [{
+                    $size: "$boosted.boostSession"
+                  }, 0]
+                },
+                else: [],
+                then: '$boosted'
+              }
+            },
+            "contentModeration": 1,
+            "reportedStatus": 1,
+            "reportedUserCount": 1,
+            "contentModerationResponse": 1,
+            "reportedUser": 1,
+            "timeStart": 1,
+            "timeEnd": 1,
+            "isApsara": 1,
+            "apsaraId": 1,
+            "apsaraThumbId": 1,
+            "mediaEndpoint": 1,
+            "mediaUri": 1,
+            "mediaThumbEndpoint": 1,
+            "mediaThumbUri": 1,
+            "fullName": 1,
+            "username": 1,
+            "avatar": 1,
+            "statusCB": 1,
+            "privacy": 1,
+            "mediaThumUri": 1,
+            category: 1,
+            userInterested: 1
+          },
+
+        },
 
       );
 
@@ -97613,7 +97896,6 @@ export class PostsService {
         {
           $sort: {
             createdAt: - 1,
-
           }
         },
         {
@@ -98370,7 +98652,7 @@ export class PostsService {
               },
               {
                 $project: {
-
+                  email: 1,
                   "username": 1
                 }
               }
@@ -98403,48 +98685,8 @@ export class PostsService {
                   "isPrivate": 1,
                   "isFollowPrivate": 1,
                   "isPostPrivate": 1,
+                  email: 1,
 
-                }
-              }
-            ],
-
-          }
-        },
-        {
-          $set: {
-            kosong: {
-              $ifNull: ['$userBasic.profilePict.$id', "kancut"]
-            }
-          }
-        },
-        {
-          "$lookup": {
-            from: "mediaprofilepicts",
-            as: "avatar",
-            let: {
-              localID: '$kosong'
-            },
-            pipeline: [
-              {
-                $match:
-                {
-                  $expr: {
-                    $in: ['$mediaID', "$$localID"]
-                  }
-                }
-              },
-              {
-                $project: {
-                  "mediaBasePath": 1,
-                  "mediaUri": 1,
-                  "originalName": 1,
-                  "fsSourceUri": 1,
-                  "fsSourceName": 1,
-                  "fsTargetUri": 1,
-                  "mediaType": 1,
-                  "mediaEndpoint": {
-                    "$concat": ["/profilepict/", "$mediaID"]
-                  }
                 }
               }
             ],
@@ -98653,6 +98895,102 @@ export class PostsService {
             ]
           }
         },
+        {
+          $set:
+          {
+            user:
+            {
+              $filter: {
+                input: "$userBasic",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.email",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+        {
+          $set:
+          {
+            uName:
+            {
+              $filter: {
+                input: "$username",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.email",
+                    {
+                      $arrayElemAt: ["$all.email", "$index"]
+                    },]
+                }
+              }
+            },
+          }
+        },
+
+        {
+          $unwind: {
+            path: "$user"
+          }
+        },
+        {
+          $unwind: {
+            path: "$uName"
+          }
+        },
+
+        {
+          $set: {
+            kosong: {
+              $ifNull: ['$user.profilePict.$id', "kancut"]
+            }
+          }
+        },
+        {
+          "$lookup": {
+            from: "mediaprofilepicts",
+            as: "avatar",
+            let: {
+              localID: '$kosong'
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$mediaID', "$$localID"]
+                  }
+                }
+              },
+              {
+                $project: {
+                  "mediaBasePath": 1,
+                  "mediaUri": 1,
+                  "originalName": 1,
+                  "fsSourceUri": 1,
+                  "fsSourceName": 1,
+                  "fsTargetUri": 1,
+                  "mediaType": 1,
+                  "mediaEndpoint": {
+                    "$concat": ["/profilepict/", "$mediaID"]
+                  }
+                }
+              }
+            ],
+
+          }
+        },
+
+        {
+          $unwind: {
+            path: "$avatar"
+          }
+        },
+
         {
           $project: {
             _id: "$postID",
@@ -99228,62 +99566,19 @@ export class PostsService {
             {
               $arrayElemAt: ["$media.mediaThumbUri", "$index"]
             },
-            "fullName":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$userBasic.email", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$userBasic.fullname", "$index"]
-                },
-                else: "$lemah"
-              }
-            },
-            "username":
-            {
-              $arrayElemAt: ["$username.username", "$index"]
-            },
-            "avatar":
-            {
-              $arrayElemAt: ["$avatar", "$index"]
-            },
+            "fullName": "$user.fullName",
+            "username": "$uName.username",
+            "avatar": "$avatar",
             //"statusCB": 1,
             "privacy": {
-              "isCelebrity":
-              {
-                $arrayElemAt: ["$userBasic.isCelebrity", "$index"]
-              },
-              "isIdVerified":
-              {
-                $arrayElemAt: ["$userBasic.isIdVerified", "$index"]
-              },
-              "isPrivate":
-              {
-                $arrayElemAt: ["$userBasic.isPrivate", "$index"]
-              },
-              "isFollowPrivate":
-              {
-                $arrayElemAt: ["$userBasic.isFollowPrivate", "$index"]
-              },
-              "isPostPrivate":
-              {
-                $arrayElemAt: ["$userBasic.isPostPrivate", "$index"]
-              },
+              "isCelebrity": "$user.isCelebrity",
+              "isIdVerified": "$user.isIdVerified",
+              "isPrivate": "$user.isPrivate",
+              "isFollowPrivate": "$user.isFollowPrivate",
+              "isPostPrivate": "$user.isPostPrivate",
 
             },
-            "verified":
-            {
-              $arrayElemAt: ["$userBasic.isIdVerified", "$index"]
-            },
+            "verified": "$user.fullName",
             mailViewer:
             {
               $arrayElemAt: ["$all.mailViewer", "$index"]
@@ -99312,6 +99607,136 @@ export class PostsService {
           $unwind: {
             path: "$setting"
           }
+        },
+        {
+          $project: {
+            //commentar:1,
+            mailViewer: 1,
+            viewerCount: 1,
+            viewer: 1,
+            version: "$setting.value",
+            oldDate: 1,
+            selfContents: 1,
+            official: 1,
+            selfContent: 1,
+            musik: 1,
+            isLiked: {
+              $ifNull: ["$isLike", false]
+            },
+            comment:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$comment", [
+                    null
+                  ]]
+                },
+                then: [],
+                else: "$comment"
+              }
+            },
+            intScore:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$interest"
+                },
+                then:
+                {
+                  $size: "$interest"
+                },
+                else: 0
+              }
+            },
+            "verified": 1,
+            "friend": 1,
+            // "follower": 1,
+            "following": 1,
+            "musicTitle": 1,
+            "postID": 1,
+            "artistName": 1,
+            "albumName": 1,
+            "apsaraMusic": 1,
+            "apsaraThumnail": 1,
+            "genre": 1,
+            "theme": 1,
+            "mood": 1,
+            "testDate": 1,
+            "musicId": 1,
+            "music": 1,
+            "tagPeople": 1,
+            "mediaType": 1,
+            "email": 1,
+            "postType": 1,
+            "description": 1,
+            "active": 1,
+            "createdAt": 1,
+            "updatedAt": 1,
+            "expiration": 1,
+            "visibility": 1,
+            "location": 1,
+            "tags": 1,
+            "allowComments": 1,
+            "isSafe": 1,
+            "isOwned": 1,
+            "certified": 1,
+            "saleAmount": 1,
+            "saleLike": 1,
+            "saleView": 1,
+            "isShared": 1,
+            "likes": 1,
+            "views": 1,
+            "shares": 1,
+            "comments": 1,
+            "insight": 1,
+            "userProfile": 1,
+            "contentMedias": 1,
+            "cats": "$cats",
+            "tagDescription": 1,
+            "metadata": 1,
+            "boostDate": 1,
+            "end": 1,
+            "start": 1,
+            "isBoost": 1,
+            "boostViewer": 1,
+            "boostCount": 1,
+            "uploadSource": 1,
+            "boosted":
+            {
+              $cond: {
+                if: {
+                  $gt: [{
+                    $size: "$boosted.boostSession"
+                  }, 0]
+                },
+                else: [],
+                then: '$boosted'
+              }
+            },
+            "contentModeration": 1,
+            "reportedStatus": 1,
+            "reportedUserCount": 1,
+            "contentModerationResponse": 1,
+            "reportedUser": 1,
+            "timeStart": 1,
+            "timeEnd": 1,
+            "isApsara": 1,
+            "apsaraId": 1,
+            "apsaraThumbId": 1,
+            "mediaEndpoint": 1,
+            "mediaUri": 1,
+            "mediaThumbEndpoint": 1,
+            "mediaThumbUri": 1,
+            "fullName": 1,
+            "username": 1,
+            "avatar": 1,
+            "statusCB": 1,
+            "privacy": 1,
+            "mediaThumUri": 1,
+            category: 1,
+            userInterested: 1
+          },
+
         },
 
       );
