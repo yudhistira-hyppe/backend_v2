@@ -30,7 +30,8 @@ import { ChallengeService } from 'src/trans/challenge/challenge.service';
 import { TagCountService } from 'src/content/tag_count/tag_count.service';
 import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
 import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.schema';
-
+import { LogapisService } from 'src/trans/logapis/logapis.service'; 
+import { logApis } from 'src/trans/logapis/schema/logapis.schema';
 @Controller()
 export class ContenteventsController {
   private readonly logger = new Logger(ContenteventsController.name);
@@ -52,7 +53,8 @@ export class ContenteventsController {
     private readonly challengeService: ChallengeService,
     private readonly tagCountService: TagCountService,
     private readonly postchallengeService: PostchallengeService,
-    private readonly errorHandler: ErrorHandler) { }
+    private readonly errorHandler: ErrorHandler,
+    private readonly logapiSS : LogapisService) { }
 
   @Post('api/contentevents')
   async create(@Body() CreateContenteventsDto: CreateContenteventsDto) {
@@ -172,8 +174,15 @@ export class ContenteventsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('api/friend/:email')
-  async friend(@Param('email') email: string, @Headers() headers) {
+  async friend(@Param('email') email: string, @Headers() headers, @Req() req) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    
     var data = await this.contenteventsService.friend(email, headers);
+    
+    var fullurl = req.get("Host") + req.originalUrl;
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
     return {
       response_code: 202,
       data: data,
@@ -874,18 +883,35 @@ export class ContenteventsController {
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/posts/interactive')
   async interactive2(@Req() request: any, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(request.body));
     if (headers['x-auth-user'] == undefined) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed auth-user undefined',
       );
     }
     if (request.body.eventType == undefined) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, param eventType is required',
       );
     }
     if (request.body.receiverParty == undefined) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, param receiverParty is required',
       );
@@ -902,6 +928,11 @@ export class ContenteventsController {
     let userbasic1 = await this.userbasicsService.findOne(email_user);
 
     if (userbasic1 == null || userbasic1 == undefined) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, auth-user data not found',
       );
@@ -1009,6 +1040,11 @@ export class ContenteventsController {
             this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
           }
         } catch (error) {
+          var fullurl = request.get("Host") + request.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(request.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
             error,
@@ -1126,6 +1162,11 @@ export class ContenteventsController {
             await this.postsService.updateView(email_receiverParty, request.body.postID);
             await this.insightsService.updateViews(email_receiverParty);
           } catch (error) {
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(request.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, ' +
               error,
@@ -1176,6 +1217,11 @@ export class ContenteventsController {
 
 
             } catch (error) {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(request.body));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, ' +
                 error,
@@ -1268,6 +1314,11 @@ export class ContenteventsController {
           this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
         } catch (error) {
+          var fullurl = request.get("Host") + request.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(request.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
             error,
@@ -1294,6 +1345,11 @@ export class ContenteventsController {
             // }
             this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
           } catch (error) {
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(request.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, ' +
               error,
@@ -1312,6 +1368,11 @@ export class ContenteventsController {
             this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           } catch (error) {
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(request.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, ' +
               error,
@@ -1342,6 +1403,11 @@ export class ContenteventsController {
           // }
           this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
         } catch (error) {
+          var fullurl = request.get("Host") + request.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(request.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
             error,
@@ -1370,6 +1436,11 @@ export class ContenteventsController {
 
               this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(request.body));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, ' +
                 error,
@@ -1395,6 +1466,11 @@ export class ContenteventsController {
 
               this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(request.body));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, ' +
                 error,
@@ -1428,6 +1504,11 @@ export class ContenteventsController {
 
           this.checkFriendbasedString(email_user, email_receiverParty, "delete");
         } catch (error) {
+          var fullurl = request.get("Host") + request.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(request.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
             error,
@@ -1734,6 +1815,11 @@ export class ContenteventsController {
         await this.insightsService.updateReactions(email_user);
         this.sendInteractiveFCM(email_receiverParty, "REACTION", request.body.postID, email_user, Emote);
       } catch (error) {
+        var fullurl = request.get("Host") + request.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(request.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed, ' +
           error,
@@ -1741,6 +1827,11 @@ export class ContenteventsController {
       }
       //}
     }
+
+    var fullurl = request.get("Host") + request.originalUrl;
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    var reqbody = JSON.parse(JSON.stringify(request.body));
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
 
     return {
       response_code: 202,
