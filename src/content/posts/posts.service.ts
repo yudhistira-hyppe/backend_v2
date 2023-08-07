@@ -19332,6 +19332,20157 @@ export class PostsService {
     return true;
   }
 
+  // async finddatasearchcontenNew(key: string, email: string, skip: number, limit: number, pict: any, vid: any, diary: any, user: any, tag: any) {
+
+
+  //   var pipeline = [];
+
+  //   pipeline.push({
+  //     $project: {
+  //       "dedy": key
+  //     }
+  //   },
+  //     {
+  //       $limit: 1
+  //     },);
+
+  //   if (pict === true && vid === false && diary === false && user === true && tag === false) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "user":
+  //             [
+
+  //               {
+  //                 $lookup: {
+  //                   from: "userauths",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "username": {
+  //                           $regex: key,
+  //                           $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         kampretos: { $toLower: "$username" }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$kampretos", key]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length:
+  //                         {
+  //                           $cond: [
+  //                             {
+  //                               ifnull: ['$username', false]
+  //                             },
+  //                             {
+  //                               $strLenCP: "$username"
+  //                             },
+  //                             0
+  //                           ]
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ],
+  //                   as: "userAuth"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userAuth",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "userbasics",
+  //                   as: "userBasic",
+  //                   let: {
+  //                     localID: '$userAuth.email'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "fullName": 1,
+  //                         "profilePict": 1,
+  //                         "isCelebrity": 1,
+  //                         "isIdVerified": 1,
+  //                         "isPrivate": 1,
+  //                         "urluserBadge":
+  //                         {
+  //                           "$filter":
+  //                           {
+  //                             input: "$userBadge",
+  //                             as: "listbadge",
+  //                             cond:
+  //                             {
+  //                               "$and":
+  //                                 [
+  //                                   {
+  //                                     "$eq":
+  //                                       [
+  //                                         "$$listbadge.isActive", true
+  //                                       ]
+  //                                   },
+  //                                   {
+  //                                     "$lte": [
+  //                                       {
+  //                                         "$dateToString": {
+  //                                           "format": "%Y-%m-%d %H:%M:%S",
+  //                                           "date": {
+  //                                             "$add": [
+  //                                               new Date(),
+  //                                               25200000
+  //                                             ]
+  //                                           }
+  //                                         }
+  //                                       },
+  //                                       "$$listbadge.endDatetime"
+  //                                     ]
+  //                                   }
+  //                                 ]
+  //                             }
+  //                           }
+  //                         },
+  //                       },
+
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userBasic",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediaprofilepicts",
+  //                   as: "avatar",
+  //                   let: {
+  //                     localID: '$userBasic.profilePict.$id'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$mediaID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "mediaBasePath": 1,
+  //                         "mediaUri": 1,
+  //                         "originalName": 1,
+  //                         "fsSourceUri": 1,
+  //                         "fsSourceName": 1,
+  //                         "fsTargetUri": 1,
+  //                         "mediaType": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/profilepict/", "$mediaID"]
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ],
+
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "friend_list",
+  //                   as: "friend",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $or: [
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$localID']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": email
+  //                               }
+  //                             ]
+  //                           },
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$user']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": '$userAuth.email'
+  //                               }
+  //                             ]
+  //                           }
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         friend:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $size: '$friendlist'
+  //                               }, 0]
+  //                             },
+  //                             then: 3,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "follower",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "receiverParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWER",
+
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         follower:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 2,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "following",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "senderParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWING"
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         following:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 1,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $project: {
+  //                   "dodol": {
+  //                     $ifNull: ["$userAuth.username", "kosong"]
+  //                   },
+  //                   "friend": {
+  //                     $arrayElemAt: ["$friend.friend", 0]
+  //                   },
+  //                   "follower":
+  //                   {
+  //                     $arrayElemAt: ["$follower.follower", 0]
+  //                   },
+  //                   "following":
+  //                   {
+  //                     $arrayElemAt: ["$following.following", 0]
+  //                   },
+  //                   "statusEN":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "FRIEND",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "FOLLOWING",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "FOLLOWER",
+  //                               else: "NOT CONNECTED"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "statusID":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "PERTEMANAN",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "MENGIKUTI",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "PENGIKUT",
+  //                               else: "BELUM TERHUBUNG"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "fullName": "$userBasic.fullName",
+  //                   "profilePict": "$userBasic.profilePict",
+  //                   "profilePicts": "$userBasic.profilePicts",
+  //                   "username": "$userAuth.username",
+  //                   "length": "$userAuth.length",
+  //                   "score": "$userAuth.score",
+  //                   "totScore": {
+  //                     $sum: [{
+  //                       $arrayElemAt: ["$friend.friend", 0]
+  //                     }, "$userAuth.score"]
+  //                   },
+  //                   "email": "$userAuth.email",
+  //                   "avatar":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $eq: [{
+  //                           $arrayElemAt: ["$avatar.mediaType", {
+  //                             "$indexOfArray": [
+  //                               "$avatar.mediaID",
+  //                               '$userBasic.profilePict.$id'
+  //                             ]
+  //                           }]
+  //                         }, "image"]
+  //                       },
+  //                       then: "$avatar",
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "urluserBadge":
+  //                   {
+  //                     "$ifNull":
+  //                       [
+  //                         {
+  //                           "$arrayElemAt":
+  //                             [
+  //                               "$userBasic.urluserBadge", 0
+  //                             ]
+  //                         },
+  //                         null
+  //                       ]
+  //                   }
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   friend: - 1,
+  //                   follower: - 1,
+  //                   following: - 1,
+
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ],
+  //           //pict
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           user:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: [{
+  //                   $arrayElemAt: ["$user.dodol", 0]
+  //                 }, "kosong"]
+  //               },
+  //               then: "$saassaas",
+  //               else: "$user"
+  //             }
+  //           },
+  //           pict: "$pict",
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === false && vid === true && diary === false && user === true && tag === false) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "user":
+  //             [
+
+  //               {
+  //                 $lookup: {
+  //                   from: "userauths",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "username": {
+  //                           $regex: key,
+  //                           $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         kampretos: { $toLower: "$username" }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$kampretos", key]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length:
+  //                         {
+  //                           $cond: [
+  //                             {
+  //                               ifnull: ['$username', false]
+  //                             },
+  //                             {
+  //                               $strLenCP: "$username"
+  //                             },
+  //                             0
+  //                           ]
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ],
+  //                   as: "userAuth"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userAuth",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "userbasics",
+  //                   as: "userBasic",
+  //                   let: {
+  //                     localID: '$userAuth.email'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "fullName": 1,
+  //                         "profilePict": 1,
+  //                         "isCelebrity": 1,
+  //                         "isIdVerified": 1,
+  //                         "isPrivate": 1,
+  //                         "urluserBadge":
+  //                         {
+  //                           "$filter":
+  //                           {
+  //                             input: "$userBadge",
+  //                             as: "listbadge",
+  //                             cond:
+  //                             {
+  //                               "$and":
+  //                                 [
+  //                                   {
+  //                                     "$eq":
+  //                                       [
+  //                                         "$$listbadge.isActive", true
+  //                                       ]
+  //                                   },
+  //                                   {
+  //                                     "$lte": [
+  //                                       {
+  //                                         "$dateToString": {
+  //                                           "format": "%Y-%m-%d %H:%M:%S",
+  //                                           "date": {
+  //                                             "$add": [
+  //                                               new Date(),
+  //                                               25200000
+  //                                             ]
+  //                                           }
+  //                                         }
+  //                                       },
+  //                                       "$$listbadge.endDatetime"
+  //                                     ]
+  //                                   }
+  //                                 ]
+  //                             }
+  //                           }
+  //                         },
+  //                       },
+
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userBasic",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediaprofilepicts",
+  //                   as: "avatar",
+  //                   let: {
+  //                     localID: '$userBasic.profilePict.$id'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$mediaID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "mediaBasePath": 1,
+  //                         "mediaUri": 1,
+  //                         "originalName": 1,
+  //                         "fsSourceUri": 1,
+  //                         "fsSourceName": 1,
+  //                         "fsTargetUri": 1,
+  //                         "mediaType": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/profilepict/", "$mediaID"]
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ],
+
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "friend_list",
+  //                   as: "friend",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $or: [
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$localID']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": email
+  //                               }
+  //                             ]
+  //                           },
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$user']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": '$userAuth.email'
+  //                               }
+  //                             ]
+  //                           }
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         friend:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $size: '$friendlist'
+  //                               }, 0]
+  //                             },
+  //                             then: 3,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "follower",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "receiverParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWER",
+
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         follower:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 2,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "following",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "senderParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWING"
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         following:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 1,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $project: {
+  //                   "dodol": {
+  //                     $ifNull: ["$userAuth.username", "kosong"]
+  //                   },
+  //                   "friend": {
+  //                     $arrayElemAt: ["$friend.friend", 0]
+  //                   },
+  //                   "follower":
+  //                   {
+  //                     $arrayElemAt: ["$follower.follower", 0]
+  //                   },
+  //                   "following":
+  //                   {
+  //                     $arrayElemAt: ["$following.following", 0]
+  //                   },
+  //                   "statusEN":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "FRIEND",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "FOLLOWING",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "FOLLOWER",
+  //                               else: "NOT CONNECTED"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "statusID":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "PERTEMANAN",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "MENGIKUTI",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "PENGIKUT",
+  //                               else: "BELUM TERHUBUNG"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "fullName": "$userBasic.fullName",
+  //                   "profilePict": "$userBasic.profilePict",
+  //                   "profilePicts": "$userBasic.profilePicts",
+  //                   "username": "$userAuth.username",
+  //                   "length": "$userAuth.length",
+  //                   "score": "$userAuth.score",
+  //                   "totScore": {
+  //                     $sum: [{
+  //                       $arrayElemAt: ["$friend.friend", 0]
+  //                     }, "$userAuth.score"]
+  //                   },
+  //                   "email": "$userAuth.email",
+  //                   "avatar":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $eq: [{
+  //                           $arrayElemAt: ["$avatar.mediaType", {
+  //                             "$indexOfArray": [
+  //                               "$avatar.mediaID",
+  //                               '$userBasic.profilePict.$id'
+  //                             ]
+  //                           }]
+  //                         }, "image"]
+  //                       },
+  //                       then: "$avatar",
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "urluserBadge":
+  //                   {
+  //                     "$ifNull":
+  //                       [
+  //                         {
+  //                           "$arrayElemAt":
+  //                             [
+  //                               "$userBasic.urluserBadge", 0
+  //                             ]
+  //                         },
+  //                         null
+  //                       ]
+  //                   }
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   friend: - 1,
+  //                   follower: - 1,
+  //                   following: - 1,
+
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ],
+  //           //pict
+  //           "vid":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   let: {
+  //                     name: "$dedy"
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "vid"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreVid": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreVid: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediavideos",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreVid": "$pict.scoreVid",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreVid: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           user:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: [{
+  //                   $arrayElemAt: ["$user.dodol", 0]
+  //                 }, "kosong"]
+  //               },
+  //               then: "$saassaas",
+  //               else: "$user"
+  //             }
+  //           },
+  //           vid: "$vid",
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === false && vid === false && diary === true && user === true && tag === false) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "user":
+  //             [
+
+  //               {
+  //                 $lookup: {
+  //                   from: "userauths",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "username": {
+  //                           $regex: key,
+  //                           $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         kampretos: { $toLower: "$username" }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$kampretos", key]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length:
+  //                         {
+  //                           $cond: [
+  //                             {
+  //                               ifnull: ['$username', false]
+  //                             },
+  //                             {
+  //                               $strLenCP: "$username"
+  //                             },
+  //                             0
+  //                           ]
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ],
+  //                   as: "userAuth"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userAuth",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "userbasics",
+  //                   as: "userBasic",
+  //                   let: {
+  //                     localID: '$userAuth.email'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "fullName": 1,
+  //                         "profilePict": 1,
+  //                         "isCelebrity": 1,
+  //                         "isIdVerified": 1,
+  //                         "isPrivate": 1,
+  //                         "urluserBadge":
+  //                         {
+  //                           "$filter":
+  //                           {
+  //                             input: "$userBadge",
+  //                             as: "listbadge",
+  //                             cond:
+  //                             {
+  //                               "$and":
+  //                                 [
+  //                                   {
+  //                                     "$eq":
+  //                                       [
+  //                                         "$$listbadge.isActive", true
+  //                                       ]
+  //                                   },
+  //                                   {
+  //                                     "$lte": [
+  //                                       {
+  //                                         "$dateToString": {
+  //                                           "format": "%Y-%m-%d %H:%M:%S",
+  //                                           "date": {
+  //                                             "$add": [
+  //                                               new Date(),
+  //                                               25200000
+  //                                             ]
+  //                                           }
+  //                                         }
+  //                                       },
+  //                                       "$$listbadge.endDatetime"
+  //                                     ]
+  //                                   }
+  //                                 ]
+  //                             }
+  //                           }
+  //                         },
+  //                       },
+
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userBasic",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediaprofilepicts",
+  //                   as: "avatar",
+  //                   let: {
+  //                     localID: '$userBasic.profilePict.$id'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$mediaID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "mediaBasePath": 1,
+  //                         "mediaUri": 1,
+  //                         "originalName": 1,
+  //                         "fsSourceUri": 1,
+  //                         "fsSourceName": 1,
+  //                         "fsTargetUri": 1,
+  //                         "mediaType": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/profilepict/", "$mediaID"]
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ],
+
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "friend_list",
+  //                   as: "friend",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $or: [
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$localID']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": email
+  //                               }
+  //                             ]
+  //                           },
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$user']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": '$userAuth.email'
+  //                               }
+  //                             ]
+  //                           }
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         friend:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $size: '$friendlist'
+  //                               }, 0]
+  //                             },
+  //                             then: 3,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "follower",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "receiverParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWER",
+
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         follower:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 2,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "following",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "senderParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWING"
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         following:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 1,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $project: {
+  //                   "dodol": {
+  //                     $ifNull: ["$userAuth.username", "kosong"]
+  //                   },
+  //                   "friend": {
+  //                     $arrayElemAt: ["$friend.friend", 0]
+  //                   },
+  //                   "follower":
+  //                   {
+  //                     $arrayElemAt: ["$follower.follower", 0]
+  //                   },
+  //                   "following":
+  //                   {
+  //                     $arrayElemAt: ["$following.following", 0]
+  //                   },
+  //                   "statusEN":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "FRIEND",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "FOLLOWING",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "FOLLOWER",
+  //                               else: "NOT CONNECTED"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "statusID":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "PERTEMANAN",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "MENGIKUTI",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "PENGIKUT",
+  //                               else: "BELUM TERHUBUNG"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "fullName": "$userBasic.fullName",
+  //                   "profilePict": "$userBasic.profilePict",
+  //                   "profilePicts": "$userBasic.profilePicts",
+  //                   "username": "$userAuth.username",
+  //                   "length": "$userAuth.length",
+  //                   "score": "$userAuth.score",
+  //                   "totScore": {
+  //                     $sum: [{
+  //                       $arrayElemAt: ["$friend.friend", 0]
+  //                     }, "$userAuth.score"]
+  //                   },
+  //                   "email": "$userAuth.email",
+  //                   "avatar":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $eq: [{
+  //                           $arrayElemAt: ["$avatar.mediaType", {
+  //                             "$indexOfArray": [
+  //                               "$avatar.mediaID",
+  //                               '$userBasic.profilePict.$id'
+  //                             ]
+  //                           }]
+  //                         }, "image"]
+  //                       },
+  //                       then: "$avatar",
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "urluserBadge":
+  //                   {
+  //                     "$ifNull":
+  //                       [
+  //                         {
+  //                           "$arrayElemAt":
+  //                             [
+  //                               "$userBasic.urluserBadge", 0
+  //                             ]
+  //                         },
+  //                         null
+  //                       ]
+  //                   }
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   friend: - 1,
+  //                   follower: - 1,
+  //                   following: - 1,
+
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ],
+  //           "diary":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "diary"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreDiary": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreDiary: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediadiaries",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreDiary": "$pict.scoreDiary",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreDiary: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           user:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: [{
+  //                   $arrayElemAt: ["$user.dodol", 0]
+  //                 }, "kosong"]
+  //               },
+  //               then: "$saassaas",
+  //               else: "$user"
+  //             }
+  //           },
+  //           diary: "$diary"
+  //         }
+  //       });
+  //   }
+  //   else if (pict === true && vid === true && diary === false && user === true && tag === false) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "user":
+  //             [
+
+  //               {
+  //                 $lookup: {
+  //                   from: "userauths",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "username": {
+  //                           $regex: key,
+  //                           $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         kampretos: { $toLower: "$username" }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$kampretos", key]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length:
+  //                         {
+  //                           $cond: [
+  //                             {
+  //                               ifnull: ['$username', false]
+  //                             },
+  //                             {
+  //                               $strLenCP: "$username"
+  //                             },
+  //                             0
+  //                           ]
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ],
+  //                   as: "userAuth"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userAuth",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "userbasics",
+  //                   as: "userBasic",
+  //                   let: {
+  //                     localID: '$userAuth.email'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "fullName": 1,
+  //                         "profilePict": 1,
+  //                         "isCelebrity": 1,
+  //                         "isIdVerified": 1,
+  //                         "isPrivate": 1,
+  //                         "urluserBadge":
+  //                         {
+  //                           "$filter":
+  //                           {
+  //                             input: "$userBadge",
+  //                             as: "listbadge",
+  //                             cond:
+  //                             {
+  //                               "$and":
+  //                                 [
+  //                                   {
+  //                                     "$eq":
+  //                                       [
+  //                                         "$$listbadge.isActive", true
+  //                                       ]
+  //                                   },
+  //                                   {
+  //                                     "$lte": [
+  //                                       {
+  //                                         "$dateToString": {
+  //                                           "format": "%Y-%m-%d %H:%M:%S",
+  //                                           "date": {
+  //                                             "$add": [
+  //                                               new Date(),
+  //                                               25200000
+  //                                             ]
+  //                                           }
+  //                                         }
+  //                                       },
+  //                                       "$$listbadge.endDatetime"
+  //                                     ]
+  //                                   }
+  //                                 ]
+  //                             }
+  //                           }
+  //                         },
+  //                       },
+
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userBasic",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediaprofilepicts",
+  //                   as: "avatar",
+  //                   let: {
+  //                     localID: '$userBasic.profilePict.$id'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$mediaID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "mediaBasePath": 1,
+  //                         "mediaUri": 1,
+  //                         "originalName": 1,
+  //                         "fsSourceUri": 1,
+  //                         "fsSourceName": 1,
+  //                         "fsTargetUri": 1,
+  //                         "mediaType": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/profilepict/", "$mediaID"]
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ],
+
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "friend_list",
+  //                   as: "friend",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $or: [
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$localID']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": email
+  //                               }
+  //                             ]
+  //                           },
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$user']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": '$userAuth.email'
+  //                               }
+  //                             ]
+  //                           }
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         friend:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $size: '$friendlist'
+  //                               }, 0]
+  //                             },
+  //                             then: 3,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "follower",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "receiverParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWER",
+
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         follower:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 2,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "following",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "senderParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWING"
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         following:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 1,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $project: {
+  //                   "dodol": {
+  //                     $ifNull: ["$userAuth.username", "kosong"]
+  //                   },
+  //                   "friend": {
+  //                     $arrayElemAt: ["$friend.friend", 0]
+  //                   },
+  //                   "follower":
+  //                   {
+  //                     $arrayElemAt: ["$follower.follower", 0]
+  //                   },
+  //                   "following":
+  //                   {
+  //                     $arrayElemAt: ["$following.following", 0]
+  //                   },
+  //                   "statusEN":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "FRIEND",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "FOLLOWING",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "FOLLOWER",
+  //                               else: "NOT CONNECTED"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "statusID":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "PERTEMANAN",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "MENGIKUTI",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "PENGIKUT",
+  //                               else: "BELUM TERHUBUNG"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "fullName": "$userBasic.fullName",
+  //                   "profilePict": "$userBasic.profilePict",
+  //                   "profilePicts": "$userBasic.profilePicts",
+  //                   "username": "$userAuth.username",
+  //                   "length": "$userAuth.length",
+  //                   "score": "$userAuth.score",
+  //                   "totScore": {
+  //                     $sum: [{
+  //                       $arrayElemAt: ["$friend.friend", 0]
+  //                     }, "$userAuth.score"]
+  //                   },
+  //                   "email": "$userAuth.email",
+  //                   "avatar":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $eq: [{
+  //                           $arrayElemAt: ["$avatar.mediaType", {
+  //                             "$indexOfArray": [
+  //                               "$avatar.mediaID",
+  //                               '$userBasic.profilePict.$id'
+  //                             ]
+  //                           }]
+  //                         }, "image"]
+  //                       },
+  //                       then: "$avatar",
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "urluserBadge":
+  //                   {
+  //                     "$ifNull":
+  //                       [
+  //                         {
+  //                           "$arrayElemAt":
+  //                             [
+  //                               "$userBasic.urluserBadge", 0
+  //                             ]
+  //                         },
+  //                         null
+  //                       ]
+  //                   }
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   friend: - 1,
+  //                   follower: - 1,
+  //                   following: - 1,
+
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ],
+  //           //pict
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+  //           "vid":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   let: {
+  //                     name: "$dedy"
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "vid"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreVid": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreVid: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediavideos",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreVid": "$pict.scoreVid",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreVid: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           user:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: [{
+  //                   $arrayElemAt: ["$user.dodol", 0]
+  //                 }, "kosong"]
+  //               },
+  //               then: "$saassaas",
+  //               else: "$user"
+  //             }
+  //           },
+  //           pict: "$pict",
+  //           vid: "$vid",
+
+  //         }
+  //       });
+
+  //   }
+  //   else if (pict === true && vid === false && diary === true && user === true && tag === false) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "user":
+  //             [
+
+  //               {
+  //                 $lookup: {
+  //                   from: "userauths",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "username": {
+  //                           $regex: key,
+  //                           $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         kampretos: { $toLower: "$username" }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$kampretos", key]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length:
+  //                         {
+  //                           $cond: [
+  //                             {
+  //                               ifnull: ['$username', false]
+  //                             },
+  //                             {
+  //                               $strLenCP: "$username"
+  //                             },
+  //                             0
+  //                           ]
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ],
+  //                   as: "userAuth"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userAuth",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "userbasics",
+  //                   as: "userBasic",
+  //                   let: {
+  //                     localID: '$userAuth.email'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "fullName": 1,
+  //                         "profilePict": 1,
+  //                         "isCelebrity": 1,
+  //                         "isIdVerified": 1,
+  //                         "isPrivate": 1,
+  //                         "urluserBadge":
+  //                         {
+  //                           "$filter":
+  //                           {
+  //                             input: "$userBadge",
+  //                             as: "listbadge",
+  //                             cond:
+  //                             {
+  //                               "$and":
+  //                                 [
+  //                                   {
+  //                                     "$eq":
+  //                                       [
+  //                                         "$$listbadge.isActive", true
+  //                                       ]
+  //                                   },
+  //                                   {
+  //                                     "$lte": [
+  //                                       {
+  //                                         "$dateToString": {
+  //                                           "format": "%Y-%m-%d %H:%M:%S",
+  //                                           "date": {
+  //                                             "$add": [
+  //                                               new Date(),
+  //                                               25200000
+  //                                             ]
+  //                                           }
+  //                                         }
+  //                                       },
+  //                                       "$$listbadge.endDatetime"
+  //                                     ]
+  //                                   }
+  //                                 ]
+  //                             }
+  //                           }
+  //                         },
+  //                       },
+
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userBasic",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediaprofilepicts",
+  //                   as: "avatar",
+  //                   let: {
+  //                     localID: '$userBasic.profilePict.$id'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$mediaID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "mediaBasePath": 1,
+  //                         "mediaUri": 1,
+  //                         "originalName": 1,
+  //                         "fsSourceUri": 1,
+  //                         "fsSourceName": 1,
+  //                         "fsTargetUri": 1,
+  //                         "mediaType": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/profilepict/", "$mediaID"]
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ],
+
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "friend_list",
+  //                   as: "friend",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $or: [
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$localID']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": email
+  //                               }
+  //                             ]
+  //                           },
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$user']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": '$userAuth.email'
+  //                               }
+  //                             ]
+  //                           }
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         friend:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $size: '$friendlist'
+  //                               }, 0]
+  //                             },
+  //                             then: 3,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "follower",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "receiverParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWER",
+
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         follower:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 2,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "following",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "senderParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWING"
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         following:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 1,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $project: {
+  //                   "dodol": {
+  //                     $ifNull: ["$userAuth.username", "kosong"]
+  //                   },
+  //                   "friend": {
+  //                     $arrayElemAt: ["$friend.friend", 0]
+  //                   },
+  //                   "follower":
+  //                   {
+  //                     $arrayElemAt: ["$follower.follower", 0]
+  //                   },
+  //                   "following":
+  //                   {
+  //                     $arrayElemAt: ["$following.following", 0]
+  //                   },
+  //                   "statusEN":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "FRIEND",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "FOLLOWING",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "FOLLOWER",
+  //                               else: "NOT CONNECTED"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "statusID":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "PERTEMANAN",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "MENGIKUTI",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "PENGIKUT",
+  //                               else: "BELUM TERHUBUNG"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "fullName": "$userBasic.fullName",
+  //                   "profilePict": "$userBasic.profilePict",
+  //                   "profilePicts": "$userBasic.profilePicts",
+  //                   "username": "$userAuth.username",
+  //                   "length": "$userAuth.length",
+  //                   "score": "$userAuth.score",
+  //                   "totScore": {
+  //                     $sum: [{
+  //                       $arrayElemAt: ["$friend.friend", 0]
+  //                     }, "$userAuth.score"]
+  //                   },
+  //                   "email": "$userAuth.email",
+  //                   "avatar":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $eq: [{
+  //                           $arrayElemAt: ["$avatar.mediaType", {
+  //                             "$indexOfArray": [
+  //                               "$avatar.mediaID",
+  //                               '$userBasic.profilePict.$id'
+  //                             ]
+  //                           }]
+  //                         }, "image"]
+  //                       },
+  //                       then: "$avatar",
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "urluserBadge":
+  //                   {
+  //                     "$ifNull":
+  //                       [
+  //                         {
+  //                           "$arrayElemAt":
+  //                             [
+  //                               "$userBasic.urluserBadge", 0
+  //                             ]
+  //                         },
+  //                         null
+  //                       ]
+  //                   }
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   friend: - 1,
+  //                   follower: - 1,
+  //                   following: - 1,
+
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ],
+  //           //pict
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+  //           "diary":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "diary"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreDiary": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreDiary: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediadiaries",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreDiary": "$pict.scoreDiary",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreDiary: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           user:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: [{
+  //                   $arrayElemAt: ["$user.dodol", 0]
+  //                 }, "kosong"]
+  //               },
+  //               then: "$saassaas",
+  //               else: "$user"
+  //             }
+  //           },
+  //           pict: "$pict",
+  //           diary: "$diary",
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === false && vid === true && diary === true && user === true && tag === false) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "user":
+  //             [
+
+  //               {
+  //                 $lookup: {
+  //                   from: "userauths",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "username": {
+  //                           $regex: key,
+  //                           $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         kampretos: { $toLower: "$username" }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$kampretos", key]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length:
+  //                         {
+  //                           $cond: [
+  //                             {
+  //                               ifnull: ['$username', false]
+  //                             },
+  //                             {
+  //                               $strLenCP: "$username"
+  //                             },
+  //                             0
+  //                           ]
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ],
+  //                   as: "userAuth"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userAuth",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "userbasics",
+  //                   as: "userBasic",
+  //                   let: {
+  //                     localID: '$userAuth.email'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "fullName": 1,
+  //                         "profilePict": 1,
+  //                         "isCelebrity": 1,
+  //                         "isIdVerified": 1,
+  //                         "isPrivate": 1,
+  //                         "urluserBadge":
+  //                         {
+  //                           "$filter":
+  //                           {
+  //                             input: "$userBadge",
+  //                             as: "listbadge",
+  //                             cond:
+  //                             {
+  //                               "$and":
+  //                                 [
+  //                                   {
+  //                                     "$eq":
+  //                                       [
+  //                                         "$$listbadge.isActive", true
+  //                                       ]
+  //                                   },
+  //                                   {
+  //                                     "$lte": [
+  //                                       {
+  //                                         "$dateToString": {
+  //                                           "format": "%Y-%m-%d %H:%M:%S",
+  //                                           "date": {
+  //                                             "$add": [
+  //                                               new Date(),
+  //                                               25200000
+  //                                             ]
+  //                                           }
+  //                                         }
+  //                                       },
+  //                                       "$$listbadge.endDatetime"
+  //                                     ]
+  //                                   }
+  //                                 ]
+  //                             }
+  //                           }
+  //                         },
+  //                       },
+
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userBasic",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediaprofilepicts",
+  //                   as: "avatar",
+  //                   let: {
+  //                     localID: '$userBasic.profilePict.$id'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$mediaID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "mediaBasePath": 1,
+  //                         "mediaUri": 1,
+  //                         "originalName": 1,
+  //                         "fsSourceUri": 1,
+  //                         "fsSourceName": 1,
+  //                         "fsTargetUri": 1,
+  //                         "mediaType": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/profilepict/", "$mediaID"]
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ],
+
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "friend_list",
+  //                   as: "friend",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $or: [
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$localID']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": email
+  //                               }
+  //                             ]
+  //                           },
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$user']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": '$userAuth.email'
+  //                               }
+  //                             ]
+  //                           }
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         friend:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $size: '$friendlist'
+  //                               }, 0]
+  //                             },
+  //                             then: 3,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "follower",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "receiverParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWER",
+
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         follower:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 2,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "following",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "senderParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWING"
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         following:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 1,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $project: {
+  //                   "dodol": {
+  //                     $ifNull: ["$userAuth.username", "kosong"]
+  //                   },
+  //                   "friend": {
+  //                     $arrayElemAt: ["$friend.friend", 0]
+  //                   },
+  //                   "follower":
+  //                   {
+  //                     $arrayElemAt: ["$follower.follower", 0]
+  //                   },
+  //                   "following":
+  //                   {
+  //                     $arrayElemAt: ["$following.following", 0]
+  //                   },
+  //                   "statusEN":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "FRIEND",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "FOLLOWING",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "FOLLOWER",
+  //                               else: "NOT CONNECTED"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "statusID":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "PERTEMANAN",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "MENGIKUTI",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "PENGIKUT",
+  //                               else: "BELUM TERHUBUNG"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "fullName": "$userBasic.fullName",
+  //                   "profilePict": "$userBasic.profilePict",
+  //                   "profilePicts": "$userBasic.profilePicts",
+  //                   "username": "$userAuth.username",
+  //                   "length": "$userAuth.length",
+  //                   "score": "$userAuth.score",
+  //                   "totScore": {
+  //                     $sum: [{
+  //                       $arrayElemAt: ["$friend.friend", 0]
+  //                     }, "$userAuth.score"]
+  //                   },
+  //                   "email": "$userAuth.email",
+  //                   "avatar":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $eq: [{
+  //                           $arrayElemAt: ["$avatar.mediaType", {
+  //                             "$indexOfArray": [
+  //                               "$avatar.mediaID",
+  //                               '$userBasic.profilePict.$id'
+  //                             ]
+  //                           }]
+  //                         }, "image"]
+  //                       },
+  //                       then: "$avatar",
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "urluserBadge":
+  //                   {
+  //                     "$ifNull":
+  //                       [
+  //                         {
+  //                           "$arrayElemAt":
+  //                             [
+  //                               "$userBasic.urluserBadge", 0
+  //                             ]
+  //                         },
+  //                         null
+  //                       ]
+  //                   }
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   friend: - 1,
+  //                   follower: - 1,
+  //                   following: - 1,
+
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ],
+  //           "vid":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   let: {
+  //                     name: "$dedy"
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "vid"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreVid": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreVid: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediavideos",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreVid": "$pict.scoreVid",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreVid: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+  //           "diary":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "diary"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreDiary": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreDiary: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediadiaries",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreDiary": "$pict.scoreDiary",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreDiary: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+
+
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           user:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: [{
+  //                   $arrayElemAt: ["$user.dodol", 0]
+  //                 }, "kosong"]
+  //               },
+  //               then: "$saassaas",
+  //               else: "$user"
+  //             }
+  //           },
+  //           vid: "$vid",
+  //           diary: "$diary",
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === true && vid === true && diary === true && user === true && tag === false) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "user":
+  //             [
+
+  //               {
+  //                 $lookup: {
+  //                   from: "userauths",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "username": {
+  //                           $regex: key,
+  //                           $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         kampretos: { $toLower: "$username" }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$kampretos", key]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length:
+  //                         {
+  //                           $cond: [
+  //                             {
+  //                               ifnull: ['$username', false]
+  //                             },
+  //                             {
+  //                               $strLenCP: "$username"
+  //                             },
+  //                             0
+  //                           ]
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ],
+  //                   as: "userAuth"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userAuth",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "userbasics",
+  //                   as: "userBasic",
+  //                   let: {
+  //                     localID: '$userAuth.email'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "fullName": 1,
+  //                         "profilePict": 1,
+  //                         "isCelebrity": 1,
+  //                         "isIdVerified": 1,
+  //                         "isPrivate": 1,
+  //                         "urluserBadge":
+  //                         {
+  //                           "$filter":
+  //                           {
+  //                             input: "$userBadge",
+  //                             as: "listbadge",
+  //                             cond:
+  //                             {
+  //                               "$and":
+  //                                 [
+  //                                   {
+  //                                     "$eq":
+  //                                       [
+  //                                         "$$listbadge.isActive", true
+  //                                       ]
+  //                                   },
+  //                                   {
+  //                                     "$lte": [
+  //                                       {
+  //                                         "$dateToString": {
+  //                                           "format": "%Y-%m-%d %H:%M:%S",
+  //                                           "date": {
+  //                                             "$add": [
+  //                                               new Date(),
+  //                                               25200000
+  //                                             ]
+  //                                           }
+  //                                         }
+  //                                       },
+  //                                       "$$listbadge.endDatetime"
+  //                                     ]
+  //                                   }
+  //                                 ]
+  //                             }
+  //                           }
+  //                         },
+  //                       },
+
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userBasic",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediaprofilepicts",
+  //                   as: "avatar",
+  //                   let: {
+  //                     localID: '$userBasic.profilePict.$id'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$mediaID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "mediaBasePath": 1,
+  //                         "mediaUri": 1,
+  //                         "originalName": 1,
+  //                         "fsSourceUri": 1,
+  //                         "fsSourceName": 1,
+  //                         "fsTargetUri": 1,
+  //                         "mediaType": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/profilepict/", "$mediaID"]
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ],
+
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "friend_list",
+  //                   as: "friend",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $or: [
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$localID']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": email
+  //                               }
+  //                             ]
+  //                           },
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$user']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": '$userAuth.email'
+  //                               }
+  //                             ]
+  //                           }
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         friend:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $size: '$friendlist'
+  //                               }, 0]
+  //                             },
+  //                             then: 3,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "follower",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "receiverParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWER",
+
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         follower:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 2,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "following",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "senderParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWING"
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         following:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 1,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $project: {
+  //                   "dodol": {
+  //                     $ifNull: ["$userAuth.username", "kosong"]
+  //                   },
+  //                   "friend": {
+  //                     $arrayElemAt: ["$friend.friend", 0]
+  //                   },
+  //                   "follower":
+  //                   {
+  //                     $arrayElemAt: ["$follower.follower", 0]
+  //                   },
+  //                   "following":
+  //                   {
+  //                     $arrayElemAt: ["$following.following", 0]
+  //                   },
+  //                   "statusEN":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "FRIEND",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "FOLLOWING",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "FOLLOWER",
+  //                               else: "NOT CONNECTED"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "statusID":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "PERTEMANAN",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "MENGIKUTI",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "PENGIKUT",
+  //                               else: "BELUM TERHUBUNG"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "fullName": "$userBasic.fullName",
+  //                   "profilePict": "$userBasic.profilePict",
+  //                   "profilePicts": "$userBasic.profilePicts",
+  //                   "username": "$userAuth.username",
+  //                   "length": "$userAuth.length",
+  //                   "score": "$userAuth.score",
+  //                   "totScore": {
+  //                     $sum: [{
+  //                       $arrayElemAt: ["$friend.friend", 0]
+  //                     }, "$userAuth.score"]
+  //                   },
+  //                   "email": "$userAuth.email",
+  //                   "avatar":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $eq: [{
+  //                           $arrayElemAt: ["$avatar.mediaType", {
+  //                             "$indexOfArray": [
+  //                               "$avatar.mediaID",
+  //                               '$userBasic.profilePict.$id'
+  //                             ]
+  //                           }]
+  //                         }, "image"]
+  //                       },
+  //                       then: "$avatar",
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "urluserBadge":
+  //                   {
+  //                     "$ifNull":
+  //                       [
+  //                         {
+  //                           "$arrayElemAt":
+  //                             [
+  //                               "$userBasic.urluserBadge", 0
+  //                             ]
+  //                         },
+  //                         null
+  //                       ]
+  //                   }
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   friend: - 1,
+  //                   follower: - 1,
+  //                   following: - 1,
+
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ],
+  //           //pict
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+  //           "vid":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   let: {
+  //                     name: "$dedy"
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "vid"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreVid": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreVid: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediavideos",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreVid": "$pict.scoreVid",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreVid: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+  //           "diary":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "diary"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreDiary": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreDiary: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediadiaries",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreDiary": "$pict.scoreDiary",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreDiary: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+
+
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           user:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: [{
+  //                   $arrayElemAt: ["$user.dodol", 0]
+  //                 }, "kosong"]
+  //               },
+  //               then: "$saassaas",
+  //               else: "$user"
+  //             }
+  //           },
+  //           pict: "$pict",
+  //           vid: "$vid",
+  //           diary: "$diary",
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === false && vid === false && diary === false && user === true && tag === false) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "user":
+  //             [
+
+  //               {
+  //                 $lookup: {
+  //                   from: "userauths",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "username": {
+  //                           $regex: key,
+  //                           $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         kampretos: { $toLower: "$username" }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$kampretos", key]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length:
+  //                         {
+  //                           $cond: [
+  //                             {
+  //                               ifnull: ['$username', false]
+  //                             },
+  //                             {
+  //                               $strLenCP: "$username"
+  //                             },
+  //                             0
+  //                           ]
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ],
+  //                   as: "userAuth"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userAuth",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "userbasics",
+  //                   as: "userBasic",
+  //                   let: {
+  //                     localID: '$userAuth.email'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "fullName": 1,
+  //                         "profilePict": 1,
+  //                         "isCelebrity": 1,
+  //                         "isIdVerified": 1,
+  //                         "isPrivate": 1,
+  //                         "urluserBadge":
+  //                         {
+  //                           "$filter":
+  //                           {
+  //                             input: "$userBadge",
+  //                             as: "listbadge",
+  //                             cond:
+  //                             {
+  //                               "$and":
+  //                                 [
+  //                                   {
+  //                                     "$eq":
+  //                                       [
+  //                                         "$$listbadge.isActive", true
+  //                                       ]
+  //                                   },
+  //                                   {
+  //                                     "$lte": [
+  //                                       {
+  //                                         "$dateToString": {
+  //                                           "format": "%Y-%m-%d %H:%M:%S",
+  //                                           "date": {
+  //                                             "$add": [
+  //                                               new Date(),
+  //                                               25200000
+  //                                             ]
+  //                                           }
+  //                                         }
+  //                                       },
+  //                                       "$$listbadge.endDatetime"
+  //                                     ]
+  //                                   }
+  //                                 ]
+  //                             }
+  //                           }
+  //                         },
+  //                       },
+
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userBasic",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediaprofilepicts",
+  //                   as: "avatar",
+  //                   let: {
+  //                     localID: '$userBasic.profilePict.$id'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$mediaID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "mediaBasePath": 1,
+  //                         "mediaUri": 1,
+  //                         "originalName": 1,
+  //                         "fsSourceUri": 1,
+  //                         "fsSourceName": 1,
+  //                         "fsTargetUri": 1,
+  //                         "mediaType": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/profilepict/", "$mediaID"]
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ],
+
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "friend_list",
+  //                   as: "friend",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $or: [
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$localID']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": email
+  //                               }
+  //                             ]
+  //                           },
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$user']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": '$userAuth.email'
+  //                               }
+  //                             ]
+  //                           }
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         friend:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $size: '$friendlist'
+  //                               }, 0]
+  //                             },
+  //                             then: 3,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "follower",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "receiverParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWER",
+
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         follower:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 2,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "following",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "senderParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWING"
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         following:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 1,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $project: {
+  //                   "dodol": {
+  //                     $ifNull: ["$userAuth.username", "kosong"]
+  //                   },
+  //                   "friend": {
+  //                     $arrayElemAt: ["$friend.friend", 0]
+  //                   },
+  //                   "follower":
+  //                   {
+  //                     $arrayElemAt: ["$follower.follower", 0]
+  //                   },
+  //                   "following":
+  //                   {
+  //                     $arrayElemAt: ["$following.following", 0]
+  //                   },
+  //                   "statusEN":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "FRIEND",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "FOLLOWING",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "FOLLOWER",
+  //                               else: "NOT CONNECTED"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "statusID":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "PERTEMANAN",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "MENGIKUTI",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "PENGIKUT",
+  //                               else: "BELUM TERHUBUNG"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "fullName": "$userBasic.fullName",
+  //                   "profilePict": "$userBasic.profilePict",
+  //                   "profilePicts": "$userBasic.profilePicts",
+  //                   "username": "$userAuth.username",
+  //                   "length": "$userAuth.length",
+  //                   "score": "$userAuth.score",
+  //                   "totScore": {
+  //                     $sum: [{
+  //                       $arrayElemAt: ["$friend.friend", 0]
+  //                     }, "$userAuth.score"]
+  //                   },
+  //                   "email": "$userAuth.email",
+  //                   "avatar":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $eq: [{
+  //                           $arrayElemAt: ["$avatar.mediaType", {
+  //                             "$indexOfArray": [
+  //                               "$avatar.mediaID",
+  //                               '$userBasic.profilePict.$id'
+  //                             ]
+  //                           }]
+  //                         }, "image"]
+  //                       },
+  //                       then: "$avatar",
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "urluserBadge":
+  //                   {
+  //                     "$ifNull":
+  //                       [
+  //                         {
+  //                           "$arrayElemAt":
+  //                             [
+  //                               "$userBasic.urluserBadge", 0
+  //                             ]
+  //                         },
+  //                         null
+  //                       ]
+  //                   }
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   friend: - 1,
+  //                   follower: - 1,
+  //                   following: - 1,
+
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ],
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           user:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: [{
+  //                   $arrayElemAt: ["$user.dodol", 0]
+  //                 }, "kosong"]
+  //               },
+  //               then: "$saassaas",
+  //               else: "$user"
+  //             }
+  //           },
+  //         }
+  //       });
+  //   }
+  //   else if (pict === false && vid === true && diary === false && user === false && tag === false) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+
+  //           "vid":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   let: {
+  //                     name: "$dedy"
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "vid"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreVid": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreVid: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediavideos",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreVid": "$pict.scoreVid",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreVid: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+
+  //           vid: "$vid",
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === true && vid === false && diary === false && user === false && tag === false) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           //pict
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+
+  //           pict: "$pict"
+  //         }
+  //       });
+  //   }
+  //   else if (pict === false && vid === false && diary === true && user === false && tag === false) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+
+  //           "diary":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "diary"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreDiary": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreDiary: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediadiaries",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreDiary": "$pict.scoreDiary",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreDiary: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+
+
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+
+  //           diary: "$diary",
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === false && vid === false && diary === false && user === false && tag === true) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "tags":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "tag_count",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "_id": {
+  //                           $regex: key, $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$_id", "de"]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length: {
+  //                           $strLenCP: "$_id"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         dodol: "kancut"
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         name: "$_id",
+  //                         total: 1,
+  //                         score: 1,
+  //                         length: 1,
+  //                         dodol: {
+  //                           $ifNull: ["$_id", "kosong"]
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ],
+  //                   as: "tag"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$tag",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 $project: {
+  //                   tag: "$tag.name",
+  //                   total: "$tag.total",
+  //                   score: "$tag.score",
+  //                   length: "$tag.length",
+  //                   dodol: "$tag.dodol",
+
+  //                 },
+
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   total: - 1
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           dodol: "$tags.dodol",
+  //           tags:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{ $size: "$tags.dodol" }, 0]
+  //               },
+  //               then: "$tags",
+  //               else: "$tagsssdsd"
+  //             }
+  //           },
+
+  //         }
+  //       });
+  //   }
+
+  //   else if (pict === false && vid === false && diary === false && user === true && tag === true) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "user":
+  //             [
+
+  //               {
+  //                 $lookup: {
+  //                   from: "userauths",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "username": {
+  //                           $regex: key,
+  //                           $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         kampretos: { $toLower: "$username" }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$kampretos", key]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length:
+  //                         {
+  //                           $cond: [
+  //                             {
+  //                               ifnull: ['$username', false]
+  //                             },
+  //                             {
+  //                               $strLenCP: "$username"
+  //                             },
+  //                             0
+  //                           ]
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ],
+  //                   as: "userAuth"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userAuth",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "userbasics",
+  //                   as: "userBasic",
+  //                   let: {
+  //                     localID: '$userAuth.email'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "fullName": 1,
+  //                         "profilePict": 1,
+  //                         "isCelebrity": 1,
+  //                         "isIdVerified": 1,
+  //                         "isPrivate": 1,
+  //                         "urluserBadge":
+  //                         {
+  //                           "$filter":
+  //                           {
+  //                             input: "$userBadge",
+  //                             as: "listbadge",
+  //                             cond:
+  //                             {
+  //                               "$and":
+  //                                 [
+  //                                   {
+  //                                     "$eq":
+  //                                       [
+  //                                         "$$listbadge.isActive", true
+  //                                       ]
+  //                                   },
+  //                                   {
+  //                                     "$lte": [
+  //                                       {
+  //                                         "$dateToString": {
+  //                                           "format": "%Y-%m-%d %H:%M:%S",
+  //                                           "date": {
+  //                                             "$add": [
+  //                                               new Date(),
+  //                                               25200000
+  //                                             ]
+  //                                           }
+  //                                         }
+  //                                       },
+  //                                       "$$listbadge.endDatetime"
+  //                                     ]
+  //                                   }
+  //                                 ]
+  //                             }
+  //                           }
+  //                         },
+  //                       },
+
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userBasic",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediaprofilepicts",
+  //                   as: "avatar",
+  //                   let: {
+  //                     localID: '$userBasic.profilePict.$id'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$mediaID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "mediaBasePath": 1,
+  //                         "mediaUri": 1,
+  //                         "originalName": 1,
+  //                         "fsSourceUri": 1,
+  //                         "fsSourceName": 1,
+  //                         "fsTargetUri": 1,
+  //                         "mediaType": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/profilepict/", "$mediaID"]
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ],
+
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "friend_list",
+  //                   as: "friend",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $or: [
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$localID']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": email
+  //                               }
+  //                             ]
+  //                           },
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$user']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": '$userAuth.email'
+  //                               }
+  //                             ]
+  //                           }
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         friend:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $size: '$friendlist'
+  //                               }, 0]
+  //                             },
+  //                             then: 3,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "follower",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "receiverParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWER",
+
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         follower:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 2,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "following",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "senderParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWING"
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         following:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 1,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $project: {
+  //                   "dodol": {
+  //                     $ifNull: ["$userAuth.username", "kosong"]
+  //                   },
+  //                   "friend": {
+  //                     $arrayElemAt: ["$friend.friend", 0]
+  //                   },
+  //                   "follower":
+  //                   {
+  //                     $arrayElemAt: ["$follower.follower", 0]
+  //                   },
+  //                   "following":
+  //                   {
+  //                     $arrayElemAt: ["$following.following", 0]
+  //                   },
+  //                   "statusEN":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "FRIEND",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "FOLLOWING",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "FOLLOWER",
+  //                               else: "NOT CONNECTED"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "statusID":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "PERTEMANAN",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "MENGIKUTI",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "PENGIKUT",
+  //                               else: "BELUM TERHUBUNG"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "fullName": "$userBasic.fullName",
+  //                   "profilePict": "$userBasic.profilePict",
+  //                   "profilePicts": "$userBasic.profilePicts",
+  //                   "username": "$userAuth.username",
+  //                   "length": "$userAuth.length",
+  //                   "score": "$userAuth.score",
+  //                   "totScore": {
+  //                     $sum: [{
+  //                       $arrayElemAt: ["$friend.friend", 0]
+  //                     }, "$userAuth.score"]
+  //                   },
+  //                   "email": "$userAuth.email",
+  //                   "avatar":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $eq: [{
+  //                           $arrayElemAt: ["$avatar.mediaType", {
+  //                             "$indexOfArray": [
+  //                               "$avatar.mediaID",
+  //                               '$userBasic.profilePict.$id'
+  //                             ]
+  //                           }]
+  //                         }, "image"]
+  //                       },
+  //                       then: "$avatar",
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "urluserBadge":
+  //                   {
+  //                     "$ifNull":
+  //                       [
+  //                         {
+  //                           "$arrayElemAt":
+  //                             [
+  //                               "$userBasic.urluserBadge", 0
+  //                             ]
+  //                         },
+  //                         null
+  //                       ]
+  //                   }
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   friend: - 1,
+  //                   follower: - 1,
+  //                   following: - 1,
+
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ],
+  //           "tags":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "tag_count",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "_id": {
+  //                           $regex: key
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$_id", "de"]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length: {
+  //                           $strLenCP: "$_id"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         dodol: "kancut"
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         name: "$_id",
+  //                         total: 1,
+  //                         score: 1,
+  //                         length: 1,
+  //                         dodol: {
+  //                           $ifNull: ["$_id", "kosong"]
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ],
+  //                   as: "tag"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$tag",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 $project: {
+  //                   tag: "$tag.name",
+  //                   total: "$tag.total",
+  //                   score: "$tag.score",
+  //                   length: "$tag.length",
+  //                   dodol: "$tag.dodol",
+
+  //                 },
+
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   total: - 1
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           user:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: [{
+  //                   $arrayElemAt: ["$user.dodol", 0]
+  //                 }, "kosong"]
+  //               },
+  //               then: "$saassaas",
+  //               else: "$user"
+  //             }
+  //           },
+  //           dodol: "$tags.dodol",
+  //           tags:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{ $size: "$tags.dodol" }, 0]
+  //               },
+  //               then: "$tags",
+  //               else: "$tagsssdsd"
+  //             }
+  //           },
+  //         }
+  //       });
+  //   }
+  //   else if (pict === false && vid === false && diary === true && user === false && tag === true) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "diary":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "diary"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreDiary": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreDiary: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediadiaries",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreDiary": "$pict.scoreDiary",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreDiary: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+
+  //           "tags":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "tag_count",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "_id": {
+  //                           $regex: key, $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$_id", "de"]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length: {
+  //                           $strLenCP: "$_id"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         dodol: "kancut"
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         name: "$_id",
+  //                         total: 1,
+  //                         score: 1,
+  //                         length: 1,
+  //                         dodol: {
+  //                           $ifNull: ["$_id", "kosong"]
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ],
+  //                   as: "tag"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$tag",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 $project: {
+  //                   tag: "$tag.name",
+  //                   total: "$tag.total",
+  //                   score: "$tag.score",
+  //                   length: "$tag.length",
+  //                   dodol: "$tag.dodol",
+
+  //                 },
+
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   total: - 1
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+
+  //           diary: "$diary",
+  //           dodol: "$tags.dodol",
+  //           tags:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{ $size: "$tags.dodol" }, 0]
+  //               },
+  //               then: "$tags",
+  //               else: "$tagsssdsd"
+  //             }
+  //           },
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === false && vid === true && diary === false && user === false && tag === true) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "vid":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   let: {
+  //                     name: "$dedy"
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "vid"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreVid": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreVid: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediavideos",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreVid": "$pict.scoreVid",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreVid: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+  //           "tags":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "tag_count",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "_id": {
+  //                           $regex: key, $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$_id", "de"]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length: {
+  //                           $strLenCP: "$_id"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         dodol: "kancut"
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         name: "$_id",
+  //                         total: 1,
+  //                         score: 1,
+  //                         length: 1,
+  //                         dodol: {
+  //                           $ifNull: ["$_id", "kosong"]
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ],
+  //                   as: "tag"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$tag",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 $project: {
+  //                   tag: "$tag.name",
+  //                   total: "$tag.total",
+  //                   score: "$tag.score",
+  //                   length: "$tag.length",
+  //                   dodol: "$tag.dodol",
+
+  //                 },
+
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   total: - 1
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+
+  //           vid: "$vid",
+  //           dodol: "$tags.dodol",
+  //           tags:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{ $size: "$tags.dodol" }, 0]
+  //               },
+  //               then: "$tags",
+  //               else: "$tagsssdsd"
+  //             }
+  //           },
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === true && vid === false && diary === false && user === false && tag === true) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+  //           "tags":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "tag_count",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "_id": {
+  //                           $regex: key, $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$_id", "de"]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length: {
+  //                           $strLenCP: "$_id"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         dodol: "kancut"
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         name: "$_id",
+  //                         total: 1,
+  //                         score: 1,
+  //                         length: 1,
+  //                         dodol: {
+  //                           $ifNull: ["$_id", "kosong"]
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ],
+  //                   as: "tag"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$tag",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 $project: {
+  //                   tag: "$tag.name",
+  //                   total: "$tag.total",
+  //                   score: "$tag.score",
+  //                   length: "$tag.length",
+  //                   dodol: "$tag.dodol",
+
+  //                 },
+
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   total: - 1
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+
+  //           pict: "$pict",
+  //           dodol: "$tags.dodol",
+  //           tags:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{ $size: "$tags.dodol" }, 0]
+  //               },
+  //               then: "$tags",
+  //               else: "$tagsssdsd"
+  //             }
+  //           },
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === true && vid === true && diary === false && user === false && tag === true) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           //pict
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+  //           "vid":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   let: {
+  //                     name: "$dedy"
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "vid"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreVid": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreVid: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediavideos",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreVid": "$pict.scoreVid",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreVid: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+  //           "tags":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "tag_count",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "_id": {
+  //                           $regex: key, $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$_id", "de"]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length: {
+  //                           $strLenCP: "$_id"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         dodol: "kancut"
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         name: "$_id",
+  //                         total: 1,
+  //                         score: 1,
+  //                         length: 1,
+  //                         dodol: {
+  //                           $ifNull: ["$_id", "kosong"]
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ],
+  //                   as: "tag"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$tag",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 $project: {
+  //                   tag: "$tag.name",
+  //                   total: "$tag.total",
+  //                   score: "$tag.score",
+  //                   length: "$tag.length",
+  //                   dodol: "$tag.dodol",
+
+  //                 },
+
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   total: - 1
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+
+  //           pict: "$pict",
+  //           vid: "$vid",
+  //           dodol: "$tags.dodol",
+  //           tags:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{ $size: "$tags.dodol" }, 0]
+  //               },
+  //               then: "$tags",
+  //               else: "$tagsssdsd"
+  //             }
+  //           },
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === true && vid === true && diary === true && user === false && tag === true) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           //pict
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+  //           "vid":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   let: {
+  //                     name: "$dedy"
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "vid"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreVid": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreVid: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediavideos",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreVid": "$pict.scoreVid",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreVid: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+  //           "diary":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "diary"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreDiary": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreDiary: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediadiaries",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreDiary": "$pict.scoreDiary",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreDiary: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+
+  //           "tags":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "tag_count",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "_id": {
+  //                           $regex: key, $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$_id", "de"]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length: {
+  //                           $strLenCP: "$_id"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         dodol: "kancut"
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         name: "$_id",
+  //                         total: 1,
+  //                         score: 1,
+  //                         length: 1,
+  //                         dodol: {
+  //                           $ifNull: ["$_id", "kosong"]
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ],
+  //                   as: "tag"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$tag",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 $project: {
+  //                   tag: "$tag.name",
+  //                   total: "$tag.total",
+  //                   score: "$tag.score",
+  //                   length: "$tag.length",
+  //                   dodol: "$tag.dodol",
+
+  //                 },
+
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   total: - 1
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           pict: "$pict",
+  //           vid: "$vid",
+  //           diary: "$diary",
+  //           dodol: "$tags.dodol",
+  //           tags:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{ $size: "$tags.dodol" }, 0]
+  //               },
+  //               then: "$tags",
+  //               else: "$tagsssdsd"
+  //             }
+  //           },
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === true && vid === false && diary === true && user === false && tag === true) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           //pict
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+  //           "diary":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "diary"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreDiary": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreDiary: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediadiaries",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreDiary": "$pict.scoreDiary",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreDiary: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+
+  //           "tags":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "tag_count",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "_id": {
+  //                           $regex: key, $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$_id", "de"]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length: {
+  //                           $strLenCP: "$_id"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         dodol: "kancut"
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         name: "$_id",
+  //                         total: 1,
+  //                         score: 1,
+  //                         length: 1,
+  //                         dodol: {
+  //                           $ifNull: ["$_id", "kosong"]
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ],
+  //                   as: "tag"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$tag",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 $project: {
+  //                   tag: "$tag.name",
+  //                   total: "$tag.total",
+  //                   score: "$tag.score",
+  //                   length: "$tag.length",
+  //                   dodol: "$tag.dodol",
+
+  //                 },
+
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   total: - 1
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+
+  //           pict: "$pict",
+  //           diary: "$diary",
+  //           dodol: "$tags.dodol",
+  //           tags:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{ $size: "$tags.dodol" }, 0]
+  //               },
+  //               then: "$tags",
+  //               else: "$tagsssdsd"
+  //             }
+  //           },
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === true && vid === false && diary === false && user === true && tag === true) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "user":
+  //             [
+
+  //               {
+  //                 $lookup: {
+  //                   from: "userauths",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "username": {
+  //                           $regex: key,
+  //                           $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         kampretos: { $toLower: "$username" }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$kampretos", key]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length:
+  //                         {
+  //                           $cond: [
+  //                             {
+  //                               ifnull: ['$username', false]
+  //                             },
+  //                             {
+  //                               $strLenCP: "$username"
+  //                             },
+  //                             0
+  //                           ]
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ],
+  //                   as: "userAuth"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userAuth",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "userbasics",
+  //                   as: "userBasic",
+  //                   let: {
+  //                     localID: '$userAuth.email'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "fullName": 1,
+  //                         "profilePict": 1,
+  //                         "isCelebrity": 1,
+  //                         "isIdVerified": 1,
+  //                         "isPrivate": 1,
+  //                         "urluserBadge":
+  //                         {
+  //                           "$filter":
+  //                           {
+  //                             input: "$userBadge",
+  //                             as: "listbadge",
+  //                             cond:
+  //                             {
+  //                               "$and":
+  //                                 [
+  //                                   {
+  //                                     "$eq":
+  //                                       [
+  //                                         "$$listbadge.isActive", true
+  //                                       ]
+  //                                   },
+  //                                   {
+  //                                     "$lte": [
+  //                                       {
+  //                                         "$dateToString": {
+  //                                           "format": "%Y-%m-%d %H:%M:%S",
+  //                                           "date": {
+  //                                             "$add": [
+  //                                               new Date(),
+  //                                               25200000
+  //                                             ]
+  //                                           }
+  //                                         }
+  //                                       },
+  //                                       "$$listbadge.endDatetime"
+  //                                     ]
+  //                                   }
+  //                                 ]
+  //                             }
+  //                           }
+  //                         },
+  //                       },
+
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userBasic",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediaprofilepicts",
+  //                   as: "avatar",
+  //                   let: {
+  //                     localID: '$userBasic.profilePict.$id'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$mediaID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "mediaBasePath": 1,
+  //                         "mediaUri": 1,
+  //                         "originalName": 1,
+  //                         "fsSourceUri": 1,
+  //                         "fsSourceName": 1,
+  //                         "fsTargetUri": 1,
+  //                         "mediaType": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/profilepict/", "$mediaID"]
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ],
+
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "friend_list",
+  //                   as: "friend",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $or: [
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$localID']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": email
+  //                               }
+  //                             ]
+  //                           },
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$user']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": '$userAuth.email'
+  //                               }
+  //                             ]
+  //                           }
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         friend:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $size: '$friendlist'
+  //                               }, 0]
+  //                             },
+  //                             then: 3,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "follower",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "receiverParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWER",
+
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         follower:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 2,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "following",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "senderParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWING"
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         following:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 1,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $project: {
+  //                   "dodol": {
+  //                     $ifNull: ["$userAuth.username", "kosong"]
+  //                   },
+  //                   "friend": {
+  //                     $arrayElemAt: ["$friend.friend", 0]
+  //                   },
+  //                   "follower":
+  //                   {
+  //                     $arrayElemAt: ["$follower.follower", 0]
+  //                   },
+  //                   "following":
+  //                   {
+  //                     $arrayElemAt: ["$following.following", 0]
+  //                   },
+  //                   "statusEN":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "FRIEND",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "FOLLOWING",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "FOLLOWER",
+  //                               else: "NOT CONNECTED"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "statusID":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "PERTEMANAN",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "MENGIKUTI",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "PENGIKUT",
+  //                               else: "BELUM TERHUBUNG"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "fullName": "$userBasic.fullName",
+  //                   "profilePict": "$userBasic.profilePict",
+  //                   "profilePicts": "$userBasic.profilePicts",
+  //                   "username": "$userAuth.username",
+  //                   "length": "$userAuth.length",
+  //                   "score": "$userAuth.score",
+  //                   "totScore": {
+  //                     $sum: [{
+  //                       $arrayElemAt: ["$friend.friend", 0]
+  //                     }, "$userAuth.score"]
+  //                   },
+  //                   "email": "$userAuth.email",
+  //                   "avatar":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $eq: [{
+  //                           $arrayElemAt: ["$avatar.mediaType", {
+  //                             "$indexOfArray": [
+  //                               "$avatar.mediaID",
+  //                               '$userBasic.profilePict.$id'
+  //                             ]
+  //                           }]
+  //                         }, "image"]
+  //                       },
+  //                       then: "$avatar",
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "urluserBadge":
+  //                   {
+  //                     "$ifNull":
+  //                       [
+  //                         {
+  //                           "$arrayElemAt":
+  //                             [
+  //                               "$userBasic.urluserBadge", 0
+  //                             ]
+  //                         },
+  //                         null
+  //                       ]
+  //                   }
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   friend: - 1,
+  //                   follower: - 1,
+  //                   following: - 1,
+
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ],
+  //           //pict
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+  //           "tags":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "tag_count",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "_id": {
+  //                           $regex: key, $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$_id", "de"]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length: {
+  //                           $strLenCP: "$_id"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         dodol: "kancut"
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         name: "$_id",
+  //                         total: 1,
+  //                         score: 1,
+  //                         length: 1,
+  //                         dodol: {
+  //                           $ifNull: ["$_id", "kosong"]
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ],
+  //                   as: "tag"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$tag",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 $project: {
+  //                   tag: "$tag.name",
+  //                   total: "$tag.total",
+  //                   score: "$tag.score",
+  //                   length: "$tag.length",
+  //                   dodol: "$tag.dodol",
+
+  //                 },
+
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   total: - 1
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           user:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: [{
+  //                   $arrayElemAt: ["$user.dodol", 0]
+  //                 }, "kosong"]
+  //               },
+  //               then: "$saassaas",
+  //               else: "$user"
+  //             }
+  //           },
+  //           pict: "$pict",
+  //           dodol: "$tags.dodol",
+  //           tags:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{ $size: "$tags.dodol" }, 0]
+  //               },
+  //               then: "$tags",
+  //               else: "$tagsssdsd"
+  //             }
+  //           },
+  //         }
+  //       });
+  //   }
+
+  //   else if (pict === true && vid === true && diary === false && user === true && tag === true) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "user":
+  //             [
+
+  //               {
+  //                 $lookup: {
+  //                   from: "userauths",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "username": {
+  //                           $regex: key,
+  //                           $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         kampretos: { $toLower: "$username" }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$kampretos", key]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length:
+  //                         {
+  //                           $cond: [
+  //                             {
+  //                               ifnull: ['$username', false]
+  //                             },
+  //                             {
+  //                               $strLenCP: "$username"
+  //                             },
+  //                             0
+  //                           ]
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ],
+  //                   as: "userAuth"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userAuth",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "userbasics",
+  //                   as: "userBasic",
+  //                   let: {
+  //                     localID: '$userAuth.email'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "fullName": 1,
+  //                         "profilePict": 1,
+  //                         "isCelebrity": 1,
+  //                         "isIdVerified": 1,
+  //                         "isPrivate": 1,
+  //                         "urluserBadge":
+  //                         {
+  //                           "$filter":
+  //                           {
+  //                             input: "$userBadge",
+  //                             as: "listbadge",
+  //                             cond:
+  //                             {
+  //                               "$and":
+  //                                 [
+  //                                   {
+  //                                     "$eq":
+  //                                       [
+  //                                         "$$listbadge.isActive", true
+  //                                       ]
+  //                                   },
+  //                                   {
+  //                                     "$lte": [
+  //                                       {
+  //                                         "$dateToString": {
+  //                                           "format": "%Y-%m-%d %H:%M:%S",
+  //                                           "date": {
+  //                                             "$add": [
+  //                                               new Date(),
+  //                                               25200000
+  //                                             ]
+  //                                           }
+  //                                         }
+  //                                       },
+  //                                       "$$listbadge.endDatetime"
+  //                                     ]
+  //                                   }
+  //                                 ]
+  //                             }
+  //                           }
+  //                         },
+  //                       },
+
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userBasic",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediaprofilepicts",
+  //                   as: "avatar",
+  //                   let: {
+  //                     localID: '$userBasic.profilePict.$id'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$mediaID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "mediaBasePath": 1,
+  //                         "mediaUri": 1,
+  //                         "originalName": 1,
+  //                         "fsSourceUri": 1,
+  //                         "fsSourceName": 1,
+  //                         "fsTargetUri": 1,
+  //                         "mediaType": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/profilepict/", "$mediaID"]
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ],
+
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "friend_list",
+  //                   as: "friend",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $or: [
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$localID']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": email
+  //                               }
+  //                             ]
+  //                           },
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$user']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": '$userAuth.email'
+  //                               }
+  //                             ]
+  //                           }
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         friend:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $size: '$friendlist'
+  //                               }, 0]
+  //                             },
+  //                             then: 3,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "follower",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "receiverParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWER",
+
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         follower:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 2,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "following",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "senderParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWING"
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         following:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 1,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $project: {
+  //                   "dodol": {
+  //                     $ifNull: ["$userAuth.username", "kosong"]
+  //                   },
+  //                   "friend": {
+  //                     $arrayElemAt: ["$friend.friend", 0]
+  //                   },
+  //                   "follower":
+  //                   {
+  //                     $arrayElemAt: ["$follower.follower", 0]
+  //                   },
+  //                   "following":
+  //                   {
+  //                     $arrayElemAt: ["$following.following", 0]
+  //                   },
+  //                   "statusEN":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "FRIEND",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "FOLLOWING",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "FOLLOWER",
+  //                               else: "NOT CONNECTED"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "statusID":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "PERTEMANAN",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "MENGIKUTI",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "PENGIKUT",
+  //                               else: "BELUM TERHUBUNG"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "fullName": "$userBasic.fullName",
+  //                   "profilePict": "$userBasic.profilePict",
+  //                   "profilePicts": "$userBasic.profilePicts",
+  //                   "username": "$userAuth.username",
+  //                   "length": "$userAuth.length",
+  //                   "score": "$userAuth.score",
+  //                   "totScore": {
+  //                     $sum: [{
+  //                       $arrayElemAt: ["$friend.friend", 0]
+  //                     }, "$userAuth.score"]
+  //                   },
+  //                   "email": "$userAuth.email",
+  //                   "avatar":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $eq: [{
+  //                           $arrayElemAt: ["$avatar.mediaType", {
+  //                             "$indexOfArray": [
+  //                               "$avatar.mediaID",
+  //                               '$userBasic.profilePict.$id'
+  //                             ]
+  //                           }]
+  //                         }, "image"]
+  //                       },
+  //                       then: "$avatar",
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "urluserBadge":
+  //                   {
+  //                     "$ifNull":
+  //                       [
+  //                         {
+  //                           "$arrayElemAt":
+  //                             [
+  //                               "$userBasic.urluserBadge", 0
+  //                             ]
+  //                         },
+  //                         null
+  //                       ]
+  //                   }
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   friend: - 1,
+  //                   follower: - 1,
+  //                   following: - 1,
+
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ],
+  //           //pict
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+  //           "vid":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   let: {
+  //                     name: "$dedy"
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "vid"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreVid": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreVid: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediavideos",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreVid": "$pict.scoreVid",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreVid: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+  //           "tags":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "tag_count",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "_id": {
+  //                           $regex: key, $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$_id", "de"]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length: {
+  //                           $strLenCP: "$_id"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         dodol: "kancut"
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         name: "$_id",
+  //                         total: 1,
+  //                         score: 1,
+  //                         length: 1,
+  //                         dodol: {
+  //                           $ifNull: ["$_id", "kosong"]
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ],
+  //                   as: "tag"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$tag",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 $project: {
+  //                   tag: "$tag.name",
+  //                   total: "$tag.total",
+  //                   score: "$tag.score",
+  //                   length: "$tag.length",
+  //                   dodol: "$tag.dodol",
+
+  //                 },
+
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   total: - 1
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           user:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: [{
+  //                   $arrayElemAt: ["$user.dodol", 0]
+  //                 }, "kosong"]
+  //               },
+  //               then: "$saassaas",
+  //               else: "$user"
+  //             }
+  //           },
+  //           pict: "$pict",
+  //           vid: "$vid",
+  //           dodol: "$tags.dodol",
+  //           tags:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{ $size: "$tags.dodol" }, 0]
+  //               },
+  //               then: "$tags",
+  //               else: "$tagsssdsd"
+  //             }
+  //           },
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === false && vid === true && diary === true && user === true && tag === true) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "user":
+  //             [
+
+  //               {
+  //                 $lookup: {
+  //                   from: "userauths",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "username": {
+  //                           $regex: key,
+  //                           $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         kampretos: { $toLower: "$username" }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$kampretos", key]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length:
+  //                         {
+  //                           $cond: [
+  //                             {
+  //                               ifnull: ['$username', false]
+  //                             },
+  //                             {
+  //                               $strLenCP: "$username"
+  //                             },
+  //                             0
+  //                           ]
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ],
+  //                   as: "userAuth"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userAuth",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "userbasics",
+  //                   as: "userBasic",
+  //                   let: {
+  //                     localID: '$userAuth.email'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "fullName": 1,
+  //                         "profilePict": 1,
+  //                         "isCelebrity": 1,
+  //                         "isIdVerified": 1,
+  //                         "isPrivate": 1,
+  //                         "urluserBadge":
+  //                         {
+  //                           "$filter":
+  //                           {
+  //                             input: "$userBadge",
+  //                             as: "listbadge",
+  //                             cond:
+  //                             {
+  //                               "$and":
+  //                                 [
+  //                                   {
+  //                                     "$eq":
+  //                                       [
+  //                                         "$$listbadge.isActive", true
+  //                                       ]
+  //                                   },
+  //                                   {
+  //                                     "$lte": [
+  //                                       {
+  //                                         "$dateToString": {
+  //                                           "format": "%Y-%m-%d %H:%M:%S",
+  //                                           "date": {
+  //                                             "$add": [
+  //                                               new Date(),
+  //                                               25200000
+  //                                             ]
+  //                                           }
+  //                                         }
+  //                                       },
+  //                                       "$$listbadge.endDatetime"
+  //                                     ]
+  //                                   }
+  //                                 ]
+  //                             }
+  //                           }
+  //                         },
+  //                       },
+
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userBasic",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediaprofilepicts",
+  //                   as: "avatar",
+  //                   let: {
+  //                     localID: '$userBasic.profilePict.$id'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$mediaID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "mediaBasePath": 1,
+  //                         "mediaUri": 1,
+  //                         "originalName": 1,
+  //                         "fsSourceUri": 1,
+  //                         "fsSourceName": 1,
+  //                         "fsTargetUri": 1,
+  //                         "mediaType": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/profilepict/", "$mediaID"]
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ],
+
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "friend_list",
+  //                   as: "friend",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $or: [
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$localID']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": email
+  //                               }
+  //                             ]
+  //                           },
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$user']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": '$userAuth.email'
+  //                               }
+  //                             ]
+  //                           }
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         friend:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $size: '$friendlist'
+  //                               }, 0]
+  //                             },
+  //                             then: 3,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "follower",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "receiverParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWER",
+
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         follower:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 2,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "following",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "senderParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWING"
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         following:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 1,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $project: {
+  //                   "dodol": {
+  //                     $ifNull: ["$userAuth.username", "kosong"]
+  //                   },
+  //                   "friend": {
+  //                     $arrayElemAt: ["$friend.friend", 0]
+  //                   },
+  //                   "follower":
+  //                   {
+  //                     $arrayElemAt: ["$follower.follower", 0]
+  //                   },
+  //                   "following":
+  //                   {
+  //                     $arrayElemAt: ["$following.following", 0]
+  //                   },
+  //                   "statusEN":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "FRIEND",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "FOLLOWING",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "FOLLOWER",
+  //                               else: "NOT CONNECTED"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "statusID":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "PERTEMANAN",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "MENGIKUTI",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "PENGIKUT",
+  //                               else: "BELUM TERHUBUNG"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "fullName": "$userBasic.fullName",
+  //                   "profilePict": "$userBasic.profilePict",
+  //                   "profilePicts": "$userBasic.profilePicts",
+  //                   "username": "$userAuth.username",
+  //                   "length": "$userAuth.length",
+  //                   "score": "$userAuth.score",
+  //                   "totScore": {
+  //                     $sum: [{
+  //                       $arrayElemAt: ["$friend.friend", 0]
+  //                     }, "$userAuth.score"]
+  //                   },
+  //                   "email": "$userAuth.email",
+  //                   "avatar":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $eq: [{
+  //                           $arrayElemAt: ["$avatar.mediaType", {
+  //                             "$indexOfArray": [
+  //                               "$avatar.mediaID",
+  //                               '$userBasic.profilePict.$id'
+  //                             ]
+  //                           }]
+  //                         }, "image"]
+  //                       },
+  //                       then: "$avatar",
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "urluserBadge":
+  //                   {
+  //                     "$ifNull":
+  //                       [
+  //                         {
+  //                           "$arrayElemAt":
+  //                             [
+  //                               "$userBasic.urluserBadge", 0
+  //                             ]
+  //                         },
+  //                         null
+  //                       ]
+  //                   }
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   friend: - 1,
+  //                   follower: - 1,
+  //                   following: - 1,
+
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ],
+  //           "vid":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   let: {
+  //                     name: "$dedy"
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "vid"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreVid": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreVid: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediavideos",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreVid": "$pict.scoreVid",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreVid: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+  //           "diary":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "diary"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreDiary": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreDiary: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediadiaries",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreDiary": "$pict.scoreDiary",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreDiary: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+
+  //           "tags":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "tag_count",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "_id": {
+  //                           $regex: key, $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$_id", "de"]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length: {
+  //                           $strLenCP: "$_id"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         dodol: "kancut"
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         name: "$_id",
+  //                         total: 1,
+  //                         score: 1,
+  //                         length: 1,
+  //                         dodol: {
+  //                           $ifNull: ["$_id", "kosong"]
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ],
+  //                   as: "tag"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$tag",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 $project: {
+  //                   tag: "$tag.name",
+  //                   total: "$tag.total",
+  //                   score: "$tag.score",
+  //                   length: "$tag.length",
+  //                   dodol: "$tag.dodol",
+
+  //                 },
+
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   total: - 1
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           user:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: [{
+  //                   $arrayElemAt: ["$user.dodol", 0]
+  //                 }, "kosong"]
+  //               },
+  //               then: "$saassaas",
+  //               else: "$user"
+  //             }
+  //           },
+  //           vid: "$vid",
+  //           diary: "$diary",
+  //           dodol: "$tags.dodol",
+  //           tags:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{ $size: "$tags.dodol" }, 0]
+  //               },
+  //               then: "$tags",
+  //               else: "$tagsssdsd"
+  //             }
+  //           },
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === true && vid === true && diary === true && user === false && tag === true) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+  //           "vid":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   let: {
+  //                     name: "$dedy"
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "vid"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreVid": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreVid: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediavideos",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreVid": "$pict.scoreVid",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreVid: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+  //           "diary":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "diary"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreDiary": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreDiary: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediadiaries",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreDiary": "$pict.scoreDiary",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreDiary: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+
+  //           "tags":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "tag_count",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "_id": {
+  //                           $regex: key, $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$_id", "de"]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length: {
+  //                           $strLenCP: "$_id"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         dodol: "kancut"
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         name: "$_id",
+  //                         total: 1,
+  //                         score: 1,
+  //                         length: 1,
+  //                         dodol: {
+  //                           $ifNull: ["$_id", "kosong"]
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ],
+  //                   as: "tag"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$tag",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 $project: {
+  //                   tag: "$tag.name",
+  //                   total: "$tag.total",
+  //                   score: "$tag.score",
+  //                   length: "$tag.length",
+  //                   dodol: "$tag.dodol",
+
+  //                 },
+
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   total: - 1
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+
+  //           pict: "$pict",
+  //           vid: "$vid",
+  //           diary: "$diary",
+  //           dodol: "$tags.dodol",
+  //           tags:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{ $size: "$tags.dodol" }, 0]
+  //               },
+  //               then: "$tags",
+  //               else: "$tagsssdsd"
+  //             }
+  //           },
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === true && vid === true && diary === true && user === true && tag === true) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+  //           "user":
+  //             [
+
+  //               {
+  //                 $lookup: {
+  //                   from: "userauths",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "username": {
+  //                           $regex: key,
+  //                           $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         kampretos: { $toLower: "$username" }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$kampretos", key]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length:
+  //                         {
+  //                           $cond: [
+  //                             {
+  //                               ifnull: ['$username', false]
+  //                             },
+  //                             {
+  //                               $strLenCP: "$username"
+  //                             },
+  //                             0
+  //                           ]
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ],
+  //                   as: "userAuth"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userAuth",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "userbasics",
+  //                   as: "userBasic",
+  //                   let: {
+  //                     localID: '$userAuth.email'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$email', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "fullName": 1,
+  //                         "profilePict": 1,
+  //                         "isCelebrity": 1,
+  //                         "isIdVerified": 1,
+  //                         "isPrivate": 1,
+  //                         "urluserBadge":
+  //                         {
+  //                           "$filter":
+  //                           {
+  //                             input: "$userBadge",
+  //                             as: "listbadge",
+  //                             cond:
+  //                             {
+  //                               "$and":
+  //                                 [
+  //                                   {
+  //                                     "$eq":
+  //                                       [
+  //                                         "$$listbadge.isActive", true
+  //                                       ]
+  //                                   },
+  //                                   {
+  //                                     "$lte": [
+  //                                       {
+  //                                         "$dateToString": {
+  //                                           "format": "%Y-%m-%d %H:%M:%S",
+  //                                           "date": {
+  //                                             "$add": [
+  //                                               new Date(),
+  //                                               25200000
+  //                                             ]
+  //                                           }
+  //                                         }
+  //                                       },
+  //                                       "$$listbadge.endDatetime"
+  //                                     ]
+  //                                   }
+  //                                 ]
+  //                             }
+  //                           }
+  //                         },
+  //                       },
+
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$userBasic",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediaprofilepicts",
+  //                   as: "avatar",
+  //                   let: {
+  //                     localID: '$userBasic.profilePict.$id'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$mediaID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         "mediaBasePath": 1,
+  //                         "mediaUri": 1,
+  //                         "originalName": 1,
+  //                         "fsSourceUri": 1,
+  //                         "fsSourceName": 1,
+  //                         "fsTargetUri": 1,
+  //                         "mediaType": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/profilepict/", "$mediaID"]
+  //                         }
+  //                       }
+  //                     },
+
+  //                   ],
+
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "friend_list",
+  //                   as: "friend",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $or: [
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$localID']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": email
+  //                               }
+  //                             ]
+  //                           },
+  //                           {
+  //                             $and: [
+  //                               {
+  //                                 $expr: {
+  //                                   $eq: ['$email', '$$user']
+  //                                 }
+  //                               },
+  //                               {
+  //                                 "friendlist.email": '$userAuth.email'
+  //                               }
+  //                             ]
+  //                           }
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         friend:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $size: '$friendlist'
+  //                               }, 0]
+  //                             },
+  //                             then: 3,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "follower",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "receiverParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWER",
+
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         follower:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 2,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "contentevents",
+  //                   as: "following",
+  //                   let: {
+  //                     localID: '$userAuth.email',
+  //                     user: email
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $expr: {
+  //                               $eq: ['$email', '$$localID']
+  //                             }
+  //                           },
+  //                           {
+  //                             "senderParty": email
+  //                           },
+  //                           {
+  //                             "eventType": "FOLLOWING"
+  //                           },
+  //                           {
+  //                             "event": "ACCEPT"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+
+  //                         ]
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         following:
+  //                         {
+  //                           $cond: {
+  //                             if: {
+  //                               $gt: [{
+  //                                 $strLenCP: "$email"
+  //                               }, 0]
+  //                             },
+  //                             then: 1,
+  //                             else: 0
+  //                           }
+  //                         },
+
+  //                       }
+  //                     }
+  //                   ]
+  //                 },
+
+  //               },
+  //               {
+  //                 $project: {
+  //                   "dodol": {
+  //                     $ifNull: ["$userAuth.username", "kosong"]
+  //                   },
+  //                   "friend": {
+  //                     $arrayElemAt: ["$friend.friend", 0]
+  //                   },
+  //                   "follower":
+  //                   {
+  //                     $arrayElemAt: ["$follower.follower", 0]
+  //                   },
+  //                   "following":
+  //                   {
+  //                     $arrayElemAt: ["$following.following", 0]
+  //                   },
+  //                   "statusEN":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "FRIEND",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "FOLLOWING",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "FOLLOWER",
+  //                               else: "NOT CONNECTED"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "statusID":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gt: [{
+  //                           $arrayElemAt: ["$friend.friend", 0]
+  //                         }, 0]
+  //                       },
+  //                       then: "PERTEMANAN",
+  //                       else:
+  //                       {
+  //                         $cond: {
+  //                           if: {
+  //                             $gt: [{
+  //                               $arrayElemAt: ["$follower.follower", 0]
+  //                             }, 0]
+  //                           },
+  //                           then: "MENGIKUTI",
+  //                           else:
+  //                           {
+  //                             $cond: {
+  //                               if: {
+  //                                 $gt: [{
+  //                                   $arrayElemAt: ["$following.following", 0]
+  //                                 }, 0]
+  //                               },
+  //                               then: "PENGIKUT",
+  //                               else: "BELUM TERHUBUNG"
+  //                             }
+  //                           },
+
+  //                         }
+  //                       },
+
+  //                     }
+  //                   },
+  //                   "fullName": "$userBasic.fullName",
+  //                   "profilePict": "$userBasic.profilePict",
+  //                   "profilePicts": "$userBasic.profilePicts",
+  //                   "username": "$userAuth.username",
+  //                   "length": "$userAuth.length",
+  //                   "score": "$userAuth.score",
+  //                   "totScore": {
+  //                     $sum: [{
+  //                       $arrayElemAt: ["$friend.friend", 0]
+  //                     }, "$userAuth.score"]
+  //                   },
+  //                   "email": "$userAuth.email",
+  //                   "avatar":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $eq: [{
+  //                           $arrayElemAt: ["$avatar.mediaType", {
+  //                             "$indexOfArray": [
+  //                               "$avatar.mediaID",
+  //                               '$userBasic.profilePict.$id'
+  //                             ]
+  //                           }]
+  //                         }, "image"]
+  //                       },
+  //                       then: "$avatar",
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "urluserBadge":
+  //                   {
+  //                     "$ifNull":
+  //                       [
+  //                         {
+  //                           "$arrayElemAt":
+  //                             [
+  //                               "$userBasic.urluserBadge", 0
+  //                             ]
+  //                         },
+  //                         null
+  //                       ]
+  //                   }
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   friend: - 1,
+  //                   follower: - 1,
+  //                   following: - 1,
+
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ],
+  //           //pict
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+  //           "vid":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   let: {
+  //                     name: "$dedy"
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "vid"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreVid": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreVid: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediavideos",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreVid": "$pict.scoreVid",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreVid: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+  //           "diary":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "diary"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreDiary": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreDiary: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediadiaries",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreDiary": "$pict.scoreDiary",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreDiary: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+
+  //           "tags":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "tag_count",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         "_id": {
+  //                           $regex: key, $options: 'i'
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         score: {
+  //                           $indexOfCP: ["$_id", "de"]
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         length: {
+  //                           $strLenCP: "$_id"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         dodol: "kancut"
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         name: "$_id",
+  //                         total: 1,
+  //                         score: 1,
+  //                         length: 1,
+  //                         dodol: {
+  //                           $ifNull: ["$_id", "kosong"]
+  //                         },
+
+  //                       }
+  //                     },
+
+  //                   ],
+  //                   as: "tag"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$tag",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 $project: {
+  //                   tag: "$tag.name",
+  //                   total: "$tag.total",
+  //                   score: "$tag.score",
+  //                   length: "$tag.length",
+  //                   dodol: "$tag.dodol",
+
+  //                 },
+
+  //               },
+  //               {
+  //                 $sort: {
+  //                   score: 1,
+  //                   length: 1,
+  //                   total: - 1
+  //                 }
+  //               },
+  //               {
+  //                 $skip: skip
+  //               },
+  //               {
+  //                 $limit: limit
+  //               },
+
+  //             ]
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+  //           user:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $eq: [{
+  //                   $arrayElemAt: ["$user.dodol", 0]
+  //                 }, "kosong"]
+  //               },
+  //               then: "$saassaas",
+  //               else: "$user"
+  //             }
+  //           },
+  //           pict: "$pict",
+  //           vid: "$vid",
+  //           diary: "$diary",
+  //           dodol: "$tags.dodol",
+  //           tags:
+  //           {
+  //             $cond: {
+  //               if: {
+  //                 $gt: [{ $size: "$tags.dodol" }, 0]
+  //               },
+  //               then: "$tags",
+  //               else: "$tagsssdsd"
+  //             }
+  //           },
+
+  //         }
+  //       });
+  //   }
+  //   else if (pict === true && vid === true && diary === true && user === false && tag === false) {
+  //     pipeline.push(
+
+  //       {
+  //         $facet:
+  //         {
+
+  //           //pict
+  //           "pict":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "pict"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $set: {
+  //                         scorePict: {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "scorePict": 1,
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scorePict: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: - 1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediapicts",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/pict/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+  //                         "uploadSource": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scorePict": "$pict.scorePict",
+  //                   //  "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "uploadSource": "$media.uploadSource",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "viewed": "$pict.insight.views",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "apsaraThumbId": {
+  //                     $arrayElemAt: ['$media.apsaraThumbId', 0]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scorePict: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: - 1
+  //                 }
+  //               },
+
+  //             ],
+  //           "vid":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   let: {
+  //                     name: "$dedy"
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "vid"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreVid": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreVid: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediavideos",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreVid": "$pict.scoreVid",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreVid: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+  //           "diary":
+  //             [
+  //               {
+  //                 $lookup: {
+  //                   from: "posts",
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $and: [
+  //                           {
+  //                             $text: {
+  //                               $search: key
+
+  //                             }
+  //                           },
+  //                           {
+  //                             "reportedStatus": {
+  //                               $ne: "OWNED"
+  //                             }
+  //                           },
+  //                           {
+  //                             "visibility": "PUBLIC"
+  //                           },
+  //                           {
+  //                             "active": true
+  //                           },
+  //                           {
+  //                             "postType": "diary"
+  //                           },
+  //                           {
+  //                             "reportedUser.email": {
+  //                               $not: {
+  //                                 $regex: email
+  //                               }
+  //                             }
+  //                           },
+
+  //                         ]
+  //                       },
+
+  //                     },
+  //                     {
+  //                       $project: {
+  //                         // "boosted":
+  //                         // {
+  //                         //   $cond: {
+  //                         //     if: {
+  //                         //       $gt: [{
+  //                         //         "$dateToString": {
+  //                         //           "format": "%Y-%m-%d %H:%M:%S",
+  //                         //           "date": {
+  //                         //             $add: [new Date(), 25200000]
+  //                         //           }
+  //                         //         }
+  //                         //       }, "$boosted.boostSession.timeEnd"]
+  //                         //     },
+  //                         //     then: [],
+  //                         //     else: '$boosted'
+  //                         //   }
+  //                         // },
+  //                         "reportedStatus": 1,
+  //                         "insight": {
+  //                           "shares": "$shares",
+  //                           "comments": "$comments",
+  //                           "views": "$views",
+  //                           "likes": "$likes",
+
+  //                         },
+  //                         "comments": "$comments",
+  //                         "likes": "$likes",
+  //                         "views": "$views",
+  //                         "_id": 1,
+  //                         "postID": 1,
+  //                         "createdAt": 1,
+  //                         "updatedAt": 1,
+  //                         "email": 1,
+  //                         "postType": 1,
+  //                         "description": 1,
+  //                         "active": 1,
+  //                         "metadata": 1,
+  //                         "location": 1,
+  //                         "isOwned": 1,
+  //                         "visibility": 1,
+  //                         "isViewed": 1,
+  //                         "allowComments": 1,
+  //                         "saleAmount": 1,
+  //                         "isLiked": 1,
+  //                         "scoreDiary": {
+  //                           $meta: "textScore"
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $sort: {
+  //                         scoreDiary: - 1,
+  //                         comments: - 1,
+  //                         likes: - 1,
+  //                         views: -1
+  //                       }
+  //                     },
+  //                     {
+  //                       $skip: skip
+  //                     },
+  //                     {
+  //                       $limit: limit
+  //                     },
+  //                   ],
+  //                   as: "pict"
+  //                 },
+
+  //               },
+  //               {
+  //                 $unwind: {
+  //                   path: "$pict",
+  //                   preserveNullAndEmptyArrays: true
+  //                 }
+  //               },
+  //               {
+  //                 "$lookup": {
+  //                   from: "mediadiaries",
+  //                   as: "media",
+  //                   let: {
+  //                     localID: '$pict.postID'
+  //                   },
+  //                   pipeline: [
+  //                     {
+  //                       $match:
+  //                       {
+  //                         $expr: {
+  //                           $eq: ['$postID', '$$localID']
+  //                         }
+  //                       }
+  //                     },
+  //                     {
+  //                       $project: {
+
+  //                         "apsara": 1,
+  //                         "apsaraId": 1,
+  //                         "apsaraThumbId": 1,
+  //                         "mediaEndpoint": {
+  //                           "$concat": ["/stream/", "$postID"]
+  //                         },
+  //                         "mediaUri": 1,
+  //                         "mediaThumbEndpoint": {
+  //                           "$concat": ["/thumb/", "$postID"]
+  //                         },
+  //                         "mediaThumbUri": 1,
+  //                         "mediaType": 1,
+
+  //                       }
+  //                     }
+  //                   ],
+
+  //                 },
+
+  //               },
+  //               // {
+  //               //   "$lookup": {
+  //               //     from: "contentevents",
+  //               //     as: "likes",
+  //               //     let: {
+  //               //       localID: '$pict.postID'
+  //               //     },
+  //               //     pipeline: [
+  //               //       {
+  //               //         $match:
+  //               //         {
+  //               //           $and: [
+  //               //             {
+  //               //               $expr: {
+  //               //                 $eq: ['$postID', '$$localID']
+  //               //               }
+  //               //             },
+  //               //             {
+  //               //               "email": email
+
+  //               //             },
+  //               //             {
+  //               //               "eventType": "LIKE"
+  //               //             }
+  //               //           ]
+  //               //         }
+  //               //       },
+
+  //               //     ],
+
+  //               //   },
+
+  //               // },
+  //               {
+  //                 $project: {
+  //                   "scoreDiary": "$pict.scoreDiary",
+  //                   // "boosted": "$pict.boosted",
+  //                   "reportedStatus": "$pict.reportedStatus",
+  //                   "_id": "$pict._id",
+  //                   "mediaThumbEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaThumbEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaEndpoint":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaEndpoint', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "mediaType":
+  //                   {
+  //                     $arrayElemAt: ['$media.mediaType', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "createdAt": "$pict.createdAt",
+  //                   "updatedAt": "$pict.updatedAt",
+  //                   "postID": "$pict.postID",
+  //                   "email": "$pict.email",
+  //                   "postType": "$pict.postType",
+  //                   "description": "$pict.description",
+  //                   "active": "$pict.active",
+  //                   "metadata": "$pict.metadata",
+  //                   "location": "$pict.location",
+  //                   "isOwned": "$pict.isOwned",
+  //                   "visibility": "$pict.visibility",
+  //                   "isViewed": "$pict.isViewed",
+  //                   "allowComments": "$pict.allowComments",
+  //                   "saleAmount": "$pict.saleAmount",
+  //                   "viewed": "$pict.insight.views",
+  //                   "monetize":
+  //                   {
+  //                     $cond: {
+  //                       if: {
+  //                         $gte: ["$pict.saleAmount", 1]
+  //                       },
+  //                       then: true,
+  //                       else: "$taslimKONAG"
+  //                     }
+  //                   },
+  //                   "insight":
+  //                   {
+  //                     $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+  //                   },
+  //                   "comments": "$pict.comments",
+  //                   "likes": "$pict.likes",
+  //                   "apsaraId":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsaraId', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   "isApsara":
+  //                   {
+  //                     $arrayElemAt: ['$media.apsara', {
+  //                       "$indexOfArray": [
+  //                         "$media.postID",
+  //                         "$pict.postID"
+  //                       ]
+  //                     }]
+  //                   },
+  //                   // "isLiked":
+  //                   // {
+  //                   //   $cond: {
+  //                   //     if: {
+  //                   //       $eq: [{
+  //                   //         $arrayElemAt: ["$likes.eventType", {
+  //                   //           "$indexOfArray": [
+  //                   //             "$likes.postID",
+  //                   //             "$pict.postID"
+  //                   //           ]
+  //                   //         }]
+  //                   //       }, "LIKE"]
+  //                   //     },
+  //                   //     then: true,
+  //                   //     else: "$taslimKONAG"
+  //                   //   }
+  //                   // },
+
+  //                 }
+  //               },
+  //               {
+  //                 $sort: {
+  //                   scoreDiary: - 1,
+  //                   comments: - 1,
+  //                   likes: - 1,
+  //                   viewed: -1
+
+  //                 }
+  //               },
+
+  //             ],
+
+  //         },
+
+  //       },
+  //       {
+  //         $project: {
+
+  //           pict: "$pict",
+  //           vid: "$vid",
+  //           diary: "$diary",
+
+
+  //         }
+  //       });
+  //   }
+  //   const query = await this.PostsModel.aggregate(pipeline);
+  //   return query;
+  // }
   async finddatasearchcontenNew(key: string, email: string, skip: number, limit: number, pict: any, vid: any, diary: any, user: any, tag: any) {
 
 
@@ -19363,20 +39514,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -19396,7 +39546,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -19408,6 +39558,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -19431,42 +39589,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -19506,7 +39629,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -19805,19 +39928,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -19829,12 +39940,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -20191,20 +40296,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -20224,7 +40328,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -20236,6 +40340,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -20259,42 +40371,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -20334,7 +40411,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -20633,19 +40710,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -20657,12 +40722,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -21012,20 +41071,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -21045,7 +41103,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -21057,6 +41115,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -21080,42 +41146,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -21155,7 +41186,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -21454,19 +41485,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -21478,12 +41497,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -21829,20 +41842,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -21862,7 +41874,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -21874,6 +41886,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -21897,42 +41917,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -21972,7 +41957,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -22271,19 +42256,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -22295,12 +42268,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -22964,20 +42931,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -22997,7 +42963,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -23009,6 +42975,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -23032,42 +43006,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -23107,7 +43046,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -23406,19 +43345,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -23430,12 +43357,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -24096,20 +44017,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -24129,7 +44049,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -24141,6 +44061,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -24164,42 +44092,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -24239,7 +44132,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -24538,19 +44431,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -24562,12 +44443,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -25222,20 +45097,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -25255,7 +45129,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -25267,6 +45141,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -25290,42 +45172,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -25365,7 +45212,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -25664,19 +45511,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -25688,12 +45523,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -26662,20 +46491,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -26695,7 +46523,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -26707,6 +46535,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -26730,42 +46566,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -26805,7 +46606,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -27104,19 +46905,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -27128,12 +46917,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -28260,20 +48043,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -28293,7 +48075,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -28305,6 +48087,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -28328,42 +48118,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -28403,7 +48158,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -28702,19 +48457,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -28726,12 +48469,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -32616,20 +52353,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -32649,7 +52385,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -32661,6 +52397,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -32684,42 +52428,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -32759,7 +52468,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -33058,19 +52767,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -33082,12 +52779,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -33537,20 +53228,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -33570,7 +53260,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -33582,6 +53272,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -33605,42 +53303,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -33680,7 +53343,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -33979,19 +53642,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -34003,12 +53654,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -34765,20 +54410,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -34798,7 +54442,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -34810,6 +54454,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -34833,42 +54485,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -34908,7 +54525,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -35207,19 +54824,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -35231,12 +54836,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -37020,20 +56619,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -37053,7 +56651,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -37065,6 +56663,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -37088,42 +56694,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -37163,7 +56734,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -37462,19 +57033,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -37486,12 +57045,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -39483,7 +59036,6 @@ export class PostsService {
     const query = await this.PostsModel.aggregate(pipeline);
     return query;
   }
-
   async landingpage(email: string, type: string, skip: number, limit: number) {
     var pipeline = [];
     var dataseting = null;
