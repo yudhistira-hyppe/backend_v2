@@ -4925,7 +4925,7 @@ export class GetusercontentsController {
 
     }
 
-    @Post('api/getuserposts/my/v2')
+    @Post('api/posts/getuserposts/my/v2')
     @UseInterceptors(FileInterceptor('postContent'))
     @UseGuards(JwtAuthGuard)
     async contentlandingpagemy(@Body() body, @Headers('x-auth-user') email: string): Promise<any> {
