@@ -3706,7 +3706,7 @@ export class PostContentService {
               PostData_.apsaraThumbId = String(pic.apsaraId);
             }
           } else {
-            PostData_.mediaThumbEndpoint = '/thumb/' + pic.postID;
+            PostData_.mediaThumbEndpoint = '/pict/' + pic.postID;
             PostData_.mediaEndpoint = '/pict/' + pic.postID;
             PostData_.mediaUri = pic.mediaUri;
           }
