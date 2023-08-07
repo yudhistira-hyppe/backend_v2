@@ -19355,20 +19355,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -19388,7 +19387,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -19400,6 +19399,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -19423,42 +19430,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -19498,7 +19470,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -19797,19 +19769,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -19821,12 +19781,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -20183,20 +20137,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -20216,7 +20169,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -20228,6 +20181,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -20251,42 +20212,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -20326,7 +20252,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -20625,19 +20551,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -20649,12 +20563,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -21004,20 +20912,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -21037,7 +20944,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -21049,6 +20956,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -21072,42 +20987,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -21147,7 +21027,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -21446,19 +21326,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -21470,12 +21338,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -21821,20 +21683,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -21854,7 +21715,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -21866,6 +21727,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -21889,42 +21758,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -21964,7 +21798,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -22263,19 +22097,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -22287,12 +22109,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -22956,20 +22772,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -22989,7 +22804,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -23001,6 +22816,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -23024,42 +22847,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -23099,7 +22887,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -23398,19 +23186,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -23422,12 +23198,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -24088,20 +23858,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -24121,7 +23890,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -24133,6 +23902,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -24156,42 +23933,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -24231,7 +23973,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -24530,19 +24272,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -24554,12 +24284,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -25214,20 +24938,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -25247,7 +24970,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -25259,6 +24982,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -25282,42 +25013,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -25357,7 +25053,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -25656,19 +25352,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -25680,12 +25364,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -26654,20 +26332,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -26687,7 +26364,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -26699,6 +26376,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -26722,42 +26407,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -26797,7 +26447,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -27096,19 +26746,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -27120,12 +26758,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -28252,20 +27884,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -28285,7 +27916,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -28297,6 +27928,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -28320,42 +27959,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -28395,7 +27999,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -28694,19 +28298,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -28718,12 +28310,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -32608,20 +32194,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -32641,7 +32226,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -32653,6 +32238,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -32676,42 +32269,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -32751,7 +32309,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -33050,19 +32608,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -33074,12 +32620,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -33529,20 +33069,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -33562,7 +33101,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -33574,6 +33113,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -33597,42 +33144,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -33672,7 +33184,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -33971,19 +33483,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -33995,12 +33495,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -34757,20 +34251,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -34790,7 +34283,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -34802,6 +34295,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -34825,42 +34326,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -34900,7 +34366,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -35199,19 +34665,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -35223,12 +34677,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
@@ -37012,20 +36460,19 @@ export class PostsService {
                         $match:
                         {
                           "username": {
-                            $regex: key,
-                            $options: 'i'
+                            $regex: key
                           }
                         }
                       },
                       {
                         $set: {
-                          kampretos: { $toLower: "$username" }
+                          search: key
                         }
                       },
                       {
                         $set: {
                           score: {
-                            $indexOfCP: ["$kampretos", key]
+                            $indexOfCP: ["$username", key]
                           }
                         }
                       },
@@ -37045,7 +36492,7 @@ export class PostsService {
                           },
 
                         }
-                      }
+                      },
                     ],
                     as: "userAuth"
                   },
@@ -37057,6 +36504,14 @@ export class PostsService {
                     preserveNullAndEmptyArrays: true
                   }
                 },
+
+                {
+                  $skip: skip
+                },
+                {
+                  $limit: limit
+                },
+
                 {
                   "$lookup": {
                     from: "userbasics",
@@ -37080,42 +36535,7 @@ export class PostsService {
                           "isCelebrity": 1,
                           "isIdVerified": 1,
                           "isPrivate": 1,
-                          "urluserBadge":
-                          {
-                            "$filter":
-                            {
-                              input: "$userBadge",
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive", true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
+
                         },
 
                       }
@@ -37155,7 +36575,7 @@ export class PostsService {
                           "fsTargetUri": 1,
                           "mediaType": 1,
                           "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$mediaID"]
+                            "$concat": ["/profilepict/", "$mediaUri"]
                           }
                         }
                       },
@@ -37454,19 +36874,7 @@ export class PostsService {
                         else: "$taslimKONAG"
                       }
                     },
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$userBasic.urluserBadge", 0
-                              ]
-                          },
-                          null
-                        ]
-                    }
+
                   }
                 },
                 {
@@ -37478,12 +36886,6 @@ export class PostsService {
                     following: - 1,
 
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
                 },
 
               ],
