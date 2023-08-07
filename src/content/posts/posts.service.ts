@@ -94169,6 +94169,17 @@ export class PostsService {
     var dataseting = null;
     var sortObject = null;
     var value = 0;
+    var idsetting = "64d06e5c451e0000bd006c62";
+    var valuelimit = 0;
+
+    try {
+
+      dataseting = await this.settingsService.findOne(idsetting);
+      valuelimit = dataseting._doc.value;
+
+    } catch (e) {
+      valuelimit = 0;
+    }
 
     if (type == "pict") {
       try {
@@ -94552,7 +94563,7 @@ export class PostsService {
           $skip: skip
         },
         {
-          $limit: limit
+          $limit: valuelimit
         },
         {
           $group: {
@@ -96448,7 +96459,7 @@ export class PostsService {
           $skip: skip
         },
         {
-          $limit: limit
+          $limit: valuelimit
         },
         {
           $group: {
@@ -98342,7 +98353,7 @@ export class PostsService {
           $skip: skip
         },
         {
-          $limit: limit
+          $limit: valuelimit
         },
         {
           $group: {
