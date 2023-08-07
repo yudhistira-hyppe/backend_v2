@@ -1221,7 +1221,7 @@ export class AdsService {
     }
 
 
-    async findAds(email: string, nameType: string, idUser: string) {
+    async findAds(email: string, idUser: string, nameType: string) {
         console.log(email);
         console.log(nameType);
         var query = await this.adsModel.aggregate(
