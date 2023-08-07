@@ -108,6 +108,7 @@ export class TagPeople {
 }
 
 export class PostData {
+    _id: string;
     rotate: number;
     metadata: Metadata;
     description: string;
