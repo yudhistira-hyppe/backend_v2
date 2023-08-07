@@ -1221,960 +1221,7 @@ export class AdsService {
     }
 
 
-
     async findAds(email: string, nameType: string) {
-        console.log(email);
-        console.log(nameType);
-        // var query = await this.adsModel.aggregate([
-        //     {
-        //         $set:
-        //         {
-        //             email: email
-        //         }
-        //     },
-        //     {
-        //         $set:
-        //         {
-        //             tay:
-        //             {
-        //                 $ifNull: ['$tayang', 0]
-        //             }
-        //         }
-        //     },
-        //     {
-        //         $set: {
-        //             "testDate":
-        //             {
-        //                 "$dateToString": {
-        //                     "format": "%Y-%m-%d %H:%M:%S",
-        //                     "date": {
-        //                         $add: [new Date(), 25200000]
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     },
-        //     {
-        //         $set: {
-        //             "tayang": {
-        //                 $concat: [
-        //                     "$liveAt",
-        //                     " 00:00:00"
-        //                 ]
-        //             }
-        //         }
-        //     },
-        //     {
-        //         $set:
-        //         {
-        //             co: ["MALE", " MALE", "Laki-laki", "Pria"]
-        //         }
-        //     },
-        //     {
-        //         $set:
-        //         {
-        //             ce: ["FEMALE", " FEMALE", "Perempuan", "Wanita"]
-        //         }
-        //     },
-        //     {
-        //         "$lookup": {
-        //             from: "userbasics",
-        //             as: "userBasic",
-        //             let: {
-        //                 localID: '$email'
-        //             },
-        //             pipeline: [
-        //                 {
-        //                     $match:
-        //                     {
-        //                         $expr: {
-        //                             $eq: ['$email', '$$localID']
-        //                         }
-        //                     }
-        //                 },
-        //                 {
-        //                     $project: {
-        //                         "email": 1,
-        //                         "userInterests": 1,
-        //                         "states": ["$states"],
-        //                         "gender": ["$gender"],
-        //                         "age":
-        //                         {
-        //                             $cond: {
-        //                                 if: {
-        //                                     $and: ['$dob', {
-        //                                         $ne: ["$dob", ""]
-        //                                     }]
-        //                                 },
-        //                                 then: {
-        //                                     $toInt: {
-        //                                         $divide: [{
-        //                                             $subtract: [new Date(), {
-        //                                                 $toDate: "$dob"
-        //                                             }]
-        //                                         }, (365 * 24 * 60 * 60 * 1000)]
-        //                                     }
-        //                                 },
-        //                                 else: 0
-        //                             }
-        //                         },
-
-        //                     }
-        //                 }
-        //             ],
-
-        //         }
-        //     },
-        //     {
-        //         "$lookup": {
-        //             from: "adsplaces",
-        //             as: "places",
-        //             let: {
-        //                 localID: '$placingID'
-        //             },
-        //             pipeline: [
-        //                 {
-        //                     $match:
-        //                     {
-        //                         $expr: {
-        //                             $eq: ['$_id', '$$localID']
-        //                         }
-        //                     }
-        //                 },
-        //                 {
-        //                     $project: {
-        //                         namePlace: 1,
-
-        //                     }
-        //                 }
-        //             ],
-
-        //         }
-        //     },
-        //     {
-        //         "$lookup": {
-        //             from: "userads",
-        //             as: "adsUser",
-        //             let: {
-        //                 localID: '$userBasic._id'
-        //             },
-        //             pipeline: [
-        //                 {
-        //                     $match:
-        //                     {
-        //                         $and: [
-        //                             {
-        //                                 $expr: {
-        //                                     $in: ['$userID', '$$localID']
-        //                                 }
-        //                             },
-        //                             //{
-        //                             //    "statusView": false
-        //                             //},
-        //                             {
-        //                                 $or: [
-        //                                     {
-        //                                         "liveTypeuserads": false
-        //                                     },
-        //                                     //{
-        //                                     //		"liveTypeAds": null
-        //                                     //},
-        //                                 ]
-        //                             }
-        //                         ]
-        //                     },
-
-        //                 },
-        //                 {
-        //                     $project: {
-        //                         adsID: "$adsID",
-        //                         dodol: {
-        //                             $toString: "$adsID"
-        //                         },
-        //                         userID: 1,
-        //                         viewed: "$viewed",
-
-        //                     }
-        //                 },
-
-        //             ],
-
-        //         }
-        //     },
-        //     {
-        //         "$lookup": {
-        //             from: "userads",
-        //             as: "adsUser2",
-        //             let: {
-        //                 localID: '$userBasic._id'
-        //             },
-        //             pipeline: [
-        //                 {
-        //                     $match:
-        //                     {
-        //                         $and: [
-        //                             {
-        //                                 $expr: {
-        //                                     $in: ['$userID', '$$localID']
-        //                                 }
-        //                             },
-        //                             //{
-        //                             //    "statusView": false
-        //                             //},
-        //                             {
-        //                                 "isActive": true
-        //                             },
-        //                             {
-        //                                 $or: [
-        //                                     {
-        //                                         "liveTypeuserads": true
-        //                                     },
-        //                                     //{
-        //                                     //		"liveTypeAds": null
-        //                                     //},
-        //                                 ]
-        //                             }
-        //                         ]
-        //                     },
-
-        //                 },
-        //                 {
-        //                     $project: {
-        //                         adsID: "$adsID",
-        //                         dodol: {
-        //                             $toString: "$adsID"
-        //                         },
-        //                         userID: 1,
-        //                         viewed: "$viewed",
-
-        //                     }
-        //                 },
-
-        //             ],
-
-        //         }
-        //     },
-        //     {
-        //         $addFields: {
-        //             "isValid": {
-        //                 "$in": [
-        //                     "$_id",
-        //                     "$adsUser.adsID"
-        //                 ]
-        //             }
-        //         }
-        //     },
-        //     {
-        //         $match:
-        //         {
-        //             $and: [
-        //                 {
-        //                     "status": "APPROVE"
-        //                 },
-        //                 {
-        //                     $expr: {
-        //                         $lt: ["$totalView", "$tay"]
-        //                     }
-        //                 },
-        //                 {
-        //                     $expr: {
-        //                         $lt: ["$tayang", "$testDate"]
-        //                     }
-        //                 },
-        //                 {
-        //                     "_id": {
-        //                         $not: {
-        //                             $in: ["$adsUser.adsID"]
-        //                         }
-        //                     }
-        //                 },
-        //                 {
-        //                     isValid: false
-        //                 },
-        //                 {
-        //                     "isActive": true,
-        //                 },
-
-        //                 {
-        //                     "reportedUser":
-        //                     {
-        //                         $ne: "$email"
-        //                     }
-        //                 },
-        //             ]
-        //         }
-        //     },
-        //     {
-        //         $project: {
-        //             isValid: 1,
-        //             userBasic: 1,
-        //             email: "$email",
-        //             viewed:
-        //             {
-        //                 $cond: {
-        //                     if: {
-        //                         $in: ["$_id", "$adsUser2.adsID"]
-        //                     },
-        //                     then:
-        //                     {
-        //                         $arrayElemAt: ['$adsUser2.viewed', {
-        //                             $indexOfArray: [
-        //                                 "$adsUser2.adsID",
-        //                                 "$_id"
-        //                             ]
-        //                         }]
-        //                     },
-        //                     else: 0
-        //                 }
-        //             },
-        //             userAds: "$adsUser2",
-        //             ads: [{
-        //                 _id: "$_id",
-        //                 description: "$description",
-        //                 testDate: "$testDate",
-        //                 tayang: "$tayang",
-        //                 ageStart: "$startAge",
-        //                 ageEnd: "$endAge",
-        //                 placingID: "$placingID",
-        //                 liveTypeAds: "$liveTypeAds",
-        //                 adsUserId: "$userID",
-        //                 timestamps: "$timestamp",
-        //                 type: "$type",
-        //                 idApsara: "$idApsara",
-        //                 duration: "$duration",
-        //                 urlLink: "$urlLink",
-        //                 placingName:
-        //                 {
-        //                     $arrayElemAt: ['$places.namePlace', 0]
-        //                 },
-        //                 demografisID:
-        //                 {
-        //                     $cond: {
-        //                         if: {
-        //                             $isArray: "$view"
-        //                         },
-        //                         then: "$demografisID",
-        //                         else: ["$demografisID"],
-
-        //                     }
-        //                 },
-        //                 interestID: "$interestID",
-        //                 gender: "$gender",
-        //                 liveAt: "$liveTypeAds",
-        //                 liveTypeuserads: "$liveTypeAds",
-        //                 typeAdsID: "$typeAdsID",
-        //                 kelamin:
-        //                 {
-        //                     $cond: {
-        //                         if: {
-        //                             $eq: ['$gender', "L"]
-        //                         },
-        //                         then: "$co",
-        //                         else: "$ce"
-        //                     }
-        //                 },
-
-        //             }]
-        //         }
-        //     },
-        //     {
-        //         "$lookup": {
-        //             from: "adstypes",
-        //             as: "types",
-        //             let: {
-        //                 localID: '$ads.typeAdsID'
-        //             },
-        //             pipeline: [
-        //                 {
-        //                     $match:
-        //                     {
-        //                         $expr: {
-        //                             $in: ['$_id', '$$localID']
-        //                         }
-        //                     }
-        //                 },
-        //                 {
-        //                     $project: {
-        //                         "nameType": 1,
-
-        //                     }
-        //                 }
-        //             ],
-
-        //         }
-        //     },
-        //     {
-        //         $unwind: {
-        //             path: "$ads",
-
-        //         }
-        //     },
-        //     {
-        //         $unwind: {
-        //             path: "$userBasic",
-
-        //         }
-        //     },
-        //     {
-        //         $unwind: {
-        //             path: "$types",
-
-        //         }
-        //     },
-        //     {
-        //         $project: {
-        //             viewed: "$viewed",
-        //             adsId: "$ads._id",
-        //             userID: "$userBasic._id",
-        //             liveAt: "$ads.liveAt",
-        //             description: "$ads.description",
-        //             liveTypeAds: "$ads.liveTypeAds",
-        //             nameType: "$types.nameType",
-        //             timestamps: "$ads.timestamps",
-        //             typeAdsID: "$ads.typeAdsID",
-        //             adsUserId: "$ads.adsUserId",
-        //             placingID: "$ads.placingID",
-        //             type: "$ads.type",
-        //             placingName: "$ads.placingName",
-        //             idApsara: "$ads.idApsara",
-        //             duration: "$ads.duration",
-        //             urlLink: "$ads.urlLink",
-        //             testDate: "$ads.testDate",
-        //             tayang: "$ads.tayang",
-        //             createdAt:
-        //             {
-        //                 "$dateToString": {
-        //                     "format": "%Y-%m-%d %H:%M:%S",
-        //                     "date": {
-        //                         $add: [new Date(), 25200000]
-        //                     }
-        //                 }
-        //             },
-        //             kelaminku:
-        //             {
-        //                 $cond: {
-        //                     if: {
-        //                         $gt: [{
-        //                             $size: {
-        //                                 $setIntersection: ["$ads.kelamin", "$userBasic.gender"]
-        //                             }
-        //                         }, 0]
-        //                     },
-        //                     then: 1,
-        //                     else: 0
-        //                 }
-        //             },
-        //             minat:
-        //             {
-        //                 $cond: {
-        //                     if: {
-        //                         $gt: [{
-        //                             $size: {
-        //                                 $setIntersection: ["$ads.interestID.$id", "$userBasic.userInterests.$id"]
-        //                             }
-        //                         }, 0]
-        //                     },
-        //                     then: 1,
-        //                     else: 0
-        //                 }
-        //             },
-        //             lapak:
-        //             {
-        //                 $cond: {
-        //                     if: {
-        //                         $gt: [{
-        //                             $size: {
-        //                                 $setIntersection: ["$ads.demografisID.$id", "$userBasic.states.$id"]
-        //                             }
-        //                         }, 0]
-        //                     },
-        //                     then: 1,
-        //                     else: 0
-        //                 }
-        //             },
-        //             umur:
-        //             {
-        //                 $cond: {
-        //                     if: {
-        //                         $and: [
-        //                             {
-        //                                 $gte: ["$userBasic.age", "$ads.ageStart"]
-        //                             },
-        //                             {
-        //                                 $lte: ["$userBasic.age", "$ads.ageEnd"]
-        //                             }
-        //                         ]
-        //                     },
-        //                     then: 1,
-        //                     else: 0,
-
-        //                 }
-        //             },
-
-        //         }
-        //     },
-        //     {
-        //         $project: {
-        //             viewed: 1,
-        //             placingID: 1,
-        //             placingName: 1,
-        //             timestamps: 1,
-        //             adsId: 1,
-        //             userID: 1,
-        //             liveAt: 1,
-        //             liveTypeuserads: 1,
-        //             nameType: 1,
-        //             createdAt: 1,
-        //             kelaminku: 1,
-        //             minat: 1,
-        //             lapak: 1,
-        //             umur: 1,
-        //             testDate: 1,
-        //             tayang: 1,
-        //             adsUserId: 1,
-        //             liveTypeAds: 1,
-        //             typeAdsID: 1,
-        //             description: 1,
-        //             type: 1,
-        //             idApsara: 1,
-        //             duration: 1,
-        //             urlLink: 1,
-        //             priority:
-        //             {
-        //                 $switch: {
-        //                     branches: [
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "HIGHEST"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "HIGHT"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "HIGHT"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "HIGHT"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "HIGHT"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "MEDIUM"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "MEDIUM"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "MEDIUM"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "MEDIUM"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "LOW"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "LOW"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "LOW"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "LOW"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "LOWEST"
-        //                         },
-
-        //                     ],
-        //                     "default": "LOWEST"
-        //                 }
-        //             },
-        //             priorityNumber:
-        //             {
-        //                 $switch: {
-        //                     branches: [
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 6
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 5
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 5
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 5
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 5
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 4
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 4
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 4
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 4
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 3
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 3
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 3
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 3
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 2
-        //                         },
-
-        //                     ],
-        //                     "default": 2
-        //                 }
-        //             },
-
-        //         }
-        //     },
-        //     {
-        //         $match:
-        //         {
-        //             "nameType": nameType,
-
-        //         }
-        //     },
-        //     {
-        //         $sort: {
-        //             viewed: 1,
-        //             priorityNumber: - 1,
-        //             timestamps: 1,
-
-        //         }
-        //     },
-        //     {
-        //         $skip: 0
-        //     },
-        //     {
-        //         $limit: 1
-        //     },
-
-        // ]);
         var query = await this.adsModel.aggregate(
             [
                 {
@@ -2366,7 +1413,7 @@ export class AdsService {
                                         {
                                             $or: [
                                                 {
-                                                    " 	ads": false
+                                                    "liveTypeuserads": false
                                                 },
 
                                             ]
@@ -2411,14 +1458,14 @@ export class AdsService {
                                         {
                                             "isActive": true
                                         },
-                                        //{
-                                        //    $or: [
-                                        //        {
-                                        //            "liveTypeuserads": true
-                                        //        },
-                                        //        
-                                        //    ]
-                                        //}
+                                        {
+                                            $or: [
+                                                {
+                                                    "liveTypeuserads": true
+                                                },
+
+                                            ]
+                                        }
                                     ]
                                 },
 
@@ -2490,10 +1537,9 @@ export class AdsService {
                                 {
                                     "userID":
                                     {
-                                        $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                        $ne: new Object("6214438e602c354635ed7876")
                                     }
                                 },
-
                             ]
                         },
                         {
@@ -2537,20 +1583,20 @@ export class AdsService {
                                     }
                                 },
                                 {
-                                    "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                    "userID": new Object("6214438e602c354635ed7876")
                                 },
 
                             ]
-                        },]
+                        },
+
+                        ]
                     }
                 },
                 {
                     $project: {
-                        sekarang: 1,
                         isValid: 1,
                         userBasic: 1,
                         email: "$email",
-                        test: "$adsUser2.adsID",
                         viewed:
                         {
                             $cond: {
@@ -2576,9 +1622,9 @@ export class AdsService {
                             description: "$description",
                             testDate: "$testDate",
                             tayang: "$tayang",
-                            skipTime: "$skipTime",
                             ageStart: "$startAge",
                             ageEnd: "$endAge",
+                            skipTime: "$skipTime",
                             placingID: "$placingID",
                             liveTypeAds: "$liveTypeAds",
                             adsUserId: "$userID",
@@ -2756,20 +1802,18 @@ export class AdsService {
                 },
                 {
                     $project: {
-                        test: 1,
-                        sekarang: 1,
                         viewed: "$viewed",
                         adsId: "$ads._id",
                         userID: "$userBasic._id",
-                        liveAt: "$liveAt",
+                        liveAt: "$ads.liveAt",
                         description: "$ads.description",
                         liveTypeAds: "$ads.liveTypeAds",
                         nameType: "$types.nameType",
                         timestamps: "$ads.timestamps",
+                        skipTime: "$ads.skipTime",
                         typeAdsID: "$ads.typeAdsID",
                         adsUserId: "$ads.adsUserId",
                         placingID: "$ads.placingID",
-                        skipTime: "$ads.skipTime",
                         type: "$ads.type",
                         placingName: "$ads.placingName",
                         idApsara: "$ads.idApsara",
@@ -2843,16 +1887,12 @@ export class AdsService {
                                 },
                                 then: 1,
                                 else: 0,
-
                             }
                         },
-
                     }
                 },
                 {
                     $project: {
-                        test: 1,
-                        sekarang: 1,
                         viewed: 1,
                         placingID: 1,
                         placingName: 1,
@@ -2860,6 +1900,7 @@ export class AdsService {
                         adsId: 1,
                         userID: 1,
                         liveAt: 1,
+                        skipTime: 1,
                         liveTypeuserads: 1,
                         nameType: 1,
                         createdAt: 1,
@@ -2868,7 +1909,6 @@ export class AdsService {
                         lapak: 1,
                         umur: 1,
                         testDate: 1,
-                        skipTime: 1,
                         tayang: 1,
                         adsUserId: 1,
                         liveTypeAds: 1,
@@ -3288,7 +2328,6 @@ export class AdsService {
                                 "default": 2
                             }
                         },
-
                     }
                 },
                 {
@@ -3299,7 +2338,6 @@ export class AdsService {
                                 $and: [
                                     {
                                         "nameType": nameType,
-
                                     },
                                     {
                                         liveTypeAds: true
@@ -3310,7 +2348,6 @@ export class AdsService {
                                 $and: [
                                     {
                                         "nameType": nameType,
-
                                     },
                                     {
                                         liveTypeAds: false
@@ -3320,10 +2357,8 @@ export class AdsService {
                                             $lt: ["$viewed", 1]
                                         }
                                     },
-
                                 ]
                             },
-
                         ]
                     }
                 },
@@ -3339,7 +2374,7 @@ export class AdsService {
                     $skip: 0
                 },
                 {
-                    $limit: 5
+                    $limit: 1
                 },
 
             ]
@@ -3347,959 +2382,9 @@ export class AdsService {
         return query;
     }
 
-    async findAdsNew(email: string, idUser:string, nameType: string) {
-        console.log(email);
-        console.log(nameType);
-        //     {
-        //         $set:
-        //         {
-        //             email: email
-        //         }
-        //     },
-        //     {
-        //         $set:
-        //         {
-        //             tay:
-        //             {
-        //                 $ifNull: ['$tayang', 0]
-        //             }
-        //         }
-        //     },
-        //     {
-        //         $set: {
-        //             "testDate":
-        //             {
-        //                 "$dateToString": {
-        //                     "format": "%Y-%m-%d %H:%M:%S",
-        //                     "date": {
-        //                         $add: [new Date(), 25200000]
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     },
-        //     {
-        //         $set: {
-        //             "tayang": {
-        //                 $concat: [
-        //                     "$liveAt",
-        //                     " 00:00:00"
-        //                 ]
-        //             }
-        //         }
-        //     },
-        //     {
-        //         $set:
-        //         {
-        //             co: ["MALE", " MALE", "Laki-laki", "Pria"]
-        //         }
-        //     },
-        //     {
-        //         $set:
-        //         {
-        //             ce: ["FEMALE", " FEMALE", "Perempuan", "Wanita"]
-        //         }
-        //     },
-        //     {
-        //         "$lookup": {
-        //             from: "userbasics",
-        //             as: "userBasic",
-        //             let: {
-        //                 localID: '$email'
-        //             },
-        //             pipeline: [
-        //                 {
-        //                     $match:
-        //                     {
-        //                         $expr: {
-        //                             $eq: ['$email', '$$localID']
-        //                         }
-        //                     }
-        //                 },
-        //                 {
-        //                     $project: {
-        //                         "email": 1,
-        //                         "userInterests": 1,
-        //                         "states": ["$states"],
-        //                         "gender": ["$gender"],
-        //                         "age":
-        //                         {
-        //                             $cond: {
-        //                                 if: {
-        //                                     $and: ['$dob', {
-        //                                         $ne: ["$dob", ""]
-        //                                     }]
-        //                                 },
-        //                                 then: {
-        //                                     $toInt: {
-        //                                         $divide: [{
-        //                                             $subtract: [new Date(), {
-        //                                                 $toDate: "$dob"
-        //                                             }]
-        //                                         }, (365 * 24 * 60 * 60 * 1000)]
-        //                                     }
-        //                                 },
-        //                                 else: 0
-        //                             }
-        //                         },
 
-        //                     }
-        //                 }
-        //             ],
-
-        //         }
-        //     },
-        //     {
-        //         "$lookup": {
-        //             from: "adsplaces",
-        //             as: "places",
-        //             let: {
-        //                 localID: '$placingID'
-        //             },
-        //             pipeline: [
-        //                 {
-        //                     $match:
-        //                     {
-        //                         $expr: {
-        //                             $eq: ['$_id', '$$localID']
-        //                         }
-        //                     }
-        //                 },
-        //                 {
-        //                     $project: {
-        //                         namePlace: 1,
-
-        //                     }
-        //                 }
-        //             ],
-
-        //         }
-        //     },
-        //     {
-        //         "$lookup": {
-        //             from: "userads",
-        //             as: "adsUser",
-        //             let: {
-        //                 localID: '$userBasic._id'
-        //             },
-        //             pipeline: [
-        //                 {
-        //                     $match:
-        //                     {
-        //                         $and: [
-        //                             {
-        //                                 $expr: {
-        //                                     $in: ['$userID', '$$localID']
-        //                                 }
-        //                             },
-        //                             //{
-        //                             //    "statusView": false
-        //                             //},
-        //                             {
-        //                                 $or: [
-        //                                     {
-        //                                         "liveTypeuserads": false
-        //                                     },
-        //                                     //{
-        //                                     //		"liveTypeAds": null
-        //                                     //},
-        //                                 ]
-        //                             }
-        //                         ]
-        //                     },
-
-        //                 },
-        //                 {
-        //                     $project: {
-        //                         adsID: "$adsID",
-        //                         dodol: {
-        //                             $toString: "$adsID"
-        //                         },
-        //                         userID: 1,
-        //                         viewed: "$viewed",
-
-        //                     }
-        //                 },
-
-        //             ],
-
-        //         }
-        //     },
-        //     {
-        //         "$lookup": {
-        //             from: "userads",
-        //             as: "adsUser2",
-        //             let: {
-        //                 localID: '$userBasic._id'
-        //             },
-        //             pipeline: [
-        //                 {
-        //                     $match:
-        //                     {
-        //                         $and: [
-        //                             {
-        //                                 $expr: {
-        //                                     $in: ['$userID', '$$localID']
-        //                                 }
-        //                             },
-        //                             //{
-        //                             //    "statusView": false
-        //                             //},
-        //                             {
-        //                                 "isActive": true
-        //                             },
-        //                             {
-        //                                 $or: [
-        //                                     {
-        //                                         "liveTypeuserads": true
-        //                                     },
-        //                                     //{
-        //                                     //		"liveTypeAds": null
-        //                                     //},
-        //                                 ]
-        //                             }
-        //                         ]
-        //                     },
-
-        //                 },
-        //                 {
-        //                     $project: {
-        //                         adsID: "$adsID",
-        //                         dodol: {
-        //                             $toString: "$adsID"
-        //                         },
-        //                         userID: 1,
-        //                         viewed: "$viewed",
-
-        //                     }
-        //                 },
-
-        //             ],
-
-        //         }
-        //     },
-        //     {
-        //         $addFields: {
-        //             "isValid": {
-        //                 "$in": [
-        //                     "$_id",
-        //                     "$adsUser.adsID"
-        //                 ]
-        //             }
-        //         }
-        //     },
-        //     {
-        //         $match:
-        //         {
-        //             $and: [
-        //                 {
-        //                     "status": "APPROVE"
-        //                 },
-        //                 {
-        //                     $expr: {
-        //                         $lt: ["$totalView", "$tay"]
-        //                     }
-        //                 },
-        //                 {
-        //                     $expr: {
-        //                         $lt: ["$tayang", "$testDate"]
-        //                     }
-        //                 },
-        //                 {
-        //                     "_id": {
-        //                         $not: {
-        //                             $in: ["$adsUser.adsID"]
-        //                         }
-        //                     }
-        //                 },
-        //                 {
-        //                     isValid: false
-        //                 },
-        //                 {
-        //                     "isActive": true,
-        //                 },
-
-        //                 {
-        //                     "reportedUser":
-        //                     {
-        //                         $ne: "$email"
-        //                     }
-        //                 },
-        //             ]
-        //         }
-        //     },
-        //     {
-        //         $project: {
-        //             isValid: 1,
-        //             userBasic: 1,
-        //             email: "$email",
-        //             viewed:
-        //             {
-        //                 $cond: {
-        //                     if: {
-        //                         $in: ["$_id", "$adsUser2.adsID"]
-        //                     },
-        //                     then:
-        //                     {
-        //                         $arrayElemAt: ['$adsUser2.viewed', {
-        //                             $indexOfArray: [
-        //                                 "$adsUser2.adsID",
-        //                                 "$_id"
-        //                             ]
-        //                         }]
-        //                     },
-        //                     else: 0
-        //                 }
-        //             },
-        //             userAds: "$adsUser2",
-        //             ads: [{
-        //                 _id: "$_id",
-        //                 description: "$description",
-        //                 testDate: "$testDate",
-        //                 tayang: "$tayang",
-        //                 ageStart: "$startAge",
-        //                 ageEnd: "$endAge",
-        //                 placingID: "$placingID",
-        //                 liveTypeAds: "$liveTypeAds",
-        //                 adsUserId: "$userID",
-        //                 timestamps: "$timestamp",
-        //                 type: "$type",
-        //                 idApsara: "$idApsara",
-        //                 duration: "$duration",
-        //                 urlLink: "$urlLink",
-        //                 placingName:
-        //                 {
-        //                     $arrayElemAt: ['$places.namePlace', 0]
-        //                 },
-        //                 demografisID:
-        //                 {
-        //                     $cond: {
-        //                         if: {
-        //                             $isArray: "$view"
-        //                         },
-        //                         then: "$demografisID",
-        //                         else: ["$demografisID"],
-
-        //                     }
-        //                 },
-        //                 interestID: "$interestID",
-        //                 gender: "$gender",
-        //                 liveAt: "$liveTypeAds",
-        //                 liveTypeuserads: "$liveTypeAds",
-        //                 typeAdsID: "$typeAdsID",
-        //                 kelamin:
-        //                 {
-        //                     $cond: {
-        //                         if: {
-        //                             $eq: ['$gender', "L"]
-        //                         },
-        //                         then: "$co",
-        //                         else: "$ce"
-        //                     }
-        //                 },
-
-        //             }]
-        //         }
-        //     },
-        //     {
-        //         "$lookup": {
-        //             from: "adstypes",
-        //             as: "types",
-        //             let: {
-        //                 localID: '$ads.typeAdsID'
-        //             },
-        //             pipeline: [
-        //                 {
-        //                     $match:
-        //                     {
-        //                         $expr: {
-        //                             $in: ['$_id', '$$localID']
-        //                         }
-        //                     }
-        //                 },
-        //                 {
-        //                     $project: {
-        //                         "nameType": 1,
-
-        //                     }
-        //                 }
-        //             ],
-
-        //         }
-        //     },
-        //     {
-        //         $unwind: {
-        //             path: "$ads",
-
-        //         }
-        //     },
-        //     {
-        //         $unwind: {
-        //             path: "$userBasic",
-
-        //         }
-        //     },
-        //     {
-        //         $unwind: {
-        //             path: "$types",
-
-        //         }
-        //     },
-        //     {
-        //         $project: {
-        //             viewed: "$viewed",
-        //             adsId: "$ads._id",
-        //             userID: "$userBasic._id",
-        //             liveAt: "$ads.liveAt",
-        //             description: "$ads.description",
-        //             liveTypeAds: "$ads.liveTypeAds",
-        //             nameType: "$types.nameType",
-        //             timestamps: "$ads.timestamps",
-        //             typeAdsID: "$ads.typeAdsID",
-        //             adsUserId: "$ads.adsUserId",
-        //             placingID: "$ads.placingID",
-        //             type: "$ads.type",
-        //             placingName: "$ads.placingName",
-        //             idApsara: "$ads.idApsara",
-        //             duration: "$ads.duration",
-        //             urlLink: "$ads.urlLink",
-        //             testDate: "$ads.testDate",
-        //             tayang: "$ads.tayang",
-        //             createdAt:
-        //             {
-        //                 "$dateToString": {
-        //                     "format": "%Y-%m-%d %H:%M:%S",
-        //                     "date": {
-        //                         $add: [new Date(), 25200000]
-        //                     }
-        //                 }
-        //             },
-        //             kelaminku:
-        //             {
-        //                 $cond: {
-        //                     if: {
-        //                         $gt: [{
-        //                             $size: {
-        //                                 $setIntersection: ["$ads.kelamin", "$userBasic.gender"]
-        //                             }
-        //                         }, 0]
-        //                     },
-        //                     then: 1,
-        //                     else: 0
-        //                 }
-        //             },
-        //             minat:
-        //             {
-        //                 $cond: {
-        //                     if: {
-        //                         $gt: [{
-        //                             $size: {
-        //                                 $setIntersection: ["$ads.interestID.$id", "$userBasic.userInterests.$id"]
-        //                             }
-        //                         }, 0]
-        //                     },
-        //                     then: 1,
-        //                     else: 0
-        //                 }
-        //             },
-        //             lapak:
-        //             {
-        //                 $cond: {
-        //                     if: {
-        //                         $gt: [{
-        //                             $size: {
-        //                                 $setIntersection: ["$ads.demografisID.$id", "$userBasic.states.$id"]
-        //                             }
-        //                         }, 0]
-        //                     },
-        //                     then: 1,
-        //                     else: 0
-        //                 }
-        //             },
-        //             umur:
-        //             {
-        //                 $cond: {
-        //                     if: {
-        //                         $and: [
-        //                             {
-        //                                 $gte: ["$userBasic.age", "$ads.ageStart"]
-        //                             },
-        //                             {
-        //                                 $lte: ["$userBasic.age", "$ads.ageEnd"]
-        //                             }
-        //                         ]
-        //                     },
-        //                     then: 1,
-        //                     else: 0,
-
-        //                 }
-        //             },
-
-        //         }
-        //     },
-        //     {
-        //         $project: {
-        //             viewed: 1,
-        //             placingID: 1,
-        //             placingName: 1,
-        //             timestamps: 1,
-        //             adsId: 1,
-        //             userID: 1,
-        //             liveAt: 1,
-        //             liveTypeuserads: 1,
-        //             nameType: 1,
-        //             createdAt: 1,
-        //             kelaminku: 1,
-        //             minat: 1,
-        //             lapak: 1,
-        //             umur: 1,
-        //             testDate: 1,
-        //             tayang: 1,
-        //             adsUserId: 1,
-        //             liveTypeAds: 1,
-        //             typeAdsID: 1,
-        //             description: 1,
-        //             type: 1,
-        //             idApsara: 1,
-        //             duration: 1,
-        //             urlLink: 1,
-        //             priority:
-        //             {
-        //                 $switch: {
-        //                     branches: [
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "HIGHEST"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "HIGHT"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "HIGHT"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "HIGHT"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "HIGHT"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "MEDIUM"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "MEDIUM"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "MEDIUM"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "MEDIUM"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "LOW"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "LOW"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "LOW"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "LOW"
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: "LOWEST"
-        //                         },
-
-        //                     ],
-        //                     "default": "LOWEST"
-        //                 }
-        //             },
-        //             priorityNumber:
-        //             {
-        //                 $switch: {
-        //                     branches: [
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 6
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 5
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 5
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 5
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 5
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 4
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 4
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 4
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 4
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $gte: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 3
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $gte: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 3
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $gte: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 3
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $gte: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 3
-        //                         },
-        //                         {
-        //                             case: {
-        //                                 $and: [{
-        //                                     $lt: ["$kelaminku", 1]
-        //                                 }, {
-        //                                     $lt: ["$minat", 1]
-        //                                 }, {
-        //                                     $lt: ["$lapak", 1]
-        //                                 }, {
-        //                                     $lt: ["$umur", 1]
-        //                                 },]
-        //                             },
-        //                             then: 2
-        //                         },
-
-        //                     ],
-        //                     "default": 2
-        //                 }
-        //             },
-
-        //         }
-        //     },
-        //     {
-        //         $match:
-        //         {
-        //             "nameType": nameType,
-
-        //         }
-        //     },
-        //     {
-        //         $sort: {
-        //             viewed: 1,
-        //             priorityNumber: - 1,
-        //             timestamps: 1,
-
-        //         }
-        //     },
-        //     {
-        //         $skip: 0
-        //     },
-        //     {
-        //         $limit: 1
-        //     },
-
-        // ]);
-        var query = await this.adsModel.aggregate(
+    async findAdsNew(email: string, idUSer: string, nameType: string) {
+        console.log(JSON.stringify(
             [
                 {
                     $set:
@@ -4535,6 +2620,7 @@ export class AdsService {
                                         {
                                             "isActive": true
                                         },
+
                                     ]
                                 },
 
@@ -4570,7 +2656,7 @@ export class AdsService {
                         from: "accountbalances",
                         as: "balances",
                         let: {
-                            localID: new mongoose.Types.ObjectId(idUser)
+                            localID: new mongoose.Types.ObjectId(idUSer)
                         },
                         pipeline: [
                             {
@@ -4588,7 +2674,9 @@ export class AdsService {
                                             _id: "$iduser",
                                             tot: {
                                                 $sum: "$kredit",
+
                                             },
+
                                         }
                                     }],
                                     debet: [{
@@ -4596,9 +2684,12 @@ export class AdsService {
                                             _id: "$iduser",
                                             tot: {
                                                 $sum: "$debet",
+
                                             },
+
                                         }
                                     }],
+
                                 }
                             },
                             //{
@@ -4628,6 +2719,7 @@ export class AdsService {
                                             {
                                                 $arrayElemAt: ["$debet.tot", 0]
                                             },
+
                                         ]
                                     },
 
@@ -4640,117 +2732,120 @@ export class AdsService {
                 {
                     $match:
                     {
-                        $or: [{
-                            $and: [
-                                {
-                                    "status": "ACTIVE"
-                                },
-                                {
-                                    $expr: {
-                                        $lt: ["$totalView", "$tay"]
-                                    }
-                                },
-                                {
-                                    $expr: {
-                                        $lt: ["$tayang", "$testDate"]
-                                    }
-                                },
-                                {
-                                    "_id": {
-                                        $not: {
-                                            $in: ["$adsUser.adsID"]
+                        $or: [
+                            {
+                                $and: [
+                                    {
+                                        "status": "APPROVE"
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$totalView", "$tay"]
                                         }
-                                    }
-                                },
-                                {
-                                    isValid: false
-                                },
-                                {
-                                    "isActive": true,
-
-                                },
-                                {
-                                    "reportedUser":
+                                    },
                                     {
-                                        $ne: "$email"
-                                    }
-                                },
-                                {
-                                    "userID":
-                                    {
-                                        $ne: new mongoose.Types.ObjectId(idUser)
-                                    }
-                                },
-                                {
-                                    "userID":
-                                    {
-                                        $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
-                                    }
-                                },
-
-                            ]
-                        },
-                        {
-                            $and: [
-                                {
-                                    $expr: {
-                                        $eq: ["$liveAt", "$sekarang"]
-                                    }
-                                },
-                                {
-                                    "status": "ACTIVE"
-                                },
-                                {
-                                    $expr: {
-                                        $lt: ["$totalView", "$tay"]
-                                    }
-                                },
-                                {
-                                    $expr: {
-                                        $lt: ["$tayang", "$testDate"]
-                                    }
-                                },
-                                {
-                                    "_id": {
-                                        $not: {
-                                            $in: ["$adsUser.adsID"]
+                                        $expr: {
+                                            $lt: ["$tayang", "$testDate"]
                                         }
-                                    }
-                                },
-                                {
-                                    isValid: false
-                                },
-                                {
-                                    "isActive": true,
-
-                                },
-                                {
-                                    "reportedUser":
+                                    },
                                     {
-                                        $ne: "$email"
-                                    }
-                                },
-                                {
-                                    "userID": {
-                                        $ne: new mongoose.Types.ObjectId(idUser)
-                                    }
-                                },
-                                {
-                                    "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
-                                },
-                                {
-                                    $expr: {
-                                        $lt: [
-                                            {
-                                                $arrayElemAt: ["$balances.total", 0]
-                                            },
-                                            49000]
-                                    }
-                                },
-                            ]
-                        },]
+                                        "_id": {
+                                            $not: {
+                                                $in: ["$adsUser.adsID"]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        isValid: false
+                                    },
+                                    {
+                                        "isActive": true,
+                                        //
+                                    },
+                                    {
+                                        "reportedUser":
+                                        {
+                                            $ne: "$email"
+                                        }
+                                    },
+                                    {
+                                        "userID":
+                                        {
+                                            $ne: new mongoose.Types.ObjectId(idUSer)
+                                        }
+                                    },
+                                    {
+                                        "userID":
+                                        {
+                                            $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                        }
+                                    },
+
+                                ]
+                            },
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ["$liveAt", "$sekarang"]
+                                        }
+                                    },
+                                    {
+                                        "status": "APPROVE"
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$totalView", "$tay"]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$tayang", "$testDate"]
+                                        }
+                                    },
+                                    {
+                                        "_id": {
+                                            $not: {
+                                                $in: ["$adsUser.adsID"]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        isValid: false
+                                    },
+                                    {
+                                        "isActive": true,
+                                        //
+                                    },
+                                    {
+                                        "reportedUser":
+                                        {
+                                            $ne: "$email"
+                                        }
+                                    },
+                                    {
+                                        "userID": {
+                                            $ne: new mongoose.Types.ObjectId(idUSer)
+                                        }
+                                    },
+                                    {
+                                        "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: [
+                                                {
+                                                    $arrayElemAt: ["$balances.total", 0]
+                                                },
+                                                49000]
+                                        }
+                                    },
+                                ]
+                            },
+                        ]
                     }
                 },
+
                 {
                     $project: {
                         balances: 1,
@@ -4947,13 +3042,13 @@ export class AdsService {
                 {
                     $unwind: {
                         path: "$ads",
-
+                        preserveNullAndEmptyArrays: true
                     }
                 },
                 {
                     $unwind: {
                         path: "$userBasic",
-
+                        preserveNullAndEmptyArrays: true
                     }
                 },
                 {
@@ -5508,7 +3603,7 @@ export class AdsService {
                             {
                                 $and: [
                                     {
-                                        "nameType": nameType,
+                                        "nameType": "In App Ads",
 
                                     },
                                     {
@@ -5519,7 +3614,1272 @@ export class AdsService {
                             {
                                 $and: [
                                     {
-                                        "nameType": nameType,
+                                        "nameType": "In App Ads",
+
+                                    },
+                                    {
+                                        liveTypeAds: false
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$viewed", 1]
+                                        }
+                                    },
+
+                                ]
+                            },
+
+                        ]
+                    }
+                },
+                {
+                    $sort: {
+                        viewed: 1,
+                        priorityNumber: - 1,
+                        timestamps: 1,
+
+                    }
+                },
+                {
+                    $skip: 0
+                },
+                {
+                    $limit: 5
+                },
+
+            ]
+        ));
+        var query = await this.adsModel.aggregate(
+            [
+                {
+                    $set:
+                    {
+                        email: email
+                    }
+                },
+                {
+                    $set:
+                    {
+                        tay:
+                        {
+                            $ifNull: ['$tayang', 0]
+                        }
+                    }
+                },
+                {
+                    $set: {
+                        "testDate":
+                        {
+                            "$dateToString": {
+                                "format": "%Y-%m-%d %H:%M:%S",
+                                "date": {
+                                    $add: [new Date(), 25200000]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    $set: {
+                        "sekarang":
+                        {
+                            "$dateToString": {
+                                "format": "%Y-%m-%d",
+                                "date": {
+                                    $add: [new Date(), 25200000]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    $set: {
+                        "tayang": {
+                            $concat: [
+                                "$liveAt",
+                                " 00:00:00"
+                            ]
+                        }
+                    }
+                },
+                {
+                    $set:
+                    {
+                        co: ["MALE", " MALE", "Laki-laki", "Pria"]
+                    },
+
+                },
+                {
+                    $set:
+                    {
+                        ce: ["FEMALE", " FEMALE", "Perempuan", "Wanita"]
+                    }
+                },
+                {
+                    $set:
+                    {
+                        all: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria", "Other"]
+                    }
+                },
+                {
+                    $set:
+                    {
+                        ceOther: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "Other"]
+                    }
+                },
+                {
+                    $set:
+                    {
+                        coOther: ["MALE", " MALE", "Laki-laki", "Pria", "Other"]
+                    }
+                },
+                {
+                    $set:
+                    {
+                        ceCo: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria"]
+                    }
+                },
+                {
+                    $set:
+                    {
+                        other: ["Other"]
+                    }
+                },
+                {
+                    "$lookup": {
+                        from: "userbasics",
+                        as: "userBasic",
+                        let: {
+                            localID: '$email'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $expr: {
+                                        $eq: ['$email', '$$localID']
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    "email": 1,
+                                    "userInterests": 1,
+                                    "states": ["$states"],
+                                    "gender": ["$gender"],
+                                    "age":
+                                    {
+                                        $cond: {
+                                            if: {
+                                                $and: ['$dob', {
+                                                    $ne: ["$dob", ""]
+                                                }]
+                                            },
+                                            then: {
+                                                $toInt: {
+                                                    $divide: [{
+                                                        $subtract: [new Date(), {
+                                                            $toDate: "$dob"
+                                                        }]
+                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                }
+                                            },
+                                            else: 0
+                                        }
+                                    },
+
+                                }
+                            }
+                        ],
+
+                    }
+                },
+                {
+                    "$lookup": {
+                        from: "adsplaces",
+                        as: "places",
+                        let: {
+                            localID: '$placingID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $expr: {
+                                        $eq: ['$_id', '$$localID']
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    namePlace: 1,
+
+                                }
+                            }
+                        ],
+
+                    }
+                },
+                {
+                    "$lookup": {
+                        from: "userads",
+                        as: "adsUser",
+                        let: {
+                            localID: '$userBasic._id'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$userID', '$$localID']
+                                            }
+                                        },
+                                        {
+                                            $or: [
+                                                {
+                                                    " 	ads": false
+                                                },
+
+                                            ]
+                                        }
+                                    ]
+                                },
+
+                            },
+                            {
+                                $project: {
+                                    adsID: "$adsID",
+                                    dodol: {
+                                        $toString: "$adsID"
+                                    },
+                                    userID: 1,
+                                    viewed: "$viewed",
+
+                                }
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    "$lookup": {
+                        from: "userads",
+                        as: "adsUser2",
+                        let: {
+                            localID: '$userBasic._id'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$userID', '$$localID']
+                                            }
+                                        },
+                                        {
+                                            "isActive": true
+                                        },
+
+                                    ]
+                                },
+
+                            },
+                            {
+                                $project: {
+                                    adsID: "$adsID",
+                                    dodol: {
+                                        $toString: "$adsID"
+                                    },
+                                    userID: 1,
+                                    viewed: "$viewed",
+
+                                }
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    $addFields: {
+                        "isValid": {
+                            "$in": [
+                                "$_id",
+                                "$adsUser.adsID"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "$lookup": {
+                        from: "accountbalances",
+                        as: "balances",
+                        let: {
+                            localID: new mongoose.Types.ObjectId(idUSer)
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $expr: {
+                                        $eq: ['$iduser', '$$localID']
+                                    }
+                                }
+                            },
+                            {
+                                $facet: {
+                                    kredit: [{
+                                        $group: {
+                                            _id: "$iduser",
+                                            tot: {
+                                                $sum: "$kredit",
+
+                                            },
+
+                                        }
+                                    }],
+                                    debet: [{
+                                        $group: {
+                                            _id: "$iduser",
+                                            tot: {
+                                                $sum: "$debet",
+
+                                            },
+
+                                        }
+                                    }],
+
+                                }
+                            },
+                            //{
+                            //		$sort:{
+                            //				timestamp:-1
+                            //		}
+                            //},
+                            //{
+                            //		$limit:1
+                            //},
+                            {
+                                $project: {
+                                    debet:
+                                    {
+                                        $arrayElemAt: ["$debet.tot", 0]
+                                    },
+                                    kredit:
+                                    {
+                                        $arrayElemAt: ["$kredit.tot", 0]
+                                    },
+                                    total:
+                                    {
+                                        $subtract: [
+                                            {
+                                                $arrayElemAt: ["$kredit.tot", 0]
+                                            },
+                                            {
+                                                $arrayElemAt: ["$debet.tot", 0]
+                                            },
+
+                                        ]
+                                    },
+
+                                }
+                            }
+                        ],
+
+                    }
+                },
+                {
+                    $match:
+                    {
+                        $or: [
+                            {
+                                $and: [
+                                    {
+                                        "status": "APPROVE"
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$totalView", "$tay"]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$tayang", "$testDate"]
+                                        }
+                                    },
+                                    {
+                                        "_id": {
+                                            $not: {
+                                                $in: ["$adsUser.adsID"]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        isValid: false
+                                    },
+                                    {
+                                        "isActive": true,
+                                        //
+                                    },
+                                    {
+                                        "reportedUser":
+                                        {
+                                            $ne: "$email"
+                                        }
+                                    },
+                                    {
+                                        "userID":
+                                        {
+                                            $ne: new mongoose.Types.ObjectId(idUSer)
+                                        }
+                                    },
+                                    {
+                                        "userID":
+                                        {
+                                            $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                        }
+                                    },
+
+                                ]
+                            },
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ["$liveAt", "$sekarang"]
+                                        }
+                                    },
+                                    {
+                                        "status": "APPROVE"
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$totalView", "$tay"]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$tayang", "$testDate"]
+                                        }
+                                    },
+                                    {
+                                        "_id": {
+                                            $not: {
+                                                $in: ["$adsUser.adsID"]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        isValid: false
+                                    },
+                                    {
+                                        "isActive": true,
+                                        //
+                                    },
+                                    {
+                                        "reportedUser":
+                                        {
+                                            $ne: "$email"
+                                        }
+                                    },
+                                    {
+                                        "userID": {
+                                            $ne: new mongoose.Types.ObjectId(idUSer)
+                                        }
+                                    },
+                                    {
+                                        "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: [
+                                                {
+                                                    $arrayElemAt: ["$balances.total", 0]
+                                                },
+                                                49000]
+                                        }
+                                    },
+                                ]
+                            },
+                        ]
+                    }
+                },
+
+                {
+                    $project: {
+                        balances: 1,
+                        sekarang: 1,
+                        isValid: 1,
+                        userBasic: 1,
+                        email: "$email",
+                        test: "$adsUser2.adsID",
+                        viewed:
+                        {
+                            $cond: {
+                                if: {
+                                    $in: ["$_id", "$adsUser2.adsID"]
+                                },
+                                then:
+                                {
+                                    $arrayElemAt: ['$adsUser2.viewed', {
+                                        $indexOfArray: [
+                                            "$adsUser2.adsID",
+                                            "$_id"
+                                        ]
+                                    }]
+                                },
+                                else: 0
+                            }
+                        },
+                        userAds: "$adsUser2",
+                        kel: "$gender",
+                        ads: [{
+                            _id: "$_id",
+                            description: "$description",
+                            testDate: "$testDate",
+                            tayang: "$tayang",
+                            skipTime: "$skipTime",
+                            ageStart: "$startAge",
+                            ageEnd: "$endAge",
+                            placingID: "$placingID",
+                            liveTypeAds: "$liveTypeAds",
+                            adsUserId: "$userID",
+                            timestamps: "$timestamp",
+                            type: "$type",
+                            idApsara: "$idApsara",
+                            duration: "$duration",
+                            urlLink: "$urlLink",
+                            placingName:
+                            {
+                                $arrayElemAt: ['$places.namePlace', 0]
+                            },
+                            demografisID:
+                            {
+                                $cond: {
+                                    if: {
+                                        $isArray: "$view"
+                                    },
+                                    then: "$demografisID",
+                                    else: ["$demografisID"],
+
+                                }
+                            },
+                            interestID: "$interestID",
+                            gender: "$gender",
+                            liveAt: "$liveAt",
+                            liveTypeuserads: "$liveTypeAds",
+                            typeAdsID: "$typeAdsID",
+                            kelamin:
+                            {
+                                $switch: {
+                                    branches: [
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["P"]]
+                                            },
+                                            then: "$ce"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["L"]]
+                                            },
+                                            then: "$co"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["O"]]
+                                            },
+                                            then: "$other"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["L", "P"]]
+                                            },
+                                            then: "$ceCo"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["P", "L"]]
+                                            },
+                                            then: "$ceCo"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["O", "L"]]
+                                            },
+                                            then: "$coOther"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["L", "O"]]
+                                            },
+                                            then: "$coOther"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["P", "O"]]
+                                            },
+                                            then: "$ceOther"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["O", "P"]]
+                                            },
+                                            then: "$ceOther"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["L", "P", "O"]]
+                                            },
+                                            then: "$all"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["L", "O", "P"]]
+                                            },
+                                            then: "$all"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["O", "P", "L"]]
+                                            },
+                                            then: "$all"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["O", "L", "P"]]
+                                            },
+                                            then: "$all"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["P", "L", "O"]]
+                                            },
+                                            then: "$all"
+                                        },
+                                        {
+                                            case: {
+                                                $eq: ["$gender", ["P", "O", "L"]]
+                                            },
+                                            then: "$all"
+                                        },
+
+                                    ],
+                                    default: "kancut"
+                                }
+                            },
+
+                        }]
+                    }
+                },
+                {
+                    "$lookup": {
+                        from: "adstypes",
+                        as: "types",
+                        let: {
+                            localID: '$ads.typeAdsID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $expr: {
+                                        $in: ['$_id', '$$localID']
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    "nameType": 1,
+
+                                }
+                            }
+                        ],
+
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$ads",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$userBasic",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$types",
+
+                    }
+                },
+                {
+                    $project: {
+                        balances: 1,
+                        test: 1,
+                        sekarang: 1,
+                        viewed: "$viewed",
+                        adsId: "$ads._id",
+                        userID: "$userBasic._id",
+                        liveAt: "$liveAt",
+                        description: "$ads.description",
+                        liveTypeAds: "$ads.liveTypeAds",
+                        nameType: "$types.nameType",
+                        timestamps: "$ads.timestamps",
+                        typeAdsID: "$ads.typeAdsID",
+                        adsUserId: "$ads.adsUserId",
+                        placingID: "$ads.placingID",
+                        skipTime: "$ads.skipTime",
+                        type: "$ads.type",
+                        placingName: "$ads.placingName",
+                        idApsara: "$ads.idApsara",
+                        duration: "$ads.duration",
+                        urlLink: "$ads.urlLink",
+                        testDate: "$ads.testDate",
+                        tayang: "$ads.tayang",
+                        createdAt:
+                        {
+                            "$dateToString": {
+                                "format": "%Y-%m-%d %H:%M:%S",
+                                "date": {
+                                    $add: [new Date(), 25200000]
+                                }
+                            }
+                        },
+                        kelaminku:
+                        {
+                            $cond: {
+                                if: {
+                                    $gt: [{
+                                        $size: {
+                                            $setIntersection: ["$ads.kelamin", "$userBasic.gender"]
+                                        }
+                                    }, 0]
+                                },
+                                then: 1,
+                                else: 0
+                            }
+                        },
+                        minat:
+                        {
+                            $cond: {
+                                if: {
+                                    $gt: [{
+                                        $size: {
+                                            $setIntersection: ["$ads.interestID.$id", "$userBasic.userInterests.$id"]
+                                        }
+                                    }, 0]
+                                },
+                                then: 1,
+                                else: 0
+                            }
+                        },
+                        lapak:
+                        {
+                            $cond: {
+                                if: {
+                                    $gt: [{
+                                        $size: {
+                                            $setIntersection: ["$ads.demografisID.$id", "$userBasic.states.$id"]
+                                        }
+                                    }, 0]
+                                },
+                                then: 1,
+                                else: 0
+                            }
+                        },
+                        umur:
+                        {
+                            $cond: {
+                                if: {
+                                    $and: [
+                                        {
+                                            $gte: ["$userBasic.age", "$ads.ageStart"]
+                                        },
+                                        {
+                                            $lte: ["$userBasic.age", "$ads.ageEnd"]
+                                        }
+                                    ]
+                                },
+                                then: 1,
+                                else: 0,
+
+                            }
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+                        balances: 1,
+                        test: 1,
+                        sekarang: 1,
+                        viewed: 1,
+                        placingID: 1,
+                        placingName: 1,
+                        timestamps: 1,
+                        adsId: 1,
+                        userID: 1,
+                        liveAt: 1,
+                        liveTypeuserads: 1,
+                        nameType: 1,
+                        createdAt: 1,
+                        kelaminku: 1,
+                        minat: 1,
+                        lapak: 1,
+                        umur: 1,
+                        testDate: 1,
+                        skipTime: 1,
+                        tayang: 1,
+                        adsUserId: 1,
+                        liveTypeAds: 1,
+                        typeAdsID: 1,
+                        description: 1,
+                        type: 1,
+                        idApsara: 1,
+                        duration: 1,
+                        urlLink: 1,
+                        priority:
+                        {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "HIGHEST"
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "HIGHT"
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "HIGHT"
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "HIGHT"
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "HIGHT"
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "MEDIUM"
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "MEDIUM"
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "MEDIUM"
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "MEDIUM"
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "LOW"
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "LOW"
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "LOW"
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "LOW"
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: "LOWEST"
+                                    },
+
+                                ],
+                                "default": "LOWEST"
+                            }
+                        },
+                        priorityNumber:
+                        {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 6
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 5
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 5
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 5
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 5
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 4
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 4
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 4
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 4
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $gte: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 3
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $gte: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 3
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $gte: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 3
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $gte: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 3
+                                    },
+                                    {
+                                        case: {
+                                            $and: [{
+                                                $lt: ["$kelaminku", 1]
+                                            }, {
+                                                $lt: ["$minat", 1]
+                                            }, {
+                                                $lt: ["$lapak", 1]
+                                            }, {
+                                                $lt: ["$umur", 1]
+                                            },]
+                                        },
+                                        then: 2
+                                    },
+
+                                ],
+                                "default": 2
+                            }
+                        },
+
+                    }
+                },
+                {
+                    $match:
+                    {
+                        $or: [
+                            {
+                                $and: [
+                                    {
+                                        "nameType": "In App Ads",
+
+                                    },
+                                    {
+                                        liveTypeAds: true
+                                    }
+                                ]
+                            },
+                            {
+                                $and: [
+                                    {
+                                        "nameType": "In App Ads",
 
                                     },
                                     {
