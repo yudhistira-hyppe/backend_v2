@@ -99915,7 +99915,7 @@ export class PostsService {
           }
         },
         {
-          $skip: skip
+          $skip: (skip * limit)
         },
         {
           $limit: limit
@@ -101406,7 +101406,7 @@ export class PostsService {
           }
         },
         {
-          $skip: skip
+          $skip: (skip * limit)
         },
         {
           $limit: limit
@@ -102895,7 +102895,7 @@ export class PostsService {
           }
         },
         {
-          $skip: skip
+          $skip: (skip * limit)
         },
         {
           $limit: limit
