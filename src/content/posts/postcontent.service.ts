@@ -1659,19 +1659,6 @@ export class PostContentService {
     let dataPosts = await this.postService.findByPostId(Posts_._id.toString());
     var dataResponseGenerate = await this.genrateDataPost5(dataPosts, data_userbasics);
     let CreatePostResponse_ = new CreatePostResponse();
-    let dataResponse = await this.postService.findByPostId(Posts_._id.toString());
-    var avatar = await this.utilService.getAvatarUser(Posts_.email.toString());
-    var username = await this.utilService.getUsertname(Posts_.email.toString());
-    dataResponse["username"] = username; 
-    dataResponse["avatar"] = avatar; 
-    dataResponse["isLiked"] = false;
-    dataResponse["privacy"] = {
-      isCelebrity: (data_userbasics.isCelebrity != undefined) ? data_userbasics.isCelebrity : false,
-      isIdVerified: (data_userbasics.isIdVerified != undefined) ? data_userbasics.isIdVerified : false,
-      isPrivate: (data_userbasics.isPrivate != undefined) ? data_userbasics.isPrivate : false,
-      isFollowPrivate: (data_userbasics.isFollowPrivate != undefined) ? data_userbasics.isFollowPrivate : false,
-      isPostPrivate: (data_userbasics.isPostPrivate != undefined) ? data_userbasics.isPostPrivate : false,
-    };
     let Messages_ = new Messages();
     Messages_.info = ["The process successful"];
     CreatePostResponse_.messages = Messages_;
