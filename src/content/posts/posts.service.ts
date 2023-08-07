@@ -99864,9 +99864,6 @@ export class PostsService {
   async landingpageMy(email: string, type: string, skip: number, limit: number) {
     var pipeline = [];
 
-    var sortObject = null;
-    var value = 0;
-
 
     if (type == "pict") {
 

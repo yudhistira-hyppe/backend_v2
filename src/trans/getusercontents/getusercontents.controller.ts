@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Headers, BadRequestException, UseInterceptors } from '@nestjs/common';
 import { GetusercontentsService } from './getusercontents.service';
 import { CreateGetusercontentsDto } from './dto/create-getusercontents.dto';
 import { Getusercontents } from './schemas/getusercontents.schema';
@@ -20,6 +20,7 @@ import { ContenteventsService } from '../../content/contentevents/contentevents.
 import { TagCountService } from '../../content/tag_count/tag_count.service';
 import { InterestCountService } from '../../content/interest_count/interest_count.service';
 import { UtilsService } from '../../utils/utils.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 @Controller()
 export class GetusercontentsController {
     constructor(private readonly getusercontentsService: GetusercontentsService,
@@ -4925,40 +4926,27 @@ export class GetusercontentsController {
     }
 
     @Post('api/getuserposts/my/v2')
+    @UseInterceptors(FileInterceptor('postContent'))
     @UseGuards(JwtAuthGuard)
-    async contentlandingpagemy(@Req() request: Request): Promise<any> {
+    async contentlandingpagemy(@Body() body, @Headers('x-auth-user') email: string): Promise<any> {
 
-        var pageNumber = 0;
-        var pageRow = 0;
+        var pageNumber = null;
+        var pageRow = null;
         var postType = null;
-        var email = null;
         var data = null;
         var datasearch = null;
         var emailreceiver = null;
-
-
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["pageNumber"] !== undefined) {
-            pageNumber = request_json["pageNumber"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
+        if (body.pageNumber !== undefined) {
+            pageNumber = body.pageNumber;
         }
 
-        if (request_json["pageRow"] !== undefined) {
-            pageRow = request_json["pageRow"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
+        if (body.pageRow !== undefined) {
+            pageRow = body.pageRow;
         }
-        if (request_json["postType"] !== undefined) {
-            postType = request_json["postType"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
+        if (body.postType !== undefined) {
+            postType = body.postType;
         }
-        if (request_json["email"] !== undefined) {
-            email = request_json["email"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
+
 
         const messages = {
             "info": ["The process successful"],
@@ -4970,7 +4958,7 @@ export class GetusercontentsController {
 
         try {
 
-            data = await this.postsService.landingpageMy(email, postType, pageNumber, pageRow);
+            data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow));
             lengpict = data.length;
 
         } catch (e) {
