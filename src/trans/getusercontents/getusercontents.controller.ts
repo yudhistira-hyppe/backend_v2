@@ -4928,8 +4928,8 @@ export class GetusercontentsController {
     @UseGuards(JwtAuthGuard)
     async contentlandingpagemy(@Req() request: Request): Promise<any> {
 
-        var skip = 0;
-        var limit = 0;
+        var pageNumber = 0;
+        var pageRow = 0;
         var postType = null;
         var email = null;
         var data = null;
@@ -4938,14 +4938,14 @@ export class GetusercontentsController {
 
 
         var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["skip"] !== undefined) {
-            skip = request_json["skip"];
+        if (request_json["pageNumber"] !== undefined) {
+            pageNumber = request_json["pageNumber"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
 
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
+        if (request_json["pageRow"] !== undefined) {
+            pageRow = request_json["pageRow"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
@@ -4970,7 +4970,7 @@ export class GetusercontentsController {
 
         try {
 
-            data = await this.postsService.landingpageMy(email, postType, skip, limit);
+            data = await this.postsService.landingpageMy(email, postType, pageNumber, pageRow);
             lengpict = data.length;
 
         } catch (e) {
