@@ -233,7 +233,7 @@ export class AdsUserCompareController {
         }
 
         var current_date = await this.utilsService.getDateTimeString();
-        const data_ads = await this.adsService.findAds(headers['x-auth-user'], type_);
+        const data_ads = await this.adsService.findAds(headers['x-auth-user'], type_, data_userbasic._id.toString());
         console.log(data_ads);
         var genIdUserAds = new mongoose.Types.ObjectId();
         if (await this.utilsService.ceckData(data_ads)) {
