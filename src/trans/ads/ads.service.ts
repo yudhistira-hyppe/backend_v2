@@ -2384,7 +2384,7 @@ export class AdsService {
 
 
     async findAdsNew(email: string, idUSer: string, nameType: string) {
-        /// var query = await this.adsModel.aggregate(
+        // var query = await this.adsModel.aggregate(
         //     [
         //         {
         //             $set:
