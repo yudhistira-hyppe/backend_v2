@@ -95951,7 +95951,7 @@ export class PostsService {
             selfContents: 1,
             official: 1,
             selfContent: 1,
-            musik: 1,
+            music: "$musik",
             isLiked: {
               $ifNull: ["$isLike", false]
             },
@@ -95994,7 +95994,6 @@ export class PostsService {
             "mood": 1,
             "testDate": 1,
             "musicId": 1,
-            "music": 1,
             "tagPeople": 1,
             "mediaType": 1,
             "email": 1,
@@ -97847,7 +97846,7 @@ export class PostsService {
             selfContents: 1,
             official: 1,
             selfContent: 1,
-            musik: 1,
+            music: "$musik",
             isLiked: {
               $ifNull: ["$isLike", false]
             },
@@ -97890,7 +97889,6 @@ export class PostsService {
             "mood": 1,
             "testDate": 1,
             "musicId": 1,
-            "music": 1,
             "tagPeople": 1,
             "mediaType": 1,
             "email": 1,
@@ -99741,7 +99739,7 @@ export class PostsService {
             selfContents: 1,
             official: 1,
             selfContent: 1,
-            musik: 1,
+            music: "$musik",
             isLiked: {
               $ifNull: ["$isLike", false]
             },
@@ -99784,7 +99782,6 @@ export class PostsService {
             "mood": 1,
             "testDate": 1,
             "musicId": 1,
-            "music": 1,
             "tagPeople": 1,
             "mediaType": 1,
             "email": 1,
