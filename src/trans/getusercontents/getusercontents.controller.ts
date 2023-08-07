@@ -4685,12 +4685,12 @@ export class GetusercontentsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
+        limit = request_json["limit"];
+        // if (request_json["limit"] !== undefined) {
+        //     limit = request_json["limit"];
+        // } else {
+        //     throw new BadRequestException("Unabled to proceed");
+        // }
         if (request_json["type"] !== undefined) {
             type = request_json["type"];
         } else {
