@@ -1108,4 +1108,10 @@ export class AdsUserCompareController {
             );
         }
     }
+
+    @Get('/user/test/')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async test(){
+        return await this.adsService.findAdsNewTest("randyaji.ra@gmail.com", "62144383602c354635ed786b", "In App Ads");
+    }
 }
