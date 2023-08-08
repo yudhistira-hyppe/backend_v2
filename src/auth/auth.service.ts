@@ -7695,7 +7695,7 @@ export class AuthService {
         data['avatar'] = mediaprofilepicts_res;
       }
       data["isIdVerified"] = datauserbasicsService.isIdVerified;
-      data["isEmailVerified"] = datauserauthsService.isEmailVerified.toString();
+      data["isEmailVerified"] = datauserauthsService.isEmailVerified;
       data["token"] = 'Bearer ' + token;
       data["idProofStatus"] = datauserbasicsService.idProofStatus;
       data["insight"] = insights_res;
@@ -9178,7 +9178,7 @@ export class AuthService {
                   data['avatar'] = mediaprofilepicts_res;
                 }
                 data["isIdVerified"] = datauserbasicsService.isIdVerified;
-                data["isEmailVerified"] = datauserauthsService.isEmailVerified.toString();
+                data["isEmailVerified"] = datauserauthsService.isEmailVerified;
                 data["token"] = 'Bearer ' + token;
                 data["idProofStatus"] = datauserbasicsService.idProofStatus;
                 data["insight"] = insights_res;
