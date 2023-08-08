@@ -2230,6 +2230,10 @@ export class PostContentService {
     //Generate Certified
     if (Posts_.certified) {
       this.generateCertificate(String(body.postID), lang.toString());
+      if (Posts_.saleAmount > 0) {
+        await this.utilService.sendFcmV2(Posts_.email.toString(), Posts_.email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), Posts_.postType.toString())
+        //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+      }
     } 
 
     //Send FCM Tag
