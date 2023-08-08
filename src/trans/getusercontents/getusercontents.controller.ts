@@ -5161,14 +5161,15 @@ export class GetusercontentsController {
     @Post('api/posts/getuserposts/byprofile')
     @UseInterceptors(FileInterceptor('postContent'))
     @UseGuards(JwtAuthGuard)
-    async contentbyprofile(@Body() body, @Headers('x-auth-user') email: string): Promise<any> {
+    async contentbyprofile(@Body() body): Promise<any> {
 
         var pageNumber = null;
         var pageRow = null;
         var postType = null;
         var data = null;
         var datasearch = null;
-        var emailreceiver = null;
+        var email = null;
+
         if (body.pageNumber !== undefined) {
             pageNumber = body.pageNumber;
         }
@@ -5179,7 +5180,9 @@ export class GetusercontentsController {
         if (body.postType !== undefined) {
             postType = body.postType;
         }
-
+        if (body.email !== undefined) {
+            email = body.email;
+        }
 
         const messages = {
             "info": ["The process successful"],
