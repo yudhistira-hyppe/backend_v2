@@ -908,7 +908,7 @@ export class AuthController {
           response_code: 202,
           data: {
             email: LoginRequest_.email,
-            isEmailVerified: _isEmailVerified
+            isEmailVerified: _isEmailVerified.toString()
           },
           messages: {
             info: [messages],
@@ -938,7 +938,7 @@ export class AuthController {
           response_code: 202,
           data: {
             email: LoginRequest_.email,
-            isEmailVerified: _isEmailVerified
+            isEmailVerified: _isEmailVerified.toString()
           },
           messages: {
             info: [messages],
