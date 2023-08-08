@@ -1,32 +1,48 @@
-import { Body, Controller, Post, UseGuards, Headers, Param, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Headers, Param, Get, HttpCode, HttpStatus, Query, Req } from '@nestjs/common';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { GenreDto } from './dto/genre.dto';
 import { GenreService } from './genre.service';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
 
 @Controller()
 export class GenreController {
     constructor(
         private readonly genreService: GenreService,
         private readonly utilsService: UtilsService,
-        private readonly errorHandler: ErrorHandler) {}
+        private readonly errorHandler: ErrorHandler,
+        private readonly logapiSS: LogapisService,
+        ) {}
 
     @UseGuards(JwtAuthGuard)
     @Post('api/genre/create')
     @HttpCode(HttpStatus.ACCEPTED)
-    async create(@Body() GenreDto_: GenreDto, @Headers() headers) {
+    async create(@Body() GenreDto_: GenreDto, @Headers() headers, @Req() request) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var reqbody = JSON.parse(JSON.stringify(GenreDto_));
+
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
         }
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email header dan token not match',
             );
         } 
         if (GenreDto_.name==undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+            
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed param name is required',
             );
@@ -44,29 +60,49 @@ export class GenreController {
                 ]
             }
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
         return Response;
     }
 
     @UseGuards(JwtAuthGuard)
     @Post('api/genre/update')
     @HttpCode(HttpStatus.ACCEPTED)
-    async update(@Body() GenreDto_: GenreDto, @Headers() headers) {
+    async update(@Body() GenreDto_: GenreDto, @Headers() headers, @Req() request) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var reqbody = JSON.parse(JSON.stringify(GenreDto_));
+
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
         }
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email header dan token not match',
             );
         }
         if (GenreDto_._id == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed param _id is required',
             );
         }
         if (GenreDto_.name == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed name id is required',
             );
@@ -83,24 +119,41 @@ export class GenreController {
                 ]
             }
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
         return Response;
     }
 
     @UseGuards(JwtAuthGuard)
     @Post('api/genre/delete')
     @HttpCode(HttpStatus.ACCEPTED)
-    async delete(@Body() GenreDto_: GenreDto, @Headers() headers) {
+    async delete(@Body() GenreDto_: GenreDto, @Headers() headers, @Req() request) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var reqbody = JSON.parse(JSON.stringify(GenreDto_));
+
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
         }
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email header dan token not match',
             );
         }
         if (GenreDto_._id == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed param _id is required',
             );
@@ -115,30 +168,49 @@ export class GenreController {
                 ]
             }
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
         return Response;
     }
 
     @UseGuards(JwtAuthGuard)
     @Get('api/genre/:id')
     @HttpCode(HttpStatus.ACCEPTED)
-    async getOne(@Param('id') id: string, @Headers() headers) {
+    async getOne(@Param('id') id: string, @Headers() headers, @Req() request) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
         }
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email header dan token not match',
             );
         }
         if (id==undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed param id is required',
             );
         }
         var profile = await this.utilsService.generateProfile(headers['x-auth-user'], "FULL");
         if (!(await this.utilsService.ceckData(profile))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed user not found',
             );
@@ -158,6 +230,10 @@ export class GenreController {
                 ]
             }
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
         return Response;
     }
 
@@ -167,7 +243,11 @@ export class GenreController {
     async getMusicPost(
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
-        @Query('search') search: string, @Headers() headers) {
+        @Query('search') search: string, @Headers() headers, @Req() request) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+
         const pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
         const pageRow_ = (pageRow != undefined) ? pageRow : 8;
         const search_ = search;
@@ -176,6 +256,9 @@ export class GenreController {
 
         var profile = await this.utilsService.generateProfile(headers['x-auth-user'], "FULL");
         if (!(await this.utilsService.ceckData(profile))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed user not found',
             );
@@ -198,6 +281,10 @@ export class GenreController {
             },
             page: pageNumber
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
         return Response;
     }
 }
