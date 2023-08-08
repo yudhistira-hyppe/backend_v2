@@ -99430,6 +99430,70 @@ export class PostsService {
         },
         {
           "$lookup": {
+            from: "friend_list",
+            as: "friend",
+            let: {
+              localID: '$email',
+              user: email
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $or: [
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $in: ['$email', '$$localID']
+                          }
+                        },
+                        {
+                          "friendlist.email": email
+                        }
+                      ]
+                    },
+                    {
+                      $and: [
+                        {
+                          "email": email
+                        },
+                        {
+                          $expr: {
+                            $in: ['$friendlist.email', '$$localID']
+                          }
+                        },
+
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                $project: {
+                  email: 1,
+                  friend:
+                  {
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          $size: '$friendlist'
+                        }, 0]
+                      },
+                      then: 1,
+                      else: 0
+                    }
+                  },
+
+                }
+              },
+
+            ]
+          },
+
+        },
+        {
+          "$lookup": {
             from: "contentevents",
             as: "following",
             let: {
@@ -99690,6 +99754,7 @@ export class PostsService {
                   "isPostPrivate": 1,
                   email: 1,
 
+
                 }
               }
             ],
@@ -99851,12 +99916,6 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-        //{
-        //    $unwind: {
-        //        path: "$categories",
-        //        preserveNullAndEmptyArrays: true
-        //    }
-        //},
         {
           $set: {
             index: {
@@ -99864,26 +99923,56 @@ export class PostsService {
             }
           }
         },
-        //{
-        //    $set: {
-        //        indexUser: {
-        //            $indexOfArray: ["$all.email", "$email"]
-        //        }
-        //    }
-        //},
+        {
+          $set: {
+            ded: {
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$comment.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then: [
+                  {
+                    $arrayElemAt: ["$comment", "$index"]
+                  }],
+                else: []
+              }
+            },
+
+          }
+        },
         {
           $set: {
             testLogs: [
               {
-                $ifNull: [
-                  {
-                    $arrayElemAt: ["$countLogs._id", "$indexLogs"]
+                $cond: {
+                  if: {
+                    $eq: [
+                      {
+                        $arrayElemAt: ["$ded", "$index"]
+                      },
+                      null
+                    ]
+                  },
+                  then: [],
+                  else: {
+                    $arrayElemAt: ["$ded", "$index"]
                   }
-                  ,
-                  []
-                ]
-              }
+                }
+              },
+
             ]
+          }
+        },
+        {
+          $unwind: {
+            path: "$testLogs"
           }
         },
         {
@@ -99895,13 +99984,13 @@ export class PostsService {
                 input: "$userBasic",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.email",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -99913,13 +100002,13 @@ export class PostsService {
                 input: "$username",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.email",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -99931,13 +100020,13 @@ export class PostsService {
                 input: "$following",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.senderParty",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.senderParty", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -99949,13 +100038,13 @@ export class PostsService {
                 input: "$username",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.email",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -99967,13 +100056,13 @@ export class PostsService {
                 input: "$friend",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.email",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -99985,16 +100074,15 @@ export class PostsService {
                 input: "$media",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.postID",
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    },]
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
-
         {
           $unwind: {
             path: "$user",
@@ -100013,12 +100101,59 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-
         {
           $set: {
             kosong: {
               $ifNull: ['$user.profilePict.$id', "kancut"]
             }
+          }
+        },
+        {
+          $set: {
+            cekMusic:
+            {
+              $arrayElemAt: ["$all", "$index"]
+            },
+
+          }
+        },
+        {
+          $set: {
+            musicOk: {
+              $ifNull: ["$cekMusic.musicId", "kampret"]
+            },
+
+          }
+        },
+        {
+          $set: {
+            musicNih:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$musicOk", "kampret"]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $filter: {
+                    input: "$music",
+                    as: "song",
+                    cond: {
+                      $eq: ["$$song._id", "$cekMusic.musicId"]
+                    }
+                  }
+                },
+
+              }
+            },
+
+          }
+        },
+        {
+          $unwind: {
+            path: "$musicNih",
+            preserveNullAndEmptyArrays: true
           }
         },
         {
@@ -100055,162 +100190,35 @@ export class PostsService {
 
           }
         },
-
         {
           $unwind: {
             path: "$avatar",
             preserveNullAndEmptyArrays: true
           }
         },
-
         {
           $project: {
-            _id: "$postID",
-            musicTitle:
+            test1:
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.musicTitle", "$index"]
-                }
-              }
+              $arrayElemAt: ["$mailViewer", "$index"]
             },
+            test2:
+            {
+              $arrayElemAt: ["$all.kancuts", "$index"]
+            },
+            _id:
+            {
+              $arrayElemAt: ["$all.postID", "$index"]
+            },
+            musicTitle: "$musicNih.musicTitle",
             "postID": 1,
-            "artistName":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.artistName", "$index"]
-                }
-              }
-            },
-            "albumName":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.albumName", "$index"]
-                }
-              }
-            },
-            "apsaraMusic":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.apsaraMusic", "$index"]
-                }
-              }
-            },
-            "apsaraThumnail":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.apsaraThumnail", "$index"]
-                }
-              }
-            },
-            "genre":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.genre.name", "$index"]
-                }
-              }
-            },
-            "theme":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.theme.name", "$index"]
-                }
-              }
-            },
-            "mood":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.mood.name", "$index"]
-                }
-              }
-            },
+            "artistName": "$musicNih.artistName",
+            "albumName": "$musicNih.albumName",
+            "apsaraMusic": "$musicNih.apsaraMusic",
+            "apsaraThumnail": "$musicNih.apsaraThumnail",
+            "genre": "$musicNih.genre",
+            "theme": "$musicNih.theme",
+            "mood": "$musicNih.mood",
             "testDate":
             {
               $arrayElemAt: ["$testDate", 0]
@@ -100322,16 +100330,16 @@ export class PostsService {
             },
             comments:
             {
-              $size: "$testLogs"
+              $size: "$ded"
             },
             email:
             {
               $arrayElemAt: ["$all.email", "$index"]
             },
-            //viewer: 
-            //{
-            //    $arrayElemAt: ["$all.viewer", "$index"]
-            //},
+            viewer:
+            {
+              $arrayElemAt: ["$all.viewer", "$index"]
+            },
             oldDate:
             {
               $arrayElemAt: ["$oldDate", 0]
@@ -100371,24 +100379,7 @@ export class PostsService {
                 else: 0
               }
             },
-            musik:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music", "$index"]
-                }
-              }
-            },
+            musik: "$musicNih",
             isLike:
             {
               $cond: {
@@ -100409,29 +100400,7 @@ export class PostsService {
                 else: false
               }
             },
-            comment:
-              [
-                {
-                  $cond: {
-                    if: {
-                      $eq: [
-                        {
-                          $arrayElemAt: ["$comment.postID", "$index"]
-                        },
-                        {
-                          $arrayElemAt: ["$all.postID", "$index"]
-                        }
-                      ]
-                    },
-                    then:
-                    {
-                      $arrayElemAt: ["$comment", "$index"]
-                    },
-                    else: "$lemah"
-                  }
-                },
-
-              ],
+            comment: "$ded",
             interest: {
               $filter: {
                 input: "$category",
@@ -100446,8 +100415,12 @@ export class PostsService {
                 }
               }
             },
-            friends: { $arrayElemAt: ["$friendster.friend", 0] },
-            "following": { $arrayElemAt: ["$followings.following", 0] },
+            friends: {
+              $arrayElemAt: ["$friendster.friend", 0]
+            },
+            "following": {
+              $arrayElemAt: ["$followings.following", 0]
+            },
             "insight":
             {
               "likes":
@@ -100599,6 +100572,7 @@ export class PostsService {
               $arrayElemAt: ["$all.mailViewer", "$index"]
             },
             userInterested: "$userInterest.userInterests",
+
           },
 
         },
@@ -100632,7 +100606,7 @@ export class PostsService {
             selfContents: 1,
             official: 1,
             selfContent: 1,
-            music: "$musik",
+            musik: 1,
             isLiked: {
               $ifNull: ["$isLike", false]
             },
@@ -100675,6 +100649,7 @@ export class PostsService {
             "mood": 1,
             "testDate": 1,
             "musicId": 1,
+            "music": 1,
             "tagPeople": 1,
             "mediaType": 1,
             "email": 1,
@@ -100748,7 +100723,6 @@ export class PostsService {
             userInterested: 1
           },
         },
-
 
       );
 
@@ -100912,6 +100886,70 @@ export class PostsService {
               },
               {
                 $limit: 2
+              },
+
+            ]
+          },
+
+        },
+        {
+          "$lookup": {
+            from: "friend_list",
+            as: "friend",
+            let: {
+              localID: '$email',
+              user: email
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $or: [
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $in: ['$email', '$$localID']
+                          }
+                        },
+                        {
+                          "friendlist.email": email
+                        }
+                      ]
+                    },
+                    {
+                      $and: [
+                        {
+                          "email": email
+                        },
+                        {
+                          $expr: {
+                            $in: ['$friendlist.email', '$$localID']
+                          }
+                        },
+
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                $project: {
+                  email: 1,
+                  friend:
+                  {
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          $size: '$friendlist'
+                        }, 0]
+                      },
+                      then: 1,
+                      else: 0
+                    }
+                  },
+
+                }
               },
 
             ]
@@ -101180,6 +101218,7 @@ export class PostsService {
                   "isPostPrivate": 1,
                   email: 1,
 
+
                 }
               }
             ],
@@ -101341,12 +101380,6 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-        //{
-        //    $unwind: {
-        //        path: "$categories",
-        //        preserveNullAndEmptyArrays: true
-        //    }
-        //},
         {
           $set: {
             index: {
@@ -101354,26 +101387,56 @@ export class PostsService {
             }
           }
         },
-        //{
-        //    $set: {
-        //        indexUser: {
-        //            $indexOfArray: ["$all.email", "$email"]
-        //        }
-        //    }
-        //},
+        {
+          $set: {
+            ded: {
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$comment.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then: [
+                  {
+                    $arrayElemAt: ["$comment", "$index"]
+                  }],
+                else: []
+              }
+            },
+
+          }
+        },
         {
           $set: {
             testLogs: [
               {
-                $ifNull: [
-                  {
-                    $arrayElemAt: ["$countLogs._id", "$indexLogs"]
+                $cond: {
+                  if: {
+                    $eq: [
+                      {
+                        $arrayElemAt: ["$ded", "$index"]
+                      },
+                      null
+                    ]
+                  },
+                  then: [],
+                  else: {
+                    $arrayElemAt: ["$ded", "$index"]
                   }
-                  ,
-                  []
-                ]
-              }
+                }
+              },
+
             ]
+          }
+        },
+        {
+          $unwind: {
+            path: "$testLogs"
           }
         },
         {
@@ -101385,13 +101448,13 @@ export class PostsService {
                 input: "$userBasic",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.email",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -101403,13 +101466,13 @@ export class PostsService {
                 input: "$username",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.email",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -101421,13 +101484,13 @@ export class PostsService {
                 input: "$following",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.senderParty",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.senderParty", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -101439,13 +101502,13 @@ export class PostsService {
                 input: "$username",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.email",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -101457,13 +101520,13 @@ export class PostsService {
                 input: "$friend",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.email",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -101475,16 +101538,15 @@ export class PostsService {
                 input: "$media",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.postID",
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    },]
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
-
         {
           $unwind: {
             path: "$user",
@@ -101503,12 +101565,59 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-
         {
           $set: {
             kosong: {
               $ifNull: ['$user.profilePict.$id', "kancut"]
             }
+          }
+        },
+        {
+          $set: {
+            cekMusic:
+            {
+              $arrayElemAt: ["$all", "$index"]
+            },
+
+          }
+        },
+        {
+          $set: {
+            musicOk: {
+              $ifNull: ["$cekMusic.musicId", "kampret"]
+            },
+
+          }
+        },
+        {
+          $set: {
+            musicNih:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$musicOk", "kampret"]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $filter: {
+                    input: "$music",
+                    as: "song",
+                    cond: {
+                      $eq: ["$$song._id", "$cekMusic.musicId"]
+                    }
+                  }
+                },
+
+              }
+            },
+
+          }
+        },
+        {
+          $unwind: {
+            path: "$musicNih",
+            preserveNullAndEmptyArrays: true
           }
         },
         {
@@ -101545,162 +101654,35 @@ export class PostsService {
 
           }
         },
-
         {
           $unwind: {
             path: "$avatar",
             preserveNullAndEmptyArrays: true
           }
         },
-
         {
           $project: {
-            _id: "$postID",
-            musicTitle:
+            test1:
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.musicTitle", "$index"]
-                }
-              }
+              $arrayElemAt: ["$mailViewer", "$index"]
             },
+            test2:
+            {
+              $arrayElemAt: ["$all.kancuts", "$index"]
+            },
+            _id:
+            {
+              $arrayElemAt: ["$all.postID", "$index"]
+            },
+            musicTitle: "$musicNih.musicTitle",
             "postID": 1,
-            "artistName":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.artistName", "$index"]
-                }
-              }
-            },
-            "albumName":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.albumName", "$index"]
-                }
-              }
-            },
-            "apsaraMusic":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.apsaraMusic", "$index"]
-                }
-              }
-            },
-            "apsaraThumnail":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.apsaraThumnail", "$index"]
-                }
-              }
-            },
-            "genre":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.genre.name", "$index"]
-                }
-              }
-            },
-            "theme":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.theme.name", "$index"]
-                }
-              }
-            },
-            "mood":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.mood.name", "$index"]
-                }
-              }
-            },
+            "artistName": "$musicNih.artistName",
+            "albumName": "$musicNih.albumName",
+            "apsaraMusic": "$musicNih.apsaraMusic",
+            "apsaraThumnail": "$musicNih.apsaraThumnail",
+            "genre": "$musicNih.genre",
+            "theme": "$musicNih.theme",
+            "mood": "$musicNih.mood",
             "testDate":
             {
               $arrayElemAt: ["$testDate", 0]
@@ -101812,16 +101794,16 @@ export class PostsService {
             },
             comments:
             {
-              $size: "$testLogs"
+              $size: "$ded"
             },
             email:
             {
               $arrayElemAt: ["$all.email", "$index"]
             },
-            //viewer: 
-            //{
-            //    $arrayElemAt: ["$all.viewer", "$index"]
-            //},
+            viewer:
+            {
+              $arrayElemAt: ["$all.viewer", "$index"]
+            },
             oldDate:
             {
               $arrayElemAt: ["$oldDate", 0]
@@ -101861,24 +101843,7 @@ export class PostsService {
                 else: 0
               }
             },
-            musik:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music", "$index"]
-                }
-              }
-            },
+            musik: "$musicNih",
             isLike:
             {
               $cond: {
@@ -101899,29 +101864,7 @@ export class PostsService {
                 else: false
               }
             },
-            comment:
-              [
-                {
-                  $cond: {
-                    if: {
-                      $eq: [
-                        {
-                          $arrayElemAt: ["$comment.postID", "$index"]
-                        },
-                        {
-                          $arrayElemAt: ["$all.postID", "$index"]
-                        }
-                      ]
-                    },
-                    then:
-                    {
-                      $arrayElemAt: ["$comment", "$index"]
-                    },
-                    else: "$lemah"
-                  }
-                },
-
-              ],
+            comment: "$ded",
             interest: {
               $filter: {
                 input: "$category",
@@ -101936,8 +101879,12 @@ export class PostsService {
                 }
               }
             },
-            friends: { $arrayElemAt: ["$friendster.friend", 0] },
-            "following": { $arrayElemAt: ["$followings.following", 0] },
+            friends: {
+              $arrayElemAt: ["$friendster.friend", 0]
+            },
+            "following": {
+              $arrayElemAt: ["$followings.following", 0]
+            },
             "insight":
             {
               "likes":
@@ -102089,6 +102036,7 @@ export class PostsService {
               $arrayElemAt: ["$all.mailViewer", "$index"]
             },
             userInterested: "$userInterest.userInterests",
+
           },
 
         },
@@ -102122,7 +102070,7 @@ export class PostsService {
             selfContents: 1,
             official: 1,
             selfContent: 1,
-            music: "$musik",
+            musik: 1,
             isLiked: {
               $ifNull: ["$isLike", false]
             },
@@ -102165,6 +102113,7 @@ export class PostsService {
             "mood": 1,
             "testDate": 1,
             "musicId": 1,
+            "music": 1,
             "tagPeople": 1,
             "mediaType": 1,
             "email": 1,
@@ -102238,6 +102187,7 @@ export class PostsService {
             userInterested: 1
           },
         },
+
       );
 
 
@@ -102400,6 +102350,70 @@ export class PostsService {
               },
               {
                 $limit: 2
+              },
+
+            ]
+          },
+
+        },
+        {
+          "$lookup": {
+            from: "friend_list",
+            as: "friend",
+            let: {
+              localID: '$email',
+              user: email
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $or: [
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $in: ['$email', '$$localID']
+                          }
+                        },
+                        {
+                          "friendlist.email": email
+                        }
+                      ]
+                    },
+                    {
+                      $and: [
+                        {
+                          "email": email
+                        },
+                        {
+                          $expr: {
+                            $in: ['$friendlist.email', '$$localID']
+                          }
+                        },
+
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                $project: {
+                  email: 1,
+                  friend:
+                  {
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          $size: '$friendlist'
+                        }, 0]
+                      },
+                      then: 1,
+                      else: 0
+                    }
+                  },
+
+                }
               },
 
             ]
@@ -102668,6 +102682,7 @@ export class PostsService {
                   "isPostPrivate": 1,
                   email: 1,
 
+
                 }
               }
             ],
@@ -102829,12 +102844,6 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-        //{
-        //    $unwind: {
-        //        path: "$categories",
-        //        preserveNullAndEmptyArrays: true
-        //    }
-        //},
         {
           $set: {
             index: {
@@ -102842,26 +102851,56 @@ export class PostsService {
             }
           }
         },
-        //{
-        //    $set: {
-        //        indexUser: {
-        //            $indexOfArray: ["$all.email", "$email"]
-        //        }
-        //    }
-        //},
+        {
+          $set: {
+            ded: {
+              $cond: {
+                if: {
+                  $eq: [
+                    {
+                      $arrayElemAt: ["$comment.postID", "$index"]
+                    },
+                    {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    }
+                  ]
+                },
+                then: [
+                  {
+                    $arrayElemAt: ["$comment", "$index"]
+                  }],
+                else: []
+              }
+            },
+
+          }
+        },
         {
           $set: {
             testLogs: [
               {
-                $ifNull: [
-                  {
-                    $arrayElemAt: ["$countLogs._id", "$indexLogs"]
+                $cond: {
+                  if: {
+                    $eq: [
+                      {
+                        $arrayElemAt: ["$ded", "$index"]
+                      },
+                      null
+                    ]
+                  },
+                  then: [],
+                  else: {
+                    $arrayElemAt: ["$ded", "$index"]
                   }
-                  ,
-                  []
-                ]
-              }
+                }
+              },
+
             ]
+          }
+        },
+        {
+          $unwind: {
+            path: "$testLogs"
           }
         },
         {
@@ -102873,13 +102912,13 @@ export class PostsService {
                 input: "$userBasic",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.email",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -102891,13 +102930,13 @@ export class PostsService {
                 input: "$username",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.email",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -102909,13 +102948,13 @@ export class PostsService {
                 input: "$following",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.senderParty",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.senderParty", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -102927,13 +102966,13 @@ export class PostsService {
                 input: "$username",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.email",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -102945,13 +102984,13 @@ export class PostsService {
                 input: "$friend",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.email",
-                    {
-                      $arrayElemAt: ["$all.email", "$index"]
-                    },]
+                  $eq: ["$$nonok.email", {
+                    $arrayElemAt: ["$all.email", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
         {
@@ -102963,16 +103002,15 @@ export class PostsService {
                 input: "$media",
                 as: "nonok",
                 cond: {
-                  $eq: ["$$nonok.postID",
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    },]
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
                 }
               }
             },
+
           }
         },
-
         {
           $unwind: {
             path: "$user",
@@ -102991,12 +103029,59 @@ export class PostsService {
             preserveNullAndEmptyArrays: true
           }
         },
-
         {
           $set: {
             kosong: {
               $ifNull: ['$user.profilePict.$id', "kancut"]
             }
+          }
+        },
+        {
+          $set: {
+            cekMusic:
+            {
+              $arrayElemAt: ["$all", "$index"]
+            },
+
+          }
+        },
+        {
+          $set: {
+            musicOk: {
+              $ifNull: ["$cekMusic.musicId", "kampret"]
+            },
+
+          }
+        },
+        {
+          $set: {
+            musicNih:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$musicOk", "kampret"]
+                },
+                then: "$ilang",
+                else:
+                {
+                  $filter: {
+                    input: "$music",
+                    as: "song",
+                    cond: {
+                      $eq: ["$$song._id", "$cekMusic.musicId"]
+                    }
+                  }
+                },
+
+              }
+            },
+
+          }
+        },
+        {
+          $unwind: {
+            path: "$musicNih",
+            preserveNullAndEmptyArrays: true
           }
         },
         {
@@ -103033,162 +103118,35 @@ export class PostsService {
 
           }
         },
-
         {
           $unwind: {
             path: "$avatar",
             preserveNullAndEmptyArrays: true
           }
         },
-
         {
           $project: {
-            _id: "$postID",
-            musicTitle:
+            test1:
             {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.musicTitle", "$index"]
-                }
-              }
+              $arrayElemAt: ["$mailViewer", "$index"]
             },
+            test2:
+            {
+              $arrayElemAt: ["$all.kancuts", "$index"]
+            },
+            _id:
+            {
+              $arrayElemAt: ["$all.postID", "$index"]
+            },
+            musicTitle: "$musicNih.musicTitle",
             "postID": 1,
-            "artistName":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.artistName", "$index"]
-                }
-              }
-            },
-            "albumName":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.albumName", "$index"]
-                }
-              }
-            },
-            "apsaraMusic":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.apsaraMusic", "$index"]
-                }
-              }
-            },
-            "apsaraThumnail":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.apsaraThumnail", "$index"]
-                }
-              }
-            },
-            "genre":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.genre.name", "$index"]
-                }
-              }
-            },
-            "theme":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.theme.name", "$index"]
-                }
-              }
-            },
-            "mood":
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music.mood.name", "$index"]
-                }
-              }
-            },
+            "artistName": "$musicNih.artistName",
+            "albumName": "$musicNih.albumName",
+            "apsaraMusic": "$musicNih.apsaraMusic",
+            "apsaraThumnail": "$musicNih.apsaraThumnail",
+            "genre": "$musicNih.genre",
+            "theme": "$musicNih.theme",
+            "mood": "$musicNih.mood",
             "testDate":
             {
               $arrayElemAt: ["$testDate", 0]
@@ -103300,16 +103258,16 @@ export class PostsService {
             },
             comments:
             {
-              $size: "$testLogs"
+              $size: "$ded"
             },
             email:
             {
               $arrayElemAt: ["$all.email", "$index"]
             },
-            //viewer: 
-            //{
-            //    $arrayElemAt: ["$all.viewer", "$index"]
-            //},
+            viewer:
+            {
+              $arrayElemAt: ["$all.viewer", "$index"]
+            },
             oldDate:
             {
               $arrayElemAt: ["$oldDate", 0]
@@ -103349,24 +103307,7 @@ export class PostsService {
                 else: 0
               }
             },
-            musik:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$all.musicId", "$index"]
-                    },
-                    null
-                  ]
-                },
-                then: "$ilang",
-                else:
-                {
-                  $arrayElemAt: ["$music", "$index"]
-                }
-              }
-            },
+            musik: "$musicNih",
             isLike:
             {
               $cond: {
@@ -103387,29 +103328,7 @@ export class PostsService {
                 else: false
               }
             },
-            comment:
-              [
-                {
-                  $cond: {
-                    if: {
-                      $eq: [
-                        {
-                          $arrayElemAt: ["$comment.postID", "$index"]
-                        },
-                        {
-                          $arrayElemAt: ["$all.postID", "$index"]
-                        }
-                      ]
-                    },
-                    then:
-                    {
-                      $arrayElemAt: ["$comment", "$index"]
-                    },
-                    else: "$lemah"
-                  }
-                },
-
-              ],
+            comment: "$ded",
             interest: {
               $filter: {
                 input: "$category",
@@ -103424,8 +103343,12 @@ export class PostsService {
                 }
               }
             },
-            friends: { $arrayElemAt: ["$friendster.friend", 0] },
-            "following": { $arrayElemAt: ["$followings.following", 0] },
+            friends: {
+              $arrayElemAt: ["$friendster.friend", 0]
+            },
+            "following": {
+              $arrayElemAt: ["$followings.following", 0]
+            },
             "insight":
             {
               "likes":
@@ -103577,6 +103500,7 @@ export class PostsService {
               $arrayElemAt: ["$all.mailViewer", "$index"]
             },
             userInterested: "$userInterest.userInterests",
+
           },
 
         },
@@ -103610,7 +103534,7 @@ export class PostsService {
             selfContents: 1,
             official: 1,
             selfContent: 1,
-            music: "$musik",
+            musik: 1,
             isLiked: {
               $ifNull: ["$isLike", false]
             },
@@ -103653,6 +103577,7 @@ export class PostsService {
             "mood": 1,
             "testDate": 1,
             "musicId": 1,
+            "music": 1,
             "tagPeople": 1,
             "mediaType": 1,
             "email": 1,
@@ -103727,13 +103652,13 @@ export class PostsService {
           },
         },
 
+
       );
 
     }
     var query = await this.PostsModel.aggregate(pipeline);
     return query;
   }
-
   async landingpage4(email: string, type: string, skip: number, limit: number) {
     var pipeline = [];
     var dataseting = null;
