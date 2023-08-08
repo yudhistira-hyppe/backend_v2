@@ -126190,6 +126190,26 @@ export class PostsService {
 
         },
         {
+          $lookup: {
+            from: "settings",
+            as: "setting",
+            pipeline: [
+              {
+                $match:
+                {
+                  "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                }
+              },
+
+            ]
+          }
+        },
+        {
+          $unwind: {
+            path: "$setting"
+          }
+        },
+        {
           $project: {
             mailViewer: 1,
             viewerCount: 1,
@@ -127634,6 +127654,26 @@ export class PostsService {
 
         },
         {
+          $lookup: {
+            from: "settings",
+            as: "setting",
+            pipeline: [
+              {
+                $match:
+                {
+                  "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                }
+              },
+
+            ]
+          }
+        },
+        {
+          $unwind: {
+            path: "$setting"
+          }
+        },
+        {
           $project: {
             mailViewer: 1,
             viewerCount: 1,
@@ -129076,6 +129116,26 @@ export class PostsService {
 
           },
 
+        },
+        {
+          $lookup: {
+            from: "settings",
+            as: "setting",
+            pipeline: [
+              {
+                $match:
+                {
+                  "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                }
+              },
+
+            ]
+          }
+        },
+        {
+          $unwind: {
+            path: "$setting"
+          }
         },
         {
           $project: {
