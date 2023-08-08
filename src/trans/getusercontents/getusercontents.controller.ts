@@ -5168,6 +5168,7 @@ export class GetusercontentsController {
         var postType = null;
         var data = null;
         var datasearch = null;
+        var emailreceiver = null;
         var email = null;
 
         if (body.pageNumber !== undefined) {
