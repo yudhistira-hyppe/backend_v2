@@ -9936,7 +9936,7 @@ export class AuthService {
             response_code: 202,
             data: {
               email: datauserauthsService_.email,
-              isEmailVerified: datauserauthsService_.isEmailVerified
+              isEmailVerified: datauserauthsService_.isEmailVerified.toString()
             },
             messages: {
               info: [messages],
@@ -9964,7 +9964,7 @@ export class AuthService {
           response_code: 202,
           data: {
             email: datauserauthsService_.email,
-            isEmailVerified: datauserauthsService_.isEmailVerified
+            isEmailVerified: datauserauthsService_.isEmailVerified.toString()
           },
           messages: {
             info: [messages],
