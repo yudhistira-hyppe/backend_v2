@@ -582,6 +582,7 @@ export class PostContentService {
     Posts_.email = data_userbasics.email;
     Posts_.createdAt = currentDate;
     Posts_.updatedAt = currentDate;
+    Posts_.saleAmount = body.saleAmount;
     Posts_.expiration = Long.fromBigInt(generateExpired);
     if (body.musicId != undefined) {
       Posts_.musicId = new mongoose.Types.ObjectId(body.musicId);
@@ -2233,6 +2234,7 @@ export class PostContentService {
     }
 
     //Sale amount send notice
+    console.log("SALE AMOUNT", Posts_.saleAmount);
     if (Posts_.saleAmount > 0) {
       console.log("SALE AMOUNT", Posts_.saleAmount);
       await this.utilService.sendFcmV2(Posts_.email.toString(), Posts_.email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), Posts_.postType.toString())
