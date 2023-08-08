@@ -1315,13 +1315,13 @@ export class PostsController {
 
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('api/posts/getuserposts/my')
-  @UseInterceptors(FileInterceptor('postContent'))
-  async getUserPostMy(@Body() body, @Headers() headers): Promise<PostResponseApps> {
-    this.logger.log("getUserPostMy >>> start: " + JSON.stringify(body));
-    return this.postContentService.getUserPostMy(body, headers);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Post('api/posts/getuserposts/my')
+  // @UseInterceptors(FileInterceptor('postContent'))
+  // async getUserPostMy(@Body() body, @Headers() headers): Promise<PostResponseApps> {
+  //   this.logger.log("getUserPostMy >>> start: " + JSON.stringify(body));
+  //   return this.postContentService.getUserPostMy(body, headers);
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Get('api/posts/getboost')
@@ -1673,13 +1673,13 @@ export class PostsController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('api/posts/getuserposts/byprofile')
-  @UseInterceptors(FileInterceptor('postContent'))
-  async getUserPostByProfile(@Body() body, @Headers() headers): Promise<PostResponseApps> {
-    this.logger.log("getUserPostByProfile >>> start: " + JSON.stringify(body));
-    return this.postContentService.getUserPostByProfile(body, headers);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Post('api/posts/getuserposts/byprofile')
+  // @UseInterceptors(FileInterceptor('postContent'))
+  // async getUserPostByProfile(@Body() body, @Headers() headers): Promise<PostResponseApps> {
+  //   this.logger.log("getUserPostByProfile >>> start: " + JSON.stringify(body));
+  //   return this.postContentService.getUserPostByProfile(body, headers);
+  // }
 
   @Post('api/posts/notifyapsara')
   async notifyApsara(@Body() body, @Headers() headers) {

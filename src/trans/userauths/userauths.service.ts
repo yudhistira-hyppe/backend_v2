@@ -1001,4 +1001,80 @@ export class UserauthsService {
 
     return query;
   }
+  async findUser(username: string, skip: number, limit: number) {
+
+
+    const query = await this.userauthModel.aggregate([
+      {
+        "$match": {
+          "username": {
+            $regex: username,
+            $options: 'i'
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: 'userbasics',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'userbasic_data',
+
+        },
+
+      },
+      {
+        $project: {
+
+          profilpictId: {
+            $arrayElemAt: ['$userbasic_data.profilePict.$id', 0]
+          },
+          idUserAuth: "$_id",
+          fullName: {
+            $arrayElemAt: ['$userbasic_data.fullName', 0]
+          },
+          username: 1,
+          email: 1,
+
+        }
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts',
+          localField: 'profilpictId',
+          foreignField: '_id',
+          as: 'profilePict_data',
+
+        },
+
+      },
+      {
+        "$unwind": {
+          "path": "$profilePict_data",
+          "preserveNullAndEmptyArrays": true
+        }
+      },
+      {
+        $project: {
+
+          profilpictId: 1,
+          idUserAuth: 1,
+          fullName: 1,
+          username: 1,
+          email: 1,
+          avatar: {
+            mediaBasePath: '$profilePict_data.mediaBasePath',
+            mediaUri: '$profilePict_data.mediaUri',
+            mediaType: '$profilePict_data.mediaType',
+            mediaEndpoint: { $concat: ["/profilepict", "/", "$profilePict_data.mediaID"] },
+
+          },
+        }
+      },
+      { $sort: { fullName: 1 }, },
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+    return query;
+  }
 }
