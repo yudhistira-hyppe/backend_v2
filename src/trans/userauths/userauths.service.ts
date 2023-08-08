@@ -1009,7 +1009,7 @@ export class UserauthsService {
       {
         "$match": {
           "username": {
-            $regex: "hyppe",
+            $regex: username,
             $options: 'i'
           }
         }
