@@ -7695,7 +7695,7 @@ export class AuthService {
         data['avatar'] = mediaprofilepicts_res;
       }
       data["isIdVerified"] = datauserbasicsService.isIdVerified;
-      data["isEmailVerified"] = datauserauthsService.isEmailVerified;
+      data["isEmailVerified"] = datauserauthsService.isEmailVerified.toString();
       data["token"] = 'Bearer ' + token;
       data["idProofStatus"] = datauserbasicsService.idProofStatus;
       data["insight"] = insights_res;
@@ -9178,7 +9178,7 @@ export class AuthService {
                   data['avatar'] = mediaprofilepicts_res;
                 }
                 data["isIdVerified"] = datauserbasicsService.isIdVerified;
-                data["isEmailVerified"] = datauserauthsService.isEmailVerified;
+                data["isEmailVerified"] = datauserauthsService.isEmailVerified.toString();
                 data["token"] = 'Bearer ' + token;
                 data["idProofStatus"] = datauserbasicsService.idProofStatus;
                 data["insight"] = insights_res;
@@ -9936,7 +9936,7 @@ export class AuthService {
             response_code: 202,
             data: {
               email: datauserauthsService_.email,
-              isEmailVerified: datauserauthsService_.isEmailVerified
+              isEmailVerified: datauserauthsService_.isEmailVerified.toString()
             },
             messages: {
               info: [messages],
@@ -9964,7 +9964,7 @@ export class AuthService {
           response_code: 202,
           data: {
             email: datauserauthsService_.email,
-            isEmailVerified: datauserauthsService_.isEmailVerified
+            isEmailVerified: datauserauthsService_.isEmailVerified.toString()
           },
           messages: {
             info: [messages],
