@@ -119448,7 +119448,6 @@ export class PostsService {
       }
 
       pipeline.push(
-
         {
           $sort: {
             createdAt: - 1,
@@ -119600,34 +119599,34 @@ export class PostsService {
         },
         {
           $set: {
-            kancut:
+            kancuts:
             {
-              $cond: {
-                if: {
-                  $filter: {
-                    input: "$viewer",
-                    cond: {
-                      $eq: ["$$this", email]
-                    }
-                  }
-                },
-                then:
-                {
-                  $concatArrays: [
-                    '$viewer',
-                    [email, email]
-                  ]
-                },
-                else: [email, email]
-              }
-            }
+              $concatArrays: [
+                '$viewer',
+                [email]
+              ]
+            },
           }
         },
         {
           $set: {
             mailViewer: {
               $filter: {
-                input: "$kancut",
+                input: "$kancuts",
+                cond: {
+                  $eq: ["$$this", email]
+                }
+              }
+            },
+
+          }
+        },
+
+        {
+          $set: {
+            dodolCount: {
+              $filter: {
+                input: "$kancuts",
                 cond: {
                   $eq: ["$$this", email]
                 }
@@ -119642,17 +119641,21 @@ export class PostsService {
             {
               $cond: {
                 if: {
-                  $isArray: "$mailViewer"
+                  $isArray: "$dodolCount"
                 },
-                then: {
-                  $subtract: [
-                    {
-                      $size: "$mailViewer"
-                    },
-                    1
-                  ]
+                then:
+                {
+                  $size: "$dodolCount"
                 },
-                else: 0
+                //{
+                //		$subtract: [
+                //				{
+                //						$size: "$dodolCount"
+                //				},
+                //				1
+                //		]
+                //},
+                else: 1
               }
             },
 
@@ -120442,11 +120445,11 @@ export class PostsService {
                     }
                   ]
                 },
-                then:
-                {
-                  $arrayElemAt: ["$comment", "$index"]
-                },
-                else: "$lemah"
+                then: [
+                  {
+                    $arrayElemAt: ["$comment", "$index"]
+                  }],
+                else: []
               }
             },
 
@@ -120703,8 +120706,15 @@ export class PostsService {
         },
         {
           $project: {
+            test1:
+            {
+              $arrayElemAt: ["$mailViewer", "$index"]
+            },
+            test2:
+            {
+              $arrayElemAt: ["$all.kancuts", "$index"]
+            },
             _id:
-
             {
               $arrayElemAt: ["$all.postID", "$index"]
             },
@@ -120828,7 +120838,7 @@ export class PostsService {
             },
             comments:
             {
-              $size: "$testLogs"
+              $size: "$ded"
             },
             email:
             {
@@ -120906,29 +120916,7 @@ export class PostsService {
                 else: false
               }
             },
-            comment:
-              [
-                {
-                  $cond: {
-                    if: {
-                      $eq: [
-                        {
-                          $arrayElemAt: ["$comment.postID", "$index"]
-                        },
-                        {
-                          $arrayElemAt: ["$all.postID", "$index"]
-                        }
-                      ]
-                    },
-                    then:
-                    {
-                      $arrayElemAt: ["$comment", "$index"]
-                    },
-                    else: "$lemah"
-                  }
-                },
-
-              ],
+            comment: "$ded",
             interest: {
               $filter: {
                 input: "$category",
@@ -121250,6 +121238,7 @@ export class PostsService {
             userInterested: 1
           },
         },
+
       );
 
       pipeline.push(
@@ -121423,34 +121412,34 @@ export class PostsService {
         },
         {
           $set: {
-            kancut:
+            kancuts:
             {
-              $cond: {
-                if: {
-                  $filter: {
-                    input: "$viewer",
-                    cond: {
-                      $eq: ["$$this", email]
-                    }
-                  }
-                },
-                then:
-                {
-                  $concatArrays: [
-                    '$viewer',
-                    [email, email]
-                  ]
-                },
-                else: [email, email]
-              }
-            }
+              $concatArrays: [
+                '$viewer',
+                [email]
+              ]
+            },
           }
         },
         {
           $set: {
             mailViewer: {
               $filter: {
-                input: "$kancut",
+                input: "$kancuts",
+                cond: {
+                  $eq: ["$$this", email]
+                }
+              }
+            },
+
+          }
+        },
+
+        {
+          $set: {
+            dodolCount: {
+              $filter: {
+                input: "$kancuts",
                 cond: {
                   $eq: ["$$this", email]
                 }
@@ -121465,17 +121454,21 @@ export class PostsService {
             {
               $cond: {
                 if: {
-                  $isArray: "$mailViewer"
+                  $isArray: "$dodolCount"
                 },
-                then: {
-                  $subtract: [
-                    {
-                      $size: "$mailViewer"
-                    },
-                    1
-                  ]
+                then:
+                {
+                  $size: "$dodolCount"
                 },
-                else: 0
+                //{
+                //		$subtract: [
+                //				{
+                //						$size: "$dodolCount"
+                //				},
+                //				1
+                //		]
+                //},
+                else: 1
               }
             },
 
@@ -122265,11 +122258,11 @@ export class PostsService {
                     }
                   ]
                 },
-                then:
-                {
-                  $arrayElemAt: ["$comment", "$index"]
-                },
-                else: "$lemah"
+                then: [
+                  {
+                    $arrayElemAt: ["$comment", "$index"]
+                  }],
+                else: []
               }
             },
 
@@ -122526,8 +122519,15 @@ export class PostsService {
         },
         {
           $project: {
+            test1:
+            {
+              $arrayElemAt: ["$mailViewer", "$index"]
+            },
+            test2:
+            {
+              $arrayElemAt: ["$all.kancuts", "$index"]
+            },
             _id:
-
             {
               $arrayElemAt: ["$all.postID", "$index"]
             },
@@ -122651,7 +122651,7 @@ export class PostsService {
             },
             comments:
             {
-              $size: "$testLogs"
+              $size: "$ded"
             },
             email:
             {
@@ -122729,29 +122729,7 @@ export class PostsService {
                 else: false
               }
             },
-            comment:
-              [
-                {
-                  $cond: {
-                    if: {
-                      $eq: [
-                        {
-                          $arrayElemAt: ["$comment.postID", "$index"]
-                        },
-                        {
-                          $arrayElemAt: ["$all.postID", "$index"]
-                        }
-                      ]
-                    },
-                    then:
-                    {
-                      $arrayElemAt: ["$comment", "$index"]
-                    },
-                    else: "$lemah"
-                  }
-                },
-
-              ],
+            comment: "$ded",
             interest: {
               $filter: {
                 input: "$category",
@@ -123244,34 +123222,34 @@ export class PostsService {
         },
         {
           $set: {
-            kancut:
+            kancuts:
             {
-              $cond: {
-                if: {
-                  $filter: {
-                    input: "$viewer",
-                    cond: {
-                      $eq: ["$$this", email]
-                    }
-                  }
-                },
-                then:
-                {
-                  $concatArrays: [
-                    '$viewer',
-                    [email, email]
-                  ]
-                },
-                else: [email, email]
-              }
-            }
+              $concatArrays: [
+                '$viewer',
+                [email]
+              ]
+            },
           }
         },
         {
           $set: {
             mailViewer: {
               $filter: {
-                input: "$kancut",
+                input: "$kancuts",
+                cond: {
+                  $eq: ["$$this", email]
+                }
+              }
+            },
+
+          }
+        },
+
+        {
+          $set: {
+            dodolCount: {
+              $filter: {
+                input: "$kancuts",
                 cond: {
                   $eq: ["$$this", email]
                 }
@@ -123286,17 +123264,21 @@ export class PostsService {
             {
               $cond: {
                 if: {
-                  $isArray: "$mailViewer"
+                  $isArray: "$dodolCount"
                 },
-                then: {
-                  $subtract: [
-                    {
-                      $size: "$mailViewer"
-                    },
-                    1
-                  ]
+                then:
+                {
+                  $size: "$dodolCount"
                 },
-                else: 0
+                //{
+                //		$subtract: [
+                //				{
+                //						$size: "$dodolCount"
+                //				},
+                //				1
+                //		]
+                //},
+                else: 1
               }
             },
 
@@ -124086,11 +124068,11 @@ export class PostsService {
                     }
                   ]
                 },
-                then:
-                {
-                  $arrayElemAt: ["$comment", "$index"]
-                },
-                else: "$lemah"
+                then: [
+                  {
+                    $arrayElemAt: ["$comment", "$index"]
+                  }],
+                else: []
               }
             },
 
@@ -124347,8 +124329,15 @@ export class PostsService {
         },
         {
           $project: {
+            test1:
+            {
+              $arrayElemAt: ["$mailViewer", "$index"]
+            },
+            test2:
+            {
+              $arrayElemAt: ["$all.kancuts", "$index"]
+            },
             _id:
-
             {
               $arrayElemAt: ["$all.postID", "$index"]
             },
@@ -124472,7 +124461,7 @@ export class PostsService {
             },
             comments:
             {
-              $size: "$testLogs"
+              $size: "$ded"
             },
             email:
             {
@@ -124550,29 +124539,7 @@ export class PostsService {
                 else: false
               }
             },
-            comment:
-              [
-                {
-                  $cond: {
-                    if: {
-                      $eq: [
-                        {
-                          $arrayElemAt: ["$comment.postID", "$index"]
-                        },
-                        {
-                          $arrayElemAt: ["$all.postID", "$index"]
-                        }
-                      ]
-                    },
-                    then:
-                    {
-                      $arrayElemAt: ["$comment", "$index"]
-                    },
-                    else: "$lemah"
-                  }
-                },
-
-              ],
+            comment: "$ded",
             interest: {
               $filter: {
                 input: "$category",
@@ -124905,6 +124872,7 @@ export class PostsService {
     var query = await this.PostsModel.aggregate(pipeline);
     return query;
   }
+
   async landingpageMy(email: string, type: string, skip: number, limit: number) {
     var pipeline = [];
 
