@@ -50,6 +50,7 @@ import ffmpeg from "fluent-ffmpeg";
 import { OssContentPictService } from './osscontentpict.service';
 import { DisqusService } from '../disqus/disqus.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
+import { LogapisService } from 'src/trans/logapis/logapis.service'; 
 
 const webp = require('webp-converter');
 const sharp = require('sharp');
@@ -90,6 +91,7 @@ export class PostContentService {
     private ossContentPictService: OssContentPictService,
     private disqusService: DisqusService,
     private disqusLogService: DisquslogsService,
+    private logapiSS: LogapisService,
   ) { }
 
   async uploadVideo(file: Express.Multer.File, postID: string) {
@@ -104,7 +106,11 @@ export class PostContentService {
     });
   }
 
-  async createNewPostV4(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+  async createNewPostV4(file: Express.Multer.File, body: any, headers: any, url:string): Promise<CreatePostResponse> {
+    var timestamps_start = await this.utilService.getDateTimeString();
+    var reqbody = body;
+    reqbody['postContent'] = file;
+    
     this.logger.log('createNewPost >>> start: ' + JSON.stringify(body));
     var res = new CreatePostResponse();
     res.response_code = 204;
@@ -113,6 +119,9 @@ export class PostContentService {
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
     if (profile == undefined) {
+      var timestamps_end = await this.utilService.getDateTimeString();
+      this.logapiSS.create2(url, timestamps_start, timestamps_end, body.email, null, null, reqbody);
+
       let msg = new Messages();
       msg.info = ["Email unknown"];
       res.messages = msg;
@@ -121,6 +130,9 @@ export class PostContentService {
 
     if (body.certified && body.certified == "true") {
       if (profile.isIdVerified != true) {
+        var timestamps_end = await this.utilService.getDateTimeString();
+        this.logapiSS.create2(url, timestamps_start, timestamps_end, body.email, null, null, reqbody);
+
         let msg = new Messages();
         msg.info = ["The user ID has not been verified"];
         res.messages = msg;
@@ -3113,12 +3125,18 @@ export class PostContentService {
   }
 
   async getUserPost(body: any, headers: any): Promise<PostResponseApps> {
+    var timestamps_start = await this.utilService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/getuserposts";
+    var reqbody = JSON.parse(JSON.stringify(body));
 
     let type = 'GET_POST';
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findone_(auth.email);
     if (profile == null) {
+      var timestamps_end = await this.utilService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
       let res = new PostResponseApps();
       let msg = new Messages
       msg.info = ["User tidak tedaftar"];
@@ -3150,10 +3168,16 @@ export class PostContentService {
     ver.value;
     res.version = String(ver.value);
 
+    var timestamps_end = await this.utilService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
     return res;
   }
 
   async getUserPostMy(body: any, headers: any): Promise<PostResponseApps> {
+    var timestamps_start = await this.utilService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/getuserposts/my";
+    var reqbody = JSON.parse(JSON.stringify(body));
 
     let type = 'GET_POST';
     var token = headers['x-auth-token'];
@@ -3167,10 +3191,21 @@ export class PostContentService {
     let pd = await this.loadPostData(posts, body, profile, profile);
     res.data = pd;
 
+    var timestamps_end = await this.utilService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
     return res;
   }
 
   async getUserPostBoost(pageNumber: number, pageRow: number, headers: any) {
+    var timestamps_start = await this.utilService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/getuserposts/my";
+    var setdata = {
+      "pageNumber":pageNumber,
+      "pageRow":pageRow,
+    };
+    var reqbody = JSON.parse(JSON.stringify(setdata));
+    
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
@@ -3180,6 +3215,9 @@ export class PostContentService {
     let posts = await this.doGetUserPostBoost(pageNumber, pageRow, profile);
     let pd = await this.loadPostBoostData(posts, profile);
     res.data = pd;
+
+    var timestamps_end = await this.utilService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
 
     return res;
   }
@@ -3731,6 +3769,9 @@ export class PostContentService {
   }
 
   async getUserPostByProfile(body: any, headers: any): Promise<PostResponseApps> {
+    var timestamps_start = await this.utilService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/getuserposts/byprofile";
+    var reqbody = JSON.parse(JSON.stringify(body));
 
     let type = 'GET_POST';
     var token = headers['x-auth-token'];
@@ -3744,6 +3785,9 @@ export class PostContentService {
     let posts = await this.doGetUserPostTheir(body, headers, profile);
     let pd = await this.loadPostData(posts, body, profile_, profile);
     res.data = pd;
+
+    var timestamps_end = await this.utilService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
 
     return res;
   }
@@ -5109,7 +5153,9 @@ export class PostContentService {
     return xres;
   }
 
-  public async getVideoPlayAuth(ids: String): Promise<ApsaraPlayResponse> {
+  public async getVideoPlayAuth(ids: String, link:string, email:string): Promise<ApsaraPlayResponse> {
+    var timestamps_start = await this.utilService.getDateTimeString();
+    
     this.logger.log('getVideoApsaraSingle >>> start: ' + ids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
@@ -5136,8 +5182,15 @@ export class PostContentService {
       let xres = new GetVideoPlayAuthResponse();
       this.logger.log('getVideoApsaraSingle >>> response: ' + JSON.stringify(result));
       console.log("APSARA VIDEO GET", JSON.stringify(result))
+
+      var timestamps_end = await this.utilService.getDateTimeString();
+      this.logapiSS.create2(link, timestamps_start, timestamps_end, email, null, null, null);
+
       return result;
     } catch (e) {
+      var timestamps_end = await this.utilService.getDateTimeString();
+      this.logapiSS.create2(link, timestamps_start, timestamps_end, email, null, null, null);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, ' + e,
       );

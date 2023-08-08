@@ -26,14 +26,16 @@ export class BoostsessionController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(@Req() req): Promise<Boostsession[]> {
+  async findAll(@Req() req, @Headers() headers): Promise<Boostsession[]> {
     var timestamps_start = await this.utilsService.getDateTimeString();
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 
     var data = await this.boostsessionService.findAll();
 
     var fullurl = req.get("Host") + req.originalUrl;
     var timestamps_end = await this.utilsService.getDateTimeString();
-    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, null);
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, null);
 
     return data;
   }

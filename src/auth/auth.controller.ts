@@ -1024,7 +1024,9 @@ export class AuthController {
   @HttpCode(HttpStatus.ACCEPTED)
   async refreshToken(@Body() RefreshTokenRequest_: RefreshTokenRequest, @Headers() headers, @Req() req) {
     var timestamps_start = await this.utilsService.getDateTimeString();
-    
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
     //Ceck User Jwtrefreshtoken
     const data_jwtrefreshtokenService =
       await this.jwtrefreshtokenService.findByEmailRefreshToken(RefreshTokenRequest_.email, RefreshTokenRequest_.refreshToken);
@@ -1071,7 +1073,7 @@ export class AuthController {
       var fullurl = req.get("Host") + req.originalUrl;
       var timestamps_end = await this.utilsService.getDateTimeString();
       var reqbody = JSON.parse(JSON.stringify(RefreshTokenRequest_));
-      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
 
       return GlobalResponse_;
       //}
@@ -1079,7 +1081,7 @@ export class AuthController {
       var fullurl = req.get("Host") + req.originalUrl;
       var timestamps_end = await this.utilsService.getDateTimeString();
       var reqbody = JSON.parse(JSON.stringify(RefreshTokenRequest_));
-      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
 
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',

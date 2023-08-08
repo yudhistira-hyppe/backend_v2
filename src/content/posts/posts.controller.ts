@@ -9,7 +9,7 @@ import {
   Req,
   Headers,
   Request, Logger,
-  BadRequestException, HttpStatus, Put, Res, HttpCode, Query, UseInterceptors, UploadedFile
+  BadRequestException, HttpStatus, Put, Res, HttpCode, Query, UseInterceptors, UploadedFile, Header
 } from '@nestjs/common';
 import { FormDataRequest } from 'nestjs-form-data';
 import { PostsService } from './posts.service';
@@ -48,6 +48,7 @@ import { ChallengeService } from 'src/trans/challenge/challenge.service';
 import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
 import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.schema';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { request } from 'http';
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -84,8 +85,19 @@ export class PostsController {
 
   @Get('api/posts')
   @UseGuards(JwtAuthGuard)
-  async findAll(): Promise<Posts[]> {
-    return this.PostsService.findAll();
+  async findAll(@Headers() headers): Promise<Posts[]> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
+    var data = await this.PostsService.findAll();
+    // return this.PostsService.findAll();
+
+    var fullurl = headers.host + "/api/posts";
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, null);
+
+    return data;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -182,7 +194,10 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/deletetag')
-  async deleteTag(@Req() request) {
+  async deleteTag(@Req() request, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = request.get("Host") + request.originalUrl;
+
     var email = null;
     var postID = null;
     var data = null;
@@ -192,12 +207,18 @@ export class PostsController {
     if (request_json["email"] !== undefined) {
       email = request_json["email"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
     if (request_json["postID"] !== undefined) {
       postID = request_json["postID"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -213,14 +234,24 @@ export class PostsController {
       dataauth = await this.userauthsService.findOneByEmail(email);
       var ido = dataauth._id;
     } catch (e) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
     //deletetagpeople
     try {
 
       this.PostsService.updateTags(postID, ido);
+
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
       return { response_code: 202, messages };
     } catch (e) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
       return { response_code: 500, messagesEror };
     }
 
@@ -351,6 +382,8 @@ export class PostsController {
   @Post('api/posts/v4/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPostv4(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    var fullurl = headers.host + "/api/posts/v4/createpost";
+    
     this.logger.log("createPost >>> start");
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
     var arrtag = [];
@@ -368,7 +401,7 @@ export class PostsController {
     }
 
 
-    var data = await this.postContentService.createNewPostV4(file, body, headers);
+    var data = await this.postContentService.createNewPostV4(file, body, headers, fullurl);
     var postID = data.data.postID;
 
 
@@ -603,6 +636,10 @@ export class PostsController {
   @Post('api/posts/updatepost')
   @UseInterceptors(FileInterceptor('postContent'))
   async updatePostnew(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/updatepost";
+    var reqbody = body;
+
     this.logger.log("updatePost >>> start");
     var email = headers['x-auth-user'];
     var saleAmount = body.saleAmount;
@@ -621,6 +658,9 @@ export class PostsController {
     }
     var dataTransaction = await this.transactionsPostService.findpostid(body.postID.toString());
     if (await this.utilsService.ceckData(dataTransaction)) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
       if (lang == "id") {
         await this.errorHandler.generateNotAcceptableException(
           "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
@@ -747,6 +787,9 @@ export class PostsController {
         endDatetime = datapostchallenge.endDatetime;
 
         if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime)) {
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, content is participating in the challenge',
           );
@@ -834,6 +877,10 @@ export class PostsController {
             await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
             //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
           }
+
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
           return data;
 
         }
@@ -1486,6 +1533,11 @@ export class PostsController {
   @Post('api/posts/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPostV3new(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/createpost";
+    var reqbody = body;
+    reqbody['postContent'] = file;
+    
     this.logger.log("createPost >>> start");
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
     var arrtag = [];
@@ -1507,7 +1559,7 @@ export class PostsController {
       }
     }
 
-    var data = await this.postContentService.createNewPostV4(file, body, headers);
+    var data = await this.postContentService.createNewPostV4(file, body, headers, fullurl);
     var postID = data.data.postID;
 
     var email = data.data.email;
@@ -1718,6 +1770,10 @@ export class PostsController {
 
       }
     }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
     return data;
   }
 
@@ -2025,8 +2081,15 @@ export class PostsController {
   @HttpCode(HttpStatus.OK)
   @Post('api/posts/tagpeople')
   async getTagpeople(@Headers() headers, @Body() body) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/tagpeople";
+    var reqbody = JSON.parse(JSON.stringify(body));
+
     //CECK BAEARER TOKEN
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed token and email not match',
       );
@@ -2035,12 +2098,18 @@ export class PostsController {
     //CECK DATA USER
     const data_userbasic = await this.userbasicsService.findOne(headers['x-auth-user']);
     if (!(await this.utilsService.ceckData(data_userbasic))) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+      
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed User not found'
       );
     }
 
     if (body.postId == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, Param PostID required'
       );
@@ -2092,6 +2161,9 @@ export class PostsController {
           }
         }
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
         return {
           response_code: 202,
           data: atp1,
@@ -2101,6 +2173,9 @@ export class PostsController {
         };
       }
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, Data Post not found'
       );
@@ -2149,21 +2224,39 @@ export class PostsController {
 
   @Post('api/posts/getvideo')
   async getVideo(@Body() body, @Headers() headers) {
+
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/posts/getvideo';
+    var reqbody = JSON.parse(JSON.stringify(body));
+
     this.logger.log("getVideo >>> start: " + JSON.stringify(body));
     var definition = "SD";
     if (body.definition != undefined) {
       definition = String(body.definition);
     }
-    return this.postContentService.getVideoApsaraSingle(String(body.apsaraId), definition);
+    // return this.postContentService.getVideoApsaraSingle(String(body.apsaraId), definition);
+    var data = await this.postContentService.getVideoApsaraSingleV4(String(body.apsaraId), definition);
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
+    return data;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('api/posts/apsaraauth?')
   @HttpCode(HttpStatus.ACCEPTED)
   async getApsaraAuth(
-    @Query('apsaraId') apsaraId: string) {
+    @Query('apsaraId') apsaraId: string,
+    @Headers() headers) {
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var fullurl = headers.host + "/api/posts/apsaraauth?apsaraId=" + apsaraId;
+
     this.logger.log("apsaraId >>> start: " + JSON.stringify(apsaraId));
-    return this.postContentService.getVideoPlayAuth(apsaraId);
+    return this.postContentService.getVideoPlayAuth(apsaraId, fullurl, auth.email);
   }
 
   @Post('api/userplaylist/generate')
@@ -2205,6 +2298,7 @@ export class PostsController {
   async getinteractives(
     @Headers() headers,
     @Body() body,
+    @Req() request
     // @Query('eventType') eventType: string,
     // @Query('withDetail') withDetail: boolean,
     // @Query('withEvents') withEvents: string,
@@ -2213,12 +2307,22 @@ export class PostsController {
     // @Query('pageNumber') pageNumber: number,
     // @Query('senderOrReceiver') senderOrReceiver: string
   ) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = request.get("Host") + request.originalUrl;
+    var reqbody = JSON.parse(JSON.stringify(body));
+
     if (headers['x-auth-user'] == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
       );
     }
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed email header dan token not match',
       );
@@ -2375,6 +2479,10 @@ export class PostsController {
       });
       data_response = data_filter;
     }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
     return {
       "response_code": 202,
       "data": data_response,
@@ -2729,6 +2837,9 @@ export class PostsController {
   @Get('stream/:id')
   @HttpCode(HttpStatus.OK)
   async stream(@Param('id') mediaFile: string, @Headers() headers, @Res() response) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/stream/" + mediaFile;
+    
     console.log(mediaFile);
     if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(headers['x-auth-token'], headers['x-auth-user'])) {
@@ -2742,24 +2853,45 @@ export class PostsController {
             if (mediaBasePath != "") {
               var data = await this.PostsService.stream(mediaBasePath + mediaFile);
               if (data != null) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
                 response.set("Content-Type", "application/octet-stream");
                 response.send(data);
               } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
                 response.send(null);
               }
             } else {
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
               response.send(null);
             }
           } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             response.send(null);
           }
         } else {
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
           response.send(null);
         }
       } else {
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, null);
+
         response.send(null);
       }
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, null);
+
       response.send(null);
     }
   }
@@ -2771,7 +2903,12 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Put('api/posts/delete/:id')
-  async deletePost(@Res() res, @Param('id') id: string) {
+  async deletePost(@Res() res, @Param('id') id: string, @Req() request, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = request.get("Host") + request.originalUrl;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
     const messages = {
@@ -2784,11 +2921,18 @@ export class PostsController {
     // var idobj = mongoose.Types.ObjectId(id);
     try {
       let data = await this.PostsService.updatenonaktif(id);
+
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, null);
+
       res.status(HttpStatus.OK).json({
         response_code: 202,
         "message": messages
       });
     } catch (e) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, null);
+
       res.status(HttpStatus.BAD_REQUEST).json({
 
         "message": messagesEror
@@ -2798,7 +2942,12 @@ export class PostsController {
 
   @Post('api/posts/postbychart')
   @UseGuards(JwtAuthGuard)
-  async getPostChartBasedDate(@Req() request: Request): Promise<any> {
+  async getPostChartBasedDate(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/postbychart";
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    
     var data = null;
     var date = null;
     var iduser = null;
@@ -2812,6 +2961,9 @@ export class PostsController {
       date = request_json["date"];
     }
     else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -2856,12 +3008,20 @@ export class PostsController {
       total: (getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
     }
 
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
+
     return { response_code: 202, messages, data };
   }
 
   @Get('api/posts/showsertifikasistatbychart')
   @UseGuards(JwtAuthGuard)
-  async getCertifiedStatByChart(@Req() request: Request): Promise<any> {
+  async getCertifiedStatByChart(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/showsertifikasistatbychart";
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
     var data = null;
 
     const messages = {
@@ -2886,13 +3046,20 @@ export class PostsController {
         }
       ];
     }
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, null);
 
     return { response_code: 202, messages, data };
   }
 
   @Post('api/posts/analityc')
   @UseGuards(JwtAuthGuard)
-  async getByChart(@Req() request: Request): Promise<any> {
+  async getByChart(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/analityc";
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    
     var data = null;
     var startdate = null;
     var enddate = null;
@@ -2906,12 +3073,16 @@ export class PostsController {
     if (request_json["startdate"] !== undefined) {
       startdate = request_json["startdate"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
       throw new BadRequestException("Unabled to proceed");
     }
 
     if (request_json["enddate"] !== undefined) {
       enddate = request_json["enddate"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -2964,13 +3135,18 @@ export class PostsController {
       }
 
     }
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
 
     return { response_code: 202, messages, data: arrdataview };
   }
 
   @Post('api/posts/landing-page/recentStory')
   @UseGuards(JwtAuthGuard)
-  async getRecentStory(@Req() request: Request): Promise<any> {
+  async getRecentStory(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.Host + "/api/posts/landing-page/recentStory";
+
     var data = null;
     var email = null;
     var page = null;
@@ -3038,6 +3214,10 @@ export class PostsController {
     } else {
       data = [];
     }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
     return { response_code: 202, data, messages };
   }
 
@@ -3524,18 +3704,30 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('api/music/used/:id')
-  async getOneMusicPost(@Param('id') id: string, @Headers() headers) {
+  async getOneMusicPost(@Param('id') id: string, @Req() request, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = request.get("Host") + request.originalUrl;
+
     if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
       );
     }
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed email header dan token not match',
       );
     }
     if (id == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed param id is required',
       );
@@ -3566,6 +3758,10 @@ export class PostsController {
         ]
       }
     }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
     return Response;
   }
 }
