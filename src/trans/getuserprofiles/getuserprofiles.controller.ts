@@ -155,7 +155,6 @@ export class GetuserprofilesController {
 
 
   }
-
   @Post('api/getuserprofiles/search')
   //@FormDataRequest()
   @UseGuards(JwtAuthGuard)
@@ -186,7 +185,7 @@ export class GetuserprofilesController {
     } else {
       throw new BadRequestException("Unabled to proceed");
     }
-    data = await this.getuserprofilesService.findUser(username, skip, limit);
+    data = await this.userauthsService.findUser(username, skip, limit);
     return { response_code: 202, data, skip, limit, messages };
   }
 
