@@ -583,6 +583,7 @@ export class PostContentService {
     Posts_.email = data_userbasics.email;
     Posts_.createdAt = currentDate;
     Posts_.updatedAt = currentDate;
+    Posts_.saleAmount = body.saleAmount;
     Posts_.expiration = Long.fromBigInt(generateExpired);
     if (body.musicId != undefined) {
       Posts_.musicId = new mongoose.Types.ObjectId(body.musicId);
