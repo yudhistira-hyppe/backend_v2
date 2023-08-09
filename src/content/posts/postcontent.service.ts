@@ -53,6 +53,8 @@ import { DisquslogsService } from '../disquslogs/disquslogs.service';
 import { Mediaprofilepicts } from '../mediaprofilepicts/schemas/mediaprofilepicts.schema';
 import { TagCountService } from '../tag_count/tag_count.service';
 import { TagCountDto } from '../tag_count/dto/create-tag_count.dto';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { logApis } from 'src/trans/logapis/schema/logapis.schema';
 
 const webp = require('webp-converter');
 const sharp = require('sharp');
@@ -94,6 +96,7 @@ export class PostContentService {
     private disqusService: DisqusService,
     private readonly tagCountService: TagCountService,
     private disqusLogService: DisquslogsService,
+    private readonly logapiSS: LogapisService
   ) { }
 
   async uploadVideo(file: Express.Multer.File, postID: string) {
@@ -109,6 +112,11 @@ export class PostContentService {
   }
 
   async createNewPostV5(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    var timestamps_start = await this.utilService.getDateTimeString();
+    var fullurl = headers.host + '/api/posts/createpost';
+    var reqbody = JSON.parse(JSON.stringify(body));
+    reqbody['postContent'] = file;
+    
     //Create Response
     let CreatePostResponse_ = new CreatePostResponse();
     let Messages_ = new Messages();
@@ -152,6 +160,9 @@ export class PostContentService {
     //Get userbasics
     const data_userbasics = await this.userService.findOne(email);
     if (!(await this.utilService.ceckData(data_userbasics))) {
+      var timestamps_end = await this.utilService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
       Messages_.info = ["Email unknown"];
       CreatePostResponse_.messages = Messages_;
       return CreatePostResponse_;
@@ -169,10 +180,10 @@ export class PostContentService {
     const mime = file.mimetype;
     if (mime.startsWith('video')) {
       console.log('============================================== CREATE POST TYPE ' + body.postID +' ==============================================', mime);
-      return this.createNewPostVideoV5(file, body, data_userbasics);
+      return this.createNewPostVideoV5(file, body, data_userbasics, fullurl);
     } else {
       console.log('============================================== CREATE POST TYPE ' + body.postID +' ==============================================', mime);
-      return this.createNewPostPictV5(file, body, data_userbasics);
+      return this.createNewPostPictV5(file, body, data_userbasics, fullurl);
     }
   }
 
@@ -583,6 +594,7 @@ export class PostContentService {
     Posts_.email = data_userbasics.email;
     Posts_.createdAt = currentDate;
     Posts_.updatedAt = currentDate;
+    Posts_.saleAmount = body.saleAmount;
     Posts_.expiration = Long.fromBigInt(generateExpired);
     if (body.musicId != undefined) {
       Posts_.musicId = new mongoose.Types.ObjectId(body.musicId);
@@ -1512,9 +1524,13 @@ export class PostContentService {
     return res;
   }
 
-  private async createNewPostVideoV5(file: Express.Multer.File, body: any, data_userbasics: Userbasic): Promise<CreatePostResponse> {
+  private async createNewPostVideoV5(file: Express.Multer.File, body: any, data_userbasics: Userbasic, link:string): Promise<CreatePostResponse> {
     //Current Date
     const currentDate = await this.utilService.getDateTimeString();
+    var reqbody = JSON.parse(JSON.stringify(body));
+    reqbody['postContent'] = file;
+    var inputemail = data_userbasics.email;
+    var setemail = inputemail.toString();
 
     //Build Post
     let Posts_: Posts = await this.buildPost_(body, data_userbasics);
@@ -1660,6 +1676,10 @@ export class PostContentService {
     var dataResponseGenerate = await this.genrateDataPost5(dataPosts, data_userbasics);
     let CreatePostResponse_ = new CreatePostResponse();
     let Messages_ = new Messages();
+
+    var timestamps_end = await this.utilService.getDateTimeString();
+    this.logapiSS.create2(link, currentDate, timestamps_end, setemail, null, null, reqbody);
+
     Messages_.info = ["The process successful"];
     CreatePostResponse_.messages = Messages_;
     CreatePostResponse_.response_code = 202;
@@ -2231,7 +2251,15 @@ export class PostContentService {
     //Generate Certified
     if (Posts_.certified) {
       this.generateCertificate(String(body.postID), lang.toString());
-    } 
+    }
+
+    //Sale amount send notice
+    if (Posts_.saleAmount > 0) {
+      console.log("SALE AMOUNT", Posts_.saleAmount);
+      await this.utilService.sendFcmV2(Posts_.email.toString(), Posts_.email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), Posts_.postType.toString())
+      //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+    }
+
 
     //Send FCM Tag
     let tag = Posts_.tagPeople;
@@ -3282,9 +3310,13 @@ export class PostContentService {
     return res;
   }
 
-  private async createNewPostPictV5(file: Express.Multer.File, body: any, data_userbasics: Userbasic): Promise<CreatePostResponse> {
+  private async createNewPostPictV5(file: Express.Multer.File, body: any, data_userbasics: Userbasic, link:string): Promise<CreatePostResponse> {
     //Current Date
     const currentDate = await this.utilService.getDateTimeString();
+    var reqbody = JSON.parse(JSON.stringify(body));
+    reqbody['postContent'] = file;
+    var inputemail = data_userbasics.email;
+    var setemail = inputemail.toString();
 
     //Set Extension
     var extension = "jpg";
@@ -3439,6 +3471,13 @@ export class PostContentService {
       await this.mediamusicService.updateUsed(body.musicId);
     }
 
+    //Sale amount send notice
+    if (Posts_.saleAmount > 0) {
+      console.log("SALE AMOUNT", Posts_.saleAmount);
+      await this.utilService.sendFcmV2(Posts_.email.toString(), Posts_.email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), Posts_.postType.toString())
+      //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+    }
+
     //Post Ceck Moderation
     this.cmodService.cmodImage(Posts_.postID.toString(), url_filename);
 
@@ -3447,6 +3486,10 @@ export class PostContentService {
     var dataResponseGenerate = await this.genrateDataPost5(dataPosts, data_userbasics);
     let CreatePostResponse_ = new CreatePostResponse();
     let Messages_ = new Messages();
+
+    var timestamps_end = await this.utilService.getDateTimeString();
+    this.logapiSS.create2(link, currentDate, timestamps_end, setemail, null, null, reqbody);
+
     Messages_.info = ["The process successful"];
     CreatePostResponse_.messages = Messages_;
     CreatePostResponse_.response_code = 202;
