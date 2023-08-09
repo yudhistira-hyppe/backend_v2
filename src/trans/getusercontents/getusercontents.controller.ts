@@ -3815,7 +3815,7 @@ export class GetusercontentsController {
         var datatag = null;
 
         try {
-            datasearch = await this.interestCountService.detailinterestcontenNew2(keys, email, skip, limit, listpict, listvid, listdiary);
+            datasearch = await this.getusercontentsService.detailinterestcontenNew2(keys, email, skip, limit, listpict, listvid, listdiary);
             interests = datasearch[0].interest;
 
         } catch (e) {
