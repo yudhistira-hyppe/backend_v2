@@ -577,6 +577,10 @@ export class AuthController {
       if (await this.utilsService.ceckData(data_userauths)) {
         _isEmailVerified = data_userauths.isEmailVerified;
       } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
         if (lang == "en") {
           await this.errorHandler.generateNotAcceptableException(
             'No users were found. Please check again.',
@@ -2451,9 +2455,9 @@ export class AuthController {
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/signup/socmed')
-  async signupsosmed(@Req() request: any) {
+  async signupsosmed(@Req() request: any, @Headers() headers) {
     this.logger.log("signupsosmed >>> start: " + JSON.stringify(request.body));
-    return await this.socmed.signupsosmed(request);
+    return await this.socmed.signupsosmed(request, headers);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)

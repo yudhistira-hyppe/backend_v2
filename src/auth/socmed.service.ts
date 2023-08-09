@@ -37,6 +37,7 @@ import { CreateGetcontenteventsDto } from '../trans/getusercontents/getcontentev
 import { CreateUserbasicnewDto } from '../trans/newuserbasic/dto/create-userbasicnew.dto';
 import { PostsService } from '../content/posts/posts.service';
 import { AuthService } from './auth.service';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
 
 @Injectable()
 export class SocmedService {
@@ -66,9 +67,14 @@ export class SocmedService {
     private adsUserCompareService: AdsUserCompareService,
     private contenteventsService: ContenteventsService,
     private postsService: PostsService,
+    private readonly logapiSS: LogapisService
   ) { }
 
-  async signupsosmed(req: any) {
+  async signupsosmed(req: any, headers:any) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/user/signup/socmed';
+    var reqbody = JSON.parse(JSON.stringify(req.body));
+
     this.logger.log("signupsosmedv2 >>> start: ");
     console.log("signupsosmedv2 >>> PARAM: " + JSON.stringify(req.body));
     var user_email = null;
@@ -80,11 +86,21 @@ export class SocmedService {
     var user_imei = null;
 
     if (req.body.email == undefined) {
+      
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
+
       await this.errorHandler.generateNotAcceptableException(
         'Email is mandatory',
       );
     } else {
       if (req.body.email == '') {
+        
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
+
         await this.errorHandler.generateNotAcceptableException(
           'Email is mandatory',
         );
@@ -94,11 +110,19 @@ export class SocmedService {
     }
 
     if (req.body.socmedSource == undefined) {
+      
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Socmed is mandatory',
       );
     } else {
       if (req.body.socmedSource == '') {
+        
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           'Socmed is mandatory',
         );
@@ -128,6 +152,10 @@ export class SocmedService {
     }
 
     if (!(await this.utilsService.validasiEmail(user_email.trim()))) {
+      
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
       throw new NotAcceptableException({
         response_code: 406,
         messages: {
@@ -248,6 +276,11 @@ export class SocmedService {
 
 
           } catch (error) {
+            
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Create Activity events Child. Error:' + error,
             );
@@ -273,6 +306,11 @@ export class SocmedService {
                 },
               );
           } catch (error) {
+            
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Update Activity events Parent. Error:' +
               error,
@@ -325,6 +363,11 @@ export class SocmedService {
 
 
           } catch (error) {
+            
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Create Activity events Parent. Error:' +
               error,
@@ -372,6 +415,11 @@ export class SocmedService {
 
 
           } catch (error) {
+            
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Create Activity events Child. Error:' + error,
             );
@@ -410,6 +458,11 @@ export class SocmedService {
                 //Insert User Userdevices
                 await this.userdevicesService.create(data_CreateUserdeviceDto);
               } catch (error) {
+                
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                   'Unabled to proceed Create Userdevices. Error:' + error,
                 );
@@ -445,6 +498,11 @@ export class SocmedService {
               });
             }
           } catch (error) {
+            
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Update Devices Userauths. Error:' + error,
             );
@@ -473,6 +531,12 @@ export class SocmedService {
         }
 
         var vesion = await this.utilsService.getversion();
+
+        
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
+
         return {
           response_code: 202,
           data: {
@@ -515,6 +579,10 @@ export class SocmedService {
           },
         };
       } else {
+        
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           'User not found',
         );
@@ -558,6 +626,10 @@ export class SocmedService {
               }
             }
           } catch (error) {
+            
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Get Id Language. Error: ' + error,
             );
@@ -589,6 +661,10 @@ export class SocmedService {
           //Insert Insights
           await this.insightsService.create(data_CreateInsightsDto);
         } catch (error) {
+          
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Insights. Error: ' + error,
           );
@@ -608,6 +684,10 @@ export class SocmedService {
               );
               ID_device = datauserdevicesService._id;
             } catch (error) {
+              
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Get Userdevices. Error:' + error,
               );
@@ -627,6 +707,10 @@ export class SocmedService {
               //Insert User Userdevices
               await this.userdevicesService.create(data_CreateUserdeviceDto);
             } catch (error) {
+              
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create Userdevices. Error:' + error,
               );
@@ -667,6 +751,10 @@ export class SocmedService {
           //Insert UserAuth
           await this.userauthsService.create(data_CreateUserauthDto);
         } catch (error) {
+          
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create UserAuth. Error: ' + error,
           );
@@ -715,6 +803,10 @@ export class SocmedService {
           //Insert UserBasic
           await this.userbasicsService.create(data_CreateUserbasicDto);
         } catch (error) {
+          
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create UserBasic. Error: ' + error,
           );
@@ -770,6 +862,10 @@ export class SocmedService {
 
 
         } catch (error) {
+          
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity events Parent. Error: ' +
             error,
@@ -844,6 +940,10 @@ export class SocmedService {
                 await this.insightsService.updateFollower(req.body.referral);
                 await this.insightsService.updateFollowing(req.body.email);
               } catch (error) {
+                
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                   'Unabled to proceed Create Refferal. Error:' +
                   error,
@@ -912,6 +1012,10 @@ export class SocmedService {
 
 
         } catch (error) {
+          
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity events Child. Error: ' +
             error,
@@ -955,11 +1059,19 @@ export class SocmedService {
             data_CreateActivityeventsDto_parent,
           );
         } catch (error) {
+          
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity events Parent. Error:' +
             error,
           );
         }
+
+        
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
         return {
           response_code: 202,
@@ -1000,6 +1112,10 @@ export class SocmedService {
           },
         };
       } else {
+        
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           'Sorry! This email already registered',
         );

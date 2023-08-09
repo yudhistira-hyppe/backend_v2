@@ -48,7 +48,7 @@ import { ChallengeService } from 'src/trans/challenge/challenge.service';
 import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
 import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.schema';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
-import { request } from 'http';
+
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -3145,7 +3145,7 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   async getRecentStory(@Req() request: Request, @Headers() headers): Promise<any> {
     var timestamps_start = await this.utilsService.getDateTimeString();
-    var fullurl = headers.Host + "/api/posts/landing-page/recentStory";
+    var fullurl = headers.host + "/api/posts/landing-page/recentStory";
 
     var data = null;
     var email = null;
@@ -3155,16 +3155,25 @@ export class PostsController {
     if (request_json["email"] !== undefined) {
       email = request_json["email"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
     if (request_json["page"] !== undefined) {
       page = request_json["page"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+      
       throw new BadRequestException("Unabled to proceed");
     }
     if (request_json["limit"] !== undefined) {
       limit = request_json["limit"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
     const messages = {
@@ -3216,7 +3225,7 @@ export class PostsController {
     }
 
     var timestamps_end = await this.utilsService.getDateTimeString();
-    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
     return { response_code: 202, data, messages };
   }
