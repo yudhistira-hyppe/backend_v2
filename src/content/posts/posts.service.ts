@@ -119931,7 +119931,14 @@ export class PostsService {
               {
                 $limit: 2
               },
-
+              {
+                $group: {
+                  _id: "$postID",
+                  komentar: {
+                    $push: "$$ROOT"
+                  }
+                }
+              }
             ]
           },
 
@@ -120433,56 +120440,33 @@ export class PostsService {
         },
         {
           $set: {
-            ded: {
+            indexComment:
+            {
+              $indexOfArray: ["$comment._id", {
+                $arrayElemAt: ["$all.postID", "$index"]
+              },]
+            },
+          }
+        },
+        {
+          $set: {
+            ded:
+            {
               $cond: {
                 if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$comment.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
+                  $gte: ["$indexComment", 0]
                 },
-                then: [
-                  {
-                    $arrayElemAt: ["$comment", "$index"]
-                  }],
+                then:
+                {
+                  $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                },
                 else: []
               }
             },
 
           }
         },
-        {
-          $set: {
-            testLogs: [
-              {
-                $cond: {
-                  if: {
-                    $eq: [
-                      {
-                        $arrayElemAt: ["$ded", "$index"]
-                      },
-                      null
-                    ]
-                  },
-                  then: [],
-                  else: {
-                    $arrayElemAt: ["$ded", "$index"]
-                  }
-                }
-              },
 
-            ]
-          }
-        },
-        {
-          $unwind: {
-            path: "$testLogs"
-          }
-        },
         {
           $set:
           {
@@ -121744,7 +121728,14 @@ export class PostsService {
               {
                 $limit: 2
               },
-
+              {
+                $group: {
+                  _id: "$postID",
+                  komentar: {
+                    $push: "$$ROOT"
+                  }
+                }
+              }
             ]
           },
 
@@ -122246,56 +122237,23 @@ export class PostsService {
         },
         {
           $set: {
-            ded: {
+            ded:
+            {
               $cond: {
                 if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$comment.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
+                  $gte: ["$indexComment", 0]
                 },
-                then: [
-                  {
-                    $arrayElemAt: ["$comment", "$index"]
-                  }],
+                then:
+                {
+                  $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                },
                 else: []
               }
             },
 
           }
         },
-        {
-          $set: {
-            testLogs: [
-              {
-                $cond: {
-                  if: {
-                    $eq: [
-                      {
-                        $arrayElemAt: ["$ded", "$index"]
-                      },
-                      null
-                    ]
-                  },
-                  then: [],
-                  else: {
-                    $arrayElemAt: ["$ded", "$index"]
-                  }
-                }
-              },
 
-            ]
-          }
-        },
-        {
-          $unwind: {
-            path: "$testLogs"
-          }
-        },
         {
           $set:
           {
@@ -123554,7 +123512,14 @@ export class PostsService {
               {
                 $limit: 2
               },
-
+              {
+                $group: {
+                  _id: "$postID",
+                  komentar: {
+                    $push: "$$ROOT"
+                  }
+                }
+              }
             ]
           },
 
@@ -124056,56 +124021,23 @@ export class PostsService {
         },
         {
           $set: {
-            ded: {
+            ded:
+            {
               $cond: {
                 if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$comment.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
+                  $gte: ["$indexComment", 0]
                 },
-                then: [
-                  {
-                    $arrayElemAt: ["$comment", "$index"]
-                  }],
+                then:
+                {
+                  $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                },
                 else: []
               }
             },
 
           }
         },
-        {
-          $set: {
-            testLogs: [
-              {
-                $cond: {
-                  if: {
-                    $eq: [
-                      {
-                        $arrayElemAt: ["$ded", "$index"]
-                      },
-                      null
-                    ]
-                  },
-                  then: [],
-                  else: {
-                    $arrayElemAt: ["$ded", "$index"]
-                  }
-                }
-              },
 
-            ]
-          }
-        },
-        {
-          $unwind: {
-            path: "$testLogs"
-          }
-        },
         {
           $set:
           {
@@ -124872,6 +124804,7 @@ export class PostsService {
     var query = await this.PostsModel.aggregate(pipeline);
     return query;
   }
+
 
   async landingpageMy(email: string, type: string, skip: number, limit: number) {
     var pipeline = [];
