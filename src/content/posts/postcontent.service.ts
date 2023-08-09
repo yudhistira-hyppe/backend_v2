@@ -582,6 +582,7 @@ export class PostContentService {
     Posts_.email = data_userbasics.email;
     Posts_.createdAt = currentDate;
     Posts_.updatedAt = currentDate;
+    Posts_.saleAmount = body.saleAmount;
     Posts_.expiration = Long.fromBigInt(generateExpired);
     if (body.musicId != undefined) {
       Posts_.musicId = new mongoose.Types.ObjectId(body.musicId);
@@ -2230,7 +2231,15 @@ export class PostContentService {
     //Generate Certified
     if (Posts_.certified) {
       this.generateCertificate(String(body.postID), lang.toString());
-    } 
+    }
+
+    //Sale amount send notice
+    console.log("SALE AMOUNT", Posts_.saleAmount);
+    if (Posts_.saleAmount > 0) {
+      console.log("SALE AMOUNT", Posts_.saleAmount);
+      await this.utilService.sendFcmV2(Posts_.email.toString(), Posts_.email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), Posts_.postType.toString())
+      //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+    }
 
     //Send FCM Tag
     let tag = Posts_.tagPeople;
@@ -3436,6 +3445,13 @@ export class PostContentService {
     //Update Music
     if (body.musicId != undefined) {
       await this.mediamusicService.updateUsed(body.musicId);
+    }
+
+    //Sale amount send notice
+    if (Posts_.saleAmount > 0) {
+      console.log("SALE AMOUNT", Posts_.saleAmount);
+      await this.utilService.sendFcmV2(Posts_.email.toString(), Posts_.email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), Posts_.postType.toString())
+      //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
     }
 
     //Post Ceck Moderation
