@@ -40,6 +40,7 @@ import { FriendListModule } from 'src/content/friend_list/friend_list.module';
 import { ChallengeModule } from '../trans/challenge/challenge.module';
 import { UserchallengesModule } from '../trans/userchallenges/userchallenges.module';
 import { ConfigModule } from '@nestjs/config';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -75,6 +76,7 @@ import { ConfigModule } from '@nestjs/config';
     PostsModule,
     UserticketsModule,
     FriendListModule,
+    LogapisModule,
     ActivityeventsModule, JwtModule.register({
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },

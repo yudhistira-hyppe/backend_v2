@@ -47,6 +47,8 @@ import { UserchallengesService } from 'src/trans/userchallenges/userchallenges.s
 import { ChallengeService } from 'src/trans/challenge/challenge.service';
 import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
 import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.schema';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
+
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -73,7 +75,8 @@ export class PostsController {
     private readonly userchallengesService: UserchallengesService,
     private readonly challengeService: ChallengeService,
     private readonly postchallengeService: PostchallengeService,
-    private readonly methodepaymentsService: MethodepaymentsService) { }
+    private readonly methodepaymentsService: MethodepaymentsService,
+    private readonly logapiSS: LogapisService) { }
 
   @Post()
   async create(@Body() CreatePostsDto: CreatePostsDto) {
@@ -601,6 +604,10 @@ export class PostsController {
   @Post('api/posts/updatepost')
   @UseInterceptors(FileInterceptor('postContent'))
   async updatePostnew(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/updatepost";
+    var reqbody = body;
+    
     this.logger.log("updatePost >>> start");
     var email = headers['x-auth-user'];
     var saleAmount = body.saleAmount;
@@ -611,6 +618,8 @@ export class PostsController {
     var posts = await this.PostsService.findid(body.postID.toString());
     var dataTransaction = await this.transactionsPostService.findpostid(body.postID.toString());
     if (await this.utilsService.ceckData(dataTransaction)) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
       if (lang == "id") {
         await this.errorHandler.generateNotAcceptableException(
           "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
@@ -1039,6 +1048,10 @@ export class PostsController {
       await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
       //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
     }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
     return data;
   }
 

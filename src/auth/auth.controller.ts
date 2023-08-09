@@ -64,6 +64,7 @@ import { CreateMediaprofilepictsDto } from 'src/content/mediaprofilepicts/dto/cr
 import { FriendListService } from 'src/content/friend_list/friend_list.service';
 import { CreateUserauthDto } from 'src/trans/userauths/dto/create-userauth.dto';
 import { ConfigService } from '@nestjs/config';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
 const sharp = require('sharp');
 const convert = require('heic-convert');
 
@@ -95,7 +96,8 @@ export class AuthController {
     private userbankaccountsService: UserbankaccountsService,
     private userticketdetailsService: UserticketdetailsService,
     private friendListService: FriendListService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly logapiSS: LogapisService
   ) { }
 
   // @UseGuards(LocalAuthGuard)
@@ -518,8 +520,8 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('api/user/login')
   @HttpCode(HttpStatus.ACCEPTED)
-  async login(@Body() LoginRequest_: LoginRequest) {
-
+  async login(@Body() LoginRequest_: LoginRequest, @Req() req) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
     var getdevicedata = null;
     var current_date = await this.utilsService.getDateTimeString();
 
@@ -574,6 +576,10 @@ export class AuthController {
       if (await this.utilsService.ceckData(data_userauths)) {
         _isEmailVerified = data_userauths.isEmailVerified;
       } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
         if (lang == "en") {
           await this.errorHandler.generateNotAcceptableException(
             'No users were found. Please check again.',
@@ -641,6 +647,11 @@ export class AuthController {
 
             //await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, Failed create Activity events Child. Error:' + error,
             );
@@ -666,6 +677,11 @@ export class AuthController {
                 },
               );
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Update Activity events Parent. Error:' +
               error,
@@ -733,6 +749,11 @@ export class AuthController {
 
             //await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, Failed create activity events parent. Error:' +
               error,
@@ -776,6 +797,11 @@ export class AuthController {
 
             // await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, Failed create Activity events Child. Error:' + error,
             );
@@ -801,6 +827,11 @@ export class AuthController {
               await this.userdevicesService.updatebyEmail(LoginRequest_.email, LoginRequest_.deviceId, data_update);
               Id_user_userdevices = data_userdevices._id;
             } catch (error) {
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, Failed update user devices. Error:' + error,
               );
@@ -824,6 +855,11 @@ export class AuthController {
               //Insert User Userdevices
               await this.userdevicesService.create(CreateUserdeviceDto_);
             } catch (error) {
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, Failed update user devices. Error:' + error,
               );
@@ -854,6 +890,11 @@ export class AuthController {
               });
             }
           } catch (error) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed, Failed update devices userauths. Error:' + error,
             );
@@ -891,6 +932,11 @@ export class AuthController {
         var GlobalMessages_ = new GlobalMessages();
         GlobalMessages_.info = [messages_response];
 
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
         GlobalResponse_.response_code = 202;
         GlobalResponse_.data = ProfileDTO_;
         GlobalResponse_.messages = GlobalMessages_;
@@ -914,6 +960,12 @@ export class AuthController {
             info: [messages],
           },
         }
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
         return response;
         // if (lang == "en") {
         //   await this.errorHandler.generateNotAcceptableException(
@@ -944,8 +996,19 @@ export class AuthController {
             info: [messages],
           },
         }
+        
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
         return response;
       } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
         if (lang == "en") {
           await this.errorHandler.generateNotAcceptableException(
             'No users were found. Please check again.',
@@ -2224,9 +2287,9 @@ export class AuthController {
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/signup/socmed')
-  async signupsosmed(@Req() request: any) {
+  async signupsosmed(@Req() request: any, @Headers() headers) {
     this.logger.log("signupsosmed >>> start: " + JSON.stringify(request.body));
-    return await this.socmed.signupsosmed(request);
+    return await this.socmed.signupsosmed(request, headers);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
