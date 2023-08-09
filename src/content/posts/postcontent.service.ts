@@ -113,7 +113,7 @@ export class PostContentService {
 
   async createNewPostV5(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
     var timestamps_start = await this.utilService.getDateTimeString();
-    var fullurl = headers.Host + '/api/posts/createpost';
+    var fullurl = headers.host + '/api/posts/createpost';
     var reqbody = JSON.parse(JSON.stringify(body));
     reqbody['postContent'] = file;
     
