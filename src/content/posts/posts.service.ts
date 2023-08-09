@@ -99423,7 +99423,14 @@ export class PostsService {
               {
                 $limit: 2
               },
-
+              {
+                $group: {
+                  _id: "$postID",
+                  komentar: {
+                    $push: "$$ROOT"
+                  }
+                }
+              }
             ]
           },
 
@@ -99925,54 +99932,30 @@ export class PostsService {
         },
         {
           $set: {
-            ded: {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$comment.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then: [
-                  {
-                    $arrayElemAt: ["$comment", "$index"]
-                  }],
-                else: []
-              }
+            indexComment:
+            {
+              $indexOfArray: ["$comment._id", {
+                $arrayElemAt: ["$all.postID", "$index"]
+              },]
             },
-
           }
         },
         {
           $set: {
-            testLogs: [
-              {
-                $cond: {
-                  if: {
-                    $eq: [
-                      {
-                        $arrayElemAt: ["$ded", "$index"]
-                      },
-                      null
-                    ]
-                  },
-                  then: [],
-                  else: {
-                    $arrayElemAt: ["$ded", "$index"]
-                  }
-                }
-              },
+            ded:
+            {
+              $cond: {
+                if: {
+                  $gte: ["$indexComment", 0]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                },
+                else: []
+              }
+            },
 
-            ]
-          }
-        },
-        {
-          $unwind: {
-            path: "$testLogs"
           }
         },
         {
@@ -100887,7 +100870,14 @@ export class PostsService {
               {
                 $limit: 2
               },
-
+              {
+                $group: {
+                  _id: "$postID",
+                  komentar: {
+                    $push: "$$ROOT"
+                  }
+                }
+              }
             ]
           },
 
@@ -101389,54 +101379,30 @@ export class PostsService {
         },
         {
           $set: {
-            ded: {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$comment.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then: [
-                  {
-                    $arrayElemAt: ["$comment", "$index"]
-                  }],
-                else: []
-              }
+            indexComment:
+            {
+              $indexOfArray: ["$comment._id", {
+                $arrayElemAt: ["$all.postID", "$index"]
+              },]
             },
-
           }
         },
         {
           $set: {
-            testLogs: [
-              {
-                $cond: {
-                  if: {
-                    $eq: [
-                      {
-                        $arrayElemAt: ["$ded", "$index"]
-                      },
-                      null
-                    ]
-                  },
-                  then: [],
-                  else: {
-                    $arrayElemAt: ["$ded", "$index"]
-                  }
-                }
-              },
+            ded:
+            {
+              $cond: {
+                if: {
+                  $gte: ["$indexComment", 0]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                },
+                else: []
+              }
+            },
 
-            ]
-          }
-        },
-        {
-          $unwind: {
-            path: "$testLogs"
           }
         },
         {
@@ -102351,7 +102317,14 @@ export class PostsService {
               {
                 $limit: 2
               },
-
+              {
+                $group: {
+                  _id: "$postID",
+                  komentar: {
+                    $push: "$$ROOT"
+                  }
+                }
+              }
             ]
           },
 
@@ -102853,54 +102826,30 @@ export class PostsService {
         },
         {
           $set: {
-            ded: {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$comment.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then: [
-                  {
-                    $arrayElemAt: ["$comment", "$index"]
-                  }],
-                else: []
-              }
+            indexComment:
+            {
+              $indexOfArray: ["$comment._id", {
+                $arrayElemAt: ["$all.postID", "$index"]
+              },]
             },
-
           }
         },
         {
           $set: {
-            testLogs: [
-              {
-                $cond: {
-                  if: {
-                    $eq: [
-                      {
-                        $arrayElemAt: ["$ded", "$index"]
-                      },
-                      null
-                    ]
-                  },
-                  then: [],
-                  else: {
-                    $arrayElemAt: ["$ded", "$index"]
-                  }
-                }
-              },
+            ded:
+            {
+              $cond: {
+                if: {
+                  $gte: ["$indexComment", 0]
+                },
+                then:
+                {
+                  $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                },
+                else: []
+              }
+            },
 
-            ]
-          }
-        },
-        {
-          $unwind: {
-            path: "$testLogs"
           }
         },
         {
