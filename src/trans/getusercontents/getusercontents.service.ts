@@ -25611,15 +25611,12 @@ export class GetusercontentsService {
   async updatePostviewer(postid: string, email: string) {
     return await this.getusercontentsModel.updateOne({ postID: postid }, { $push: { viewer: email } }).exec();
   }
-
   async detailinterestcontenNew(key: string, email: string, skip: number, limit: number, pict: any, vid: any, diary: any) {
-
 
     var pipeline = [];
 
     if (pict === true && vid === false && diary === false) {
       pipeline.push(
-
         {
           $facet: {
             pict: [
@@ -25840,24 +25837,24 @@ export class GetusercontentsService {
                         from: "interest_count",
                         as: "count",
                         let: {
-                          localID: new Types.ObjectId(key),
-                          pipeline: [
+                          localID: new Types.ObjectId(key)
+                        },
+                        pipeline: [
+                          {
+                            $match:
                             {
-                              $match:
-                              {
-                                $expr: {
-                                  $eq: ['$_id', '$$localID']
-                                }
-                              }
-                            },
-                            {
-                              $project: {
-                                total: 1,
+                              $expr: {
+                                $eq: ['$_id', '$$localID']
                               }
                             }
-                          ]
-                        }
-                      },
+                          },
+                          {
+                            $project: {
+                              total: 1,
+                            }
+                          }
+                        ]
+                      }
                     },
                     {
                       $unwind: {
@@ -26188,7 +26185,6 @@ export class GetusercontentsService {
         {
           $facet: {
 
-
             diary: [
               {
                 $match:
@@ -26470,7 +26466,6 @@ export class GetusercontentsService {
       pipeline.push(
         {
           $facet: {
-
             pict: [
               {
                 $match:
@@ -26665,6 +26660,7 @@ export class GetusercontentsService {
                 }
               },
             ],
+
             diary: [
               {
                 $match:
@@ -27336,7 +27332,6 @@ export class GetusercontentsService {
               },
             ],
 
-
             interest: [
               {
                 "$lookup": {
@@ -27359,24 +27354,24 @@ export class GetusercontentsService {
                         from: "interest_count",
                         as: "count",
                         let: {
-                          localID: new Types.ObjectId(key),
-                          pipeline: [
+                          localID: new Types.ObjectId(key)
+                        },
+                        pipeline: [
+                          {
+                            $match:
                             {
-                              $match:
-                              {
-                                $expr: {
-                                  $eq: ['$_id', '$$localID']
-                                }
-                              }
-                            },
-                            {
-                              $project: {
-                                total: 1,
+                              $expr: {
+                                $eq: ['$_id', '$$localID']
                               }
                             }
-                          ]
-                        }
-                      },
+                          },
+                          {
+                            $project: {
+                              total: 1,
+                            }
+                          }
+                        ]
+                      }
                     },
                     {
                       $unwind: {
@@ -27423,6 +27418,7 @@ export class GetusercontentsService {
       pipeline.push(
         {
           $facet: {
+
             video: [
               {
                 $match:
@@ -27617,7 +27613,6 @@ export class GetusercontentsService {
                 }
               },
             ],
-
             diary: [
               {
                 $match:
@@ -27897,7 +27892,6 @@ export class GetusercontentsService {
     }
     else if (pict === true && vid === true && diary === true) {
       pipeline.push(
-
         {
           $facet: {
             pict: [
@@ -28094,7 +28088,6 @@ export class GetusercontentsService {
                 }
               },
             ],
-
             video: [
               {
                 $match:
@@ -28289,7 +28282,6 @@ export class GetusercontentsService {
                 }
               },
             ],
-
             diary: [
               {
                 $match:
@@ -28484,6 +28476,7 @@ export class GetusercontentsService {
                 }
               },
             ],
+
             interest: [
               {
                 "$lookup": {
@@ -28506,24 +28499,24 @@ export class GetusercontentsService {
                         from: "interest_count",
                         as: "count",
                         let: {
-                          localID: new Types.ObjectId(key),
-                          pipeline: [
+                          localID: new Types.ObjectId(key)
+                        },
+                        pipeline: [
+                          {
+                            $match:
                             {
-                              $match:
-                              {
-                                $expr: {
-                                  $eq: ['$_id', '$$localID']
-                                }
-                              }
-                            },
-                            {
-                              $project: {
-                                total: 1,
+                              $expr: {
+                                $eq: ['$_id', '$$localID']
                               }
                             }
-                          ]
-                        }
-                      },
+                          },
+                          {
+                            $project: {
+                              total: 1,
+                            }
+                          }
+                        ]
+                      }
                     },
                     {
                       $unwind: {
@@ -28568,7 +28561,7 @@ export class GetusercontentsService {
     }
 
 
-    const query = await this.getusercontentsModel.aggregate(pipeline);
+    var query = await this.getusercontentsModel.aggregate(pipeline);
     return query;
   }
 }
