@@ -30214,9 +30214,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -30224,16 +30230,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -32090,9 +32096,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -32100,16 +32112,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -33967,9 +33979,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -33977,16 +33995,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -35841,9 +35859,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -35851,16 +35875,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -37627,9 +37651,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -37637,16 +37667,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -39501,9 +39531,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -39511,16 +39547,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -41285,9 +41321,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -41295,16 +41337,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -43160,9 +43202,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -43170,16 +43218,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -44945,9 +44993,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -44955,16 +45009,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -46819,9 +46873,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -46829,16 +46889,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -48603,9 +48663,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -48613,16 +48679,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -50411,9 +50477,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -50421,16 +50493,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
