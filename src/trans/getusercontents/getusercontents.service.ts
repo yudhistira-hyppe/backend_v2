@@ -28564,7 +28564,6 @@ export class GetusercontentsService {
     var query = await this.getusercontentsModel.aggregate(pipeline);
     return query;
   }
-
   async detailinterestcontenNew2(key: string, email: string, skip: number, limit: number, pict: any, vid: any, diary: any) {
 
     var pipeline = [];
@@ -29061,9 +29060,17 @@ export class GetusercontentsService {
                         createdAt: - 1
                       }
                     },
+                    // {
+                    //   $limit: 2
+                    // },
                     {
-                      $limit: 2
-                    },
+                      $group: {
+                        _id: "$postID",
+                        komentar: {
+                          $push: "$$ROOT"
+                        }
+                      }
+                    }
 
                   ]
                 },
@@ -29565,55 +29572,30 @@ export class GetusercontentsService {
               },
               {
                 $set: {
-                  ded: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$comment.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then: [
-                        {
-                          $arrayElemAt: ["$comment", "$index"]
-                        }
-                      ],
-                      else: []
-                    }
+                  indexComment:
+                  {
+                    $indexOfArray: ["$comment._id", {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
                   },
-
                 }
               },
               {
                 $set: {
-                  testLogs: [
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [
-                            {
-                              $arrayElemAt: ["$ded", "$index"]
-                            },
-                            null
-                          ]
-                        },
-                        then: [],
-                        else: {
-                          $arrayElemAt: ["$ded", "$index"]
-                        }
-                      }
-                    },
+                  ded:
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$indexComment", 0]
+                      },
+                      then:
+                      {
+                        $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                      },
+                      else: []
+                    }
+                  },
 
-                  ]
-                }
-              },
-              {
-                $unwind: {
-                  path: "$testLogs"
                 }
               },
               {
@@ -30231,9 +30213,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -30241,16 +30229,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -30955,10 +30943,17 @@ export class GetusercontentsService {
                         createdAt: - 1
                       }
                     },
+                    // {
+                    //   $limit: 2
+                    // },
                     {
-                      $limit: 2
-                    },
-
+                      $group: {
+                        _id: "$postID",
+                        komentar: {
+                          $push: "$$ROOT"
+                        }
+                      }
+                    }
                   ]
                 },
 
@@ -31459,55 +31454,30 @@ export class GetusercontentsService {
               },
               {
                 $set: {
-                  ded: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$comment.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then: [
-                        {
-                          $arrayElemAt: ["$comment", "$index"]
-                        }
-                      ],
-                      else: []
-                    }
+                  indexComment:
+                  {
+                    $indexOfArray: ["$comment._id", {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
                   },
-
                 }
               },
               {
                 $set: {
-                  testLogs: [
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [
-                            {
-                              $arrayElemAt: ["$ded", "$index"]
-                            },
-                            null
-                          ]
-                        },
-                        then: [],
-                        else: {
-                          $arrayElemAt: ["$ded", "$index"]
-                        }
-                      }
-                    },
+                  ded:
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$indexComment", 0]
+                      },
+                      then:
+                      {
+                        $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                      },
+                      else: []
+                    }
+                  },
 
-                  ]
-                }
-              },
-              {
-                $unwind: {
-                  path: "$testLogs"
                 }
               },
               {
@@ -32125,9 +32095,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -32135,16 +32111,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -32848,9 +32824,17 @@ export class GetusercontentsService {
                         createdAt: - 1
                       }
                     },
+                    // {
+                    //   $limit: 2
+                    // },
                     {
-                      $limit: 2
-                    },
+                      $group: {
+                        _id: "$postID",
+                        komentar: {
+                          $push: "$$ROOT"
+                        }
+                      }
+                    }
 
                   ]
                 },
@@ -33353,54 +33337,30 @@ export class GetusercontentsService {
               },
               {
                 $set: {
-                  ded: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$comment.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then: [
-                        {
-                          $arrayElemAt: ["$comment", "$index"]
-                        }],
-                      else: []
-                    }
+                  indexComment:
+                  {
+                    $indexOfArray: ["$comment._id", {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
                   },
-
                 }
               },
               {
                 $set: {
-                  testLogs: [
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [
-                            {
-                              $arrayElemAt: ["$ded", "$index"]
-                            },
-                            null
-                          ]
-                        },
-                        then: [],
-                        else: {
-                          $arrayElemAt: ["$ded", "$index"]
-                        }
-                      }
-                    },
+                  ded:
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$indexComment", 0]
+                      },
+                      then:
+                      {
+                        $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                      },
+                      else: []
+                    }
+                  },
 
-                  ]
-                }
-              },
-              {
-                $unwind: {
-                  path: "$testLogs"
                 }
               },
               {
@@ -34018,9 +33978,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -34028,16 +33994,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -34739,9 +34705,17 @@ export class GetusercontentsService {
                         createdAt: - 1
                       }
                     },
+                    // {
+                    //   $limit: 2
+                    // },
                     {
-                      $limit: 2
-                    },
+                      $group: {
+                        _id: "$postID",
+                        komentar: {
+                          $push: "$$ROOT"
+                        }
+                      }
+                    }
 
                   ]
                 },
@@ -35243,55 +35217,30 @@ export class GetusercontentsService {
               },
               {
                 $set: {
-                  ded: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$comment.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then: [
-                        {
-                          $arrayElemAt: ["$comment", "$index"]
-                        }
-                      ],
-                      else: []
-                    }
+                  indexComment:
+                  {
+                    $indexOfArray: ["$comment._id", {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
                   },
-
                 }
               },
               {
                 $set: {
-                  testLogs: [
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [
-                            {
-                              $arrayElemAt: ["$ded", "$index"]
-                            },
-                            null
-                          ]
-                        },
-                        then: [],
-                        else: {
-                          $arrayElemAt: ["$ded", "$index"]
-                        }
-                      }
-                    },
+                  ded:
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$indexComment", 0]
+                      },
+                      then:
+                      {
+                        $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                      },
+                      else: []
+                    }
+                  },
 
-                  ]
-                }
-              },
-              {
-                $unwind: {
-                  path: "$testLogs"
                 }
               },
               {
@@ -35909,9 +35858,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -35919,16 +35874,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -36541,9 +36496,17 @@ export class GetusercontentsService {
                         createdAt: - 1
                       }
                     },
+                    // {
+                    //   $limit: 2
+                    // },
                     {
-                      $limit: 2
-                    },
+                      $group: {
+                        _id: "$postID",
+                        komentar: {
+                          $push: "$$ROOT"
+                        }
+                      }
+                    }
 
                   ]
                 },
@@ -37046,54 +37009,30 @@ export class GetusercontentsService {
               },
               {
                 $set: {
-                  ded: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$comment.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then: [
-                        {
-                          $arrayElemAt: ["$comment", "$index"]
-                        }],
-                      else: []
-                    }
+                  indexComment:
+                  {
+                    $indexOfArray: ["$comment._id", {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
                   },
-
                 }
               },
               {
                 $set: {
-                  testLogs: [
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [
-                            {
-                              $arrayElemAt: ["$ded", "$index"]
-                            },
-                            null
-                          ]
-                        },
-                        then: [],
-                        else: {
-                          $arrayElemAt: ["$ded", "$index"]
-                        }
-                      }
-                    },
+                  ded:
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$indexComment", 0]
+                      },
+                      then:
+                      {
+                        $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                      },
+                      else: []
+                    }
+                  },
 
-                  ]
-                }
-              },
-              {
-                $unwind: {
-                  path: "$testLogs"
                 }
               },
               {
@@ -37711,9 +37650,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -37721,16 +37666,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -38432,9 +38377,17 @@ export class GetusercontentsService {
                         createdAt: - 1
                       }
                     },
+                    // {
+                    //   $limit: 2
+                    // },
                     {
-                      $limit: 2
-                    },
+                      $group: {
+                        _id: "$postID",
+                        komentar: {
+                          $push: "$$ROOT"
+                        }
+                      }
+                    }
 
                   ]
                 },
@@ -38936,55 +38889,30 @@ export class GetusercontentsService {
               },
               {
                 $set: {
-                  ded: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$comment.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then: [
-                        {
-                          $arrayElemAt: ["$comment", "$index"]
-                        }
-                      ],
-                      else: []
-                    }
+                  indexComment:
+                  {
+                    $indexOfArray: ["$comment._id", {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
                   },
-
                 }
               },
               {
                 $set: {
-                  testLogs: [
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [
-                            {
-                              $arrayElemAt: ["$ded", "$index"]
-                            },
-                            null
-                          ]
-                        },
-                        then: [],
-                        else: {
-                          $arrayElemAt: ["$ded", "$index"]
-                        }
-                      }
-                    },
+                  ded:
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$indexComment", 0]
+                      },
+                      then:
+                      {
+                        $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                      },
+                      else: []
+                    }
+                  },
 
-                  ]
-                }
-              },
-              {
-                $unwind: {
-                  path: "$testLogs"
                 }
               },
               {
@@ -39602,9 +39530,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -39612,16 +39546,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -40233,9 +40167,17 @@ export class GetusercontentsService {
                         createdAt: - 1
                       }
                     },
+                    // {
+                    //   $limit: 2
+                    // },
                     {
-                      $limit: 2
-                    },
+                      $group: {
+                        _id: "$postID",
+                        komentar: {
+                          $push: "$$ROOT"
+                        }
+                      }
+                    }
 
                   ]
                 },
@@ -40737,55 +40679,30 @@ export class GetusercontentsService {
               },
               {
                 $set: {
-                  ded: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$comment.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then: [
-                        {
-                          $arrayElemAt: ["$comment", "$index"]
-                        }
-                      ],
-                      else: []
-                    }
+                  indexComment:
+                  {
+                    $indexOfArray: ["$comment._id", {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
                   },
-
                 }
               },
               {
                 $set: {
-                  testLogs: [
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [
-                            {
-                              $arrayElemAt: ["$ded", "$index"]
-                            },
-                            null
-                          ]
-                        },
-                        then: [],
-                        else: {
-                          $arrayElemAt: ["$ded", "$index"]
-                        }
-                      }
-                    },
+                  ded:
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$indexComment", 0]
+                      },
+                      then:
+                      {
+                        $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                      },
+                      else: []
+                    }
+                  },
 
-                  ]
-                }
-              },
-              {
-                $unwind: {
-                  path: "$testLogs"
                 }
               },
               {
@@ -41403,9 +41320,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -41413,16 +41336,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -42126,10 +42049,17 @@ export class GetusercontentsService {
                         createdAt: - 1
                       }
                     },
+                    // {
+                    //   $limit: 2
+                    // },
                     {
-                      $limit: 2
-                    },
-
+                      $group: {
+                        _id: "$postID",
+                        komentar: {
+                          $push: "$$ROOT"
+                        }
+                      }
+                    }
                   ]
                 },
 
@@ -42630,55 +42560,30 @@ export class GetusercontentsService {
               },
               {
                 $set: {
-                  ded: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$comment.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then: [
-                        {
-                          $arrayElemAt: ["$comment", "$index"]
-                        }
-                      ],
-                      else: []
-                    }
+                  indexComment:
+                  {
+                    $indexOfArray: ["$comment._id", {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
                   },
-
                 }
               },
               {
                 $set: {
-                  testLogs: [
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [
-                            {
-                              $arrayElemAt: ["$ded", "$index"]
-                            },
-                            null
-                          ]
-                        },
-                        then: [],
-                        else: {
-                          $arrayElemAt: ["$ded", "$index"]
-                        }
-                      }
-                    },
+                  ded:
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$indexComment", 0]
+                      },
+                      then:
+                      {
+                        $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                      },
+                      else: []
+                    }
+                  },
 
-                  ]
-                }
-              },
-              {
-                $unwind: {
-                  path: "$testLogs"
                 }
               },
               {
@@ -43296,9 +43201,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -43306,16 +43217,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -43927,9 +43838,17 @@ export class GetusercontentsService {
                         createdAt: - 1
                       }
                     },
+                    // {
+                    //   $limit: 2
+                    // },
                     {
-                      $limit: 2
-                    },
+                      $group: {
+                        _id: "$postID",
+                        komentar: {
+                          $push: "$$ROOT"
+                        }
+                      }
+                    }
 
                   ]
                 },
@@ -44432,54 +44351,30 @@ export class GetusercontentsService {
               },
               {
                 $set: {
-                  ded: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$comment.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then: [
-                        {
-                          $arrayElemAt: ["$comment", "$index"]
-                        }],
-                      else: []
-                    }
+                  indexComment:
+                  {
+                    $indexOfArray: ["$comment._id", {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
                   },
-
                 }
               },
               {
                 $set: {
-                  testLogs: [
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [
-                            {
-                              $arrayElemAt: ["$ded", "$index"]
-                            },
-                            null
-                          ]
-                        },
-                        then: [],
-                        else: {
-                          $arrayElemAt: ["$ded", "$index"]
-                        }
-                      }
-                    },
+                  ded:
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$indexComment", 0]
+                      },
+                      then:
+                      {
+                        $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                      },
+                      else: []
+                    }
+                  },
 
-                  ]
-                }
-              },
-              {
-                $unwind: {
-                  path: "$testLogs"
                 }
               },
               {
@@ -45097,9 +44992,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -45107,16 +45008,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -45818,9 +45719,17 @@ export class GetusercontentsService {
                         createdAt: - 1
                       }
                     },
+                    // {
+                    //   $limit: 2
+                    // },
                     {
-                      $limit: 2
-                    },
+                      $group: {
+                        _id: "$postID",
+                        komentar: {
+                          $push: "$$ROOT"
+                        }
+                      }
+                    }
 
                   ]
                 },
@@ -46322,55 +46231,30 @@ export class GetusercontentsService {
               },
               {
                 $set: {
-                  ded: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$comment.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then: [
-                        {
-                          $arrayElemAt: ["$comment", "$index"]
-                        }
-                      ],
-                      else: []
-                    }
+                  indexComment:
+                  {
+                    $indexOfArray: ["$comment._id", {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
                   },
-
                 }
               },
               {
                 $set: {
-                  testLogs: [
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [
-                            {
-                              $arrayElemAt: ["$ded", "$index"]
-                            },
-                            null
-                          ]
-                        },
-                        then: [],
-                        else: {
-                          $arrayElemAt: ["$ded", "$index"]
-                        }
-                      }
-                    },
+                  ded:
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$indexComment", 0]
+                      },
+                      then:
+                      {
+                        $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                      },
+                      else: []
+                    }
+                  },
 
-                  ]
-                }
-              },
-              {
-                $unwind: {
-                  path: "$testLogs"
                 }
               },
               {
@@ -46988,9 +46872,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -46998,16 +46888,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -47619,9 +47509,17 @@ export class GetusercontentsService {
                         createdAt: - 1
                       }
                     },
+                    // {
+                    //   $limit: 2
+                    // },
                     {
-                      $limit: 2
-                    },
+                      $group: {
+                        _id: "$postID",
+                        komentar: {
+                          $push: "$$ROOT"
+                        }
+                      }
+                    }
 
                   ]
                 },
@@ -48123,55 +48021,30 @@ export class GetusercontentsService {
               },
               {
                 $set: {
-                  ded: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$comment.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then: [
-                        {
-                          $arrayElemAt: ["$comment", "$index"]
-                        }
-                      ],
-                      else: []
-                    }
+                  indexComment:
+                  {
+                    $indexOfArray: ["$comment._id", {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
                   },
-
                 }
               },
               {
                 $set: {
-                  testLogs: [
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [
-                            {
-                              $arrayElemAt: ["$ded", "$index"]
-                            },
-                            null
-                          ]
-                        },
-                        then: [],
-                        else: {
-                          $arrayElemAt: ["$ded", "$index"]
-                        }
-                      }
-                    },
+                  ded:
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$indexComment", 0]
+                      },
+                      then:
+                      {
+                        $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                      },
+                      else: []
+                    }
+                  },
 
-                  ]
-                }
-              },
-              {
-                $unwind: {
-                  path: "$testLogs"
                 }
               },
               {
@@ -48789,9 +48662,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -48799,16 +48678,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
@@ -49420,10 +49299,17 @@ export class GetusercontentsService {
                         createdAt: - 1
                       }
                     },
+                    // {
+                    //   $limit: 2
+                    // },
                     {
-                      $limit: 2
-                    },
-
+                      $group: {
+                        _id: "$postID",
+                        komentar: {
+                          $push: "$$ROOT"
+                        }
+                      }
+                    }
                   ]
                 },
 
@@ -50590,9 +50476,15 @@ export class GetusercontentsService {
                   as: "setting",
                   pipeline: [
                     {
-                      $match:
-                      {
-                        "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                      $match: {
+                        $or: [
+                          {
+                            "_id": new Types.ObjectId("62bbdb4ba7520000050077a7")
+                          },
+                          {
+                            "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
+                          }
+                        ]
                       }
                     },
 
@@ -50600,16 +50492,16 @@ export class GetusercontentsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$setting"
-                }
-              },
-              {
                 $project: {
                   mailViewer: 1,
                   viewerCount: 1,
                   viewer: 1,
-                  version: "$setting.value",
+                  version: {
+                    $arrayElemAt: ["$setting.value", 0]
+                  },
+                  limitLandingpage: {
+                    $arrayElemAt: ["$setting.value", 1]
+                  },
                   oldDate: 1,
                   selfContents: 1,
                   official: 1,
