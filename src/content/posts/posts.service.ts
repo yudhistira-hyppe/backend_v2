@@ -120821,8 +120821,9 @@ export class PostsService {
               $arrayElemAt: ["$media.uploadSource", "$index"]
             },
             comments:
+
             {
-              $size: "$ded"
+              $arrayElemAt: ["$all.comments", "$index"]
             },
             email:
             {
@@ -122608,8 +122609,9 @@ export class PostsService {
               $arrayElemAt: ["$media.uploadSource", "$index"]
             },
             comments:
+
             {
-              $size: "$ded"
+              $arrayElemAt: ["$all.comments", "$index"]
             },
             email:
             {
@@ -124392,8 +124394,9 @@ export class PostsService {
               $arrayElemAt: ["$media.uploadSource", "$index"]
             },
             comments:
+
             {
-              $size: "$ded"
+              $arrayElemAt: ["$all.comments", "$index"]
             },
             email:
             {
@@ -125858,8 +125861,9 @@ export class PostsService {
               $arrayElemAt: ["$media.uploadSource", "$index"]
             },
             comments:
+
             {
-              $size: "$ded"
+              $arrayElemAt: ["$all.comments", "$index"]
             },
             email:
             {
@@ -127305,8 +127309,9 @@ export class PostsService {
               $arrayElemAt: ["$media.uploadSource", "$index"]
             },
             comments:
+
             {
-              $size: "$ded"
+              $arrayElemAt: ["$all.comments", "$index"]
             },
             email:
             {
@@ -128752,8 +128757,9 @@ export class PostsService {
               $arrayElemAt: ["$media.uploadSource", "$index"]
             },
             comments:
+
             {
-              $size: "$ded"
+              $arrayElemAt: ["$all.comments", "$index"]
             },
             email:
             {

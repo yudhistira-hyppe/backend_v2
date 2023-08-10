@@ -29970,8 +29970,9 @@ export class GetusercontentsService {
                     $arrayElemAt: ["$media.uploadSource", "$index"]
                   },
                   comments:
+
                   {
-                    $size: "$ded"
+                    $arrayElemAt: ["$all.comments", "$index"]
                   },
                   email:
                   {
@@ -31864,8 +31865,9 @@ export class GetusercontentsService {
                     $arrayElemAt: ["$media.uploadSource", "$index"]
                   },
                   comments:
+
                   {
-                    $size: "$ded"
+                    $arrayElemAt: ["$all.comments", "$index"]
                   },
                   email:
                   {
@@ -33757,8 +33759,9 @@ export class GetusercontentsService {
                     $arrayElemAt: ["$media.uploadSource", "$index"]
                   },
                   comments:
+
                   {
-                    $size: "$ded"
+                    $arrayElemAt: ["$all.comments", "$index"]
                   },
                   email:
                   {
@@ -35648,8 +35651,9 @@ export class GetusercontentsService {
                     $arrayElemAt: ["$media.uploadSource", "$index"]
                   },
                   comments:
+
                   {
-                    $size: "$ded"
+                    $arrayElemAt: ["$all.comments", "$index"]
                   },
                   email:
                   {
@@ -37450,8 +37454,9 @@ export class GetusercontentsService {
                     $arrayElemAt: ["$media.uploadSource", "$index"]
                   },
                   comments:
+
                   {
-                    $size: "$ded"
+                    $arrayElemAt: ["$all.comments", "$index"]
                   },
                   email:
                   {
@@ -39341,8 +39346,9 @@ export class GetusercontentsService {
                     $arrayElemAt: ["$media.uploadSource", "$index"]
                   },
                   comments:
+
                   {
-                    $size: "$ded"
+                    $arrayElemAt: ["$all.comments", "$index"]
                   },
                   email:
                   {
@@ -41142,8 +41148,9 @@ export class GetusercontentsService {
                     $arrayElemAt: ["$media.uploadSource", "$index"]
                   },
                   comments:
+
                   {
-                    $size: "$ded"
+                    $arrayElemAt: ["$all.comments", "$index"]
                   },
                   email:
                   {
@@ -43035,8 +43042,9 @@ export class GetusercontentsService {
                     $arrayElemAt: ["$media.uploadSource", "$index"]
                   },
                   comments:
+
                   {
-                    $size: "$ded"
+                    $arrayElemAt: ["$all.comments", "$index"]
                   },
                   email:
                   {
@@ -44836,8 +44844,9 @@ export class GetusercontentsService {
                     $arrayElemAt: ["$media.uploadSource", "$index"]
                   },
                   comments:
+
                   {
-                    $size: "$ded"
+                    $arrayElemAt: ["$all.comments", "$index"]
                   },
                   email:
                   {
@@ -46727,8 +46736,9 @@ export class GetusercontentsService {
                     $arrayElemAt: ["$media.uploadSource", "$index"]
                   },
                   comments:
+
                   {
-                    $size: "$ded"
+                    $arrayElemAt: ["$all.comments", "$index"]
                   },
                   email:
                   {
@@ -48528,8 +48538,9 @@ export class GetusercontentsService {
                     $arrayElemAt: ["$media.uploadSource", "$index"]
                   },
                   comments:
+
                   {
-                    $size: "$ded"
+                    $arrayElemAt: ["$all.comments", "$index"]
                   },
                   email:
                   {
@@ -50329,8 +50340,9 @@ export class GetusercontentsService {
                     $arrayElemAt: ["$media.uploadSource", "$index"]
                   },
                   comments:
+
                   {
-                    $size: "$ded"
+                    $arrayElemAt: ["$all.comments", "$index"]
                   },
                   email:
                   {
