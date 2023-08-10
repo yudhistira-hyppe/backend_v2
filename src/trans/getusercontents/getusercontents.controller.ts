@@ -5630,38 +5630,44 @@ export class GetusercontentsController {
                     uploadSource = data[i].uploadSource;
 
 
-                    if (uploadSource !== "OSS") {
+                    if (uploadSource == "OSS") {
+
+                    } else {
+
+                        if (gettempresultpictapsara !== undefined) {
+                            for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+                                if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+
+                                    data[i].media =
+                                    {
+                                        "ImageInfo": [gettempresultpictapsara[j]]
+                                    }
+
+                                    data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
 
 
-                        for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
-                            if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
-
-                                data[i].media =
-                                {
-                                    "ImageInfo": [gettempresultpictapsara[j]]
                                 }
-
-                                data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
-
-
 
                             }
 
                         }
 
-                        for (var j = 0; j < gettempresultpictapsaratum.length; j++) {
+                        if (gettempresultpictapsaratum !== undefined) {
+                            for (var j = 0; j < gettempresultpictapsaratum.length; j++) {
 
 
-                            if (gettempresultpictapsaratum[j].ImageId == data[i].apsaraThumbId) {
-                                checkpictketemu = true;
-                                data[i].media =
-                                {
-                                    "ImageInfo": [gettempresultpictapsaratum[j]]
+                                if (gettempresultpictapsaratum[j].ImageId == data[i].apsaraThumbId) {
+                                    checkpictketemu = true;
+                                    data[i].media =
+                                    {
+                                        "ImageInfo": [gettempresultpictapsaratum[j]]
+                                    }
+
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsaratum[j].URL;
+
                                 }
-
-                                data[i].mediaThumbEndpoint = gettempresultpictapsaratum[j].URL;
-
                             }
                         }
 
