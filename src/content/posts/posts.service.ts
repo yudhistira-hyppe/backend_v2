@@ -99727,9 +99727,9 @@ export class PostsService {
                         $ne: false
                       }
                     },
-                    {
-                      "sequenceNumber": 0
-                    },
+                    // {
+                    //   "sequenceNumber": 0
+                    // },
 
                   ]
                 }
@@ -100797,7 +100797,12 @@ export class PostsService {
                 as: "nonok",
                 cond: {
                   $in: ["$$nonok._id", {
-                    $arrayElemAt: ["$categories", "$index"]
+                    $ifNull: [
+                      {
+                        $arrayElemAt: ["$categories", "$index"]
+                      },
+                      []
+                    ]
                   },]
                 }
               }
@@ -100959,14 +100964,14 @@ export class PostsService {
             },
             comment:
             {
-              $cond: {
-                if: {
-                  $eq: ["$comment", [
-                    null
-                  ]]
-                },
-                then: [],
-                else: "$comment"
+              $filter: {
+                input: "$ded",
+                as: "stud",
+                cond: {
+                  $eq: [
+                    "$$stud.sequenceNumber", 0
+                  ]
+                }
               }
             },
             intScore:
@@ -101530,9 +101535,9 @@ export class PostsService {
                         $ne: false
                       }
                     },
-                    {
-                      "sequenceNumber": 0
-                    },
+                    // {
+                    //   "sequenceNumber": 0
+                    // },
 
                   ]
                 }
@@ -102590,7 +102595,12 @@ export class PostsService {
                 as: "nonok",
                 cond: {
                   $in: ["$$nonok._id", {
-                    $arrayElemAt: ["$categories", "$index"]
+                    $ifNull: [
+                      {
+                        $arrayElemAt: ["$categories", "$index"]
+                      },
+                      []
+                    ]
                   },]
                 }
               }
@@ -102752,14 +102762,14 @@ export class PostsService {
             },
             comment:
             {
-              $cond: {
-                if: {
-                  $eq: ["$comment", [
-                    null
-                  ]]
-                },
-                then: [],
-                else: "$comment"
+              $filter: {
+                input: "$ded",
+                as: "stud",
+                cond: {
+                  $eq: [
+                    "$$stud.sequenceNumber", 0
+                  ]
+                }
               }
             },
             intScore:
@@ -103320,9 +103330,9 @@ export class PostsService {
                         $ne: false
                       }
                     },
-                    {
-                      "sequenceNumber": 0
-                    },
+                    // {
+                    //   "sequenceNumber": 0
+                    // },
 
                   ]
                 }
@@ -104380,7 +104390,12 @@ export class PostsService {
                 as: "nonok",
                 cond: {
                   $in: ["$$nonok._id", {
-                    $arrayElemAt: ["$categories", "$index"]
+                    $ifNull: [
+                      {
+                        $arrayElemAt: ["$categories", "$index"]
+                      },
+                      []
+                    ]
                   },]
                 }
               }
@@ -104542,14 +104557,14 @@ export class PostsService {
             },
             comment:
             {
-              $cond: {
-                if: {
-                  $eq: ["$comment", [
-                    null
-                  ]]
-                },
-                then: [],
-                else: "$comment"
+              $filter: {
+                input: "$ded",
+                as: "stud",
+                cond: {
+                  $eq: [
+                    "$$stud.sequenceNumber", 0
+                  ]
+                }
               }
             },
             intScore:
@@ -104783,9 +104798,9 @@ export class PostsService {
                         $ne: false
                       }
                     },
-                    {
-                      "sequenceNumber": 0
-                    },
+                    // {
+                    //   "sequenceNumber": 0
+                    // },
 
                   ]
                 }
@@ -105844,7 +105859,12 @@ export class PostsService {
                 as: "nonok",
                 cond: {
                   $in: ["$$nonok._id", {
-                    $arrayElemAt: ["$categories", "$index"]
+                    $ifNull: [
+                      {
+                        $arrayElemAt: ["$categories", "$index"]
+                      },
+                      []
+                    ]
                   },]
                 }
               }
@@ -106006,14 +106026,14 @@ export class PostsService {
             },
             comment:
             {
-              $cond: {
-                if: {
-                  $eq: ["$comment", [
-                    null
-                  ]]
-                },
-                then: [],
-                else: "$comment"
+              $filter: {
+                input: "$ded",
+                as: "stud",
+                cond: {
+                  $eq: [
+                    "$$stud.sequenceNumber", 0
+                  ]
+                }
               }
             },
             intScore:
@@ -106236,9 +106256,9 @@ export class PostsService {
                         $ne: false
                       }
                     },
-                    {
-                      "sequenceNumber": 0
-                    },
+                    // {
+                    //   "sequenceNumber": 0
+                    // },
 
                   ]
                 }
@@ -107297,7 +107317,12 @@ export class PostsService {
                 as: "nonok",
                 cond: {
                   $in: ["$$nonok._id", {
-                    $arrayElemAt: ["$categories", "$index"]
+                    $ifNull: [
+                      {
+                        $arrayElemAt: ["$categories", "$index"]
+                      },
+                      []
+                    ]
                   },]
                 }
               }
@@ -107459,14 +107484,14 @@ export class PostsService {
             },
             comment:
             {
-              $cond: {
-                if: {
-                  $eq: ["$comment", [
-                    null
-                  ]]
-                },
-                then: [],
-                else: "$comment"
+              $filter: {
+                input: "$ded",
+                as: "stud",
+                cond: {
+                  $eq: [
+                    "$$stud.sequenceNumber", 0
+                  ]
+                }
               }
             },
             intScore:
@@ -107689,9 +107714,9 @@ export class PostsService {
                         $ne: false
                       }
                     },
-                    {
-                      "sequenceNumber": 0
-                    },
+                    // {
+                    //   "sequenceNumber": 0
+                    // },
 
                   ]
                 }
@@ -108750,7 +108775,12 @@ export class PostsService {
                 as: "nonok",
                 cond: {
                   $in: ["$$nonok._id", {
-                    $arrayElemAt: ["$categories", "$index"]
+                    $ifNull: [
+                      {
+                        $arrayElemAt: ["$categories", "$index"]
+                      },
+                      []
+                    ]
                   },]
                 }
               }
@@ -108912,14 +108942,14 @@ export class PostsService {
             },
             comment:
             {
-              $cond: {
-                if: {
-                  $eq: ["$comment", [
-                    null
-                  ]]
-                },
-                then: [],
-                else: "$comment"
+              $filter: {
+                input: "$ded",
+                as: "stud",
+                cond: {
+                  $eq: [
+                    "$$stud.sequenceNumber", 0
+                  ]
+                }
               }
             },
             intScore:
@@ -109031,7 +109061,6 @@ export class PostsService {
     var query = await this.PostsModel.aggregate(pipeline);
     return query;
   }
-
 
 }
 
