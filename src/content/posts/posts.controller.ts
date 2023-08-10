@@ -1536,7 +1536,7 @@ export class PostsController {
     var timestamps_start = await this.utilsService.getDateTimeString();
     var fullurl = headers.host + "/api/posts/createpost";
     var reqbody = body;
-    reqbody['postContent'] = file;
+    // reqbody['postContent'] = file;
     
     this.logger.log("createPost >>> start");
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))

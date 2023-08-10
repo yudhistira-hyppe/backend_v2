@@ -30,7 +30,7 @@ export class InterestsRepoController {
       var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
       var fullurl = headers.host + '/api/interestsrepo';
       var reqbody = JSON.parse(JSON.stringify(request));
-      reqbody['icon_file'] = files.icon_file;
+      // reqbody['icon_file'] = files.icon_file;
       
       var date = new Date();
       var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
@@ -208,7 +208,7 @@ export class InterestsRepoController {
       var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
       var fullurl = headers.host + '/api/interestsrepo/update';
       var reqbody = JSON.parse(JSON.stringify(request));
-      reqbody['icon_file'] = files.icon_file;
+      // reqbody['icon_file'] = files.icon_file;
       // if(files.icon_file != undefined)
       // {
       //   reqbody['icon_file'] = files.icon_file;
