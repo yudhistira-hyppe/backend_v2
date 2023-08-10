@@ -115,7 +115,7 @@ export class PostContentService {
     var timestamps_start = await this.utilService.getDateTimeString();
     var fullurl = headers.host + '/api/posts/createpost';
     var reqbody = JSON.parse(JSON.stringify(body));
-    reqbody['postContent'] = file;
+    // reqbody['postContent'] = file;
     
     //Create Response
     let CreatePostResponse_ = new CreatePostResponse();
