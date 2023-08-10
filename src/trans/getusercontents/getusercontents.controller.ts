@@ -5072,6 +5072,9 @@ export class GetusercontentsController {
                         for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
                             if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
+                                if (data[i].apsaraThumbId == data[i].apsaraId) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                                }
                                 // checkpictketemu = true;
                                 data[i].media =
                                 {
@@ -5318,6 +5321,9 @@ export class GetusercontentsController {
                         for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
                             if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
+                                if (data[i].apsaraThumbId == data[i].apsaraId) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                                }
                                 // checkpictketemu = true;
                                 data[i].media =
                                 {
