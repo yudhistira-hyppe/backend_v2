@@ -5042,6 +5042,7 @@ export class GetusercontentsController {
 
                     if (apsaraId !== undefined && apsaraThumbId !== undefined) {
                         tempdatapict.push(data[i].apsaraThumbId);
+                        tempdatapict.push(data[i].apsaraId);
 
                     }
                     else if (apsaraId !== undefined && apsaraThumbId === undefined) {
@@ -5089,7 +5090,7 @@ export class GetusercontentsController {
                                     "ImageInfo": [gettempresultpictapsara[j]]
                                 }
 
-                                data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
 
                             }
                         }
@@ -5287,6 +5288,7 @@ export class GetusercontentsController {
 
                     if (apsaraId !== undefined && apsaraThumbId !== undefined) {
                         tempdatapict.push(data[i].apsaraThumbId);
+                        tempdatapict.push(data[i].apsaraId);
 
                     }
                     else if (apsaraId !== undefined && apsaraThumbId === undefined) {
@@ -5334,7 +5336,7 @@ export class GetusercontentsController {
                                     "ImageInfo": [gettempresultpictapsara[j]]
                                 }
 
-                                data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
 
                             }
                         }
