@@ -118,8 +118,8 @@ export class BadgeController {
     {
       var data = await this.badgeService.create(files.badge_general, files.badge_profile, request);
       var timestamps_end = await this.utilservice.getDateTimeString();
-      request['badge_general'] = files.badge_general;
-      request['badge_profile'] = files.badge_profile;
+      // request['badge_general'] = files.badge_general;
+      // request['badge_profile'] = files.badge_profile;
       this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request);
       return res.status(HttpStatus.OK).json({
           response_code: 202,
@@ -130,8 +130,8 @@ export class BadgeController {
     catch(e)
     {
       var timestamps_end = await this.utilservice.getDateTimeString();
-      request['badge_general'] = files.badge_general;
-      request['badge_profile'] = files.badge_profile;
+      // request['badge_general'] = files.badge_general;
+      // request['badge_profile'] = files.badge_profile;
       this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request);
       return res.status(HttpStatus.BAD_REQUEST).json({
         "message": messagesEror
@@ -141,12 +141,21 @@ export class BadgeController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll() {
+  async findAll(@Req() request, @Headers() headers) {
+    var timestamps_start = await this.utilservice.getDateTimeString();
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    var fullurl = request.get("Host") + request.originalUrl;
+
     var data = await this.badgeService.findAll();
 
     const messages = {
       "info": ["The process successful"],
     };
+
+    var timestamps_end = await this.utilservice.getDateTimeString();
+    this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
 
     return {
         response_code: 202,
@@ -158,7 +167,12 @@ export class BadgeController {
   // listing get badge berdasarkan tipe juara
   @UseGuards(JwtAuthGuard)
   @Post('findall')
-  async findAllByType(@Req() request: Request) {
+  async findAllByType(@Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.utilservice.getDateTimeString();
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    var fullurl = headers.host + '/api/badge/findall';
 
     var listjuara = null;
     var request_json = JSON.parse(JSON.stringify(request.body));
@@ -173,6 +187,9 @@ export class BadgeController {
       "info": ["The process successful"],
     };
 
+    var timestamps_end = await this.utilservice.getDateTimeString();
+    this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return {
         response_code: 202,
         data:data,
@@ -182,7 +199,13 @@ export class BadgeController {
 
   @UseGuards(JwtAuthGuard)
   @Post('listing')
-  async detailAll(@Req() request: Request) {
+  async detailAll(@Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.utilservice.getDateTimeString();
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    var fullurl = headers.host + "/api/badge/listing";
+
     var page = null;
     var limit = null;
     var search = null;
@@ -217,6 +240,9 @@ export class BadgeController {
       "info": ["The process successful"],
     };
 
+    var timestamps_end = await this.utilservice.getDateTimeString();
+    this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return {
         response_code: 202,
         data:data,
@@ -225,11 +251,17 @@ export class BadgeController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string, @Req() request) {
+    var timestamps_start = await this.utilservice.getDateTimeString();
+    var fullurl = request.get("Host") + request.originalUrl;
+
     var data = await this.badgeService.findOne(id);
     const messages = {
       "info": ["The process successful"],
     };
+
+    var timestamps_end = await this.utilservice.getDateTimeString();
+    this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, null);
 
     return {
         response_code: 202,
@@ -249,7 +281,10 @@ export class BadgeController {
     },
     @Body() request,
     @Res() res,
+    @Headers() headers
   ) {
+    var timestamps_start = await this.utilservice.getDateTimeString();
+    var fullurl = headers.host + "/api/badge/" + id;
 
     const messages = {
       "info": ["The process successful"],
@@ -263,6 +298,9 @@ export class BadgeController {
     {
       var data = await this.badgeService.update(id, files.badge_general, files.badge_profile, request);
 
+      var timestamps_end = await this.utilservice.getDateTimeString();
+      this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request);
+
       return res.status(HttpStatus.OK).json({
           response_code: 202,
           "data": data,
@@ -271,6 +309,9 @@ export class BadgeController {
     }
     catch(e)
     {
+      var timestamps_end = await this.utilservice.getDateTimeString();
+      this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request);
+
       return res.status(HttpStatus.BAD_REQUEST).json({
         "message": messagesEror
       });
