@@ -29018,9 +29018,9 @@ export class GetusercontentsService {
                               $ne: false
                             }
                           },
-                          {
-                            "sequenceNumber": 0
-                          },
+                          // {
+                          //   "sequenceNumber": 0
+                          // },
 
                         ]
                       }
@@ -30087,7 +30087,12 @@ export class GetusercontentsService {
                       as: "nonok",
                       cond: {
                         $in: ["$$nonok._id", {
-                          $arrayElemAt: ["$categories", "$index"]
+                          $ifNull: [
+                            {
+                              $arrayElemAt: ["$categories", "$index"]
+                            },
+                            []
+                          ]
                         },]
                       }
                     }
@@ -30901,9 +30906,9 @@ export class GetusercontentsService {
                               $ne: false
                             }
                           },
-                          {
-                            "sequenceNumber": 0
-                          },
+                          // {
+                          //   "sequenceNumber": 0
+                          // },
 
                         ]
                       }
@@ -31969,7 +31974,12 @@ export class GetusercontentsService {
                       as: "nonok",
                       cond: {
                         $in: ["$$nonok._id", {
-                          $arrayElemAt: ["$categories", "$index"]
+                          $ifNull: [
+                            {
+                              $arrayElemAt: ["$categories", "$index"]
+                            },
+                            []
+                          ]
                         },]
                       }
                     }
@@ -32782,9 +32792,9 @@ export class GetusercontentsService {
                               $ne: false
                             }
                           },
-                          {
-                            "sequenceNumber": 0
-                          },
+                          // {
+                          //   "sequenceNumber": 0
+                          // },
 
                         ]
                       }
@@ -33852,7 +33862,12 @@ export class GetusercontentsService {
                       as: "nonok",
                       cond: {
                         $in: ["$$nonok._id", {
-                          $arrayElemAt: ["$categories", "$index"]
+                          $ifNull: [
+                            {
+                              $arrayElemAt: ["$categories", "$index"]
+                            },
+                            []
+                          ]
                         },]
                       }
                     }
@@ -34663,9 +34678,9 @@ export class GetusercontentsService {
                               $ne: false
                             }
                           },
-                          {
-                            "sequenceNumber": 0
-                          },
+                          // {
+                          //   "sequenceNumber": 0
+                          // },
 
                         ]
                       }
@@ -35732,7 +35747,12 @@ export class GetusercontentsService {
                       as: "nonok",
                       cond: {
                         $in: ["$$nonok._id", {
-                          $arrayElemAt: ["$categories", "$index"]
+                          $ifNull: [
+                            {
+                              $arrayElemAt: ["$categories", "$index"]
+                            },
+                            []
+                          ]
                         },]
                       }
                     }
@@ -36454,9 +36474,9 @@ export class GetusercontentsService {
                               $ne: false
                             }
                           },
-                          {
-                            "sequenceNumber": 0
-                          },
+                          // {
+                          //   "sequenceNumber": 0
+                          // },
 
                         ]
                       }
@@ -37524,7 +37544,12 @@ export class GetusercontentsService {
                       as: "nonok",
                       cond: {
                         $in: ["$$nonok._id", {
-                          $arrayElemAt: ["$categories", "$index"]
+                          $ifNull: [
+                            {
+                              $arrayElemAt: ["$categories", "$index"]
+                            },
+                            []
+                          ]
                         },]
                       }
                     }
@@ -38335,9 +38360,9 @@ export class GetusercontentsService {
                               $ne: false
                             }
                           },
-                          {
-                            "sequenceNumber": 0
-                          },
+                          // {
+                          //   "sequenceNumber": 0
+                          // },
 
                         ]
                       }
@@ -39404,7 +39429,12 @@ export class GetusercontentsService {
                       as: "nonok",
                       cond: {
                         $in: ["$$nonok._id", {
-                          $arrayElemAt: ["$categories", "$index"]
+                          $ifNull: [
+                            {
+                              $arrayElemAt: ["$categories", "$index"]
+                            },
+                            []
+                          ]
                         },]
                       }
                     }
@@ -40125,9 +40155,9 @@ export class GetusercontentsService {
                               $ne: false
                             }
                           },
-                          {
-                            "sequenceNumber": 0
-                          },
+                          // {
+                          //   "sequenceNumber": 0
+                          // },
 
                         ]
                       }
@@ -41194,7 +41224,12 @@ export class GetusercontentsService {
                       as: "nonok",
                       cond: {
                         $in: ["$$nonok._id", {
-                          $arrayElemAt: ["$categories", "$index"]
+                          $ifNull: [
+                            {
+                              $arrayElemAt: ["$categories", "$index"]
+                            },
+                            []
+                          ]
                         },]
                       }
                     }
@@ -42007,9 +42042,9 @@ export class GetusercontentsService {
                               $ne: false
                             }
                           },
-                          {
-                            "sequenceNumber": 0
-                          },
+                          // {
+                          //   "sequenceNumber": 0
+                          // },
 
                         ]
                       }
@@ -43075,7 +43110,12 @@ export class GetusercontentsService {
                       as: "nonok",
                       cond: {
                         $in: ["$$nonok._id", {
-                          $arrayElemAt: ["$categories", "$index"]
+                          $ifNull: [
+                            {
+                              $arrayElemAt: ["$categories", "$index"]
+                            },
+                            []
+                          ]
                         },]
                       }
                     }
@@ -43796,9 +43836,9 @@ export class GetusercontentsService {
                               $ne: false
                             }
                           },
-                          {
-                            "sequenceNumber": 0
-                          },
+                          // {
+                          //   "sequenceNumber": 0
+                          // },
 
                         ]
                       }
@@ -44866,7 +44906,12 @@ export class GetusercontentsService {
                       as: "nonok",
                       cond: {
                         $in: ["$$nonok._id", {
-                          $arrayElemAt: ["$categories", "$index"]
+                          $ifNull: [
+                            {
+                              $arrayElemAt: ["$categories", "$index"]
+                            },
+                            []
+                          ]
                         },]
                       }
                     }
@@ -45677,9 +45722,9 @@ export class GetusercontentsService {
                               $ne: false
                             }
                           },
-                          {
-                            "sequenceNumber": 0
-                          },
+                          // {
+                          //   "sequenceNumber": 0
+                          // },
 
                         ]
                       }
@@ -46746,7 +46791,12 @@ export class GetusercontentsService {
                       as: "nonok",
                       cond: {
                         $in: ["$$nonok._id", {
-                          $arrayElemAt: ["$categories", "$index"]
+                          $ifNull: [
+                            {
+                              $arrayElemAt: ["$categories", "$index"]
+                            },
+                            []
+                          ]
                         },]
                       }
                     }
@@ -47467,9 +47517,9 @@ export class GetusercontentsService {
                               $ne: false
                             }
                           },
-                          {
-                            "sequenceNumber": 0
-                          },
+                          // {
+                          //   "sequenceNumber": 0
+                          // },
 
                         ]
                       }
@@ -48536,7 +48586,12 @@ export class GetusercontentsService {
                       as: "nonok",
                       cond: {
                         $in: ["$$nonok._id", {
-                          $arrayElemAt: ["$categories", "$index"]
+                          $ifNull: [
+                            {
+                              $arrayElemAt: ["$categories", "$index"]
+                            },
+                            []
+                          ]
                         },]
                       }
                     }
@@ -49257,9 +49312,9 @@ export class GetusercontentsService {
                               $ne: false
                             }
                           },
-                          {
-                            "sequenceNumber": 0
-                          },
+                          // {
+                          //   "sequenceNumber": 0
+                          // },
 
                         ]
                       }
@@ -50350,7 +50405,12 @@ export class GetusercontentsService {
                       as: "nonok",
                       cond: {
                         $in: ["$$nonok._id", {
-                          $arrayElemAt: ["$categories", "$index"]
+                          $ifNull: [
+                            {
+                              $arrayElemAt: ["$categories", "$index"]
+                            },
+                            []
+                          ]
                         },]
                       }
                     }
