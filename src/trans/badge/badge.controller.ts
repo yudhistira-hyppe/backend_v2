@@ -226,12 +226,18 @@ export class BadgeController {
     if (request_json["page"] !== undefined) {
         page = Number(request_json["page"]);
     } else {
+        var timestamps_end = await this.utilservice.getDateTimeString();
+        this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         throw new BadRequestException("Unabled to proceed, page field is required");
     }
 
     if (request_json["limit"] !== undefined) {
         limit = Number(request_json["limit"]);
     } else {
+        var timestamps_end = await this.utilservice.getDateTimeString();
+        this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         throw new BadRequestException("Unabled to proceed, limit field is required");
     }
 

@@ -15,11 +15,13 @@ import { SettingsModule } from '../settings/settings.module';
 import { VouchersModule } from '../vouchers/vouchers.module';
 import { AdsplacesModule } from '../adsplaces/adsplaces.module';
 import { PostsModule } from '../../content/posts/posts.module';
+import { LogapisModule } from '../logapis/logapis.module';
 //import { UserAdsModule } from '../userads/userads.module';
 @Module({
 
     imports: [
         AdsplacesModule,
+        LogapisModule,
         ConfigModule.forRoot(), UservouchersModule, UserbasicsModule, AdstypesModule, SeaweedfsModule, MediaimageadsModule, UtilsModule, MediavideosadsModule,
         SettingsModule, VouchersModule, PostsModule,
         MongooseModule.forFeature([{ name: Ads.name, schema: AdsSchema }], 'SERVER_FULL')

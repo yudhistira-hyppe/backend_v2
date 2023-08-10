@@ -15,11 +15,13 @@ import { AdsplacesModule } from '../../adsplaces/adsplaces.module';
 import { UservouchersModule } from '../../uservouchers/uservouchers.module';
 import { VouchersModule } from '../../vouchers/vouchers.module';
 import { MediaprofilepictsModule } from '../../../content/mediaprofilepicts/mediaprofilepicts.module';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
 
 @Module({
     imports: [
         MediaprofilepictsModule,
         VouchersModule,
+        LogapisModule,
         UservouchersModule,
         AdsplacesModule,
         AccountbalancesModule,
