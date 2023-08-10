@@ -5204,7 +5204,7 @@ export class GetusercontentsController {
     @Post('api/posts/getuserposts/byprofile')
     @UseInterceptors(FileInterceptor('postContent'))
     @UseGuards(JwtAuthGuard)
-    async contentbyprofile(@Body() body): Promise<any> {
+    async contentbyprofile(@Body() body, @Headers('x-auth-user') emailLogin: string): Promise<any> {
 
         var pageNumber = null;
         var pageRow = null;
@@ -5235,7 +5235,6 @@ export class GetusercontentsController {
         var picts = [];
         var lengpict = null;
 
-
         try {
 
             data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow));
@@ -5246,6 +5245,15 @@ export class GetusercontentsController {
             lengpict = 0;
 
         }
+
+
+        //CECK FOLLOWING
+        var getFollowing = false;
+        var ceck_data_FOLLOW = await this.contenteventsService.ceckData(String(emailLogin), "FOLLOWING", "ACCEPT", "", email, "", true);
+        if (await this.utilsService.ceckData(ceck_data_FOLLOW)) {
+            getFollowing = true;
+        }
+        data.forEach(v => { v.following = getFollowing; });
 
         var tempdatapict = [];
 
