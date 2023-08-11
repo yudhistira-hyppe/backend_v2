@@ -5401,6 +5401,7 @@ export class GetusercontentsController {
                                 }
 
                                 data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
 
 
 
@@ -5413,6 +5414,7 @@ export class GetusercontentsController {
                                 }
 
                                 data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
 
                             }
                         }
