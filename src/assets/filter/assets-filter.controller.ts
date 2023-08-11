@@ -70,7 +70,6 @@ export class AssetsFilterController {
 
         var data = await this.assetsFilterService.find(assetsUser);
 
-        var timestamps_end = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
         var timestamps_end = await this.utilsService.getDateTimeString();
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
@@ -145,7 +144,6 @@ export class AssetsFilterController {
         });
         this.userbasicsService.updateUserAssets(headers['x-auth-user'], _UpdateAssetsFilterDto_.assets)
 
-        var timestamps_end = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
         var timestamps_end = await this.utilsService.getDateTimeString();
         var reqbody = JSON.parse(JSON.stringify(_UpdateAssetsFilterDto_));
