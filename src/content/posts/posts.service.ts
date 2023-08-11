@@ -100741,7 +100741,19 @@ export class PostsService {
                 else: false
               }
             },
-            comment: "$ded",
+            comment:
+            {
+              $filter: {
+                input: "$ded",
+                as: "stud",
+                cond: {
+                  $eq: [
+                    "$$stud.sequenceNumber",
+                    0
+                  ]
+                }
+              }
+            },
             interest: {
               $filter: {
                 input: "$category",
@@ -100935,7 +100947,10 @@ export class PostsService {
                     },
                     {
                       "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
-                    }
+                    },
+                    {
+                      "_id": new Types.ObjectId("645da79c295b0000520048c2")
+                    },
                   ]
                 }
               },
@@ -100951,8 +100966,11 @@ export class PostsService {
             version: {
               $arrayElemAt: ["$setting.value", 0]
             },
-            limitLandingpage: {
+            versionIos: {
               $arrayElemAt: ["$setting.value", 1]
+            },
+            limitLandingpage: {
+              $arrayElemAt: ["$setting.value", 2]
             },
             oldDate: 1,
             selfContents: 1,
@@ -100964,14 +100982,14 @@ export class PostsService {
             },
             comment:
             {
-              $filter: {
-                input: "$ded",
-                as: "stud",
-                cond: {
-                  $eq: [
-                    "$$stud.sequenceNumber", 0
-                  ]
-                }
+              $cond: {
+                if: {
+                  $eq: ["$comment", [
+                    null
+                  ]]
+                },
+                then: [],
+                else: "$comment"
               }
             },
             intScore:
@@ -102539,7 +102557,19 @@ export class PostsService {
                 else: false
               }
             },
-            comment: "$ded",
+            comment:
+            {
+              $filter: {
+                input: "$ded",
+                as: "stud",
+                cond: {
+                  $eq: [
+                    "$$stud.sequenceNumber",
+                    0
+                  ]
+                }
+              }
+            },
             interest: {
               $filter: {
                 input: "$category",
@@ -102733,7 +102763,10 @@ export class PostsService {
                     },
                     {
                       "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
-                    }
+                    },
+                    {
+                      "_id": new Types.ObjectId("645da79c295b0000520048c2")
+                    },
                   ]
                 }
               },
@@ -102749,8 +102782,11 @@ export class PostsService {
             version: {
               $arrayElemAt: ["$setting.value", 0]
             },
-            limitLandingpage: {
+            versionIos: {
               $arrayElemAt: ["$setting.value", 1]
+            },
+            limitLandingpage: {
+              $arrayElemAt: ["$setting.value", 2]
             },
             oldDate: 1,
             selfContents: 1,
@@ -102762,14 +102798,14 @@ export class PostsService {
             },
             comment:
             {
-              $filter: {
-                input: "$ded",
-                as: "stud",
-                cond: {
-                  $eq: [
-                    "$$stud.sequenceNumber", 0
-                  ]
-                }
+              $cond: {
+                if: {
+                  $eq: ["$comment", [
+                    null
+                  ]]
+                },
+                then: [],
+                else: "$comment"
               }
             },
             intScore:
@@ -104334,7 +104370,19 @@ export class PostsService {
                 else: false
               }
             },
-            comment: "$ded",
+            comment:
+            {
+              $filter: {
+                input: "$ded",
+                as: "stud",
+                cond: {
+                  $eq: [
+                    "$$stud.sequenceNumber",
+                    0
+                  ]
+                }
+              }
+            },
             interest: {
               $filter: {
                 input: "$category",
@@ -104528,7 +104576,10 @@ export class PostsService {
                     },
                     {
                       "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
-                    }
+                    },
+                    {
+                      "_id": new Types.ObjectId("645da79c295b0000520048c2")
+                    },
                   ]
                 }
               },
@@ -104544,8 +104595,11 @@ export class PostsService {
             version: {
               $arrayElemAt: ["$setting.value", 0]
             },
-            limitLandingpage: {
+            versionIos: {
               $arrayElemAt: ["$setting.value", 1]
+            },
+            limitLandingpage: {
+              $arrayElemAt: ["$setting.value", 2]
             },
             oldDate: 1,
             selfContents: 1,
@@ -104557,14 +104611,14 @@ export class PostsService {
             },
             comment:
             {
-              $filter: {
-                input: "$ded",
-                as: "stud",
-                cond: {
-                  $eq: [
-                    "$$stud.sequenceNumber", 0
-                  ]
-                }
+              $cond: {
+                if: {
+                  $eq: ["$comment", [
+                    null
+                  ]]
+                },
+                then: [],
+                else: "$comment"
               }
             },
             intScore:
@@ -105743,6 +105797,7 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.viewer", "$index"]
             },
+
             oldDate:
             {
               $arrayElemAt: ["$oldDate", 0]
@@ -105803,7 +105858,19 @@ export class PostsService {
                 else: false
               }
             },
-            comment: "$ded",
+            comment:
+            {
+              $filter: {
+                input: "$ded",
+                as: "stud",
+                cond: {
+                  $eq: [
+                    "$$stud.sequenceNumber",
+                    0
+                  ]
+                }
+              }
+            },
             interest: {
               $filter: {
                 input: "$category",
@@ -105997,7 +106064,10 @@ export class PostsService {
                     },
                     {
                       "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
-                    }
+                    },
+                    {
+                      "_id": new Types.ObjectId("645da79c295b0000520048c2")
+                    },
                   ]
                 }
               },
@@ -106013,27 +106083,30 @@ export class PostsService {
             version: {
               $arrayElemAt: ["$setting.value", 0]
             },
-            limitLandingpage: {
+            versionIos: {
               $arrayElemAt: ["$setting.value", 1]
+            },
+            limitLandingpage: {
+              $arrayElemAt: ["$setting.value", 2]
             },
             oldDate: 1,
             selfContents: 1,
             official: 1,
             selfContent: 1,
-            musik: 1,
+            music: "$musik",
             isLiked: {
               $ifNull: ["$isLike", false]
             },
             comment:
             {
-              $filter: {
-                input: "$ded",
-                as: "stud",
-                cond: {
-                  $eq: [
-                    "$$stud.sequenceNumber", 0
-                  ]
-                }
+              $cond: {
+                if: {
+                  $eq: ["$comment", [
+                    null
+                  ]]
+                },
+                then: [],
+                else: "$comment"
               }
             },
             intScore:
@@ -106063,7 +106136,6 @@ export class PostsService {
             "mood": 1,
             "testDate": 1,
             "musicId": 1,
-            "music": 1,
             "tagPeople": 1,
             "mediaType": 1,
             "email": 1,
@@ -107201,6 +107273,7 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.viewer", "$index"]
             },
+
             oldDate:
             {
               $arrayElemAt: ["$oldDate", 0]
@@ -107261,7 +107334,19 @@ export class PostsService {
                 else: false
               }
             },
-            comment: "$ded",
+            comment:
+            {
+              $filter: {
+                input: "$ded",
+                as: "stud",
+                cond: {
+                  $eq: [
+                    "$$stud.sequenceNumber",
+                    0
+                  ]
+                }
+              }
+            },
             interest: {
               $filter: {
                 input: "$category",
@@ -107455,7 +107540,10 @@ export class PostsService {
                     },
                     {
                       "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
-                    }
+                    },
+                    {
+                      "_id": new Types.ObjectId("645da79c295b0000520048c2")
+                    },
                   ]
                 }
               },
@@ -107471,27 +107559,30 @@ export class PostsService {
             version: {
               $arrayElemAt: ["$setting.value", 0]
             },
-            limitLandingpage: {
+            versionIos: {
               $arrayElemAt: ["$setting.value", 1]
+            },
+            limitLandingpage: {
+              $arrayElemAt: ["$setting.value", 2]
             },
             oldDate: 1,
             selfContents: 1,
             official: 1,
             selfContent: 1,
-            musik: 1,
+            music: "$musik",
             isLiked: {
               $ifNull: ["$isLike", false]
             },
             comment:
             {
-              $filter: {
-                input: "$ded",
-                as: "stud",
-                cond: {
-                  $eq: [
-                    "$$stud.sequenceNumber", 0
-                  ]
-                }
+              $cond: {
+                if: {
+                  $eq: ["$comment", [
+                    null
+                  ]]
+                },
+                then: [],
+                else: "$comment"
               }
             },
             intScore:
@@ -107521,7 +107612,6 @@ export class PostsService {
             "mood": 1,
             "testDate": 1,
             "musicId": 1,
-            "music": 1,
             "tagPeople": 1,
             "mediaType": 1,
             "email": 1,
@@ -108659,6 +108749,7 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.viewer", "$index"]
             },
+
             oldDate:
             {
               $arrayElemAt: ["$oldDate", 0]
@@ -108719,7 +108810,19 @@ export class PostsService {
                 else: false
               }
             },
-            comment: "$ded",
+            comment:
+            {
+              $filter: {
+                input: "$ded",
+                as: "stud",
+                cond: {
+                  $eq: [
+                    "$$stud.sequenceNumber",
+                    0
+                  ]
+                }
+              }
+            },
             interest: {
               $filter: {
                 input: "$category",
@@ -108913,7 +109016,10 @@ export class PostsService {
                     },
                     {
                       "_id": new Types.ObjectId("64d06e5c451e0000bd006c62")
-                    }
+                    },
+                    {
+                      "_id": new Types.ObjectId("645da79c295b0000520048c2")
+                    },
                   ]
                 }
               },
@@ -108929,27 +109035,30 @@ export class PostsService {
             version: {
               $arrayElemAt: ["$setting.value", 0]
             },
-            limitLandingpage: {
+            versionIos: {
               $arrayElemAt: ["$setting.value", 1]
+            },
+            limitLandingpage: {
+              $arrayElemAt: ["$setting.value", 2]
             },
             oldDate: 1,
             selfContents: 1,
             official: 1,
             selfContent: 1,
-            musik: 1,
+            music: "$musik",
             isLiked: {
               $ifNull: ["$isLike", false]
             },
             comment:
             {
-              $filter: {
-                input: "$ded",
-                as: "stud",
-                cond: {
-                  $eq: [
-                    "$$stud.sequenceNumber", 0
-                  ]
-                }
+              $cond: {
+                if: {
+                  $eq: ["$comment", [
+                    null
+                  ]]
+                },
+                then: [],
+                else: "$comment"
               }
             },
             intScore:
@@ -108979,7 +109088,6 @@ export class PostsService {
             "mood": 1,
             "testDate": 1,
             "musicId": 1,
-            "music": 1,
             "tagPeople": 1,
             "mediaType": 1,
             "email": 1,
