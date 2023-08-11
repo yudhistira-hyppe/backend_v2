@@ -125956,14 +125956,7 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.viewer", "$index"]
             },
-            viewerCount:
-            {
-              $size:
-              {
-                $arrayElemAt: ["$all.mailViewer", "$index"]
-              },
 
-            },
             oldDate:
             {
               $arrayElemAt: ["$oldDate", 0]
@@ -127439,14 +127432,7 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.viewer", "$index"]
             },
-            viewerCount:
-            {
-              $size:
-              {
-                $arrayElemAt: ["$all.mailViewer", "$index"]
-              },
 
-            },
             oldDate:
             {
               $arrayElemAt: ["$oldDate", 0]
@@ -128922,14 +128908,7 @@ export class PostsService {
             {
               $arrayElemAt: ["$all.viewer", "$index"]
             },
-            viewerCount:
-            {
-              $size:
-              {
-                $arrayElemAt: ["$all.mailViewer", "$index"]
-              },
 
-            },
             oldDate:
             {
               $arrayElemAt: ["$oldDate", 0]
