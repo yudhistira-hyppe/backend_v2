@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Query, BadRequestException, Req, HttpStatus, HttpCode } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Query, BadRequestException, Req, HttpStatus, HttpCode, Headers } from '@nestjs/common';
 import { GetuserprofilesService } from './getuserprofiles.service';
 import { CreateGetuserprofilesDto } from './dto/create-getuserprofiles.dto';
 import { Getuserprofiles } from './schemas/getuserprofiles.schema';
@@ -16,6 +16,8 @@ import { Request } from 'express';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { PaginationParams } from './utils/paginationParams';
 import { ActivityeventsService } from '../activityevents/activityevents.service';
+import { UtilsService } from 'src/utils/utils.service';
+import { LogapisService } from '../logapis/logapis.service';
 
 @Controller()
 export class GetuserprofilesController {
@@ -32,6 +34,8 @@ export class GetuserprofilesController {
     private languagesService: LanguagesService,
     private interestsService: InterestsService,
     private activityeventsService: ActivityeventsService,
+    private readonly utilsService: UtilsService,
+    private readonly logapiSS: LogapisService
 
   ) { }
 
@@ -59,7 +63,16 @@ export class GetuserprofilesController {
     @Query('limit') limit: number,
     @Query('search') search: string,
     @Query('searchemail') searchemail: string,
-    @Query('groupId') groupId: string) {
+    @Query('groupId') groupId: string,
+    @Headers() headers,
+    @Req() req) {
+
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = req.get("Host") + req.originalUrl;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     console.log(skip);
     console.log(limit);
     if (search == undefined) {
@@ -79,6 +92,10 @@ export class GetuserprofilesController {
     }
     var data = await this.getuserprofilesService.getUserHyppe(searchemail, search, Number(skip), Number(limit), groupId);
     //var totalRow = (await this.getuserprofilesService.countUserHyppe(searchemail, search)).length;
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
     return {
       response_code: 202, data: data, skip: skip, limit: limit, messages: {
         "info": [
@@ -92,7 +109,13 @@ export class GetuserprofilesController {
   @Post('api/getuserprofiles')
   //@FormDataRequest()
   @UseGuards(JwtAuthGuard)
-  async profileuser(@Req() request: Request): Promise<any> {
+  async profileuser(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/getuserprofiles';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    
     var request_json = JSON.parse(JSON.stringify(request.body));
     var username = null;
     var gender = null;
@@ -135,11 +158,17 @@ export class GetuserprofilesController {
     if (request_json["page"] !== undefined) {
       page = request_json["page"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
     if (request_json["limit"] !== undefined) {
       limit = request_json["limit"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -151,6 +180,9 @@ export class GetuserprofilesController {
       totalrow = 0;
     }
 
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return { response_code: 202, data, page, limit, totalrow, totalallrow, totalfilter, totalpage, messages };
 
 
@@ -159,7 +191,13 @@ export class GetuserprofilesController {
   @Post('api/getuserprofiles/search')
   //@FormDataRequest()
   @UseGuards(JwtAuthGuard)
-  async finduser(@Req() request: Request): Promise<any> {
+  async finduser(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/getuserprofiles/search';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    
     var request_json = JSON.parse(JSON.stringify(request.body));
     var username = null;
     var skip = 0;
@@ -173,20 +211,33 @@ export class GetuserprofilesController {
     if (request_json["username"] !== undefined) {
       username = request_json["username"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
     if (request_json["skip"] !== undefined) {
       skip = request_json["skip"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
     if (request_json["limit"] !== undefined) {
       limit = request_json["limit"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
     data = await this.getuserprofilesService.findUser(username, skip, limit);
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return { response_code: 202, data, skip, limit, messages };
   }
 
