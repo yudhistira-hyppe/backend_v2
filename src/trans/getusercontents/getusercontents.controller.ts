@@ -5623,10 +5623,10 @@ export class GetusercontentsController {
 
                                 if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
 
-                                    data[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsara[j]]
-                                    }
+                                    // data[i].media =
+                                    // {
+                                    //     "ImageInfo": [gettempresultpictapsara[j]]
+                                    // }
 
                                     data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
 
@@ -5644,13 +5644,16 @@ export class GetusercontentsController {
 
                                 if (gettempresultpictapsaratum[j].ImageId == data[i].apsaraThumbId) {
                                     checkpictketemu = true;
-                                    data[i].media =
-                                    {
-                                        "ImageInfo": [gettempresultpictapsaratum[j]]
-                                    }
+                                    // data[i].media =
+                                    // {
+                                    //     "ImageInfo": [gettempresultpictapsaratum[j]]
+                                    // }
 
                                     data[i].mediaThumbEndpoint = gettempresultpictapsaratum[j].URL;
 
+                                }
+                                else {
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
                                 }
                             }
                         }
@@ -5708,10 +5711,10 @@ export class GetusercontentsController {
                     for (var j = 0; j < gettempresultpictapsara.length; j++) {
                         if (gettempresultpictapsara[j].VideoId == data[i].apsaraId) {
                             checkpictketemu = true;
-                            data[i].media =
-                            {
-                                "VideoList": [gettempresultpictapsara[j]]
-                            }
+                            // data[i].media =
+                            // {
+                            //     "VideoList": [gettempresultpictapsara[j]]
+                            // }
 
                             data[i].mediaThumbEndpoint = gettempresultpictapsara[j].CoverURL;
                         }
