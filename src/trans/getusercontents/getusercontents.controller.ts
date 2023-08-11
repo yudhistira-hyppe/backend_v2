@@ -3532,7 +3532,7 @@ export class GetusercontentsController {
 
         }
         try {
-            arrvid = datasearch[0].vid;
+            arrvid = datasearch[0].video;
             lengvid = arrvid.length;
 
         } catch (e) {
