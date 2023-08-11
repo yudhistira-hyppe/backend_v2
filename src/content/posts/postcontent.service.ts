@@ -1528,7 +1528,7 @@ export class PostContentService {
     //Current Date
     const currentDate = await this.utilService.getDateTimeString();
     var reqbody = JSON.parse(JSON.stringify(body));
-    reqbody['postContent'] = file;
+    // reqbody['postContent'] = file;
     var inputemail = data_userbasics.email;
     var setemail = inputemail.toString();
 
@@ -3314,7 +3314,7 @@ export class PostContentService {
     //Current Date
     const currentDate = await this.utilService.getDateTimeString();
     var reqbody = JSON.parse(JSON.stringify(body));
-    reqbody['postContent'] = file;
+    // reqbody['postContent'] = file;
     var inputemail = data_userbasics.email;
     var setemail = inputemail.toString();
 
