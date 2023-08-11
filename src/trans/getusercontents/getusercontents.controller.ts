@@ -5014,7 +5014,9 @@ export class GetusercontentsController {
         if (await this.utilsService.ceckData(ceck_data_FOLLOW)) {
             getFollowing = true;
         }
-        data.forEach(v => { v.following = getFollowing; });
+        if (data != null) {
+            data.forEach(v => { v.following = getFollowing; });
+        }
 
         var tempdatapict = [];
 
