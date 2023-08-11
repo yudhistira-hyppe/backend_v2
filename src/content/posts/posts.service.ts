@@ -121432,6 +121432,7 @@ export class PostsService {
                 [email]
               ]
             },
+
           }
         },
         {
@@ -121447,7 +121448,6 @@ export class PostsService {
 
           }
         },
-
         {
           $set: {
             dodolCount: {
@@ -121473,14 +121473,6 @@ export class PostsService {
                 {
                   $size: "$dodolCount"
                 },
-                //{
-                //		$subtract: [
-                //				{
-                //						$size: "$dodolCount"
-                //				},
-                //				1
-                //		]
-                //},
                 else: 1
               }
             },
@@ -121712,9 +121704,6 @@ export class PostsService {
                         $ne: false
                       }
                     },
-                    // {
-                    //   "sequenceNumber": 0
-                    // },
 
                   ]
                 }
@@ -121746,7 +121735,8 @@ export class PostsService {
               },
               {
                 $unwind: {
-                  path: "$userComment"
+                  path: "$userComment",
+                  preserveNullAndEmptyArrays: true
                 }
               },
               {
@@ -121754,17 +121744,16 @@ export class PostsService {
                   createdAt: - 1
                 }
               },
-              // {
-              //   $limit: 2
-              // },
               {
                 $group: {
                   _id: "$postID",
                   komentar: {
                     $push: "$$ROOT"
-                  }
+                  },
+
                 }
-              }
+              },
+
             ]
           },
 
@@ -122266,6 +122255,17 @@ export class PostsService {
         },
         {
           $set: {
+            indexComment:
+            {
+              $indexOfArray: ["$comment._id", {
+                $arrayElemAt: ["$all.postID", "$index"]
+              },]
+            },
+
+          }
+        },
+        {
+          $set: {
             ded:
             {
               $cond: {
@@ -122282,7 +122282,6 @@ export class PostsService {
 
           }
         },
-
         {
           $set:
           {
@@ -122506,14 +122505,6 @@ export class PostsService {
         },
         {
           $project: {
-            test1:
-            {
-              $arrayElemAt: ["$mailViewer", "$index"]
-            },
-            test2:
-            {
-              $arrayElemAt: ["$all.kancuts", "$index"]
-            },
             _id:
             {
               $arrayElemAt: ["$all.postID", "$index"]
@@ -123066,6 +123057,7 @@ export class PostsService {
             category: 1,
             userInterested: 1
           },
+
         },
       );
 
@@ -123245,6 +123237,7 @@ export class PostsService {
                 [email]
               ]
             },
+
           }
         },
         {
@@ -123260,7 +123253,6 @@ export class PostsService {
 
           }
         },
-
         {
           $set: {
             dodolCount: {
@@ -123286,14 +123278,6 @@ export class PostsService {
                 {
                   $size: "$dodolCount"
                 },
-                //{
-                //		$subtract: [
-                //				{
-                //						$size: "$dodolCount"
-                //				},
-                //				1
-                //		]
-                //},
                 else: 1
               }
             },
@@ -123525,9 +123509,6 @@ export class PostsService {
                         $ne: false
                       }
                     },
-                    // {
-                    //   "sequenceNumber": 0
-                    // },
 
                   ]
                 }
@@ -123559,7 +123540,8 @@ export class PostsService {
               },
               {
                 $unwind: {
-                  path: "$userComment"
+                  path: "$userComment",
+                  preserveNullAndEmptyArrays: true
                 }
               },
               {
@@ -123567,17 +123549,16 @@ export class PostsService {
                   createdAt: - 1
                 }
               },
-              // {
-              //   $limit: 2
-              // },
               {
                 $group: {
                   _id: "$postID",
                   komentar: {
                     $push: "$$ROOT"
-                  }
+                  },
+
                 }
-              }
+              },
+
             ]
           },
 
@@ -124079,6 +124060,17 @@ export class PostsService {
         },
         {
           $set: {
+            indexComment:
+            {
+              $indexOfArray: ["$comment._id", {
+                $arrayElemAt: ["$all.postID", "$index"]
+              },]
+            },
+
+          }
+        },
+        {
+          $set: {
             ded:
             {
               $cond: {
@@ -124095,7 +124087,6 @@ export class PostsService {
 
           }
         },
-
         {
           $set:
           {
@@ -124319,14 +124310,6 @@ export class PostsService {
         },
         {
           $project: {
-            test1:
-            {
-              $arrayElemAt: ["$mailViewer", "$index"]
-            },
-            test2:
-            {
-              $arrayElemAt: ["$all.kancuts", "$index"]
-            },
             _id:
             {
               $arrayElemAt: ["$all.postID", "$index"]
@@ -124879,7 +124862,9 @@ export class PostsService {
             category: 1,
             userInterested: 1
           },
+
         },
+
 
       );
       pipeline.push(
