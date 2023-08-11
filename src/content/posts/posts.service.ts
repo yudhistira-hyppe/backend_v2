@@ -123442,10 +123442,10 @@ export class PostsService {
           }
         },
         {
-          $skip: skip
+          $skip: 0
         },
         {
-          $limit: valuelimit
+          $limit: 10
         },
         {
           $group: {
@@ -123888,7 +123888,6 @@ export class PostsService {
                   "isFollowPrivate": 1,
                   "isPostPrivate": 1,
                   email: 1,
-
 
                 }
               }

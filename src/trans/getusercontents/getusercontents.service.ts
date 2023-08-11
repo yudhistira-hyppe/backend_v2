@@ -32490,7 +32490,7 @@ export class GetusercontentsService {
                       if: {
                         $and: [
                           {
-                            $eq: ["$email", "ilhamilhamm64@gmail.com"]
+                            $eq: ["$email", email]
                           },
                           {
                             $gt: ["$createdAt", "$oldDate"]
@@ -32510,7 +32510,7 @@ export class GetusercontentsService {
                   {
                     $concatArrays: [
                       '$viewer',
-                      ["ilhamilhamm64@gmail.com"]
+                      [email]
                     ]
                   },
                 }
@@ -32521,7 +32521,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -32535,7 +32535,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -32623,7 +32623,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -32632,7 +32632,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com"
+                                  $regex: email
                                 }
                               }
                             },
@@ -32644,7 +32644,7 @@ export class GetusercontentsService {
                             {
                               "boosted.boostViewer": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "isLast": true,
                                   "timeEnd": {
                                     $lte: {
@@ -32658,7 +32658,7 @@ export class GetusercontentsService {
                               $and: [
                                 {
                                   "boosted.boostViewer.email": {
-                                    $ne: "ilhamilhamm64@gmail.com"
+                                    $ne: email
                                   }
                                 },
 
@@ -32692,7 +32692,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -32701,7 +32701,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com",
+                                  $regex: email,
 
                                 }
                               }
@@ -32857,7 +32857,7 @@ export class GetusercontentsService {
                   as: "friend",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -32872,14 +32872,14 @@ export class GetusercontentsService {
                                 }
                               },
                               {
-                                "friendlist.email": "ilhamilhamm64@gmail.com"
+                                "friendlist.email": email
                               }
                             ]
                           },
                           {
                             $and: [
                               {
-                                "email": "ilhamilhamm64@gmail.com"
+                                "email": email
                               },
                               {
                                 $expr: {
@@ -32921,7 +32921,7 @@ export class GetusercontentsService {
                   as: "following",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -32934,7 +32934,7 @@ export class GetusercontentsService {
                             }
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com"
+                            "email": email
                           },
                           {
                             "eventType": "FOLLOWING",
@@ -33069,7 +33069,7 @@ export class GetusercontentsService {
                   from: "userbasics",
                   as: "userInterest",
                   let: {
-                    localID: "ilhamilhamm64@gmail.com"
+                    localID: email
                   },
                   pipeline: [
                     {
@@ -33263,7 +33263,7 @@ export class GetusercontentsService {
                             "active": true
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com",
+                            "email": email,
 
                           },
 
@@ -33764,7 +33764,7 @@ export class GetusercontentsService {
                             $arrayElemAt: ["$all.email", "$index"]
                           }
                           ,
-                          "ilhamilhamm64@gmail.com"
+                          email
                         ]
                       },
                       then: 1,
@@ -36172,7 +36172,7 @@ export class GetusercontentsService {
                       if: {
                         $and: [
                           {
-                            $eq: ["$email", "ilhamilhamm64@gmail.com"]
+                            $eq: ["$email", email]
                           },
                           {
                             $gt: ["$createdAt", "$oldDate"]
@@ -36192,7 +36192,7 @@ export class GetusercontentsService {
                   {
                     $concatArrays: [
                       '$viewer',
-                      ["ilhamilhamm64@gmail.com"]
+                      [email]
                     ]
                   },
                 }
@@ -36203,7 +36203,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -36217,7 +36217,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -36305,7 +36305,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -36314,7 +36314,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com"
+                                  $regex: email
                                 }
                               }
                             },
@@ -36326,7 +36326,7 @@ export class GetusercontentsService {
                             {
                               "boosted.boostViewer": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "isLast": true,
                                   "timeEnd": {
                                     $lte: {
@@ -36340,7 +36340,7 @@ export class GetusercontentsService {
                               $and: [
                                 {
                                   "boosted.boostViewer.email": {
-                                    $ne: "ilhamilhamm64@gmail.com"
+                                    $ne: email
                                   }
                                 },
 
@@ -36374,7 +36374,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -36383,7 +36383,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com",
+                                  $regex: email,
 
                                 }
                               }
@@ -36539,7 +36539,7 @@ export class GetusercontentsService {
                   as: "friend",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -36554,14 +36554,14 @@ export class GetusercontentsService {
                                 }
                               },
                               {
-                                "friendlist.email": "ilhamilhamm64@gmail.com"
+                                "friendlist.email": email
                               }
                             ]
                           },
                           {
                             $and: [
                               {
-                                "email": "ilhamilhamm64@gmail.com"
+                                "email": email
                               },
                               {
                                 $expr: {
@@ -36603,7 +36603,7 @@ export class GetusercontentsService {
                   as: "following",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -36616,7 +36616,7 @@ export class GetusercontentsService {
                             }
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com"
+                            "email": email
                           },
                           {
                             "eventType": "FOLLOWING",
@@ -36751,7 +36751,7 @@ export class GetusercontentsService {
                   from: "userbasics",
                   as: "userInterest",
                   let: {
-                    localID: "ilhamilhamm64@gmail.com"
+                    localID: email
                   },
                   pipeline: [
                     {
@@ -36945,7 +36945,7 @@ export class GetusercontentsService {
                             "active": true
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com",
+                            "email": email,
 
                           },
 
@@ -37446,7 +37446,7 @@ export class GetusercontentsService {
                             $arrayElemAt: ["$all.email", "$index"]
                           }
                           ,
-                          "ilhamilhamm64@gmail.com"
+                          email
                         ]
                       },
                       then: 1,
@@ -43534,7 +43534,7 @@ export class GetusercontentsService {
                       if: {
                         $and: [
                           {
-                            $eq: ["$email", "ilhamilhamm64@gmail.com"]
+                            $eq: ["$email", email]
                           },
                           {
                             $gt: ["$createdAt", "$oldDate"]
@@ -43554,7 +43554,7 @@ export class GetusercontentsService {
                   {
                     $concatArrays: [
                       '$viewer',
-                      ["ilhamilhamm64@gmail.com"]
+                      [email]
                     ]
                   },
                 }
@@ -43565,7 +43565,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -43579,7 +43579,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -43667,7 +43667,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -43676,7 +43676,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com"
+                                  $regex: email
                                 }
                               }
                             },
@@ -43688,7 +43688,7 @@ export class GetusercontentsService {
                             {
                               "boosted.boostViewer": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "isLast": true,
                                   "timeEnd": {
                                     $lte: {
@@ -43702,7 +43702,7 @@ export class GetusercontentsService {
                               $and: [
                                 {
                                   "boosted.boostViewer.email": {
-                                    $ne: "ilhamilhamm64@gmail.com"
+                                    $ne: email
                                   }
                                 },
 
@@ -43736,7 +43736,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -43745,7 +43745,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com",
+                                  $regex: email,
 
                                 }
                               }
@@ -43901,7 +43901,7 @@ export class GetusercontentsService {
                   as: "friend",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -43916,14 +43916,14 @@ export class GetusercontentsService {
                                 }
                               },
                               {
-                                "friendlist.email": "ilhamilhamm64@gmail.com"
+                                "friendlist.email": email
                               }
                             ]
                           },
                           {
                             $and: [
                               {
-                                "email": "ilhamilhamm64@gmail.com"
+                                "email": email
                               },
                               {
                                 $expr: {
@@ -43965,7 +43965,7 @@ export class GetusercontentsService {
                   as: "following",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -43978,7 +43978,7 @@ export class GetusercontentsService {
                             }
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com"
+                            "email": email
                           },
                           {
                             "eventType": "FOLLOWING",
@@ -44113,7 +44113,7 @@ export class GetusercontentsService {
                   from: "userbasics",
                   as: "userInterest",
                   let: {
-                    localID: "ilhamilhamm64@gmail.com"
+                    localID: email
                   },
                   pipeline: [
                     {
@@ -44307,7 +44307,7 @@ export class GetusercontentsService {
                             "active": true
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com",
+                            "email": email,
 
                           },
 
@@ -44808,7 +44808,7 @@ export class GetusercontentsService {
                             $arrayElemAt: ["$all.email", "$index"]
                           }
                           ,
-                          "ilhamilhamm64@gmail.com"
+                          email
                         ]
                       },
                       then: 1,
@@ -49010,7 +49010,7 @@ export class GetusercontentsService {
                       if: {
                         $and: [
                           {
-                            $eq: ["$email", "ilhamilhamm64@gmail.com"]
+                            $eq: ["$email", email]
                           },
                           {
                             $gt: ["$createdAt", "$oldDate"]
@@ -49030,7 +49030,7 @@ export class GetusercontentsService {
                   {
                     $concatArrays: [
                       '$viewer',
-                      ["ilhamilhamm64@gmail.com"]
+                      [email]
                     ]
                   },
                 }
@@ -49041,7 +49041,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -49055,7 +49055,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -49143,7 +49143,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -49152,7 +49152,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com"
+                                  $regex: email
                                 }
                               }
                             },
@@ -49164,7 +49164,7 @@ export class GetusercontentsService {
                             {
                               "boosted.boostViewer": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "isLast": true,
                                   "timeEnd": {
                                     $lte: {
@@ -49178,7 +49178,7 @@ export class GetusercontentsService {
                               $and: [
                                 {
                                   "boosted.boostViewer.email": {
-                                    $ne: "ilhamilhamm64@gmail.com"
+                                    $ne: email
                                   }
                                 },
 
@@ -49212,7 +49212,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -49221,7 +49221,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com",
+                                  $regex: email,
 
                                 }
                               }
@@ -49376,7 +49376,7 @@ export class GetusercontentsService {
                   as: "friend",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -49391,14 +49391,14 @@ export class GetusercontentsService {
                                 }
                               },
                               {
-                                "friendlist.email": "ilhamilhamm64@gmail.com"
+                                "friendlist.email": email
                               }
                             ]
                           },
                           {
                             $and: [
                               {
-                                "email": "ilhamilhamm64@gmail.com"
+                                "email": email
                               },
                               {
                                 $expr: {
@@ -49440,7 +49440,7 @@ export class GetusercontentsService {
                   as: "following",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -49453,7 +49453,7 @@ export class GetusercontentsService {
                             }
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com"
+                            "email": email
                           },
                           {
                             "eventType": "FOLLOWING",
@@ -49588,7 +49588,7 @@ export class GetusercontentsService {
                   from: "userbasics",
                   as: "userInterest",
                   let: {
-                    localID: "ilhamilhamm64@gmail.com"
+                    localID: email
                   },
                   pipeline: [
                     {
@@ -49782,7 +49782,7 @@ export class GetusercontentsService {
                             "active": true
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com",
+                            "email": email,
 
                           },
 
@@ -50307,7 +50307,7 @@ export class GetusercontentsService {
                             $arrayElemAt: ["$all.email", "$index"]
                           }
                           ,
-                          "ilhamilhamm64@gmail.com"
+                          email
                         ]
                       },
                       then: 1,
