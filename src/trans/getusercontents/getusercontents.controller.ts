@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, BadRequestException, Headers, Head } from '@nestjs/common';
 import { GetusercontentsService } from './getusercontents.service';
 import { CreateGetusercontentsDto } from './dto/create-getusercontents.dto';
 import { Getusercontents } from './schemas/getusercontents.schema';
@@ -45,6 +45,8 @@ export class GetusercontentsController {
     @Post('api/getusercontents/all')
     @UseGuards(JwtAuthGuard)
     async contentuserall(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
 
         var email = null;
         var page = 0;
@@ -57,17 +59,26 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["page"] !== undefined) {
             page = request_json["page"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         monetize = request_json["monetize"];
@@ -104,12 +115,19 @@ export class GetusercontentsController {
         } else {
             totalpage = parseInt(tpage2);
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
 
     @Post('api/getusercontents/latest')
     @UseGuards(JwtAuthGuard)
     async contentuserlatest(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        
         var skip = 0;
         var limit = 0;
         var email = null;
@@ -117,18 +135,27 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         const messages = {
@@ -137,12 +164,18 @@ export class GetusercontentsController {
 
         let data = await this.getusercontentsService.findlatesdata(email, skip, limit);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/popular')
     @UseGuards(JwtAuthGuard)
     async contentuser(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        
         var skip = 0;
         var limit = 0;
         var email = null;
@@ -150,17 +183,26 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -170,12 +212,18 @@ export class GetusercontentsController {
 
         let data = await this.getusercontentsService.findpopular(email, skip, limit);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/monetize')
     @UseGuards(JwtAuthGuard)
     async contentusermonetize(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        
         var skip = 0;
         var limit = 0;
         var email = null;
@@ -183,17 +231,26 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+            
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -203,12 +260,21 @@ export class GetusercontentsController {
 
         let data = await this.getusercontentsService.findmonetize(email, skip, limit);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/search')
     @UseGuards(JwtAuthGuard)
-    async contentusersearch(@Req() request: Request): Promise<any> {
+    async contentusersearch(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var emailreq = auth.email;
+
         var skip = 0;
         var limit = 0;
         var email = null;
@@ -217,23 +283,35 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, emailreq, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["title"] !== undefined) {
             title = request_json["title"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, emailreq, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, emailreq, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, emailreq, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -243,6 +321,9 @@ export class GetusercontentsController {
 
         let data = await this.getusercontentsService.findsearch(email, title, skip, limit);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, emailreq, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
@@ -250,12 +331,17 @@ export class GetusercontentsController {
     @Post('api/getusercontents/management/all')
     @UseGuards(JwtAuthGuard)
     async contentuserallmanagement(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
 
         var email = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -266,6 +352,9 @@ export class GetusercontentsController {
 
         let data = await this.getusercontentsService.findmanagementcontentall(email);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
@@ -273,6 +362,7 @@ export class GetusercontentsController {
     @Post('api/getusercontents/management/grouping')
     @UseGuards(JwtAuthGuard)
     async contentmanagemen2(@Req() request: Request): Promise<any> {
+        var fullurl = request.get("Host") + request.originalUrl;
 
         var timestamps_start = await this.utilsService.getDateTimeString();
         var data = null;
@@ -281,6 +371,9 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -294,19 +387,25 @@ export class GetusercontentsController {
 
         var fullurl = request.get("Host") + request.originalUrl;
         var timestamps_end = await this.utilsService.getDateTimeString();
-        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request.body);
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/management/grouping/activitygraph')
     @UseGuards(JwtAuthGuard)
     async contentmanagemengraphactivity(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        
         var data = null;
         var email = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -317,12 +416,21 @@ export class GetusercontentsController {
 
         data = await this.getusercontentsService.getactivitygraph(email);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/time')
     @UseGuards(JwtAuthGuard)
-    async contentusertime(@Req() request: Request): Promise<any> {
+    async contentusertime(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         var DateDiff = require('date-diff');
 
         var postID = null;
@@ -330,6 +438,9 @@ export class GetusercontentsController {
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -361,7 +472,8 @@ export class GetusercontentsController {
             "info": ["The process successful"],
         };
 
-
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
 
 
@@ -370,13 +482,21 @@ export class GetusercontentsController {
 
     @Post('api/getusercontents/details')
     @UseGuards(JwtAuthGuard)
-    async contentuserdetail(@Req() request: Request): Promise<any> {
-
+    async contentuserdetail(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         var postID = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -387,12 +507,17 @@ export class GetusercontentsController {
 
         let data = await this.getusercontentsService.findpostid(postID);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/management/konten/all')
     @UseGuards(JwtAuthGuard)
     async contentuserallmanagementkonten(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
 
         var email = null;
         var skip = 0;
@@ -401,18 +526,27 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+            
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -423,12 +557,17 @@ export class GetusercontentsController {
 
         let data = await this.getusercontentsService.findalldatakonten(email, skip, limit);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/management/konten/owned')
     @UseGuards(JwtAuthGuard)
     async contentuserallmanagementkontenowned(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
 
         var email = null;
         var skip = 0;
@@ -437,18 +576,27 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -459,12 +607,17 @@ export class GetusercontentsController {
 
         let data = await this.getusercontentsService.findalldatakontenowned(email, skip, limit);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/management/konten/monetize')
     @UseGuards(JwtAuthGuard)
     async contentuserallmanagementkontenmonetize(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
 
         var email = null;
         var skip = 0;
@@ -473,18 +626,27 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -495,6 +657,9 @@ export class GetusercontentsController {
 
         let data = await this.getusercontentsService.findalldatakontenmonetize(email, skip, limit);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
@@ -502,6 +667,8 @@ export class GetusercontentsController {
     @Post('api/getusercontents/management/konten/posttype')
     @UseGuards(JwtAuthGuard)
     async contentuserallmanagementkontenpostype(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
 
         var email = null;
         var skip = 0;
@@ -511,28 +678,43 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["postType"] !== undefined) {
             postType = request_json["postType"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -543,12 +725,17 @@ export class GetusercontentsController {
 
         let data = await this.getusercontentsService.findalldatakontenpostype(email, postType, skip, limit);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/management/konten/daterange')
     @UseGuards(JwtAuthGuard)
     async contentuserallmanagementkontenrange(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
 
         var email = null;
         var skip = 0;
@@ -559,34 +746,52 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["startdate"] !== undefined) {
             startdate = request_json["startdate"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["enddate"] !== undefined) {
             enddate = request_json["enddate"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -597,12 +802,18 @@ export class GetusercontentsController {
 
         let data = await this.getusercontentsService.findalldatakontendaterange(email, startdate, enddate, skip, limit);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/management/konten/buy')
     @UseGuards(JwtAuthGuard)
     async contentuserallmanagementkontenbuy(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
 
@@ -613,18 +824,27 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         var ubasic = await this.userbasicsService.findOne(email);
@@ -638,12 +858,18 @@ export class GetusercontentsController {
 
         let data = await this.getusercontentsService.findalldatakontenbuy(userid, skip, limit);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/management/konten/group')
     @UseGuards(JwtAuthGuard)
     async contentuserallmanagementkontenfilterss(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
 
@@ -654,6 +880,9 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -670,12 +899,18 @@ export class GetusercontentsController {
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         var ubasic = await this.userbasicsService.findOne(email);
@@ -693,12 +928,17 @@ export class GetusercontentsController {
         let data = await this.getusercontentsService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, reported, postType, startdate, enddate, skip, limit);
         var totalFilter = dataFilter.length;
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, skip, limit, totalFilter, totalAll, messages };
     }
 
     @Post('api/getusercontents/management/analitic')
     @UseGuards(JwtAuthGuard)
     async contentuserallmanagementkontenanalitic(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
 
         var email = null;
 
@@ -706,6 +946,9 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -715,12 +958,17 @@ export class GetusercontentsController {
 
         let data = await this.getusercontentsService.findpopularanalitic(email);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/management/analitic/follower')
     @UseGuards(JwtAuthGuard)
     async contentuserallmanagementkontenfolowwing(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
 
         var email = null;
         var year = null;
@@ -730,6 +978,9 @@ export class GetusercontentsController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -738,6 +989,9 @@ export class GetusercontentsController {
         if (request_json["year"] !== undefined) {
             year = request_json["year"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -807,19 +1061,30 @@ export class GetusercontentsController {
 
         var totalallfollower = sumfollow;
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, datafollower, totalallfollower, messages };
     }
 
     @Post('api/getusercontents/buy/details')
     @UseGuards(JwtAuthGuard)
-    async contentuserdetailbuy(@Req() request: Request): Promise<any> {
+    async contentuserdetailbuy(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var data = null;
         var postID = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -898,18 +1163,26 @@ export class GetusercontentsController {
 
             };
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Content not for sell..!");
         }
 
-
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/searchdata')
     @UseGuards(JwtAuthGuard)
-    async contentsearch(@Req() request: Request): Promise<any> {
-
+    async contentsearch(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var keys = null;
         var skip = 0;
@@ -928,12 +1201,18 @@ export class GetusercontentsController {
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -1074,6 +1353,8 @@ export class GetusercontentsController {
             user, picts, vid, diary
         }];
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
     }
@@ -1261,7 +1542,13 @@ export class GetusercontentsController {
 
     @Post('api/getusercontents/searchdatabyuser')
     @UseGuards(JwtAuthGuard)
-    async contentfilterbyuser(@Req() request: Request): Promise<any> {
+    async contentfilterbyuser(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var datavids = null;
         var datadiary = null;
         var datapict = null;
@@ -1283,18 +1570,27 @@ export class GetusercontentsController {
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["keys"] !== undefined) {
             keys = request_json["keys"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -1366,6 +1662,10 @@ export class GetusercontentsController {
             "diary": { "data": datadiary, "totalFilter": totalFilterDiary, "skip": skip, "limit": limit },
             "pict": { "data": datapict, "totalFilter": totalFilterPict, "skip": skip, "limit": limit },
         };
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
@@ -1505,7 +1805,12 @@ export class GetusercontentsController {
 
     @Post('api/getusercontents/database/details')
     @UseGuards(JwtAuthGuard)
-    async detailcontent(@Req() request: Request): Promise<any> {
+    async detailcontent(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var postID = null;
         var page = null;
@@ -1516,6 +1821,9 @@ export class GetusercontentsController {
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         page = request_json["page"];
@@ -1685,10 +1993,16 @@ export class GetusercontentsController {
             let datadet = await this.getusercontentsService.getapsaraDatabaseDetail(dataquery, days, hours, minutes, seconds, dataSum, dataSumgender, dataSumwilayah);
             data.push(datadet[0]);
 
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             return { response_code: 202, data, messages };
         }
 
         else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Data is not found..!");
         }
 
@@ -1696,7 +2010,13 @@ export class GetusercontentsController {
 
     @UseGuards(JwtAuthGuard)
     @Post('api/getusercontents/boostconsole')
-    async finddataboost(@Req() request: Request): Promise<any> {
+    async finddataboost(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         const messages = {
             "info": ["The process successful"],
         };
@@ -1714,12 +2034,20 @@ export class GetusercontentsController {
             data = [];
         }
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return { response_code: 202, data, messages };
     }
 
     @UseGuards(JwtAuthGuard)
     @Post('api/getusercontents/boostconsole/list')
-    async finddataboostbawah(@Req() request: Request): Promise<any> {
+    async finddataboostbawah(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         const messages = {
             "info": ["The process successful"],
@@ -1748,11 +2076,17 @@ export class GetusercontentsController {
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["page"] !== undefined) {
             page = request_json["page"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         email = request_json["email"];
@@ -1802,13 +2136,22 @@ export class GetusercontentsController {
         // } else {
         //     totalpage = parseInt(tpage2);
         // }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, page, limit, total, totalallrow: 0, totalsearch: 0, totalpage: 0, messages };
 
     }
 
     @Post('api/getusercontents/boostconsole/list/details')
     @UseGuards(JwtAuthGuard)
-    async detailcontentboost(@Req() request: Request): Promise<any> {
+    async detailcontentboost(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var postID = null;
         var page = null;
@@ -1830,6 +2173,9 @@ export class GetusercontentsController {
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         page = request_json["page"];
@@ -2067,10 +2413,16 @@ export class GetusercontentsController {
             let datadet = await this.getusercontentsService.getapsaraContenBoostDetail(dataquery, dataSum, dataSumgender, dataSumwilayah, arrdataview, sumage, like, comment, datakomentar);
             data.push(datadet[0]);
 
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             return { response_code: 202, data, messages };
         }
 
         else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             return { response_code: 202, data: [], messages };
         }
 
@@ -2415,7 +2767,13 @@ export class GetusercontentsController {
 
     @UseGuards(JwtAuthGuard)
     @Post('api/getusercontents/database')
-    async finddata2(@Req() request: Request): Promise<any> {
+    async finddata2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         const messages = {
             "info": ["The process successful"],
         };
@@ -2450,11 +2808,17 @@ export class GetusercontentsController {
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["page"] !== undefined) {
             page = request_json["page"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -2499,7 +2863,8 @@ export class GetusercontentsController {
             }
         }
 
-
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
 
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
@@ -2823,8 +3188,12 @@ export class GetusercontentsController {
 
     @Post('api/getusercontents/searchdatanew')
     @UseGuards(JwtAuthGuard)
-    async contentsearchnew2(@Req() request: Request): Promise<any> {
-
+    async contentsearchnew2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var keys = null;
         var skip = 0;
@@ -2844,12 +3213,18 @@ export class GetusercontentsController {
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -3134,13 +3509,19 @@ export class GetusercontentsController {
             user, picts, vid, diary, tags
         }];
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
     }
     @Post('api/getusercontents/searchdatanew/v2')
     @UseGuards(JwtAuthGuard)
-    async contentsearchnew(@Req() request: Request): Promise<any> {
-
+    async contentsearchnew(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var keys = null;
         var skip = 0;
@@ -3160,12 +3541,18 @@ export class GetusercontentsController {
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -3449,14 +3836,20 @@ export class GetusercontentsController {
             user, picts, vid, diary, tags
         }];
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
     }
     //test
     @Post('api/getusercontents/searchdatanew/detailinterest')
     @UseGuards(JwtAuthGuard)
-    async detailinterestsearchnew2(@Req() request: Request): Promise<any> {
-
+    async detailinterestsearchnew2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var keys = null;
         var skip = 0;
@@ -3479,12 +3872,18 @@ export class GetusercontentsController {
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -3755,14 +4154,20 @@ export class GetusercontentsController {
             picts, vid, diary, interests
         }];
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/searchdatanew/detailinterest/v2')
     @UseGuards(JwtAuthGuard)
-    async detailinterestsearchnewv2(@Req() request: Request): Promise<any> {
-
+    async detailinterestsearchnewv2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var keys = null;
         var skip = 0;
@@ -3785,12 +4190,18 @@ export class GetusercontentsController {
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+            
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -4061,14 +4472,20 @@ export class GetusercontentsController {
             picts, vid, diary, interests
         }];
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/searchdatanew/detailtag')
     @UseGuards(JwtAuthGuard)
-    async detailtagsearchnew2(@Req() request: Request): Promise<any> {
-
+    async detailtagsearchnew2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var keys = null;
         var skip = 0;
@@ -4091,12 +4508,18 @@ export class GetusercontentsController {
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -4366,14 +4789,20 @@ export class GetusercontentsController {
             picts, vid, diary, tags
         }];
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/searchdatanew/detailtag/v2')
     @UseGuards(JwtAuthGuard)
-    async detailtagsearchnewv2(@Req() request: Request): Promise<any> {
-
+    async detailtagsearchnewv2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var keys = null;
         var skip = 0;
@@ -4396,12 +4825,18 @@ export class GetusercontentsController {
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -4670,13 +5105,20 @@ export class GetusercontentsController {
             picts, vid, diary, tags
         }];
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
     }
 
     @Post('api/getusercontents/landingpage')
     @UseGuards(JwtAuthGuard)
-    async contentlandingpage(@Req() request: Request): Promise<any> {
+    async contentlandingpage(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var skip = 0;
         var limit = 0;
@@ -4691,22 +5133,34 @@ export class GetusercontentsController {
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["type"] !== undefined) {
             type = request_json["type"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -4915,6 +5369,8 @@ export class GetusercontentsController {
             version = "";
         }
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data: picts, version: version.toString(), version_ios: (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(), messages };
     }
@@ -4934,7 +5390,13 @@ export class GetusercontentsController {
 
     @Post('api/getusercontents/sendnotif')
     @UseGuards(JwtAuthGuard)
-    async sendmasal(@Req() request: Request): Promise<any> {
+    async sendmasal(@Req() request: Request, @Headers() headers): Promise<any> {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var page = 0;
         var limit = 0;
@@ -4952,16 +5414,25 @@ export class GetusercontentsController {
         if (request_json["title"] !== undefined) {
             title = request_json["title"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["body"] !== undefined) {
             body = request_json["body"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -4972,6 +5443,9 @@ export class GetusercontentsController {
         };
 
         this.testSend(200, postID, title, body, type, emailuser);
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, messages };
     }
