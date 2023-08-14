@@ -125037,10 +125037,34 @@ export class PostsService {
 
   async landingpageMy(email: string, type: string, skip: number, limit: number, emaillogin: string) {
     var pipeline = [];
+    var $and = []
+
+    if (email != emaillogin){
+      $and.push({
+        "reportedStatus": {
+          $ne: "OWNED"
+        }
+      })
+    }
 
 
     if (type == "pict") {
 
+      $and.push(
+        {
+          "active": true
+        },
+        {
+          "postType": "pict"
+        },
+        {
+          $expr: {
+            $gt: ["$boosted.boostSession.end", "$testDate",]
+          }
+        },
+        {
+          email: email
+        })
 
       pipeline.push(
         {
@@ -125053,27 +125077,7 @@ export class PostsService {
           {
             $or: [
               {
-                $and: [
-                  {
-                    "reportedStatus": {
-                      $ne: "OWNED"
-                    }
-                  },
-                  {
-                    "active": true
-                  },
-                  {
-                    "postType": "pict"
-                  },
-                  {
-                    $expr: {
-                      $gt: ["$boosted.boostSession.end", "$testDate",]
-                    }
-                  },
-                  {
-                    email: email
-                  }
-                ]
+                $and
               },
 
             ]
@@ -126516,7 +126520,25 @@ export class PostsService {
     }
     else if (type == "vid") {
 
-
+      $and.push({
+        $expr: {
+          $gte: ["$createdAt", "2022-01-09 00:36:58"]
+        }
+      },
+        {
+          "active": true
+        },
+        {
+          "postType": "vid"
+        },
+        {
+          $expr: {
+            $gt: ["$boosted.boostSession.end", "$testDate",]
+          }
+        },
+        {
+          email: email
+        })
       pipeline.push(
 
         {
@@ -126529,32 +126551,7 @@ export class PostsService {
           {
             $or: [
               {
-                $and: [
-                  {
-                    $expr: {
-                      $gte: ["$createdAt", "2022-01-09 00:36:58"]
-                    }
-                  },
-                  {
-                    "reportedStatus": {
-                      $ne: "OWNED"
-                    }
-                  },
-                  {
-                    "active": true
-                  },
-                  {
-                    "postType": "vid"
-                  },
-                  {
-                    $expr: {
-                      $gt: ["$boosted.boostSession.end", "$testDate",]
-                    }
-                  },
-                  {
-                    email: email
-                  }
-                ]
+                $and
               },
 
             ]
@@ -128000,7 +127997,25 @@ export class PostsService {
     }
     else if (type == "diary") {
 
-
+      $and.push({
+        $expr: {
+          $gte: ["$createdAt", "2022-01-09 00:57:28"]
+        }
+      },
+        {
+          "active": true
+        },
+        {
+          "postType": "diary"
+        },
+        {
+          $expr: {
+            $gt: ["$boosted.boostSession.end", "$testDate",]
+          }
+        },
+        {
+          email: email
+        })
       pipeline.push(
         {
           $sort: {
@@ -128012,32 +128027,7 @@ export class PostsService {
           {
             $or: [
               {
-                $and: [
-                  {
-                    $expr: {
-                      $gte: ["$createdAt", "2022-01-09 00:57:28"]
-                    }
-                  },
-                  {
-                    "reportedStatus": {
-                      $ne: "OWNED"
-                    }
-                  },
-                  {
-                    "active": true
-                  },
-                  {
-                    "postType": "diary"
-                  },
-                  {
-                    $expr: {
-                      $gt: ["$boosted.boostSession.end", "$testDate",]
-                    }
-                  },
-                  {
-                    email: email
-                  }
-                ]
+                $and
               },
 
             ]
