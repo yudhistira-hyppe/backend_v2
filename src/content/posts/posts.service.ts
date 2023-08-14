@@ -40746,6 +40746,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -41515,6 +41520,11 @@ export class PostsService {
                               $text: {
                                 $search: key
 
+                              }
+                            },
+                            {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:57:28"]
                               }
                             },
                             {
@@ -42606,6 +42616,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -43693,6 +43708,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -44470,6 +44490,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -44774,6 +44799,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -45061,7 +45091,6 @@ export class PostsService {
                 },
 
               ],
-
 
           },
 
@@ -45865,6 +45894,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -46169,6 +46203,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -46456,7 +46495,6 @@ export class PostsService {
                 },
 
               ],
-
 
           },
 
@@ -46972,6 +47010,11 @@ export class PostsService {
                               $text: {
                                 $search: key
 
+                              }
+                            },
+                            {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:36:58"]
                               }
                             },
                             {
@@ -47623,6 +47666,11 @@ export class PostsService {
                               $text: {
                                 $search: key
 
+                              }
+                            },
+                            {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:57:28"]
                               }
                             },
                             {
@@ -48619,6 +48667,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -49035,6 +49088,11 @@ export class PostsService {
                               $text: {
                                 $search: key
 
+                              }
+                            },
+                            {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:36:58"]
                               }
                             },
                             {
@@ -50192,6 +50250,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -50924,6 +50987,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -51228,6 +51296,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -51515,7 +51588,6 @@ export class PostsService {
                 },
 
               ],
-
             "tags":
               [
                 {
@@ -51958,6 +52030,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -52245,7 +52322,6 @@ export class PostsService {
                 },
 
               ],
-
             "tags":
               [
                 {
@@ -54006,6 +54082,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -54876,6 +54957,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -55180,6 +55266,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -55454,8 +55545,8 @@ export class PostsService {
                     // },
 
                   }
-                }, { $match: { isApsara: true } },
-
+                },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreDiary: - 1,
@@ -55467,7 +55558,6 @@ export class PostsService {
                 },
 
               ],
-
             "tags":
               [
                 {
@@ -55924,6 +56014,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -56225,6 +56320,11 @@ export class PostsService {
                               $text: {
                                 $search: key
 
+                              }
+                            },
+                            {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:57:28"]
                               }
                             },
                             {
@@ -57402,6 +57502,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -57706,6 +57811,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -57993,7 +58103,6 @@ export class PostsService {
                 },
 
               ],
-
             "tags":
               [
                 {
@@ -58452,6 +58561,11 @@ export class PostsService {
                               }
                             },
                             {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                              }
+                            },
+                            {
                               "reportedStatus": {
                                 $ne: "OWNED"
                               }
@@ -58753,6 +58867,11 @@ export class PostsService {
                               $text: {
                                 $search: key
 
+                              }
+                            },
+                            {
+                              $expr: {
+                                $gte: ["$createdAt", "2022-01-09 00:57:28"]
                               }
                             },
                             {
@@ -121511,6 +121630,11 @@ export class PostsService {
               {
                 $and: [
                   {
+                    $expr: {
+                      $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                    }
+                  },
+                  {
                     "reportedStatus": {
                       $ne: "OWNED"
                     }
@@ -123322,6 +123446,11 @@ export class PostsService {
             $or: [
               {
                 $and: [
+                  {
+                    $expr: {
+                      $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                    }
+                  },
                   {
                     "reportedStatus": {
                       $ne: "OWNED"
@@ -126412,6 +126541,11 @@ export class PostsService {
               {
                 $and: [
                   {
+                    $expr: {
+                      $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                    }
+                  },
+                  {
                     "reportedStatus": {
                       $ne: "OWNED"
                     }
@@ -127894,6 +128028,11 @@ export class PostsService {
             $or: [
               {
                 $and: [
+                  {
+                    $expr: {
+                      $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                    }
+                  },
                   {
                     "reportedStatus": {
                       $ne: "OWNED"
