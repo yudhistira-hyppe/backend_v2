@@ -4799,7 +4799,7 @@ export class GetusercontentsController {
 
                     if (apsaraId !== undefined && apsaraThumbId !== undefined) {
                         tempdatapict.push(data[i].apsaraThumbId);
-
+                        tempdatapict.push(data[i].apsaraId);
 
                     }
                     else if (apsaraId !== undefined && apsaraThumbId === undefined) {
@@ -5041,9 +5041,7 @@ export class GetusercontentsController {
             version = data[0].version;
             // console.log(tempdatapict);
             if (postType == "pict") {
-
                 for (let i = 0; i < lengpict; i++) {
-
                     uploadSource = data[i].uploadSource;
                     try {
                         apsaraId = data[i].apsaraId;
@@ -5058,7 +5056,7 @@ export class GetusercontentsController {
 
                     if (apsaraId !== undefined && apsaraThumbId !== undefined) {
                         tempdatapict.push(data[i].apsaraThumbId);
-
+                        tempdatapict.push(data[i].apsaraId);
 
                     }
                     else if (apsaraId !== undefined && apsaraThumbId === undefined) {
@@ -5084,9 +5082,7 @@ export class GetusercontentsController {
 
                     if (uploadSource == "OSS") {
                         data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
-
                     } else {
-
                         for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
 
