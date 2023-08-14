@@ -25910,6 +25910,11 @@ export class GetusercontentsService {
                 {
                   $and: [
                     {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                      }
+                    },
+                    {
                       "reportedStatus": {
                         $ne: "OWNED"
                       }
@@ -26191,6 +26196,11 @@ export class GetusercontentsService {
                 $match:
                 {
                   $and: [
+                    {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                      }
+                    },
                     {
                       "reportedStatus": {
                         $ne: "OWNED"
@@ -26668,6 +26678,11 @@ export class GetusercontentsService {
                 {
                   $and: [
                     {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                      }
+                    },
+                    {
                       "reportedStatus": {
                         $ne: "OWNED"
                       }
@@ -26856,7 +26871,6 @@ export class GetusercontentsService {
                 }
               },
             ],
-
             interest: [
               {
                 "$lookup": {
@@ -27144,6 +27158,11 @@ export class GetusercontentsService {
                 {
                   $and: [
                     {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                      }
+                    },
+                    {
                       "reportedStatus": {
                         $ne: "OWNED"
                       }
@@ -27426,6 +27445,11 @@ export class GetusercontentsService {
                 {
                   $and: [
                     {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                      }
+                    },
+                    {
                       "reportedStatus": {
                         $ne: "OWNED"
                       }
@@ -27620,6 +27644,11 @@ export class GetusercontentsService {
                 {
                   $and: [
                     {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                      }
+                    },
+                    {
                       "reportedStatus": {
                         $ne: "OWNED"
                       }
@@ -27808,7 +27837,6 @@ export class GetusercontentsService {
                 }
               },
             ],
-
             interest: [
               {
                 "$lookup": {
@@ -28095,6 +28123,11 @@ export class GetusercontentsService {
                 {
                   $and: [
                     {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                      }
+                    },
+                    {
                       "reportedStatus": {
                         $ne: "OWNED"
                       }
@@ -28288,6 +28321,11 @@ export class GetusercontentsService {
                 $match:
                 {
                   $and: [
+                    {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                      }
+                    },
                     {
                       "reportedStatus": {
                         $ne: "OWNED"
@@ -30689,6 +30727,11 @@ export class GetusercontentsService {
                     {
                       $and: [
                         {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                          }
+                        },
+                        {
                           "reportedStatus": {
                             $ne: "OWNED"
                           }
@@ -32581,6 +32624,11 @@ export class GetusercontentsService {
                   $or: [
                     {
                       $and: [
+                        {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                          }
+                        },
                         {
                           "reportedStatus": {
                             $ne: "OWNED"
@@ -36271,6 +36319,11 @@ export class GetusercontentsService {
                     {
                       $and: [
                         {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                          }
+                        },
+                        {
                           "reportedStatus": {
                             $ne: "OWNED"
                           }
@@ -37843,8 +37896,8 @@ export class GetusercontentsService {
                   userInterested: 1
                 },
               },
-
               { $match: { isApsara: true } }
+
             ],
             interest: [
               {
@@ -39959,6 +40012,11 @@ export class GetusercontentsService {
                     {
                       $and: [
                         {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                          }
+                        },
+                        {
                           "reportedStatus": {
                             $ne: "OWNED"
                           }
@@ -40386,7 +40444,7 @@ export class GetusercontentsService {
                         "mediaUri": 1,
                         "postID": 1,
                         "mediaEndpoint": {
-                          "$concat": ["/stream/", "$postID"]
+                          "$concat": ["/pict/", "$postID"]
                         },
                         "mediaThumbEndpoint": {
                           "$concat": ["/thumb/", "$postID"]
@@ -41532,7 +41590,6 @@ export class GetusercontentsService {
               },
               { $match: { isApsara: true } }
             ],
-
 
             interest: [
               {
@@ -41853,6 +41910,11 @@ export class GetusercontentsService {
                     {
                       $and: [
                         {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                          }
+                        },
+                        {
                           "reportedStatus": {
                             $ne: "OWNED"
                           }
@@ -42280,7 +42342,7 @@ export class GetusercontentsService {
                         "mediaUri": 1,
                         "postID": 1,
                         "mediaEndpoint": {
-                          "$concat": ["/stream/", "$postID"]
+                          "$concat": ["/pict/", "$postID"]
                         },
                         "mediaThumbEndpoint": {
                           "$concat": ["/thumb/", "$postID"]
@@ -43426,7 +43488,6 @@ export class GetusercontentsService {
               },
               { $match: { isApsara: true } }
             ],
-
             diary: [
               {
                 $match: {
@@ -43654,6 +43715,11 @@ export class GetusercontentsService {
                   $or: [
                     {
                       $and: [
+                        {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                          }
+                        },
                         {
                           "reportedStatus": {
                             $ne: "OWNED"
@@ -45227,8 +45293,8 @@ export class GetusercontentsService {
                   userInterested: 1
                 },
               },
-
               { $match: { isApsara: true } }
+
             ],
             interest: [
               {
@@ -47343,6 +47409,11 @@ export class GetusercontentsService {
                     {
                       $and: [
                         {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                          }
+                        },
+                        {
                           "reportedStatus": {
                             $ne: "OWNED"
                           }
@@ -47770,7 +47841,7 @@ export class GetusercontentsService {
                         "mediaUri": 1,
                         "postID": 1,
                         "mediaEndpoint": {
-                          "$concat": ["/stream/", "$postID"]
+                          "$concat": ["/pict/", "$postID"]
                         },
                         "mediaThumbEndpoint": {
                           "$concat": ["/thumb/", "$postID"]
@@ -48916,7 +48987,6 @@ export class GetusercontentsService {
               },
               { $match: { isApsara: true } }
             ],
-
             diary: [
               {
                 $match: {
@@ -49144,6 +49214,11 @@ export class GetusercontentsService {
                   $or: [
                     {
                       $and: [
+                        {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                          }
+                        },
                         {
                           "reportedStatus": {
                             $ne: "OWNED"
@@ -49416,6 +49491,7 @@ export class GetusercontentsService {
                         }
                       }
                     }
+
                   ]
                 },
 
@@ -49924,54 +50000,30 @@ export class GetusercontentsService {
               },
               {
                 $set: {
-                  ded: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$comment.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then: [
-                        {
-                          $arrayElemAt: ["$comment", "$index"]
-                        }],
-                      else: []
-                    }
+                  indexComment:
+                  {
+                    $indexOfArray: ["$comment._id", {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
                   },
-
                 }
               },
               {
                 $set: {
-                  testLogs: [
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [
-                            {
-                              $arrayElemAt: ["$ded", "$index"]
-                            },
-                            null
-                          ]
-                        },
-                        then: [],
-                        else: {
-                          $arrayElemAt: ["$ded", "$index"]
-                        }
-                      }
-                    },
+                  ded:
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$indexComment", 0]
+                      },
+                      then:
+                      {
+                        $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                      },
+                      else: []
+                    }
+                  },
 
-                  ]
-                }
-              },
-              {
-                $unwind: {
-                  path: "$testLogs"
                 }
               },
               {
