@@ -1,16 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Res, HttpStatus, Response, Request, Req, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Res, HttpStatus, Response, Request, Req, BadRequestException, Headers } from '@nestjs/common';
 import { UserauthsService } from './userauths.service';
 import { CreateUserauthDto } from './dto/create-userauth.dto';
 import { Userauth } from './schemas/userauth.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Templates } from '../../infra/templates/schemas/templates.schema';
-
+import { LogapisService } from '../logapis/logapis.service';
 
 @Controller('api/userauths')
 export class UserauthsController {
   constructor(
     private readonly userauthsService: UserauthsService,
-
+    private readonly logapiSS: LogapisService
 
   ) { }
 
@@ -45,7 +45,15 @@ export class UserauthsController {
 
   @Post('useractivebychart')
   @UseGuards(JwtAuthGuard)
-  async getUserActiveChartBasedDate(@Req() request: Request): Promise<any> {
+  async getUserActiveChartBasedDate(@Req() request: Request, @Headers() headers): Promise<any> {
+    var setdate = new Date();
+    var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+    var fullurl = headers.host + '/api/userauths/useractivebychart';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    
     var data = null;
     var date = null;
 
@@ -57,6 +65,11 @@ export class UserauthsController {
     if (request_json["date"] !== undefined) {
       date = request_json["date"];
     } else {
+      var setdate = new Date();
+      var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -92,7 +105,20 @@ export class UserauthsController {
         }
       }
 
-      return { response_code: 202, messages, data };
+      array.push(obj);
     }
+
+    data =
+    {
+      data: array,
+      total: (getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
+    }
+
+    var setdate = new Date();
+    var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+    return { response_code: 202, messages, data };
   }
 }
