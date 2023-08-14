@@ -120833,6 +120833,24 @@ export class PostsService {
           }
         },
         {
+          $set:
+          {
+            liked:
+            {
+              $filter: {
+                input: "$isLike",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
+                }
+              }
+            },
+
+          }
+        },
+        {
           $project: {
             test1:
             {
@@ -121024,25 +121042,8 @@ export class PostsService {
               }
             },
             musik: "$musicNih",
-            isLike:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$isLike.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$isLike.isLiked", "$index"]
-                },
-                else: false
-              }
+            isLike: {
+              $arrayElemAt: ["$liked.isLiked", 0]
             },
             comment:
             {
@@ -122655,6 +122656,24 @@ export class PostsService {
           }
         },
         {
+          $set:
+          {
+            liked:
+            {
+              $filter: {
+                input: "$isLike",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
+                }
+              }
+            },
+
+          }
+        },
+        {
           $project: {
             _id:
             {
@@ -122838,25 +122857,8 @@ export class PostsService {
               }
             },
             musik: "$musicNih",
-            isLike:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$isLike.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$isLike.isLiked", "$index"]
-                },
-                else: false
-              }
+            isLike: {
+              $arrayElemAt: ["$liked.isLiked", 0]
             },
             comment:
             {
@@ -124466,6 +124468,24 @@ export class PostsService {
           }
         },
         {
+          $set:
+          {
+            liked:
+            {
+              $filter: {
+                input: "$isLike",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
+                }
+              }
+            },
+
+          }
+        },
+        {
           $project: {
             _id:
             {
@@ -124649,25 +124669,8 @@ export class PostsService {
               }
             },
             musik: "$musicNih",
-            isLike:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$isLike.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$isLike.isLiked", "$index"]
-                },
-                else: false
-              }
+            isLike: {
+              $arrayElemAt: ["$liked.isLiked", 0]
             },
             comment:
             {
@@ -125955,6 +125958,24 @@ export class PostsService {
           }
         },
         {
+          $set:
+          {
+            liked:
+            {
+              $filter: {
+                input: "$isLike",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
+                }
+              }
+            },
+
+          }
+        },
+        {
           $project: {
             test1:
             {
@@ -126139,25 +126160,8 @@ export class PostsService {
               }
             },
             musik: "$musicNih",
-            isLike:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$isLike.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$isLike.isLiked", "$index"]
-                },
-                else: false
-              }
+            isLike: {
+              $arrayElemAt: ["$liked.isLiked", 0]
             },
             comment:
             {
@@ -127438,6 +127442,24 @@ export class PostsService {
           }
         },
         {
+          $set:
+          {
+            liked:
+            {
+              $filter: {
+                input: "$isLike",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
+                }
+              }
+            },
+
+          }
+        },
+        {
           $project: {
             test1:
             {
@@ -127622,25 +127644,8 @@ export class PostsService {
               }
             },
             musik: "$musicNih",
-            isLike:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$isLike.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$isLike.isLiked", "$index"]
-                },
-                else: false
-              }
+            isLike: {
+              $arrayElemAt: ["$liked.isLiked", 0]
             },
             comment:
             {
@@ -128921,6 +128926,24 @@ export class PostsService {
           }
         },
         {
+          $set:
+          {
+            liked:
+            {
+              $filter: {
+                input: "$isLike",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
+                }
+              }
+            },
+
+          }
+        },
+        {
           $project: {
             test1:
             {
@@ -129105,25 +129128,8 @@ export class PostsService {
               }
             },
             musik: "$musicNih",
-            isLike:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$isLike.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$isLike.isLiked", "$index"]
-                },
-                else: false
-              }
+            isLike: {
+              $arrayElemAt: ["$liked.isLiked", 0]
             },
             comment:
             {
