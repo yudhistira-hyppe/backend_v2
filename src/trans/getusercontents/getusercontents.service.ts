@@ -31096,9 +31096,16 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        $expr: {
-                          $in: ['$postID', '$$localID']
-                        }
+                        and: [
+                          {
+                            $expr: {
+                              $in: ['$postID', '$$localID']
+                            }
+                          },
+                          {
+                            apsara: true
+                          }
+                        ]
                       }
                     },
                     {
@@ -31109,7 +31116,7 @@ export class GetusercontentsService {
                         "mediaUri": 1,
                         "postID": 1,
                         "mediaEndpoint": {
-                          "$concat": ["/stream/", "$postID"]
+                          "$concat": ["/pict/", "$postID"]
                         },
                         "mediaThumbEndpoint": {
                           "$concat": ["/thumb/", "$postID"]
@@ -32983,9 +32990,16 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        $expr: {
-                          $in: ['$postID', '$$localID']
-                        }
+                        and: [
+                          {
+                            $expr: {
+                              $in: ['$postID', '$$localID']
+                            }
+                          },
+                          {
+                            apsara: true
+                          }
+                        ]
                       }
                     },
                     {
@@ -36665,9 +36679,16 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        $expr: {
-                          $in: ['$postID', '$$localID']
-                        }
+                        and: [
+                          {
+                            $expr: {
+                              $in: ['$postID', '$$localID']
+                            }
+                          },
+                          {
+                            apsara: true
+                          }
+                        ]
                       }
                     },
                     {
@@ -40345,9 +40366,16 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        $expr: {
-                          $in: ['$postID', '$$localID']
-                        }
+                        and: [
+                          {
+                            $expr: {
+                              $in: ['$postID', '$$localID']
+                            }
+                          },
+                          {
+                            apsara: true
+                          }
+                        ]
                       }
                     },
                     {
@@ -42232,9 +42260,16 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        $expr: {
-                          $in: ['$postID', '$$localID']
-                        }
+                        and: [
+                          {
+                            $expr: {
+                              $in: ['$postID', '$$localID']
+                            }
+                          },
+                          {
+                            apsara: true
+                          }
+                        ]
                       }
                     },
                     {
@@ -44028,9 +44063,16 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        $expr: {
-                          $in: ['$postID', '$$localID']
-                        }
+                        and: [
+                          {
+                            $expr: {
+                              $in: ['$postID', '$$localID']
+                            }
+                          },
+                          {
+                            apsara: true
+                          }
+                        ]
                       }
                     },
                     {
@@ -47708,9 +47750,16 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        $expr: {
-                          $in: ['$postID', '$$localID']
-                        }
+                        and: [
+                          {
+                            $expr: {
+                              $in: ['$postID', '$$localID']
+                            }
+                          },
+                          {
+                            apsara: true
+                          }
+                        ]
                       }
                     },
                     {
@@ -49503,9 +49552,16 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        $expr: {
-                          $in: ['$postID', '$$localID']
-                        }
+                        and: [
+                          {
+                            $expr: {
+                              $in: ['$postID', '$$localID']
+                            }
+                          },
+                          {
+                            apsara: true
+                          }
+                        ]
                       }
                     },
                     {

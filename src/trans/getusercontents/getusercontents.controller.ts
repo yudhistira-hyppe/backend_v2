@@ -4758,7 +4758,7 @@ export class GetusercontentsController {
 
         try {
 
-            data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow));
+            data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow), email);
             lengpict = data.length;
 
         } catch (e) {
@@ -5006,7 +5006,7 @@ export class GetusercontentsController {
 
         try {
 
-            data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow));
+            data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow), emailLogin);
             lengpict = data.length;
             console.log("data", data);
         } catch (e) {
@@ -5089,7 +5089,7 @@ export class GetusercontentsController {
 
                         for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
-                            
+
                             if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
                                 if (data[i].apsaraThumbId == data[i].apsaraId) {
                                     data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
@@ -5107,7 +5107,7 @@ export class GetusercontentsController {
 
 
 
-                            }else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                            } else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
                                 if (!dataUpsaraThum) {
                                     data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
                                 }

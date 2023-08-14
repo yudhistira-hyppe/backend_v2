@@ -121915,9 +121915,16 @@ export class PostsService {
               {
                 $match:
                 {
-                  $expr: {
-                    $in: ['$postID', '$$localID']
-                  }
+                  and: [
+                    {
+                      $expr: {
+                        $in: ['$postID', '$$localID']
+                      }
+                    },
+                    {
+                      apsara: true
+                    }
+                  ]
                 }
               },
               {
@@ -123084,7 +123091,6 @@ export class PostsService {
           },
 
         },
-        { $match: { isApsara: true } }
       );
 
       pipeline.push(
@@ -123721,9 +123727,16 @@ export class PostsService {
               {
                 $match:
                 {
-                  $expr: {
-                    $in: ['$postID', '$$localID']
-                  }
+                  and: [
+                    {
+                      $expr: {
+                        $in: ['$postID', '$$localID']
+                      }
+                    },
+                    {
+                      apsara: true
+                    }
+                  ]
                 }
               },
               {
@@ -124889,7 +124902,7 @@ export class PostsService {
           },
 
         },
-        { $match: { isApsara: true } }
+
 
       );
       pipeline.push(
@@ -124903,7 +124916,7 @@ export class PostsService {
   }
 
 
-  async landingpageMy(email: string, type: string, skip: number, limit: number) {
+  async landingpageMy(email: string, type: string, skip: number, limit: number, emaillogin: string) {
     var pipeline = [];
 
 
@@ -125490,7 +125503,7 @@ export class PostsService {
                       "active": true
                     },
                     {
-                      "email": email,
+                      "email": emaillogin,
 
                     },
 
@@ -126686,9 +126699,16 @@ export class PostsService {
               {
                 $match:
                 {
-                  $expr: {
-                    $in: ['$postID', '$$localID']
-                  }
+                  and: [
+                    {
+                      $expr: {
+                        $in: ['$postID', '$$localID']
+                      }
+                    },
+                    {
+                      apsara: true
+                    }
+                  ]
                 }
               },
               {
@@ -126966,7 +126986,7 @@ export class PostsService {
                       "active": true
                     },
                     {
-                      "email": email,
+                      "email": emaillogin,
 
                     },
 
@@ -127854,7 +127874,7 @@ export class PostsService {
             userInterested: 1
           },
         },
-        { $match: { isApsara: true } }
+
       );
 
 
@@ -128162,9 +128182,16 @@ export class PostsService {
               {
                 $match:
                 {
-                  $expr: {
-                    $in: ['$postID', '$$localID']
-                  }
+                  and: [
+                    {
+                      $expr: {
+                        $in: ['$postID', '$$localID']
+                      }
+                    },
+                    {
+                      apsara: true
+                    }
+                  ]
                 }
               },
               {
@@ -128442,7 +128469,7 @@ export class PostsService {
                       "active": true
                     },
                     {
-                      "email": email,
+                      "email": emaillogin,
 
                     },
 
@@ -129330,7 +129357,7 @@ export class PostsService {
             userInterested: 1
           },
         },
-        { $match: { isApsara: true } }
+
 
       );
 
@@ -129338,6 +129365,9 @@ export class PostsService {
     var query = await this.PostsModel.aggregate(pipeline);
     return query;
   }
+
+
+
 
 }
 

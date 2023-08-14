@@ -425,9 +425,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -539,7 +546,7 @@ export class TagCountService {
                                         }
                                     }
                                 },
-                                { $match: { isApsara: true } },
+
                                 {
                                     $sort: {
                                         isApsara: -1,
@@ -607,9 +614,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -721,7 +735,7 @@ export class TagCountService {
                                         }
                                     }
                                 },
-                                { $match: { isApsara: true } },
+
                                 {
                                     $sort: {
                                         isApsara: -1,
@@ -952,9 +966,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -1066,7 +1087,7 @@ export class TagCountService {
                                         }
                                     }
                                 },
-                                { $match: { isApsara: true } },
+
                                 {
                                     $sort: {
                                         isApsara: -1,
@@ -1297,9 +1318,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -1411,7 +1439,7 @@ export class TagCountService {
                                         }
                                     }
                                 },
-                                { $match: { isApsara: true } },
+
                                 {
                                     $sort: {
                                         isApsara: -1,
@@ -1459,9 +1487,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -1573,7 +1608,7 @@ export class TagCountService {
                                         }
                                     }
                                 },
-                                { $match: { isApsara: true } },
+
                                 {
                                     $sort: {
                                         isApsara: -1,
@@ -1641,9 +1676,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -1755,7 +1797,7 @@ export class TagCountService {
                                         }
                                     }
                                 },
-                                { $match: { isApsara: true } },
+
                                 {
                                     $sort: {
                                         isApsara: -1,
@@ -1803,9 +1845,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -1917,7 +1966,7 @@ export class TagCountService {
                                         }
                                     }
                                 },
-                                { $match: { isApsara: true } },
+
                                 {
                                     $sort: {
                                         isApsara: -1,
@@ -2148,9 +2197,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -2262,7 +2318,7 @@ export class TagCountService {
                                         }
                                     }
                                 },
-                                { $match: { isApsara: true } },
+
                                 {
                                     $sort: {
                                         isApsara: -1,
@@ -3243,9 +3299,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -3981,7 +4044,7 @@ export class TagCountService {
                                         "tags": 1
                                     }
                                 },
-                                { $match: { isApsara: true } }
+
                             ],
                     },
 
@@ -4032,9 +4095,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -4771,7 +4841,7 @@ export class TagCountService {
                                     }
                                 },
 
-                                { $match: { isApsara: true } }
+
 
                             ],
 
@@ -5597,9 +5667,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -6336,7 +6413,7 @@ export class TagCountService {
                                     }
                                 },
 
-                                { $match: { isApsara: true } }
+
                             ],
 
                     },
@@ -7161,9 +7238,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -7899,7 +7983,7 @@ export class TagCountService {
                                         "tags": 1
                                     }
                                 },
-                                { $match: { isApsara: true } }
+
                             ],
                         "diary":
                             [
@@ -7930,9 +8014,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -8669,7 +8760,7 @@ export class TagCountService {
                                     }
                                 },
 
-                                { $match: { isApsara: true } }
+
 
                             ],
 
@@ -8723,9 +8814,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -9461,7 +9559,7 @@ export class TagCountService {
                                         "tags": 1
                                     }
                                 },
-                                { $match: { isApsara: true } }
+
 
 
                             ],
@@ -9494,9 +9592,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -10233,7 +10338,7 @@ export class TagCountService {
                                     }
                                 },
 
-                                { $match: { isApsara: true } }
+
                             ],
 
                     },
@@ -11058,9 +11163,16 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-                                                    $expr: {
-                                                        $eq: ['$postID', '$$localID']
-                                                    }
+                                                    and: [
+                                                        {
+                                                            $expr: {
+                                                                $in: ['$postID', '$$localID']
+                                                            }
+                                                        },
+                                                        {
+                                                            apsara: true
+                                                        }
+                                                    ]
                                                 }
                                             },
                                             {
@@ -11788,7 +11900,6 @@ export class TagCountService {
                                     }
                                 },
 
-                                { $match: { isApsara: true } }
 
                             ],
 
