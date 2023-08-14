@@ -122039,16 +122039,11 @@ export class PostsService {
               {
                 $match:
                 {
-                  and: [
-                    {
-                      $expr: {
-                        $in: ['$postID', '$$localID']
-                      }
-                    },
-                    {
-                      apsara: true
-                    }
-                  ]
+
+
+                  $expr: {
+                    $in: ['$postID', '$$localID']
+                  }
                 }
               },
               {
@@ -123856,16 +123851,11 @@ export class PostsService {
               {
                 $match:
                 {
-                  and: [
-                    {
-                      $expr: {
-                        $in: ['$postID', '$$localID']
-                      }
-                    },
-                    {
-                      apsara: true
-                    }
-                  ]
+
+
+                  $expr: {
+                    $in: ['$postID', '$$localID']
+                  }
                 }
               },
               {
@@ -126833,16 +126823,11 @@ export class PostsService {
               {
                 $match:
                 {
-                  and: [
-                    {
-                      $expr: {
-                        $in: ['$postID', '$$localID']
-                      }
-                    },
-                    {
-                      apsara: true
-                    }
-                  ]
+
+
+                  $expr: {
+                    $in: ['$postID', '$$localID']
+                  }
                 }
               },
               {
@@ -128321,16 +128306,11 @@ export class PostsService {
               {
                 $match:
                 {
-                  and: [
-                    {
-                      $expr: {
-                        $in: ['$postID', '$$localID']
-                      }
-                    },
-                    {
-                      apsara: true
-                    }
-                  ]
+
+
+                  $expr: {
+                    $in: ['$postID', '$$localID']
+                  }
                 }
               },
               {

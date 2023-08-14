@@ -31139,16 +31139,11 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        and: [
-                          {
-                            $expr: {
-                              $in: ['$postID', '$$localID']
-                            }
-                          },
-                          {
-                            apsara: true
-                          }
-                        ]
+
+
+                        $expr: {
+                          $in: ['$postID', '$$localID']
+                        }
                       }
                     },
                     {
@@ -33038,16 +33033,11 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        and: [
-                          {
-                            $expr: {
-                              $in: ['$postID', '$$localID']
-                            }
-                          },
-                          {
-                            apsara: true
-                          }
-                        ]
+
+
+                        $expr: {
+                          $in: ['$postID', '$$localID']
+                        }
                       }
                     },
                     {
@@ -36732,16 +36722,11 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        and: [
-                          {
-                            $expr: {
-                              $in: ['$postID', '$$localID']
-                            }
-                          },
-                          {
-                            apsara: true
-                          }
-                        ]
+
+
+                        $expr: {
+                          $in: ['$postID', '$$localID']
+                        }
                       }
                     },
                     {
@@ -40424,16 +40409,11 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        and: [
-                          {
-                            $expr: {
-                              $in: ['$postID', '$$localID']
-                            }
-                          },
-                          {
-                            apsara: true
-                          }
-                        ]
+
+
+                        $expr: {
+                          $in: ['$postID', '$$localID']
+                        }
                       }
                     },
                     {
@@ -42322,16 +42302,11 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        and: [
-                          {
-                            $expr: {
-                              $in: ['$postID', '$$localID']
-                            }
-                          },
-                          {
-                            apsara: true
-                          }
-                        ]
+
+
+                        $expr: {
+                          $in: ['$postID', '$$localID']
+                        }
                       }
                     },
                     {
@@ -44129,16 +44104,11 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        and: [
-                          {
-                            $expr: {
-                              $in: ['$postID', '$$localID']
-                            }
-                          },
-                          {
-                            apsara: true
-                          }
-                        ]
+
+
+                        $expr: {
+                          $in: ['$postID', '$$localID']
+                        }
                       }
                     },
                     {
@@ -47821,16 +47791,11 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        and: [
-                          {
-                            $expr: {
-                              $in: ['$postID', '$$localID']
-                            }
-                          },
-                          {
-                            apsara: true
-                          }
-                        ]
+
+
+                        $expr: {
+                          $in: ['$postID', '$$localID']
+                        }
                       }
                     },
                     {
@@ -49628,16 +49593,11 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
-                        and: [
-                          {
-                            $expr: {
-                              $in: ['$postID', '$$localID']
-                            }
-                          },
-                          {
-                            apsara: true
-                          }
-                        ]
+
+
+                        $expr: {
+                          $in: ['$postID', '$$localID']
+                        }
                       }
                     },
                     {
