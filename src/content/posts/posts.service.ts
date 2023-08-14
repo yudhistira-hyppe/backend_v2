@@ -41021,6 +41021,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreVid: - 1,
@@ -41792,6 +41793,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreDiary: - 1,
@@ -42879,6 +42881,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreVid: - 1,
@@ -43965,6 +43968,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreDiary: - 1,
@@ -44741,6 +44745,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreVid: - 1,
@@ -45044,6 +45049,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreDiary: - 1,
@@ -46134,6 +46140,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreVid: - 1,
@@ -46437,6 +46444,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreDiary: - 1,
@@ -47242,6 +47250,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreVid: - 1,
@@ -47892,6 +47901,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreDiary: - 1,
@@ -48884,6 +48894,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreDiary: - 1,
@@ -49302,6 +49313,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreVid: - 1,
@@ -50455,6 +50467,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreVid: - 1,
@@ -51186,6 +51199,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreVid: - 1,
@@ -51489,6 +51503,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreDiary: - 1,
@@ -52218,6 +52233,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreDiary: - 1,
@@ -54265,6 +54281,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreVid: - 1,
@@ -55134,6 +55151,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreVid: - 1,
@@ -55436,7 +55454,8 @@ export class PostsService {
                     // },
 
                   }
-                },
+                }, { $match: { isApsara: true } },
+
                 {
                   $sort: {
                     scoreDiary: - 1,
@@ -56180,6 +56199,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreVid: - 1,
@@ -56483,6 +56503,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreDiary: - 1,
@@ -57656,6 +57677,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreVid: - 1,
@@ -57959,6 +57981,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreDiary: - 1,
@@ -58704,6 +58727,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreVid: - 1,
@@ -59007,6 +59031,7 @@ export class PostsService {
 
                   }
                 },
+                { $match: { isApsara: true } },
                 {
                   $sort: {
                     scoreDiary: - 1,
@@ -123443,10 +123468,10 @@ export class PostsService {
           }
         },
         {
-          $skip: 0
+          $skip: skip
         },
         {
-          $limit: 10
+          $limit: valuelimit
         },
         {
           $group: {
