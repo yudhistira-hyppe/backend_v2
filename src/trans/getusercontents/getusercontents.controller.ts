@@ -4849,6 +4849,9 @@ export class GetusercontentsController {
 
                             }
                             else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                                if (data[i].apsaraThumbId == data[i].apsaraId) {
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                }
                                 if (!dataUpsaraThum) {
                                     data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
                                 }
