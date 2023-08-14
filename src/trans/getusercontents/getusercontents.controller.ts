@@ -4755,7 +4755,6 @@ export class GetusercontentsController {
         var picts = [];
         var lengpict = null;
 
-
         try {
 
             data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow), email);
@@ -4822,12 +4821,7 @@ export class GetusercontentsController {
                     var dataUpsaraThum = (data[i].apsaraThumbId != undefined);
                     var dataUpsara = (data[i].apsaraId != undefined);
 
-
-                    if (uploadSource == "OSS") {
-                        data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
-
-                    } else {
-
+                    if (data[i].isApsara){
                         for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
                             if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
@@ -4865,6 +4859,8 @@ export class GetusercontentsController {
 
                             }
                         }
+                    }else{
+                        data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
                     }
 
 
