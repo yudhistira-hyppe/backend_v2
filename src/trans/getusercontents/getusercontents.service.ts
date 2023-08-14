@@ -32253,7 +32253,7 @@ export class GetusercontentsService {
                 },
 
               },
-
+              { $match: { isApsara: true } }
             ],
 
             interest: [
@@ -34140,7 +34140,7 @@ export class GetusercontentsService {
                   userInterested: 1
                 },
               },
-
+              { $match: { isApsara: true } }
 
             ],
             interest: [
@@ -37823,7 +37823,7 @@ export class GetusercontentsService {
                 },
               },
 
-
+              { $match: { isApsara: true } }
             ],
             interest: [
               {
@@ -41502,7 +41502,7 @@ export class GetusercontentsService {
                 },
 
               },
-
+              { $match: { isApsara: true } }
             ],
 
 
@@ -43389,7 +43389,7 @@ export class GetusercontentsService {
                 },
 
               },
-
+              { $match: { isApsara: true } }
             ],
 
             diary: [
@@ -45186,7 +45186,7 @@ export class GetusercontentsService {
                 },
               },
 
-
+              { $match: { isApsara: true } }
             ],
             interest: [
               {
@@ -48865,7 +48865,7 @@ export class GetusercontentsService {
                 },
 
               },
-
+              { $match: { isApsara: true } }
             ],
 
             diary: [
@@ -50684,7 +50684,7 @@ export class GetusercontentsService {
                   userInterested: 1
                 },
               },
-
+              { $match: { isApsara: true } }
 
             ],
             interest: [

@@ -123059,6 +123059,7 @@ export class PostsService {
           },
 
         },
+        { $match: { isApsara: true } }
       );
 
       pipeline.push(
@@ -124863,7 +124864,7 @@ export class PostsService {
           },
 
         },
-
+        { $match: { isApsara: true } }
 
       );
       pipeline.push(
@@ -127828,7 +127829,7 @@ export class PostsService {
             userInterested: 1
           },
         },
-
+        { $match: { isApsara: true } }
       );
 
 
@@ -129304,7 +129305,7 @@ export class PostsService {
             userInterested: 1
           },
         },
-
+        { $match: { isApsara: true } }
 
       );
 
