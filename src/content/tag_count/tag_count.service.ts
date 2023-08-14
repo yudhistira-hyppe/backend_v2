@@ -106,12 +106,6 @@ export class TagCountService {
                             $match:
                             {
                                 $and: [
-
-                                    {
-                                        $text: {
-                                            $search: key
-                                        }
-                                    },
                                     {
                                         $expr: {
                                             $in: ['$postID', '$$localID']
@@ -169,6 +163,7 @@ export class TagCountService {
                                 },
                                 "comments": "$comments",
                                 "likes": "$likes",
+                                "scorePict": 1,
                                 "_id": 1,
                                 "postID": 1,
                                 "createdAt": 1,
@@ -185,9 +180,7 @@ export class TagCountService {
                                 "allowComments": 1,
                                 "saleAmount": 1,
                                 "isLiked": 1,
-                                "scorePict": {
-                                    $meta: "textScore"
-                                }
+
                             }
                         }
                     ],
@@ -260,7 +253,6 @@ export class TagCountService {
                                                     },
                                                     "mediaThumbUri": 1,
                                                     "mediaType": 1,
-                                                    "uploadSource": 1,
 
                                                 }
                                             }
@@ -305,7 +297,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.email",
+                                        "email": "$pict.postID",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -316,7 +308,6 @@ export class TagCountService {
                                         "isViewed": "$pict.isViewed",
                                         "allowComments": "$pict.allowComments",
                                         "saleAmount": "$pict.saleAmount",
-                                        "uploadSource": "$media.uploadSource",
                                         "monetize":
                                         {
                                             $cond: {
@@ -342,6 +333,7 @@ export class TagCountService {
                                                 ]
                                             }]
                                         },
+                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                                         "isApsara":
                                         {
                                             $ifNull: [
@@ -353,8 +345,7 @@ export class TagCountService {
                                                         ]
                                                     }]
                                                 }, false]
-                                        },
-                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                                        }
                                     }
                                 },
                                 {
@@ -425,10 +416,8 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-
-
                                                     $expr: {
-                                                        $in: ['$postID', '$$localID']
+                                                        $eq: ['$postID', '$$localID']
                                                     }
                                                 }
                                             },
@@ -491,7 +480,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.email",
+                                        "email": "$pict.postID",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -541,7 +530,6 @@ export class TagCountService {
                                         }
                                     }
                                 },
-
                                 {
                                     $sort: {
                                         isApsara: -1,
@@ -609,10 +597,8 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-
-
                                                     $expr: {
-                                                        $in: ['$postID', '$$localID']
+                                                        $eq: ['$postID', '$$localID']
                                                     }
                                                 }
                                             },
@@ -675,7 +661,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.email",
+                                        "email": "$pict.postID",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -725,14 +711,14 @@ export class TagCountService {
                                         }
                                     }
                                 },
-
                                 {
                                     $sort: {
-                                        isApsara: -1,
+                                        isApsara: 1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
                                         createdAt: -1
+
                                     }
                                 },
                                 {
@@ -812,7 +798,6 @@ export class TagCountService {
                                                     },
                                                     "mediaThumbUri": 1,
                                                     "mediaType": 1,
-                                                    "uploadSource": 1,
 
                                                 }
                                             }
@@ -857,7 +842,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.email",
+                                        "email": "$pict.postID",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -868,7 +853,6 @@ export class TagCountService {
                                         "isViewed": "$pict.isViewed",
                                         "allowComments": "$pict.allowComments",
                                         "saleAmount": "$pict.saleAmount",
-                                        "uploadSource": "$media.uploadSource",
                                         "monetize":
                                         {
                                             $cond: {
@@ -894,6 +878,7 @@ export class TagCountService {
                                                 ]
                                             }]
                                         },
+                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                                         "isApsara":
                                         {
                                             $ifNull: [
@@ -905,8 +890,7 @@ export class TagCountService {
                                                         ]
                                                     }]
                                                 }, false]
-                                        },
-                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                                        }
                                     }
                                 },
                                 {
@@ -956,10 +940,8 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-
-
                                                     $expr: {
-                                                        $in: ['$postID', '$$localID']
+                                                        $eq: ['$postID', '$$localID']
                                                     }
                                                 }
                                             },
@@ -1022,7 +1004,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.email",
+                                        "email": "$pict.postID",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -1072,14 +1054,14 @@ export class TagCountService {
                                         }
                                     }
                                 },
-
                                 {
                                     $sort: {
-                                        isApsara: -1,
+                                        isApsara: 1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
                                         createdAt: -1
+
                                     }
                                 },
                                 {
@@ -1159,7 +1141,6 @@ export class TagCountService {
                                                     },
                                                     "mediaThumbUri": 1,
                                                     "mediaType": 1,
-                                                    "uploadSource": 1,
 
                                                 }
                                             }
@@ -1204,7 +1185,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.email",
+                                        "email": "$pict.postID",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -1215,7 +1196,6 @@ export class TagCountService {
                                         "isViewed": "$pict.isViewed",
                                         "allowComments": "$pict.allowComments",
                                         "saleAmount": "$pict.saleAmount",
-                                        "uploadSource": "$media.uploadSource",
                                         "monetize":
                                         {
                                             $cond: {
@@ -1241,6 +1221,7 @@ export class TagCountService {
                                                 ]
                                             }]
                                         },
+                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                                         "isApsara":
                                         {
                                             $ifNull: [
@@ -1252,8 +1233,7 @@ export class TagCountService {
                                                         ]
                                                     }]
                                                 }, false]
-                                        },
-                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                                        }
                                     }
                                 },
                                 {
@@ -1303,10 +1283,8 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-
-
                                                     $expr: {
-                                                        $in: ['$postID', '$$localID']
+                                                        $eq: ['$postID', '$$localID']
                                                     }
                                                 }
                                             },
@@ -1369,7 +1347,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.email",
+                                        "email": "$pict.postID",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -1419,7 +1397,6 @@ export class TagCountService {
                                         }
                                     }
                                 },
-
                                 {
                                     $sort: {
                                         isApsara: -1,
@@ -1467,10 +1444,8 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-
-
                                                     $expr: {
-                                                        $in: ['$postID', '$$localID']
+                                                        $eq: ['$postID', '$$localID']
                                                     }
                                                 }
                                             },
@@ -1533,7 +1508,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.email",
+                                        "email": "$pict.postID",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -1583,14 +1558,14 @@ export class TagCountService {
                                         }
                                     }
                                 },
-
                                 {
                                     $sort: {
-                                        isApsara: -1,
+                                        isApsara: 1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
                                         createdAt: -1
+
                                     }
                                 },
                                 {
@@ -1651,10 +1626,8 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-
-
                                                     $expr: {
-                                                        $in: ['$postID', '$$localID']
+                                                        $eq: ['$postID', '$$localID']
                                                     }
                                                 }
                                             },
@@ -1717,7 +1690,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.email",
+                                        "email": "$pict.postID",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -1767,7 +1740,6 @@ export class TagCountService {
                                         }
                                     }
                                 },
-
                                 {
                                     $sort: {
                                         isApsara: -1,
@@ -1815,10 +1787,8 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-
-
                                                     $expr: {
-                                                        $in: ['$postID', '$$localID']
+                                                        $eq: ['$postID', '$$localID']
                                                     }
                                                 }
                                             },
@@ -1881,7 +1851,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.email",
+                                        "email": "$pict.postID",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -1931,14 +1901,14 @@ export class TagCountService {
                                         }
                                     }
                                 },
-
                                 {
                                     $sort: {
-                                        isApsara: -1,
+                                        isApsara: 1,
                                         scorePict: - 1,
                                         comments: - 1,
                                         likes: - 1,
                                         createdAt: -1
+
                                     }
                                 },
                                 {
@@ -2018,7 +1988,6 @@ export class TagCountService {
                                                     },
                                                     "mediaThumbUri": 1,
                                                     "mediaType": 1,
-                                                    "uploadSource": 1,
 
                                                 }
                                             }
@@ -2063,7 +2032,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.email",
+                                        "email": "$pict.postID",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -2074,7 +2043,6 @@ export class TagCountService {
                                         "isViewed": "$pict.isViewed",
                                         "allowComments": "$pict.allowComments",
                                         "saleAmount": "$pict.saleAmount",
-                                        "uploadSource": "$media.uploadSource",
                                         "monetize":
                                         {
                                             $cond: {
@@ -2100,6 +2068,7 @@ export class TagCountService {
                                                 ]
                                             }]
                                         },
+                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
                                         "isApsara":
                                         {
                                             $ifNull: [
@@ -2111,8 +2080,7 @@ export class TagCountService {
                                                         ]
                                                     }]
                                                 }, false]
-                                        },
-                                        "apsaraThumbId": { $arrayElemAt: ['$media.apsaraThumbId', 0] },
+                                        }
                                     }
                                 },
                                 {
@@ -2162,10 +2130,8 @@ export class TagCountService {
                                             {
                                                 $match:
                                                 {
-
-
                                                     $expr: {
-                                                        $in: ['$postID', '$$localID']
+                                                        $eq: ['$postID', '$$localID']
                                                     }
                                                 }
                                             },
@@ -2228,7 +2194,7 @@ export class TagCountService {
                                         "createdAt": "$pict.createdAt",
                                         "updatedAt": "$pict.updatedAt",
                                         "postID": "$pict.postID",
-                                        "email": "$pict.email",
+                                        "email": "$pict.postID",
                                         "postType": "$pict.postType",
                                         "description": "$pict.description",
                                         "active": "$pict.active",
@@ -2278,7 +2244,6 @@ export class TagCountService {
                                         }
                                     }
                                 },
-
                                 {
                                     $sort: {
                                         isApsara: -1,
