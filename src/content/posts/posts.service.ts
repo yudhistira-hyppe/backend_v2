@@ -119580,6 +119580,12 @@ export class PostsService {
       valuelimit = 0;
     }
 
+    var x = (2 * valuelimit);
+
+    if (skip >= x) {
+      skip = skip + 1;
+    }
+
     if (type == "pict") {
       try {
         dataseting = await this.settingsService.findOneByJenis("PictLandingPage");
