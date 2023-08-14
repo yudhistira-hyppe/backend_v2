@@ -4819,6 +4819,8 @@ export class GetusercontentsController {
                     boostCount = data[i].boostCount;
                     var checkpictketemu = false;
                     uploadSource = data[i].uploadSource;
+                    var dataUpsaraThum = (data[i].apsaraThumbId != undefined);
+                    var dataUpsara = (data[i].apsaraId != undefined);
 
 
                     if (uploadSource == "OSS") {
@@ -4830,6 +4832,9 @@ export class GetusercontentsController {
 
                             if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
                                 if (data[i].apsaraThumbId == data[i].apsaraId) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                                }
+                                if (!dataUpsara) {
                                     data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
                                 }
                                 // checkpictketemu = true;
@@ -4844,6 +4849,9 @@ export class GetusercontentsController {
 
                             }
                             else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                                if (!dataUpsaraThum) {
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                }
                                 checkpictketemu = true;
                                 data[i].media =
                                 {
@@ -5000,7 +5008,7 @@ export class GetusercontentsController {
 
             data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow));
             lengpict = data.length;
-
+            console.log("data", data);
         } catch (e) {
             data = null;
             lengpict = 0;
@@ -5070,6 +5078,8 @@ export class GetusercontentsController {
                     boostCount = data[i].boostCount;
                     var checkpictketemu = false;
                     uploadSource = data[i].uploadSource;
+                    var dataUpsaraThum = (data[i].apsaraThumbId != undefined);
+                    var dataUpsara = (data[i].apsaraId != undefined);
 
 
                     if (uploadSource == "OSS") {
@@ -5079,8 +5089,12 @@ export class GetusercontentsController {
 
                         for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
+                            
                             if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
                                 if (data[i].apsaraThumbId == data[i].apsaraId) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                                }
+                                if (!dataUpsara) {
                                     data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
                                 }
                                 // checkpictketemu = true;
@@ -5093,8 +5107,10 @@ export class GetusercontentsController {
 
 
 
-                            }
-                            else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                            }else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                                if (!dataUpsaraThum) {
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                }
                                 checkpictketemu = true;
                                 data[i].media =
                                 {
@@ -5104,6 +5120,7 @@ export class GetusercontentsController {
                                 data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
 
                             }
+
                         }
                     }
 
