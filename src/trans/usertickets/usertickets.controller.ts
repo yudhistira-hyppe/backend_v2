@@ -18,6 +18,7 @@ import * as fse from 'fs-extra';
 import * as fs from 'fs';
 import { CreateLogticketsDto } from '../logtickets/dto/create-logtickets.dto';
 import { OssService } from "../../stream/oss/oss.service";
+import { LogapisService } from '../logapis/logapis.service';
 //import FormData from "form-data";
 const multer = require('multer');
 var FormData = require('form-data');
@@ -63,7 +64,8 @@ export class UserticketsController {
     private readonly userauthsService: UserauthsService,
     private readonly seaweedfsService: SeaweedfsService,
     private readonly ossService: OssService,
-    private readonly logticketsService: LogticketsService) { }
+    private readonly logticketsService: LogticketsService,
+    private readonly logapiSS: LogapisService) { }
 
 
 
@@ -80,14 +82,23 @@ export class UserticketsController {
     @Body() CreateUserticketsDto: CreateUserticketsDto,
     @Headers() headers, @Res() res) {
     //  var idmediaproofpict = CreateMediaproofpictsDto_._id.toString();
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/usertickets/createticket';
+    var reqbody = JSON.parse(JSON.stringify(CreateUserticketsDto));
 
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed token and email not match',
       );
     }
 
     if (headers['x-auth-token'] == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed email is required',
       );
@@ -218,21 +229,33 @@ export class UserticketsController {
                   if (result.res.statusCode == 200) {
                     url_cardPict = result.res.requestUrls[0];
                   } else {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException(
                       'Unabled to proceed supportfile failed upload',
                     );
                   }
                 } else {
+                  var timestamps_end = await this.utilsService.getDateTimeString();
+                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                   await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed supportfile failed upload',
                   );
                 }
               } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                   'Unabled to proceed supportfile failed upload',
                 );
               }
             } else {
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed supportfile failed upload',
               );
@@ -257,6 +280,9 @@ export class UserticketsController {
 
           var data = await this.userticketsService.findOne(objadsid);
 
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
           return res.status(HttpStatus.OK).json({
             response_code: 202,
             "data": data,
@@ -265,6 +291,9 @@ export class UserticketsController {
 
 
         } else {
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
           return res.status(HttpStatus.OK).json({
             response_code: 202,
             "data": datausertiket,
@@ -274,6 +303,9 @@ export class UserticketsController {
         }
 
       } catch (err) {
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed' + err,
         );
@@ -282,6 +314,9 @@ export class UserticketsController {
 
     }
     else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed user not found',
       );
@@ -290,13 +325,22 @@ export class UserticketsController {
 
   @Post('api/usertickets/retrieveticket')
   @UseGuards(JwtAuthGuard)
-  async retrieve(@Req() request: Request): Promise<any> {
+  async retrieve(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/usertickets/retrieveticket';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     const mongoose = require('mongoose');
     var id = null;
     var request_json = JSON.parse(JSON.stringify(request.body));
     if (request_json["id"] !== undefined) {
       id = request_json["id"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -307,12 +351,21 @@ export class UserticketsController {
 
     let data = await this.userticketsService.retrieve(idticket);
 
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return { response_code: 202, data, messages };
   }
 
   @Post('api/usertickets/list')
   @UseGuards(JwtAuthGuard)
-  async search(@Req() request: Request): Promise<any> {
+  async search(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/usertickets/list';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     var status = null;
     var tipe = null;
     var startdate = null;
@@ -324,24 +377,36 @@ export class UserticketsController {
     if (request_json["status"] !== undefined) {
       status = request_json["status"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
     if (request_json["tipe"] !== undefined) {
       tipe = request_json["tipe"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
     if (request_json["page"] !== undefined) {
       page = request_json["page"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
     if (request_json["limit"] !== undefined) {
       limit = request_json["limit"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -357,6 +422,10 @@ export class UserticketsController {
 
     let data = await this.userticketsService.searchdata(status, tipe, startdate, enddate, page, limit);
     var totalrow = data.length;
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return { response_code: 202, data, page, limit, totalrow, totalallrow, messages };
   }
 
@@ -406,7 +475,13 @@ export class UserticketsController {
 
   @UseGuards(JwtAuthGuard)
   @Put('api/usertickets/:id')
-  async update(@Res() res, @Param('id') id: string, @Body() createUserticketsDto: CreateUserticketsDto) {
+  async update(@Res() res, @Param('id') id: string, @Body() createUserticketsDto: CreateUserticketsDto, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/usertickets/' + id;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
     const messages = {
@@ -419,11 +494,18 @@ export class UserticketsController {
     var idobj = mongoose.Types.ObjectId(id);
     try {
       let data = await this.userticketsService.delete(idobj);
+
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
       return res.status(HttpStatus.OK).json({
         response_code: 202,
         "message": messages
       });
     } catch (e) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
       return res.status(HttpStatus.BAD_REQUEST).json({
 
         "message": messagesEror
@@ -434,6 +516,12 @@ export class UserticketsController {
   @UseGuards(JwtAuthGuard)
   @Put('api/usertickets/update/:id')
   async updatedata(@Res() res, @Param('id') id: string, @Req() request: Request, @Headers() headers, @Body() CreateUserticketsDto: CreateUserticketsDto) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/usertickets/update/' + id;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
     const messages = {
@@ -513,11 +601,18 @@ export class UserticketsController {
       datalogticket.type = "change status";
       datalogticket.remark = remark;
       await this.logticketsService.create(datalogticket);
+
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       return res.status(HttpStatus.OK).json({
         response_code: 202,
         "message": messages
       });
     } catch (e) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       return res.status(HttpStatus.BAD_REQUEST).json({
 
         "message": messagesEror
@@ -527,7 +622,13 @@ export class UserticketsController {
 
   @Post('api/usertickets/filter')
   @UseGuards(JwtAuthGuard)
-  async profileuser(@Req() request: Request): Promise<any> {
+  async profileuser(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/usertickets/filter';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     var request_json = JSON.parse(JSON.stringify(request.body));
     var search = null;
     var data = null;
@@ -568,12 +669,18 @@ export class UserticketsController {
     if (request_json["page"] !== undefined) {
       page = request_json["page"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
     if (request_json["limit"] !== undefined) {
       limit = request_json["limit"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -619,13 +726,23 @@ export class UserticketsController {
     // } else {
     //   totalpage = parseInt(tpage2);
     // }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return { response_code: 202, data, page, limit, total, totalallrow: 0, totalsearch: 0, totalpage: 0, messages };
 
   }
 
   @Post('api/usertickets/count')
   @UseGuards(JwtAuthGuard)
-  async countticket(): Promise<any> {
+  async countticket(@Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/usertickets/count';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     var datanew = null;
     var dataprogres = null;
     var dataclose = null;
@@ -694,7 +811,8 @@ export class UserticketsController {
       "prosentaseClose": prosentaseClose,
     };
 
-
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
 
     return { response_code: 202, data, messages };
   }
