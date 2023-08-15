@@ -99277,6 +99277,12 @@ export class PostsService {
       valuelimit = 0;
     }
 
+    var x = (2 * valuelimit);
+
+    if (skip >= x) {
+      skip = skip + 1;
+    }
+
     if (type == "pict") {
       try {
         dataseting = await this.settingsService.findOneByJenis("PictLandingPage");
@@ -100530,6 +100536,24 @@ export class PostsService {
           }
         },
         {
+          $set:
+          {
+            liked:
+            {
+              $filter: {
+                input: "$isLike",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
+                }
+              }
+            },
+
+          }
+        },
+        {
           $project: {
             test1:
             {
@@ -100721,25 +100745,8 @@ export class PostsService {
               }
             },
             musik: "$musicNih",
-            isLike:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$isLike.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$isLike.isLiked", "$index"]
-                },
-                else: false
-              }
+            isLike: {
+              $arrayElemAt: ["$liked.isLiked", 0]
             },
             comment:
             {
@@ -101273,6 +101280,7 @@ export class PostsService {
                 [email]
               ]
             },
+
           }
         },
         {
@@ -101288,7 +101296,6 @@ export class PostsService {
 
           }
         },
-
         {
           $set: {
             dodolCount: {
@@ -101314,14 +101321,6 @@ export class PostsService {
                 {
                   $size: "$dodolCount"
                 },
-                //{
-                //		$subtract: [
-                //				{
-                //						$size: "$dodolCount"
-                //				},
-                //				1
-                //		]
-                //},
                 else: 1
               }
             },
@@ -101334,6 +101333,11 @@ export class PostsService {
             $or: [
               {
                 $and: [
+                  {
+                    $expr: {
+                      $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                    }
+                  },
                   {
                     "reportedStatus": {
                       $ne: "OWNED"
@@ -101553,9 +101557,6 @@ export class PostsService {
                         $ne: false
                       }
                     },
-                    // {
-                    //   "sequenceNumber": 0
-                    // },
 
                   ]
                 }
@@ -101587,7 +101588,8 @@ export class PostsService {
               },
               {
                 $unwind: {
-                  path: "$userComment"
+                  path: "$userComment",
+                  preserveNullAndEmptyArrays: true
                 }
               },
               {
@@ -101595,17 +101597,16 @@ export class PostsService {
                   createdAt: - 1
                 }
               },
-              // {
-              //   $limit: 2
-              // },
               {
                 $group: {
                   _id: "$postID",
                   komentar: {
                     $push: "$$ROOT"
-                  }
+                  },
+
                 }
-              }
+              },
+
             ]
           },
 
@@ -101742,6 +101743,8 @@ export class PostsService {
               {
                 $match:
                 {
+
+
                   $expr: {
                     $in: ['$postID', '$$localID']
                   }
@@ -102107,6 +102110,17 @@ export class PostsService {
         },
         {
           $set: {
+            indexComment:
+            {
+              $indexOfArray: ["$comment._id", {
+                $arrayElemAt: ["$all.postID", "$index"]
+              },]
+            },
+
+          }
+        },
+        {
+          $set: {
             ded:
             {
               $cond: {
@@ -102123,7 +102137,6 @@ export class PostsService {
 
           }
         },
-
         {
           $set:
           {
@@ -102346,15 +102359,25 @@ export class PostsService {
           }
         },
         {
+          $set:
+          {
+            liked:
+            {
+              $filter: {
+                input: "$isLike",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
+                }
+              }
+            },
+
+          }
+        },
+        {
           $project: {
-            test1:
-            {
-              $arrayElemAt: ["$mailViewer", "$index"]
-            },
-            test2:
-            {
-              $arrayElemAt: ["$all.kancuts", "$index"]
-            },
             _id:
             {
               $arrayElemAt: ["$all.postID", "$index"]
@@ -102537,25 +102560,8 @@ export class PostsService {
               }
             },
             musik: "$musicNih",
-            isLike:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$isLike.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$isLike.isLiked", "$index"]
-                },
-                else: false
-              }
+            isLike: {
+              $arrayElemAt: ["$liked.isLiked", 0]
             },
             comment:
             {
@@ -102907,6 +102913,7 @@ export class PostsService {
             category: 1,
             userInterested: 1
           },
+
         },
       );
 
@@ -103086,6 +103093,7 @@ export class PostsService {
                 [email]
               ]
             },
+
           }
         },
         {
@@ -103101,7 +103109,6 @@ export class PostsService {
 
           }
         },
-
         {
           $set: {
             dodolCount: {
@@ -103127,14 +103134,6 @@ export class PostsService {
                 {
                   $size: "$dodolCount"
                 },
-                //{
-                //		$subtract: [
-                //				{
-                //						$size: "$dodolCount"
-                //				},
-                //				1
-                //		]
-                //},
                 else: 1
               }
             },
@@ -103147,6 +103146,11 @@ export class PostsService {
             $or: [
               {
                 $and: [
+                  {
+                    $expr: {
+                      $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                    }
+                  },
                   {
                     "reportedStatus": {
                       $ne: "OWNED"
@@ -103366,9 +103370,6 @@ export class PostsService {
                         $ne: false
                       }
                     },
-                    // {
-                    //   "sequenceNumber": 0
-                    // },
 
                   ]
                 }
@@ -103400,7 +103401,8 @@ export class PostsService {
               },
               {
                 $unwind: {
-                  path: "$userComment"
+                  path: "$userComment",
+                  preserveNullAndEmptyArrays: true
                 }
               },
               {
@@ -103408,17 +103410,16 @@ export class PostsService {
                   createdAt: - 1
                 }
               },
-              // {
-              //   $limit: 2
-              // },
               {
                 $group: {
                   _id: "$postID",
                   komentar: {
                     $push: "$$ROOT"
-                  }
+                  },
+
                 }
-              }
+              },
+
             ]
           },
 
@@ -103555,6 +103556,8 @@ export class PostsService {
               {
                 $match:
                 {
+
+
                   $expr: {
                     $in: ['$postID', '$$localID']
                   }
@@ -103749,7 +103752,6 @@ export class PostsService {
                   "isPostPrivate": 1,
                   email: 1,
 
-
                 }
               }
             ],
@@ -103920,6 +103922,17 @@ export class PostsService {
         },
         {
           $set: {
+            indexComment:
+            {
+              $indexOfArray: ["$comment._id", {
+                $arrayElemAt: ["$all.postID", "$index"]
+              },]
+            },
+
+          }
+        },
+        {
+          $set: {
             ded:
             {
               $cond: {
@@ -103936,7 +103949,6 @@ export class PostsService {
 
           }
         },
-
         {
           $set:
           {
@@ -104159,15 +104171,25 @@ export class PostsService {
           }
         },
         {
+          $set:
+          {
+            liked:
+            {
+              $filter: {
+                input: "$isLike",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
+                }
+              }
+            },
+
+          }
+        },
+        {
           $project: {
-            test1:
-            {
-              $arrayElemAt: ["$mailViewer", "$index"]
-            },
-            test2:
-            {
-              $arrayElemAt: ["$all.kancuts", "$index"]
-            },
             _id:
             {
               $arrayElemAt: ["$all.postID", "$index"]
@@ -104350,25 +104372,8 @@ export class PostsService {
               }
             },
             musik: "$musicNih",
-            isLike:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$isLike.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$isLike.isLiked", "$index"]
-                },
-                else: false
-              }
+            isLike: {
+              $arrayElemAt: ["$liked.isLiked", 0]
             },
             comment:
             {
@@ -104720,7 +104725,9 @@ export class PostsService {
             category: 1,
             userInterested: 1
           },
+
         },
+
 
       );
       pipeline.push(
@@ -104734,12 +104741,36 @@ export class PostsService {
   }
 
 
-  async landingpageMy(email: string, type: string, skip: number, limit: number) {
+  async landingpageMy(email: string, type: string, skip: number, limit: number, emaillogin: string) {
     var pipeline = [];
+    var $and = []
+
+    if (email != emaillogin) {
+      $and.push({
+        "reportedStatus": {
+          $ne: "OWNED"
+        }
+      })
+    }
 
 
     if (type == "pict") {
 
+      $and.push(
+        {
+          "active": true
+        },
+        {
+          "postType": "pict"
+        },
+        {
+          $expr: {
+            $gt: ["$boosted.boostSession.end", "$testDate",]
+          }
+        },
+        {
+          email: email
+        })
 
       pipeline.push(
         {
@@ -104752,27 +104783,7 @@ export class PostsService {
           {
             $or: [
               {
-                $and: [
-                  {
-                    "reportedStatus": {
-                      $ne: "OWNED"
-                    }
-                  },
-                  {
-                    "active": true
-                  },
-                  {
-                    "postType": "pict"
-                  },
-                  {
-                    $expr: {
-                      $gt: ["$boosted.boostSession.end", "$testDate",]
-                    }
-                  },
-                  {
-                    email: email
-                  }
-                ]
+                $and
               },
 
             ]
@@ -105321,7 +105332,7 @@ export class PostsService {
                       "active": true
                     },
                     {
-                      "email": email,
+                      "email": emaillogin,
 
                     },
 
@@ -105654,6 +105665,24 @@ export class PostsService {
           }
         },
         {
+          $set:
+          {
+            liked:
+            {
+              $filter: {
+                input: "$isLike",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
+                }
+              }
+            },
+
+          }
+        },
+        {
           $project: {
             test1:
             {
@@ -105838,25 +105867,8 @@ export class PostsService {
               }
             },
             musik: "$musicNih",
-            isLike:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$isLike.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$isLike.isLiked", "$index"]
-                },
-                else: false
-              }
+            isLike: {
+              $arrayElemAt: ["$liked.isLiked", 0]
             },
             comment:
             {
@@ -106215,7 +106227,25 @@ export class PostsService {
     }
     else if (type == "vid") {
 
-
+      $and.push({
+        $expr: {
+          $gte: ["$createdAt", "2022-01-09 00:36:58"]
+        }
+      },
+        {
+          "active": true
+        },
+        {
+          "postType": "vid"
+        },
+        {
+          $expr: {
+            $gt: ["$boosted.boostSession.end", "$testDate",]
+          }
+        },
+        {
+          email: email
+        })
       pipeline.push(
 
         {
@@ -106228,27 +106258,7 @@ export class PostsService {
           {
             $or: [
               {
-                $and: [
-                  {
-                    "reportedStatus": {
-                      $ne: "OWNED"
-                    }
-                  },
-                  {
-                    "active": true
-                  },
-                  {
-                    "postType": "vid"
-                  },
-                  {
-                    $expr: {
-                      $gt: ["$boosted.boostSession.end", "$testDate",]
-                    }
-                  },
-                  {
-                    email: email
-                  }
-                ]
+                $and
               },
 
             ]
@@ -106517,6 +106527,8 @@ export class PostsService {
               {
                 $match:
                 {
+
+
                   $expr: {
                     $in: ['$postID', '$$localID']
                   }
@@ -106797,7 +106809,7 @@ export class PostsService {
                       "active": true
                     },
                     {
-                      "email": email,
+                      "email": emaillogin,
 
                     },
 
@@ -107130,6 +107142,24 @@ export class PostsService {
           }
         },
         {
+          $set:
+          {
+            liked:
+            {
+              $filter: {
+                input: "$isLike",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
+                }
+              }
+            },
+
+          }
+        },
+        {
           $project: {
             test1:
             {
@@ -107314,25 +107344,8 @@ export class PostsService {
               }
             },
             musik: "$musicNih",
-            isLike:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$isLike.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$isLike.isLiked", "$index"]
-                },
-                else: false
-              }
+            isLike: {
+              $arrayElemAt: ["$liked.isLiked", 0]
             },
             comment:
             {
@@ -107692,7 +107705,25 @@ export class PostsService {
     }
     else if (type == "diary") {
 
-
+      $and.push({
+        $expr: {
+          $gte: ["$createdAt", "2022-01-09 00:57:28"]
+        }
+      },
+        {
+          "active": true
+        },
+        {
+          "postType": "diary"
+        },
+        {
+          $expr: {
+            $gt: ["$boosted.boostSession.end", "$testDate",]
+          }
+        },
+        {
+          email: email
+        })
       pipeline.push(
         {
           $sort: {
@@ -107704,27 +107735,7 @@ export class PostsService {
           {
             $or: [
               {
-                $and: [
-                  {
-                    "reportedStatus": {
-                      $ne: "OWNED"
-                    }
-                  },
-                  {
-                    "active": true
-                  },
-                  {
-                    "postType": "diary"
-                  },
-                  {
-                    $expr: {
-                      $gt: ["$boosted.boostSession.end", "$testDate",]
-                    }
-                  },
-                  {
-                    email: email
-                  }
-                ]
+                $and
               },
 
             ]
@@ -107993,6 +108004,8 @@ export class PostsService {
               {
                 $match:
                 {
+
+
                   $expr: {
                     $in: ['$postID', '$$localID']
                   }
@@ -108273,7 +108286,7 @@ export class PostsService {
                       "active": true
                     },
                     {
-                      "email": email,
+                      "email": emaillogin,
 
                     },
 
@@ -108606,6 +108619,24 @@ export class PostsService {
           }
         },
         {
+          $set:
+          {
+            liked:
+            {
+              $filter: {
+                input: "$isLike",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
+                }
+              }
+            },
+
+          }
+        },
+        {
           $project: {
             test1:
             {
@@ -108790,25 +108821,8 @@ export class PostsService {
               }
             },
             musik: "$musicNih",
-            isLike:
-            {
-              $cond: {
-                if: {
-                  $eq: [
-                    {
-                      $arrayElemAt: ["$isLike.postID", "$index"]
-                    },
-                    {
-                      $arrayElemAt: ["$all.postID", "$index"]
-                    }
-                  ]
-                },
-                then:
-                {
-                  $arrayElemAt: ["$isLike.isLiked", "$index"]
-                },
-                else: false
-              }
+            isLike: {
+              $arrayElemAt: ["$liked.isLiked", 0]
             },
             comment:
             {
@@ -109169,6 +109183,7 @@ export class PostsService {
     var query = await this.PostsModel.aggregate(pipeline);
     return query;
   }
+
 
 }
 

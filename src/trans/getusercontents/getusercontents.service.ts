@@ -25909,6 +25909,11 @@ export class GetusercontentsService {
                 {
                   $and: [
                     {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                      }
+                    },
+                    {
                       "reportedStatus": {
                         $ne: "OWNED"
                       }
@@ -26190,6 +26195,11 @@ export class GetusercontentsService {
                 $match:
                 {
                   $and: [
+                    {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                      }
+                    },
                     {
                       "reportedStatus": {
                         $ne: "OWNED"
@@ -26667,6 +26677,11 @@ export class GetusercontentsService {
                 {
                   $and: [
                     {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                      }
+                    },
+                    {
                       "reportedStatus": {
                         $ne: "OWNED"
                       }
@@ -26855,7 +26870,6 @@ export class GetusercontentsService {
                 }
               },
             ],
-
             interest: [
               {
                 "$lookup": {
@@ -27143,6 +27157,11 @@ export class GetusercontentsService {
                 {
                   $and: [
                     {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                      }
+                    },
+                    {
                       "reportedStatus": {
                         $ne: "OWNED"
                       }
@@ -27425,6 +27444,11 @@ export class GetusercontentsService {
                 {
                   $and: [
                     {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                      }
+                    },
+                    {
                       "reportedStatus": {
                         $ne: "OWNED"
                       }
@@ -27619,6 +27643,11 @@ export class GetusercontentsService {
                 {
                   $and: [
                     {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                      }
+                    },
+                    {
                       "reportedStatus": {
                         $ne: "OWNED"
                       }
@@ -27807,7 +27836,6 @@ export class GetusercontentsService {
                 }
               },
             ],
-
             interest: [
               {
                 "$lookup": {
@@ -28094,6 +28122,11 @@ export class GetusercontentsService {
                 {
                   $and: [
                     {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                      }
+                    },
+                    {
                       "reportedStatus": {
                         $ne: "OWNED"
                       }
@@ -28287,6 +28320,11 @@ export class GetusercontentsService {
                 $match:
                 {
                   $and: [
+                    {
+                      $expr: {
+                        $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                      }
+                    },
                     {
                       "reportedStatus": {
                         $ne: "OWNED"
@@ -29820,6 +29858,24 @@ export class GetusercontentsService {
                 }
               },
               {
+                $set:
+                {
+                  liked:
+                  {
+                    $filter: {
+                      input: "$isLike",
+                      as: "nonok",
+                      cond: {
+                        $eq: ["$$nonok.postID", {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        },]
+                      }
+                    }
+                  },
+
+                }
+              },
+              {
                 $project: {
                   test1:
                   {
@@ -30011,25 +30067,8 @@ export class GetusercontentsService {
                     }
                   },
                   musik: "$musicNih",
-                  isLike:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$isLike.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then:
-                      {
-                        $arrayElemAt: ["$isLike.isLiked", "$index"]
-                      },
-                      else: false
-                    }
+                  isLike: {
+                    $arrayElemAt: ["$liked.isLiked", 0]
                   },
                   comment: "$ded",
                   interest: {
@@ -30688,6 +30727,11 @@ export class GetusercontentsService {
                     {
                       $and: [
                         {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                          }
+                        },
+                        {
                           "reportedStatus": {
                             $ne: "OWNED"
                           }
@@ -31095,6 +31139,8 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
+
+
                         $expr: {
                           $in: ['$postID', '$$localID']
                         }
@@ -31108,7 +31154,7 @@ export class GetusercontentsService {
                         "mediaUri": 1,
                         "postID": 1,
                         "mediaEndpoint": {
-                          "$concat": ["/stream/", "$postID"]
+                          "$concat": ["/pict/", "$postID"]
                         },
                         "mediaThumbEndpoint": {
                           "$concat": ["/thumb/", "$postID"]
@@ -31707,6 +31753,24 @@ export class GetusercontentsService {
                 }
               },
               {
+                $set:
+                {
+                  liked:
+                  {
+                    $filter: {
+                      input: "$isLike",
+                      as: "nonok",
+                      cond: {
+                        $eq: ["$$nonok.postID", {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        },]
+                      }
+                    }
+                  },
+
+                }
+              },
+              {
                 $project: {
                   test1:
                   {
@@ -31898,25 +31962,8 @@ export class GetusercontentsService {
                     }
                   },
                   musik: "$musicNih",
-                  isLike:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$isLike.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then:
-                      {
-                        $arrayElemAt: ["$isLike.isLiked", "$index"]
-                      },
-                      else: false
-                    }
+                  isLike: {
+                    $arrayElemAt: ["$liked.isLiked", 0]
                   },
                   comment: "$ded",
                   interest: {
@@ -32252,7 +32299,7 @@ export class GetusercontentsService {
                 },
 
               },
-
+              { $match: { isApsara: true } }
             ],
 
             interest: [
@@ -32489,7 +32536,7 @@ export class GetusercontentsService {
                       if: {
                         $and: [
                           {
-                            $eq: ["$email", "ilhamilhamm64@gmail.com"]
+                            $eq: ["$email", email]
                           },
                           {
                             $gt: ["$createdAt", "$oldDate"]
@@ -32509,7 +32556,7 @@ export class GetusercontentsService {
                   {
                     $concatArrays: [
                       '$viewer',
-                      ["ilhamilhamm64@gmail.com"]
+                      [email]
                     ]
                   },
                 }
@@ -32520,7 +32567,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -32534,7 +32581,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -32573,6 +32620,11 @@ export class GetusercontentsService {
                   $or: [
                     {
                       $and: [
+                        {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                          }
+                        },
                         {
                           "reportedStatus": {
                             $ne: "OWNED"
@@ -32622,7 +32674,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -32631,7 +32683,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com"
+                                  $regex: email
                                 }
                               }
                             },
@@ -32643,7 +32695,7 @@ export class GetusercontentsService {
                             {
                               "boosted.boostViewer": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "isLast": true,
                                   "timeEnd": {
                                     $lte: {
@@ -32657,7 +32709,7 @@ export class GetusercontentsService {
                               $and: [
                                 {
                                   "boosted.boostViewer.email": {
-                                    $ne: "ilhamilhamm64@gmail.com"
+                                    $ne: email
                                   }
                                 },
 
@@ -32691,7 +32743,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -32700,7 +32752,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com",
+                                  $regex: email,
 
                                 }
                               }
@@ -32856,7 +32908,7 @@ export class GetusercontentsService {
                   as: "friend",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -32871,14 +32923,14 @@ export class GetusercontentsService {
                                 }
                               },
                               {
-                                "friendlist.email": "ilhamilhamm64@gmail.com"
+                                "friendlist.email": email
                               }
                             ]
                           },
                           {
                             $and: [
                               {
-                                "email": "ilhamilhamm64@gmail.com"
+                                "email": email
                               },
                               {
                                 $expr: {
@@ -32920,7 +32972,7 @@ export class GetusercontentsService {
                   as: "following",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -32933,7 +32985,7 @@ export class GetusercontentsService {
                             }
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com"
+                            "email": email
                           },
                           {
                             "eventType": "FOLLOWING",
@@ -32982,6 +33034,8 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
+
+
                         $expr: {
                           $in: ['$postID', '$$localID']
                         }
@@ -33068,7 +33122,7 @@ export class GetusercontentsService {
                   from: "userbasics",
                   as: "userInterest",
                   let: {
-                    localID: "ilhamilhamm64@gmail.com"
+                    localID: email
                   },
                   pipeline: [
                     {
@@ -33262,7 +33316,7 @@ export class GetusercontentsService {
                             "active": true
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com",
+                            "email": email,
 
                           },
 
@@ -33595,6 +33649,24 @@ export class GetusercontentsService {
                 }
               },
               {
+                $set:
+                {
+                  liked:
+                  {
+                    $filter: {
+                      input: "$isLike",
+                      as: "nonok",
+                      cond: {
+                        $eq: ["$$nonok.postID", {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        },]
+                      }
+                    }
+                  },
+
+                }
+              },
+              {
                 $project: {
                   test1:
                   {
@@ -33763,7 +33835,7 @@ export class GetusercontentsService {
                             $arrayElemAt: ["$all.email", "$index"]
                           }
                           ,
-                          "ilhamilhamm64@gmail.com"
+                          email
                         ]
                       },
                       then: 1,
@@ -33786,25 +33858,8 @@ export class GetusercontentsService {
                     }
                   },
                   musik: "$musicNih",
-                  isLike:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$isLike.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then:
-                      {
-                        $arrayElemAt: ["$isLike.isLiked", "$index"]
-                      },
-                      else: false
-                    }
+                  isLike: {
+                    $arrayElemAt: ["$liked.isLiked", 0]
                   },
                   comment: "$ded",
                   interest: {
@@ -34139,7 +34194,7 @@ export class GetusercontentsService {
                   userInterested: 1
                 },
               },
-
+              { $match: { isApsara: true } }
 
             ],
             interest: [
@@ -35480,6 +35535,24 @@ export class GetusercontentsService {
                 }
               },
               {
+                $set:
+                {
+                  liked:
+                  {
+                    $filter: {
+                      input: "$isLike",
+                      as: "nonok",
+                      cond: {
+                        $eq: ["$$nonok.postID", {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        },]
+                      }
+                    }
+                  },
+
+                }
+              },
+              {
                 $project: {
                   test1:
                   {
@@ -35671,25 +35744,8 @@ export class GetusercontentsService {
                     }
                   },
                   musik: "$musicNih",
-                  isLike:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$isLike.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then:
-                      {
-                        $arrayElemAt: ["$isLike.isLiked", "$index"]
-                      },
-                      else: false
-                    }
+                  isLike: {
+                    $arrayElemAt: ["$liked.isLiked", 0]
                   },
                   comment: "$ded",
                   interest: {
@@ -36171,7 +36227,7 @@ export class GetusercontentsService {
                       if: {
                         $and: [
                           {
-                            $eq: ["$email", "ilhamilhamm64@gmail.com"]
+                            $eq: ["$email", email]
                           },
                           {
                             $gt: ["$createdAt", "$oldDate"]
@@ -36191,7 +36247,7 @@ export class GetusercontentsService {
                   {
                     $concatArrays: [
                       '$viewer',
-                      ["ilhamilhamm64@gmail.com"]
+                      [email]
                     ]
                   },
                 }
@@ -36202,7 +36258,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -36216,7 +36272,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -36255,6 +36311,11 @@ export class GetusercontentsService {
                   $or: [
                     {
                       $and: [
+                        {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                          }
+                        },
                         {
                           "reportedStatus": {
                             $ne: "OWNED"
@@ -36304,7 +36365,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -36313,7 +36374,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com"
+                                  $regex: email
                                 }
                               }
                             },
@@ -36325,7 +36386,7 @@ export class GetusercontentsService {
                             {
                               "boosted.boostViewer": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "isLast": true,
                                   "timeEnd": {
                                     $lte: {
@@ -36339,7 +36400,7 @@ export class GetusercontentsService {
                               $and: [
                                 {
                                   "boosted.boostViewer.email": {
-                                    $ne: "ilhamilhamm64@gmail.com"
+                                    $ne: email
                                   }
                                 },
 
@@ -36373,7 +36434,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -36382,7 +36443,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com",
+                                  $regex: email,
 
                                 }
                               }
@@ -36538,7 +36599,7 @@ export class GetusercontentsService {
                   as: "friend",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -36553,14 +36614,14 @@ export class GetusercontentsService {
                                 }
                               },
                               {
-                                "friendlist.email": "ilhamilhamm64@gmail.com"
+                                "friendlist.email": email
                               }
                             ]
                           },
                           {
                             $and: [
                               {
-                                "email": "ilhamilhamm64@gmail.com"
+                                "email": email
                               },
                               {
                                 $expr: {
@@ -36602,7 +36663,7 @@ export class GetusercontentsService {
                   as: "following",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -36615,7 +36676,7 @@ export class GetusercontentsService {
                             }
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com"
+                            "email": email
                           },
                           {
                             "eventType": "FOLLOWING",
@@ -36664,6 +36725,8 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
+
+
                         $expr: {
                           $in: ['$postID', '$$localID']
                         }
@@ -36750,7 +36813,7 @@ export class GetusercontentsService {
                   from: "userbasics",
                   as: "userInterest",
                   let: {
-                    localID: "ilhamilhamm64@gmail.com"
+                    localID: email
                   },
                   pipeline: [
                     {
@@ -36944,7 +37007,7 @@ export class GetusercontentsService {
                             "active": true
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com",
+                            "email": email,
 
                           },
 
@@ -37277,6 +37340,24 @@ export class GetusercontentsService {
                 }
               },
               {
+                $set:
+                {
+                  liked:
+                  {
+                    $filter: {
+                      input: "$isLike",
+                      as: "nonok",
+                      cond: {
+                        $eq: ["$$nonok.postID", {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        },]
+                      }
+                    }
+                  },
+
+                }
+              },
+              {
                 $project: {
                   test1:
                   {
@@ -37445,7 +37526,7 @@ export class GetusercontentsService {
                             $arrayElemAt: ["$all.email", "$index"]
                           }
                           ,
-                          "ilhamilhamm64@gmail.com"
+                          email
                         ]
                       },
                       then: 1,
@@ -37468,25 +37549,8 @@ export class GetusercontentsService {
                     }
                   },
                   musik: "$musicNih",
-                  isLike:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$isLike.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then:
-                      {
-                        $arrayElemAt: ["$isLike.isLiked", "$index"]
-                      },
-                      else: false
-                    }
+                  isLike: {
+                    $arrayElemAt: ["$liked.isLiked", 0]
                   },
                   comment: "$ded",
                   interest: {
@@ -37821,7 +37885,7 @@ export class GetusercontentsService {
                   userInterested: 1
                 },
               },
-
+              { $match: { isApsara: true } }
 
             ],
             interest: [
@@ -39162,6 +39226,24 @@ export class GetusercontentsService {
                 }
               },
               {
+                $set:
+                {
+                  liked:
+                  {
+                    $filter: {
+                      input: "$isLike",
+                      as: "nonok",
+                      cond: {
+                        $eq: ["$$nonok.postID", {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        },]
+                      }
+                    }
+                  },
+
+                }
+              },
+              {
                 $project: {
                   test1:
                   {
@@ -39353,25 +39435,8 @@ export class GetusercontentsService {
                     }
                   },
                   musik: "$musicNih",
-                  isLike:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$isLike.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then:
-                      {
-                        $arrayElemAt: ["$isLike.isLiked", "$index"]
-                      },
-                      else: false
-                    }
+                  isLike: {
+                    $arrayElemAt: ["$liked.isLiked", 0]
                   },
                   comment: "$ded",
                   interest: {
@@ -39709,6 +39774,7 @@ export class GetusercontentsService {
               },
 
             ],
+
             video: [
               {
                 $match: {
@@ -39936,6 +40002,11 @@ export class GetusercontentsService {
                   $or: [
                     {
                       $and: [
+                        {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                          }
+                        },
                         {
                           "reportedStatus": {
                             $ne: "OWNED"
@@ -40208,7 +40279,6 @@ export class GetusercontentsService {
                         }
                       }
                     }
-
                   ]
                 },
 
@@ -40345,6 +40415,8 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
+
+
                         $expr: {
                           $in: ['$postID', '$$localID']
                         }
@@ -40358,7 +40430,7 @@ export class GetusercontentsService {
                         "mediaUri": 1,
                         "postID": 1,
                         "mediaEndpoint": {
-                          "$concat": ["/stream/", "$postID"]
+                          "$concat": ["/pict/", "$postID"]
                         },
                         "mediaThumbEndpoint": {
                           "$concat": ["/thumb/", "$postID"]
@@ -40957,6 +41029,24 @@ export class GetusercontentsService {
                 }
               },
               {
+                $set:
+                {
+                  liked:
+                  {
+                    $filter: {
+                      input: "$isLike",
+                      as: "nonok",
+                      cond: {
+                        $eq: ["$$nonok.postID", {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        },]
+                      }
+                    }
+                  },
+
+                }
+              },
+              {
                 $project: {
                   test1:
                   {
@@ -41148,25 +41238,8 @@ export class GetusercontentsService {
                     }
                   },
                   musik: "$musicNih",
-                  isLike:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$isLike.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then:
-                      {
-                        $arrayElemAt: ["$isLike.isLiked", "$index"]
-                      },
-                      else: false
-                    }
+                  isLike: {
+                    $arrayElemAt: ["$liked.isLiked", 0]
                   },
                   comment: "$ded",
                   interest: {
@@ -41502,7 +41575,7 @@ export class GetusercontentsService {
                 },
 
               },
-
+              { $match: { isApsara: true } }
             ],
 
             interest: [
@@ -41824,6 +41897,11 @@ export class GetusercontentsService {
                     {
                       $and: [
                         {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                          }
+                        },
+                        {
                           "reportedStatus": {
                             $ne: "OWNED"
                           }
@@ -42231,6 +42309,8 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
+
+
                         $expr: {
                           $in: ['$postID', '$$localID']
                         }
@@ -42244,7 +42324,7 @@ export class GetusercontentsService {
                         "mediaUri": 1,
                         "postID": 1,
                         "mediaEndpoint": {
-                          "$concat": ["/stream/", "$postID"]
+                          "$concat": ["/pict/", "$postID"]
                         },
                         "mediaThumbEndpoint": {
                           "$concat": ["/thumb/", "$postID"]
@@ -42843,6 +42923,24 @@ export class GetusercontentsService {
                 }
               },
               {
+                $set:
+                {
+                  liked:
+                  {
+                    $filter: {
+                      input: "$isLike",
+                      as: "nonok",
+                      cond: {
+                        $eq: ["$$nonok.postID", {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        },]
+                      }
+                    }
+                  },
+
+                }
+              },
+              {
                 $project: {
                   test1:
                   {
@@ -43034,25 +43132,8 @@ export class GetusercontentsService {
                     }
                   },
                   musik: "$musicNih",
-                  isLike:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$isLike.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then:
-                      {
-                        $arrayElemAt: ["$isLike.isLiked", "$index"]
-                      },
-                      else: false
-                    }
+                  isLike: {
+                    $arrayElemAt: ["$liked.isLiked", 0]
                   },
                   comment: "$ded",
                   interest: {
@@ -43388,7 +43469,7 @@ export class GetusercontentsService {
                 },
 
               },
-
+              { $match: { isApsara: true } }
             ],
             diary: [
               {
@@ -43533,7 +43614,7 @@ export class GetusercontentsService {
                       if: {
                         $and: [
                           {
-                            $eq: ["$email", "ilhamilhamm64@gmail.com"]
+                            $eq: ["$email", email]
                           },
                           {
                             $gt: ["$createdAt", "$oldDate"]
@@ -43553,7 +43634,7 @@ export class GetusercontentsService {
                   {
                     $concatArrays: [
                       '$viewer',
-                      ["ilhamilhamm64@gmail.com"]
+                      [email]
                     ]
                   },
                 }
@@ -43564,7 +43645,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -43578,7 +43659,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -43617,6 +43698,11 @@ export class GetusercontentsService {
                   $or: [
                     {
                       $and: [
+                        {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                          }
+                        },
                         {
                           "reportedStatus": {
                             $ne: "OWNED"
@@ -43666,7 +43752,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -43675,7 +43761,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com"
+                                  $regex: email
                                 }
                               }
                             },
@@ -43687,7 +43773,7 @@ export class GetusercontentsService {
                             {
                               "boosted.boostViewer": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "isLast": true,
                                   "timeEnd": {
                                     $lte: {
@@ -43701,7 +43787,7 @@ export class GetusercontentsService {
                               $and: [
                                 {
                                   "boosted.boostViewer.email": {
-                                    $ne: "ilhamilhamm64@gmail.com"
+                                    $ne: email
                                   }
                                 },
 
@@ -43735,7 +43821,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -43744,7 +43830,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com",
+                                  $regex: email,
 
                                 }
                               }
@@ -43900,7 +43986,7 @@ export class GetusercontentsService {
                   as: "friend",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -43915,14 +44001,14 @@ export class GetusercontentsService {
                                 }
                               },
                               {
-                                "friendlist.email": "ilhamilhamm64@gmail.com"
+                                "friendlist.email": email
                               }
                             ]
                           },
                           {
                             $and: [
                               {
-                                "email": "ilhamilhamm64@gmail.com"
+                                "email": email
                               },
                               {
                                 $expr: {
@@ -43964,7 +44050,7 @@ export class GetusercontentsService {
                   as: "following",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -43977,7 +44063,7 @@ export class GetusercontentsService {
                             }
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com"
+                            "email": email
                           },
                           {
                             "eventType": "FOLLOWING",
@@ -44026,6 +44112,8 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
+
+
                         $expr: {
                           $in: ['$postID', '$$localID']
                         }
@@ -44112,7 +44200,7 @@ export class GetusercontentsService {
                   from: "userbasics",
                   as: "userInterest",
                   let: {
-                    localID: "ilhamilhamm64@gmail.com"
+                    localID: email
                   },
                   pipeline: [
                     {
@@ -44306,7 +44394,7 @@ export class GetusercontentsService {
                             "active": true
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com",
+                            "email": email,
 
                           },
 
@@ -44639,6 +44727,24 @@ export class GetusercontentsService {
                 }
               },
               {
+                $set:
+                {
+                  liked:
+                  {
+                    $filter: {
+                      input: "$isLike",
+                      as: "nonok",
+                      cond: {
+                        $eq: ["$$nonok.postID", {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        },]
+                      }
+                    }
+                  },
+
+                }
+              },
+              {
                 $project: {
                   test1:
                   {
@@ -44807,7 +44913,7 @@ export class GetusercontentsService {
                             $arrayElemAt: ["$all.email", "$index"]
                           }
                           ,
-                          "ilhamilhamm64@gmail.com"
+                          email
                         ]
                       },
                       then: 1,
@@ -44830,25 +44936,8 @@ export class GetusercontentsService {
                     }
                   },
                   musik: "$musicNih",
-                  isLike:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$isLike.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then:
-                      {
-                        $arrayElemAt: ["$isLike.isLiked", "$index"]
-                      },
-                      else: false
-                    }
+                  isLike: {
+                    $arrayElemAt: ["$liked.isLiked", 0]
                   },
                   comment: "$ded",
                   interest: {
@@ -45183,7 +45272,7 @@ export class GetusercontentsService {
                   userInterested: 1
                 },
               },
-
+              { $match: { isApsara: true } }
 
             ],
             interest: [
@@ -45419,7 +45508,7 @@ export class GetusercontentsService {
                       if: {
                         $and: [
                           {
-                            $eq: ["$email", "kusnur9@gmail.com"]
+                            $eq: ["$email", email]
                           },
                           {
                             $gt: ["$createdAt", "$oldDate"]
@@ -45439,7 +45528,7 @@ export class GetusercontentsService {
                   {
                     $concatArrays: [
                       '$viewer',
-                      ["kusnur9@gmail.com"]
+                      [email]
                     ]
                   },
 
@@ -45451,7 +45540,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "kusnur9@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -45464,7 +45553,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "kusnur9@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -45552,7 +45641,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "kusnur9@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -45561,7 +45650,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "kusnur9@gmail.com"
+                                  $regex: email
                                 }
                               }
                             },
@@ -45573,7 +45662,7 @@ export class GetusercontentsService {
                             {
                               "boosted.boostViewer": {
                                 "$elemMatch": {
-                                  "email": "kusnur9@gmail.com",
+                                  "email": email,
                                   "isLast": true,
                                   "timeEnd": {
                                     $lte: {
@@ -45587,7 +45676,7 @@ export class GetusercontentsService {
                               $and: [
                                 {
                                   "boosted.boostViewer.email": {
-                                    $ne: "kusnur9@gmail.com"
+                                    $ne: email
                                   }
                                 },
 
@@ -45621,7 +45710,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "kusnur9@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -45630,7 +45719,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "kusnur9@gmail.com",
+                                  $regex: email,
 
                                 }
                               }
@@ -45786,7 +45875,7 @@ export class GetusercontentsService {
                   as: "friend",
                   let: {
                     localID: '$email',
-                    user: "kusnur9@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -45801,14 +45890,14 @@ export class GetusercontentsService {
                                 }
                               },
                               {
-                                "friendlist.email": "kusnur9@gmail.com"
+                                "friendlist.email": email
                               }
                             ]
                           },
                           {
                             $and: [
                               {
-                                "email": "kusnur9@gmail.com"
+                                "email": email
                               },
                               {
                                 $expr: {
@@ -45850,7 +45939,7 @@ export class GetusercontentsService {
                   as: "following",
                   let: {
                     localID: '$email',
-                    user: "kusnur9@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -45863,7 +45952,7 @@ export class GetusercontentsService {
                             }
                           },
                           {
-                            "email": "kusnur9@gmail.com"
+                            "email": email
                           },
                           {
                             "eventType": "FOLLOWING",
@@ -45998,7 +46087,7 @@ export class GetusercontentsService {
                   from: "userbasics",
                   as: "userInterest",
                   let: {
-                    localID: "kusnur9@gmail.com"
+                    localID: email
                   },
                   pipeline: [
                     {
@@ -46191,7 +46280,7 @@ export class GetusercontentsService {
                             "active": true
                           },
                           {
-                            "email": "kusnur9@gmail.com",
+                            "email": email,
 
                           },
 
@@ -46524,6 +46613,24 @@ export class GetusercontentsService {
                 }
               },
               {
+                $set:
+                {
+                  liked:
+                  {
+                    $filter: {
+                      input: "$isLike",
+                      as: "nonok",
+                      cond: {
+                        $eq: ["$$nonok.postID", {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        },]
+                      }
+                    }
+                  },
+
+                }
+              },
+              {
                 $project: {
                   test1:
                   {
@@ -46692,7 +46799,7 @@ export class GetusercontentsService {
                             $arrayElemAt: ["$all.email", "$index"]
                           }
                           ,
-                          "kusnur9@gmail.com"
+                          email
                         ]
                       },
                       then: 1,
@@ -46715,25 +46822,8 @@ export class GetusercontentsService {
                     }
                   },
                   musik: "$musicNih",
-                  isLike:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$isLike.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then:
-                      {
-                        $arrayElemAt: ["$isLike.isLiked", "$index"]
-                      },
-                      else: false
-                    }
+                  isLike: {
+                    $arrayElemAt: ["$liked.isLiked", 0]
                   },
                   comment: "$ded",
                   interest: {
@@ -47071,6 +47161,7 @@ export class GetusercontentsService {
               },
 
             ],
+
             video: [
               {
                 $match: {
@@ -47214,7 +47305,7 @@ export class GetusercontentsService {
                       if: {
                         $and: [
                           {
-                            $eq: ["$email", "kusnur9@gmail.com"]
+                            $eq: ["$email", email]
                           },
                           {
                             $gt: ["$createdAt", "$oldDate"]
@@ -47234,7 +47325,7 @@ export class GetusercontentsService {
                   {
                     $concatArrays: [
                       '$viewer',
-                      ["kusnur9@gmail.com"]
+                      [email]
                     ]
                   },
 
@@ -47246,7 +47337,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "kusnur9@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -47259,7 +47350,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "kusnur9@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -47298,6 +47389,11 @@ export class GetusercontentsService {
                   $or: [
                     {
                       $and: [
+                        {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                          }
+                        },
                         {
                           "reportedStatus": {
                             $ne: "OWNED"
@@ -47347,7 +47443,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "kusnur9@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -47356,7 +47452,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "kusnur9@gmail.com"
+                                  $regex: email
                                 }
                               }
                             },
@@ -47368,7 +47464,7 @@ export class GetusercontentsService {
                             {
                               "boosted.boostViewer": {
                                 "$elemMatch": {
-                                  "email": "kusnur9@gmail.com",
+                                  "email": email,
                                   "isLast": true,
                                   "timeEnd": {
                                     $lte: {
@@ -47382,7 +47478,7 @@ export class GetusercontentsService {
                               $and: [
                                 {
                                   "boosted.boostViewer.email": {
-                                    $ne: "kusnur9@gmail.com"
+                                    $ne: email
                                   }
                                 },
 
@@ -47416,7 +47512,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "kusnur9@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -47425,7 +47521,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "kusnur9@gmail.com",
+                                  $regex: email,
 
                                 }
                               }
@@ -47570,7 +47666,6 @@ export class GetusercontentsService {
                         }
                       }
                     }
-
                   ]
                 },
 
@@ -47581,7 +47676,7 @@ export class GetusercontentsService {
                   as: "friend",
                   let: {
                     localID: '$email',
-                    user: "kusnur9@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -47596,14 +47691,14 @@ export class GetusercontentsService {
                                 }
                               },
                               {
-                                "friendlist.email": "kusnur9@gmail.com"
+                                "friendlist.email": email
                               }
                             ]
                           },
                           {
                             $and: [
                               {
-                                "email": "kusnur9@gmail.com"
+                                "email": email
                               },
                               {
                                 $expr: {
@@ -47645,7 +47740,7 @@ export class GetusercontentsService {
                   as: "following",
                   let: {
                     localID: '$email',
-                    user: "kusnur9@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -47658,7 +47753,7 @@ export class GetusercontentsService {
                             }
                           },
                           {
-                            "email": "kusnur9@gmail.com"
+                            "email": email
                           },
                           {
                             "eventType": "FOLLOWING",
@@ -47707,6 +47802,8 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
+
+
                         $expr: {
                           $in: ['$postID', '$$localID']
                         }
@@ -47720,7 +47817,7 @@ export class GetusercontentsService {
                         "mediaUri": 1,
                         "postID": 1,
                         "mediaEndpoint": {
-                          "$concat": ["/stream/", "$postID"]
+                          "$concat": ["/pict/", "$postID"]
                         },
                         "mediaThumbEndpoint": {
                           "$concat": ["/thumb/", "$postID"]
@@ -47793,7 +47890,7 @@ export class GetusercontentsService {
                   from: "userbasics",
                   as: "userInterest",
                   let: {
-                    localID: "kusnur9@gmail.com"
+                    localID: email
                   },
                   pipeline: [
                     {
@@ -47986,7 +48083,7 @@ export class GetusercontentsService {
                             "active": true
                           },
                           {
-                            "email": "kusnur9@gmail.com",
+                            "email": email,
 
                           },
 
@@ -48319,6 +48416,24 @@ export class GetusercontentsService {
                 }
               },
               {
+                $set:
+                {
+                  liked:
+                  {
+                    $filter: {
+                      input: "$isLike",
+                      as: "nonok",
+                      cond: {
+                        $eq: ["$$nonok.postID", {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        },]
+                      }
+                    }
+                  },
+
+                }
+              },
+              {
                 $project: {
                   test1:
                   {
@@ -48487,7 +48602,7 @@ export class GetusercontentsService {
                             $arrayElemAt: ["$all.email", "$index"]
                           }
                           ,
-                          "kusnur9@gmail.com"
+                          email
                         ]
                       },
                       then: 1,
@@ -48510,25 +48625,8 @@ export class GetusercontentsService {
                     }
                   },
                   musik: "$musicNih",
-                  isLike:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$isLike.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then:
-                      {
-                        $arrayElemAt: ["$isLike.isLiked", "$index"]
-                      },
-                      else: false
-                    }
+                  isLike: {
+                    $arrayElemAt: ["$liked.isLiked", 0]
                   },
                   comment: "$ded",
                   interest: {
@@ -48864,7 +48962,7 @@ export class GetusercontentsService {
                 },
 
               },
-
+              { $match: { isApsara: true } }
             ],
             diary: [
               {
@@ -49009,7 +49107,7 @@ export class GetusercontentsService {
                       if: {
                         $and: [
                           {
-                            $eq: ["$email", "ilhamilhamm64@gmail.com"]
+                            $eq: ["$email", email]
                           },
                           {
                             $gt: ["$createdAt", "$oldDate"]
@@ -49029,7 +49127,7 @@ export class GetusercontentsService {
                   {
                     $concatArrays: [
                       '$viewer',
-                      ["ilhamilhamm64@gmail.com"]
+                      [email]
                     ]
                   },
                 }
@@ -49040,7 +49138,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -49054,7 +49152,7 @@ export class GetusercontentsService {
                     $filter: {
                       input: "$kancuts",
                       cond: {
-                        $eq: ["$$this", "ilhamilhamm64@gmail.com"]
+                        $eq: ["$$this", email]
                       }
                     }
                   },
@@ -49093,6 +49191,11 @@ export class GetusercontentsService {
                   $or: [
                     {
                       $and: [
+                        {
+                          $expr: {
+                            $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                          }
+                        },
                         {
                           "reportedStatus": {
                             $ne: "OWNED"
@@ -49142,7 +49245,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -49151,7 +49254,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com"
+                                  $regex: email
                                 }
                               }
                             },
@@ -49163,7 +49266,7 @@ export class GetusercontentsService {
                             {
                               "boosted.boostViewer": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "isLast": true,
                                   "timeEnd": {
                                     $lte: {
@@ -49177,7 +49280,7 @@ export class GetusercontentsService {
                               $and: [
                                 {
                                   "boosted.boostViewer.email": {
-                                    $ne: "ilhamilhamm64@gmail.com"
+                                    $ne: email
                                   }
                                 },
 
@@ -49211,7 +49314,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser": {
                                 "$elemMatch": {
-                                  "email": "ilhamilhamm64@gmail.com",
+                                  "email": email,
                                   "active": false,
 
                                 }
@@ -49220,7 +49323,7 @@ export class GetusercontentsService {
                             {
                               "reportedUser.email": {
                                 $not: {
-                                  $regex: "ilhamilhamm64@gmail.com",
+                                  $regex: email,
 
                                 }
                               }
@@ -49365,6 +49468,7 @@ export class GetusercontentsService {
                         }
                       }
                     }
+
                   ]
                 },
 
@@ -49375,7 +49479,7 @@ export class GetusercontentsService {
                   as: "friend",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -49390,14 +49494,14 @@ export class GetusercontentsService {
                                 }
                               },
                               {
-                                "friendlist.email": "ilhamilhamm64@gmail.com"
+                                "friendlist.email": email
                               }
                             ]
                           },
                           {
                             $and: [
                               {
-                                "email": "ilhamilhamm64@gmail.com"
+                                "email": email
                               },
                               {
                                 $expr: {
@@ -49439,7 +49543,7 @@ export class GetusercontentsService {
                   as: "following",
                   let: {
                     localID: '$email',
-                    user: "ilhamilhamm64@gmail.com"
+                    user: email
                   },
                   pipeline: [
                     {
@@ -49452,7 +49556,7 @@ export class GetusercontentsService {
                             }
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com"
+                            "email": email
                           },
                           {
                             "eventType": "FOLLOWING",
@@ -49501,6 +49605,8 @@ export class GetusercontentsService {
                     {
                       $match:
                       {
+
+
                         $expr: {
                           $in: ['$postID', '$$localID']
                         }
@@ -49587,7 +49693,7 @@ export class GetusercontentsService {
                   from: "userbasics",
                   as: "userInterest",
                   let: {
-                    localID: "ilhamilhamm64@gmail.com"
+                    localID: email
                   },
                   pipeline: [
                     {
@@ -49781,7 +49887,7 @@ export class GetusercontentsService {
                             "active": true
                           },
                           {
-                            "email": "ilhamilhamm64@gmail.com",
+                            "email": email,
 
                           },
 
@@ -49866,54 +49972,30 @@ export class GetusercontentsService {
               },
               {
                 $set: {
-                  ded: {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$comment.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then: [
-                        {
-                          $arrayElemAt: ["$comment", "$index"]
-                        }],
-                      else: []
-                    }
+                  indexComment:
+                  {
+                    $indexOfArray: ["$comment._id", {
+                      $arrayElemAt: ["$all.postID", "$index"]
+                    },]
                   },
-
                 }
               },
               {
                 $set: {
-                  testLogs: [
-                    {
-                      $cond: {
-                        if: {
-                          $eq: [
-                            {
-                              $arrayElemAt: ["$ded", "$index"]
-                            },
-                            null
-                          ]
-                        },
-                        then: [],
-                        else: {
-                          $arrayElemAt: ["$ded", "$index"]
-                        }
-                      }
-                    },
+                  ded:
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$indexComment", 0]
+                      },
+                      then:
+                      {
+                        $arrayElemAt: ["$comment.komentar", "$indexComment"]
+                      },
+                      else: []
+                    }
+                  },
 
-                  ]
-                }
-              },
-              {
-                $unwind: {
-                  path: "$testLogs"
                 }
               },
               {
@@ -50138,6 +50220,24 @@ export class GetusercontentsService {
                 }
               },
               {
+                $set:
+                {
+                  liked:
+                  {
+                    $filter: {
+                      input: "$isLike",
+                      as: "nonok",
+                      cond: {
+                        $eq: ["$$nonok.postID", {
+                          $arrayElemAt: ["$all.postID", "$index"]
+                        },]
+                      }
+                    }
+                  },
+
+                }
+              },
+              {
                 $project: {
                   test1:
                   {
@@ -50306,7 +50406,7 @@ export class GetusercontentsService {
                             $arrayElemAt: ["$all.email", "$index"]
                           }
                           ,
-                          "ilhamilhamm64@gmail.com"
+                          email
                         ]
                       },
                       then: 1,
@@ -50329,25 +50429,8 @@ export class GetusercontentsService {
                     }
                   },
                   musik: "$musicNih",
-                  isLike:
-                  {
-                    $cond: {
-                      if: {
-                        $eq: [
-                          {
-                            $arrayElemAt: ["$isLike.postID", "$index"]
-                          },
-                          {
-                            $arrayElemAt: ["$all.postID", "$index"]
-                          }
-                        ]
-                      },
-                      then:
-                      {
-                        $arrayElemAt: ["$isLike.isLiked", "$index"]
-                      },
-                      else: false
-                    }
+                  isLike: {
+                    $arrayElemAt: ["$liked.isLiked", 0]
                   },
                   comment: "$ded",
                   interest: {
@@ -50682,7 +50765,7 @@ export class GetusercontentsService {
                   userInterested: 1
                 },
               },
-
+              { $match: { isApsara: true } }
 
             ],
             interest: [

@@ -3532,7 +3532,7 @@ export class GetusercontentsController {
 
         }
         try {
-            arrvid = datasearch[0].vid;
+            arrvid = datasearch[0].video;
             lengvid = arrvid.length;
 
         } catch (e) {
@@ -3838,7 +3838,7 @@ export class GetusercontentsController {
 
         }
         try {
-            arrvid = datasearch[0].vid;
+            arrvid = datasearch[0].video;
             lengvid = arrvid.length;
 
         } catch (e) {
@@ -4790,6 +4790,7 @@ export class GetusercontentsController {
                                 }
 
                                 data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
 
 
 
@@ -4802,6 +4803,7 @@ export class GetusercontentsController {
                                 }
 
                                 data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
 
                             }
                         }
@@ -4955,10 +4957,9 @@ export class GetusercontentsController {
         var picts = [];
         var lengpict = null;
 
-
         try {
 
-            data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow));
+            data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow), email);
             lengpict = data.length;
 
         } catch (e) {
@@ -4999,6 +5000,7 @@ export class GetusercontentsController {
 
                     if (apsaraId !== undefined && apsaraThumbId !== undefined) {
                         tempdatapict.push(data[i].apsaraThumbId);
+                        tempdatapict.push(data[i].apsaraId);
 
                     }
                     else if (apsaraId !== undefined && apsaraThumbId === undefined) {
@@ -5018,16 +5020,19 @@ export class GetusercontentsController {
                     boostCount = data[i].boostCount;
                     var checkpictketemu = false;
                     uploadSource = data[i].uploadSource;
+                    var dataUpsaraThum = (data[i].apsaraThumbId != undefined);
+                    var dataUpsara = (data[i].apsaraId != undefined);
 
-
-                    if (uploadSource == "OSS") {
-                        data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
-
-                    } else {
-
+                    if (data[i].isApsara) {
                         for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
                             if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
+                                if (data[i].apsaraThumbId == data[i].apsaraId) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                                }
+                                if (!dataUpsara) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                                }
                                 // checkpictketemu = true;
                                 data[i].media =
                                 {
@@ -5040,16 +5045,24 @@ export class GetusercontentsController {
 
                             }
                             else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                                if (data[i].apsaraThumbId == data[i].apsaraId) {
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                }
+                                if (!dataUpsaraThum) {
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                }
                                 checkpictketemu = true;
                                 data[i].media =
                                 {
                                     "ImageInfo": [gettempresultpictapsara[j]]
                                 }
 
-                                data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
 
                             }
                         }
+                    } else {
+                        data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
                     }
 
 
@@ -5161,7 +5174,7 @@ export class GetusercontentsController {
     @Post('api/posts/getuserposts/byprofile')
     @UseInterceptors(FileInterceptor('postContent'))
     @UseGuards(JwtAuthGuard)
-    async contentbyprofile(@Body() body): Promise<any> {
+    async contentbyprofile(@Body() body, @Headers('x-auth-user') emailLogin: string): Promise<any> {
 
         var pageNumber = null;
         var pageRow = null;
@@ -5192,16 +5205,26 @@ export class GetusercontentsController {
         var picts = [];
         var lengpict = null;
 
-
         try {
 
-            data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow));
+            data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow), emailLogin);
             lengpict = data.length;
-
+            console.log("data", data);
         } catch (e) {
             data = null;
             lengpict = 0;
 
+        }
+
+
+        //CECK FOLLOWING
+        var getFollowing = false;
+        var ceck_data_FOLLOW = await this.contenteventsService.ceckData(String(emailLogin), "FOLLOWING", "ACCEPT", "", email, "", true);
+        if (await this.utilsService.ceckData(ceck_data_FOLLOW)) {
+            getFollowing = true;
+        }
+        if (data != null) {
+            data.forEach(v => { v.following = getFollowing; });
         }
 
         var tempdatapict = [];
@@ -5219,9 +5242,7 @@ export class GetusercontentsController {
             version = data[0].version;
             // console.log(tempdatapict);
             if (postType == "pict") {
-
                 for (let i = 0; i < lengpict; i++) {
-
                     uploadSource = data[i].uploadSource;
                     try {
                         apsaraId = data[i].apsaraId;
@@ -5236,6 +5257,7 @@ export class GetusercontentsController {
 
                     if (apsaraId !== undefined && apsaraThumbId !== undefined) {
                         tempdatapict.push(data[i].apsaraThumbId);
+                        tempdatapict.push(data[i].apsaraId);
 
                     }
                     else if (apsaraId !== undefined && apsaraThumbId === undefined) {
@@ -5255,16 +5277,23 @@ export class GetusercontentsController {
                     boostCount = data[i].boostCount;
                     var checkpictketemu = false;
                     uploadSource = data[i].uploadSource;
+                    var dataUpsaraThum = (data[i].apsaraThumbId != undefined);
+                    var dataUpsara = (data[i].apsaraId != undefined);
 
 
                     if (uploadSource == "OSS") {
                         data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
-
                     } else {
-
                         for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
+
                             if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
+                                if (data[i].apsaraThumbId == data[i].apsaraId) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                                }
+                                if (!dataUpsara) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                                }
                                 // checkpictketemu = true;
                                 data[i].media =
                                 {
@@ -5275,17 +5304,20 @@ export class GetusercontentsController {
 
 
 
-                            }
-                            else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                            } else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                                if (!dataUpsaraThum) {
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                }
                                 checkpictketemu = true;
                                 data[i].media =
                                 {
                                     "ImageInfo": [gettempresultpictapsara[j]]
                                 }
 
-                                data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
 
                             }
+
                         }
                     }
 
