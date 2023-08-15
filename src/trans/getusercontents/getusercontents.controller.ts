@@ -2877,7 +2877,7 @@ export class GetusercontentsController {
         var apsaraThumbId = null;
         var uploadSource = null;
         try {
-            datasearch = await this.postsService.finddatasearchcontenNew(keys.toLowerCase(), email, skip, limit, listpict, listvid, listdiary, listuser, listtag);
+            datasearch = await this.postsService.finddatasearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary, listuser, listtag);
             user = datasearch[0].user;
             tags = datasearch[0].tags;
 
@@ -4821,7 +4821,7 @@ export class GetusercontentsController {
                     var dataUpsaraThum = (data[i].apsaraThumbId != undefined);
                     var dataUpsara = (data[i].apsaraId != undefined);
 
-                    if (data[i].isApsara){
+                    if (data[i].isApsara) {
                         for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
                             if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
@@ -4859,7 +4859,7 @@ export class GetusercontentsController {
 
                             }
                         }
-                    }else{
+                    } else {
                         data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
                     }
 
