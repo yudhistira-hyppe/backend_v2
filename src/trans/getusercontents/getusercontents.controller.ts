@@ -4757,7 +4757,7 @@ export class GetusercontentsController {
 
         try {
 
-            data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow), email);
+            data = await this.postsService.landingpageMy2(email, postType, parseInt(pageNumber), parseInt(pageRow), email);
             lengpict = data.length;
 
         } catch (e) {
