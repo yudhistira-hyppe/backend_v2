@@ -7,11 +7,13 @@ import { Res, HttpStatus, Response } from '@nestjs/common';
 import { isEmpty } from 'rxjs';
 import { FriendListDto } from 'src/content/friend_list/dto/create-friend_list.dto';
 import { FriendListService } from 'src/content/friend_list/friend_list.service';
+import { LogapisService } from '../logapis/logapis.service';
 
 @Controller('api/userbasics')
 export class UserbasicsController {
   constructor(private readonly userbasicsService: UserbasicsService,
-    private readonly friendlistService: FriendListService) { }
+    private readonly friendlistService: FriendListService,
+    private readonly logapiSS: LogapisService) { }
 
   @Post()
   async create(@Body() CreateUserbasicDto: CreateUserbasicDto) {
@@ -187,7 +189,15 @@ export class UserbasicsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('newuser')
-  async countPostsesiactiv(@Req() request): Promise<Object> {
+  async countPostsesiactiv(@Req() request, @Headers() headers): Promise<Object> {
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    var fullurl = request.get("Host") + request.originalUrl;
+
     var datasesi = [];
 
     var startdate = null;
@@ -238,12 +248,25 @@ export class UserbasicsController {
 
     }
 
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return { response_code: 202, data, messages };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('demografis')
-  async countPostareas(@Req() request): Promise<any> {
+  async countPostareas(@Req() request, @Headers() headers): Promise<any> {
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    var fullurl = request.get("Host") + request.originalUrl;
+
     var data = [];
 
     var startdate = null;
@@ -308,6 +331,11 @@ export class UserbasicsController {
     }
 
     data[0].wilayah = dataSumwilayah;
+
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
     return { response_code: 202, data, messages };
   }

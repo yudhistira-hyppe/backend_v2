@@ -5,10 +5,12 @@ import { Uservouchers } from './schemas/uservouchers.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserbasicsService } from '../userbasics/userbasics.service';
 import { VouchersService } from '../vouchers/vouchers.service';
+import { LogapisService } from '../logapis/logapis.service';
+import { UtilsService } from 'src/utils/utils.service'; 
 
 @Controller('api/uservouchers')
 export class UservouchersController {
-    constructor(private readonly uservouchersService: UservouchersService, private readonly userbasicsService: UserbasicsService, private readonly vouchersService: VouchersService,) { }
+    constructor(private readonly uservouchersService: UservouchersService, private readonly userbasicsService: UserbasicsService, private readonly vouchersService: VouchersService, private readonly logapiSS: LogapisService, private readonly utilsService: UtilsService) { }
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -101,7 +103,12 @@ export class UservouchersController {
 
     @Post('byuser')
     @UseGuards(JwtAuthGuard)
-    async voucheruser(@Req() request: Request): Promise<any> {
+    async voucheruser(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var fullurl = headers.host + '/api/uservouchers/byuser';
 
         var email = null;
         var iduser = null;
@@ -115,6 +122,9 @@ export class UservouchersController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         key = request_json["key"];
@@ -133,6 +143,9 @@ export class UservouchersController {
 
             iduser = ubasic._id;
         } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("user not found");
         }
 
@@ -170,6 +183,9 @@ export class UservouchersController {
         } catch (e) {
             datatrue = null;
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
     }
