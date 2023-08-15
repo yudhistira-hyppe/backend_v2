@@ -2877,7 +2877,7 @@ export class GetusercontentsController {
         var apsaraThumbId = null;
         var uploadSource = null;
         try {
-            datasearch = await this.postsService.finddatasearchcontenNew(keys.toLowerCase(), email, skip, limit, listpict, listvid, listdiary, listuser, listtag);
+            datasearch = await this.postsService.finddatasearchcontenNew(keys, email, skip, limit, listpict, listvid, listdiary, listuser, listtag);
             user = datasearch[0].user;
             tags = datasearch[0].tags;
 
