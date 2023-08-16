@@ -34,10 +34,11 @@ import { TemplatesRepoModule } from '../infra/templates_repo/templates_repo.modu
 import { BanksModule } from '../trans/banks/banks.module';
 import { DeepArModule } from '../trans/deepar/deepar.module';
 import { UserscoresModule } from '../trans/userscores/userscores.module';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
 
 @Module({
   imports: [
-
+    LogapisModule,
     UserscoresModule,
     DeepArModule,
     BanksModule,
