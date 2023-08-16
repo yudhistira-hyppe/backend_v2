@@ -4798,7 +4798,7 @@ export class GetusercontentsController {
 
                     if (apsaraId !== undefined && apsaraThumbId !== undefined) {
                         tempdatapict.push(data[i].apsaraThumbId);
-                        tempdatapict.push(data[i].apsaraId);
+                        // tempdatapict.push(data[i].apsaraId);
 
                     }
                     else if (apsaraId !== undefined && apsaraThumbId === undefined) {
@@ -5033,7 +5033,7 @@ export class GetusercontentsController {
         var uploadSource = null;
         var apsaraId = null;
         var apsaraThumbId = null;
-
+        var isApsara = null;
         // console.log(lengpict);
         if (lengpict > 0) {
             var resultpictapsara = null;
@@ -5042,6 +5042,7 @@ export class GetusercontentsController {
             if (postType == "pict") {
                 for (let i = 0; i < lengpict; i++) {
                     uploadSource = data[i].uploadSource;
+                    isApsara = data[i].isApsara;
                     try {
                         apsaraId = data[i].apsaraId;
                     } catch (e) {
@@ -5055,7 +5056,7 @@ export class GetusercontentsController {
 
                     if (apsaraId !== undefined && apsaraThumbId !== undefined) {
                         tempdatapict.push(data[i].apsaraThumbId);
-                        tempdatapict.push(data[i].apsaraId);
+                        //tempdatapict.push(data[i].apsaraId);
 
                     }
                     else if (apsaraId !== undefined && apsaraThumbId === undefined) {
@@ -5079,7 +5080,7 @@ export class GetusercontentsController {
                     var dataUpsara = (data[i].apsaraId != undefined);
 
 
-                    if (uploadSource == "OSS") {
+                    if (isApsara !== undefined && isApsara == false) {
                         data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
                     } else {
                         for (var j = 0; j < gettempresultpictapsara.length; j++) {
@@ -5353,6 +5354,7 @@ export class GetusercontentsController {
         var uploadSource = null;
         var apsaraId = null;
         var apsaraThumbId = null;
+        var isApsara = null;
         var postType = null;
         // console.log(lengpict);
         if (lengpict > 0) {
@@ -5364,6 +5366,7 @@ export class GetusercontentsController {
                 for (let i = 0; i < lengpict; i++) {
 
                     uploadSource = data[i].uploadSource;
+                    isApsara = data[i].isApsara;
                     try {
                         apsaraId = data[i].apsaraId;
                     } catch (e) {
@@ -5398,7 +5401,7 @@ export class GetusercontentsController {
                     uploadSource = data[i].uploadSource;
 
 
-                    if (uploadSource == "OSS") {
+                    if (isApsara !== undefined && isApsara == false) {
                         data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
 
                     } else {
