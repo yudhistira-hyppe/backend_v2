@@ -4757,7 +4757,7 @@ export class GetusercontentsController {
 
         try {
 
-            data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow), email);
+            data = await this.postsService.landingpageMy2(email, postType, parseInt(pageNumber), parseInt(pageRow), email);
             lengpict = data.length;
 
         } catch (e) {
@@ -4801,7 +4801,7 @@ export class GetusercontentsController {
                         apsaraThumbId = "";
                     }
 
-                    if (apsaraId!=""){
+                    if (apsaraId != "") {
                         tempapsaraId.push(data[i].apsaraId);
                     }
 
@@ -4825,7 +4825,7 @@ export class GetusercontentsController {
                 }
                 tempapsaraId_result = await this.postContentService.getImageApsara(tempapsaraId);
                 tempapsaraThumbId_result = await this.postContentService.getImageApsara(tempapsaraThumbId);
-                
+
                 let gettempresultpictapsara_tempapsaraId = tempapsaraId_result.ImageInfo;
                 let gettempresultpictapsara_tempapsaraThumbId = tempapsaraThumbId_result.ImageInfo;
                 for (let i = 0; i < lengpict; i++) {
@@ -5039,7 +5039,7 @@ export class GetusercontentsController {
 
         try {
 
-            data = await this.postsService.landingpageMy(email, postType, parseInt(pageNumber), parseInt(pageRow), emailLogin);
+            data = await this.postsService.landingpageMy2(email, postType, parseInt(pageNumber), parseInt(pageRow), emailLogin);
             lengpict = data.length;
             console.log("data", data);
         } catch (e) {
@@ -5092,7 +5092,7 @@ export class GetusercontentsController {
                         apsaraThumbId = "";
                     }
 
-                    if (apsaraId!=""){
+                    if (apsaraId != "") {
                         tempapsaraId.push(data[i].apsaraId);
                     }
 
@@ -5133,7 +5133,7 @@ export class GetusercontentsController {
                                 }
                             }
                         }
-                    } 
+                    }
 
                     // if (uploadSource == "OSS") {
                     //     data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
