@@ -100661,7 +100661,9 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $in: ['$_id', '$$localID']
+                    $in: ['$_id', {
+                      $ifNull: ['$$localID', []]
+                    }]
                   }
                 }
               },
@@ -102486,7 +102488,9 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $in: ['$_id', '$$localID']
+                    $in: ['$_id', {
+                      $ifNull: ['$$localID', []]
+                    }]
                   }
                 }
               },
@@ -104300,7 +104304,9 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $in: ['$_id', '$$localID']
+                    $in: ['$_id', {
+                      $ifNull: ['$$localID', []]
+                    }]
                   }
                 }
               },
@@ -105796,13 +105802,15 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $in: ['$_id', '$$localID']
+                    $in: ['$_id', {
+                      $ifNull: ['$$localID', []]
+                    }]
                   }
                 }
               },
               {
                 $project: {
-
+                  "_id": 1,
                   "username": 1
                 }
               }
@@ -105873,7 +105881,7 @@ export class PostsService {
                   ]
                 },
                 then: [],
-                else: "$userTag.username"
+                else: "$userTag"
                 //
                 //  $arrayElemAt: ["$userTag.username", "$index"]
                 //}
@@ -107275,13 +107283,15 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $in: ['$_id', '$$localID']
+                    $in: ['$_id', {
+                      $ifNull: ['$$localID', []]
+                    }]
                   }
                 }
               },
               {
                 $project: {
-
+                  "_id": 1,
                   "username": 1
                 }
               }
@@ -107352,7 +107362,7 @@ export class PostsService {
                   ]
                 },
                 then: [],
-                else: "$userTag.username"
+                else: "$userTag"
                 //
                 //  $arrayElemAt: ["$userTag.username", "$index"]
                 //}
@@ -108754,13 +108764,15 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $in: ['$_id', '$$localID']
+                    $in: ['$_id', {
+                      $ifNull: ['$$localID', []]
+                    }]
                   }
                 }
               },
               {
                 $project: {
-
+                  "_id": 1,
                   "username": 1
                 }
               }
@@ -108831,7 +108843,7 @@ export class PostsService {
                   ]
                 },
                 then: [],
-                else: "$userTag.username"
+                else: "$userTag"
                 //
                 //  $arrayElemAt: ["$userTag.username", "$index"]
                 //}
@@ -110271,7 +110283,9 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $in: ['$_id', '$$localID']
+                    $in: ['$_id', {
+                      $ifNull: ['$$localID', []]
+                    }]
                   }
                 }
               },
@@ -111788,7 +111802,9 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $in: ['$_id', '$$localID']
+                    $in: ['$_id', {
+                      $ifNull: ['$$localID', []]
+                    }]
                   }
                 }
               },
@@ -113297,7 +113313,9 @@ export class PostsService {
                 $match:
                 {
                   $expr: {
-                    $in: ['$_id', '$$localID']
+                    $in: ['$_id', {
+                      $ifNull: ['$$localID', []]
+                    }]
                   }
                 }
               },
