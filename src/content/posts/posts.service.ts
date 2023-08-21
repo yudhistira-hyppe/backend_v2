@@ -114053,12 +114053,12 @@ export class PostsService {
       }
       pipeline.push(
 
-        {
-          $skip: ((skip - 1) * limit)
-        },
-        {
-          $limit: limit
-        },
+        // {
+        //   $skip: ((skip - 1) * limit)
+        // },
+        // {
+        //   $limit: limit
+        // },
         {
           $group: {
             _id: "$postType",
