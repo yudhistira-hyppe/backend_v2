@@ -114603,6 +114603,64 @@ export class PostsService {
         },
         {
           "$lookup": {
+            from: "contentevents",
+            as: "isView",
+            let: {
+              picts: '$postID',
+
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $in: ['$postID', '$$picts']
+                      }
+                    },
+                    {
+                      "eventType": "VIEW"
+                    },
+                    {
+                      "email": emaillogin,
+
+                    },
+
+                  ]
+                },
+
+              },
+              {
+                $set: {
+                  kancut: {
+                    $ifNull: ["email", "kosong"]
+                  }
+                }
+              },
+              {
+                $project: {
+                  "email": 1,
+                  "postID": 1,
+                  isViewed:
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$kancut", "kosong"]
+                      },
+                      then: false,
+                      else: true
+                    }
+                  },
+
+                }
+              }
+            ],
+
+          }
+        },
+        {
+          "$lookup": {
             from: "disquslogs",
             as: "countLogs",
             let: {
@@ -114947,6 +115005,24 @@ export class PostsService {
           }
         },
         {
+          $set:
+          {
+            viewed:
+            {
+              $filter: {
+                input: "$isView",
+                as: "nonok",
+                cond: {
+                  $eq: ["$$nonok.postID", {
+                    $arrayElemAt: ["$all.postID", "$index"]
+                  },]
+                }
+              }
+            },
+
+          }
+        },
+        {
           $project: {
             test1:
             {
@@ -115133,6 +115209,9 @@ export class PostsService {
             musik: "$musicNih",
             isLike: {
               $arrayElemAt: ["$liked.isLiked", 0]
+            },
+            isView: {
+              $arrayElemAt: ["$viewed.isViewed", 0]
             },
             comment:
             {
@@ -115372,6 +115451,9 @@ export class PostsService {
             music: "$musik",
             isLiked: {
               $ifNull: ["$isLike", false]
+            },
+            isViewed: {
+              $ifNull: ["$isView", false]
             },
             comment:
             {
