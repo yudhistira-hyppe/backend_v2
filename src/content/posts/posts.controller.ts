@@ -1208,6 +1208,10 @@ export class PostsController {
           await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
           //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
         return data;
       } else {
         var datenow = new Date(Date.now());
@@ -1215,6 +1219,9 @@ export class PostsController {
         endDatetime = datapostchallenge.endDatetime;
 
         if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime) && saleAmount > 0) {
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, content is participating in the challenge',
           );
@@ -1519,6 +1526,10 @@ export class PostsController {
             await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
             //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
           }
+
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
           return data;
         }
       }
