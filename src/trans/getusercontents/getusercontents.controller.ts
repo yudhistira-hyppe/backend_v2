@@ -4845,8 +4845,16 @@ export class GetusercontentsController {
                     // }
                     mediaType = data[i].mediaType;
 
+
                     if (data[i].isApsara == true) {
                         tempdatapict.push(data[i].apsaraId);
+                    } else {
+                        if (mediaType == "image" || mediaType == "images") {
+                            data[i].mediaEndpoint = "/pict/" + data[i].postID;
+                        } else {
+                            data[i].mediaEndpoint = "/stream/" + data[i].postID;
+
+                        }
                     }
                 }
 
@@ -5025,6 +5033,7 @@ export class GetusercontentsController {
         var apsaraId = null;
         var apsaraThumbId = null;
         var mediaType = null;
+        var postID = null;
         var gettempresultpictapsara = null;
         // console.log(lengpict);
         if (lengpict > 0) {
@@ -5154,6 +5163,13 @@ export class GetusercontentsController {
 
                     if (data[i].isApsara == true) {
                         tempdatapict.push(data[i].apsaraId);
+                    } else {
+                        if (mediaType == "image" || mediaType == "images") {
+                            data[i].mediaEndpoint = "/pict/" + data[i].postID;
+                        } else {
+                            data[i].mediaEndpoint = "/stream/" + data[i].postID;
+
+                        }
                     }
                 }
 
