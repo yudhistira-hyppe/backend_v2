@@ -5022,15 +5022,20 @@ export class GetusercontentsController {
         var apsaraId = null;
         var apsaraThumbId = null;
         var isApsara = null;
+        var apsaraId = null;
+        var apsaraThumbId = null;
+        var mediaType = null;
+        var gettempresultpictapsara = null;
         // console.log(lengpict);
         if (lengpict > 0) {
             var resultpictapsara = null;
             version = data[0].version;
             // console.log(tempdatapict);
             if (postType == "pict") {
+
                 for (let i = 0; i < lengpict; i++) {
+
                     uploadSource = data[i].uploadSource;
-                    isApsara = data[i].isApsara;
                     try {
                         apsaraId = data[i].apsaraId;
                     } catch (e) {
@@ -5044,7 +5049,7 @@ export class GetusercontentsController {
 
                     if (apsaraId !== undefined && apsaraThumbId !== undefined) {
                         tempdatapict.push(data[i].apsaraThumbId);
-                        //tempdatapict.push(data[i].apsaraId);
+                        // tempdatapict.push(data[i].apsaraId);
 
                     }
                     else if (apsaraId !== undefined && apsaraThumbId === undefined) {
@@ -5067,12 +5072,8 @@ export class GetusercontentsController {
                     var dataUpsaraThum = (data[i].apsaraThumbId != undefined);
                     var dataUpsara = (data[i].apsaraId != undefined);
 
-
-                    if (isApsara !== undefined && isApsara == false) {
-                        data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
-                    } else {
+                    if (data[i].isApsara) {
                         for (var j = 0; j < gettempresultpictapsara.length; j++) {
-
 
                             if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
                                 if (data[i].apsaraThumbId == data[i].apsaraId) {
@@ -5091,7 +5092,11 @@ export class GetusercontentsController {
 
 
 
-                            } else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                            }
+                            else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                                if (data[i].apsaraThumbId == data[i].apsaraId) {
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                }
                                 if (!dataUpsaraThum) {
                                     data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
                                 }
@@ -5104,8 +5109,9 @@ export class GetusercontentsController {
                                 data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
 
                             }
-
                         }
+                    } else {
+                        data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
                     }
 
 
@@ -5144,27 +5150,73 @@ export class GetusercontentsController {
                     // if (postType === "diary") {
                     //     data[i].saleAmount = 0;
                     // }
+                    mediaType = data[i].mediaType;
 
                     if (data[i].isApsara == true) {
                         tempdatapict.push(data[i].apsaraId);
                     }
                 }
-                resultpictapsara = await this.postContentService.getVideoApsara(tempdatapict);
-                let gettempresultpictapsara = resultpictapsara.VideoList;
+
+                if (mediaType == "image" || mediaType == "images") {
+                    resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                    gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+                } else {
+                    resultpictapsara = await this.postContentService.getVideoApsara(tempdatapict);
+                    gettempresultpictapsara = resultpictapsara.VideoList;
+                }
+
                 for (let i = 0; i < lengpict; i++) {
                     emailreceiver = data[i].email;
                     boostCount = data[i].boostCount;
                     boosted = data[i].boosted;
                     var checkpictketemu = false;
                     for (var j = 0; j < gettempresultpictapsara.length; j++) {
-                        if (gettempresultpictapsara[j].VideoId == data[i].apsaraId) {
-                            checkpictketemu = true;
-                            data[i].media =
-                            {
-                                "VideoList": [gettempresultpictapsara[j]]
-                            }
+                        if (mediaType == "image" || mediaType == "images") {
+                            if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
+                                if (data[i].apsaraThumbId == data[i].apsaraId) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                                }
+                                if (!dataUpsara) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                                }
+                                // checkpictketemu = true;
+                                data[i].media =
+                                {
+                                    "ImageInfo": [gettempresultpictapsara[j]]
+                                }
 
-                            data[i].mediaThumbEndpoint = gettempresultpictapsara[j].CoverURL;
+                                data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
+                            }
+                            else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                                if (data[i].apsaraThumbId == data[i].apsaraId) {
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                }
+                                if (!dataUpsaraThum) {
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                }
+                                checkpictketemu = true;
+                                data[i].media =
+                                {
+                                    "ImageInfo": [gettempresultpictapsara[j]]
+                                }
+
+                                data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+
+                            }
+                        } else {
+                            if (gettempresultpictapsara[j].VideoId == data[i].apsaraId) {
+                                checkpictketemu = true;
+                                data[i].media =
+                                {
+                                    "VideoList": [gettempresultpictapsara[j]]
+                                }
+
+                                data[i].mediaThumbEndpoint = gettempresultpictapsara[j].CoverURL;
+                            }
                         }
                     }
 
