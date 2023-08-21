@@ -109378,11 +109378,11 @@ export class PostsService {
                 {
                   "postType": "pict"
                 },
-                {
-                  $expr: {
-                    $gt: ["$boosted.boostSession.end", "$testDate",]
-                  }
-                },
+                // {
+                //   $expr: {
+                //     $gt: ["$boosted.boostSession.end", "$testDate",]
+                //   }
+                // },
                 {
                   email: email
                 },
@@ -109437,11 +109437,11 @@ export class PostsService {
                 {
                   "postType": "pict"
                 },
-                {
-                  $expr: {
-                    $gt: ["$boosted.boostSession.end", "$testDate",]
-                  }
-                },
+                // {
+                //   $expr: {
+                //     $gt: ["$boosted.boostSession.end", "$testDate",]
+                //   }
+                // },
                 {
                   email: email
                 },
@@ -110931,11 +110931,11 @@ export class PostsService {
                 {
                   "postType": "vid"
                 },
-                {
-                  $expr: {
-                    $gt: ["$boosted.boostSession.end", "$testDate",]
-                  }
-                },
+                // {
+                //   $expr: {
+                //     $gt: ["$boosted.boostSession.end", "$testDate",]
+                //   }
+                // },
                 {
                   email: email
                 },
@@ -110991,11 +110991,11 @@ export class PostsService {
                 {
                   "postType": "vid"
                 },
-                {
-                  $expr: {
-                    $gt: ["$boosted.boostSession.end", "$testDate",]
-                  }
-                },
+                // {
+                //   $expr: {
+                //     $gt: ["$boosted.boostSession.end", "$testDate",]
+                //   }
+                // },
                 {
                   email: email
                 },
@@ -112488,11 +112488,11 @@ export class PostsService {
                 {
                   "postType": "diary"
                 },
-                {
-                  $expr: {
-                    $gt: ["$boosted.boostSession.end", "$testDate",]
-                  }
-                },
+                // {
+                //   $expr: {
+                //     $gt: ["$boosted.boostSession.end", "$testDate",]
+                //   }
+                // },
                 {
                   email: email
                 },
@@ -112547,11 +112547,11 @@ export class PostsService {
                 {
                   "postType": "diary"
                 },
-                {
-                  $expr: {
-                    $gt: ["$boosted.boostSession.end", "$testDate",]
-                  }
-                },
+                // {
+                //   $expr: {
+                //     $gt: ["$boosted.boostSession.end", "$testDate",]
+                //   }
+                // },
                 {
                   email: email
                 },
