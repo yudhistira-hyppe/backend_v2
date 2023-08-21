@@ -109391,7 +109391,27 @@ export class PostsService {
                     $ne: "OWNED"
                   }
                 },
+                {
+                  $or: [
+                    {
+                      "reportedUser": {
+                        "$elemMatch": {
+                          "email": emaillogin,
+                          "active": false,
 
+                        }
+                      }
+                    },
+                    {
+                      "reportedUser.email": {
+                        $not: {
+                          $regex: emaillogin
+                        }
+                      }
+                    },
+
+                  ]
+                },
 
 
               ]
@@ -109425,7 +109445,27 @@ export class PostsService {
                 {
                   email: email
                 },
+                {
+                  $or: [
+                    {
+                      "reportedUser": {
+                        "$elemMatch": {
+                          "email": emaillogin,
+                          "active": false,
 
+                        }
+                      }
+                    },
+                    {
+                      "reportedUser.email": {
+                        $not: {
+                          $regex: emaillogin
+                        }
+                      }
+                    },
+
+                  ]
+                },
               ]
             }
           },);
@@ -110904,6 +110944,27 @@ export class PostsService {
                     $ne: "OWNED"
                   }
                 },
+                {
+                  $or: [
+                    {
+                      "reportedUser": {
+                        "$elemMatch": {
+                          "email": emaillogin,
+                          "active": false,
+
+                        }
+                      }
+                    },
+                    {
+                      "reportedUser.email": {
+                        $not: {
+                          $regex: emaillogin
+                        }
+                      }
+                    },
+
+                  ]
+                },
               ]
             }
           },
@@ -110938,7 +110999,27 @@ export class PostsService {
                 {
                   email: email
                 },
+                {
+                  $or: [
+                    {
+                      "reportedUser": {
+                        "$elemMatch": {
+                          "email": emaillogin,
+                          "active": false,
 
+                        }
+                      }
+                    },
+                    {
+                      "reportedUser.email": {
+                        $not: {
+                          $regex: emaillogin
+                        }
+                      }
+                    },
+
+                  ]
+                },
               ]
             }
           },
@@ -112420,6 +112501,27 @@ export class PostsService {
                     $ne: "OWNED"
                   }
                 },
+                {
+                  $or: [
+                    {
+                      "reportedUser": {
+                        "$elemMatch": {
+                          "email": emaillogin,
+                          "active": false,
+
+                        }
+                      }
+                    },
+                    {
+                      "reportedUser.email": {
+                        $not: {
+                          $regex: emaillogin
+                        }
+                      }
+                    },
+
+                  ]
+                },
               ]
             }
           },);
@@ -112453,7 +112555,27 @@ export class PostsService {
                 {
                   email: email
                 },
+                {
+                  $or: [
+                    {
+                      "reportedUser": {
+                        "$elemMatch": {
+                          "email": emaillogin,
+                          "active": false,
 
+                        }
+                      }
+                    },
+                    {
+                      "reportedUser.email": {
+                        $not: {
+                          $regex: emaillogin
+                        }
+                      }
+                    },
+
+                  ]
+                },
               ]
             }
           },);
