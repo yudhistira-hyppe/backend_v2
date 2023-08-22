@@ -919,5 +919,105 @@ export class MediaproofpictsService {
 
   }
 
+  async listkycsummary2(startdate: string, enddate: string) {
+    var pipeline = [];
+    
+    var firstmatch = [];
+    firstmatch.push(
+      {
+        status: {
+          $ne: null
+        }
+      },
+      {
+
+        status: {
+          $ne: ""
+        }
+      },
+    );
+
+    if(startdate != null && enddate != null)
+    {
+      firstmatch.push(
+        { 
+          createdAt: 
+          { 
+            "$gte": startdate 
+          } 
+        },
+        { 
+          createdAt: 
+          { 
+            "$lte": enddate 
+          } 
+        }
+      );
+    }
+
+    pipeline.push(
+      {
+        "$project":
+        {
+          status: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [
+                      "$status",
+                      "IN_PROGGRESS"
+                    ]
+                  },
+                  then: "BARU"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$status",
+                      "FAILED"
+                    ]
+                  },
+                  then: "DITOLAK"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$status",
+                      "FINISH"
+                    ]
+                  },
+                  then: "BYSYSTEM"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$status",
+                      "DISETUJUI"
+                    ]
+                  },
+                  then: "DISETUJUI"
+                },
+              ],
+              default: ""
+            }
+          },
+        }
+      },
+      {
+        $group: {
+          _id: '$status',
+          myCount: {
+            $sum: 1
+          },
+
+        }
+      },
+    );
+
+    var query = await this.MediaproofpictsModel.aggregate(pipeline);
+    return query;
+
+  }
 
 }

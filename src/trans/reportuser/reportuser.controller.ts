@@ -2155,7 +2155,7 @@ export class ReportuserController {
         var lengappealbank = 0;
 
         try {
-
+            
             dataappealbank = await this.userbankaccountsService.countAppealakunbank(startdate, enddate);
             lengappealbank = dataappealbank.length;
 
@@ -2230,7 +2230,7 @@ export class ReportuserController {
 
 
         try {
-
+            
             datacontentreport = await this.postsService.countReportStatus(startdate, enddate);
             reportContent = datacontentreport[0].report;
             appealContent = datacontentreport[0].appeal;
@@ -2491,7 +2491,7 @@ export class ReportuserController {
 
 
         try {
-
+            
             dataadsreport = await this.adsService.countReportStatus(startdate, enddate);
             reportAds = dataadsreport[0].report;
             appealAds = dataadsreport[0].appeal;
@@ -2754,7 +2754,7 @@ export class ReportuserController {
         var sumusertiket = null;
 
         try {
-
+            
             datauserticket = await this.userticketsService.countUserticketStatus(startdate, enddate);
             lengusertiket = datauserticket.length;
 
@@ -2829,8 +2829,9 @@ export class ReportuserController {
         };
 
         try {
-
-            datakyc = await this.mediaproofpictsService.listkycsummary(startdate, enddate);
+            
+            // datakyc = await this.mediaproofpictsService.listkycsummary(startdate, enddate);
+            datakyc = await this.mediaproofpictsService.listkycsummary2(startdate, enddate);
             lengkyc = datakyc.length;
 
         } catch (e) {
