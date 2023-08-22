@@ -2830,7 +2830,8 @@ export class ReportuserController {
 
         try {
 
-            datakyc = await this.mediaproofpictsService.listkycsummary(startdate, enddate);
+            //datakyc = await this.mediaproofpictsService.listkycsummary(startdate, enddate);
+            datakyc = await this.mediaproofpictsService.listkycsummary2(startdate, enddate);
             lengkyc = datakyc.length;
 
         } catch (e) {
