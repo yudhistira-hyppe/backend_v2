@@ -957,6 +957,12 @@ export class MediaproofpictsService {
 
     pipeline.push(
       {
+        "$match":
+        {
+          "$and":firstmatch
+        }
+      },
+      {
         "$project":
         {
           status: {
@@ -1019,5 +1025,5 @@ export class MediaproofpictsService {
     return query;
 
   }
-  
+
 }
