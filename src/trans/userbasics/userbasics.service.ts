@@ -6996,4 +6996,320 @@ export class UserbasicsService {
     ]);
     return query[0];
   }
+
+  //async listkyc(keys: string, status: any[], startdate: string, enddate: string, descending: boolean, page: number, limit: number)
+  async listkycsummary2(startdate: string, enddate: string, jenisquery: string, keys: string, status:any[], descending: boolean, page: number, limit: number) 
+  {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+
+    var pipeline = [];
+    var firstmatch = [];
+    var order = null;
+
+    firstmatch.push(
+      {
+        "$expr":
+        {
+            "$eq":
+            [
+                "$_id", "$$fk_id"
+            ]
+        }
+      },
+      {
+        status: {
+          $ne: null
+        }
+      },
+      {
+
+        status: {
+          $ne: ""
+        }
+      },
+    );
+
+    if (startdate != null && startdate !== undefined) 
+    {
+      firstmatch.push(
+        { 
+          createdAt: 
+          { 
+            "$gte": startdate 
+          } 
+        } 
+      );
+    }
+
+    if (enddate != null && enddate !== undefined) 
+    {
+      firstmatch.push(
+        { 
+          createdAt: 
+          { 
+            "$lte": dateend 
+          } 
+        } 
+      );
+    }
+
+    pipeline.push(
+      {
+          "$match":
+          {
+              proofPict:
+              {
+                  "$exists":true
+              }
+          }
+      },
+      {
+          "$project":
+          {
+              _id:0,
+              userId:"$_id",
+              proofPict:"$proofPict.$id",
+              email:1,
+              profilePict:"$profilePict.$id"
+          }
+      },
+      {
+          "$lookup":
+          {
+              from:"mediaproofpicts",
+              as:"proof_data",
+              let:
+              {
+                  fk_id:"$proofPict"
+              },
+              pipeline:
+              [
+                  {
+                      "$match":
+                      {
+                          "$and":firstmatch
+                      }
+                  }
+              ]
+          }
+      },
+      {
+          "$unwind":
+          {
+              path:"$proof_data"
+          }
+      },
+      {
+          "$lookup": 
+          {
+              "from": "userauths",
+              "localField": "email",
+              "foreignField": "email",
+              "as": "userAuth_data"
+          }
+      },
+      {
+          "$lookup": {
+              "from": "mediaprofilepicts",
+              "localField": "profilePict",
+              "foreignField": "_id",
+              "as": "profilePict_data"
+          }
+      },
+      {
+          "$project":
+          {
+              _id:"$proof_data._id",
+              createdAt:"$proof_data.createdAt",
+              idcardnumber:"$proof_data.idcardnumber",
+              kycHandle:"$proof_data.kycHandle",
+              email:1,
+              userId:1,
+              status:"$proof_data.status",
+              jumlahPermohonan: "1",
+              tahapan: "KTP",
+              username:
+              {
+                  "$arrayElemAt":
+                  [
+                      "$userAuth_data.username", 0
+                  ]
+              },
+              avatar:
+              {
+                  "$arrayElemAt":
+                  [
+                      "$profilePict_data", 0
+                  ]
+              }
+          },
+      },
+      {
+          "$addFields": 
+          {
+              "concat": "/profilepict",
+              "pict": {
+                  "$replaceOne": {
+                      "input": "$avatar.mediaUri",
+                      "find": "_0001.jpeg",
+                      "replacement": ""
+                  }
+              }
+          }
+      },
+      {
+          "$project": 
+          {
+              email: 1,
+              username: 1,
+              createdAt: 1,
+              status: 
+              {
+                  "$switch": {
+                      "branches": [
+                          {
+                              "case": {
+                                  "$eq": [
+                                      "$status",
+                                      "IN_PROGGRESS"
+                                  ]
+                              },
+                              "then": "BARU"
+                          },
+                          {
+                              "case": {
+                                  "$eq": [
+                                      "$status",
+                                      "FAILED"
+                                  ]
+                              },
+                              "then": "DITOLAK"
+                          },
+                          {
+                              "case": {
+                                  "$eq": [
+                                      "$status",
+                                      "FINISH"
+                                  ]
+                              },
+                              "then": "BYSYSTEM"
+                          },
+                          {
+                              "case": {
+                                  "$eq": [
+                                      "$status",
+                                      "DISETUJUI"
+                                  ]
+                              },
+                              "then": "DISETUJUI"
+                          }
+                      ],
+                      "default": ""
+                  }
+              },
+              idcardnumber: 1,
+              jumlahPermohonan: 1,
+              tahapan: 1,
+              kycHandle: 1,
+              avatar: 
+              {
+                  mediaBasePath: "$avatar.mediaBasePath",
+                  mediaUri: "$avatar.mediaUri",
+                  mediaType: "$avatar.mediaType",
+                  mediaEndpoint: 
+                  {
+                      "$concat": [
+                          "$concat",
+                          "/",
+                          "$pict"
+                      ]
+                  }
+              }
+          }
+      },
+    );
+
+    if(jenisquery == 'summary')
+    {
+      pipeline.push(
+        {
+          "$group":
+          {
+            _id:"$status",
+            myCount:
+            {
+                $sum:1
+            },
+          }
+        }
+      );
+    }
+    else
+    {
+      if(keys != null && keys != undefined)
+      {
+        pipeline.push({
+          $match: {
+  
+            username: {
+              $regex: keys, $options: 'i'
+            },
+          }
+        });
+      }
+
+      if (status != null && status !== undefined) 
+      {
+        pipeline.push(
+          {
+            $match: {
+              $or: [
+                {
+                  status: {
+                    $in: status
+                  }
+                },
+  
+              ]
+            }
+          }
+        );
+      }
+
+      if (descending === true) 
+      {
+        order = -1;
+      } else {
+        order = 1;
+      }
+
+      pipeline.push(
+        {
+          $sort: {
+            createdAt: order
+          },
+        }
+      );
+
+      if (page > 0) 
+      {
+        pipeline.push({ $skip: (page * limit) });
+      }
+
+      if (limit > 0) 
+      {
+        pipeline.push({ $limit: limit });
+      }
+    }
+
+    var query = await this.userbasicModel.aggregate(pipeline);
+
+    return query;
+  }
 }

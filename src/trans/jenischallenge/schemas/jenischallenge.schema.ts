@@ -12,6 +12,9 @@ export class jenisChallenge {
 
     @Prop()
     description: String
+
+    @Prop()
+    isActive: Boolean
 }
 
 export const jenisChallengeSchema = SchemaFactory.createForClass(jenisChallenge);
