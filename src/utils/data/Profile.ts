@@ -59,6 +59,7 @@ export class ProfileDTO {
     loginSource: String;
     devicetype: String;
     urluserBadge: any[];
+    tutor: any[];
 }
 
 export class LocationDTO {

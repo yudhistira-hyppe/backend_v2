@@ -7,7 +7,7 @@ import { TemplatesModule } from '../infra/templates/templates.module';
 import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { UtilsController } from './utils.controller';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { InterestsRepoModule } from '../infra/interests_repo/interests_repo.module';
 import { AreasModule } from '../infra/areas/areas.module';
@@ -34,6 +34,8 @@ import { TemplatesRepoModule } from '../infra/templates_repo/templates_repo.modu
 import { BanksModule } from '../trans/banks/banks.module';
 import { DeepArModule } from '../trans/deepar/deepar.module';
 import { UserscoresModule } from '../trans/userscores/userscores.module';
+import { Settings2Schema, SettingsMixed } from 'src/trans/settings2/schemas/settings2.schema';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -94,6 +96,9 @@ import { UserscoresModule } from '../trans/userscores/userscores.module';
       }),
       inject: [ConfigService],
     }),
+    ConfigModule.forRoot(),
+    MongooseModule.forFeature([{ name: SettingsMixed.name, schema: Settings2Schema }], 'SERVER_FULL')
+    
   ],
   controllers: [UtilsController],
   providers: [ErrorHandler, UtilsService],

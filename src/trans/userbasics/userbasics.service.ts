@@ -6906,8 +6906,9 @@ export class UserbasicsService {
           "cities":1,
           "idProofNumber":1,
           "idProofStatus":1,
-          "pin":1,
-          "otppinVerified":1,
+          "pin": 1,
+          "tutor": 1,
+          "otppinVerified": 1,
           urluserBadge:
           {
             "$filter":
@@ -6988,7 +6989,8 @@ export class UserbasicsService {
           "idProofNumber":1,
           "idProofStatus":1,
           "pin":1,
-          "otppinVerified":1,
+          "otppinVerified": 1,
+          "tutor": 1,
           urluserBadge: {
             "$arrayElemAt":
               [
@@ -6999,5 +7001,24 @@ export class UserbasicsService {
       }
     ]);
     return query[0];
+  }
+
+  async updateTutor(email: string, key:string,value:boolean) {
+    console.log(email)
+    console.log(key)
+    console.log(value)
+    this.userbasicModel.updateOne({ 'tutor.key': key, email: email }, {
+      '$set': {
+        'tutor.$.status': value
+      }
+    },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    ).clone().exec();
   }
 }

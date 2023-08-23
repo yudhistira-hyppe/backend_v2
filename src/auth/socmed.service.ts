@@ -38,6 +38,7 @@ import { CreateUserbasicnewDto } from '../trans/newuserbasic/dto/create-userbasi
 import { PostsService } from '../content/posts/posts.service';
 import { AuthService } from './auth.service';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SocmedService {
@@ -67,7 +68,8 @@ export class SocmedService {
     private adsUserCompareService: AdsUserCompareService,
     private contenteventsService: ContenteventsService,
     private postsService: PostsService,
-    private readonly logapiSS: LogapisService
+    private readonly logapiSS: LogapisService,
+    private readonly configService: ConfigService,
   ) { }
 
   async signupsosmed(req: any, headers:any) {
@@ -536,7 +538,29 @@ export class SocmedService {
         var timestamps_end = await this.utilsService.getDateTimeString();
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
-
+        let arrayTutor = [];
+        if (datauserbasicsService.tutor != undefined) {
+          const SETTING_TUTOR = this.configService.get("SETTING_TUTOR");
+          const getSettingTutor = await this.utilsService.getSettingMixed(SETTING_TUTOR);
+          if (await this.utilsService.ceckData(getSettingTutor)) {
+            if (Array.isArray(getSettingTutor.value) && Array.isArray(datauserbasicsService.tutor)) {
+              if (getSettingTutor.value.length == datauserbasicsService.tutor.length) {
+                arrayTutor = datauserbasicsService.tutor;
+                let arraySetting = getSettingTutor.value;
+                var data_ii = await Promise.all(arrayTutor.map(async (item, index) => {
+                  console.log();
+                  return {
+                    "key": item.key,
+                    "textID": arraySetting[index].textID,
+                    "textEn": arraySetting[index].textEn,
+                    "status": item.status,
+                  }
+                }));
+                arrayTutor = data_ii;
+              }
+            }
+          }
+        }
         return {
           response_code: 202,
           data: {
@@ -566,7 +590,8 @@ export class SocmedService {
             iduser: String(datauserbasicsService._id),
             isComplete: "false",
             status: "INITIAL",
-            refreshToken: datajwtrefreshtoken_data.refresh_token_id
+            refreshToken: datajwtrefreshtoken_data.refresh_token_id,
+            tutor: arrayTutor
           },
           version: vesion,
           version_ios : (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(),
@@ -760,6 +785,44 @@ export class SocmedService {
           );
         }
 
+        let arrayTutor = [
+          {
+            key: "protection",
+            status: false
+          },
+          {
+            key: "sell",
+            status: false
+          },
+          {
+            key: "interest",
+            status: false
+          },
+          {
+            key: "ownership",
+            status: false
+          },
+          {
+            key: "boost",
+            status: false
+          },
+          {
+            key: "transaction",
+            status: false
+          },
+          {
+            key: "idRefferal",
+            status: false
+          },
+          {
+            key: "shareRefferal",
+            status: false
+          },
+          {
+            key: "codeRefferal",
+            status: false
+          }
+        ];
         //Create UserBasic
         try {
           var data_CreateUserbasicDto = new CreateUserbasicDto();
@@ -779,6 +842,7 @@ export class SocmedService {
           data_CreateUserbasicDto.createdAt = current_date;
           data_CreateUserbasicDto.updatedAt = current_date;
           data_CreateUserbasicDto.statusKyc = 'unverified';
+          data_CreateUserbasicDto.tutor = arrayTutor;
           data_CreateUserbasicDto.insight = {
             $ref: 'insights',
             $id: ID_insights,
@@ -1072,7 +1136,27 @@ export class SocmedService {
         
         var timestamps_end = await this.utilsService.getDateTimeString();
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
-
+        
+        if (arrayTutor != undefined) {
+          const SETTING_TUTOR = this.configService.get("SETTING_TUTOR");
+          const getSettingTutor = await this.utilsService.getSettingMixed(SETTING_TUTOR);
+          if (await this.utilsService.ceckData(getSettingTutor)) {
+            if (Array.isArray(getSettingTutor.value) && Array.isArray(arrayTutor)) {
+              if (getSettingTutor.value.length == arrayTutor.length) {
+                let arraySetting = getSettingTutor.value;
+                var data_i = await Promise.all(arrayTutor.map(async (item, index) => {
+                  return {
+                    "key": item.key,
+                    "textID": arraySetting[index].textID,
+                    "textEn": arraySetting[index].textEn,
+                    "status": item.status,
+                  }
+                }));
+                arrayTutor = data_i;
+              }
+            }
+          }
+        }
         return {
           response_code: 202,
           data: {
@@ -1101,7 +1185,8 @@ export class SocmedService {
             username: username_,
             isComplete: "false",
             status: "INITIAL",
-            refreshToken: datajwtrefreshtoken_data.refresh_token_id
+            refreshToken: datajwtrefreshtoken_data.refresh_token_id,
+            tutor: arrayTutor
           },
           messages: {
             nextFlow: [
