@@ -50859,6 +50859,271 @@ export class GetusercontentsService {
     var query = await this.getusercontentsModel.aggregate(pipeline);
     return query;
   }
+
+  async getmusicCard()
+  {
+    var query = await this.getusercontentsModel.aggregate(
+      [
+        {
+            "$match":
+            {
+                musicId:
+                {	
+                    "$exists":true
+                }
+            }
+        },
+        {
+            "$group":
+            {
+                _id:"$musicId",
+                total:
+                {
+                    "$sum":1
+                }
+            }
+        },
+        {
+            $lookup: 
+            {
+                from: 'mediamusic',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'music_data',
+            },
+        },
+        {
+            "$unwind":
+            {
+                path:"$music_data"
+            }
+        },
+        {
+            $lookup: 
+            {
+                from: 'theme',
+                localField: 'music_data.theme',
+                foreignField: '_id',
+                as: 'theme_data',
+            },
+        },
+        {
+            $lookup: 
+            {
+                from: 'genre',
+                localField: 'music_data.genre',
+                foreignField: '_id',
+                as: 'genre_data',
+            },
+        },
+        {
+            $lookup: 
+            {
+                from: 'mood',
+                localField: 'music_data.mood',
+                foreignField: '_id',
+                as: 'mood_data',
+            },
+        },
+        {
+            $project: 
+            {
+                musicTitle: '$music_data.musicTitle',
+                artistName: '$music_data.artistName',
+                albumName: '$music_data.albumName',
+                genre: 
+                { 
+                    "$arrayElemAt": 
+                    [
+                        '$genre_data', 0
+                    ] 
+                },
+                theme: 
+                { 
+                    "$arrayElemAt": 
+                    [
+                        '$theme_data', 0
+                    ] 
+                },
+                mood: 
+                { 
+                    "$arrayElemAt": 
+                    [
+                        '$mood_data', 0
+                    ] 
+                },
+                releaseDate: '$music_data.releaseDate',
+                apsaraMusic: '$music_data.apsaraMusic',
+                apsaraThumnail: '$music_data.apsaraThumnail',
+                _id:1,
+                total:1
+            }
+        },
+        {
+            "$facet":
+            {
+                "artistPopuler": 
+                [
+                    {
+                        "$group": 
+                        {
+                            _id:"$artistName",
+                            apsaraMusic: 
+                            {
+                                "$first":"$apsaraMusic"
+                            },
+                            apsaraThumnail: 
+                            {
+                                "$first":"$apsaraThumnail"
+                            },
+                            count: 
+                            { 
+                                "$sum": "$total"
+                            }
+                        }
+                    },
+                    { 
+                        $sort: 
+                        { 
+                            count: -1,
+                            _id:1
+                        } 
+                    },
+                    { 
+                        $skip: 0 
+                    },
+                    { 
+                        $limit: 5 
+                    },
+                    {
+                        "$project":
+                        {
+                            _id:
+                            {
+                                artistName:"$_id",
+                                apsaraMusic:"$apsaraMusic",
+                                apsaraThumnail:"$apsaraThumnail"
+                            },
+                            count:1
+                        }
+                    }
+                ],
+                "musicPopuler": 
+                [
+                    {
+                        "$group": 
+                        {
+                            _id: 
+                            {
+                                "musicTitle": "$musicTitle",
+                                "apsaraMusic": "$apsaraMusic",
+                                "apsaraThumnail": "$apsaraThumnail"
+                            },
+                            count: 
+                            { 
+                                "$sum": "$total"
+                            }
+                        }
+                    },
+                    { 
+                        $sort: 
+                        { 
+                            count: -1,
+                            _id:1
+                        } 
+                    },
+                    { 
+                        $skip: 0 
+                    },
+                    { 
+                        $limit: 5 
+                    },
+                ],
+                "genrePopuler": 
+                [
+                    {
+                        "$group": 
+                        {
+                            _id:"$genre",
+                            count: 
+                            { 
+                                "$sum": "$total"
+                            }
+                        }
+                    },
+                    { 
+                        $sort: 
+                        { 
+                            count: -1,
+                            _id:1
+                        } 
+                    },
+                    { 
+                        $skip: 0 
+                    },
+                    { 
+                        $limit: 5 
+                    },
+                ],
+                "themePopuler": 
+                [
+                    {
+                        "$group": 
+                        {
+                            _id:"$theme",
+                            count: 
+                            { 
+                                "$sum": "$total"
+                            }
+                        }
+                    },
+                    { 
+                        $sort: 
+                        { 
+                            count: -1,
+                            _id:1
+                        } 
+                    },
+                    { 
+                        $skip: 0 
+                    },
+                    { 
+                        $limit: 5 
+                    },
+                ],
+                "moodPopuler": 
+                [
+                    {
+                        "$group": 
+                        {
+                            _id:"$mood",
+                            count: 
+                            { 
+                                "$sum": "$total"
+                            }
+                        }
+                    },
+                    { 
+                        $sort: 
+                        { 
+                            count: -1,
+                            _id:1
+                        } 
+                    },
+                    { 
+                        $skip: 0 
+                    },
+                    { 
+                        $limit: 5 
+                    },
+                ],
+            }
+        }
+      ]
+    );
+
+    return query;
+  }
 }
 
 
