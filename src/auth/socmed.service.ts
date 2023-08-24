@@ -842,7 +842,7 @@ export class SocmedService {
           data_CreateUserbasicDto.createdAt = current_date;
           data_CreateUserbasicDto.updatedAt = current_date;
           data_CreateUserbasicDto.statusKyc = 'unverified';
-          data_CreateUserbasicDto.tutor = arrayTutor;
+          //data_CreateUserbasicDto.tutor = arrayTutor;
           data_CreateUserbasicDto.insight = {
             $ref: 'insights',
             $id: ID_insights,
