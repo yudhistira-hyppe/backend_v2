@@ -1028,6 +1028,52 @@ export class DisqusController {
     dl.disqusID = dis.disqusID;
     if (dto.postID != undefined) {
       dl.postID = dto.postID;
+
+      var post = await this.postDisqusService.findByPostId(dto.postID.toString());
+      var media = await this.postDisqusService.findOnepostID(dto.postID.toString());
+      var media_ = {}
+      if (await this.utilsService.ceckData(media)) {
+        if (post.createdAt != undefined) {
+          media_["createdAt"] = post.createdAt;
+        }
+        if (media[0].datacontent[0].mediaBasePath != undefined) {
+          media_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
+        }
+        if (post.postType != undefined) {
+          media_["postType"] = post.postType;
+        }
+        if (media[0].datacontent[0].mediaUri != undefined) {
+          media_["mediaUri"] = media[0].datacontent[0].mediaUri;
+        }
+        if (media[0].datacontent[0].mediaUri != undefined) {
+          media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
+        }
+        if (post.description != undefined) {
+          media_["description"] = post.description;
+        }
+        if (post.active != undefined) {
+          media_["active"] = post.active;
+        }
+        if (media[0].datacontent[0].mediaType != undefined) {
+          media_["mediaType"] = media[0].datacontent[0].mediaType;
+        }
+        if (media[0].datacontent[0].mediaType != undefined) {
+          media_["mediaThumbEndpoint"] = "/thumb/" + post.postID;
+        }
+        if (post.postID != undefined) {
+          media_["postID"] = post.postID;
+        }
+        if (media[0].datacontent[0].mediaUri != undefined) {
+          media_["mediaEndpoint"] = "/stream/" + media[0].datacontent[0].mediaUri;
+        }
+        if (media[0].datacontent[0].apsara != undefined) {
+          media_["apsara"] = media[0].datacontent[0].apsara
+        }
+        if (media[0].datacontent[0].apsaraId != undefined) {
+          media_["apsaraId"] = media[0].datacontent[0].apsaraId
+        }
+        dl.medias = [media_];
+      }
     }
     let ndl = await this.disqusLogService.create(dl);
 
