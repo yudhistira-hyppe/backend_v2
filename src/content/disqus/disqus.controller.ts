@@ -1030,7 +1030,7 @@ export class DisqusController {
       dl.postID = dto.postID;
 
       var post = await this.postDisqusService.findByPostId(dto.postID.toString());
-      var media = await this.postDisqusService.findOnepostID(dto.postID.toString());
+      var media = await this.postDisqusService.findOnepostID3(post);
       var media_ = {}
       if (await this.utilsService.ceckData(media)) {
         if (post.createdAt != undefined) {
