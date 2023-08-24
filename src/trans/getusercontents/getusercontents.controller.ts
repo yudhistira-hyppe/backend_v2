@@ -5773,7 +5773,8 @@ export class GetusercontentsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('api/getusercontents/musiccard')
+    //@Get('api/getusercontents/musiccard')
+    @Get('api/musiccard/')
     async getMusicCard(@Headers() headers) {
         const data = await this.getusercontentsService.getmusicCard();
 
