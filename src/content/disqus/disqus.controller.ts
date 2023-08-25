@@ -222,6 +222,26 @@ export class DisqusController {
                     }
                   }
                 }
+              } else {
+                for (let x = 0; x < o.disqusLogs.length; x++) {
+                  if (o.disqusLogs[x].medias != undefined) {
+                    if (o.disqusLogs[x].medias.length > 0) {
+                      if (o.disqusLogs[x].medias.length > 0) {
+                        if (o.disqusLogs[x].medias[0] != undefined) {
+                          if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
+                            if (o.disqusLogs[x].medias[0].mediaType != undefined) {
+                              if (o.disqusLogs[x].medias[0].mediaType == 'image') {
+                                ApsaraArrayImage.push((o.disqusLogs[x].medias[0].apsaraId));
+                              } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
+                                ApsaraArrayVideo.push((o.disqusLogs[x].medias[0].apsaraId));
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
             console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ApsaraArrayImage ', ApsaraArrayImage);
@@ -259,7 +279,7 @@ export class DisqusController {
                                       o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl;
                                     } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
                                       var apsaraThumnailUrl = vapsara.VideoList.find(x => x.VideoId == ApsaraId).CoverURL;
-                                      o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl;
+                                      o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl+"";
                                     }
                                   }
                                 }
@@ -271,13 +291,37 @@ export class DisqusController {
                         break;
                       }
                     }
+                  } 
+                }
+              } else {
+                for (let x = 0; x < o.disqusLogs.length; x++) {
+                  if (o.disqusLogs[x].medias != undefined) {
+                    if (o.disqusLogs[x].medias.length > 0) {
+                      if (o.disqusLogs[x].medias.length > 0) {
+                        if (o.disqusLogs[x].medias[0] != undefined) {
+                          if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
+                            if (o.disqusLogs[x].medias[0].mediaType != undefined) {
+                              var ApsaraId = o.disqusLogs[x].medias[0].apsaraId;
+                              if (o.disqusLogs[x].medias[0].mediaType == 'image') {
+                                var apsaraThumnailUrl = papsara.ImageInfo.find(x => x.ImageId == ApsaraId).URL;
+                                o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl;
+                              } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
+                                var apsaraThumnailUrl = vapsara.VideoList.find(x => x.VideoId == ApsaraId).CoverURL;
+                                o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl;
+                                console.log("MASUK SINI", o.disqusLogs[x])
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               }
               tmp.push(o);
             }
           }
-          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> tmp', JSON.stringify(tmp));
+          //console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> tmp', JSON.stringify(tmp));
 
           res.data = tmp;
 
@@ -1032,6 +1076,7 @@ export class DisqusController {
       var post = await this.postDisqusService.findByPostId(dto.postID.toString());
       var media = await this.postDisqusService.findOnepostID3(post);
       var media_ = {}
+
       if (await this.utilsService.ceckData(media)) {
         if (post.createdAt != undefined) {
           media_["createdAt"] = post.createdAt;
@@ -1042,12 +1087,23 @@ export class DisqusController {
         if (post.postType != undefined) {
           media_["postType"] = post.postType;
         }
-        if (media[0].datacontent[0].mediaUri != undefined) {
-          media_["mediaUri"] = media[0].datacontent[0].mediaUri;
-        }
-        if (media[0].datacontent[0].mediaUri != undefined) {
-          media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
-        }
+
+        // if (media[0].datacontent[0].apsara == true) {
+        //   if (media[0].datacontent[0].apsaraId != undefined) {
+        //     const resultpictapsara = await this.postDisqusService.getVideoApsara1([media[0].datacontent[0].apsaraId]);
+        //     const gettempresultpictapsara = resultpictapsara.VideoList;
+        //     media_["mediaUri"] = gettempresultpictapsara[0].CoverURL;
+        //     media_["mediaThumbUri"] = gettempresultpictapsara[0].CoverURL;
+        //   }
+        // }else{
+          if (media[0].datacontent[0].mediaUri != undefined) {
+            media_["mediaUri"] = media[0].datacontent[0].mediaUri;
+          }
+          if (media[0].datacontent[0].mediaUri != undefined) {
+            media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
+          }
+        //}
+
         if (post.description != undefined) {
           media_["description"] = post.description;
         }
