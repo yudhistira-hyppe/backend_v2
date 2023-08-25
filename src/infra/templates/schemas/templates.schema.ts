@@ -37,6 +37,8 @@ export class Templates {
   email: string
   @Prop()
   createdAt: string
+  @Prop()
+  type_sending: string;
 }
 
 export const TemplatesSchema = SchemaFactory.createForClass(Templates);
