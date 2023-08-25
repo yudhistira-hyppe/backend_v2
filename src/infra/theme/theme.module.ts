@@ -5,9 +5,11 @@ import { ThemeController } from './theme.controller';
 import { ThemeService } from './theme.service';
 import { Theme, ThemeSchema } from './schemas/theme.schema';
 import { UtilsModule } from '../../utils/utils.module';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
 
 @Module({
     imports: [
+        LogapisModule,
         UtilsModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Theme.name, schema: ThemeSchema }], 'SERVER_FULL')

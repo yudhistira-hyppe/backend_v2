@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, UseGuards, Headers, Post, Body, UseInterceptors, UploadedFiles, Query, Res, Param } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, UseGuards, Headers, Post, Body, Req, UseInterceptors, UploadedFiles, Query, Res, Param } from '@nestjs/common';
 import { AssetsFilterService } from './assets-filter.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UtilsService } from '../../utils/utils.service';
@@ -11,6 +11,7 @@ import { OssService } from '../../stream/oss/oss.service';
 import * as https from "https";
 import * as http from "http";
 const sharp = require('sharp');
+import { LogapisService } from 'src/trans/logapis/logapis.service';
 
 
 @Controller('api/assets/filter')
@@ -21,6 +22,7 @@ export class AssetsFilterController {
         private readonly errorHandler: ErrorHandler,
         private readonly userbasicsService: UserbasicsService,
         private readonly ossService: OssService,
+        private readonly logapiSS: LogapisService,
     ) { }
 
 
@@ -199,19 +201,33 @@ export class AssetsFilterController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Get('/user')
-    async getfilter(@Headers() headers) {
+    async getfilter(@Headers() headers, @Req() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
         }
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email header dan token not match',
             );
         }
         var profile = await this.userbasicsService.findOne(headers['x-auth-user']);
         if (!(await this.utilsService.ceckData(profile))) {
+
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed user not found',
             );
@@ -243,6 +259,11 @@ export class AssetsFilterController {
                 status: item.status,
             }
         }));
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
         return {
             response_code: 202,
             data: data_,
@@ -305,19 +326,33 @@ export class AssetsFilterController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('/update')
-    async updateAssets(@Headers() headers, @Body() UpdateAssetsFilterDto_: UpdateAssetsFilterDto) {
+    async updateAssets(@Headers() headers, @Body() UpdateAssetsFilterDto_: UpdateAssetsFilterDto, @Req() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString(); 
+
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
         }
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email header dan token not match',
             );
         }
         var profile = await this.userbasicsService.findOne(headers['x-auth-user']);
         if (!(await this.utilsService.ceckData(profile))) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed user not found',
             );
@@ -325,11 +360,19 @@ export class AssetsFilterController {
 
         if (UpdateAssetsFilterDto_.assets != undefined) {
             if (UpdateAssetsFilterDto_.assets.length < 0) {
+                var fullurl = req.get("Host") + req.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+                
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, Param assets is required',
                 );
             }
         } else {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, Param assets is required',
             );
@@ -340,6 +383,11 @@ export class AssetsFilterController {
             return new mongoose.Types.ObjectId(i);
         });
         this.userbasicsService.updateUserAssets(headers['x-auth-user'], _UpdateAssetsFilterDto_.assets)
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(_UpdateAssetsFilterDto_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
 
         return {
             response_code: 202,

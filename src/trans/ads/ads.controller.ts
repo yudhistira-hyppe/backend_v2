@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, HttpStatus, Put, Headers, UploadedFiles, UseInterceptors, HttpCode, HttpException, Req, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, HttpStatus, Put, Headers, UploadedFiles, UseInterceptors, HttpCode, HttpException, Req, BadRequestException, Header } from '@nestjs/common';
 import { AdsService } from './ads.service';
 import { CreateAdsDto, CreateAdsResponse, MediaimageadsDto, MediavodeosadsDto } from './dto/create-ads.dto';
 import { Ads } from './schemas/ads.schema';
@@ -17,6 +17,7 @@ import { SettingsService } from '../settings/settings.service';
 import { VouchersService } from '../vouchers/vouchers.service';
 import { AdsplacesService } from '../adsplaces/adsplaces.service';
 //import { UserAdsService } from '../userads/userads.service';
+import { LogapisService } from '../logapis/logapis.service';
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
 import { diskStorage } from 'multer';
@@ -77,7 +78,8 @@ export class AdsController {
         private readonly seaweedfsService: SeaweedfsService,
         private readonly settingsService: SettingsService,
         private readonly adsplacesService: AdsplacesService,
-        private readonly vouchersService: VouchersService) { }
+        private readonly vouchersService: VouchersService,
+        private readonly logAPISS: LogapisService) { }
 
 
     @UseGuards(JwtAuthGuard)
@@ -134,15 +136,24 @@ export class AdsController {
         },
         @Body() CreateAdsDto: CreateAdsDto,
         @Headers() headers, @Res() res, @Req() request: Request) {
-
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + "/api/ads/createads";
+        var email = headers['x-auth-user'];
+        var reqbody = JSON.parse(JSON.stringify(request.body));
 
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed token and email not match',
             );
         }
 
         if (headers['x-auth-token'] == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email is required',
             );
@@ -165,28 +176,43 @@ export class AdsController {
         if (request_json["liveTypeAds"] !== undefined) {
             liveTypeAds = request_json["liveTypeAds"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["tipe"] !== undefined) {
             tipe = request_json["tipe"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["sizeFile"] !== undefined) {
             sizeFile = request_json["sizeFile"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["idApsara"] !== undefined) {
             idApsara = request_json["idApsara"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["duration"] !== undefined) {
             duration = request_json["duration"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -241,18 +267,27 @@ export class AdsController {
         }
 
         if (lengname > titleMax) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": "Maksimal jumlah karakter judul iklan konten " + titleMax
             });
         }
         if (sizeFile > sizeMax) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": "Maksimal ukuran media " + sizeMax
             });
         }
         if (lengdesc > descriptionMax) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": "Maksimal jumlah karakter deskripsi iklan konten " + descriptionMax
@@ -261,13 +296,17 @@ export class AdsController {
 
 
         if (rounding > durationMax) {
-
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
 
             return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": "Maksimal duration iklan konten " + durationMax + " detik"
             });
         } else if (duration < durationMin) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": "Minimal duration iklan konten " + durationMin + " detik"
@@ -525,6 +564,10 @@ export class AdsController {
                     CreateAdsDto.totalCredit = sumCreditValue + sumFreeCredit;
                     // CreateAdsDto.mediaAds = mongoose.Types.ObjectId(idmedia);;
                     let data = await this.adsService.create(CreateAdsDto);
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     return res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
@@ -532,12 +575,19 @@ export class AdsController {
                     });
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     return res.status(HttpStatus.BAD_REQUEST).json({
 
                         "message": e.toString()
                     });
                 }
             } else {
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 return res.status(HttpStatus.BAD_REQUEST).json({
 
                     "message": "Silahkan beli voucher dahulu.."
@@ -546,6 +596,9 @@ export class AdsController {
 
 
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror
@@ -604,7 +657,9 @@ export class AdsController {
     }
     @Post('listbyuser')
     @UseGuards(JwtAuthGuard)
-    async adslistuser(@Req() request: Request): Promise<any> {
+    async adslistuser(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/ads/listbyuser';
 
         var email = null;
         var ubasic = null;
@@ -619,17 +674,26 @@ export class AdsController {
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -647,6 +711,9 @@ export class AdsController {
             var userid = mongoose.Types.ObjectId(ubasic._id);
 
         } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("User not found");
         }
 
@@ -655,12 +722,17 @@ export class AdsController {
 
         var totalSearch = data.length;
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, totalSearch, skip, limit, messages };
     }
 
     @Post('listadsuser')
     @UseGuards(JwtAuthGuard)
-    async adslist(@Req() request: Request): Promise<any> {
+    async adslist(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/ads/listadsuser';
 
         var email = null;
         var ubasic = null;
@@ -679,17 +751,26 @@ export class AdsController {
         if (request_json["page"] !== undefined) {
             page = request_json["page"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -707,6 +788,9 @@ export class AdsController {
             var userid = mongoose.Types.ObjectId(ubasic._id);
 
         } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("User not found");
         }
 
@@ -731,12 +815,22 @@ export class AdsController {
         } else {
             totalpage = parseInt(tpage2);
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, page, limit, totalsearch, totalpage, messages };
     }
 
     @Post('management/adscenter')
     @UseGuards(JwtAuthGuard)
-    async adscenter(@Req() request: Request): Promise<any> {
+    async adscenter(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/ads/management/adscenter';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         const messages = {
             "info": ["The process successful"],
         };
@@ -805,12 +899,21 @@ export class AdsController {
                 "ads": datacount[0].ads
             }
         ];
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('management/adscenter/details')
     @UseGuards(JwtAuthGuard)
-    async contentuserdetail(@Req() request: Request): Promise<any> {
+    async contentuserdetail(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/ads/management/adscenter/details';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var id = null;
         var startdate = null;
@@ -819,6 +922,9 @@ export class AdsController {
         if (request_json["id"] !== undefined) {
             id = request_json["id"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -834,6 +940,9 @@ export class AdsController {
         // let data = await this.adsService.detailAds(idads, startdate, enddate);
         let data = await this.adsService.detailAds2(idads, startdate, enddate);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
@@ -844,7 +953,13 @@ export class AdsController {
 
     @Post('management/adscenter/chartanalytics')
     @UseGuards(JwtAuthGuard)
-    async graphadsanalytics(@Req() request: Request): Promise<any> {
+    async graphadsanalytics(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/ads/management/adscenter/chartanalytics';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         const mongoose = require('mongoose');
         var data = [];
         var requserid = null;
@@ -853,6 +968,9 @@ export class AdsController {
         if (request_json["userid"] !== undefined) {
             requserid = request_json["userid"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -865,13 +983,21 @@ export class AdsController {
         // data = await this.adsService.getgraphadsanalytics(userid);
         data = await this.adsService.getgraphadsanalytics2(userid);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
     }
 
     @Post('console/adscenter/performaadschart')
     @UseGuards(JwtAuthGuard)
-    async getallgraphperformads(@Req() request: Request): Promise<any> {
+    async getallgraphperformads(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/ads/console/adscenter/performaadschart';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         var data = null;
         var startdate = null;
         var enddate = null;
@@ -882,6 +1008,9 @@ export class AdsController {
             enddate = request_json["enddate"];
         }
         else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -929,6 +1058,9 @@ export class AdsController {
         const messages = {
             "info": ["The process successful"],
         };
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data: array, total: total, messages };
     }
@@ -995,7 +1127,13 @@ export class AdsController {
 
     @Post('console/adscenter/listads')
     @UseGuards(JwtAuthGuard)
-    async getlistads2(@Req() request: Request): Promise<any> {
+    async getlistads2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/ads/console/adscenter/listads';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         var data = null;
         var page = null;
         var limit = null;
@@ -1043,6 +1181,9 @@ export class AdsController {
             sorting = request_json["descending"];
         }
         else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -1084,12 +1225,21 @@ export class AdsController {
 
         this.updatelistdataads();
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data: getdata, totalsearch: 0, totalpage: 0, totaldatainpage: total, limit: limit, page: page, messages };
     }
 
     @Get('console/adscenter/historydetail/:id')
     @UseGuards(JwtAuthGuard)
-    async getHistoryIklan(@Param('id') id: string) {
+    async getHistoryIklan(@Param('id') id: string, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/ads/console/adscenter/historydetail/' + id;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var data = null;
 
         data = await this.adsService.getDetailHistoryIklan(id);
@@ -1098,6 +1248,9 @@ export class AdsController {
         const messages = {
             "info": ["The process successful"],
         };
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
 
         return { response_code: 202, messages, data }
     }

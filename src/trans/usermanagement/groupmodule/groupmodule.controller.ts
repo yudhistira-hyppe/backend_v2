@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Query, Post, UseGuards, Param, Req, BadRequestException, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Query, Post, UseGuards, Param, Req, BadRequestException, Request, Headers, Head } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
@@ -12,6 +12,7 @@ import { UserbasicsService } from '../../../trans/userbasics/userbasics.service'
 import { ObjectId } from 'mongodb';
 import { DivisionService } from '../division/division.service';
 import mongoose from 'mongoose';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
 
 @Controller('api/groupmodule')
 export class GroupModuleController {
@@ -22,7 +23,8 @@ export class GroupModuleController {
         private readonly groupService: GroupService,
         private readonly moduleService: ModuleService,
         private readonly divisionService: DivisionService,
-        private readonly userbasicsService: UserbasicsService
+        private readonly userbasicsService: UserbasicsService,
+        private readonly logapiSS: LogapisService
     ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -179,17 +181,30 @@ export class GroupModuleController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('/groupcreate')
-    async createGroup(@Body() request) {
+    async createGroup(@Body() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/groupmodule/groupcreate';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var reqbody = JSON.parse(JSON.stringify(request));
+
         var current_date = await this.utilsService.getDateTimeString();
         var data_division = null;
 
         if (request.divisionId == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create group param divisionId is required',
             );
         } else {
             data_division = await this.divisionService.findOne(request.divisionId);
             if (!(await this.utilsService.ceckData(data_division))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed Create group param divisionId is not found',
                 );
@@ -197,6 +212,9 @@ export class GroupModuleController {
         }
 
         if (request.nameGroup == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create group param nameGroup is required',
             );
@@ -227,6 +245,9 @@ export class GroupModuleController {
             if (param.length > 0) {
                 for (var k = 0; k < param.length; k++) {
                     if (param[k].module == undefined) {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException(
                             'Unabled to proceed Create module param module is required',
                         );
@@ -262,6 +283,10 @@ export class GroupModuleController {
                 }
             }
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
         return {
             "response_code": 202,
             "messages": {
@@ -341,18 +366,31 @@ export class GroupModuleController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('/groupupdate')
-    async update(@Body() request) {
+    async update(@Body() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/groupmodule/groupupdate';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var reqbody = JSON.parse(JSON.stringify(request));
+
         var current_date = await this.utilsService.getDateTimeString();
         var data_division = null;
         var data_group = null;
 
         if (request._id == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Update group param _id is required',
             );
         } else {
             data_group = await this.groupService.findOne(request._id);
             if (!(await this.utilsService.ceckData(data_group))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed Update group param _id group is not found',
                 );
@@ -360,12 +398,18 @@ export class GroupModuleController {
         }
 
         if (request.divisionId == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Update group param divisionId is required',
             );
         } else {
             data_division = await this.divisionService.findOne(request.divisionId);
             if (!(await this.utilsService.ceckData(data_division))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed Create group param divisionId is not found',
                 );
@@ -373,6 +417,9 @@ export class GroupModuleController {
         }
 
         if (request.nameGroup == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Update group param nameGroup is required',
             );
@@ -401,6 +448,9 @@ export class GroupModuleController {
             if (param.length > 0) {
                 for (var k = 0; k < param.length; k++) {
                     if (param[k].module == undefined) {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException(
                             'Unabled to proceed Create module param module is required',
                         );
@@ -439,6 +489,9 @@ export class GroupModuleController {
             }
         }
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
         return {
             "response_code": 202,
             "messages": {
@@ -453,8 +506,20 @@ export class GroupModuleController {
     @HttpCode(HttpStatus.ACCEPTED)
     @Delete('/delete')
     async delete(
-        @Query('id') id: string,) {
+        @Query('id') id: string,
+        @Headers() headers,
+        @Request() request) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var data = await this.groupModuleService.delete(id);
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return {
             "response_code": 202,
             "messages": {

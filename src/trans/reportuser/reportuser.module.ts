@@ -19,10 +19,11 @@ import { UserticketsModule } from '../usertickets/usertickets.module';
 import { GetusercontentsModule } from '../getusercontents/getusercontents.module';
 import { UserbankaccountsModule } from '../userbankaccounts/userbankaccounts.module';
 import { SettingsModule } from '../settings/settings.module';
+import { LogapisModule } from '../logapis/logapis.module';
 @Module({
 
     imports: [
-        SettingsModule, GetusercontentsModule, UserbankaccountsModule, UserticketsModule, UtilsModule, UserbasicsModule, MediaprofilepictsModule, UserAdsModule, UserauthsModule, TransactionsModule, PostsModule, AdsModule, ReportreasonsModule, MediaproofpictsModule, RemovedreasonsModule, ConfigModule.forRoot(),
+        SettingsModule, GetusercontentsModule, UserbankaccountsModule, UserticketsModule, UtilsModule, UserbasicsModule, MediaprofilepictsModule, UserAdsModule, UserauthsModule, TransactionsModule, PostsModule, AdsModule, ReportreasonsModule, MediaproofpictsModule, RemovedreasonsModule, LogapisModule, ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Reportuser.name, schema: ReportuserSchema }], 'SERVER_FULL')
     ],
     controllers: [ReportuserController],

@@ -21,6 +21,7 @@ import { UserchallengesModule } from 'src/trans/userchallenges/userchallenges.mo
 import { ChallengeModule } from 'src/trans/challenge/challenge.module';
 import { TagCountModule } from 'src/content/tag_count/tag_count.module';
 import { PostchallengeModule } from 'src/trans/postchallenge/postchallenge.module';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
 @Module({
     imports: [
         PostchallengeModule,
@@ -38,6 +39,7 @@ import { PostchallengeModule } from 'src/trans/postchallenge/postchallenge.modul
         UtilsModule,
         UserbasicsModule,
         FriendListModule,
+        LogapisModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Contentevents.name, schema: ContenteventsSchema }], 'SERVER_FULL')
     ],

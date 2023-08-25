@@ -19,7 +19,7 @@ import { DevicelogService } from '../infra/devicelog/devicelog.service';
 import { CreateDevicelogDto } from '../infra/devicelog/dto/create-devicelog.dto';
 import mongoose from 'mongoose';
 import { Posts } from '../content/posts/schemas/posts.schema';
-
+import { LogapisService } from 'src/trans/logapis/logapis.service';
 
 @Controller('api/utils/')
 export class UtilsController {
@@ -41,6 +41,7 @@ export class UtilsController {
         private readonly errorHandler: ErrorHandler,
         private readonly devicelogService: DevicelogService,
         private readonly utilsService: UtilsService,
+        private readonly logapiSS: LogapisService
     ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -50,7 +51,15 @@ export class UtilsController {
         @Query('langIso') langIso: string,
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
-        @Query('search') search: string) {
+        @Query('search') search: string,
+        @Req() req,
+        @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var langIso_ = langIso;
         var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
         var pageRow_ = (pageRow != undefined) ? pageRow : 3;
@@ -87,6 +96,10 @@ export class UtilsController {
             },
             page: pageNumber
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return Response;
     }
 
@@ -97,7 +110,16 @@ export class UtilsController {
         @Query('countryID') countryID: string,
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
-        @Query('search') search: string) {
+        @Query('search') search: string,
+        @Req() req,
+        @Headers() headers
+        ) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var countryID_ = countryID;
         var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
         var pageRow_ = (pageRow != undefined) ? pageRow : 3;
@@ -121,6 +143,10 @@ export class UtilsController {
             },
             page: pageNumber
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return Response;
     }
 
@@ -131,7 +157,17 @@ export class UtilsController {
         @Query('stateID') stateID: string,
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
-        @Query('search') search: string) {
+        @Query('search') search: string,
+        @Headers() headers,
+        @Req() req
+        ) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var stateID_ = stateID;
         var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
         var pageRow_ = (pageRow != undefined) ? pageRow : 3;
@@ -155,6 +191,10 @@ export class UtilsController {
             },
             page: pageNumber
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return Response;
     }
 
@@ -164,7 +204,16 @@ export class UtilsController {
     async country(
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
-        @Query('search') search: string) {
+        @Query('search') search: string,
+        @Headers() headers,
+        @Req() req) {
+        
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
         var pageRow_ = (pageRow != undefined) ? pageRow : 3;
         var search_ = search;
@@ -187,6 +236,10 @@ export class UtilsController {
             },
             page: pageNumber
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return Response;
     }
 
@@ -196,7 +249,16 @@ export class UtilsController {
     async eula(
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
-        @Query('langIso') langIso: string) {
+        @Query('langIso') langIso: string,
+        @Req() req, 
+        @Headers() headers) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
         var pageRow_ = (pageRow != undefined) ? pageRow : 3;
         var langIso_ = langIso;
@@ -221,6 +283,10 @@ export class UtilsController {
             },
             page: pageNumber
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return Response;
     }
 
@@ -231,7 +297,16 @@ export class UtilsController {
         @Query('langIso') langIso: string,
         @Query('countryCode') countryCode: string,
         @Query('pageNumber') pageNumber: number,
-        @Query('pageRow') pageRow: number) {
+        @Query('pageRow') pageRow: number,
+        @Headers() headers,
+        @Req() req) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var langIso_ = langIso;
         var countryCode_ = countryCode;
         var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
@@ -256,6 +331,10 @@ export class UtilsController {
             },
             page: pageNumber
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return Response;
     }
 
@@ -264,7 +343,16 @@ export class UtilsController {
     @HttpCode(HttpStatus.ACCEPTED)
     async language(
         @Query('langIso') langIso: string,
-        @Query('search') search: string) {
+        @Query('search') search: string,
+        @Headers() headers,
+        @Req() req) {
+        
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         var langIso_ = langIso;
         var search_ = search;
 
@@ -287,6 +375,10 @@ export class UtilsController {
             },
             page: null
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return Response;
     }
 
@@ -296,7 +388,16 @@ export class UtilsController {
     async reaction(
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
-        @Query('search') search: string) {
+        @Query('search') search: string,
+        @Headers() headers,
+        @Req() req) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
         var pageRow_ = (pageRow != undefined) ? pageRow : 20;
         var search_ = search;
@@ -326,6 +427,10 @@ export class UtilsController {
             },
             page: null
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return Response;
     }
 
@@ -336,7 +441,16 @@ export class UtilsController {
         @Query('langIso') langIso: string,
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
-        @Query('search') search: string) {
+        @Query('search') search: string,
+        @Req() req,
+        @Headers() headers) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         var langIso_ = langIso;
         var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
         var pageRow_ = (pageRow != undefined) ? pageRow : 3;
@@ -365,6 +479,10 @@ export class UtilsController {
             },
             page: null
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return Response;
     }
 
@@ -377,7 +495,16 @@ export class UtilsController {
         @Query('action') action: string,
         @Query('search') search: string,
         @Query('pageNumber') pageNumber: number,
-        @Query('pageRow') pageRow: number) {
+        @Query('pageRow') pageRow: number,
+        @Headers() headers,
+        @Req() req) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var langIso_ = langIso;
         var reportType_ = reportType;
         var action_ = action;
@@ -409,6 +536,10 @@ export class UtilsController {
             },
             page: pageNumber
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return Response;
     }
 
@@ -416,9 +547,21 @@ export class UtilsController {
     @Get('gender?')
     @HttpCode(HttpStatus.ACCEPTED)
     async gender(
-        @Query('langIso') langIso: string) {
+        @Query('langIso') langIso: string,
+        @Req() req,
+        @Headers() headers) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var langIso_ = langIso;
         if (langIso == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed',
             );
@@ -437,6 +580,10 @@ export class UtilsController {
                 ]
             }
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return Response;
     }
 
@@ -444,9 +591,21 @@ export class UtilsController {
     @Get('martialstatus?')
     @HttpCode(HttpStatus.ACCEPTED)
     async martialstatus(
-        @Query('langIso') langIso: string) {
+        @Query('langIso') langIso: string,
+        @Req() req,
+        @Headers() headers) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var langIso_ = langIso;
         if (langIso == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed',
             );
@@ -465,6 +624,10 @@ export class UtilsController {
                 ]
             }
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return Response;
     }
 
@@ -472,12 +635,25 @@ export class UtilsController {
     @Post('logdevice')
     @HttpCode(HttpStatus.ACCEPTED)
     async logdevice(@Req() request: any, @Headers() header,) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = header['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var reqbody = JSON.parse(JSON.stringify(request.body));
+
         if ((request.body.imei == undefined) || (request.body.log == undefined) || (request.body.type == undefined) || (header['x-auth-user'] == undefined)) {
             if (!(await this.utilsService.validasiTokenEmail(header))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed',
                 );
             } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed',
                 );
@@ -503,8 +679,15 @@ export class UtilsController {
                     ]
                 }
             }
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             return Response;
         } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed',
             );
@@ -513,28 +696,59 @@ export class UtilsController {
 
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('generateProfile')
-    async generateProfile(@Req() request: any) {
-        return await this.utilsService.generateProfile(request.body.email, 'LOGIN');
+    async generateProfile(@Req() request: any, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var reqbody = JSON.parse(JSON.stringify(request.body));
+
+        var data = await this.utilsService.generateProfile(request.body.email, 'LOGIN');
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+        return data;
+
+        // return await this.utilsService.generateProfile(request.body.email, 'LOGIN');
     }
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Get('getSetting')
     async getSettingMarketPlace(
-        @Headers() headers) {
+        @Headers() headers,
+        @Req() req) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         let settingMarketPlace = false;
         if (headers['x-auth-user'] == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
         }
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email header dan token not match',
             );
         }
         var getsetting = await this.utilsService.getSetting_("633f8e57ce76000009000512");
         if (getsetting == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, Setting not found',
             );
@@ -551,6 +765,10 @@ export class UtilsController {
                 ]
             }
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return Response;
     }
 }

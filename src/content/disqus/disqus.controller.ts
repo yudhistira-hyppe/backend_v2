@@ -28,6 +28,7 @@ import { DBRef, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
 
 const Long = require('mongodb').Long;
 @Controller('api/')
@@ -43,7 +44,8 @@ export class DisqusController {
     private readonly insightsService: InsightsService,
     private readonly contenteventsService: ContenteventsService,
     private readonly userauthsService: UserauthsService,
-    private readonly errorHandler: ErrorHandler) { }
+    private readonly errorHandler: ErrorHandler,
+    private readonly logapiSS : LogapisService) { }
 
   @Post('disqus')
   async create(@Body() CreateDisqusDto: CreateDisqusDto) {
@@ -76,6 +78,9 @@ export class DisqusController {
   @FormDataRequest()
   @Post('posts/disqus')
   async disqus(@Headers() headers, @Body() ContentDto_: ContentDto,) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/disqus";
+    
     console.log('>>>>>>>>>> HEADER <<<<<<<<<<', JSON.stringify(headers))
     console.log('>>>>>>>>>> CONTENT DTO <<<<<<<<<<', JSON.stringify(ContentDto_))
     var email_header = headers['x-auth-user'];
@@ -84,6 +89,10 @@ export class DisqusController {
     let res = new DisqusResponseApps();
 
     if (ContentDto_.eventType == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(ContentDto_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException('Unabled to proceed eventType is required',);
     } else {
       type = ContentDto_.eventType.toString();
@@ -100,6 +109,10 @@ export class DisqusController {
 
           console.log("processDisqus >>> receiver: ", xres.disqusLogs[0].receiver);
           this.disqusService.sendDMNotif(String(xres.room), JSON.stringify(xres));
+
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(ContentDto_));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
 
           res.response_code = 202;
           let m = new Messages();
@@ -165,6 +178,11 @@ export class DisqusController {
           }
           this.insightsService.updateComment(ContentDto_.receiverParty.toString());
           this.postDisqusService.updateCommentPlus(ContentDto_.postID.toString());
+
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(ContentDto_));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
+
           res.response_code = 202;
           let m = new Messages();
           m.info = ["The process successful"]
@@ -379,6 +397,10 @@ export class DisqusController {
           // var DisqusResponseComment_ = new DisqusResponseComment();
           // let com = await this.disqusService.findDisqusByPost(String(ContentDto_.postID), type);
 
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(ContentDto_));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
+
           var data = await this.disqusService.getDiscus(String(ContentDto_.postID), type, Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
           return {
             data: data
@@ -426,6 +448,10 @@ export class DisqusController {
       }
 
       if (isValid) {
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(ContentDto_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
+
         res.response_code = 202;
         let ms = new Messages();
         ms.info = ["The process successful"];
@@ -437,6 +463,10 @@ export class DisqusController {
         //inDto.buildErrorInfo(inDto.getEventType(), ResBundle.instance().bundleAsStr(ResBundle.AC_ERR_DEFAULT));
       }
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(ContentDto_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',
       );
@@ -1194,8 +1224,12 @@ export class DisqusController {
   @UseGuards(JwtAuthGuard)
   async deletedicuss(
     @Headers() headers,
-    @Body() request: any) {
-    return this.DisqusService.deletedicuss(request);
+    @Body() request: any,
+    @Req() req) {
+    
+    var fullurl = req.get("Host") + req.originalUrl;
+
+    return this.DisqusService.deletedicuss(headers['x-auth-user'], fullurl, request);
   }
 
   async sendCommentFCM(email: string, type: string, postID: string, receiverParty: string) {
@@ -1237,23 +1271,45 @@ export class DisqusController {
   @UseGuards(JwtAuthGuard)
   async deletedicusslog(
     @Headers() headers,
-    @Body() request: any) {
+    @Body() request: any,
+    @Req() req) {
+
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',
       );
     }
     if (request._id == undefined) {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',
       );
     }
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',
       );
     }
-    await this.disqusService.discussLog(request);
+
+    var fullurl = req.get("Host") + req.originalUrl
+
+    await this.disqusService.discussLog(fullurl, headers['x-auth-user'], request);
     return {
       response_code: 202,
       messages: {

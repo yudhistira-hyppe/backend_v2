@@ -10,7 +10,7 @@ import { InterestsRepoModule } from '../../infra/interests_repo/interests_repo.m
 import { MediaproofpictsModule } from '../../content/mediaproofpicts/mediaproofpicts.module';
 import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediaprofilepicts.module';
 import { FriendListModule } from 'src/content/friend_list/friend_list.module';
-
+import { LogapisModule } from '../logapis/logapis.module';
 
 @Module({
 
@@ -21,6 +21,7 @@ import { FriendListModule } from 'src/content/friend_list/friend_list.module';
         LanguagesModule,
         CountriesModule,
         FriendListModule,
+        LogapisModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Userbasic.name, schema: UserbasicSchema }], 'SERVER_FULL')
     ],

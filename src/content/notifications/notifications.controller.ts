@@ -1,13 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Headers } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationsDto } from './dto/create-notifications.dto';
 import { Notifications } from './schemas/notifications.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Res, HttpStatus, Response, Req, BadRequestException } from '@nestjs/common';
 import { Request } from 'express';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
 @Controller()
 export class NotificationsController {
-  constructor(private readonly NotificationsService: NotificationsService) { }
+  constructor(private readonly NotificationsService: NotificationsService,
+    private readonly logapiSS:LogapisService) { }
 
   @Post()
   async create(@Body() CreateNotificationsDto: CreateNotificationsDto) {
@@ -37,7 +39,12 @@ export class NotificationsController {
 
   @Post('api/notifications/latest')
   @UseGuards(JwtAuthGuard)
-  async contentuserall(@Req() request: Request): Promise<any> {
+  async contentuserall(@Req() request: Request, @Headers() headers): Promise<any> {
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+    var fullurl = request.get("Host") + request.originalUrl;
+
     var skip = 0;
     var limit = 0;
     var email = null;
@@ -46,12 +53,22 @@ export class NotificationsController {
     if (request_json["skip"] !== undefined) {
       skip = request_json["skip"];
     } else {
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, request_json.email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
     if (request_json["limit"] !== undefined) {
       limit = request_json["limit"];
     } else {
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, request_json.email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -59,6 +76,11 @@ export class NotificationsController {
     if (request_json["email"] !== undefined) {
       email = request_json["email"];
     } else {
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, request_json.email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -72,12 +94,22 @@ export class NotificationsController {
 
     let data = await this.NotificationsService.findlatest(email, skip, limit);
 
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, request_json.email, null, null, request_json);
+
     return { response_code: 202, data, totalAllrows: 0, messages };
   }
 
   @Post('api/notifications/business/latest')
   @UseGuards(JwtAuthGuard)
   async contentuserallbybusiness(@Req() request: Request): Promise<any> {
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+    var fullurl = request.get("Host") + request.originalUrl;
+    
     var skip = 0;
     var limit = 0;
     var email = null;
@@ -86,12 +118,22 @@ export class NotificationsController {
     if (request_json["skip"] !== undefined) {
       skip = request_json["skip"];
     } else {
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, request_json.email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
     if (request_json["limit"] !== undefined) {
       limit = request_json["limit"];
     } else {
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, request_json.email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -99,6 +141,11 @@ export class NotificationsController {
     if (request_json["email"] !== undefined) {
       email = request_json["email"];
     } else {
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, request_json.email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -111,6 +158,11 @@ export class NotificationsController {
 
 
     let data = await this.NotificationsService.findbusinesslatest(email, skip, limit);
+
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, request_json.email, null, null, request_json);
 
     return { response_code: 202, data, totalAllrows: 0, messages };
   }

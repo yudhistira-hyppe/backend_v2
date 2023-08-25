@@ -15,6 +15,7 @@ import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
 import { UserauthsModule } from '../../trans/userauths/userauths.module';
 import { SocketModule } from '../socket/socket.module';
 import { ReactionsRepoModule } from '../../infra/reactions_repo/reactions_repo.module';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
 
 @Module({
 
@@ -30,6 +31,7 @@ import { ReactionsRepoModule } from '../../infra/reactions_repo/reactions_repo.m
         UserauthsModule,
         UtilsModule,
         SocketModule,
+        LogapisModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Disqus.name, schema: DisqusSchema }], 'SERVER_FULL')
     ],

@@ -5,13 +5,15 @@ import { Activityevents } from './schemas/activityevents.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
+import { LogapisService } from '../logapis/logapis.service';
 
 
 @Controller('api/activityevents')
 export class ActivityeventsController {
   constructor(private readonly activityeventsService: ActivityeventsService,
     private readonly utilsService: UtilsService,
-    private readonly errorHandler: ErrorHandler) { }
+    private readonly errorHandler: ErrorHandler,
+    private readonly logapiSS: LogapisService) { }
 
   @Post()
   async create(@Body() CreateActivityeventsDto: CreateActivityeventsDto) {
@@ -49,12 +51,35 @@ export class ActivityeventsController {
     //     'Unabled to proceed, user permission cannot acces module',
     //   );
     // }
-    return this.activityeventsService.LogActivitas(year);
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/activityevents/logactivitas";
+    var setinput = {
+      "year":year
+    };
+    var reqbody = JSON.parse(JSON.stringify(setinput));
+
+    var data = await this.activityeventsService.LogActivitas(year);
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
+    return data;
+
+    // return this.activityeventsService.LogActivitas(year);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('logactivitas/sesi')
   async countPostsesi(@Req() request, @Headers() headers): Promise<Object> {
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/activityevents/logactivitas/sesi";
+
     var datasesi = null;
     var countUser = [];
     var awake = null;
@@ -207,13 +232,22 @@ export class ActivityeventsController {
 
     }
 
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return { response_code: 202, data, messages };
   }
 
 
   @UseGuards(JwtAuthGuard)
   @Post('logactivitas/useractive')
-  async countPostsesiactiv(@Req() request): Promise<Object> {
+  async countPostsesiactiv(@Req() request, @Headers() headers): Promise<Object> {
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/activityevents/logactivitas/useractive";
+    
     var datasesi = null;
     var countUser = [];
     var sumUser = [];
@@ -285,6 +319,9 @@ export class ActivityeventsController {
 
     }
 
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return { response_code: 202, data, messages };
   }
 
@@ -293,7 +330,12 @@ export class ActivityeventsController {
   @Post('list')
   //@FormDataRequest()
   @UseGuards(JwtAuthGuard)
-  async profileuse(): Promise<any> {
+  async profileuse(@Headers() headers): Promise<any> {
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/activityevents/logactivitas/list";
 
     var data = null;
 
@@ -304,6 +346,9 @@ export class ActivityeventsController {
 
 
     data = await this.activityeventsService.findevents();
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
 
     return { response_code: 202, data, messages };
   }

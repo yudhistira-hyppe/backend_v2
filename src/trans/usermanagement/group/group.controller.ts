@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Query, Post, UseGuards, Param, Request, Headers } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Query, Post, UseGuards, Param, Request, Headers, Req, Head, Header } from '@nestjs/common';
 import { GroupService } from './group.service';
 import { GroupDto } from './dto/group.dto';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
@@ -10,6 +10,8 @@ import { DivisionService } from '../division/division.service';
 import { UserauthsService } from '../../../trans/userauths/userauths.service';
 import { ObjectId } from 'mongodb';
 import mongoose, { Schema } from 'mongoose';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { request } from 'http';
 
 @Controller('/api/group')
 export class GroupController {
@@ -21,12 +23,19 @@ export class GroupController {
         private readonly userbasicsService: UserbasicsService,
         private readonly divisionService: DivisionService,
         private readonly userauthsService: UserauthsService,
+        private readonly logapiSS: LogapisService
     ) { }
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('/create')
-    async create(@Body() request) {
+    async create(@Body() request, @Headers() headers) {
+        var fullurl = headers.host + '/api/group/create';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var reqbody = JSON.parse(JSON.stringify(request));
+
         var current_date = await this.utilsService.getDateTimeString();
         var data_group = null;
         var data_division = null;
@@ -37,6 +46,9 @@ export class GroupController {
         var data_user_not_found = [];
 
         if (request.nameGroup == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, current_date, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create group param nameGroup is required',
             );
@@ -48,12 +60,18 @@ export class GroupController {
         }
 
         if (request.divisionId == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, current_date, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create group param divisionId is required',
             );
         } else {
             data_division = await this.divisionService.findOne(request.divisionId);
             if (!(await this.utilsService.ceckData(data_division))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, current_date, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed Create group param divisionId is not found',
                 );
@@ -97,6 +115,10 @@ export class GroupController {
         } else {
             await this.groupService.update(data_group._id, GroupDto_);
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, current_date, timestamps_end, email, null, null, reqbody);
+
         return {
             "response_code": 202,
             "data": {
@@ -119,12 +141,25 @@ export class GroupController {
     async findAll(
         @Query('skip') skip: number,
         @Query('limit') limit: number,
-        @Query('search') search: string) {
+        @Query('search') search: string,
+        @Request() request,
+        @Headers() headers) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         if (search == undefined) {
             search = "";
         }
         var data = await this.groupService.findAll(search, skip, limit);
         var totalRow = (await this.groupService.findAllCount(search)).length;
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return {
             "response_code": 202,
             "totalRow": totalRow,
@@ -142,8 +177,18 @@ export class GroupController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Get('/:id')
-    async getByid(@Param('id') id: string) {
+    async getByid(@Param('id') id: string, @Request() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var data = await this.groupService.findByid(id);
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return {
             "response_code": 202,
             "data": data,
@@ -158,7 +203,14 @@ export class GroupController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('/update')
-    async update(@Body() request) {
+    async update(@Body() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/group/update';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var reqbody = JSON.parse(JSON.stringify(request));
+
         var current_date = await this.utilsService.getDateTimeString();
         var data_division = null;
         var data_user_insert = [];
@@ -167,23 +219,35 @@ export class GroupController {
         var data_user_not_found = [];
 
         if (request._id == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create group param _id is required',
             );
         }
         if (request.nameGroup == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create group param nameGroup is required',
             );
         }
 
         if (request.divisionId == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create group param divisionId is required',
             );
         } else {
             data_division = await this.divisionService.findOne(request.divisionId);
             if (!(await this.utilsService.ceckData(data_division))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed Create group param divisionId is not found',
                 );
@@ -198,6 +262,10 @@ export class GroupController {
             GroupDto_.desc = request.desc;
         }
         await this.groupService.update(request._id, GroupDto_);
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
         return {
             "response_code": 202,
             "data": {
@@ -218,7 +286,14 @@ export class GroupController {
     @HttpCode(HttpStatus.ACCEPTED)
     @Delete('/delete')
     async delete(
-        @Query('id') id: string,) {
+        @Query('id') id: string,
+        @Request() request,
+        @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var data_ceck = await this.groupService.findOne(id);
         if (await this.utilsService.ceckData(data_ceck)){
@@ -229,6 +304,10 @@ export class GroupController {
             }
         }
         await this.groupService.delete(id);
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
         return {
             "response_code": 202,
             "messages": {
@@ -242,13 +321,26 @@ export class GroupController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('/user')
-    async addusergroup(@Body() request) {
+    async addusergroup(@Body() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/group/user';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var reqbody = JSON.parse(JSON.stringify(request));
+
         if (request.email == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Add user to group param email is required',
             );
         }
         if (request.groupId == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Add user to group param groupId is required',
             );
@@ -283,6 +375,10 @@ export class GroupController {
                         await this.userauthsService.addUserRole(request.email, "ROLE_ADMIN");
                     }
                 }
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 return {
                     "response_code": 202,
                     "messages": {
@@ -292,11 +388,17 @@ export class GroupController {
                     },
                 };
             } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed userauth not found',
                 );
             }
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed user not found',
             );
@@ -307,8 +409,17 @@ export class GroupController {
     @HttpCode(HttpStatus.ACCEPTED)
     @Delete('/user')
     async deleteusergroup(
-        @Query('email') email: string,) {
+        @Query('email') email: string, @Request() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+
         if (email == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Add user to group param email is required',
             );
@@ -327,6 +438,10 @@ export class GroupController {
                 if (await this.utilsService.ceckData(user_auth_role)) {
                     await this.userauthsService.deleteUserRole(email, "ROLE_ADMIN");
                 }
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                 return {
                     "response_code": 202,
                     "messages": {
@@ -336,11 +451,17 @@ export class GroupController {
                     },
                 };
             } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed userauth not found',
                 );
             }
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed user not found',
             );
@@ -350,13 +471,26 @@ export class GroupController {
     @UseGuards(JwtAuthGuard)
     @Post('statususer')
     @HttpCode(HttpStatus.ACCEPTED)
-    async updatestatususer(@Request() req, @Headers('x-auth-token') auth: string) {
+    async updatestatususer(@Request() req, @Headers('x-auth-token') auth: string, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var setauth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = setauth.email;
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        
         if (req.body.email == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed param email is required',
             );
         }
         if (req.body.status == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed param status is required',
             );
@@ -370,6 +504,10 @@ export class GroupController {
         }else{
             await this.userauthsService.deleteUserRole(req.body.email, 'ROLE_ADMIN')
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
         return {
             "response_code": 202,
             "messages": {
@@ -384,8 +522,18 @@ export class GroupController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Get()
-    async getListUserGroup() {
+    async getListUserGroup(@Req() req, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var setauth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = setauth.email;
+        
         var data = await this.groupService.listGroupUserAll();
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
         return {
             "response_code": 202,
             "data": data,
@@ -400,8 +548,18 @@ export class GroupController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Get('/division/:id')
-    async getGroupByIdDivisi(@Param('id') id: string) {
+    async getGroupByIdDivisi(@Param('id') id: string, @Headers() headers, @Req() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var setauth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = setauth.email;
+
         var data = await this.groupService.findByDvivision(id);
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
         return {
             "response_code": 202,
             "data": data,

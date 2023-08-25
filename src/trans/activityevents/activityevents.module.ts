@@ -5,9 +5,11 @@ import { ActivityeventsController } from './activityevents.controller';
 import { ConfigModule } from '@nestjs/config';
 import { Activityevents, ActivityeventsSchema } from './schemas/activityevents.schema';
 import { UtilsModule } from '../../utils/utils.module';
+import { LogapisModule } from '../logapis/logapis.module';
 
 @Module({
     imports: [
+        LogapisModule,
         UtilsModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Activityevents.name, schema: ActivityeventsSchema }], 'SERVER_FULL')

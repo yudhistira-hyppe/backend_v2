@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, UseInterceptors, UploadedFiles, Res, BadRequestException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, UseInterceptors, UploadedFiles, Res, BadRequestException, HttpStatus, Headers, Head } from '@nestjs/common';
 import { ChallengeService } from './challenge.service';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { Challenge } from './schemas/challenge.schema';
@@ -20,6 +20,7 @@ import { notifChallengeService } from './notifChallenge.service';
 import { UserbadgeService } from '../userbadge/userbadge.service';
 import { Userbadge } from '../userbadge/schemas/userbadge.schema';
 import { session } from 'passport';
+import { LogapisService } from '../logapis/logapis.service';
 
 @Controller('api/challenge')
 export class ChallengeController {
@@ -31,7 +32,8 @@ export class ChallengeController {
     private readonly userchallengeSS: UserchallengesService,
     private readonly notifChallengeService: notifChallengeService,
     private readonly userbadgeService: UserbadgeService,
-    private readonly userbasicsSS: UserbasicsService) { }
+    private readonly userbasicsSS: UserbasicsService,
+    private readonly logapiSS: LogapisService) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -50,18 +52,33 @@ export class ChallengeController {
     },
     @Req() request: Request,
     @Res() res,
+    @Headers() headers
   ) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge';
     var request_json = JSON.parse(JSON.stringify(request.body));
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
 
     if (files.bannerBoard == undefined) {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed. banner board image is required");
     }
 
     if (files.bannerSearch == undefined) {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed. banner search image is required");
     }
 
     if (files.popUpnotif == undefined) {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed. pop up notification image is required");
     }
 
@@ -101,6 +118,9 @@ export class ChallengeController {
       setikuti = (request_json["akun_ikuti"] == undefined && request_json["akun_ikuti"] == null ? 0 : Number(request_json['akun_ikuti']));
 
       if (setreferal == 0 && setikuti == 0) {
+        var timestamps_end = await this.util.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         throw new BadRequestException("Unabled to proceed, referral score or following score is required");
       }
 
@@ -484,6 +504,9 @@ export class ChallengeController {
 
       // console.log(JSON.stringify(listsubchallenge));
 
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       return res.status(HttpStatus.OK).json({
         response_code: 202,
         "data": insertdata,
@@ -491,6 +514,9 @@ export class ChallengeController {
       });
     }
     catch (e) {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       return res.status(HttpStatus.BAD_REQUEST).json({
         "message": messagesEror
       });
@@ -499,7 +525,13 @@ export class ChallengeController {
 
   @UseGuards(JwtAuthGuard)
   @Post('listing')
-  async findAll(@Req() request: Request) {
+  async findAll(@Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/list';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     var menuChallenge = null;
     var nameChallenge = null;
     var startdate = null;
@@ -541,18 +573,27 @@ export class ChallengeController {
     if (request_json["ascending"] !== undefined) {
       ascending = request_json["ascending"];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, sort ascending field is required");
     }
 
     if (request_json["page"] !== undefined) {
       page = Number(request_json["page"]);
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, page field is required");
     }
 
     if (request_json["limit"] !== undefined) {
       limit = Number(request_json["limit"]);
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, limit field is required");
     }
 
@@ -565,6 +606,9 @@ export class ChallengeController {
       "info": ["The process successful"],
     };
 
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return {
       response_code: 202,
       data: data,
@@ -574,13 +618,31 @@ export class ChallengeController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.challengeService.detailchallenge(id);
+  async findOne(@Param('id') id: string, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/' + id;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
+    var data = await this.challengeService.detailchallenge(id);
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+    return data;
+    // return this.challengeService.detailchallenge(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('duplicate/:id')
-  async duplikatdata(@Param('id') id: string) {
+  async duplikatdata(@Param('id') id: string, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/duplicate/' + id;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    
     var data = await this.challengeService.findOne(id);
 
     var mongoose = require('mongoose');
@@ -615,6 +677,9 @@ export class ChallengeController {
       "info": ["The process successful"],
     };
 
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
     return {
       response_code: 202,
       data: insertdata,
@@ -640,11 +705,21 @@ export class ChallengeController {
     },
     @Req() request: Request,
     @Res() res,
+    @Headers() headers
   ) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/update/' + id;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     var request_json = JSON.parse(JSON.stringify(request.body));
     var getdata = await this.challengeService.findOne(id);
 
     if (request_json['statusChallenge'] == undefined) {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, status challenge field is required");
     }
 
@@ -684,6 +759,9 @@ export class ChallengeController {
         setikuti = (request_json["akun_ikuti"] == undefined && request_json["akun_ikuti"] == null ? 0 : Number(request_json['akun_ikuti']));
 
         if (setreferal == 0 && setikuti == 0) {
+          var timestamps_end = await this.util.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
           throw new BadRequestException("Unabled to proceed, referral score or following score is required");
         }
 
@@ -1159,6 +1237,9 @@ export class ChallengeController {
       "info": ["Todo is not found!"],
     };
 
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     try {
 
       return res.status(HttpStatus.OK).json({
@@ -1178,7 +1259,14 @@ export class ChallengeController {
   @Get('subchallenge/disactivate/:id')
   async setnonactive(
     @Param('id') id: string,
+    @Headers() headers
   ) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/subchallenge/disactivate/' + id;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     var setupdatedata = new CreateSubChallengeDto();
     setupdatedata.isActive = false;
 
@@ -1187,6 +1275,9 @@ export class ChallengeController {
     };
 
     await this.subchallenge.update(id, setupdatedata);
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
 
     return {
       response_code: 202,
@@ -1198,8 +1289,15 @@ export class ChallengeController {
   @Post('setstatuschallenge/:id')
   async updatechallengedata(
     @Param('id') id: string,
-    @Req() request: Request
+    @Req() request: Request,
+    @Headers() headers
   ) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/setstatuschallenge/' + id;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     var request_json = JSON.parse(JSON.stringify(request.body));
 
     var statusChallenge = request_json['statusChallenge'];
@@ -1217,6 +1315,9 @@ export class ChallengeController {
 
     await this.challengeService.update(id, getdata);
 
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return {
       response_code: 202,
       messages: messages,
@@ -1226,8 +1327,15 @@ export class ChallengeController {
   @UseGuards(JwtAuthGuard)
   @Post('listing/bannerlandingpage')
   async listingbanner(
-    @Req() request: Request
+    @Req() request: Request,
+    @Headers() headers
   ) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/listing/bannerlandingpage';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     var targetbanner = null;
     var page = null;
     var request_json = JSON.parse(JSON.stringify(request.body));
@@ -1236,12 +1344,18 @@ export class ChallengeController {
     if (request_json["target"] !== undefined) {
       targetbanner = request_json['target'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, filter target banner field is required");
     }
 
     if (request_json["page"] !== undefined) {
       page = request_json['page'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, page field is required");
     }
 
@@ -1254,6 +1368,9 @@ export class ChallengeController {
     };
 
     var data = await this.challengeService.findlistingBanner(targetbanner, jenischallenge, page);
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
     return {
       response_code: 202,
@@ -1270,8 +1387,12 @@ export class ChallengeController {
   @UseGuards(JwtAuthGuard)
   @Post('allchallenge')
   async showallchallenge(
-    @Req() request: Request
+    @Req() request: Request,
+    @Headers() headers
   ) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/allchallenge';
+
     var iduser = null;
     var page = null;
     var limit = null;
@@ -1282,18 +1403,27 @@ export class ChallengeController {
     if (request_json["iduser"] !== undefined) {
       iduser = request_json['iduser'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, iduser field is required");
     }
 
     if (request_json["page"] !== undefined) {
       page = request_json['page'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, page field is required");
     }
 
     if (request_json["limit"] !== undefined) {
       limit = request_json['limit'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, limit field is required");
     }
 
@@ -1307,6 +1437,9 @@ export class ChallengeController {
       "info": ["The process successful"],
     };
 
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
     return {
       response_code: 202,
       data: data,
@@ -1317,8 +1450,12 @@ export class ChallengeController {
   @UseGuards(JwtAuthGuard)
   @Post('leaderboard')
   async listingleaderboard(
-    @Req() request: Request
+    @Req() request: Request,
+    @Headers() headers
   ) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/leaderboard';
+
     var challengeId = null;
     var userId = null;
 
@@ -1327,12 +1464,18 @@ export class ChallengeController {
     if (request_json["challengeId"] !== undefined) {
       challengeId = request_json['challengeId'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, userId, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, challenge field is required");
     }
 
     if (request_json["userId"] !== undefined) {
       userId = request_json['userId'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, userId, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, user id field is required");
     }
 
@@ -1341,6 +1484,9 @@ export class ChallengeController {
     const messages = {
       "info": ["The process successful"],
     };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, userId, null, request_json);
 
     return {
       response_code: 202,
@@ -1351,7 +1497,13 @@ export class ChallengeController {
 
   @UseGuards(JwtAuthGuard)
   @Get('listuserwilayah/:id')
-  async listuserwilayah(@Param('id') id: string, @Req() request: Request) {
+  async listuserwilayah(@Param('id') id: string, @Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/listuserwilayah/' + id;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    
     var challengeId = id;
 
     var data = await this.subchallenge.getwilayahpengguna(challengeId);
@@ -1375,6 +1527,9 @@ export class ChallengeController {
       "info": ["The process successful"],
     };
 
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
     return {
       response_code: 202,
       data: data,
@@ -1384,7 +1539,9 @@ export class ChallengeController {
 
   @UseGuards(JwtAuthGuard)
   @Post('join')
-  async joinChallenge(@Res() res, @Req() request: Request) {
+  async joinChallenge(@Res() res, @Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/join';
 
     var request_json = JSON.parse(JSON.stringify(request.body));
     var getsubid = request_json['idChallenge'];
@@ -1393,6 +1550,10 @@ export class ChallengeController {
     if (checkdata == true) {
       var getuserbasic = await this.userbasicsSS.findbyid(request_json['idUser']);
       var languages_json = JSON.parse(JSON.stringify(getuserbasic.languages));
+
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
+
       if (languages_json.$id == '6152481690f7b2293d0bf653') {
         throw new BadRequestException("user already registered");
       }
@@ -1439,6 +1600,9 @@ export class ChallengeController {
       const messagesEror = {
         "info": ["Todo is not found!"],
       };
+
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
 
       return res.status(HttpStatus.OK).json({
         response_code: 202,
@@ -1885,7 +2049,13 @@ export class ChallengeController {
 
   @UseGuards(JwtAuthGuard)
   @Post('listing/userchallenge')
-  async listinguserchallenge(@Req() request: Request) {
+  async listinguserchallenge(@Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/listing/userchallenge';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     var challengeid = null;
     var pilihansession = null;
     var jeniskelamin = null;
@@ -1902,30 +2072,45 @@ export class ChallengeController {
     if (request_json["challengeId"] !== undefined) {
       challengeid = request_json['challengeId'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, challenge field is required");
     }
 
     if (request_json["ascending"] !== undefined) {
       sorting = request_json['ascending'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, ascending field is required");
     }
 
     if (request_json["limit"] !== undefined) {
       limit = request_json['limit'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, limit field is required");
     }
 
     if (request_json["page"] !== undefined) {
       page = request_json['page'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, page field is required");
     }
 
     if (request_json["pilihansession"] !== undefined) {
       pilihansession = request_json['pilihansession'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, set session field is required");
     }
 
@@ -1953,6 +2138,9 @@ export class ChallengeController {
       "info": ["The create successful"],
     };
 
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return {
       response_code: 202,
       "data": data,
@@ -1964,7 +2152,13 @@ export class ChallengeController {
 
   @UseGuards(JwtAuthGuard)
   @Post('listleaderboard')
-  async listleaderboaard(@Req() request: Request) {
+  async listleaderboaard(@Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/listleaderboard';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     var idchallenge = null;
     var iduser = null;
     var status = null;
@@ -1977,12 +2171,18 @@ export class ChallengeController {
     if (request_json["idchallenge"] !== undefined) {
       idchallenge = request_json['idchallenge'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, challenge field is required");
     }
 
     if (request_json["iduser"] !== undefined) {
       iduser = request_json['iduser'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, ascending field is required");
     }
     status = request_json['status'];
@@ -2013,6 +2213,9 @@ export class ChallengeController {
       "info": ["The proses successful"],
     };
 
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return {
       response_code: 202,
       "data": data,
@@ -2023,7 +2226,13 @@ export class ChallengeController {
 
   @UseGuards(JwtAuthGuard)
   @Post('listbadgebyuser')
-  async listbadgebyuser(@Req() request: Request) {
+  async listbadgebyuser(@Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/listbadgebyuser';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     var iduser = null;
     var page = null;
     var limit = null;
@@ -2036,6 +2245,9 @@ export class ChallengeController {
     if (request_json["iduser"] !== undefined) {
       iduser = request_json['iduser'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, ascending field is required");
     }
 
@@ -2052,6 +2264,9 @@ export class ChallengeController {
       "info": ["The proses successful"],
     };
 
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return {
       response_code: 202,
       "data": data,
@@ -2063,7 +2278,10 @@ export class ChallengeController {
 
   @UseGuards(JwtAuthGuard)
   @Post('listbadgeuserdetail')
-  async listbadgeuserdetail(@Req() request: Request) {
+  async listbadgeuserdetail(@Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/listbadgeuserdetail';
+
     var iduser = null;
     var page = null;
     var limit = null;
@@ -2076,6 +2294,9 @@ export class ChallengeController {
     if (request_json["iduser"] !== undefined) {
       iduser = request_json['iduser'];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, ascending field is required");
     }
 
@@ -2091,6 +2312,9 @@ export class ChallengeController {
     const messages = {
       "info": ["The proses successful"],
     };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
 
     return {
       response_code: 202,
@@ -2139,7 +2363,13 @@ export class ChallengeController {
 
   @UseGuards(JwtAuthGuard)
   @Post('badgechoice')
-  async badgechoice(@Req() request: Request) {
+  async badgechoice(@Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/badgechoice';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     var iduserbadge = null;
     var datauserbadge = null;
     var iduser = null;
@@ -2169,6 +2399,9 @@ export class ChallengeController {
     if (request_json["iduserbadge"] !== undefined) {
       iduserbadge = request_json["iduserbadge"];
     } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed, iduserbadge field is required");
     }
 
@@ -2270,6 +2503,9 @@ export class ChallengeController {
     const messages = {
       "info": ["The process successful"],
     };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
     return {
       response_code: 202,
@@ -2414,5 +2650,73 @@ export class ChallengeController {
 
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('listleaderboard2')
+  async listleaderboaard2(@Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/listleaderboard2';
 
+    var idchallenge = null;
+    var iduser = null;
+    var status = null;
+    var session = null;
+    var datasession = null;
+    var data = null;
+    var totalSession = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+    if (request_json["idchallenge"] !== undefined) {
+      idchallenge = request_json['idchallenge'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, challenge field is required");
+    }
+
+    if (request_json["iduser"] !== undefined) {
+      iduser = request_json['iduser'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, ascending field is required");
+    }
+    status = request_json['status'];
+    session = request_json['session'];
+
+
+    try {
+      data = await this.subchallenge.getListUserChallengekedua(idchallenge, iduser, status, session);
+    } catch (e) {
+      data = [];
+    }
+    if (data !== null && data.length > 0) {
+      try {
+        datasession = await this.subchallenge.getcount(idchallenge);
+      } catch (e) {
+        datasession = [];
+      }
+      if (datasession !== null && datasession.length > 0) {
+        totalSession = datasession[0].totalSession;
+      } else {
+        totalSession = 0;
+      }
+      data[0].totalSession = totalSession;
+
+    }
+
+    const messages = {
+      "info": ["The proses successful"],
+    };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
+    return {
+      response_code: 202,
+      "data": data,
+      "message": messages
+    }
+  }
 }

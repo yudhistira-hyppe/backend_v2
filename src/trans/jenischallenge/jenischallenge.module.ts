@@ -4,9 +4,13 @@ import { JenischallengeController } from './jenischallenge.controller';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { jenisChallenge, jenisChallengeSchema } from './schemas/jenischallenge.schema';
+import { LogapisModule } from '../logapis/logapis.module';
+import { UtilsModule } from 'src/utils/utils.module';
 
 @Module({
   imports:[
+    UtilsModule,
+    LogapisModule,
     ConfigModule.forRoot(),
     MongooseModule.forFeature([{ name:jenisChallenge.name, schema: jenisChallengeSchema }], 'SERVER_FULL')
   ],

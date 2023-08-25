@@ -6,9 +6,11 @@ import { ConfigModule } from '@nestjs/config';
 import { Uservouchers, UservouchersSchema } from './schemas/uservouchers.schema';
 import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { VouchersModule } from '../vouchers/vouchers.module';
+import { LogapisModule } from '../logapis/logapis.module';
+import { UtilsModule } from 'src/utils/utils.module';
 @Module({
     imports: [
-        ConfigModule.forRoot(), UserbasicsModule, VouchersModule,
+        ConfigModule.forRoot(), UserbasicsModule, VouchersModule, LogapisModule, UtilsModule,
         MongooseModule.forFeature([{ name: Uservouchers.name, schema: UservouchersSchema }], 'SERVER_FULL')
     ],
     controllers: [UservouchersController],

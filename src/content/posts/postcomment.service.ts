@@ -39,6 +39,7 @@ import { TemplatesRepoService } from '../../infra/templates_repo/templates_repo.
 import { DisqusService } from '../disqus/disqus.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
 import { CreateDisquslogsDto } from '../disquslogs/dto/create-disquslogs.dto';
+import { LogapisService } from 'src/trans/logapis/logapis.service'; 
 
 
 //import FormData from "form-data";
@@ -66,9 +67,14 @@ export class PostCommentService {
     private templateService: TemplatesRepoService,
     private videoService: MediavideosService,
     private errorHandler: ErrorHandler,
+    private logapiSS: LogapisService,
   ) { }
 
   async removeComment(body: any, headers: any): Promise<CreatePostResponse> {
+    var timestamps_start = await this.utilService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/removecomment";
+    var reqbody = JSON.parse(JSON.stringify(body));
+
     this.logger.log('removeComment >>> start: ' + JSON.stringify(body));
     var res = new CreatePostResponse();
     res.response_code = 204;
@@ -77,6 +83,9 @@ export class PostCommentService {
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
     if (profile == undefined) {
+      var timestamps_end = await this.utilService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);      
+
       let msg = new Messages();
       msg.info = ["Email unknown"];
       res.messages = msg;
@@ -85,6 +94,9 @@ export class PostCommentService {
 
     let dis = await this.disqusLogService.findOne(body.disqusLogID);
     if (dis == undefined) {
+        var timestamps_end = await this.utilService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
         let msg = new Messages();
         msg.info = ["Disqus ID unknown"];
         res.messages = msg;
@@ -112,6 +124,9 @@ export class PostCommentService {
         //this.disqusLogService.delete(String(dis._id));
     }
 
+    var timestamps_end = await this.utilService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
     res.response_code = 202;
     let msg = new Messages();
     msg.info = ["The process successful"];
@@ -121,6 +136,10 @@ export class PostCommentService {
   }
 
   async postViewer(body: any, headers: any): Promise<CreatePostResponse> {
+    var timestamps_start = await this.utilService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/postviewer";
+    var reqbody = JSON.parse(JSON.stringify(body));
+    
     this.logger.log('postViewer >>> start: ' + JSON.stringify(body));
     var res = new CreatePostResponse();
     res.response_code = 204;
@@ -129,6 +148,9 @@ export class PostCommentService {
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
     if (profile == undefined) {
+      var timestamps_end = await this.utilService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
       let msg = new Messages();
       msg.info = ["Email unknown"];
       res.messages = msg;
@@ -137,6 +159,9 @@ export class PostCommentService {
 
     let pst = await this.postService.findid(String(body.postID));
     if (pst == undefined) {
+        var timestamps_end = await this.utilService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
         let msg = new Messages();
         msg.info = ["Post ID unknown"];
         res.messages = msg;
@@ -144,6 +169,9 @@ export class PostCommentService {
     }
 
     if (pst.contentMedias.length < 1) {
+      var timestamps_end = await this.utilService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
       let msg = new Messages();
       msg.info = ["Content Media unknown"];
       res.messages = msg;
@@ -151,6 +179,9 @@ export class PostCommentService {
     }
 
     if (String(profile.email) == String(pst.email)) {
+      var timestamps_end = await this.utilService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
       let msg = new Messages();
       msg.info = ["Viewer is poster"];
       res.messages = msg;
@@ -171,6 +202,9 @@ export class PostCommentService {
     let msg = new Messages();
     msg.info = ["Unknown Error"];
     res.messages = msg;
+
+    var timestamps_end = await this.utilService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
     
     return res;
   }  

@@ -1,16 +1,23 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Req, BadRequestException, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Req, BadRequestException, Request, Headers, Head } from '@nestjs/common';
 import { AccountbalancesService } from './accountbalances.service';
 import { CreateAccountbalancesDto } from './dto/create-accountbalances.dto';
 import { Accountbalances } from './schemas/accountbalances.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserbasicsService } from '../userbasics/userbasics.service';
+import { LogapisService } from '../logapis/logapis.service';
+import { UtilsService } from 'src/utils/utils.service'; 
 @Controller('api/accountbalances')
 export class AccountbalancesController {
-    constructor(private readonly accountbalancesService: AccountbalancesService, private readonly userbasicsService: UserbasicsService) { }
+    constructor(private readonly accountbalancesService: AccountbalancesService, private readonly userbasicsService: UserbasicsService,
+        private readonly utilsService: UtilsService,
+        private readonly logapiSS: LogapisService) { }
 
     @Post()
     @UseGuards(JwtAuthGuard)
-    async search(@Req() request: Request): Promise<any> {
+    async search(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/accountbalances';
+
         var email = null;
         var data = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
@@ -28,6 +35,8 @@ export class AccountbalancesController {
             "info": ["The process successful"],
         };
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
     }
@@ -35,7 +44,10 @@ export class AccountbalancesController {
 
     @Post('wallet')
     @UseGuards(JwtAuthGuard)
-    async searchwallet(@Req() request: Request): Promise<any> {
+    async searchwallet(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/accountbalances/wallet';
+        
         var startdate = null;
         var enddate = null;
         var email = null;
@@ -53,18 +65,27 @@ export class AccountbalancesController {
             iduser = ubasic._id;
 
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["startdate"] !== undefined) {
             startdate = request_json["startdate"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["enddate"] !== undefined) {
             enddate = request_json["enddate"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         try {
@@ -95,12 +116,18 @@ export class AccountbalancesController {
 
         data = { "startdate": startdate, "enddate": enddate, "totalsaldo": totalsaldo, "totalpenarikan": totalpenarikan }
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('history')
     @UseGuards(JwtAuthGuard)
-    async searchhistory(@Req() request: Request): Promise<any> {
+    async searchhistory(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/accountbalances/history';
+        
         var startdate = null;
         var enddate = null;
         var iduser = null;
@@ -116,28 +143,43 @@ export class AccountbalancesController {
             iduser = ubasic._id;
 
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["startdate"] !== undefined) {
             startdate = request_json["startdate"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["enddate"] !== undefined) {
             enddate = request_json["enddate"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         const messages = {
@@ -147,12 +189,21 @@ export class AccountbalancesController {
 
         data = await this.accountbalancesService.findwallethistory(iduser, startdate, enddate, skip, limit);
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @Post('detailrewards')
     @UseGuards(JwtAuthGuard)
-    async detailrewards(@Req() request: Request): Promise<any> {
+    async detailrewards(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/accountbalances/detailrewards';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         var id = null;
         var data = null;
         const mongoose = require('mongoose');
@@ -164,6 +215,9 @@ export class AccountbalancesController {
             id = request_json["id"];
 
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -173,6 +227,9 @@ export class AccountbalancesController {
         var idtr = mongoose.Types.ObjectId(id);
 
         data = await this.accountbalancesService.detailrewards(idtr);
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
     }
@@ -235,7 +292,13 @@ export class AccountbalancesController {
 
   @Post('incomebychart')
   @UseGuards(JwtAuthGuard)
-  async getIncomeChartBasedDate(@Req() request: Request): Promise<any> {
+  async getIncomeChartBasedDate(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/accountbalances/incomebychart';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    
     var data = null;
     var date = null;
 
@@ -250,6 +313,9 @@ export class AccountbalancesController {
   } 
   else 
   {
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     throw new BadRequestException("Unabled to proceed");
   }
 
@@ -299,12 +365,21 @@ export class AccountbalancesController {
     total:(getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
   }
 
+  var timestamps_end = await this.utilsService.getDateTimeString();
+  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
   return { response_code: 202, messages, data };
   }
   
   @Post('totalincomedata')
   @UseGuards(JwtAuthGuard)
-  async getTotalPendapatanBasedDate(@Req() request: Request): Promise<any> {
+  async getTotalPendapatanBasedDate(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/accountbalances/totalincomedata';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    
     var total = null;
     var startdate = null;
     var enddate = null;
@@ -318,6 +393,9 @@ export class AccountbalancesController {
         startdate = request_json["startdate"];
     }
     else {
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -325,6 +403,9 @@ export class AccountbalancesController {
         enddate = request_json["enddate"];
     }
     else {
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -339,12 +420,21 @@ export class AccountbalancesController {
 
     total = totalpendapatan;
 
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return { response_code: 202, messages, total };
   }
 
   @Post('totalvoucherincomebychart')
   @UseGuards(JwtAuthGuard)
-  async gettotalvoucherincomeBasedDate(@Req() request: Request): Promise<any> {
+  async gettotalvoucherincomeBasedDate(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/accountbalances/totalvoucherincomebychart';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    
     var data = null;
     var startdate = null;
     var enddate = null;
@@ -358,6 +448,9 @@ export class AccountbalancesController {
         startdate = request_json["startdate"];
     }
     else {
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -365,6 +458,9 @@ export class AccountbalancesController {
         enddate = request_json["enddate"];
     }
     else {
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -415,12 +511,21 @@ export class AccountbalancesController {
         total:(getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
     }
 
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return { response_code: 202, messages, data };
   }
 
   @Post('totalallincomebychart')
   @UseGuards(JwtAuthGuard)
-  async gettotalsemuaincomeBasedDate(@Req() request: Request): Promise<any> {
+  async gettotalsemuaincomeBasedDate(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/accountbalances/totalallincomebychart';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    
     var data = null;
     var startdate = null;
     var enddate = null;
@@ -434,6 +539,9 @@ export class AccountbalancesController {
         startdate = request_json["startdate"];
     }
     else {
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -441,6 +549,9 @@ export class AccountbalancesController {
         enddate = request_json["enddate"];
     }
     else {
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -490,6 +601,9 @@ export class AccountbalancesController {
         array,
         total:(getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
     }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
     return { response_code: 202, messages, data };
   }

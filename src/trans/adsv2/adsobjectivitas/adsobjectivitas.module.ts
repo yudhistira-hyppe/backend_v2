@@ -5,9 +5,11 @@ import { AdsObjectivitasService } from './adsobjectivitas.service';
 import { ConfigModule } from '@nestjs/config';
 import { AdsObjectivitas, AdsObjectivitasSchema } from './schema/adsobjectivitas.schema';
 import { UtilsModule } from '../../../utils/utils.module';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
 
 @Module({
     imports: [
+        LogapisModule,
         UtilsModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: AdsObjectivitas.name, schema: AdsObjectivitasSchema }], 'SERVER_FULL')

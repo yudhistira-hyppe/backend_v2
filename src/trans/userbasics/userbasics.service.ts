@@ -7,6 +7,7 @@ import { LanguagesService } from '../../infra/languages/languages.service';
 import { InterestsRepoService } from '../../infra/interests_repo/interests_repo.service';
 import { MediaproofpictsService } from '../../content/mediaproofpicts/mediaproofpicts.service';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
+import { LogapisService } from '../logapis/logapis.service';
 
 @Injectable()
 export class UserbasicsService {
@@ -17,6 +18,7 @@ export class UserbasicsService {
     private readonly interestsRepoService: InterestsRepoService,
     private readonly mediaprofilepictsService: MediaprofilepictsService,
     private readonly mediaproofpictsService: MediaproofpictsService,
+    private readonly logapiSS : LogapisService
 
   ) { }
 
@@ -542,7 +544,7 @@ export class UserbasicsService {
     return data;
   }
 
-  async updateStatusKyc(email: string, status: Boolean, statusKyc: string): Promise<Object> {
+  async updateStatusKyc(email: string, status: Boolean, statusKyc: string, startdate:string, urllink:string): Promise<Object> {
     let data = await this.userbasicModel.updateOne({ "email": email },
       {
         $set: {
@@ -551,6 +553,13 @@ export class UserbasicsService {
         }
       },
     );
+
+    var timestamps_end = new Date();
+    timestamps_end.setHours(timestamps_end.getHours() + 7);
+    var pecahdata = timestamps_end.toISOString().split("T");
+    var finalend = pecahdata[0] + " " + pecahdata[1].split(".")[0];
+    this.logapiSS.create2(urllink, startdate, finalend, email, null, null, null);
+
     return data;
   }
   async updateStatusKycName(nama: string, gender: string, email: string, status: Boolean, statusKyc: string, dob: string): Promise<Object> {

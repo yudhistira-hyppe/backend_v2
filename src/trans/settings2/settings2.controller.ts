@@ -1,13 +1,14 @@
 import { Settings2Service } from './settings2.service';
-import { Body, Controller, Delete, Get, Param, Post, Put, Res, Request, UseGuards, HttpStatus, Req, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Res, Request, UseGuards, HttpStatus, Req, BadRequestException, Headers } from '@nestjs/common';
 import { CreateSettings2Dto } from './dto/create-settings2.dto';
 import { SettingsMixed } from './schemas/settings2.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Max } from 'class-validator';
+import { LogapisService } from '../logapis/logapis.service';
 
 @Controller('api/settings2')
 export class Settings2Controller {
-  constructor(private readonly settings2Service: Settings2Service) {}
+  constructor(private readonly settings2Service: Settings2Service, private readonly logapiSS: LogapisService) {}
 
   // @UseGuards(JwtAuthGuard)
   // @Get()
@@ -18,13 +19,38 @@ export class Settings2Controller {
   //to be continued. get data with mixed ?
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<SettingsMixed> {
-      return this.settings2Service.findOne(id);
+  async findOne(@Param('id') id: string, @Headers() headers, @Req() request): Promise<SettingsMixed> {
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      var fullurl = request.get("Host") + request.originalUrl;
+      var token = headers['x-auth-token'];
+      var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      var email = auth.email;
+
+      var data = await this.settings2Service.findOne(id);
+
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+      return data;
+    
+      // return this.settings2Service.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Req() request: Request) {
+  async create(@Req() request: Request, @Headers() headers) {
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      var fullurl = headers.host + '/api/settings2';
+      var token = headers['x-auth-token'];
+      var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      var email = auth.email;
+    
       const messages = {
           "info": ["The process successful"],
       };
@@ -43,30 +69,55 @@ export class Settings2Controller {
       if (request_json["value"] !== undefined) {
         value = request_json["value"];
       } else {
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         throw new BadRequestException("value field is required");
       }
 
       if (request_json["jenis"] !== undefined) {
         jenis = request_json["jenis"];
       } else {
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         throw new BadRequestException("jenis field is required");
       }
 
       if (request_json["remark"] !== undefined) {
         remark = request_json["remark"];
       } else {
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         throw new BadRequestException("remark field is required");
       }
 
       if (request_json["jenisdata"] !== undefined) {
         jenisdata = request_json["jenisdata"];
       } else {
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         throw new BadRequestException("jenisdata field is required");
       }
 
       if (request_json["typedata"] !== undefined) {
         typedata = request_json["typedata"];
       } else {
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         throw new BadRequestException("typedata field is required");
       }
 
@@ -95,12 +146,26 @@ export class Settings2Controller {
       insertdata.value = value;
 
       var data = await this.settings2Service.create(insertdata);
+
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       return { response_code: 202, data, messages };
   }
 
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  async updateid(@Res() res, @Param('id') id: string, @Request() request) {
+  async updateid(@Res() res, @Param('id') id: string, @Request() request, @Headers() headers) {
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      var fullurl = request.get("Host") + request.originalUrl;
+      var token = headers['x-auth-token'];
+      var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      var email = auth.email;
+    
       const messages = {
           "info": ["The update successful"],
       };
@@ -123,30 +188,55 @@ export class Settings2Controller {
       if (request_json["value"] !== undefined) {
         value = request_json["value"];
       } else {
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         throw new BadRequestException("value field is required");
       }
 
       if (request_json["jenis"] !== undefined) {
         jenis = request_json["jenis"];
       } else {
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         throw new BadRequestException("jenis field is required");
       }
 
       if (request_json["remark"] !== undefined) {
         remark = request_json["remark"];
       } else {
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         throw new BadRequestException("remark field is required");
       }
 
       if (request_json["jenisdata"] !== undefined) {
         jenisdata = request_json["jenisdata"];
       } else {
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         throw new BadRequestException("jenisdata field is required");
       }
 
       if (request_json["typedata"] !== undefined) {
         typedata = request_json["typedata"];
       } else {
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         throw new BadRequestException("typedata field is required");
       }
 
@@ -176,12 +266,23 @@ export class Settings2Controller {
 
 
           let data = await this.settings2Service.update(id, updatedata);
+
+          var date = new Date();
+          var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+          var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
           return res.status(HttpStatus.OK).json({
               response_code: 202,
               "data": data,
               "message": messages
           });
       } catch (e) {
+          var date = new Date();
+          var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+          var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
           return res.status(HttpStatus.BAD_REQUEST).json({
 
               "message": messagesEror
@@ -189,11 +290,29 @@ export class Settings2Controller {
       }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('delete/:id')
-  async softdelete(@Param('id') id: string) {
-      var updatedata = new CreateSettings2Dto();
+  async softdelete(@Param('id') id: string, @Req() request, @Headers() headers) {
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+    var fullurl = request.get("Host") + request.originalUrl;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;  
+    
+    var updatedata = new CreateSettings2Dto();
       updatedata.isActive = false;
 
-      return this.settings2Service.update(id, updatedata);
+    var data = await this.settings2Service.update(id, updatedata);
+
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+    return data;
+    
+    // return this.settings2Service.update(id, updatedata);
   }
 }
