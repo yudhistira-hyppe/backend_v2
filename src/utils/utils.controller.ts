@@ -1,4 +1,4 @@
-import { HttpCode, Controller, HttpStatus, Get, Req, Query, UseGuards, Headers, Post } from '@nestjs/common';
+import { HttpCode, Controller, HttpStatus, Get, Req, Query, UseGuards, Headers, Post, BadRequestException } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UtilsService } from './utils.service';
 import { InterestsRepoService } from '../infra/interests_repo/interests_repo.service';
@@ -17,9 +17,13 @@ import { CorevaluesService } from '../infra/corevalues/corevalues.service';
 import { ErrorHandler } from './error.handler';
 import { DevicelogService } from '../infra/devicelog/devicelog.service';
 import { CreateDevicelogDto } from '../infra/devicelog/dto/create-devicelog.dto';
+import { UserbasicsService } from '../trans/userbasics/userbasics.service';
+import { TemplatesService } from '../infra/templates/templates.service';
+import { SettingsService } from '../trans/settings/settings.service';
 import mongoose from 'mongoose';
 import { Posts } from '../content/posts/schemas/posts.schema';
-
+import { Cron, Interval } from '@nestjs/schedule';
+import { CreateTemplatesDto } from 'src/infra/templates/dto/create-templates.dto';
 
 @Controller('api/utils/')
 export class UtilsController {
@@ -41,6 +45,9 @@ export class UtilsController {
         private readonly errorHandler: ErrorHandler,
         private readonly devicelogService: DevicelogService,
         private readonly utilsService: UtilsService,
+        private readonly userbasicsService: UserbasicsService,
+        private readonly templatesService: TemplatesService,
+        private readonly settingsService: SettingsService,
     ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -553,4 +560,190 @@ export class UtilsController {
         }
         return Response;
     }
+
+    @Post('pushnotification')
+    @UseGuards(JwtAuthGuard)
+    async sendmasal(@Req() request: Request): Promise<any> {
+
+        var titleIN = null;
+        var bodyIN = null;
+        var titleEN = null;
+        var bodyEN = null;
+        var emailuser = null;
+        var data = null;
+        var url = null;
+        var email = null;
+        var type = null;
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var strdate = dt.toISOString();
+        var repdate = strdate.replace('T', ' ');
+        var splitdate = repdate.split('.');
+        var timedate = splitdate[0];
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if (request_json["titleIN"] !== undefined) {
+            titleIN = request_json["titleIN"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["bodyIN"] !== undefined) {
+            bodyIN = request_json["bodyIN"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["titleEN"] !== undefined) {
+            titleEN = request_json["titleEN"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["bodyEN"] !== undefined) {
+            bodyEN = request_json["bodyEN"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        url = request_json["url"];
+
+        emailuser = request_json["emailuser"];
+        type = request_json["type"];
+
+        var CreateTemplatesDto_ = new CreateTemplatesDto();;
+        CreateTemplatesDto_.name = "PUSH_NOTIFICATION"
+        CreateTemplatesDto_.category = "NOTIFICATION";
+        CreateTemplatesDto_.type = "PUSHNOTIFICATION";
+        CreateTemplatesDto_.createdAt = timedate;
+        CreateTemplatesDto_.email = email;
+        CreateTemplatesDto_.body_detail = bodyEN;
+        CreateTemplatesDto_.body_detail_id = bodyIN;
+        CreateTemplatesDto_.action_buttons = url;
+        CreateTemplatesDto_.subject = titleEN;
+        CreateTemplatesDto_.subject_id = titleIN;
+        CreateTemplatesDto_.event = "ACCEPT";
+        try {
+            data = await this.templatesService.create(CreateTemplatesDto_);
+            var response = {
+                "response_code": 202,
+                "data": data,
+                "messages": {
+                    info: ['Successfuly'],
+                },
+            }
+
+            this.testSend(100, url, titleIN, bodyIN, type, emailuser, titleEN, bodyEN);
+
+            return response;
+        } catch (e) {
+            await this.errorHandler.generateBadRequestException(
+                'Failed create notification ' + e,
+            );
+        }
+
+    }
+
+
+    async testSend(limit: number, url: string, titlein: string, bodyin: string, type: string, emailuser: any[], titleen: string, bodyen: string,) {
+        var email = null;
+        var datacount = null;
+        var totalall = 0;
+
+        if (type != undefined && type == "ALL") {
+            try {
+                datacount = await this.userbasicsService.getcount();
+                totalall = datacount[0].totalpost / limit;
+            } catch (e) {
+                datacount = null;
+                totalall = 0;
+            }
+            var totalpage = 0;
+            var tpage2 = (totalall).toFixed(0);
+            var tpage = (totalall % limit);
+            if (tpage > 0 && tpage < 5) {
+                totalpage = parseInt(tpage2) + 1;
+
+            } else {
+                totalpage = parseInt(tpage2);
+            }
+
+            console.log(totalpage);
+
+            for (let x = 0; x < totalpage; x++) {
+                var data = await this.userbasicsService.getuser(x, limit);
+                for (var i = 0; i < data.length; i++) {
+                    email = data[i].email;
+                    console.log('data ke-' + i);
+                    try {
+                        console.log(i);
+                        //await this.friendlistService.create(data[i]);
+
+                        this.sendInteractiveFCM(email, url, titlein, bodyin, titleen, bodyen);
+                    }
+                    catch (e) {
+                        //await this.friendlistService.update(data[i]._id, data[i]);
+                    }
+                }
+            }
+        }
+        else if (type != undefined && type == "OPTION") {
+            if (emailuser !== undefined && emailuser.length > 0) {
+
+
+                for (var i = 0; i < emailuser.length; i++) {
+                    email = emailuser[i];
+                    console.log('data ke-' + i);
+                    try {
+                        console.log(i);
+                        //await this.friendlistService.create(data[i]);
+
+                        this.sendInteractiveFCM(email, url, titlein, bodyin, titleen, bodyen);
+                    }
+                    catch (e) {
+                        //await this.friendlistService.update(data[i]._id, data[i]);
+                    }
+                }
+
+            }
+        }
+
+
+    }
+
+    async sendInteractiveFCM(email: string, url: string, titlein: string, bodyin: string, titleen: string, bodyen: string) {
+        var idsetting = "64e81627123f00001a006092";
+        var dataseting = null;
+        var value = null;
+        try {
+
+            dataseting = await this.settingsService.findOne(idsetting);
+            value = dataseting._doc.value;
+
+        } catch (e) {
+            value = 1000;
+        }
+        const action = () => new Promise((resolve, reject) => {
+            this.utilsService.sendFcmPushNotif(email, titlein, bodyin, titleen, bodyen, "GENERAL", "ACCEPT", url)
+            console.log("Action init ")
+            return setTimeout(() => {
+                console.log("Action completed")
+                resolve;
+            }, value)
+        })
+
+        const actionRecursion = () => {
+            action().then(() => {
+                setTimeout(actionRecursion, 1000)
+            })
+        }
+
+        actionRecursion();
+    }
+
 }

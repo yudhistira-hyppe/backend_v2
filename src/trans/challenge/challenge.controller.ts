@@ -429,7 +429,7 @@ export class ChallengeController {
     for (var i = 0; i < listnotifikasipush.length; i++) {
       var tempnotifikasi = {};
       var getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_include';
-      if (request_json[getvarname] != undefined && request_json[getvarname] != null && request_json[getvarname] == 'YES'){
+      if (request_json[getvarname] != undefined && request_json[getvarname] != null && request_json[getvarname] == 'YES') {
         for (var j = 0; j < listvariable.length; j++) {
           getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_' + listvariable[j];
           if (getvarname == 'notifikasiPush_updateLeaderboard_aturWaktu') {
@@ -1496,27 +1496,22 @@ export class ChallengeController {
   // }
 
   async insertchildofchallenge(parentdata, participant) {
-    if(participant != null)
-    {
+    if (participant != null) {
       var timestamp_start = await this.util.getDateTimeString();
       // console.log(timestamp_start);
       var setparticipantchallenge = [];
-      if(participant = "ALL")
-      {
+      if (participant = "ALL") {
         var totaldata = await this.userbasicsSS.getcount();
         var setpagination = parseInt(totaldata[0].totalpost) / 200;
         var ceksisa = (parseInt(totaldata[0].totalpost) % 200);
-        if (ceksisa > 0 && ceksisa < 5) 
-        {
-            setpagination = setpagination + 1;
+        if (ceksisa > 0 && ceksisa < 5) {
+          setpagination = setpagination + 1;
         }
 
-        for(var looppagination = 0; looppagination < setpagination; looppagination++)
-        {
+        for (var looppagination = 0; looppagination < setpagination; looppagination++) {
           var getalluserbasic = await this.userbasicsSS.getuser(looppagination, 200);
 
-          for(var loopuser = 0; loopuser < getalluserbasic.length; loopuser++)
-          {
+          for (var loopuser = 0; loopuser < getalluserbasic.length; loopuser++) {
             setparticipantchallenge.push(getalluserbasic[loopuser]._id.toString());
           }
         }
