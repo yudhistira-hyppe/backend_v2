@@ -1588,7 +1588,7 @@ export class ContenteventsController {
       var id_discus_log = "";
 
       var post = await this.postsService.findByPostId(request.body.postID.toString());
-      var media = await this.postsService.findOnepostID(request.body.postID.toString());
+      var media = await this.postsService.findOnepostID3(post);
       var media_ = {}
       if (await this.utilsService.ceckData(media)) {
         if (post.createdAt != undefined) {
