@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Res, UseGuards, Request, BadRequestException, HttpStatus, Req, HttpCode, Headers, UseInterceptors, UploadedFiles, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Res, UseGuards, Request, BadRequestException, HttpStatus, Req, HttpCode, Headers, UseInterceptors, UploadedFiles, Put, NotAcceptableException } from '@nestjs/common';
 import { BannerService } from './banner.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Banner } from './schemas/banner.schema';
@@ -181,6 +181,7 @@ export class BannerController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post('listing')
     async listing(@Request() req)
     {
@@ -249,6 +250,48 @@ export class BannerController {
             response_code: 202,
             data: data,
             total: totaldata.length,
+            messages: messages,
+        };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('update/statustayang')
+    async updatestatusTayang(@Request() req)
+    {
+        var request_json = JSON.parse(JSON.stringify(req.body));
+        if(request_json['id'] == null || request_json['id'] == undefined)
+        {
+            throw new BadRequestException("Unabled to proceed, id field required");
+        }
+
+        if(request_json['statustayang'] == null || request_json['statustayang'] == undefined)
+        {
+            throw new BadRequestException("Unabled to proceed, statustayang field required");
+        }
+
+        var id = request_json['id'];
+        var statustayang = request_json['statustayang'];
+
+        if(statustayang == true)
+        {
+            var checkexists = await this.BannerService.listing(null, true, null, null, null, null, true);
+            if(checkexists.length >= 5)
+            {
+                throw new NotAcceptableException("Unabled to proceed, show banner quote already full");
+            }
+        }
+
+        var updatedata = new Banner();
+        updatedata.statusTayang = statustayang;
+        
+        await this.BannerService.update(id, updatedata);
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+      
+        return {
+            response_code: 202,
             messages: messages,
         };
     }
