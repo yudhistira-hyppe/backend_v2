@@ -628,6 +628,7 @@ export class UtilsController {
         CreateTemplatesDto_.subject = titleEN;
         CreateTemplatesDto_.subject_id = titleIN;
         CreateTemplatesDto_.event = "ACCEPT";
+        CreateTemplatesDto_.type_sending = type;
         try {
             data = await this.templatesService.create(CreateTemplatesDto_);
             var response = {

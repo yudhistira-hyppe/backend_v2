@@ -16,4 +16,5 @@ export class CreateTemplatesDto {
   subject_id: String
   email: string;
   createdAt: string;
+  type_sending: string;
 }
