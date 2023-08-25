@@ -1,4 +1,4 @@
-import { HttpCode, Controller, HttpStatus, Get, Req, Query, UseGuards, Headers, Post, BadRequestException } from '@nestjs/common';
+import { HttpCode, Controller, HttpStatus, Get, Req, Query, UseGuards, Headers, Post, BadRequestException, Request } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UtilsService } from './utils.service';
 import { InterestsRepoService } from '../infra/interests_repo/interests_repo.service';
