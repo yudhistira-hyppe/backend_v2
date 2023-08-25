@@ -2831,7 +2831,7 @@ export class ReportuserController {
         try {
 
             //datakyc = await this.mediaproofpictsService.listkycsummary(startdate, enddate);
-            datakyc = await this.mediaproofpictsService.listkycsummary2(startdate, enddate);
+            datakyc = await this.userbasicsService.listkycsummary2(startdate, enddate, 'summary', null, null, null, null, null);
             lengkyc = datakyc.length;
 
         } catch (e) {

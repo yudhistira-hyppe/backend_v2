@@ -492,9 +492,9 @@ export class MediamusicController {
     return Response;
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('api/musiccard/')
-  @HttpCode(HttpStatus.ACCEPTED)
+  // @UseGuards(JwtAuthGuard)
+  // @Get('api/musiccard/')
+  // @HttpCode(HttpStatus.ACCEPTED)
   async getMusicCard(@Headers() headers) {
     const data = await this.mediamusicService.getMusicCard();
 
