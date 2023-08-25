@@ -6,11 +6,14 @@ import { BannerController } from './banner.controller';
 import { BannerService } from './banner.service';
 import { UtilsModule } from '../../utils/utils.module';
 import { OssModule } from 'src/stream/oss/oss.module';
+
+
 @Module({
 
 
     imports: [
-        UtilsModule, OssModule,
+        OssModule,
+        UtilsModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Banner.name, schema: BannerSchema }], 'SERVER_FULL')
     ],

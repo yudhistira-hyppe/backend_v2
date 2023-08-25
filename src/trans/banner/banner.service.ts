@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { Banner, BannerDocument } from './schemas/banner.schema';
+import { first, pipe } from 'rxjs';
 
 @Injectable()
 export class BannerService {
@@ -44,6 +45,177 @@ export class BannerService {
                 }
             });
         return data;
+    }
+
+    async listing(keyword:string, statustayang:boolean, startdate:string, enddate:string, page:number, limit:number, sorting: boolean)
+    {
+        var pipeline = [];
+        pipeline.push(
+            {
+                "$match":
+                {
+                    "$expr":
+                    {
+                        "$eq":
+                        [
+                            "$active",
+                            true
+                        ]
+                    }
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from:"userbasics",
+                    as:"basic_data",
+                    let:
+                    {
+                        basic_fk:"$email"
+                    },
+                    pipeline:
+                    [
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$email", "$$basic_fk"
+                                    ]
+                                }
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                "$project":
+                {
+                    _id:1,
+                    title:1,
+                    url:1,
+                    image:1,
+                    createdAt:1,
+                    statusTayang:1,
+                    fullName:
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$basic_data.fullName", 0
+                        ]
+                    }
+                }
+            }
+        );
+
+        var firstmatch = [];
+        if(keyword != null && keyword != undefined)
+        {
+            firstmatch.push(
+                {
+                    title:
+                    {
+                        "$regex":keyword,
+                        "$options":"i"
+                    }
+                },
+            );
+        }
+
+        if(statustayang != null && statustayang != undefined)
+        {
+            firstmatch.push(
+                {
+                    "$expr":
+                    {
+                        "$eq":
+                        [
+                            "$statusTayang", statustayang
+                        ]
+                    }
+                },
+            );
+        }
+
+        if(startdate != null && startdate != undefined)
+        {
+            firstmatch.push(
+                {
+                    "$expr":
+                    {
+                        "$gte":
+                        [
+                            "$createdAt",
+                            startdate
+                        ]
+                    }
+                },
+                {
+                    "$expr":
+                    {
+                        "$lte":
+                        [
+                            "$createdAt",
+                            enddate
+                        ]
+                    }
+                },
+            );
+        }
+
+        if(firstmatch.length != 0)
+        {
+            pipeline.push(
+                {
+                    "$match":
+                    {
+                        "$and":firstmatch
+                    }
+                }
+            );
+        }
+
+        if(sorting != null)
+        {
+            var setascending = null;
+            if (sorting == true) {
+                setascending = 1;
+            }
+            else {
+                setascending = -1;
+            }
+
+            pipeline.push({
+                "$sort":
+                {
+                    "createdAt": setascending
+                }
+            });
+        }
+
+        if(page > 0)
+        {
+            pipeline.push(
+                {
+                    "$skip": (page * limit)
+                }
+            );
+        }
+
+        if(limit > 0)
+        {
+            pipeline.push(
+                {
+                    "$limit":limit
+                }
+            );
+        }
+
+        var query = await this.BannerModel.aggregate(pipeline);
+
+        return query;
     }
 
 }
