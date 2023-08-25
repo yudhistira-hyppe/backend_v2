@@ -194,45 +194,20 @@ export class DisqusController {
           if (dm != undefined && dm.length > 0) {
             for (let i = 0; i < dm.length; i++) {
               let o = dm[i];
-              if (o.emot != undefined && o.emot.length > 0) {
-                for (let x = 0; x < o.disqusLogs.length; x++) {
-                  let dl = o.disqusLogs[x];
-                  if (dl.reactionUri != undefined) {
-                    for (let y = 0; y < o.emot.length; y++) {
-                      if (dl.reactionUri == o.emot[y].URL) {
-                        if (o.disqusLogs[x].medias != undefined) {
-                          if (o.disqusLogs[x].medias.length > 0) {
-                            if (o.disqusLogs[x].medias.length > 0) {
-                              if (o.disqusLogs[x].medias[0] != undefined) {
-                                if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
-                                  if (o.disqusLogs[x].medias[0].mediaType != undefined) {
-                                    if (o.disqusLogs[x].medias[0].mediaType == 'image') {
-                                      ApsaraArrayImage.push((o.disqusLogs[x].medias[0].apsaraId));
-                                    } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
-                                      ApsaraArrayVideo.push((o.disqusLogs[x].medias[0].apsaraId));
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                        break;
-                      }
-                    }
-                  }
-                }
-              } else {
-                for (let x = 0; x < o.disqusLogs.length; x++) {
-                  if (o.disqusLogs[x].medias != undefined) {
+              for (let x = 0; x < o.disqusLogs.length; x++) {
+                let dl = o.disqusLogs[x];
+                if (o.disqusLogs[x].medias != undefined) {
+                  if (o.disqusLogs[x].medias.length > 0) {
                     if (o.disqusLogs[x].medias.length > 0) {
-                      if (o.disqusLogs[x].medias.length > 0) {
-                        if (o.disqusLogs[x].medias[0] != undefined) {
-                          if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
-                            if (o.disqusLogs[x].medias[0].mediaType != undefined) {
-                              if (o.disqusLogs[x].medias[0].mediaType == 'image') {
+                      if (o.disqusLogs[x].medias[0] != undefined) {
+                        if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
+                          if (o.disqusLogs[x].medias[0].mediaType != undefined) {
+                            if (o.disqusLogs[x].medias[0].mediaType == 'image') {
+                              if (!(ApsaraArrayVideo.includes((o.disqusLogs[x].medias[0].apsaraId)))) {
                                 ApsaraArrayImage.push((o.disqusLogs[x].medias[0].apsaraId));
-                              } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
+                              }
+                            } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
+                              if (!(ApsaraArrayVideo.includes((o.disqusLogs[x].medias[0].apsaraId)))) {
                                 ApsaraArrayVideo.push((o.disqusLogs[x].medias[0].apsaraId));
                               }
                             }
@@ -244,6 +219,39 @@ export class DisqusController {
                 }
               }
             }
+
+            // for (let i = 0; i < dm.length; i++) {
+            //   let o = dm[i];
+            //   if (o.emot != undefined && o.emot.length > 0) {
+            //     for (let x = 0; x < o.disqusLogs.length; x++) {
+            //       let dl = o.disqusLogs[x];
+            //       if (dl.reactionUri != undefined) {
+            //         for (let y = 0; y < o.emot.length; y++) {
+            //           if (dl.reactionUri == o.emot[y].URL) {
+            //             if (o.disqusLogs[x].medias != undefined) {
+            //               if (o.disqusLogs[x].medias.length > 0) {
+            //                 if (o.disqusLogs[x].medias.length > 0) {
+            //                   if (o.disqusLogs[x].medias[0] != undefined) {
+            //                     if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
+            //                       if (o.disqusLogs[x].medias[0].mediaType != undefined) {
+            //                         if (o.disqusLogs[x].medias[0].mediaType == 'image') {
+            //                           ApsaraArrayImage.push((o.disqusLogs[x].medias[0].apsaraId));
+            //                         } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
+            //                           ApsaraArrayVideo.push((o.disqusLogs[x].medias[0].apsaraId));
+            //                         }
+            //                       }
+            //                     }
+            //                   }
+            //                 }
+            //               }
+            //             }
+            //             break;
+            //           }
+            //         }
+            //       }
+            //     }
+            //   }
+            // }
             console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ApsaraArrayImage ', ApsaraArrayImage);
             console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ApsaraArrayVideo ', ApsaraArrayVideo);
           }
@@ -261,54 +269,32 @@ export class DisqusController {
           if (dm != undefined && dm.length > 0) {
             for (let i = 0; i < dm.length; i++) {
               let o = dm[i];
-              if (o.emot != undefined && o.emot.length > 0) {
-                for (let x = 0; x < o.disqusLogs.length; x++) {
-                  let dl = o.disqusLogs[x];
-                  if (dl.reactionUri != undefined) {
-                    for (let y = 0; y < o.emot.length; y++) {
-                      if (dl.reactionUri == o.emot[y].URL) {
-                        if (o.disqusLogs[x].medias != undefined) {
-                          if (o.disqusLogs[x].medias.length > 0) {
-                            if (o.disqusLogs[x].medias.length > 0) {
-                              if (o.disqusLogs[x].medias[0] != undefined) {
-                                if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
-                                  if (o.disqusLogs[x].medias[0].mediaType != undefined) {
-                                    var ApsaraId = o.disqusLogs[x].medias[0].apsaraId;
-                                    if (o.disqusLogs[x].medias[0].mediaType == 'image') {
-                                      var apsaraThumnailUrl = papsara.ImageInfo.find(x => x.ImageId == ApsaraId).URL;
-                                      o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl;
-                                    } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
-                                      var apsaraThumnailUrl = vapsara.VideoList.find(x => x.VideoId == ApsaraId).CoverURL;
-                                      o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl+"";
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                        o.disqusLogs[x].reaction_icon = o.emot[y].icon;
-                        break;
-                      }
+              for (let x = 0; x < o.disqusLogs.length; x++) {
+                let dl = o.disqusLogs[x];
+                if (dl.reactionUri != undefined) {
+                  for (let y = 0; y < o.emot.length; y++) {
+                    if (dl.reactionUri == o.emot[y].URL) {
+                      o.disqusLogs[x].reaction_icon = o.emot[y].icon;
+                      break;
                     }
-                  } 
+                  }
                 }
-              } else {
-                for (let x = 0; x < o.disqusLogs.length; x++) {
-                  if (o.disqusLogs[x].medias != undefined) {
+                if (o.disqusLogs[x].medias != undefined) {
+                  if (o.disqusLogs[x].medias.length > 0) {
                     if (o.disqusLogs[x].medias.length > 0) {
-                      if (o.disqusLogs[x].medias.length > 0) {
-                        if (o.disqusLogs[x].medias[0] != undefined) {
-                          if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
-                            if (o.disqusLogs[x].medias[0].mediaType != undefined) {
+                      if (o.disqusLogs[x].medias[0] != undefined) {
+                        if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
+                          if (o.disqusLogs[x].medias[0].mediaType != undefined) {
+                            if (o.disqusLogs[x].medias[0].apsaraId != undefined){
                               var ApsaraId = o.disqusLogs[x].medias[0].apsaraId;
+                              console.log(ApsaraId)
                               if (o.disqusLogs[x].medias[0].mediaType == 'image') {
                                 var apsaraThumnailUrl = papsara.ImageInfo.find(x => x.ImageId == ApsaraId).URL;
                                 o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl;
                               } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
+                                console.log("MASUK PAK EKO")
                                 var apsaraThumnailUrl = vapsara.VideoList.find(x => x.VideoId == ApsaraId).CoverURL;
                                 o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl;
-                                console.log("MASUK SINI", o.disqusLogs[x])
                               }
                             }
                           }
@@ -321,7 +307,47 @@ export class DisqusController {
               tmp.push(o);
             }
           }
-          //console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> tmp', JSON.stringify(tmp));
+
+          // if (dm != undefined && dm.length > 0) {
+          //   for (let i = 0; i < dm.length; i++) {
+          //     let o = dm[i];
+          //     if (o.emot != undefined && o.emot.length > 0) {
+          //       for (let x = 0; x < o.disqusLogs.length; x++) {
+          //         let dl = o.disqusLogs[x];
+          //         if (dl.reactionUri != undefined) {
+          //           for (let y = 0; y < o.emot.length; y++) {
+          //             if (dl.reactionUri == o.emot[y].URL) {
+          //               if (o.disqusLogs[x].medias != undefined) {
+          //                 if (o.disqusLogs[x].medias.length > 0) {
+          //                   if (o.disqusLogs[x].medias.length > 0) {
+          //                     if (o.disqusLogs[x].medias[0] != undefined) {
+          //                       if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
+          //                         if (o.disqusLogs[x].medias[0].mediaType != undefined) {
+          //                           var ApsaraId = o.disqusLogs[x].medias[0].apsaraId;
+          //                           if (o.disqusLogs[x].medias[0].mediaType == 'image') {
+          //                             var apsaraThumnailUrl = papsara.ImageInfo.find(x => x.ImageId == ApsaraId).URL;
+          //                             o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl;
+          //                           } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
+          //                             var apsaraThumnailUrl = vapsara.VideoList.find(x => x.VideoId == ApsaraId).CoverURL;
+          //                             o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl;
+          //                           }
+          //                         }
+          //                       }
+          //                     }
+          //                   }
+          //                 }
+          //               }
+          //               o.disqusLogs[x].reaction_icon = o.emot[y].icon;
+          //               break;
+          //             }
+          //           }
+          //         }
+          //       }
+          //     }
+          //     tmp.push(o);
+          //   }
+          // }
+          // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> tmp', JSON.stringify(tmp));
 
           res.data = tmp;
 
@@ -1076,7 +1102,6 @@ export class DisqusController {
       var post = await this.postDisqusService.findByPostId(dto.postID.toString());
       var media = await this.postDisqusService.findOnepostID3(post);
       var media_ = {}
-
       if (await this.utilsService.ceckData(media)) {
         if (post.createdAt != undefined) {
           media_["createdAt"] = post.createdAt;
@@ -1087,23 +1112,12 @@ export class DisqusController {
         if (post.postType != undefined) {
           media_["postType"] = post.postType;
         }
-
-        // if (media[0].datacontent[0].apsara == true) {
-        //   if (media[0].datacontent[0].apsaraId != undefined) {
-        //     const resultpictapsara = await this.postDisqusService.getVideoApsara1([media[0].datacontent[0].apsaraId]);
-        //     const gettempresultpictapsara = resultpictapsara.VideoList;
-        //     media_["mediaUri"] = gettempresultpictapsara[0].CoverURL;
-        //     media_["mediaThumbUri"] = gettempresultpictapsara[0].CoverURL;
-        //   }
-        // }else{
-          if (media[0].datacontent[0].mediaUri != undefined) {
-            media_["mediaUri"] = media[0].datacontent[0].mediaUri;
-          }
-          if (media[0].datacontent[0].mediaUri != undefined) {
-            media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
-          }
-        //}
-
+        if (media[0].datacontent[0].mediaUri != undefined) {
+          media_["mediaUri"] = media[0].datacontent[0].mediaUri;
+        }
+        if (media[0].datacontent[0].mediaUri != undefined) {
+          media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
+        }
         if (post.description != undefined) {
           media_["description"] = post.description;
         }
