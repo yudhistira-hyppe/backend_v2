@@ -47,13 +47,27 @@ export class TemplatesService {
     pipeline.push({
           "$match":
           {
-              "$expr":
-              {
-                  "$eq":
-                  [
-                      "$name", "PUSH_NOTIFICATION"
-                  ]
-              }
+              "$and":
+              [
+                  {
+                      "$expr":
+                      {
+                          "$eq":
+                          [
+                              "$name", "PUSH_NOTIFICATION"
+                          ]
+                      }
+                  },
+                  {
+                      "$expr":
+                      {
+                          "$eq":
+                          [
+                              "$active", true
+                          ]
+                      }
+                  },
+              ]
           }
       },
       {
