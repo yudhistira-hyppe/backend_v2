@@ -5455,4 +5455,26 @@ export class AuthController {
   }
 
 
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/user/tutor/update')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async updateAdsCTA(@Body() body: any, @Headers() headers) {
+    if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+    await this.userbasicsService.updateTutor(headers['x-auth-user'], body.key, body.value);
+    return await this.errorHandler.generateAcceptResponseCode(
+      "Update tutor succesfully", 
+    );
+  }
+
+
 }

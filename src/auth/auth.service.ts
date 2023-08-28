@@ -10215,6 +10215,45 @@ export class AuthService {
             data_CreateUserbasicDto.createdAt = current_date;
             data_CreateUserbasicDto.updatedAt = current_date;
             data_CreateUserbasicDto.statusKyc = 'unverified';
+            data_CreateUserbasicDto.statusKyc = 'unverified';
+            // data_CreateUserbasicDto.tutor = [
+            //   {
+            //     key: "protection",
+            //     status: false
+            //   },
+            //   {
+            //     key: "sell",
+            //     status: false
+            //   },
+            //   {
+            //     key: "interest",
+            //     status: false
+            //   },
+            //   {
+            //     key: "ownership",
+            //     status: false
+            //   },
+            //   {
+            //     key: "boost",
+            //     status: false
+            //   },
+            //   {
+            //     key: "transaction",
+            //     status: false
+            //   },
+            //   {
+            //     key: "idRefferal",
+            //     status: false
+            //   },
+            //   {
+            //     key: "shareRefferal",
+            //     status: false
+            //   },
+            //   {
+            //     key: "codeRefferal",
+            //     status: false
+            //   }
+            // ];
             data_CreateUserbasicDto.insight = {
               $ref: 'insights',
               $id: Object(ID_insights),
