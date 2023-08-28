@@ -2293,7 +2293,7 @@ export class UtilsService {
     }
   }
 
-  async sendFcmPushNotif(email: string, titlein: string, bodyin: any, titleen: string, bodyen: any, eventType: string, event: string, url?: string) {
+  async sendFcmPushNotif(email: string, titlein: string, bodyin: any, titleen: string, bodyen: any, eventType: string, event: string, url: string, idtemplate: string) {
 
 
     var emailuserbasic = null;
@@ -2456,6 +2456,7 @@ export class UtilsService {
       createNotificationsDto.actionButtons = null;
       createNotificationsDto.contentEventID = null;
       createNotificationsDto.senderOrReceiverInfo = senderreceiver;
+      createNotificationsDto.templateID = new Types.ObjectId(idtemplate);
 
 
       if (url != undefined) {

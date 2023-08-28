@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 export class CreateNotificationsDto {
 
 
@@ -31,17 +33,18 @@ export class CreateNotificationsDto {
     devices: any[];
     actionButtons: String;
     deviceType: String;
+    templateID: mongoose.Types.ObjectId;
 }
 
 export class ContentDTO {
-    apsaraId:string;
-    apsaraThumbId:string;
-    isApsara:boolean;
-    mediaThumbUri:string;
-    mediaUri:string;
-    mediaEndpoint:string;
-    mediaThumbEndpoint:string;
-    mediaType:string;
+    apsaraId: string;
+    apsaraThumbId: string;
+    isApsara: boolean;
+    mediaThumbUri: string;
+    mediaUri: string;
+    mediaEndpoint: string;
+    mediaThumbEndpoint: string;
+    mediaType: string;
 }
 
 export class Messages {
