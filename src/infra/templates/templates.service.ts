@@ -64,7 +64,8 @@ export class TemplatesService {
           subject_id: 1,
           email: 1,
           createdAt: 1,
-          active: 1
+          active: 1,
+          type_sending:1
         }
       },
       {
@@ -92,6 +93,7 @@ export class TemplatesService {
           email: 1,
           createdAt: 1,
           active: 1,
+          type_sending:1,
           fullName:
           {
             "$ifNull":

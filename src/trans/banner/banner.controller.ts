@@ -295,4 +295,11 @@ export class BannerController {
         return response;
 
     }
+
+    @Get(':id')
+    async getDataByID(@Param() id:string) {
+        var data = await this.BannerService.findOne2(id);
+
+        return data;
+    }
 }

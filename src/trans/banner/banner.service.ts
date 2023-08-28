@@ -21,6 +21,52 @@ export class BannerService {
         return this.BannerModel.findOne({ _id: new Types.ObjectId(id) }).exec();
     }
 
+    async findOne2(id: string) {
+        var mongo = require('mongoose');
+        var konvertid = mongo.Types.ObjectId(id);
+
+        var pipeline = [];
+        pipeline.push({
+            "$match":
+            {
+                _id:konvertid
+            }
+        },
+        {
+            $lookup: 
+            {
+                from: 'userbasics',
+                localField: 'email',
+                foreignField: 'email',
+                as: 'basic_data',
+            }
+        },
+        {
+            "$project":
+            {
+                _id:1,
+                title:1,
+                url:1,
+                image:1,
+                createdAt:1,
+                email:1,
+                statusTayang:1,
+                active:1,
+                fullName:
+                {
+                    "$arrayElemAt":
+                    [
+                        "$basic_data.fullName",0
+                    ]
+                }
+            }
+        });
+        
+        var query = await this.BannerModel.aggregate(pipeline);
+
+        return query[0];
+    }
+
     async find(): Promise<Banner[]> {
         return this.BannerModel.find().exec();
     }
