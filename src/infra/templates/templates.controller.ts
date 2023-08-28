@@ -3,11 +3,13 @@ import { TemplatesService } from './templates.service';
 import { CreateTemplatesDto } from './dto/create-templates.dto';
 import { Templates } from './schemas/templates.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { ErrorHandler } from '../../utils/error.handler';
+
+
 @Controller('api/templates')
 export class TemplatesController {
 
-  constructor(private readonly TemplatesService: TemplatesService, private readonly errorHandler: ErrorHandler,) { }
+  constructor(private readonly TemplatesService: TemplatesService,
+  ) { }
 
   @Post()
   async create(@Body() CreateTemplatesDto: CreateTemplatesDto) {
@@ -30,9 +32,7 @@ export class TemplatesController {
   @Post('/delete/:id')
   async delete(@Param('id') id: string, @Headers() headers) {
     if (id == undefined || id == "") {
-      await this.errorHandler.generateBadRequestException(
-        'Param id is required',
-      );
+      throw new BadRequestException("Unabled to proceed,id required");
     }
     await this.TemplatesService.updateNonactive(id);
     var response = {
