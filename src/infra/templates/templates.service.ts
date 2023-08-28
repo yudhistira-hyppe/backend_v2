@@ -231,6 +231,41 @@ export class TemplatesService {
               ]
           }
       },
+      {
+          "$project":
+          {
+            _id: 1,
+            name: 1,
+            event: 1,
+            subject: 1,
+            body_detail: 1,
+            body_detail_id: 1,
+            type: 1,
+            category: 1,
+            action_buttons: 1,
+            subject_id: 1,
+            email: 1,
+            createdAt: 1,
+            active: 1,
+            type_sending:1,
+            fullName:1,
+            notif_data:
+            {
+                "$cond":
+                {
+                    if:
+                    {
+                        "$eq":
+                        [
+                            "$name", "PUSH_NOTIFICATION"
+                        ]
+                    },
+                    then:"$notif_data",
+                    else:null
+                }
+            }
+          }
+      }
     ]);
 
     return query[0];
