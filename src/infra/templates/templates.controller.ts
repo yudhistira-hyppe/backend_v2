@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, BadRequestException, Request, Headers } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, BadRequestException, Request, Headers, Put } from '@nestjs/common';
 import { TemplatesService } from './templates.service';
 import { CreateTemplatesDto } from './dto/create-templates.dto';
 import { Templates } from './schemas/templates.schema';
@@ -13,6 +13,7 @@ export class TemplatesController {
 
   @Post()
   async create(@Body() CreateTemplatesDto: CreateTemplatesDto) {
+    CreateTemplatesDto.active = true;
     await this.TemplatesService.create(CreateTemplatesDto);
   }
 
@@ -29,7 +30,7 @@ export class TemplatesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/delete/:id')
+  @Put('/delete/:id')
   async delete(@Param('id') id: string, @Headers() headers) {
     if (id == undefined || id == "") {
       throw new BadRequestException("Unabled to proceed,id required");

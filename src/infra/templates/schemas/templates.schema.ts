@@ -39,6 +39,8 @@ export class Templates {
   createdAt: string
   @Prop()
   type_sending: string;
+  @Prop()
+  active: boolean;
 }
 
 export const TemplatesSchema = SchemaFactory.createForClass(Templates);
