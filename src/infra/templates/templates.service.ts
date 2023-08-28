@@ -21,6 +21,15 @@ export class TemplatesService {
   async findAll(): Promise<Templates[]> {
     return this.TemplatesModel.find().exec();
   }
+  async updateNonactive(id: string): Promise<Object> {
+    let data = await this.TemplatesModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "active": false
+        }
+      });
+    return data;
+  }
 
   async findOneByTypeAndCategory(type: string, category: string): Promise<Templates> {
     return this.TemplatesModel.findOne({
@@ -43,58 +52,58 @@ export class TemplatesService {
       {
         "$project":
         {
-          _id:1,
-          name:1,
-          event:1,
-          subject:1,
-          body_detail:1,
-          body_detail_id:1,
-          type:1,
-          category:1,
-          action_buttons:1,
-          subject_id:1,
-          email:1,
-          createdAt:1,
-          active:1
+          _id: 1,
+          name: 1,
+          event: 1,
+          subject: 1,
+          body_detail: 1,
+          body_detail_id: 1,
+          type: 1,
+          category: 1,
+          action_buttons: 1,
+          subject_id: 1,
+          email: 1,
+          createdAt: 1,
+          active: 1
         }
       },
       {
-          $lookup: 
-          {
-              from: 'userbasics',
-              localField: 'email',
-              foreignField: 'email',
-              as: 'basic_data',
-          }
+        $lookup:
+        {
+          from: 'userbasics',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'basic_data',
+        }
       },
-      {	
+      {
         "$project":
         {
-          _id:1,
-          name:1,
-          event:1,
-          subject:1,
-          body_detail:1,
-          body_detail_id:1,
-          type:1,
-          category:1,
-          action_buttons:1,
-          subject_id:1,
-          email:1,
-          createdAt:1,
-          active:1,
+          _id: 1,
+          name: 1,
+          event: 1,
+          subject: 1,
+          body_detail: 1,
+          body_detail_id: 1,
+          type: 1,
+          category: 1,
+          action_buttons: 1,
+          subject_id: 1,
+          email: 1,
+          createdAt: 1,
+          active: 1,
           fullName:
           {
             "$ifNull":
-            [
-              {
-                "$arrayElemAt":
-                [
-                  "$basic_data.fullName", 0
-                ]
-              },
-              null
-            ]
+              [
+                {
+                  "$arrayElemAt":
+                    [
+                      "$basic_data.fullName", 0
+                    ]
+                },
+                null
+              ]
           }
         }
       }
@@ -104,37 +113,35 @@ export class TemplatesService {
       {
         "$match":
         {
-          _id:konvertid
+          _id: konvertid
         }
       },
     );
     pipeline.push(temppipeline[0]);
 
     var query = await this.TemplatesModel.aggregate(pipeline);
-    
-    if(query.length == 0)
-    {
+
+    if (query.length == 0) {
       var pipeline = [];
       pipeline.push(
         {
           "$match":
           {
-            _id:id
+            _id: id
           }
         },
-        );
-        
+      );
+
       pipeline.push(temppipeline[0]);
 
       var query = await this.TemplatesModel.aggregate(pipeline);
-      
+
       return query[0];
     }
-    else
-    {
+    else {
       return query[0];
     }
-    
+
     //return this.TemplatesModel.findOne({ _id: id }).exec();
   }
 
@@ -153,146 +160,141 @@ export class TemplatesService {
   //       }
   //     },
   //   );
-  
+
   //   return data;
 
-    // let data = await this.interestCountModel.findByIdAndUpdate(
-    //         id,
-    //         tagCountDto,
-    //         { new: true },
-    //     );
+  // let data = await this.interestCountModel.findByIdAndUpdate(
+  //         id,
+  //         tagCountDto,
+  //         { new: true },
+  //     );
 
-    //     if (!data) {
-    //         throw new Error('Todo is not found!');
-    //     }
-    //     return data;
+  //     if (!data) {
+  //         throw new Error('Todo is not found!');
+  //     }
+  //     return data;
   // }
 
-  async pushnotif_listing(target:string, start:string, end:string, sorting:boolean, page:number, limit:number) 
-  {
+  async pushnotif_listing(target: string, start: string, end: string, sorting: boolean, page: number, limit: number) {
     var pipeline = [];
 
     pipeline.push({
-          "$match":
-          {
-              "$and":
-              [
-                  {
-                      "$expr":
-                      {
-                          "$eq":
-                          [
-                              "$name", "PUSH_NOTIFICATION"
-                          ]
-                      }
-                  },
-                  {
-                      "$expr":
-                      {
-                          "$eq":
-                          [
-                              "$active", true
-                          ]
-                      }
-                  },
-              ]
-          }
-      },
+      "$match":
       {
-          $lookup: 
-          {
-              from: 'userbasics',
-              localField: 'email',
-              foreignField: 'email',
-              as: 'basic_data',
-          }
-      },
-      {
-          "$project":
-          {
-              _id:1,
-              name:1,
-              event:1,
-              subject:1,
-              subject_id:1,
-              body_detail:1,
-              body_detail_id:1,
-              email:1,
-              createdAt:1,
-              fullName:
+        "$and":
+          [
+            {
+              "$expr":
               {
-                  "$arrayElemAt":
+                "$eq":
                   [
-                      "$basic_data.fullName",0
+                    "$name", "PUSH_NOTIFICATION"
                   ]
-              },
-          }
+              }
+            },
+            {
+              "$expr":
+              {
+                "$eq":
+                  [
+                    "$active", true
+                  ]
+              }
+            },
+          ]
+      }
+    },
+      {
+        $lookup:
+        {
+          from: 'userbasics',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'basic_data',
+        }
+      },
+      {
+        "$project":
+        {
+          _id: 1,
+          name: 1,
+          event: 1,
+          subject: 1,
+          subject_id: 1,
+          body_detail: 1,
+          body_detail_id: 1,
+          email: 1,
+          createdAt: 1,
+          fullName:
+          {
+            "$arrayElemAt":
+              [
+                "$basic_data.fullName", 0
+              ]
+          },
+        }
       },);
 
     var firstmatch = [];
-    if(start != null)
-    {
+    if (start != null) {
       firstmatch.push({
-            "$expr":
-            {
-                "$gte":
-                [
-                    "$createdAt",
-                    start
-                ]
-            }
-        },
+        "$expr":
         {
-            "$expr":
-            {
-                "$lte":
-                [
-                    "$createdAt",
-                    end
-                ]
-            }
+          "$gte":
+            [
+              "$createdAt",
+              start
+            ]
+        }
+      },
+        {
+          "$expr":
+          {
+            "$lte":
+              [
+                "$createdAt",
+                end
+              ]
+          }
         },)
     }
 
-    if(target != null)
-    {
+    if (target != null) {
       firstmatch.push(
         {
           "$or":
-          [
+            [
               {
-                  subject:
-                  {
-                      "$regex":target,
-                      "$options":"i"
-                  }
+                subject:
+                {
+                  "$regex": target,
+                  "$options": "i"
+                }
               },
               {
-                  subject_id:
-                  {
-                      "$regex":target,
-                      "$options":"i"
-                  }
+                subject_id:
+                {
+                  "$regex": target,
+                  "$options": "i"
+                }
               }
-          ]
+            ]
         }
       );
     }
 
-    if(firstmatch.length != 0)
-    {
+    if (firstmatch.length != 0) {
       pipeline.push(
         {
           "$match":
           {
-            "$and":firstmatch
+            "$and": firstmatch
           }
         }
       );
     }
 
-    if(sorting != null)
-    {
+    if (sorting != null) {
       var setascending = null;
       if (sorting == true) {
         setascending = 1;

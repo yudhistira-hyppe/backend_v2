@@ -277,5 +277,22 @@ export class BannerController {
             messages: messages,
         };
     }
+    @UseGuards(JwtAuthGuard)
+    @Post('/delete/:id')
+    async delete(@Param('id') id: string, @Headers() headers) {
+        if (id == undefined || id == "") {
+            await this.errorHandler.generateBadRequestException(
+                'Param id is required',
+            );
+        }
+        await this.BannerService.updateNonactive(id);
+        var response = {
+            "response_code": 202,
+            "messages": {
+                info: ['Successfuly'],
+            },
+        }
+        return response;
 
+    }
 }

@@ -1,13 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, BadRequestException, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, BadRequestException, Request, Headers } from '@nestjs/common';
 import { TemplatesService } from './templates.service';
 import { CreateTemplatesDto } from './dto/create-templates.dto';
 import { Templates } from './schemas/templates.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-
+import { ErrorHandler } from '../../utils/error.handler';
 @Controller('api/templates')
 export class TemplatesController {
 
-  constructor(private readonly TemplatesService: TemplatesService) { }
+  constructor(private readonly TemplatesService: TemplatesService, private readonly errorHandler: ErrorHandler,) { }
 
   @Post()
   async create(@Body() CreateTemplatesDto: CreateTemplatesDto) {
@@ -27,26 +27,27 @@ export class TemplatesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('delete/:id')
-  async delete(@Param('id') id: string) {
-    // var data = await this.TemplatesService.delete(id);
-    var data = null;
+  @Post('/delete/:id')
+  async delete(@Param('id') id: string, @Headers() headers) {
+    if (id == undefined || id == "") {
+      await this.errorHandler.generateBadRequestException(
+        'Param id is required',
+      );
+    }
+    await this.TemplatesService.updateNonactive(id);
+    var response = {
+      "response_code": 202,
+      "messages": {
+        info: ['Successfuly'],
+      },
+    }
+    return response;
 
-    const messages = {
-      "info": ["The process successful"],
-    };
-
-    return {
-      response_code: 202,
-      data:data,
-      messages: messages,
-    };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('listing/push_notification')
-  async listing(@Request() req)
-  {
+  async listing(@Request() req) {
     var keyword = null;
     var startdate = null;
     var enddate = null;
@@ -55,35 +56,28 @@ export class TemplatesController {
     var limit = null;
 
     var request_json = JSON.parse(JSON.stringify(req.body));
-    if(request_json['ascending'] != null && request_json['ascending'] != undefined)
-    {
+    if (request_json['ascending'] != null && request_json['ascending'] != undefined) {
       sorting = request_json['ascending'];
     }
-    else
-    {
+    else {
       throw new BadRequestException("Unabled to proceed, ascending field is required");
     }
 
-    if(request_json['page'] != null && request_json['page'] != undefined)
-    {
+    if (request_json['page'] != null && request_json['page'] != undefined) {
       page = request_json['page'];
     }
-    else
-    {
+    else {
       throw new BadRequestException("Unabled to proceed, page field is required");
     }
 
-    if(request_json['limit'] != null && request_json['limit'] != undefined)
-    {
+    if (request_json['limit'] != null && request_json['limit'] != undefined) {
       limit = request_json['limit'];
     }
-    else
-    {
+    else {
       throw new BadRequestException("Unabled to proceed, limit field is required");
     }
 
-    if(request_json['keyword'] != null && request_json['keyword'] != undefined)
-    {
+    if (request_json['keyword'] != null && request_json['keyword'] != undefined) {
       keyword = request_json['keyword'];
     }
 
