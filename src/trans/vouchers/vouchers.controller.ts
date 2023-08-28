@@ -5,12 +5,21 @@ import { Vouchers } from './schemas/vouchers.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserbasicsService } from '../userbasics/userbasics.service';
 import { SettingsService } from '../settings/settings.service';
+import { LogapisService } from '../logapis/logapis.service';
+import { UtilsService } from 'src/utils/utils.service';
 @Controller('api/vouchers')
 export class VouchersController {
-    constructor(private readonly vouchersService: VouchersService, private readonly userbasicsService: UserbasicsService, private readonly settingsService: SettingsService,) { }
+    constructor(private readonly vouchersService: VouchersService, private readonly userbasicsService: UserbasicsService, private readonly settingsService: SettingsService, private readonly logapiSS: LogapisService, private readonly utilsService: UtilsService) { }
     @UseGuards(JwtAuthGuard)
     @Post()
-    async create(@Res() res, @Headers('x-auth-token') auth: string, @Body() CreateVouchersDto: CreateVouchersDto, @Request() req) {
+    async create(@Res() res, @Headers('x-auth-token') auth: string, @Body() CreateVouchersDto: CreateVouchersDto, @Request() req, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/vouchers';
+        var settoken = headers['x-auth-token'];
+        var setauth = JSON.parse(Buffer.from(settoken.split('.')[1], 'base64').toString());
+        var email = setauth.email;
+        var reqbody = JSON.parse(JSON.stringify(CreateVouchersDto));
+
         const messages = {
             "info": ["The create successful"],
         };
@@ -81,6 +90,8 @@ export class VouchersController {
             CreateVouchersDto.pendingUsed = 0;
             let data = await this.vouchersService.create(CreateVouchersDto);
 
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
 
             return res.status(HttpStatus.OK).json({
                 response_code: 202,
@@ -88,6 +99,9 @@ export class VouchersController {
                 "message": messages
             });
         } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror
@@ -103,7 +117,13 @@ export class VouchersController {
 
     @UseGuards(JwtAuthGuard)
     @Post('list')
-    async finddata(@Req() request: Request): Promise<any> {
+    async finddata(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/vouchers/list';
+        var settoken = headers['x-auth-token'];
+        var setauth = JSON.parse(Buffer.from(settoken.split('.')[1], 'base64').toString());
+        var email = setauth.email;
+
         const messages = {
             "info": ["The process successful"],
         };
@@ -116,11 +136,17 @@ export class VouchersController {
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["page"] !== undefined) {
             page = request_json["page"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         key = request_json["key"];
@@ -134,31 +160,68 @@ export class VouchersController {
         var totalallrow = allrow[0].countrow;
         var totalpage = totalallrow / limit;
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };
     }
 
     @UseGuards(JwtAuthGuard)
     @Get(':id')
-    async findid(@Param('id') id: string): Promise<Vouchers> {
-        return this.vouchersService.findOne(id);
+    async findid(@Param('id') id: string, @Headers() headers, @Req() request): Promise<Vouchers> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var settoken = headers['x-auth-token'];
+        var setauth = JSON.parse(Buffer.from(settoken.split('.')[1], 'base64').toString());
+        var email = setauth.email;
+        
+        var data = await this.vouchersService.findOne(id);
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+        return data;
+
+        // return this.vouchersService.findOne(id);
     }
     @UseGuards(JwtAuthGuard)
     @Post('listactive')
-    async findNonExpired(@Req() request: Request): Promise<any> {
+    async findNonExpired(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/vouchers/listactive';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var request_json = JSON.parse(JSON.stringify(request.body));
         var expiredAt = "";
         if (request_json["expiredAt"] !== undefined) {
             expiredAt = request_json["expiredAt"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
-        return this.vouchersService.findExpirednactive(expiredAt);
+
+        var data = await this.vouchersService.findExpirednactive(expiredAt);
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return data;
+        // return this.vouchersService.findExpirednactive(expiredAt);
     }
 
     @UseGuards(JwtAuthGuard)
     @Put('update/:id')
-    async updatedata(@Res() res, @Param('id') id: string, @Body() CreateVouchersDto: CreateVouchersDto) {
+    async updatedata(@Res() res, @Param('id') id: string, @Body() CreateVouchersDto: CreateVouchersDto, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/vouchers/update/' + id;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var reqbody = JSON.parse(JSON.stringify(CreateVouchersDto));
 
         const messages = {
             "info": ["The update successful"],
@@ -213,11 +276,17 @@ export class VouchersController {
             CreateVouchersDto.creditTotal = creditTotal;
             let data = await this.vouchersService.update(id, CreateVouchersDto);
 
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "message": messages
             });
         } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             return res.status(HttpStatus.BAD_REQUEST).json({
 
                 "message": messagesEror + " " + e

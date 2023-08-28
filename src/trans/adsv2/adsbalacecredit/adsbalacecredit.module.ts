@@ -6,9 +6,11 @@ import { ConfigModule } from '@nestjs/config';
 import { AdsBalaceCredit, AdsBalaceCreditSchema } from './schema/adsbalacecredit.schema';
 import { UtilsModule } from '../../../utils/utils.module';
 import { UserbasicsModule } from '../../../trans/userbasics/userbasics.module';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
 
 @Module({
     imports: [
+        LogapisModule,
         UserbasicsModule,
         UtilsModule,
         ConfigModule.forRoot(),

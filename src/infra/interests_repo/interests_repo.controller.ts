@@ -5,12 +5,15 @@ import { CreateInterestsRepoDto } from './dto/create-interests_repo.dto';
 import { Interestsrepo } from './schemas/interests_repo.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { OssService } from 'src/stream/oss/oss.service';
+import { LogapisService } from 'src/trans/logapis/logapis.service'; 
+import { timestamp } from 'rxjs';
 
 @Controller('api/interestsrepo')
 export class InterestsRepoController {
     constructor(
       private readonly InterestsRepoService: InterestsRepoService,
       private readonly OssServices: OssService,
+      private readonly logapiSS: LogapisService,
     ) {}
 
     @UseGuards(JwtAuthGuard)
@@ -21,7 +24,18 @@ export class InterestsRepoController {
         icon_file?: Express.Multer.File[]
       },
       @Body() request,
+      @Headers() headers,
       ) {
+      var token = headers['x-auth-token'];
+      var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      var fullurl = headers.host + '/api/interestsrepo';
+      var reqbody = JSON.parse(JSON.stringify(request));
+      // reqbody['icon_file'] = files.icon_file;
+      
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+
       var mongoose = require('mongoose');
       var dt = new Date(Date.now());
       dt.setHours(dt.getHours() + 7); // timestamp
@@ -40,6 +54,11 @@ export class InterestsRepoController {
       
       if(files.icon_file == undefined)
       {
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
         throw new BadRequestException("Unabled to proceed. icon file is required");
       }
       else
@@ -56,6 +75,11 @@ export class InterestsRepoController {
         "info": ["The process successful"],
       };
 
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
       return {
           response_code: 202,
           data: insertdata,
@@ -65,13 +89,38 @@ export class InterestsRepoController {
 
     @Get()
     @UseGuards(JwtAuthGuard)
-    async findAll(): Promise<Interestsrepo[]> {
-      return this.InterestsRepoService.findAll();
+    async findAll(@Headers() headers): Promise<Interestsrepo[]> {
+      var token = headers['x-auth-token'];
+      var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      var fullurl = headers.host + '/api/interestsrepo';
+
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+
+      var data = await this.InterestsRepoService.findAll();
+
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, null);
+
+      return data;
+
+      // return this.InterestsRepoService.findAll();
     }
 
     @Post('list')
     @UseGuards(JwtAuthGuard)
-    async findAllForList(@Request() request) {
+    async findAllForList(@Request() request, @Headers() headers) {
+      var token = headers['x-auth-token'];
+      var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      var fullurl = request.get("Host") + request.originalUrl;
+
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+
       var page = null;
       var limit = null;
       var search = null;
@@ -84,12 +133,22 @@ export class InterestsRepoController {
       if (request_json["page"] !== undefined) {
         page = Number(request_json["page"]);
       } else {
+          var date = new Date();
+          var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+          var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
+
           throw new BadRequestException("Unabled to proceed");
       }
 
       if (request_json["limit"] !== undefined) {
         limit = Number(request_json["limit"]);
       } else {
+          var date = new Date();
+          var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+          var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
+
           throw new BadRequestException("Unabled to proceed");
       }
 
@@ -100,6 +159,11 @@ export class InterestsRepoController {
         "info": ["The process successful"],
       };
 
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
+
       return {
           response_code: 202,
           data:data,
@@ -108,8 +172,24 @@ export class InterestsRepoController {
     }
   
     @Get(':id')
-    async findOneId(@Param('id') id: string): Promise<Interestsrepo> {
-      return this.InterestsRepoService.findOne(id);
+    async findOneId(@Param('id') id: string, @Headers() headers, @Req() request): Promise<Interestsrepo> {
+      var token = headers['x-auth-token'];
+      var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      var fullurl = request.get("Host") + request.originalUrl;
+
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      
+      var data = await this.InterestsRepoService.findOne(id);
+
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, null);
+
+      return data;
+      // return this.InterestsRepoService.findOne(id);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -121,12 +201,32 @@ export class InterestsRepoController {
       },
       @Body() request,
       @Res() res,
+      @Headers() headers
       ) {
     
+      var token = headers['x-auth-token'];
+      var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      var fullurl = headers.host + '/api/interestsrepo/update';
+      var reqbody = JSON.parse(JSON.stringify(request));
+      // reqbody['icon_file'] = files.icon_file;
+      // if(files.icon_file != undefined)
+      // {
+      //   reqbody['icon_file'] = files.icon_file;
+      // }
+      
+      var date = new Date();
+      var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+      var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+
       var repoID = null;
       if (request.repoID !== undefined) {
         repoID = request.repoID;
       } else {
+          var date = new Date();
+          var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+          var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
           throw new BadRequestException("Unabled to proceed");
       }
       
@@ -161,12 +261,23 @@ export class InterestsRepoController {
 
       try {
             let data = await this.InterestsRepoService.update(repoID, updatedata);
+
+            var date = new Date();
+            var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+            var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
             return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": updatedata,
                 "message": messages
             });
         } catch (e) {
+            var date = new Date();
+            var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+            var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
             return res.status(HttpStatus.BAD_REQUEST).json({
                 "message": messagesEror
             });

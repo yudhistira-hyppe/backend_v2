@@ -10,10 +10,12 @@ import { GroupModule } from '../group/group.module';
 import { ModuleModule } from '../module/module.module';
 import { UserbasicsModule } from '../../../trans/userbasics/userbasics.module';
 import { DivisionModule } from '../division/division.module';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
 
 @Module({
 
     imports: [
+        LogapisModule,
         DivisionModule,
         UserbasicsModule,
         ModuleModule,

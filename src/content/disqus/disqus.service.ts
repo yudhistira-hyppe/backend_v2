@@ -11,6 +11,7 @@ import { DisquscontactsService } from '../disquscontacts/disquscontacts.service'
 import { Disquscontacts } from '../disquscontacts/schemas/disquscontacts.schema';
 import { AppGateway } from '../socket/socket.gateway';
 import { ReactionsRepoService } from '../../infra/reactions_repo/reactions_repo.service';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
 
 @Injectable()
 export class DisqusService {
@@ -26,6 +27,7 @@ export class DisqusService {
         private userService: UserbasicsService,
         private reactionsRepoService: ReactionsRepoService,
         private gtw: AppGateway,
+        private readonly logapiSS : LogapisService
     ) { }
 
     async create(CreateDisqusDto: CreateDisqusDto): Promise<Disqus> {
@@ -462,7 +464,9 @@ export class DisqusService {
         return deletedCat;
     }
 
-    async deletedicuss(request: any): Promise<any> {
+    async deletedicuss(email:string, link:string, request: any): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+
         const data_discus = await this.DisqusModel.findOne({ _id: request._id }).exec();
         let param_update = null;
         let data_update = null;
@@ -497,6 +501,10 @@ export class DisqusService {
                 });
             this.disquslogsService.updateBydiscusid(request._id, request.email);
 
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(request));
+            this.logapiSS.create2(link, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             return {
                 response_code: 202,
                 messages: {
@@ -504,6 +512,10 @@ export class DisqusService {
                 }
             }
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(request));
+            this.logapiSS.create2(link, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             throw new NotAcceptableException({
                 response_code: 406,
                 messages: {
@@ -513,7 +525,9 @@ export class DisqusService {
         }
     }
 
-    async discussLog(request: any): Promise<any> {
+    async discussLog(url:string, email:string, request: any): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+
         var deleteDiscussLog = await this.disquslogsService.deletedicusslog(request);
         if (deleteDiscussLog != undefined) {
             if (deleteDiscussLog.status != undefined) {
@@ -567,6 +581,9 @@ export class DisqusService {
                 }
             }
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(url, timestamps_start, timestamps_end, email, null, null, request);
     }
 
     // async finddisqus() {

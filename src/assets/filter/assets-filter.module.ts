@@ -7,12 +7,14 @@ import { AssetsFilter, AssetsFilterSchema } from './schemas/assets-filter.schema
 import { UtilsModule } from '../../utils/utils.module';
 import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
 import { OssModule } from '../../stream/oss/oss.module';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
 
 @Module({
     imports: [
         OssModule,
         UserbasicsModule,
         UtilsModule,
+        LogapisModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: AssetsFilter.name, schema: AssetsFilterSchema }], 'SERVER_FULL')
     ],

@@ -1,15 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Request, Req, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Request, Req, BadRequestException, Headers } from '@nestjs/common';
 import { FaqService } from './faqs.service';
 import { CreateFaqsDto } from './dto/create-faqs.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserbasicsService } from '../userbasics/userbasics.service';
 import { Res, HttpStatus, Response } from '@nestjs/common';
 import { isEmpty } from 'rxjs';
-
+import { LogapisService } from '../logapis/logapis.service';
+import { UtilsService } from 'src/utils/utils.service';  
 
 @Controller()
 export class FaqsController {
-  constructor(private readonly faqService: FaqService, private readonly userbasicsService: UserbasicsService) { }
+  constructor(private readonly faqService: FaqService, private readonly userbasicsService: UserbasicsService, private readonly logapiSS: LogapisService, private readonly utilsService: UtilsService) { }
 
 
   @UseGuards(JwtAuthGuard)
@@ -125,7 +126,13 @@ export class FaqsController {
 
   @Post('api/faqs/allfaqs')
   // @UseGuards(JwtAuthGuard)
-  async all(@Req() request: Request): Promise<any> {
+  async all(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/faqs/allfaqs';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
     const mongoose = require('mongoose');
     var tipe = null;
     var key = null;
@@ -134,6 +141,9 @@ export class FaqsController {
     if (request_json["tipe"] !== undefined) {
       tipe = request_json["tipe"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
     key = request_json["key"];
@@ -144,8 +154,14 @@ export class FaqsController {
 
     let data = await this.faqService.listfaq(tipe, key, kategori);
     if (!data) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new Error('Todo is not found!');
     }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
     return { response_code: 202, data, messages };
   }

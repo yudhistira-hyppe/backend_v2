@@ -6,10 +6,13 @@ import { ConfigModule } from '@nestjs/config';
 import { Accountbalances, AccountbalancesSchema } from './schemas/accountbalances.schema';
 import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { PostsModule } from '../../content/posts/posts.module';
+import { UtilsModule } from 'src/utils/utils.module'; 
+import { LogapisModule } from '../logapis/logapis.module';
 
 @Module({
     imports: [
-
+        LogapisModule,
+        UtilsModule,
         ConfigModule.forRoot(), UserbasicsModule, PostsModule,
         MongooseModule.forFeature([{ name: Accountbalances.name, schema: AccountbalancesSchema }], 'SERVER_FULL')
     ],

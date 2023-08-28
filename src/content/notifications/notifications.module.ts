@@ -5,10 +5,12 @@ import { NotificationsController } from './notifications.controller';
 import { ConfigModule } from '@nestjs/config';
 import { Notifications, NotificationsSchema } from './schemas/notifications.schema';
 import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
 
 @Module({
 
     imports: [
+        LogapisModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Notifications.name, schema: NotificationsSchema }], 'SERVER_FULL'),
         UserbasicsModule,

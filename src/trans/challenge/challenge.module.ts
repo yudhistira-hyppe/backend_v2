@@ -17,8 +17,10 @@ import { UserbasicsService } from '../userbasics/userbasics.service';
 import { notifChallenge, notifChallengeSchema } from './schemas/notifChallenge.schema';
 import { notifChallengeService } from './notifChallenge.service';
 import { UserbadgeModule } from '../userbadge/userbadge.module';
+import { LogapisModule } from '../logapis/logapis.module';
 @Module({
   imports: [
+    LogapisModule,
     ConfigModule.forRoot(),
     OssModule,
     UserbadgeModule,

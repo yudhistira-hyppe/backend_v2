@@ -9,7 +9,7 @@ import {
   Req,
   Headers,
   Request, Logger,
-  BadRequestException, HttpStatus, Put, Res, HttpCode, Query, UseInterceptors, UploadedFile
+  BadRequestException, HttpStatus, Put, Res, HttpCode, Query, UseInterceptors, UploadedFile, Header
 } from '@nestjs/common';
 import { FormDataRequest } from 'nestjs-form-data';
 import { PostsService } from './posts.service';
@@ -85,8 +85,19 @@ export class PostsController {
 
   @Get('api/posts')
   @UseGuards(JwtAuthGuard)
-  async findAll(): Promise<Posts[]> {
-    return this.PostsService.findAll();
+  async findAll(@Headers() headers): Promise<Posts[]> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
+    var data = await this.PostsService.findAll();
+    // return this.PostsService.findAll();
+
+    var fullurl = headers.host + "/api/posts";
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, null);
+
+    return data;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -183,7 +194,10 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/deletetag')
-  async deleteTag(@Req() request) {
+  async deleteTag(@Req() request, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = request.get("Host") + request.originalUrl;
+
     var email = null;
     var postID = null;
     var data = null;
@@ -193,12 +207,18 @@ export class PostsController {
     if (request_json["email"] !== undefined) {
       email = request_json["email"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
     if (request_json["postID"] !== undefined) {
       postID = request_json["postID"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -214,14 +234,24 @@ export class PostsController {
       dataauth = await this.userauthsService.findOneByEmail(email);
       var ido = dataauth._id;
     } catch (e) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
     //deletetagpeople
     try {
 
       this.PostsService.updateTags(postID, ido);
+
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
       return { response_code: 202, messages };
     } catch (e) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
       return { response_code: 500, messagesEror };
     }
 
@@ -352,6 +382,8 @@ export class PostsController {
   @Post('api/posts/v4/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPostv4(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    var fullurl = headers.host + "/api/posts/v4/createpost";
+    
     this.logger.log("createPost >>> start");
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
     var arrtag = [];
@@ -369,7 +401,7 @@ export class PostsController {
     }
 
 
-    var data = await this.postContentService.createNewPostV4(file, body, headers);
+    var data = await this.postContentService.createNewPostV4(file, body, headers, fullurl);
     var postID = data.data.postID;
 
 
@@ -612,14 +644,23 @@ export class PostsController {
     var email = headers['x-auth-user'];
     var saleAmount = body.saleAmount;
     var data = null;
+    var datapostchallenge = null;
+    var active = null;
     var lang = await this.utilsService.getUserlanguages(email);
+    var posts = null;
+    var startDatetime = null;
+    var endDatetime = null;
 
-
-    var posts = await this.PostsService.findid(body.postID.toString());
+    try {
+      posts = await this.PostsService.findid(body.postID.toString());
+    } catch (e) {
+      posts = null;
+    }
     var dataTransaction = await this.transactionsPostService.findpostid(body.postID.toString());
     if (await this.utilsService.ceckData(dataTransaction)) {
       var timestamps_end = await this.utilsService.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
       if (lang == "id") {
         await this.errorHandler.generateNotAcceptableException(
           "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
@@ -629,6 +670,11 @@ export class PostsController {
           " Unable to edit the post because it is in the process of payment.",
         );
       }
+    }
+    try {
+      datapostchallenge = await this.postchallengeService.findBypostID(body.postID.toString());
+    } catch (e) {
+      datapostchallenge = null;
     }
 
     if (body.active == 'false') {
@@ -650,82 +696,196 @@ export class PostsController {
 
       }
 
-      if (tags.length > 0) {
-        const stringSet = new Set(tags);
-        const uniqstring = [...stringSet];
 
-        console.log(uniqstring)
 
-        for (let i = 0; i < uniqstring.length; i++) {
-          let id = uniqstring[i];
+      if (datapostchallenge == null) {
+        if (tags.length > 0) {
+          const stringSet = new Set(tags);
+          const uniqstring = [...stringSet];
 
-          let datatag2 = null;
-          try {
-            datatag2 = await this.tagCountService.findOneById(id);
-          } catch (e) {
-            datatag2 = null;
-          }
+          console.log(uniqstring)
 
-          let total = 0;
-          if (datatag2 !== null) {
-            let postidlist = datatag2.listdata;
-            total = datatag2.total;
+          for (let i = 0; i < uniqstring.length; i++) {
+            let id = uniqstring[i];
 
-            for (let i = 0; i < postidlist.length; i++) {
-              if (postidlist[i].postID === body.postID) {
-                postidlist.splice(i, 1);
-              }
+            let datatag2 = null;
+            try {
+              datatag2 = await this.tagCountService.findOneById(id);
+            } catch (e) {
+              datatag2 = null;
             }
-            let tagCountDto_ = new TagCountDto();
-            tagCountDto_.total = total - 1;
-            tagCountDto_.listdata = postidlist;
-            await this.tagCountService.update(id, tagCountDto_);
-          }
 
+            let total = 0;
+            if (datatag2 !== null) {
+              let postidlist = datatag2.listdata;
+              total = datatag2.total;
+
+              for (let i = 0; i < postidlist.length; i++) {
+                if (postidlist[i].postID === body.postID) {
+                  postidlist.splice(i, 1);
+                }
+              }
+              let tagCountDto_ = new TagCountDto();
+              tagCountDto_.total = total - 1;
+              tagCountDto_.listdata = postidlist;
+              await this.tagCountService.update(id, tagCountDto_);
+            }
+
+
+          }
 
         }
 
-      }
+        //interest
 
-      //interest
+        if (cats.length > 0) {
+          const stringSetin = new Set(cats);
+          const uniqstringin = [...stringSetin];
 
-      if (cats.length > 0) {
-        const stringSetin = new Set(cats);
-        const uniqstringin = [...stringSetin];
+          console.log(uniqstringin)
 
-        console.log(uniqstringin)
+          for (let i = 0; i < uniqstringin.length; i++) {
+            let idin = uniqstringin[i];
 
-        for (let i = 0; i < uniqstringin.length; i++) {
-          let idin = uniqstringin[i];
-
-          let datain = null;
-          try {
-            datain = await this.interestCountService.findOneById(idin);
-          } catch (e) {
-            datain = null;
-          }
-
-          let totalin = 0;
-          if (datain !== null) {
-            let postidlistin = datain.listdata;
-            totalin = datain.total;
-
-            for (let i = 0; i < postidlistin.length; i++) {
-              if (postidlistin[i].postID === body.postID) {
-                postidlistin.splice(i, 1);
-              }
+            let datain = null;
+            try {
+              datain = await this.interestCountService.findOneById(idin);
+            } catch (e) {
+              datain = null;
             }
-            let tagCountDto_ = new TagCountDto();
-            tagCountDto_.total = totalin - 1;
-            tagCountDto_.listdata = postidlistin;
-            await this.tagCountService.update(idin, tagCountDto_);
+
+            let totalin = 0;
+            if (datain !== null) {
+              let postidlistin = datain.listdata;
+              totalin = datain.total;
+
+              for (let i = 0; i < postidlistin.length; i++) {
+                if (postidlistin[i].postID === body.postID) {
+                  postidlistin.splice(i, 1);
+                }
+              }
+              let tagCountDto_ = new TagCountDto();
+              tagCountDto_.total = totalin - 1;
+              tagCountDto_.listdata = postidlistin;
+              await this.tagCountService.update(idin, tagCountDto_);
+            }
+
+
+          }
+        }
+        data = await this.postContentService.updatePost(body, headers);
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+        if (saleAmount > 0) {
+          await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+          //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+        }
+        return data;
+      } else {
+        var datenow = new Date(Date.now());
+        startDatetime = datapostchallenge.startDatetime;
+        endDatetime = datapostchallenge.endDatetime;
+
+        if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime)) {
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed, content is participating in the challenge',
+          );
+
+
+        } else {
+          if (tags.length > 0) {
+            const stringSet = new Set(tags);
+            const uniqstring = [...stringSet];
+
+            console.log(uniqstring)
+
+            for (let i = 0; i < uniqstring.length; i++) {
+              let id = uniqstring[i];
+
+              let datatag2 = null;
+              try {
+                datatag2 = await this.tagCountService.findOneById(id);
+              } catch (e) {
+                datatag2 = null;
+              }
+
+              let total = 0;
+              if (datatag2 !== null) {
+                let postidlist = datatag2.listdata;
+                total = datatag2.total;
+
+                for (let i = 0; i < postidlist.length; i++) {
+                  if (postidlist[i].postID === body.postID) {
+                    postidlist.splice(i, 1);
+                  }
+                }
+                let tagCountDto_ = new TagCountDto();
+                tagCountDto_.total = total - 1;
+                tagCountDto_.listdata = postidlist;
+                await this.tagCountService.update(id, tagCountDto_);
+              }
+
+
+            }
+
           }
 
+          //interest
+
+          if (cats.length > 0) {
+            const stringSetin = new Set(cats);
+            const uniqstringin = [...stringSetin];
+
+            console.log(uniqstringin)
+
+            for (let i = 0; i < uniqstringin.length; i++) {
+              let idin = uniqstringin[i];
+
+              let datain = null;
+              try {
+                datain = await this.interestCountService.findOneById(idin);
+              } catch (e) {
+                datain = null;
+              }
+
+              let totalin = 0;
+              if (datain !== null) {
+                let postidlistin = datain.listdata;
+                totalin = datain.total;
+
+                for (let i = 0; i < postidlistin.length; i++) {
+                  if (postidlistin[i].postID === body.postID) {
+                    postidlistin.splice(i, 1);
+                  }
+                }
+                let tagCountDto_ = new TagCountDto();
+                tagCountDto_.total = totalin - 1;
+                tagCountDto_.listdata = postidlistin;
+                await this.tagCountService.update(idin, tagCountDto_);
+              }
+
+
+            }
+          }
+          data = await this.postContentService.updatePost(body, headers);
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+          if (saleAmount > 0) {
+            await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+            //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+          }
+
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
+          return data;
 
         }
       }
 
-      data = await this.postContentService.updatePost(body, headers);
 
     }
 
@@ -734,7 +894,8 @@ export class PostsController {
       var datapostawal = null;
       var tags = [];
       var arrtag = [];
-
+      var datacats = null;
+      var arrcat = [];
       var cats = [];
       try {
         datapostawal = await this.PostsService.findByPostId(body.postID);
@@ -746,300 +907,634 @@ export class PostsController {
         cats = [];
       }
       var datatag = null;
-      if (tags.length > 0) {
-        if (body.tags !== undefined && body.tags !== "") {
-          var tag = body.tags;
 
-          var splittag = tag.split(',');
-          for (let x = 0; x < splittag.length; x++) {
-            var tagkata = tags[x];
-            var tagreq = splittag[x].replace(/"/g, "");
-            arrtag.push(tagreq)
 
-            if (tagreq !== undefined && tagreq !== tagkata) {
+      if (datapostchallenge == null) {
+        if (tags.length > 0) {
+          if (body.tags !== undefined && body.tags !== "") {
+            var tag = body.tags;
 
-              try {
-                datatag = await this.tagCountService.findOneById(tagkata);
-              } catch (e) {
-                datatag = null;
-              }
+            var splittag = tag.split(',');
+            for (let x = 0; x < splittag.length; x++) {
+              var tagkata = tags[x];
+              var tagreq = splittag[x].replace(/"/g, "");
+              arrtag.push(tagreq)
 
-              var total = 0;
-              if (datatag !== null) {
-                var postidlist = datatag.listdata;
-                total = datatag.total;
-
-                for (var i = 0; i < postidlist.length; i++) {
-                  if (postidlist[i].postID === body.postID) {
-                    postidlist.splice(i, 1);
-                  }
-                }
-                let tagCountDto_ = new TagCountDto();
-                tagCountDto_.total = total - 1;
-                tagCountDto_.listdata = postidlist;
-                await this.tagCountService.update(tagkata, tagCountDto_);
-              }
-            }
-          }
-          body.tags = arrtag;
-        } else {
-          body.tags = [];
-
-        }
-
-      } else {
-        body.tags = [];
-
-      }
-
-      //interest
-      var datacats = null;
-      var arrcat = [];
-      if (cats.length > 0) {
-        if (body.cats !== undefined && body.cats !== "") {
-          var cat = body.cats;
-          var splittcat = null;
-          if (cat !== undefined && cat !== "") {
-            splittcat = cat.split(',');
-            for (let x = 0; x < splittcat.length; x++) {
-
-              var tagcat = null;
-              try {
-                tagcat = cats[x].oid.toString();
-              } catch (e) {
-                tagcat = "";
-              }
-              var catreq = splittcat[x];
-
-              if (catreq !== undefined && catreq !== tagcat) {
+              if (tagreq !== undefined && tagreq !== tagkata) {
 
                 try {
-                  datacats = await this.interestCountService.findOneById(tagcat);
+                  datatag = await this.tagCountService.findOneById(tagkata);
                 } catch (e) {
-                  datacats = null;
+                  datatag = null;
                 }
+
                 var total = 0;
-                if (datacats !== null) {
-                  let postidlist = datacats.listdata;
-                  total = datacats.total;
+                if (datatag !== null) {
+                  var postidlist = datatag.listdata;
+                  total = datatag.total;
 
                   for (var i = 0; i < postidlist.length; i++) {
                     if (postidlist[i].postID === body.postID) {
                       postidlist.splice(i, 1);
                     }
                   }
-                  let catCountDto_ = new InterestCountDto();
-                  catCountDto_.total = total - 1;
-                  catCountDto_.listdata = postidlist;
-                  await this.interestCountService.update(tagcat, catCountDto_);
+                  let tagCountDto_ = new TagCountDto();
+                  tagCountDto_.total = total - 1;
+                  tagCountDto_.listdata = postidlist;
+                  await this.tagCountService.update(tagkata, tagCountDto_);
                 }
               }
             }
+            body.tags = arrtag;
+          } else {
+            body.tags = [];
+
           }
 
         } else {
-          body.cats = [];
+          body.tags = [];
+
         }
 
-      }
+        //interest
 
-      data = await this.postContentService.updatePost(body, headers);
+        if (cats.length > 0) {
+          if (body.cats !== undefined && body.cats !== "") {
+            var cat = body.cats;
+            var splittcat = null;
+            if (cat !== undefined && cat !== "") {
+              splittcat = cat.split(',');
+              for (let x = 0; x < splittcat.length; x++) {
 
-      //tags
-      if (body.tags !== undefined && body.tags.length > 0) {
-        var tag2 = body.tags;
-        for (let i = 0; i < tag2.length; i++) {
-          let id = tag2[i];
-          var datatag2 = null;
+                var tagcat = null;
+                try {
+                  tagcat = cats[x].oid.toString();
+                } catch (e) {
+                  tagcat = "";
+                }
+                var catreq = splittcat[x];
 
-          try {
-            datatag2 = await this.tagCountService.findOneById(id);
+                if (catreq !== undefined && catreq !== tagcat) {
 
-          } catch (e) {
-            datatag2 = null;
+                  try {
+                    datacats = await this.interestCountService.findOneById(tagcat);
+                  } catch (e) {
+                    datacats = null;
+                  }
+                  var total = 0;
+                  if (datacats !== null) {
+                    let postidlist = datacats.listdata;
+                    total = datacats.total;
 
-          }
-
-          if (datatag2 === null) {
-
-            let tagCountDto_ = new TagCountDto();
-            tagCountDto_._id = id;
-            tagCountDto_.total = 1;
-            tagCountDto_.listdata = [{ "postID": body.postID }];
-            await this.tagCountService.create(tagCountDto_);
-          } else {
-
-            var datatag3 = null;
-            var lengdata3 = null;
-
-            try {
-              datatag3 = await this.tagCountService.finddatabypostid(id, body.postID);
-              lengdata3 = datatag3.length;
-
-            } catch (e) {
-              datatag3 = null;
-              lengdata3 = 0;
-            }
-            var datapost = null;
-            var tagslast = [];
-            try {
-              datapost = await this.PostsService.findByPostId(body.postID);
-              tagslast = datapost.tags;
-            } catch (e) {
-              datapost = null;
-              tagslast = [];
-            }
-            let idnew = tagslast[i];
-            var total2 = 0;
-            var postidlist2 = [];
-            let obj = { "postID": body.postID };
-            total2 = datatag2.total;
-            postidlist2 = datatag2.listdata;
-            if (id === idnew) {
-              if (lengdata3 == 0) {
-                postidlist2.push(obj);
+                    for (var i = 0; i < postidlist.length; i++) {
+                      if (postidlist[i].postID === body.postID) {
+                        postidlist.splice(i, 1);
+                      }
+                    }
+                    let catCountDto_ = new InterestCountDto();
+                    catCountDto_.total = total - 1;
+                    catCountDto_.listdata = postidlist;
+                    await this.interestCountService.update(tagcat, catCountDto_);
+                  }
+                }
               }
             }
 
-            let tagCountDto_ = new TagCountDto();
-            tagCountDto_._id = id;
-            if (id === idnew) {
-
-              if (lengdata3 == 0) {
-                tagCountDto_.total = total2 + 1;
-              }
-            }
-
-            tagCountDto_.listdata = postidlist2;
-            await this.tagCountService.update(id, tagCountDto_);
+          } else {
+            body.cats = [];
           }
 
         }
-      } else {
-
-      }
-
-      //Interest
-      const mongoose = require('mongoose');
-      var ObjectId = require('mongodb').ObjectId;
-
-      if (body.cats !== undefined) {
-        let cats = body.cats;
-        var splitcats = cats.split(',');
-        for (let i = 0; i < splitcats.length; i++) {
-          let id = splitcats[i];
-          var datacats = null;
-          var datacatsday = null;
-
-          try {
-            datacats = await this.interestCountService.findOneById(id);
-
-          } catch (e) {
-            datacats = null;
-
-          }
-
-          if (datacats === null) {
-
-
-            let interestCountDto_ = new InterestCountDto();
-            interestCountDto_._id = mongoose.Types.ObjectId(id);
-            interestCountDto_.total = 1;
-            interestCountDto_.listdata = [{ "postID": body.postID }];
-            await this.interestCountService.create(interestCountDto_);
-
-
-          }
-          else {
-
-
-            var catslast = [];
-            var datapostawal = null;
+        data = await this.postContentService.updatePost(body, headers);
+        //tags
+        if (body.tags !== undefined && body.tags.length > 0) {
+          var tag2 = body.tags;
+          for (let i = 0; i < tag2.length; i++) {
+            let id = tag2[i];
+            var datatag2 = null;
 
             try {
-              datapostawal = await this.PostsService.findByPostId(body.postID);
-              catslast = datapostawal.category;
+              datatag2 = await this.tagCountService.findOneById(id);
+
             } catch (e) {
-              datapostawal = null;
-              catslast = [];
-            }
-            let idnew = catslast[i].oid.toString();
-            var totalcats = 0;
-            var postidlistcats = [];
-            let obj = { "postID": datapostawal.postID };
-            totalcats = datacats.total;
-            postidlistcats = datacats.listdata;
-            if (id !== idnew) {
-              postidlistcats.push(obj);
+              datatag2 = null;
+
             }
 
-            let interestCountDto_ = new InterestCountDto();
-            interestCountDto_._id = mongoose.Types.ObjectId(id);
-            if (id !== idnew) {
-              interestCountDto_.total = totalcats + 1;
-            }
-            interestCountDto_.listdata = postidlistcats;
-            await this.interestCountService.update(id, interestCountDto_);
-          }
+            if (datatag2 === null) {
 
-          var dt = new Date(Date.now());
-          dt.setHours(dt.getHours() + 7); // timestamp
-          dt = new Date(dt);
-          var strdate = dt.toISOString();
-          var repdate = strdate.replace('T', ' ');
-          var splitdate = repdate.split('.');
-          var stringdate = splitdate[0];
-          var date = stringdate.substring(0, 10) + " " + "00:00:00";
-          var cekdata = null;
-
-          try {
-            cekdata = await this.interestdayService.finddate(date);
-
-          } catch (e) {
-            cekdata = null;
-
-          }
-
-          try {
-            datacatsday = await this.interestdayService.finddatabydate(date, id);
-
-          } catch (e) {
-            datacatsday = null;
-
-          }
-
-          if (cekdata.length == 0) {
-            let interestdayDto_ = new InterestdayDto();
-            interestdayDto_.date = date;
-            interestdayDto_.listinterest = [{
-              "_id": mongoose.Types.ObjectId(id),
-              "total": 1,
-              "createdAt": stringdate,
-              "updatedAt": stringdate
-            }];
-            await this.interestdayService.create(interestdayDto_);
-          } else {
-            if (datacatsday.length > 0) {
-              var idq = datacatsday[0]._id;
-              var idint = datacatsday[0].listinterest._id;
-              var totalint = datacatsday[0].listinterest.total;
-              await this.interestdayService.updatefilter(idq.toString(), idint.toString(), totalint + 1, stringdate);
+              let tagCountDto_ = new TagCountDto();
+              tagCountDto_._id = id;
+              tagCountDto_.total = 1;
+              tagCountDto_.listdata = [{ "postID": body.postID }];
+              await this.tagCountService.create(tagCountDto_);
             } else {
-              var idInt = cekdata[0]._id.toString();
-              var list = cekdata[0].listinterest;
-              var objin = {
+
+              var datatag3 = null;
+              var lengdata3 = null;
+
+              try {
+                datatag3 = await this.tagCountService.finddatabypostid(id, body.postID);
+                lengdata3 = datatag3.length;
+
+              } catch (e) {
+                datatag3 = null;
+                lengdata3 = 0;
+              }
+              var datapost = null;
+              var tagslast = [];
+              try {
+                datapost = await this.PostsService.findByPostId(body.postID);
+                tagslast = datapost.tags;
+              } catch (e) {
+                datapost = null;
+                tagslast = [];
+              }
+              let idnew = tagslast[i];
+              var total2 = 0;
+              var postidlist2 = [];
+              let obj = { "postID": body.postID };
+              total2 = datatag2.total;
+              postidlist2 = datatag2.listdata;
+              if (id === idnew) {
+                if (lengdata3 == 0) {
+                  postidlist2.push(obj);
+                }
+              }
+
+              let tagCountDto_ = new TagCountDto();
+              tagCountDto_._id = id;
+              if (id === idnew) {
+
+                if (lengdata3 == 0) {
+                  tagCountDto_.total = total2 + 1;
+                }
+              }
+
+              tagCountDto_.listdata = postidlist2;
+              await this.tagCountService.update(id, tagCountDto_);
+            }
+
+          }
+        } else {
+
+        }
+
+        //Interest
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+        if (body.cats !== undefined) {
+          let cats = body.cats;
+          var splitcats = cats.split(',');
+          for (let i = 0; i < splitcats.length; i++) {
+            let id = splitcats[i];
+            var datacats = null;
+            var datacatsday = null;
+
+            try {
+              datacats = await this.interestCountService.findOneById(id);
+
+            } catch (e) {
+              datacats = null;
+
+            }
+
+            if (datacats === null) {
+
+
+              let interestCountDto_ = new InterestCountDto();
+              interestCountDto_._id = mongoose.Types.ObjectId(id);
+              interestCountDto_.total = 1;
+              interestCountDto_.listdata = [{ "postID": body.postID }];
+              await this.interestCountService.create(interestCountDto_);
+
+
+            }
+            else {
+
+
+              var catslast = [];
+              var datapostawal = null;
+
+              try {
+                datapostawal = await this.PostsService.findByPostId(body.postID);
+                catslast = datapostawal.category;
+              } catch (e) {
+                datapostawal = null;
+                catslast = [];
+              }
+              let idnew = catslast[i].oid.toString();
+              var totalcats = 0;
+              var postidlistcats = [];
+              let obj = { "postID": datapostawal.postID };
+              totalcats = datacats.total;
+              postidlistcats = datacats.listdata;
+              if (id !== idnew) {
+                postidlistcats.push(obj);
+              }
+
+              let interestCountDto_ = new InterestCountDto();
+              interestCountDto_._id = mongoose.Types.ObjectId(id);
+              if (id !== idnew) {
+                interestCountDto_.total = totalcats + 1;
+              }
+              interestCountDto_.listdata = postidlistcats;
+              await this.interestCountService.update(id, interestCountDto_);
+            }
+
+            var dt = new Date(Date.now());
+            dt.setHours(dt.getHours() + 7); // timestamp
+            dt = new Date(dt);
+            var strdate = dt.toISOString();
+            var repdate = strdate.replace('T', ' ');
+            var splitdate = repdate.split('.');
+            var stringdate = splitdate[0];
+            var date = stringdate.substring(0, 10) + " " + "00:00:00";
+            var cekdata = null;
+
+            try {
+              cekdata = await this.interestdayService.finddate(date);
+
+            } catch (e) {
+              cekdata = null;
+
+            }
+
+            try {
+              datacatsday = await this.interestdayService.finddatabydate(date, id);
+
+            } catch (e) {
+              datacatsday = null;
+
+            }
+
+            if (cekdata.length == 0) {
+              let interestdayDto_ = new InterestdayDto();
+              interestdayDto_.date = date;
+              interestdayDto_.listinterest = [{
                 "_id": mongoose.Types.ObjectId(id),
                 "total": 1,
                 "createdAt": stringdate,
                 "updatedAt": stringdate
-              };
-              list.push(objin);
-              await this.interestdayService.updateInterestday(idInt, list);
+              }];
+              await this.interestdayService.create(interestdayDto_);
+            } else {
+              if (datacatsday.length > 0) {
+                var idq = datacatsday[0]._id;
+                var idint = datacatsday[0].listinterest._id;
+                var totalint = datacatsday[0].listinterest.total;
+                await this.interestdayService.updatefilter(idq.toString(), idint.toString(), totalint + 1, stringdate);
+              } else {
+                var idInt = cekdata[0]._id.toString();
+                var list = cekdata[0].listinterest;
+                var objin = {
+                  "_id": mongoose.Types.ObjectId(id),
+                  "total": 1,
+                  "createdAt": stringdate,
+                  "updatedAt": stringdate
+                };
+                list.push(objin);
+                await this.interestdayService.updateInterestday(idInt, list);
+              }
+            }
+
+          }
+        }
+
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+        if (saleAmount > 0) {
+          await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+          //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
+        return data;
+      } else {
+        var datenow = new Date(Date.now());
+        startDatetime = datapostchallenge.startDatetime;
+        endDatetime = datapostchallenge.endDatetime;
+
+        if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime) && saleAmount > 0) {
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed, content is participating in the challenge',
+          );
+        } else {
+
+
+          if (tags.length > 0) {
+            if (body.tags !== undefined && body.tags !== "") {
+              var tag = body.tags;
+
+              var splittag = tag.split(',');
+              for (let x = 0; x < splittag.length; x++) {
+                var tagkata = tags[x];
+                var tagreq = splittag[x].replace(/"/g, "");
+                arrtag.push(tagreq)
+
+                if (tagreq !== undefined && tagreq !== tagkata) {
+
+                  try {
+                    datatag = await this.tagCountService.findOneById(tagkata);
+                  } catch (e) {
+                    datatag = null;
+                  }
+
+                  var total = 0;
+                  if (datatag !== null) {
+                    var postidlist = datatag.listdata;
+                    total = datatag.total;
+
+                    for (var i = 0; i < postidlist.length; i++) {
+                      if (postidlist[i].postID === body.postID) {
+                        postidlist.splice(i, 1);
+                      }
+                    }
+                    let tagCountDto_ = new TagCountDto();
+                    tagCountDto_.total = total - 1;
+                    tagCountDto_.listdata = postidlist;
+                    await this.tagCountService.update(tagkata, tagCountDto_);
+                  }
+                }
+              }
+              body.tags = arrtag;
+            } else {
+              body.tags = [];
+
+            }
+
+          } else {
+            body.tags = [];
+
+          }
+
+          //interest
+
+          if (cats.length > 0) {
+            if (body.cats !== undefined && body.cats !== "") {
+              var cat = body.cats;
+              var splittcat = null;
+              if (cat !== undefined && cat !== "") {
+                splittcat = cat.split(',');
+                for (let x = 0; x < splittcat.length; x++) {
+
+                  var tagcat = null;
+                  try {
+                    tagcat = cats[x].oid.toString();
+                  } catch (e) {
+                    tagcat = "";
+                  }
+                  var catreq = splittcat[x];
+
+                  if (catreq !== undefined && catreq !== tagcat) {
+
+                    try {
+                      datacats = await this.interestCountService.findOneById(tagcat);
+                    } catch (e) {
+                      datacats = null;
+                    }
+                    var total = 0;
+                    if (datacats !== null) {
+                      let postidlist = datacats.listdata;
+                      total = datacats.total;
+
+                      for (var i = 0; i < postidlist.length; i++) {
+                        if (postidlist[i].postID === body.postID) {
+                          postidlist.splice(i, 1);
+                        }
+                      }
+                      let catCountDto_ = new InterestCountDto();
+                      catCountDto_.total = total - 1;
+                      catCountDto_.listdata = postidlist;
+                      await this.interestCountService.update(tagcat, catCountDto_);
+                    }
+                  }
+                }
+              }
+
+            } else {
+              body.cats = [];
+            }
+
+          }
+          data = await this.postContentService.updatePost(body, headers);
+          //tags
+          if (body.tags !== undefined && body.tags.length > 0) {
+            var tag2 = body.tags;
+            for (let i = 0; i < tag2.length; i++) {
+              let id = tag2[i];
+              var datatag2 = null;
+
+              try {
+                datatag2 = await this.tagCountService.findOneById(id);
+
+              } catch (e) {
+                datatag2 = null;
+
+              }
+
+              if (datatag2 === null) {
+
+                let tagCountDto_ = new TagCountDto();
+                tagCountDto_._id = id;
+                tagCountDto_.total = 1;
+                tagCountDto_.listdata = [{ "postID": body.postID }];
+                await this.tagCountService.create(tagCountDto_);
+              } else {
+
+                var datatag3 = null;
+                var lengdata3 = null;
+
+                try {
+                  datatag3 = await this.tagCountService.finddatabypostid(id, body.postID);
+                  lengdata3 = datatag3.length;
+
+                } catch (e) {
+                  datatag3 = null;
+                  lengdata3 = 0;
+                }
+                var datapost = null;
+                var tagslast = [];
+                try {
+                  datapost = await this.PostsService.findByPostId(body.postID);
+                  tagslast = datapost.tags;
+                } catch (e) {
+                  datapost = null;
+                  tagslast = [];
+                }
+                let idnew = tagslast[i];
+                var total2 = 0;
+                var postidlist2 = [];
+                let obj = { "postID": body.postID };
+                total2 = datatag2.total;
+                postidlist2 = datatag2.listdata;
+                if (id === idnew) {
+                  if (lengdata3 == 0) {
+                    postidlist2.push(obj);
+                  }
+                }
+
+                let tagCountDto_ = new TagCountDto();
+                tagCountDto_._id = id;
+                if (id === idnew) {
+
+                  if (lengdata3 == 0) {
+                    tagCountDto_.total = total2 + 1;
+                  }
+                }
+
+                tagCountDto_.listdata = postidlist2;
+                await this.tagCountService.update(id, tagCountDto_);
+              }
+
+            }
+          } else {
+
+          }
+
+          //Interest
+          const mongoose = require('mongoose');
+          var ObjectId = require('mongodb').ObjectId;
+
+          if (body.cats !== undefined) {
+            let cats = body.cats;
+            var splitcats = cats.split(',');
+            for (let i = 0; i < splitcats.length; i++) {
+              let id = splitcats[i];
+              var datacats = null;
+              var datacatsday = null;
+
+              try {
+                datacats = await this.interestCountService.findOneById(id);
+
+              } catch (e) {
+                datacats = null;
+
+              }
+
+              if (datacats === null) {
+
+
+                let interestCountDto_ = new InterestCountDto();
+                interestCountDto_._id = mongoose.Types.ObjectId(id);
+                interestCountDto_.total = 1;
+                interestCountDto_.listdata = [{ "postID": body.postID }];
+                await this.interestCountService.create(interestCountDto_);
+
+
+              }
+              else {
+
+
+                var catslast = [];
+                var datapostawal = null;
+
+                try {
+                  datapostawal = await this.PostsService.findByPostId(body.postID);
+                  catslast = datapostawal.category;
+                } catch (e) {
+                  datapostawal = null;
+                  catslast = [];
+                }
+                let idnew = catslast[i].oid.toString();
+                var totalcats = 0;
+                var postidlistcats = [];
+                let obj = { "postID": datapostawal.postID };
+                totalcats = datacats.total;
+                postidlistcats = datacats.listdata;
+                if (id !== idnew) {
+                  postidlistcats.push(obj);
+                }
+
+                let interestCountDto_ = new InterestCountDto();
+                interestCountDto_._id = mongoose.Types.ObjectId(id);
+                if (id !== idnew) {
+                  interestCountDto_.total = totalcats + 1;
+                }
+                interestCountDto_.listdata = postidlistcats;
+                await this.interestCountService.update(id, interestCountDto_);
+              }
+
+              var dt = new Date(Date.now());
+              dt.setHours(dt.getHours() + 7); // timestamp
+              dt = new Date(dt);
+              var strdate = dt.toISOString();
+              var repdate = strdate.replace('T', ' ');
+              var splitdate = repdate.split('.');
+              var stringdate = splitdate[0];
+              var date = stringdate.substring(0, 10) + " " + "00:00:00";
+              var cekdata = null;
+
+              try {
+                cekdata = await this.interestdayService.finddate(date);
+
+              } catch (e) {
+                cekdata = null;
+
+              }
+
+              try {
+                datacatsday = await this.interestdayService.finddatabydate(date, id);
+
+              } catch (e) {
+                datacatsday = null;
+
+              }
+
+              if (cekdata.length == 0) {
+                let interestdayDto_ = new InterestdayDto();
+                interestdayDto_.date = date;
+                interestdayDto_.listinterest = [{
+                  "_id": mongoose.Types.ObjectId(id),
+                  "total": 1,
+                  "createdAt": stringdate,
+                  "updatedAt": stringdate
+                }];
+                await this.interestdayService.create(interestdayDto_);
+              } else {
+                if (datacatsday.length > 0) {
+                  var idq = datacatsday[0]._id;
+                  var idint = datacatsday[0].listinterest._id;
+                  var totalint = datacatsday[0].listinterest.total;
+                  await this.interestdayService.updatefilter(idq.toString(), idint.toString(), totalint + 1, stringdate);
+                } else {
+                  var idInt = cekdata[0]._id.toString();
+                  var list = cekdata[0].listinterest;
+                  var objin = {
+                    "_id": mongoose.Types.ObjectId(id),
+                    "total": 1,
+                    "createdAt": stringdate,
+                    "updatedAt": stringdate
+                  };
+                  list.push(objin);
+                  await this.interestdayService.updateInterestday(idInt, list);
+                }
+              }
+
             }
           }
 
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+          if (saleAmount > 0) {
+            await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+            //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+          }
+
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
+          return data;
         }
       }
+
+
 
     }
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
@@ -1056,12 +1551,18 @@ export class PostsController {
     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
 
     return data;
+
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/createpost/backup')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPostV3new(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/createpost";
+    var reqbody = body;
+    // reqbody['postContent'] = file;
+    
     this.logger.log("createPost >>> start");
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
     var arrtag = [];
@@ -1083,7 +1584,7 @@ export class PostsController {
       }
     }
 
-    var data = await this.postContentService.createNewPostV4(file, body, headers);
+    var data = await this.postContentService.createNewPostV4(file, body, headers, fullurl);
     var postID = data.data.postID;
 
     var email = data.data.email;
@@ -1294,6 +1795,10 @@ export class PostsController {
 
       }
     }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
     return data;
   }
 
@@ -1362,7 +1867,8 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getnotification2')
   @UseInterceptors(FileInterceptor('postContent'))
-  async getNotification2(@Body() body, @Headers('x-auth-user') email: string) {
+  async getNotification2(@Body() body, @Headers('x-auth-user') email: string, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
     this.logger.log("getNotification >>> start: " + JSON.stringify(body));
     var eventType = null;
     var pageRow = null;
@@ -1594,6 +2100,9 @@ export class PostsController {
       data = [];
     }
 
+    var fullurl = headers.host + "/api/posts/getnotification2";
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, body);
 
     return { response_code: 202, data, messages };
   }
@@ -1607,8 +2116,15 @@ export class PostsController {
   @HttpCode(HttpStatus.OK)
   @Post('api/posts/tagpeople')
   async getTagpeople(@Headers() headers, @Body() body) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/tagpeople";
+    var reqbody = JSON.parse(JSON.stringify(body));
+
     //CECK BAEARER TOKEN
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed token and email not match',
       );
@@ -1617,12 +2133,18 @@ export class PostsController {
     //CECK DATA USER
     const data_userbasic = await this.userbasicsService.findOne(headers['x-auth-user']);
     if (!(await this.utilsService.ceckData(data_userbasic))) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+      
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed User not found'
       );
     }
 
     if (body.postId == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, Param PostID required'
       );
@@ -1674,6 +2196,9 @@ export class PostsController {
           }
         }
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
         return {
           response_code: 202,
           data: atp1,
@@ -1683,6 +2208,9 @@ export class PostsController {
         };
       }
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, Data Post not found'
       );
@@ -1731,21 +2259,39 @@ export class PostsController {
 
   @Post('api/posts/getvideo')
   async getVideo(@Body() body, @Headers() headers) {
+
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/posts/getvideo';
+    var reqbody = JSON.parse(JSON.stringify(body));
+
     this.logger.log("getVideo >>> start: " + JSON.stringify(body));
     var definition = "SD";
     if (body.definition != undefined) {
       definition = String(body.definition);
     }
-    return this.postContentService.getVideoApsaraSingle(String(body.apsaraId), definition);
+    // return this.postContentService.getVideoApsaraSingle(String(body.apsaraId), definition);
+    var data = await this.postContentService.getVideoApsaraSingleV4(String(body.apsaraId), definition);
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
+    return data;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('api/posts/apsaraauth?')
   @HttpCode(HttpStatus.ACCEPTED)
   async getApsaraAuth(
-    @Query('apsaraId') apsaraId: string) {
+    @Query('apsaraId') apsaraId: string,
+    @Headers() headers) {
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var fullurl = headers.host + "/api/posts/apsaraauth?apsaraId=" + apsaraId;
+
     this.logger.log("apsaraId >>> start: " + JSON.stringify(apsaraId));
-    return this.postContentService.getVideoPlayAuth(apsaraId);
+    return this.postContentService.getVideoPlayAuth(apsaraId, fullurl, auth.email);
   }
 
   @Post('api/userplaylist/generate')
@@ -1787,6 +2333,7 @@ export class PostsController {
   async getinteractives(
     @Headers() headers,
     @Body() body,
+    @Req() request
     // @Query('eventType') eventType: string,
     // @Query('withDetail') withDetail: boolean,
     // @Query('withEvents') withEvents: string,
@@ -1795,12 +2342,22 @@ export class PostsController {
     // @Query('pageNumber') pageNumber: number,
     // @Query('senderOrReceiver') senderOrReceiver: string
   ) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = request.get("Host") + request.originalUrl;
+    var reqbody = JSON.parse(JSON.stringify(body));
+
     if (headers['x-auth-user'] == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
       );
     }
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed email header dan token not match',
       );
@@ -1957,6 +2514,10 @@ export class PostsController {
       });
       data_response = data_filter;
     }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
     return {
       "response_code": 202,
       "data": data_response,
@@ -2311,6 +2872,9 @@ export class PostsController {
   @Get('stream/:id')
   @HttpCode(HttpStatus.OK)
   async stream(@Param('id') mediaFile: string, @Headers() headers, @Res() response) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/stream/" + mediaFile;
+    
     console.log(mediaFile);
     if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(headers['x-auth-token'], headers['x-auth-user'])) {
@@ -2324,24 +2888,45 @@ export class PostsController {
             if (mediaBasePath != "") {
               var data = await this.PostsService.stream(mediaBasePath + mediaFile);
               if (data != null) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
                 response.set("Content-Type", "application/octet-stream");
                 response.send(data);
               } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
                 response.send(null);
               }
             } else {
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
               response.send(null);
             }
           } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
             response.send(null);
           }
         } else {
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
           response.send(null);
         }
       } else {
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, null);
+
         response.send(null);
       }
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, null);
+
       response.send(null);
     }
   }
@@ -2353,7 +2938,12 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Put('api/posts/delete/:id')
-  async deletePost(@Res() res, @Param('id') id: string) {
+  async deletePost(@Res() res, @Param('id') id: string, @Req() request, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = request.get("Host") + request.originalUrl;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
     const messages = {
@@ -2366,11 +2956,18 @@ export class PostsController {
     // var idobj = mongoose.Types.ObjectId(id);
     try {
       let data = await this.PostsService.updatenonaktif(id);
+
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, null);
+
       res.status(HttpStatus.OK).json({
         response_code: 202,
         "message": messages
       });
     } catch (e) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, null);
+
       res.status(HttpStatus.BAD_REQUEST).json({
 
         "message": messagesEror
@@ -2380,7 +2977,12 @@ export class PostsController {
 
   @Post('api/posts/postbychart')
   @UseGuards(JwtAuthGuard)
-  async getPostChartBasedDate(@Req() request: Request): Promise<any> {
+  async getPostChartBasedDate(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/postbychart";
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    
     var data = null;
     var date = null;
     var iduser = null;
@@ -2394,6 +2996,9 @@ export class PostsController {
       date = request_json["date"];
     }
     else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -2438,12 +3043,20 @@ export class PostsController {
       total: (getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
     }
 
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
+
     return { response_code: 202, messages, data };
   }
 
   @Get('api/posts/showsertifikasistatbychart')
   @UseGuards(JwtAuthGuard)
-  async getCertifiedStatByChart(@Req() request: Request): Promise<any> {
+  async getCertifiedStatByChart(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/showsertifikasistatbychart";
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
     var data = null;
 
     const messages = {
@@ -2468,13 +3081,20 @@ export class PostsController {
         }
       ];
     }
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, null);
 
     return { response_code: 202, messages, data };
   }
 
   @Post('api/posts/analityc')
   @UseGuards(JwtAuthGuard)
-  async getByChart(@Req() request: Request): Promise<any> {
+  async getByChart(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/analityc";
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    
     var data = null;
     var startdate = null;
     var enddate = null;
@@ -2488,12 +3108,16 @@ export class PostsController {
     if (request_json["startdate"] !== undefined) {
       startdate = request_json["startdate"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
       throw new BadRequestException("Unabled to proceed");
     }
 
     if (request_json["enddate"] !== undefined) {
       enddate = request_json["enddate"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
       throw new BadRequestException("Unabled to proceed");
     }
 
@@ -2546,13 +3170,18 @@ export class PostsController {
       }
 
     }
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
 
     return { response_code: 202, messages, data: arrdataview };
   }
 
   @Post('api/posts/landing-page/recentStory')
   @UseGuards(JwtAuthGuard)
-  async getRecentStory(@Req() request: Request): Promise<any> {
+  async getRecentStory(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/landing-page/recentStory";
+
     var data = null;
     var email = null;
     var page = null;
@@ -2561,16 +3190,25 @@ export class PostsController {
     if (request_json["email"] !== undefined) {
       email = request_json["email"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
     if (request_json["page"] !== undefined) {
       page = request_json["page"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+      
       throw new BadRequestException("Unabled to proceed");
     }
     if (request_json["limit"] !== undefined) {
       limit = request_json["limit"];
     } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
       throw new BadRequestException("Unabled to proceed");
     }
     const messages = {
@@ -2620,6 +3258,10 @@ export class PostsController {
     } else {
       data = [];
     }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
     return { response_code: 202, data, messages };
   }
 
@@ -2846,6 +3488,22 @@ export class PostsController {
     var poinViewDiary = null;
     var poinPict = null;
     var tagar = null;
+    var datapost = null;
+    var createAt = null;
+    var saleAmount = null;
+    try {
+      datapost = await this.PostsService.findByPostId(postID);
+    } catch (e) {
+      datapost = null;
+    }
+    if (datapost !== null) {
+      createAt = datapost.createdAt;
+      if (datapost.saleAmount !== undefined) {
+        saleAmount = datapost.saleAmount;
+      } else {
+        saleAmount = 0;
+      }
+    }
     try {
       datachallenge = await this.challengeService.challengeKonten();
     } catch (e) {
@@ -2915,69 +3573,70 @@ export class PostsController {
                     let start = new Date(datauserchall[y].startDatetime);
                     let end = new Date(datauserchall[y].endDatetime);
                     let datenow = new Date(Date.now());
+                    if (new Date(createAt) >= start && new Date(createAt) <= end && saleAmount == 0) {
+                      if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
 
-                    if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
+                        var obj = {};
 
-                      var obj = {};
+                        obj = {
+                          "updatedAt": datauserchall[y].updatedAt,
+                          "score": datauserchall[y].score,
+                          "ranking": datauserchall[y].ranking,
+                        }
 
-                      obj = {
-                        "updatedAt": datauserchall[y].updatedAt,
-                        "score": datauserchall[y].score,
-                        "ranking": datauserchall[y].ranking,
-                      }
-
-                      if (postType == "vid") {
-                        poin = poinViewVid;
-                      } else if (postType == "diary") {
-                        poin = poinViewDiary;
-                      } else if (postType == "pict") {
-                        poin = poinPict;
-                      }
-                      await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                      await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
-                      try {
-                        var Postchallenge_ = new Postchallenge();
-                        Postchallenge_.postID = postID;
-                        Postchallenge_.createdAt = timedate;
-                        Postchallenge_.idChallenge = idChallenge;
-                        Postchallenge_.idSubChallenge = idsubchallenge;
-                        Postchallenge_.session = session;
-                        Postchallenge_.startDatetime = startDatetime;
-                        Postchallenge_.endDatetime = endDatetime;
-                        Postchallenge_.updatedAt = timedate;
-                        Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
-                        Postchallenge_.score = poin;
-                        await this.postchallengeService.create(Postchallenge_);
-                      } catch (e) {
-
-                      }
-                      var detail = await this.userchallengesService.findOne(iduserchall.toString());
-                      var activity = detail.activity;
-                      objintr = { "type": nametable, "id": idref, "desc": action }
-                      console.log(objintr)
-                      activity.push(objintr)
-                      await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
-
-                      var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
-
-                      if (datauschall.length > 0) {
-                        for (let x = 0; x < datauschall.length; x++) {
-
-                          let iducall = datauschall[x]._id;
-                          let start = new Date(datauschall[x].startDatetime);
-                          let end = new Date(datauschall[x].endDatetime);
-                          let datenow = new Date(Date.now());
-                          let idChallenges2 = datauschall[x].idChallenge;
-                          let rank = x + 1;
-
-                          //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                          await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                          // }
+                        if (postType == "vid") {
+                          poin = poinViewVid;
+                        } else if (postType == "diary") {
+                          poin = poinViewDiary;
+                        } else if (postType == "pict") {
+                          poin = poinPict;
+                        }
+                        await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                        await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+                        try {
+                          var Postchallenge_ = new Postchallenge();
+                          Postchallenge_.postID = postID;
+                          Postchallenge_.createdAt = timedate;
+                          Postchallenge_.idChallenge = idChallenge;
+                          Postchallenge_.idSubChallenge = idsubchallenge;
+                          Postchallenge_.session = session;
+                          Postchallenge_.startDatetime = startDatetime;
+                          Postchallenge_.endDatetime = endDatetime;
+                          Postchallenge_.updatedAt = timedate;
+                          Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
+                          Postchallenge_.score = poin;
+                          await this.postchallengeService.create(Postchallenge_);
+                        } catch (e) {
 
                         }
+                        var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                        var activity = detail.activity;
+                        objintr = { "type": nametable, "id": idref, "desc": action }
+                        console.log(objintr)
+                        activity.push(objintr)
+                        await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+
+                        var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
+
+                        if (datauschall.length > 0) {
+                          for (let x = 0; x < datauschall.length; x++) {
+
+                            let iducall = datauschall[x]._id;
+                            let start = new Date(datauschall[x].startDatetime);
+                            let end = new Date(datauschall[x].endDatetime);
+                            let datenow = new Date(Date.now());
+                            let idChallenges2 = datauschall[x].idChallenge;
+                            let rank = x + 1;
+
+                            //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                            await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                            // }
+
+                          }
+                        }
+
+
                       }
-
-
                     }
                   }
 
@@ -3013,63 +3672,64 @@ export class PostsController {
               let start = new Date(datauserchall[y].startDatetime);
               let end = new Date(datauserchall[y].endDatetime);
               let datenow = new Date(Date.now());
+              if (new Date(createAt) >= start && new Date(createAt) <= end && saleAmount == 0) {
+                if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
 
-              if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
+                  var obj = {};
 
-                var obj = {};
+                  obj = {
+                    "updatedAt": datauserchall[y].updatedAt,
+                    "score": datauserchall[y].score,
+                    "ranking": datauserchall[y].ranking,
+                  }
+                  if (postType == "vid") {
+                    poin = poinViewVid;
+                  } else if (postType == "diary") {
+                    poin = poinViewDiary;
+                  } else if (postType == "pict") {
+                    poin = poinPict;
+                  }
+                  await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                  await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+                  try {
+                    var Postchallenge_ = new Postchallenge();
+                    Postchallenge_.postID = postID;
+                    Postchallenge_.createdAt = timedate;
+                    Postchallenge_.idChallenge = idChallenge;
+                    Postchallenge_.idSubChallenge = idsubchallenge;
+                    Postchallenge_.session = session;
+                    Postchallenge_.startDatetime = startDatetime;
+                    Postchallenge_.endDatetime = endDatetime;
+                    Postchallenge_.updatedAt = timedate;
+                    Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
+                    Postchallenge_.score = poin;
+                    await this.postchallengeService.create(Postchallenge_);
+                  } catch (e) {
 
-                obj = {
-                  "updatedAt": datauserchall[y].updatedAt,
-                  "score": datauserchall[y].score,
-                  "ranking": datauserchall[y].ranking,
-                }
-                if (postType == "vid") {
-                  poin = poinViewVid;
-                } else if (postType == "diary") {
-                  poin = poinViewDiary;
-                } else if (postType == "pict") {
-                  poin = poinPict;
-                }
-                await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
-                try {
-                  var Postchallenge_ = new Postchallenge();
-                  Postchallenge_.postID = postID;
-                  Postchallenge_.createdAt = timedate;
-                  Postchallenge_.idChallenge = idChallenge;
-                  Postchallenge_.idSubChallenge = idsubchallenge;
-                  Postchallenge_.session = session;
-                  Postchallenge_.startDatetime = startDatetime;
-                  Postchallenge_.endDatetime = endDatetime;
-                  Postchallenge_.updatedAt = timedate;
-                  Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
-                  Postchallenge_.score = poin;
-                  await this.postchallengeService.create(Postchallenge_);
-                } catch (e) {
+                  }
+                  var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                  var activity = detail.activity;
+                  objintr = { "type": nametable, "id": idref, "desc": action }
+                  console.log(objintr)
+                  activity.push(objintr)
+                  await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                  var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
-                }
-                var detail = await this.userchallengesService.findOne(iduserchall.toString());
-                var activity = detail.activity;
-                objintr = { "type": nametable, "id": idref, "desc": action }
-                console.log(objintr)
-                activity.push(objintr)
-                await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
-                var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
+                  if (datauschall.length > 0) {
+                    for (let x = 0; x < datauschall.length; x++) {
 
-                if (datauschall.length > 0) {
-                  for (let x = 0; x < datauschall.length; x++) {
+                      let iducall = datauschall[x]._id;
+                      let start = new Date(datauschall[x].startDatetime);
+                      let end = new Date(datauschall[x].endDatetime);
+                      let datenow = new Date(Date.now());
+                      let idChallenges2 = datauschall[x].idChallenge;
+                      let rank = x + 1;
 
-                    let iducall = datauschall[x]._id;
-                    let start = new Date(datauschall[x].startDatetime);
-                    let end = new Date(datauschall[x].endDatetime);
-                    let datenow = new Date(Date.now());
-                    let idChallenges2 = datauschall[x].idChallenge;
-                    let rank = x + 1;
+                      //  if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                      await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                      // }
 
-                    //  if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                    await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                    // }
-
+                    }
                   }
                 }
               }
@@ -3088,18 +3748,30 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('api/music/used/:id')
-  async getOneMusicPost(@Param('id') id: string, @Headers() headers) {
+  async getOneMusicPost(@Param('id') id: string, @Req() request, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = request.get("Host") + request.originalUrl;
+
     if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
       );
     }
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed email header dan token not match',
       );
     }
     if (id == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed param id is required',
       );
@@ -3130,6 +3802,10 @@ export class PostsController {
         ]
       }
     }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
     return Response;
   }
 }

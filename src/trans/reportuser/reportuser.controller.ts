@@ -23,6 +23,7 @@ import { UtilsService } from '../../utils/utils.service';
 import { GetusercontentsService } from '../getusercontents/getusercontents.service';
 import { UserbankaccountsService } from '../userbankaccounts/userbankaccounts.service';
 import { SettingsService } from '../settings/settings.service';
+import { LogapisService } from '../logapis/logapis.service';
 @Controller('api/reportuser')
 export class ReportuserController {
 
@@ -43,6 +44,7 @@ export class ReportuserController {
         private readonly getusercontentsService: GetusercontentsService,
         private readonly userbankaccountsService: UserbankaccountsService,
         private readonly settingsService: SettingsService,
+        private readonly logapiSS: LogapisService
     ) { }
     @UseGuards(JwtAuthGuard)
     @Get('all')
@@ -58,7 +60,13 @@ export class ReportuserController {
 
     @UseGuards(JwtAuthGuard)
     @Post('create')
-    async report(@Req() request) {
+    async report(@Req() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         var reportedStatus = null;
         var reportedUserHandle = [];
         var postID = null;
@@ -85,11 +93,17 @@ export class ReportuserController {
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["type"] !== undefined) {
             type = request_json["type"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         reportedUser = request_json["reportedUser"];
@@ -217,10 +231,17 @@ export class ReportuserController {
                 }
 
                 var data = request_json;
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+                
                 return { response_code: 202, data, messages };
 
 
             } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                 throw new BadRequestException("postID is not found...!");
             }
         }
@@ -327,10 +348,17 @@ export class ReportuserController {
                 }
 
                 var data = request_json;
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                 return { response_code: 202, data, messages };
 
 
             } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                 throw new BadRequestException("Ads ID is not found...!");
             }
         }
@@ -408,10 +436,17 @@ export class ReportuserController {
                 }
 
                 var data = request_json;
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                 return { response_code: 202, data, messages };
 
 
             } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                 throw new BadRequestException("User ID is not found...!");
             }
         }
@@ -764,7 +799,13 @@ export class ReportuserController {
 
     @UseGuards(JwtAuthGuard)
     @Post('approval')
-    async reportHandleAproval(@Req() request) {
+    async reportHandleAproval(@Req() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         var postID = null;
 
         var type = null;
@@ -776,17 +817,26 @@ export class ReportuserController {
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["type"] !== undefined) {
             type = request_json["type"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["ditangguhkan"] !== undefined) {
             ditangguhkan = request_json["ditangguhkan"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -930,12 +980,20 @@ export class ReportuserController {
             }
         }
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, messages };
     }
 
     @UseGuards(JwtAuthGuard)
     @Post('flaging')
-    async reportHandleFlaging(@Req() request) {
+    async reportHandleFlaging(@Req() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var postID = null;
 
@@ -950,11 +1008,17 @@ export class ReportuserController {
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["type"] !== undefined) {
             type = request_json["type"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -1045,6 +1109,9 @@ export class ReportuserController {
 
 
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, messages };
     }
@@ -1267,7 +1334,13 @@ export class ReportuserController {
 
     @UseGuards(JwtAuthGuard)
     @Post('listdetail')
-    async finddetail(@Req() request: Request): Promise<any> {
+    async finddetail(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/reportuser/listdetail';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         const messages = {
             "info": ["The process successful"],
         };
@@ -1283,11 +1356,17 @@ export class ReportuserController {
         if (request_json["type"] !== undefined) {
             type = request_json["type"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         var data = [];
@@ -1534,6 +1613,9 @@ export class ReportuserController {
 
             }
 
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             return { response_code: 202, totalReport, dataSum, data, messages };
         }
         else if (type === "ads") {
@@ -1711,6 +1793,9 @@ export class ReportuserController {
                 dataSum.push(objcoun);
             }
 
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             return { response_code: 202, totalReport, dataSum, data, messages };
         }
 
@@ -1718,7 +1803,13 @@ export class ReportuserController {
 
     @UseGuards(JwtAuthGuard)
     @Post('listuserreport')
-    async finduserreport(@Req() request: Request): Promise<any> {
+    async finduserreport(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/reportuser/listuserreport';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         const messages = {
             "info": ["The process successful"],
         };
@@ -1734,11 +1825,17 @@ export class ReportuserController {
         if (request_json["type"] !== undefined) {
             type = request_json["type"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         var data = [];
@@ -1978,6 +2075,9 @@ export class ReportuserController {
 
         }
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, totalReport: reportedUserCount, data, messages };
 
     }
@@ -1985,7 +2085,12 @@ export class ReportuserController {
     @UseGuards(JwtAuthGuard)
     @UseGuards(JwtAuthGuard)
     @Post('delete')
-    async reportHandleDelete(@Req() request) {
+    async reportHandleDelete(@Req() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
         var postID = null;
 
@@ -1997,11 +2102,17 @@ export class ReportuserController {
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["type"] !== undefined) {
             type = request_json["type"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -2088,12 +2199,21 @@ export class ReportuserController {
 
         }
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
         return { response_code: 202, messages };
     }
 
     @UseGuards(JwtAuthGuard)
     @Post('summary')
-    async findsummary(@Req() request: Request): Promise<any> {
+    async findsummary(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/reportuser/summary';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
         const messages = {
             "info": ["The process successful"],
         };
@@ -2912,6 +3032,9 @@ export class ReportuserController {
             }
             ],
         };
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, content, ads, userticket, kyc, appealAkunBank, messages };
 

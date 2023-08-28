@@ -40,6 +40,7 @@ import { Console } from 'console';
 import { AdsBalaceCreditDto } from '../adsv2/adsbalacecredit/dto/adsbalacecredit.dto';
 import { AdsBalaceCreditService } from '../adsv2/adsbalacecredit/adsbalacecredit.service';
 import { VoucherpromoService } from '../adsv2/voucherpromo/voucherpromo.service';
+import { LogapisService } from '../logapis/logapis.service';
 
 const cheerio = require('cheerio');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -73,11 +74,15 @@ export class TransactionsController {
         private readonly adsService: AdsService, 
         private readonly adsBalaceCreditService: AdsBalaceCreditService, 
         private readonly voucherpromoService: VoucherpromoService,
+        private readonly logapiSS: LogapisService
     ) { }
 
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions')
     async create(@Res() res, @Headers('x-auth-token') auth: string, @Headers('x-auth-user') email: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Request() request) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        
         const messages = {
             "info": ["The create successful"],
         };
@@ -109,12 +114,18 @@ export class TransactionsController {
         if (request_json["postid"] !== undefined) {
             postid = request_json["postid"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["amount"] !== undefined) {
             amount = request_json["amount"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -126,18 +137,27 @@ export class TransactionsController {
         if (request_json["paymentmethod"] !== undefined) {
             paymentmethod = request_json["paymentmethod"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["bankcode"] !== undefined) {
             bankcode = request_json["bankcode"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["type"] !== undefined) {
             type = request_json["type"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -229,6 +249,9 @@ export class TransactionsController {
 
 
         } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Setting value not found..!");
         }
 
@@ -242,6 +265,9 @@ export class TransactionsController {
             idmethode = datamethode._doc._id;
 
         } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Methode payment not found...!");
         }
 
@@ -253,6 +279,9 @@ export class TransactionsController {
             idbank = databank._doc._id;
 
         } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Banks not found...!");
         }
 
@@ -268,6 +297,9 @@ export class TransactionsController {
             var valueexpiredva = datasettingexpiredva._doc.value;
 
         } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
             throw new BadRequestException("Setting value not found..!");
         }
 
@@ -291,6 +323,8 @@ export class TransactionsController {
         }
 
         if (statuswait === "WAITING_PAYMENT" && datenow > expiredvanew) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
             throw new BadRequestException("Tidak dapat melanjutkan. Selesaikan pembayaran transaksi anda dahulu !");
         }
@@ -307,6 +341,9 @@ export class TransactionsController {
                     namapenjual = ubasicseller.fullName;
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                     throw new BadRequestException("User not found..!");
                 }
 
@@ -355,6 +392,9 @@ export class TransactionsController {
                     dex = new Date(dex);
 
                     if (cekstatusva.va_status === "WAITING_PAYMENT") {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                         throw new BadRequestException("Tidak dapat melanjutkan. Konten ini sedang dalam proses pembelian");
                     }
                     else if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
@@ -395,6 +435,9 @@ export class TransactionsController {
 
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                             throw new BadRequestException("Not process..!");
 
                         }
@@ -463,11 +506,18 @@ export class TransactionsController {
 
 
                             } catch (e) {
+                                var timestamps_end = await this.utilsService.getDateTimeString();
+                                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                                 return res.status(HttpStatus.BAD_REQUEST).json({
 
                                     "message": messagesEror + " " + e.toString()
                                 });
                             }
+
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                             return res.status(HttpStatus.OK).json({
                                 response_code: 202,
                                 "data": data,
@@ -500,6 +550,9 @@ export class TransactionsController {
                             CreateTransactionsDto.postid = postidTR;
                             CreateTransactionsDto.response = datareqva;
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
+
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
                             return res.status(HttpStatus.BAD_REQUEST).json({
                                 response_code: statuscodeva,
@@ -540,6 +593,9 @@ export class TransactionsController {
 
 
                     } catch (e) {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                         throw new BadRequestException("Not process..!");
 
                     }
@@ -604,11 +660,18 @@ export class TransactionsController {
                                 "_id": datatr._id
                             };
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                             return res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror + " " + e.toString()
                             });
                         }
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "data": data,
@@ -641,6 +704,9 @@ export class TransactionsController {
                         CreateTransactionsDto.response = datareqva;
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                         return res.status(HttpStatus.BAD_REQUEST).json({
                             response_code: statuscodeva,
                             message: statusmessage
@@ -666,6 +732,9 @@ export class TransactionsController {
 
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                     throw new BadRequestException("User not found..!");
                 }
                 try {
@@ -696,6 +765,9 @@ export class TransactionsController {
                         // var totalUsePending = tusedvoucher + pendingUsed;
 
                         if (qty > qtyvoucher) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                             return res.status(HttpStatus.BAD_REQUEST).json({
                                 "message": "Maaf quantity Voucher melebihi quota.."
                             });
@@ -769,6 +841,9 @@ export class TransactionsController {
 
 
                     } catch (e) {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                         throw new BadRequestException("Not process..!");
 
                     }
@@ -892,11 +967,18 @@ export class TransactionsController {
 
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                             return res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror + " " + e.toString()
                             });
                         }
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "data": data,
@@ -929,6 +1011,9 @@ export class TransactionsController {
                         CreateTransactionsDto.postid = postidTRvoucer.toString();
                         CreateTransactionsDto.response = datareqva;
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
                         return res.status(HttpStatus.BAD_REQUEST).json({
                             response_code: statuscodeva,
@@ -965,6 +1050,9 @@ export class TransactionsController {
 
 
                     } catch (e) {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                         throw new BadRequestException("Not process..!");
 
                     }
@@ -1041,11 +1129,17 @@ export class TransactionsController {
                             };
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                             return res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror + " " + e.toString()
                             });
                         }
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
@@ -1079,6 +1173,10 @@ export class TransactionsController {
                         CreateTransactionsDto.postid = postidTRvoucer;
                         CreateTransactionsDto.response = datareqva;
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
                         return res.status(HttpStatus.BAD_REQUEST).json({
                             response_code: statuscodeva,
                             message: statusmessage
@@ -1093,7 +1191,14 @@ export class TransactionsController {
     }
 
     @Post('api/pg/oy/callback/va')
-    async callbackVa(@Res() res, @Body() payload: VaCallback) {
+    async callbackVa(@Res() res, @Body() payload: VaCallback, @Req() req, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+        var reqbody = JSON.parse(JSON.stringify(payload));
 
         const messages = {
             "info": ["The update successful"],
@@ -1192,6 +1297,9 @@ export class TransactionsController {
                     bankcode = databank._doc.bankcode;
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
                     throw new BadRequestException("Banks not found...!");
                 }
                 type = datatransaksi.type;
@@ -1370,11 +1478,19 @@ export class TransactionsController {
                         // await this.postsService.updateGenerateUserPlaylist(idusersell, CreateUserplaylistDto_);
                         await this.postContentService.generateCertificate(postid, langIso);
 
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": messages
                         });
                     } else {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": messagesnull
@@ -1503,11 +1619,18 @@ export class TransactionsController {
                             }
                         }
 
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": messages
                         });
                     } else {
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": messagesnull
@@ -1561,12 +1684,18 @@ export class TransactionsController {
                         this.sendemail(emailbuyer.toString(), "BOOST_SUCCES", datatransaksi, OwnerShip);
                         //this.sendemail(emailbuyer.toString(), "BOOST_SUCCES_TEST", datatransaksi, OwnerShip);
 
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
                         //RESPONSE SUCCES
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": messages
                         });
                     } else {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": messagesnull
@@ -1574,6 +1703,9 @@ export class TransactionsController {
                     }
                 }
             } catch (e) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
                 throw new BadRequestException("Unabled to proceed" + e);
             }
         }
@@ -1700,6 +1832,12 @@ export class TransactionsController {
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/withdraw')
     async createwithdraw(@Res() res, @Headers('x-auth-token') auth: string, @Body() OyDisbursements: OyDisbursements, @Request() request) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var setauth = JSON.parse(Buffer.from(auth.split('.')[1], 'base64').toString());
+        var setemail = setauth.email;
+        var reqbody = JSON.parse(JSON.stringify(OyDisbursements));
+        
         if (OyDisbursements.pin != undefined) {
             if (OyDisbursements.email != undefined) {
                 var ubasic = await this.userbasicsService.findOne(OyDisbursements.email);
@@ -1707,26 +1845,41 @@ export class TransactionsController {
                     if (ubasic.pin != undefined) {
                         var pin_descript = await this.utilsService.decrypt(ubasic.pin.toString());
                         if (pin_descript != OyDisbursements.pin) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
                             await this.errorHandler.generateNotAcceptableException(
                                 "Unabled to proceed, Pin not Match",
                             );
                         }
                     } else {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException(
                             "Unabled to proceed, Create a pin first",
                         );
                     }
                 } else {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+                    
                     await this.errorHandler.generateNotAcceptableException(
                         "Unabled to proceed, User not found",
                     );
                 }
             } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     "Unabled to proceed, Param Email is required",
                 );
             }
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 "Unabled to proceed, Param pin is required",
             );
@@ -1748,17 +1901,26 @@ export class TransactionsController {
         if (request_json["recipient_bank"] !== undefined) {
             recipient_bank = request_json["recipient_bank"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["recipient_account"] !== undefined) {
             recipient_account = request_json["recipient_account"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
             throw new BadRequestException("Unabled to proceed");
         }
         // var ubasic = await this.userbasicsService.findOne(email);
@@ -1846,6 +2008,9 @@ export class TransactionsController {
         }
 
         if (amounreq > totalsaldo) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
             throw new BadRequestException("The balance is not sufficient...!");
         }
         else {
@@ -1958,6 +2123,8 @@ export class TransactionsController {
                                 };
                             }
 
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
 
                             return res.status(HttpStatus.OK).json({
                                 response_code: 202,
@@ -1965,6 +2132,9 @@ export class TransactionsController {
                                 "message": messages
                             });
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
                             return res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror
@@ -2032,6 +2202,8 @@ export class TransactionsController {
                                 };
                             }
 
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
 
                             return res.status(HttpStatus.OK).json({
                                 response_code: 202,
@@ -2039,6 +2211,10 @@ export class TransactionsController {
                                 "message": messages
                             });
                         } catch (e) {
+
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
                             return res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror
@@ -2067,6 +2243,9 @@ export class TransactionsController {
                         datawithdraw.idAccountBank = idbankaccount;
                         datawithdraw.responOy = datadisbursemen;
                         var datatr = await this.withdrawsService.create(datawithdraw);
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
 
                         return res.status(HttpStatus.BAD_REQUEST).json({
                             response_code: statuscode,
@@ -2097,6 +2276,9 @@ export class TransactionsController {
                     datawithdraw.responOy = datadisbursemen;
                     var datatr = await this.withdrawsService.create(datawithdraw);
 
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
                     return res.status(HttpStatus.BAD_REQUEST).json({
                         response_code: statusdisb,
                         message: statusmessagedis
@@ -2106,6 +2288,9 @@ export class TransactionsController {
 
             }
             else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
                 throw new BadRequestException("Account Bank is not found...!");
             }
         }
@@ -2114,7 +2299,13 @@ export class TransactionsController {
     }
 
     @Post('api/pg/oy/callback/disbursement')
-    async callbackDisbursement(@Res() res, @Body() payload: OyDisburseCallbacks) {
+    async callbackDisbursement(@Res() res, @Body() payload: OyDisburseCallbacks, @Req() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var reqbody = JSON.parse(JSON.stringify(payload));
 
         const messages = {
             "info": ["Disbursement Request has been completed (success)"],
@@ -2134,6 +2325,9 @@ export class TransactionsController {
             idbank = databank._doc._id;
 
         } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+            
             throw new BadRequestException("Banks not found...!");
         }
 
@@ -2151,6 +2345,9 @@ export class TransactionsController {
 
                 await this.withdrawsService.updateone(partner_trx_id, payload);
 
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 return res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "message": messages
@@ -2161,6 +2358,9 @@ export class TransactionsController {
             else if (statusCallback === "210") {
 
                 await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload);
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
 
                 return res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -2173,6 +2373,9 @@ export class TransactionsController {
 
                 await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
 
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 return res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "message": "Disbursement is FAILED"
@@ -2183,6 +2386,9 @@ export class TransactionsController {
 
                 await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload);
 
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 return res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "message": "Pending (When there is a unclear answer from Banks Network)"
@@ -2191,12 +2397,18 @@ export class TransactionsController {
             } else {
                 await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
 
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 return res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "message": "Disbursement is FAILED"
                 });
             }
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             throw new BadRequestException("recipient_account not found...!");
         }
 
@@ -2206,7 +2418,13 @@ export class TransactionsController {
 
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/withdraw/listdetail')
-    async detailwithdraw(@Res() res, @Req() request: Request) {
+    async detailwithdraw(@Res() res, @Req() request: Request, @Headers() headers) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/withdraw/listdetail';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
 
         const messages = {
             "info": ["Disbursement Request has been completed (success)"],
@@ -2237,22 +2455,34 @@ export class TransactionsController {
         if (request_json["bankcode"] !== undefined) {
             bankcode = request_json["bankcode"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["norek"] !== undefined) {
             norek = request_json["norek"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["amount"] !== undefined) {
             amount = request_json["amount"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         var ubasic = null;
@@ -2261,6 +2491,9 @@ export class TransactionsController {
             ubasic = await this.userbasicsService.findOne(email);
             idubasic = ubasic._id;
         } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("user not found");
         }
 
@@ -2309,6 +2542,9 @@ export class TransactionsController {
                 var statuscode = datareqinq.status.code;
                 account_name = datareqinq.account_name;
                 if (account_name === null || account_name === undefined || account_name === "") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Maaf nomor rekening dan nama akun tidak ada...!");
                 }
                 namaakun = account_name.toLowerCase();
@@ -2336,6 +2572,10 @@ export class TransactionsController {
                             "chargeInquiry": valuebankcharge,
                             "statusInquiry": statusInquiry
                         }
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "data": data,
@@ -2358,6 +2598,10 @@ export class TransactionsController {
                             "bankCode": bankcode,
                             "statusInquiry": statusInquiry
                         }
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "data": data,
@@ -2382,6 +2626,10 @@ export class TransactionsController {
                         "bankCode": bankcode,
                         "statusInquiry": statusInquiry
                     }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     return res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
@@ -2405,6 +2653,10 @@ export class TransactionsController {
                         "bankCode": bankcode,
                         "statusInquiry": statusInquiry
                     }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     return res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
@@ -2428,6 +2680,10 @@ export class TransactionsController {
                         "bankCode": bankcode,
                         "statusInquiry": statusInquiry
                     }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     return res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
@@ -2449,6 +2705,10 @@ export class TransactionsController {
                         "bankCode": bankcode,
                         "statusInquiry": statusInquiry
                     }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     return res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
@@ -2468,6 +2728,10 @@ export class TransactionsController {
                     "chargeInquiry": 0,
                     "statusInquiry": statusInquiry
                 }
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                 return res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "data": data,
@@ -2478,6 +2742,8 @@ export class TransactionsController {
 
 
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
 
             throw new BadRequestException("recipient_account not found...!");
         }
@@ -5183,7 +5449,13 @@ export class TransactionsController {
 
     @Post('api/transactions/historys/details')
     @UseGuards(JwtAuthGuard)
-    async trdetailbuysell2(@Req() request: Request): Promise<any> {
+    async trdetailbuysell2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/historys/details';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+
         var data = null;
         var id = null;
         var type = null;
@@ -5194,12 +5466,18 @@ export class TransactionsController {
         if (request_json["id"] !== undefined) {
             id = request_json["id"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
         if (request_json["type"] !== undefined) {
             type = request_json["type"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -5214,6 +5492,9 @@ export class TransactionsController {
             iduser = ubasic._id;
 
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         var idmdradmin = "62bd413ff37a00001a004369";
@@ -5304,6 +5585,9 @@ export class TransactionsController {
                     namabank = databank._doc.bankname;
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
 
@@ -5317,6 +5601,9 @@ export class TransactionsController {
                     var namapenjual = ubasic.fullName;
                     var emailpenjual = ubasic.email;
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
                 var dataapsara = null;
@@ -5452,6 +5739,9 @@ export class TransactionsController {
 
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
                 try {
@@ -5478,6 +5768,9 @@ export class TransactionsController {
                     namabank = databank._doc.bankname;
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
 
@@ -5489,6 +5782,9 @@ export class TransactionsController {
                     var namapembeli = ubasic.fullName;
                     var emailpembeli = ubasic.email;
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
                 var dataapsara = null;
@@ -5618,6 +5914,9 @@ export class TransactionsController {
 
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
                 try {
@@ -5644,6 +5943,9 @@ export class TransactionsController {
                     namabank = databank._doc.bankname;
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
 
@@ -5657,6 +5959,9 @@ export class TransactionsController {
                     var namapenjual = ubasic.fullName;
                     var emailpenjual = ubasic.email;
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
                 var dataapsara = null;
@@ -5789,6 +6094,9 @@ export class TransactionsController {
 
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+                    
                     throw new BadRequestException("Data not found...!");
                 }
                 try {
@@ -5815,6 +6123,9 @@ export class TransactionsController {
                     namabank = databank._doc.bankname;
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
 
@@ -5826,6 +6137,9 @@ export class TransactionsController {
                     var namapembeli = ubasic.fullName;
                     var emailpembeli = ubasic.email;
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
                 var dataapsara = null;
@@ -5981,6 +6295,9 @@ export class TransactionsController {
                     namabank = databank._doc.bankname;
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
 
@@ -5994,6 +6311,9 @@ export class TransactionsController {
                     var namapenjual = ubasic.fullName;
                     var emailpenjual = ubasic.email;
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
                 var dataapsara = null;
@@ -6126,6 +6446,9 @@ export class TransactionsController {
 
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
                 try {
@@ -6152,6 +6475,9 @@ export class TransactionsController {
                     namabank = databank._doc.bankname;
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
 
@@ -6163,6 +6489,9 @@ export class TransactionsController {
                     var namapembeli = ubasic.fullName;
                     var emailpembeli = ubasic.email;
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
                 var dataapsara = null;
@@ -6282,6 +6611,9 @@ export class TransactionsController {
 
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
                 try {
@@ -6308,6 +6640,9 @@ export class TransactionsController {
                     namabank = databank._doc.bankname;
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
 
@@ -6316,6 +6651,9 @@ export class TransactionsController {
                     var namapenjual = ubasic.fullName;
                     var emailpenjual = ubasic.email;
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
                 var arraydetail = [];
@@ -6391,6 +6729,9 @@ export class TransactionsController {
 
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
                 try {
@@ -6417,6 +6758,9 @@ export class TransactionsController {
                     namabank = databank._doc.bankname;
 
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
 
@@ -6425,6 +6769,9 @@ export class TransactionsController {
                     var namapembeli = ubasic.fullName;
                     var emailpembeli = ubasic.email;
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
                 var arraydetail = [];
@@ -6498,6 +6845,9 @@ export class TransactionsController {
 
 
                     } catch (e) {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                         throw new BadRequestException("Data not found...!");
                     }
 
@@ -6561,22 +6911,42 @@ export class TransactionsController {
                         };
                     }
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                     throw new BadRequestException("Data not found...!");
                 }
             } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
                 throw new BadRequestException("Data not found...!");
             }
 
 
         } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Data not found...!");
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/historys/voucher')
-    async finddata(@Req() request: Request): Promise<any> {
+    async finddata(@Req() request: Request, @Headers() headers): Promise<any> {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/historys/voucher';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+
         const messages = {
             "info": ["The process successful"],
         };
@@ -6601,11 +6971,17 @@ export class TransactionsController {
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["page"] !== undefined) {
             page = request_json["page"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         descending = request_json["descending"];
@@ -6769,6 +7145,10 @@ export class TransactionsController {
                 }
 
             }
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };
         } else {
             var totalallrowuser = null;
@@ -6915,6 +7295,10 @@ export class TransactionsController {
                 }
 
             }
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             return {
                 response_code: 202,
                 "data": datauser, "page": page, "limit": limit, "total": totaluser, "totalsearch": totalsearchuser, "totalallrow": totalallrowuser, "totalpage": totalpage, "messages": messages
@@ -6930,7 +7314,13 @@ export class TransactionsController {
 
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/historys/voucher/detail')
-    async finddatadetail(@Req() request: Request): Promise<any> {
+    async finddatadetail(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/historys/voucher/detail';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+        
         const messages = {
             "info": ["The process successful"],
         };
@@ -6943,6 +7333,9 @@ export class TransactionsController {
         if (request_json["id"] !== undefined) {
             id = request_json["id"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         const mongoose = require('mongoose');
@@ -7086,6 +7479,10 @@ export class TransactionsController {
             }
 
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
         return { response_code: 202, data, messages };
     }
 
@@ -7101,7 +7498,14 @@ export class TransactionsController {
 
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/historys/voucherused')
-    async finddatavoucheruse(@Req() request: Request): Promise<any> {
+    async finddatavoucheruse(@Req() request: Request, @Headers() headers): Promise<any> {
+        
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/historys/voucherused';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+        
         const messages = {
             "info": ["The process successful"],
         };
@@ -7121,11 +7525,17 @@ export class TransactionsController {
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["page"] !== undefined) {
             page = request_json["page"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         descending = request_json["descending"];
@@ -7151,23 +7561,34 @@ export class TransactionsController {
             totalpage = parseInt(tpage2);
         }
 
-
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
 
         return { response_code: 202, data, page, limit, total, totalsearch, totalpage, messages };
     }
 
     @Post('api/transactions/boostcontent')
     @HttpCode(HttpStatus.ACCEPTED)
-    async postBost(@Headers() headers, @Body() body) {
+    async postBost(@Headers() headers, @Body() body, @Req() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var reqbody = JSON.parse(JSON.stringify(body));
+
         var DateTimeStamp = await this.utilsService.getDateTime();
 
         //VALIDASI HEADER
         if (headers['x-auth-user'] == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
         }
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email header dan token not match',
             );
@@ -7177,6 +7598,9 @@ export class TransactionsController {
         //CECK USER
         var user = await this.userbasicsService.findOne(email);
         if (!(await this.utilsService.ceckData(user))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, user not found',
             );
@@ -7190,16 +7614,25 @@ export class TransactionsController {
 
         //VALIDASI PARAM DATESTART, TYPE
         if (body.dateStart == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateBadRequestException(
                 'Unabled to proceed dateStart is required',
             );
         }
         if (body.dateEnd == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateBadRequestException(
                 'Unabled to proceed dateEnd is required',
             );
         }
         if (body.type == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+            
             await this.errorHandler.generateBadRequestException(
                 'Unabled to proceed type is required',
             );
@@ -7208,6 +7641,9 @@ export class TransactionsController {
         //GET PRICE CONTENT BOOST
         const price = await this.utilsService.getSetting_("636212286f07000023005ce2");
         if (price == null) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, Setting Price not found',
             );
@@ -7216,6 +7652,9 @@ export class TransactionsController {
         //GET BANK CHANGE
         const BankVaCharge = await this.utilsService.getSetting_("62bd40e0f37a00001a004366");
         if (BankVaCharge == null) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, Setting Bank Va Charge not found',
             );
@@ -7224,6 +7663,9 @@ export class TransactionsController {
         //GET VA EXPIRED
         const ExpiredVa = await this.utilsService.getSetting_("637df99e95400000ce004fd3");
         if (ExpiredVa == null) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, Setting Expired Va not found',
             );
@@ -7245,6 +7687,9 @@ export class TransactionsController {
             //GET ONERSHIP AMOUNT
             getOwnershipAmaount = await this.utilsService.getSetting_("6332c9a60c7d00004f005173");
             if (getOwnershipAmaount == null) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, Setting Ownership Amaount not found',
                 );
@@ -7252,6 +7697,9 @@ export class TransactionsController {
             //GET ONERSHIP AMOUNT
             getOwnershipDiscount = await this.utilsService.getSetting_("6332c9c80c7d00004f005174");
             if (getOwnershipDiscount == null) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, Setting Ownership Discount not found',
                 );
@@ -7267,11 +7715,17 @@ export class TransactionsController {
         if (body.type.toLowerCase() == "manual") {
             //CECK PARAM INTERVAL, SESSION
             if (body.interval == undefined) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateBadRequestException(
                     'Unabled to proceed interval is required',
                 );
             }
             if (body.session.toLowerCase() == undefined) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateBadRequestException(
                     'Unabled to proceed session is required',
                 );
@@ -7280,6 +7734,9 @@ export class TransactionsController {
             //CECK INTERVAL
             interval = await this.boostintervalService.findById(body.interval);
             if (!(await this.utilsService.ceckData(interval))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, interval not found',
                 );
@@ -7288,6 +7745,9 @@ export class TransactionsController {
             //CECK SESSION
             session = await this.boostsessionService.findById(body.session);
             if (!(await this.utilsService.ceckData(session))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, session not found',
                 );
@@ -7296,6 +7756,9 @@ export class TransactionsController {
             //CECK INTERVAL
             interval = await this.boostintervalService.findByType("automatic");
             if (!(await this.utilsService.ceckData(interval))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, interval not found',
                 );
@@ -7304,11 +7767,17 @@ export class TransactionsController {
             //CECK SESSION
             session = await this.boostsessionService.findByType("automatic");
             if (!(await this.utilsService.ceckData(session))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, session not found',
                 );
             }
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, type not found',
             );
@@ -7318,6 +7787,9 @@ export class TransactionsController {
         if (body.bankcode != undefined) {
             //CECK PARAM POST ID
             if (body.postID == undefined) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                 await this.errorHandler.generateBadRequestException(
                     'Unabled to proceed postID is required',
                 );
@@ -7326,6 +7798,9 @@ export class TransactionsController {
             //CECK POST ID
             var post = await this.postsService.findByPostId(body.postID);
             if (!(await this.utilsService.ceckData(post))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+                
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, post not found',
                 );
@@ -7334,6 +7809,9 @@ export class TransactionsController {
             //CECK MEDIA POST ID
             var media = await this.postsService.findOnepostID(body.postID);
             if (!(await this.utilsService.ceckData(media))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+                
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, post not found',
                 );
@@ -7341,6 +7819,9 @@ export class TransactionsController {
 
             //CECK PARAM PAYMENT METHOD
             if (!(body.paymentmethod)) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+                
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, paymentmethod is required',
                 );
@@ -7349,6 +7830,9 @@ export class TransactionsController {
             //CECK PAYMENT METHOD
             var payment_method = await this.methodepaymentsService.findmethodename(body.paymentmethod);
             if (!(await this.utilsService.ceckData(payment_method))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+                
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, payment method not found',
                 );
@@ -7357,6 +7841,9 @@ export class TransactionsController {
             //CECK BANK CODE
             var bank = await this.utilsService.getBank(body.bankcode);
             if (!(await this.utilsService.ceckData(bank))) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+                
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, Bank not found',
                 );
@@ -7480,10 +7967,17 @@ export class TransactionsController {
                             "_id": transaction_boost._id
                         };
                     } catch (e) {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException(
                             'Unabled to proceed Error, ' + e
                         );
                     }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     return {
                         response_code: 202,
                         data: data_response_,
@@ -7492,32 +7986,74 @@ export class TransactionsController {
                         },
                     };
                 } else if (Va.status.code == "208") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException('Request is Rejected (API Key is not Valid)');
                 } else if (Va.status.code == "208") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException('Request is Rejected (API Key is not Valid)');
                 } else if (Va.status.code == "211") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException("Request is Rejected (Bank code is not available for this service)");
                 } else if (Va.status.code == "212") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException("Request is Rejected (Given amount are lesser than allowed value for static va)");
                 } else if (Va.status.code == "213") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException("Request is Rejected (Given amount are greater than allowed value for static va)");
                 } else if (Va.status.code == "214") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException("Request is Rejected (Failed to generate static va)");
                 } else if (Va.status.code == "215") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException("Request is Rejected (Amount type is not supported for the requested bank code)");
-                } else if (Va.status.code == "216") {
+                } else if (Va.status.code == "216") {var timestamps_end = await this.utilsService.getDateTimeString();
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException("Request is Rejected (VA Id is empty)");
                 } else if (Va.status.code == "217") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException("Request is Rejected (VA Number is still active for this partner user id)");
                 } else if (Va.status.code == "219") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException("Request is Rejected (Virtual account is not enabled for this bank)");
                 } else if (Va.status.code == "226") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
                 } else if (Va.status.code == "245") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException("Request is rejected (Min expiry time is 60 minutes)");
                 } else if (Va.status.code == "246") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException("Request is rejected (Failed update va)");
                 } else {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException('Request is Rejected');
                 }
             } else {
@@ -7528,6 +8064,9 @@ export class TransactionsController {
                 dex = new Date(dex);
 
                 if (cekStatusVa.va_status === "WAITING_PAYMENT") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                     await this.errorHandler.generateNotAcceptableException(
                         'Tidak dapat melanjutkan. Status konten ini dalan waiting payment',
                     );
@@ -7646,10 +8185,18 @@ export class TransactionsController {
                                 "_id": transaction_boost._id
                             };
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                             await this.errorHandler.generateNotAcceptableException(
                                 'Unabled to proceed Error, ' + e
                             );
                         }
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+
                         return {
                             response_code: 202,
                             data: data_response_,
@@ -7658,30 +8205,69 @@ export class TransactionsController {
                             },
                         };
                     } else if (Va.status.code == "208") {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException('Request is Rejected (API Key is not Valid)');
                     } else if (Va.status.code == "211") {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException("Request is Rejected (Bank code is not available for this service)");
                     } else if (Va.status.code == "212") {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException("Request is Rejected (Given amount are lesser than allowed value for static va)");
                     } else if (Va.status.code == "213") {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException("Request is Rejected (Given amount are greater than allowed value for static va)");
                     } else if (Va.status.code == "214") {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException("Request is Rejected (Failed to generate static va)");
                     } else if (Va.status.code == "215") {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException("Request is Rejected (Amount type is not supported for the requested bank code)");
                     } else if (Va.status.code == "216") {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException("Request is Rejected (VA Id is empty)");
                     } else if (Va.status.code == "217") {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException("Request is Rejected (VA Number is still active for this partner user id)");
                     } else if (Va.status.code == "219") {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException("Request is Rejected (Virtual account is not enabled for this bank)");
                     } else if (Va.status.code == "226") {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
                     } else if (Va.status.code == "245") {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException("Request is rejected (Min expiry time is 60 minutes)");
                     } else if (Va.status.code == "246") {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException("Request is rejected (Failed update va)");
                     } else {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
                         await this.errorHandler.generateNotAcceptableException('Request is Rejected');
                     }
                 }
@@ -7705,6 +8291,9 @@ export class TransactionsController {
             data["priceBoost"] = price;
             data["priceBankVaCharge"] = BankVaCharge;
             data["priceTotal"] = totalAmount;
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
 
             var response = {
                 "response_code": 202,
@@ -8225,7 +8814,14 @@ export class TransactionsController {
 
     @Post('api/transactions/historys')
     @UseGuards(JwtAuthGuard)
-    async searchhistorynew2(@Req() request: Request): Promise<any> {
+    async searchhistorynew2(@Req() request: Request, @Headers() headers): Promise<any> {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/historys';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+
         var startdate = null;
         var enddate = null;
         var iduser = null;
@@ -8251,6 +8847,9 @@ export class TransactionsController {
             iduser = ubasic._id;
 
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         status = request_json["status"];
@@ -8266,11 +8865,17 @@ export class TransactionsController {
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -8528,15 +9133,27 @@ export class TransactionsController {
 
         }
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
         return { response_code: 202, data, skip, limit, messages };
     }
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Get('api/transactions/pending/')
-    async transactionspending(@Headers() headers) {
+    async transactionspending(@Headers() headers, @Req() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+
         //CECK BAEARER TOKEN
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed token and email not match',
             );
@@ -8545,6 +9162,9 @@ export class TransactionsController {
         //CECK DATA USER
         const data_userbasic = await this.userbasicsService.findOne(headers['x-auth-user']);
         if (!(await this.utilsService.ceckData(data_userbasic))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed User not found'
             );
@@ -8619,6 +9239,9 @@ export class TransactionsController {
 
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
                         try {
@@ -8641,6 +9264,9 @@ export class TransactionsController {
                             namabank = databank._doc.bankname;
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
                         amount = saleAmount;
@@ -8650,6 +9276,9 @@ export class TransactionsController {
                             var namapenjual = ubasic.fullName;
                             var emailpenjual = ubasic.email;
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
                         var dataapsara = null;
@@ -8785,6 +9414,9 @@ export class TransactionsController {
 
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
                         try {
@@ -8811,6 +9443,9 @@ export class TransactionsController {
                             namabank = databank._doc.bankname;
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
 
@@ -8822,6 +9457,9 @@ export class TransactionsController {
                             var namapembeli = ubasic.fullName;
                             var emailpembeli = ubasic.email;
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
                         var dataapsara = null;
@@ -8955,6 +9593,9 @@ export class TransactionsController {
 
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
                         try {
@@ -8981,6 +9622,9 @@ export class TransactionsController {
                             namabank = databank._doc.bankname;
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
 
@@ -8994,6 +9638,9 @@ export class TransactionsController {
                             var namapenjual = ubasic.fullName;
                             var emailpenjual = ubasic.email;
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+                            
                             throw new BadRequestException("Data not found...!");
                         }
                         var dataapsara = null;
@@ -9132,6 +9779,9 @@ export class TransactionsController {
 
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+                            
                             throw new BadRequestException("Data not found...!");
                         }
                         try {
@@ -9158,6 +9808,9 @@ export class TransactionsController {
                             namabank = databank._doc.bankname;
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+                            
                             throw new BadRequestException("Data not found...!");
                         }
 
@@ -9169,6 +9822,9 @@ export class TransactionsController {
                             var namapembeli = ubasic.fullName;
                             var emailpembeli = ubasic.email;
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
                         var dataapsara = null;
@@ -9302,6 +9958,9 @@ export class TransactionsController {
 
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
                         try {
@@ -9328,6 +9987,9 @@ export class TransactionsController {
                             namabank = databank._doc.bankname;
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
 
@@ -9341,6 +10003,9 @@ export class TransactionsController {
                             var namapenjual = ubasic.fullName;
                             var emailpenjual = ubasic.email;
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
                         var dataapsara = null;
@@ -9479,6 +10144,9 @@ export class TransactionsController {
 
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
                         try {
@@ -9505,6 +10173,9 @@ export class TransactionsController {
                             namabank = databank._doc.bankname;
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
 
@@ -9516,6 +10187,9 @@ export class TransactionsController {
                             var namapembeli = ubasic.fullName;
                             var emailpembeli = ubasic.email;
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
                         var dataapsara = null;
@@ -9639,6 +10313,9 @@ export class TransactionsController {
 
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
                         try {
@@ -9665,6 +10342,9 @@ export class TransactionsController {
                             namabank = databank._doc.bankname;
 
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
 
@@ -9673,6 +10353,9 @@ export class TransactionsController {
                             var namapenjual = ubasic.fullName;
                             var emailpenjual = ubasic.email;
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             throw new BadRequestException("Data not found...!");
                         }
                         var arraydetail = [];
@@ -9742,6 +10425,9 @@ export class TransactionsController {
                                 databank = await this.banksService.findOne(idBnk);
                                 namabank = databank._doc.bankname;
                             } catch (e) {
+                                var timestamps_end = await this.utilsService.getDateTimeString();
+                                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                                 await this.errorHandler.generateNotAcceptableException(
                                     'Unabled to proceed, Data Transaction Error : ' + e
                                 );
@@ -9800,16 +10486,26 @@ export class TransactionsController {
                                 };
                             }
                         } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                             await this.errorHandler.generateNotAcceptableException(
                                 'Unabled to proceed, Data Transaction Error : ' + e
                             );
                         }
                     } else {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                         await this.errorHandler.generateNotAcceptableException(
                             'Unabled to proceed, Data Transaction not found'
                         );
                     }
                     IdTransactionPending.push(data);
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                     return {
                         "response_code": 202,
                         "waitingCount": IdTransactionPending.length,
@@ -9821,12 +10517,19 @@ export class TransactionsController {
                         }
                     };
                 } catch (e) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed, Data Transaction Error : ' + e
                     );
                 }
             } else {
                 await this.transactionsService.updatestatuscancel(getDataTransaction._id)
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
                 return {
                     "response_code": 202,
                     "waitingCount": IdTransactionPending.length,
@@ -9839,6 +10542,9 @@ export class TransactionsController {
                 };
             }
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
             return {
                 "response_code": 202,
                 "waitingCount": IdTransactionPending.length,
@@ -9855,7 +10561,13 @@ export class TransactionsController {
 
     @Post('api/transactions/list')
     @UseGuards(JwtAuthGuard)
-    async searchhistorylist(@Req() request: Request): Promise<any> {
+    async searchhistorylist(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/list';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+
         var startdate = null;
         var enddate = null;
         var iduser = null;
@@ -9888,6 +10600,9 @@ export class TransactionsController {
             iduser = ubasic._id;
 
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         status = request_json["status"];
@@ -9903,11 +10618,17 @@ export class TransactionsController {
         if (request_json["page"] !== undefined) {
             page = request_json["page"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -10097,12 +10818,21 @@ export class TransactionsController {
             totalpage = parseInt(tpage2);
         }
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
 
     @Post('api/transactions/vouchersellchart')
     @UseGuards(JwtAuthGuard)
-    async getVoucherSellChartBasedDate(@Req() request: Request): Promise<any> {
+    async getVoucherSellChartBasedDate(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/vouchersellchart';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+        
         var data = null;
         var date = null;
 
@@ -10115,6 +10845,9 @@ export class TransactionsController {
             date = request_json["date"];
         }
         else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -10161,12 +10894,21 @@ export class TransactionsController {
             total: (getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
         }
 
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
         return { response_code: 202, messages, data };
     }
 
     @Post('api/transactions/list/content')
     @UseGuards(JwtAuthGuard)
-    async searchlist(@Req() request: Request): Promise<any> {
+    async searchlist(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/list/content';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+        
         var startdate = null;
         var enddate = null;
         var iduser = null;
@@ -10202,11 +10944,17 @@ export class TransactionsController {
         if (request_json["page"] !== undefined) {
             page = request_json["page"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
             throw new BadRequestException("Unabled to proceed");
         }
 
@@ -10336,6 +11084,9 @@ export class TransactionsController {
         } else {
             totalpage = parseInt(tpage2);
         }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
 
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }

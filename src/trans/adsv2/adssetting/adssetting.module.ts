@@ -11,9 +11,11 @@ import { TemplatesRepoModule } from '../../../infra/templates_repo/templates_rep
 import { UserbasicsModule } from '../../../trans/userbasics/userbasics.module';
 import { AdslogsModule } from '../adslog/adslogs.module';
 import { AdsObjectivitasModule } from '../adsobjectivitas/adsobjectivitas.module';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
 
 @Module({
     imports: [
+        LogapisModule,
         AdsObjectivitasModule,
         AdslogsModule,
         UserbasicsModule,

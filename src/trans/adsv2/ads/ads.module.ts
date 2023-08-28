@@ -16,9 +16,11 @@ import { MediaprofilepictsModule } from '../../../content/mediaprofilepicts/medi
 import { AdsplacesModule } from '../../../trans/adsplaces/adsplaces.module';
 import { AdstypesModule } from '../../../trans/adstypes/adstypes.module';
 import { AdslogsModule } from '../adslog/adslogs.module';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
 
 @Module({
     imports: [
+        LogapisModule,
         AdslogsModule,
         AdsplacesModule,
         MediaprofilepictsModule,

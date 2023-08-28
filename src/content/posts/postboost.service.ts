@@ -49,7 +49,7 @@ import { PostContentService } from './postcontent.service';
 import { profile } from 'console';
 import { CreateContenteventsDto } from '../contentevents/dto/create-contentevents.dto';
 import { AdsLandingService } from './adslanding/adslanding.service';
-
+import { LogapisService } from 'src/trans/logapis/logapis.service'; 
 
 //import FormData from "form-data";
 var FormData = require('form-data');
@@ -70,6 +70,7 @@ export class PostBoostService {
     private contentEventsService: ContenteventsService,
     private errorHandler: ErrorHandler,
     private adsLandingService: AdsLandingService,
+    private logapiSS: LogapisService,
   ) { }
 
   async getBoost(body: any, headers: any): Promise<PostLandingResponseApps> {
@@ -3075,6 +3076,10 @@ export class PostBoostService {
   }
 
   async getBoostV2(body: any, headers: any): Promise<PostLandingResponseApps> {
+    var timestamps_start = await this.utilService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/getuserposts/landing-page";
+    var reqbody = JSON.parse(JSON.stringify(body));
+    
     this.logger.log('getBoostV2 >>> started');
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
@@ -3449,6 +3454,9 @@ export class PostBoostService {
     var ver = await this.settingsService.findOneByJenis('AppsVersion');
     ver.value;
     res.version = String(ver.value);
+
+    var timestamps_end = await this.utilService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
 
     return res;
   }
