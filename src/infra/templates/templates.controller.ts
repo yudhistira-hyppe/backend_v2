@@ -29,7 +29,8 @@ export class TemplatesController {
   @UseGuards(JwtAuthGuard)
   @Get('delete/:id')
   async delete(@Param('id') id: string) {
-    var data = await this.TemplatesService.delete(id);
+    // var data = await this.TemplatesService.delete(id);
+    var data = null;
 
     const messages = {
       "info": ["The process successful"],
