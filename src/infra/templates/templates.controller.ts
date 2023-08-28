@@ -30,7 +30,7 @@ export class TemplatesController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put('/delete/:id')
+  @Post('/delete/:id')
   async delete(@Param('id') id: string, @Headers() headers) {
     if (id == undefined || id == "") {
       throw new BadRequestException("Unabled to proceed,id required");
