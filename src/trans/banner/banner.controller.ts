@@ -136,7 +136,6 @@ export class BannerController {
         var timedate = splitdate[0];
         var mongoose = require('mongoose');
         var insertdata = new Banner();
-        insertdata._id = new mongoose.Types.ObjectId();
 
         insertdata.createdAt = timedate;
         insertdata.active = true;
@@ -297,7 +296,7 @@ export class BannerController {
     }
 
     @Get(':id')
-    async getDataByID(@Param() id:string) {
+    async getDataByID(@Param() id: string) {
         var data = await this.BannerService.findOne2(id);
 
         return data;
