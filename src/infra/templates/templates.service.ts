@@ -33,12 +33,140 @@ export class TemplatesService {
     return this.TemplatesModel.findOne({ _id: id }).exec();
   }
 
-  async delete(id: string) {
-    const deletedCat = await this.TemplatesModel.findByIdAndRemove({
-      _id: id,
-    }).exec();
-    return deletedCat;
+  async findOne2(id: string): Promise<Templates> {
+    var mongo = require('mongoose');
+    var konvertid = mongo.Types.ObjectId(id);
+
+    var pipeline = [];
+    var temppipeline = [];
+    temppipeline.push(
+      {
+        "$project":
+        {
+          _id:1,
+          name:1,
+          event:1,
+          subject:1,
+          body_detail:1,
+          body_detail_id:1,
+          type:1,
+          category:1,
+          action_buttons:1,
+          subject_id:1,
+          email:1,
+          createdAt:1,
+          active:1
+        }
+      },
+      {
+          $lookup: 
+          {
+              from: 'userbasics',
+              localField: 'email',
+              foreignField: 'email',
+              as: 'basic_data',
+          }
+      },
+      {	
+        "$project":
+        {
+          _id:1,
+          name:1,
+          event:1,
+          subject:1,
+          body_detail:1,
+          body_detail_id:1,
+          type:1,
+          category:1,
+          action_buttons:1,
+          subject_id:1,
+          email:1,
+          createdAt:1,
+          active:1,
+          fullName:
+          {
+            "$ifNull":
+            [
+              {
+                "$arrayElemAt":
+                [
+                  "$basic_data.fullName", 0
+                ]
+              },
+              null
+            ]
+          }
+        }
+      }
+    );
+
+    pipeline.push(
+      {
+        "$match":
+        {
+          _id:konvertid
+        }
+      },
+    );
+    pipeline.push(temppipeline[0]);
+
+    var query = await this.TemplatesModel.aggregate(pipeline);
+    
+    if(query.length == 0)
+    {
+      var pipeline = [];
+      pipeline.push(
+        {
+          "$match":
+          {
+            _id:id
+          }
+        },
+        );
+        
+      pipeline.push(temppipeline[0]);
+
+      var query = await this.TemplatesModel.aggregate(pipeline);
+      
+      return query[0];
+    }
+    else
+    {
+      return query[0];
+    }
+    
+    //return this.TemplatesModel.findOne({ _id: id }).exec();
   }
+
+  // async delete(id: string) {
+  //   var mongo = require('mongoose');
+  //   var konvertid = mongo.Types.ObjectId(id);
+
+  //   var data = await this.TemplatesModel.updateOne(
+  //     {
+  //       "_id":id
+  //     },
+  //     {
+  //       "$set":
+  //       {
+  //         "active":false
+  //       }
+  //     },
+  //   );
+  
+  //   return data;
+
+    // let data = await this.interestCountModel.findByIdAndUpdate(
+    //         id,
+    //         tagCountDto,
+    //         { new: true },
+    //     );
+
+    //     if (!data) {
+    //         throw new Error('Todo is not found!');
+    //     }
+    //     return data;
+  // }
 
   async pushnotif_listing(target:string, start:string, end:string, sorting:boolean, page:number, limit:number) 
   {

@@ -22,12 +22,24 @@ export class TemplatesController {
 
   @Get(':id')
   async findOneId(@Param('id') id: string): Promise<Templates> {
-    return this.TemplatesService.findOne(id);
+    // return this.TemplatesService.findOne(id);
+    return this.TemplatesService.findOne2(id);
   }
 
-  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @Get('delete/:id')
   async delete(@Param('id') id: string) {
-    return this.TemplatesService.delete(id);
+    var data = await this.TemplatesService.delete(id);
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    return {
+      response_code: 202,
+      data:data,
+      messages: messages,
+    };
   }
 
   @UseGuards(JwtAuthGuard)
