@@ -17,4 +17,5 @@ export class CreateTemplatesDto {
   email: string;
   createdAt: string;
   type_sending: string;
+  active: boolean;
 }
