@@ -47,103 +47,228 @@ export class TemplatesService {
     var mongo = require('mongoose');
     var konvertid = mongo.Types.ObjectId(id);
 
-    var pipeline = [];
-    var temppipeline = [];
-    temppipeline.push(
+    var query = await this.TemplatesModel.aggregate([
       {
-        "$project":
-        {
-          _id: 1,
-          name: 1,
-          event: 1,
-          subject: 1,
-          body_detail: 1,
-          body_detail_id: 1,
-          type: 1,
-          category: 1,
-          action_buttons: 1,
-          subject_id: 1,
-          email: 1,
-          createdAt: 1,
-          active: 1,
-          type_sending:1
-        }
-      },
-      {
-        $lookup:
-        {
-          from: 'userbasics',
-          localField: 'email',
-          foreignField: 'email',
-          as: 'basic_data',
-        }
-      },
-      {
-        "$project":
-        {
-          _id: 1,
-          name: 1,
-          event: 1,
-          subject: 1,
-          body_detail: 1,
-          body_detail_id: 1,
-          type: 1,
-          category: 1,
-          action_buttons: 1,
-          subject_id: 1,
-          email: 1,
-          createdAt: 1,
-          active: 1,
-          type_sending:1,
-          fullName:
-          {
-            "$ifNull":
-              [
-                {
-                  "$arrayElemAt":
-                    [
-                      "$basic_data.fullName", 0
-                    ]
-                },
-                null
-              ]
-          }
-        }
-      }
-    );
-
-    pipeline.push(
-      {
-        "$match":
-        {
-          _id: konvertid
-        }
-      },
-    );
-    pipeline.push(temppipeline[0]);
-
-    var query = await this.TemplatesModel.aggregate(pipeline);
-
-    if (query.length == 0) {
-      var pipeline = [];
-      pipeline.push(
-        {
           "$match":
           {
-            _id: id
+              "$expr":
+              {
+                  "$eq":
+                  [
+                      "$_id", konvertid 
+                  ]
+              }
           }
-        },
-      );
+      },
+      {
+          "$project":
+          {
+              _id: 1,
+              name: 1,
+              event: 1,
+              subject: 1,
+              body_detail: 1,
+              body_detail_id: 1,
+              type: 1,
+              category: 1,
+              action_buttons: 1,
+              subject_id: 1,
+              email: 1,
+              createdAt: 1,
+              active: 1,
+              type_sending:1
+          }
+      },
+      {
+          $lookup:
+          {
+              from: 'userbasics',
+              localField: 'email',
+              foreignField: 'email',
+              as: 'basic_data',
+          }
+      },
+      {
+          "$project":
+          {
+              _id: 1,
+              name: 1,
+              event: 1,
+              subject: 1,
+              body_detail: 1,
+              body_detail_id: 1,
+              type: 1,
+              category: 1,
+              action_buttons: 1,
+              subject_id: 1,
+              email: 1,
+              createdAt: 1,
+              active: 1,
+              type_sending:1,
+              fullName:
+              {
+                  "$ifNull":
+                  [
+                      {
+                      "$arrayElemAt":
+                          [
+                          "$basic_data.fullName", 0
+                          ]
+                      },
+                      null
+                  ]
+              }
+          }
+      },
+      {
+          "$lookup":
+          {
+              from:"notifications",
+              as:"notif_data",
+              let:
+              {
+                  idTemplate:"$_id",
+                  type_sending:"$type_sending",
+                  type_template:"$name"
+              },
+              pipeline:
+              [
+                  {
+                      "$set":
+                      {
+                          "type_sending":"$$type_sending"
+                      }
+                  },
+                  {
+                      "$set":
+                      {
+                          "type_template":"$$type_template"
+                      }
+                  },
+                  {
+                      "$match":
+                      {
+                          "$and":
+                          [
+                              {
+                                  "$expr":
+                                  {
+                                      "$eq":
+                                      [
+                                          "$templateID", "$$idTemplate"
+                                      ]
+                                  }
+                              },
+                              {
+                                  "$expr":
+                                  {
+                                      "$eq":
+                                      [
+                                          "$type_sending", "OPTION"
+                                      ]
+                                  }
+                              },
+                              // {
+                              //     "$expr":
+                              //     {
+                              //         "$eq":
+                              //         [
+                              //             "$type_template", "PUSH_NOTIFICATION"
+                              //         ]
+                              //     }
+                              // }
+                          ]
+                      }
+                  },
+                  {
+                      "$lookup":
+                      {
+                          from:"userbasics",
+                          as:"basic_data",
+                          let:
+                          {
+                              email:"$email"
+                          },
+                          pipeline:
+                          [
+                              {
+                                  "$match":
+                                  {
+                                      "$expr":
+                                      {
+                                          "$eq":
+                                          [
+                                              "$email", "$$email"
+                                          ]
+                                      }
+                                  }
+                              },
+                              {
+                                  "$project":
+                                  {
+                                      _id:1,
+                                      email:1,
+                                      fullName:1       
+                                  }
+                              }
+                          ]
+                      }
+                  },
+                  {
+                      "$unwind":
+                      {
+                          path:"$basic_data"
+                      }
+                  },
+                  {
+                      "$project":
+                      {
+                          _id:"$basic_data._id",
+                          email:"$basic_data.email",
+                          fullName:"$basic_data.fullName"
+                      }
+                  }
+              ]
+          }
+      },
+      {
+          "$project":
+          {
+            _id: 1,
+            name: 1,
+            event: 1,
+            subject: 1,
+            body_detail: 1,
+            body_detail_id: 1,
+            type: 1,
+            category: 1,
+            action_buttons: 1,
+            subject_id: 1,
+            email: 1,
+            createdAt: 1,
+            active: 1,
+            type_sending:1,
+            fullName:1,
+            notif_data:
+            {
+                "$cond":
+                {
+                    if:
+                    {
+                        "$eq":
+                        [
+                            "$name", "PUSH_NOTIFICATION"
+                        ]
+                    },
+                    then:"$notif_data",
+                    else:null
+                }
+            }
+          }
+      }
+    ]);
 
-      pipeline.push(temppipeline[0]);
-
-      var query = await this.TemplatesModel.aggregate(pipeline);
-
-      return query[0];
-    }
-    else {
-      return query[0];
-    }
+    return query[0];
 
     //return this.TemplatesModel.findOne({ _id: id }).exec();
   }
