@@ -631,6 +631,7 @@ export class UtilsController {
         CreateTemplatesDto_.type_sending = type;
         try {
             data = await this.templatesService.create(CreateTemplatesDto_);
+            var idtemplate = data._id.toString();
             var response = {
                 "response_code": 202,
                 "data": data,
@@ -639,7 +640,7 @@ export class UtilsController {
                 },
             }
 
-            this.testSend(100, url, titleIN, bodyIN, type, emailuser, titleEN, bodyEN);
+            this.testSend(100, url, titleIN, bodyIN, type, emailuser, titleEN, bodyEN, idtemplate);
 
             return response;
         } catch (e) {
@@ -651,7 +652,7 @@ export class UtilsController {
     }
 
 
-    async testSend(limit: number, url: string, titlein: string, bodyin: string, type: string, emailuser: any[], titleen: string, bodyen: string,) {
+    async testSend(limit: number, url: string, titlein: string, bodyin: string, type: string, emailuser: any[], titleen: string, bodyen: string, idtemplate: string) {
         var email = null;
         var datacount = null;
         var totalall = 0;
@@ -685,7 +686,7 @@ export class UtilsController {
                         console.log(i);
                         //await this.friendlistService.create(data[i]);
 
-                        this.sendInteractiveFCM(email, url, titlein, bodyin, titleen, bodyen);
+                        this.sendInteractiveFCM(email, url, titlein, bodyin, titleen, bodyen, idtemplate);
                     }
                     catch (e) {
                         //await this.friendlistService.update(data[i]._id, data[i]);
@@ -704,7 +705,7 @@ export class UtilsController {
                         console.log(i);
                         //await this.friendlistService.create(data[i]);
 
-                        this.sendInteractiveFCM(email, url, titlein, bodyin, titleen, bodyen);
+                        this.sendInteractiveFCM(email, url, titlein, bodyin, titleen, bodyen, idtemplate);
                     }
                     catch (e) {
                         //await this.friendlistService.update(data[i]._id, data[i]);
@@ -717,7 +718,7 @@ export class UtilsController {
 
     }
 
-    async sendInteractiveFCM(email: string, url: string, titlein: string, bodyin: string, titleen: string, bodyen: string) {
+    async sendInteractiveFCM(email: string, url: string, titlein: string, bodyin: string, titleen: string, bodyen: string, idtemplate: string) {
         var idsetting = "64e81627123f00001a006092";
         var dataseting = null;
         var value = null;
@@ -730,7 +731,7 @@ export class UtilsController {
             value = 1000;
         }
         const action = () => new Promise((resolve, reject) => {
-            this.utilsService.sendFcmPushNotif(email, titlein, bodyin, titleen, bodyen, "GENERAL", "ACCEPT", url)
+            this.utilsService.sendFcmPushNotif(email, titlein, bodyin, titleen, bodyen, "GENERAL", "ACCEPT", url, idtemplate)
             console.log("Action init ")
             return setTimeout(() => {
                 console.log("Action completed")
