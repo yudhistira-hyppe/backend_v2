@@ -2430,12 +2430,29 @@ export class UtilsService {
 
 
       var arraydevice = [];
+      var arrStatusDevice = [];
+      var objDevice = null;
       datadevice = await this.userdevicesService.findActive(emailuserbasic);
       for (var i = 0; i < datadevice.length; i++) {
         var deviceid = datadevice[i].deviceID;
         var adm = await admin.messaging().sendToDevice(deviceid, payload, option);
         console.log(adm);
+        if (adm.successCount > 0) {
+          objDevice = {
+
+            "device": deviceid,
+            "status": "SEND"
+          }
+        } else {
+          objDevice = {
+
+            "device": deviceid,
+            "status": "NOTSEND"
+          }
+        }
+
         arraydevice.push(deviceid);
+        arrStatusDevice.push(objDevice);
 
       }
       var generateID = await this.generateId();
@@ -2453,6 +2470,7 @@ export class UtilsService {
       createNotificationsDto.flowIsDone = true;
       createNotificationsDto.createdAt = date;
       createNotificationsDto.updatedAt = date;
+      createNotificationsDto.statusDevices = arrStatusDevice;
       createNotificationsDto.actionButtons = null;
       createNotificationsDto.contentEventID = null;
       createNotificationsDto.senderOrReceiverInfo = senderreceiver;

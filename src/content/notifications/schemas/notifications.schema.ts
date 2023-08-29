@@ -54,6 +54,8 @@ export class Notifications {
   deviceType: String
   @Prop()
   templateID: mongoose.Types.ObjectId;
+  @Prop([])
+  statusDevices: any[]
 }
 
 export const NotificationsSchema = SchemaFactory.createForClass(Notifications);

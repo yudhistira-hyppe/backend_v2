@@ -34,6 +34,7 @@ export class CreateNotificationsDto {
     actionButtons: String;
     deviceType: String;
     templateID: mongoose.Types.ObjectId;
+    statusDevices: any[]
 }
 
 export class ContentDTO {
