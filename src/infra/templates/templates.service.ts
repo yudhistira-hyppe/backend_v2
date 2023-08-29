@@ -278,7 +278,50 @@ export class TemplatesService {
                           email:"$basic_data.email",
                           fullName:"$basic_data.fullName",
                           avatar:"$basic_data.avatar",
-                          createdAt:"$createdAt"
+                          status:
+                          {
+                              "$filter":
+                              {
+                                  input:"$statusDevices",
+                                  as:"list",
+                                  cond:
+                                  {
+                                      "$eq":
+                                      [
+                                          "$$list.status",
+                                          "SEND"
+                                      ]
+                                  },
+                                  limit:1
+                              }
+                          },
+                      }
+                  },
+                  {
+                      "$project":
+                      {
+                          _id:1,
+                          email:1,
+                          fullName:1,
+                          avatar:1,
+                          status:
+                          {
+                              "$cond":
+                              {
+                                  if:
+                                  {
+                                      "$eq":
+                                      [
+                                          {
+                                              "$size":"$status"
+                                          },
+                                          0
+                                      ]
+                                  },
+                                  then:"NOTSEND",
+                                  else:"SEND"
+                              }
+                          },
                       }
                   }
               ]
