@@ -208,7 +208,58 @@ export class TemplatesService {
                                   {
                                       _id:1,
                                       email:1,
-                                      fullName:1       
+                                      fullName:1,
+                                      profilePict:"$profilePict.$id"
+                                  }
+                              },
+                              {
+                                  $lookup: 
+                                  {
+                                      from: 'mediaprofilepicts',
+                                      localField: 'profilePict',
+                                      foreignField: '_id',
+                                      as: 'profilePict_data',
+                                  }
+                              },
+                              {
+                                  "$unwind":
+                                  {
+                                      path:"$profilePict_data",
+                                      preserveNullAndEmptyArrays:true
+                                  }
+                              },
+                              {
+                                  "$addFields": {
+                          
+                                      concat: '/profilepict',
+                                      pict: 
+                                      {
+                                          "$replaceOne": 
+                                          {
+                                              input:"$profilePict_data.mediaUri",
+                                              find: "_0001.jpeg",
+                                              replacement: ""
+                                          }
+                                      },
+                          
+                                  },
+                              },
+                              {
+                                  "$project":
+                                  {
+                                      _id:1,
+                                      email:1,
+                                      fullName:1,
+                                      avatar: 
+                                      {
+                                          mediaBasePath: '$profilePict_data.mediaBasePath',
+                                          mediaUri: '$profilePict_data.mediaUri',
+                                          mediaType: '$profilePict_data.mediaType',
+                                          mediaEndpoint: 
+                                          {
+                                              $concat: ["$concat", "/", "$profilePict_data.mediaID"]
+                                          },
+                                      },
                                   }
                               }
                           ]
@@ -225,7 +276,8 @@ export class TemplatesService {
                       {
                           _id:"$basic_data._id",
                           email:"$basic_data.email",
-                          fullName:"$basic_data.fullName"
+                          fullName:"$basic_data.fullName",
+                          avatar:"$basic_data.avatar",
                       }
                   }
               ]
