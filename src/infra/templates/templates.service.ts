@@ -278,6 +278,7 @@ export class TemplatesService {
                           email:"$basic_data.email",
                           fullName:"$basic_data.fullName",
                           avatar:"$basic_data.avatar",
+                          createdAt:"$createdAt"
                       }
                   }
               ]
