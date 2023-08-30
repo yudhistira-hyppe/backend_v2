@@ -6553,7 +6553,22 @@ export class PostsService {
           komen: 1,
           isOwned: 1,
           tagPeople: 1,
-          reportedUserCount: 1,
+          reportedUserCount: 
+          {
+            "$filter":
+            {
+              input:"$reportedUser",
+              as:"listuser",
+              cond:
+              {
+                "$eq":
+                [
+                  "$$listuser.active",
+                  true
+                ]
+              }
+            }
+          },
           reportedUser: 1,
           isIdVerified: '$basic.isIdVerified',
           reportedUserHandle: 1,
@@ -6887,7 +6902,10 @@ export class PostsService {
           apsaraId: 1,
           apsara: 1,
           tagPeople: 1,
-          reportedUserCount: 1,
+          reportedUserCount: 
+          {
+            "$size":"$reportedUserCount"
+          },
           reportedUserHandle: 1,
           reportedUser: 1,
           reportedStatus: 1,
