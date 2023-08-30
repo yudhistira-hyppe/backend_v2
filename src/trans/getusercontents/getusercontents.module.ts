@@ -27,11 +27,12 @@ import { TagCountModule } from '../../content/tag_count/tag_count.module';
 import { InterestCountModule } from '../../content/interest_count/interest_count.module';
 import { UtilsModule } from '../../utils/utils.module';
 import { LogapisModule } from '../logapis/logapis.module';
+import { MediamusicModule } from 'src/content/mediamusic/mediamusic.module';
 
 @Module({
 
     imports: [
-        ConfigModule.forRoot(), UserauthsModule, MediaprofilepictsModule, InsightsModule, PostsModule, MediavideosModule, MediapictsModule, MediadiariesModule, DisquslogsModule, DisqusModule, CommentModule, UserbasicsModule,
+        ConfigModule.forRoot(), UserauthsModule, MediaprofilepictsModule, InsightsModule, PostsModule, MediavideosModule, MediapictsModule, MediadiariesModule, DisquslogsModule, DisqusModule, CommentModule, UserbasicsModule, MediamusicModule,
         GetcontenteventsModule, SettingsModule, CountriesModule, GetuserprofilesModule, ContenteventsModule, TagCountModule, InterestCountModule, LogapisModule,
 
         MongooseModule.forFeature([{ name: Getusercontents.name, schema: GetusercontentsSchema }], 'SERVER_FULL'),

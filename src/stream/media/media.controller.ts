@@ -2098,7 +2098,8 @@ export class MediaController {
         }
 
         try {
-            data = await this.mediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, page, limit);
+            // data = await this.mediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, page, limit);
+            data = await this.userbasicsService.listkycsummary2(startdate, enddate, 'listing', keys, status, descending, page, limit);
         } catch (e) {
             data = null;
         }
