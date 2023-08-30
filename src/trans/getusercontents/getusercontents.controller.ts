@@ -22,6 +22,7 @@ import { InterestCountService } from '../../content/interest_count/interest_coun
 import { UtilsService } from '../../utils/utils.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LogapisService } from '../logapis/logapis.service';
+import { MediamusicService } from 'src/content/mediamusic/mediamusic.service';
 @Controller()
 export class GetusercontentsController {
     constructor(private readonly getusercontentsService: GetusercontentsService,
@@ -41,6 +42,7 @@ export class GetusercontentsController {
         private utilsService: UtilsService,
         private readonly interestCountService: InterestCountService,
         private readonly logapiSS: LogapisService,
+        private readonly mediamusicService: MediamusicService
     ) { }
 
     @Post('api/getusercontents/all')
@@ -6249,6 +6251,82 @@ export class GetusercontentsController {
         }
 
 
+    }
+
+    @UseGuards(JwtAuthGuard)
+    //@Get('api/getusercontents/musiccard')
+    @Get('api/musiccard/')
+    async getMusicCard(@Headers() headers) {
+        const data = await this.getusercontentsService.getmusicCard();
+
+        //CREATE ARRAY APSARA THUMNAIL
+        let thumnail_data_artist: string[] = [];
+        for (let i = 0; i < data[0].artistPopuler.length; i++) {
+            let data_item = data[0].artistPopuler[i];
+            if (data_item._id.apsaraThumnail != undefined && data_item._id.apsaraThumnail != "" && data_item._id.apsaraThumnail != null) {
+                thumnail_data_artist.push(data_item._id.apsaraThumnail.toString());
+            }
+        }
+        let thumnail_data_music: string[] = [];
+        for (let i = 0; i < data[0].musicPopuler.length; i++) {
+            let data_item = data[0].musicPopuler[i];
+            if (data_item._id.apsaraThumnail != undefined && data_item._id.apsaraThumnail != "" && data_item._id.apsaraThumnail != null) {
+                thumnail_data_music.push(data_item._id.apsaraThumnail.toString());
+            }
+        }
+
+        //GET DATA APSARA THUMNAIL
+        var dataApsaraThumnail_artist = await this.mediamusicService.getImageApsara(thumnail_data_artist);
+        var dataApsaraThumnail_music = await this.mediamusicService.getImageApsara(thumnail_data_music);
+
+        var data_artist = await Promise.all(data[0].artistPopuler.map(async (item, index) => {
+            //APSARA THUMNAIL
+            var apsaraThumnailUrl = null
+            if (item._id.apsaraThumnail != undefined && item._id.apsaraThumnail != "" && item._id.apsaraThumnail != null) {
+                apsaraThumnailUrl = dataApsaraThumnail_artist.ImageInfo.find(x => x.ImageId == item._id.apsaraThumnail).URL;
+            }
+
+            return {
+                _id: {
+                    artistName: item._id.artistName,
+                    apsaraMusic: item._id.apsaraMusic,
+                    apsaraThumnail: item._id.apsaraThumnail,
+                    apsaraThumnailUrl: apsaraThumnailUrl
+                }
+            };
+        }));
+
+        var data_music = await Promise.all(data[0].musicPopuler.map(async (item, index) => {
+            //APSARA THUMNAIL
+            var apsaraThumnailUrl = null
+            if (item._id.apsaraThumnail != undefined && item._id.apsaraThumnail != "" && item._id.apsaraThumnail != null) {
+                apsaraThumnailUrl = dataApsaraThumnail_music.ImageInfo.find(x => x.ImageId == item._id.apsaraThumnail).URL;
+            }
+
+            return {
+                _id: {
+                    musicTitle: item._id.musicTitle,
+                    apsaraMusic: item._id.apsaraMusic,
+                    apsaraThumnail: item._id.apsaraThumnail,
+                    apsaraThumnailUrl: apsaraThumnailUrl
+                }
+            };
+        }));
+
+        data[0].artistPopuler = data_artist;
+        data[0].musicPopuler = data_music;
+
+
+        var Response = {
+            response_code: 202,
+            data: data,
+            messages: {
+                info: [
+                    "Retrieved music card succesfully"
+                ]
+            }
+        }
+        return Response;
     }
 
 }

@@ -1383,9 +1383,11 @@ export class ReportuserController {
             try {
                 query = await this.postsService.findreportuserdetail(postID);
                 lengUser = query.length;
+                reportedUserCount = query[0].reportedUserCount;
             } catch (e) {
                 query = null;
                 lengUser = 0;
+                reportedUserCount = 0;
             }
             let pict: String[] = [];
             var objk = {};
@@ -1602,16 +1604,22 @@ export class ReportuserController {
             }
 
             if (lengreportuser > 0) {
-                for (let x = 0; x < lengreportuser; x++) {
-                    if (reportuser[x].active == false) {
-                        lengreportuser = lengreportuser - x;
-                        totalReport = lengreportuser - 1;
-                    } else {
-                        totalReport = lengreportuser;
-                    }
-                }
+                // for (let x = 0; x < lengreportuser; x++) {
+                //     if (reportuser[x].active == false) {
+                //         lengreportuser = lengreportuser - x;
+                //         totalReport = lengreportuser - 1;
+                //     } else {
+                //         totalReport = lengreportuser;
+                //     }
+                // }
+                totalReport = reportedUserCount;
 
             }
+            else
+            {
+                totalReport = 0;
+            }
+
 
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
@@ -1878,43 +1886,120 @@ export class ReportuserController {
 
                 if (reportedUser !== null || reportedUser !== undefined || lengUser > 0) {
 
+                    // for (let i = 0; i < lengUser; i++) {
+
+
+                    //     let createdAt = reportedUser[i].createdAt;
+                    //     let remark = reportedUser[i].description;
+                    //     let email = reportedUser[i].email;
+
+                    //     try {
+                    //         datauser = await this.userbasicsService.findOne(email);
+                    //     } catch (e) {
+                    //         datauser = null;
+                    //     }
+
+                    //     if (datauser !== null || datauser !== undefined) {
+                    //         try {
+                    //             media = datauser._doc.profilePict.oid;
+                    //         } catch (e) {
+                    //             media = null;
+                    //         }
+                    //         var fullName = datauser._doc.fullName;
+
+                    //         if (media !== null) {
+
+                    //             try {
+
+                    //                 mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
+                    //                 console.log(mediaprofilepicts)
+                    //                 var mediaID = mediaprofilepicts.mediaID;
+                    //                 let result = "/profilepict/" + mediaID;
+                    //                 mediaprofilepicts_res = {
+                    //                     mediaBasePath: mediaprofilepicts.mediaBasePath,
+                    //                     mediaUri: mediaprofilepicts.mediaUri,
+                    //                     mediaType: mediaprofilepicts.mediaType,
+                    //                     mediaEndpoint: result
+                    //                 };
+                    //             } catch (e) {
+
+                    //                 mediaprofilepicts_res = {
+                    //                     mediaBasePath: "",
+                    //                     mediaUri: "",
+                    //                     mediaType: "",
+                    //                     mediaEndpoint: ""
+                    //                 };
+                    //             }
+                    //         } else {
+                    //             mediaprofilepicts_res = {
+                    //                 mediaBasePath: "",
+                    //                 mediaUri: "",
+                    //                 mediaType: "",
+                    //                 mediaEndpoint: ""
+                    //             };
+                    //         }
+                    //     }
+
+                    //     objrepuser = {
+                    //         "fullName": fullName,
+                    //         "email": email,
+                    //         "createdAt": createdAt,
+                    //         "description": remark,
+                    //         "avatar": mediaprofilepicts_res,
+
+                    //     }
+
+                    //     arrRepuser.push(objrepuser);
+
+                    // }
+
                     for (let i = 0; i < lengUser; i++) {
 
+                        let cekactive = reportedUser[i].active;
+                        if(cekactive == true)
+                        {
+                            let createdAt = reportedUser[i].createdAt;
+                            let remark = reportedUser[i].description;
+                            let email = reportedUser[i].email;
 
-                        let createdAt = reportedUser[i].createdAt;
-                        let remark = reportedUser[i].description;
-                        let email = reportedUser[i].email;
-
-                        try {
-                            datauser = await this.userbasicsService.findOne(email);
-                        } catch (e) {
-                            datauser = null;
-                        }
-
-                        if (datauser !== null || datauser !== undefined) {
                             try {
-                                media = datauser._doc.profilePict.oid;
+                                datauser = await this.userbasicsService.findOne(email);
                             } catch (e) {
-                                media = null;
+                                datauser = null;
                             }
-                            var fullName = datauser._doc.fullName;
 
-                            if (media !== null) {
-
+                            if (datauser !== null || datauser !== undefined) {
                                 try {
-
-                                    mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
-                                    console.log(mediaprofilepicts)
-                                    var mediaID = mediaprofilepicts.mediaID;
-                                    let result = "/profilepict/" + mediaID;
-                                    mediaprofilepicts_res = {
-                                        mediaBasePath: mediaprofilepicts.mediaBasePath,
-                                        mediaUri: mediaprofilepicts.mediaUri,
-                                        mediaType: mediaprofilepicts.mediaType,
-                                        mediaEndpoint: result
-                                    };
+                                    media = datauser._doc.profilePict.oid;
                                 } catch (e) {
+                                    media = null;
+                                }
+                                var fullName = datauser._doc.fullName;
 
+                                if (media !== null) {
+
+                                    try {
+
+                                        mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
+                                        console.log(mediaprofilepicts)
+                                        var mediaID = mediaprofilepicts.mediaID;
+                                        let result = "/profilepict/" + mediaID;
+                                        mediaprofilepicts_res = {
+                                            mediaBasePath: mediaprofilepicts.mediaBasePath,
+                                            mediaUri: mediaprofilepicts.mediaUri,
+                                            mediaType: mediaprofilepicts.mediaType,
+                                            mediaEndpoint: result
+                                        };
+                                    } catch (e) {
+
+                                        mediaprofilepicts_res = {
+                                            mediaBasePath: "",
+                                            mediaUri: "",
+                                            mediaType: "",
+                                            mediaEndpoint: ""
+                                        };
+                                    }
+                                } else {
                                     mediaprofilepicts_res = {
                                         mediaBasePath: "",
                                         mediaUri: "",
@@ -1922,26 +2007,19 @@ export class ReportuserController {
                                         mediaEndpoint: ""
                                     };
                                 }
-                            } else {
-                                mediaprofilepicts_res = {
-                                    mediaBasePath: "",
-                                    mediaUri: "",
-                                    mediaType: "",
-                                    mediaEndpoint: ""
-                                };
                             }
+
+                            objrepuser = {
+                                "fullName": fullName,
+                                "email": email,
+                                "createdAt": createdAt,
+                                "description": remark,
+                                "avatar": mediaprofilepicts_res,
+
+                            }
+
+                            arrRepuser.push(objrepuser);
                         }
-
-                        objrepuser = {
-                            "fullName": fullName,
-                            "email": email,
-                            "createdAt": createdAt,
-                            "description": remark,
-                            "avatar": mediaprofilepicts_res,
-
-                        }
-
-                        arrRepuser.push(objrepuser);
 
                     }
 
@@ -2207,13 +2285,7 @@ export class ReportuserController {
 
     @UseGuards(JwtAuthGuard)
     @Post('summary')
-    async findsummary(@Req() request: Request, @Headers() headers): Promise<any> {
-        var timestamps_start = await this.utilsService.getDateTimeString();
-        var fullurl = headers.host + '/api/reportuser/summary';
-        var token = headers['x-auth-token'];
-        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-        var email = auth.email;
-        
+    async findsummary(@Req() request: Request): Promise<any> {
         const messages = {
             "info": ["The process successful"],
         };
@@ -2275,7 +2347,7 @@ export class ReportuserController {
         var lengappealbank = 0;
 
         try {
-            
+
             dataappealbank = await this.userbankaccountsService.countAppealakunbank(startdate, enddate);
             lengappealbank = dataappealbank.length;
 
@@ -2350,7 +2422,7 @@ export class ReportuserController {
 
 
         try {
-            
+
             datacontentreport = await this.postsService.countReportStatus(startdate, enddate);
             reportContent = datacontentreport[0].report;
             appealContent = datacontentreport[0].appeal;
@@ -2611,7 +2683,7 @@ export class ReportuserController {
 
 
         try {
-            
+
             dataadsreport = await this.adsService.countReportStatus(startdate, enddate);
             reportAds = dataadsreport[0].report;
             appealAds = dataadsreport[0].appeal;
@@ -2874,7 +2946,7 @@ export class ReportuserController {
         var sumusertiket = null;
 
         try {
-            
+
             datauserticket = await this.userticketsService.countUserticketStatus(startdate, enddate);
             lengusertiket = datauserticket.length;
 
@@ -2949,9 +3021,9 @@ export class ReportuserController {
         };
 
         try {
-            
-            // datakyc = await this.mediaproofpictsService.listkycsummary(startdate, enddate);
-            datakyc = await this.mediaproofpictsService.listkycsummary2(startdate, enddate);
+
+            //datakyc = await this.mediaproofpictsService.listkycsummary(startdate, enddate);
+            datakyc = await this.userbasicsService.listkycsummary2(startdate, enddate, 'summary', null, null, null, null, null);
             lengkyc = datakyc.length;
 
         } catch (e) {
@@ -3032,9 +3104,6 @@ export class ReportuserController {
             }
             ],
         };
-
-        var timestamps_end = await this.utilsService.getDateTimeString();
-        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, content, ads, userticket, kyc, appealAkunBank, messages };
 
