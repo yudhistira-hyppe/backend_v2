@@ -2294,6 +2294,15 @@ export class PostsController {
     return this.postContentService.getVideoPlayAuth(apsaraId, fullurl, auth.email);
   }
 
+  //@UseGuards(JwtAuthGuard)
+  @Get('api/posts/apsarasts?')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async getApsaraStd(
+    @Query('apsaraId') apsaraId: string,
+    @Headers() headers) {
+    return this.postContentService.getApsaraSts();
+  }
+
   @Post('api/userplaylist/generate')
   @HttpCode(HttpStatus.ACCEPTED)
   async generateUserPlaylist(@Body() CreateUserplaylistDto_: CreateUserplaylistDto) {

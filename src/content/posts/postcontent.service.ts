@@ -6960,6 +6960,19 @@ export class PostContentService {
     }
   }
 
+  public async getApsaraSts(): Promise<any> {
+    const StsClient = require('@alicloud/sts-sdk');
+
+    const sts = new StsClient({
+      endpoint: 'sts.aliyuncs.com',
+      accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+      accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+    });
+    const res2 = await sts.getCallerIdentity();
+    const res1 = await sts.assumeRole(`acs:ram::${"5454753205280549"}:role/${"aliyunvoddefaultrole"}`, 'xxx');
+    return res1;
+  }
+
   public async getVideoApsaraSingleV4(ids: String, definition: String) {
     this.logger.log('getVideoApsaraSingle >>> start: ' + ids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
