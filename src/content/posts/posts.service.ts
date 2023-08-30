@@ -4959,19 +4959,17 @@ export class PostsService {
           reportedStatus: 1,
           reportedUserCount:
           {
-            "$sum":
+            "$filter":
             {
-              "$cond":
+              input:"$reportedUser",
+              as:"listuser",
+              cond:
               {
-                if:
-                {
-                  "$eq":
-                    [
-                      "$reportedUser.active", true
-                    ]
-                },
-                then: 1,
-                else: 0
+                "$eq":
+                [
+                  "$$listuser.active",
+                  true
+                ]
               }
             }
           },
@@ -5008,7 +5006,10 @@ export class PostsService {
           contentModeration: 1,
           contentModerationResponse: 1,
           reportedStatus: 1,
-          reportedUserCount: 1,
+          reportedUserCount: 
+          {
+            "$size":"$reportedUserCount"
+          },
           reportedUserHandle: 1,
           reportedUser: 1,
           avatar: 1
@@ -5709,7 +5710,7 @@ export class PostsService {
       pipeline.push({ $limit: limit });
     }
 
-    console.log(JSON.stringify(pipeline))
+    // console.log(JSON.stringify(pipeline))
 
     let query = await this.PostsModel.aggregate(pipeline);
 
