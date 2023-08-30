@@ -2266,7 +2266,7 @@ export class PostContentService {
     //Sale amount send notice
     if (Posts_.saleAmount > 0) {
       console.log("SALE AMOUNT", Posts_.saleAmount);
-      await this.utilService.sendFcmV2(Posts_.email.toString(), Posts_.email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), Posts_.postType.toString())
+      this.utilService.sendFcmV2(Posts_.email.toString(), Posts_.email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), Posts_.postType.toString())
       //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
     }
 
