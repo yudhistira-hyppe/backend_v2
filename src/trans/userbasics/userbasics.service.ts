@@ -18,7 +18,7 @@ export class UserbasicsService {
     private readonly interestsRepoService: InterestsRepoService,
     private readonly mediaprofilepictsService: MediaprofilepictsService,
     private readonly mediaproofpictsService: MediaproofpictsService,
-    private readonly logapiSS : LogapisService
+    private readonly logapiSS: LogapisService
 
   ) { }
 
@@ -544,7 +544,7 @@ export class UserbasicsService {
     return data;
   }
 
-  async updateStatusKyc(email: string, status: Boolean, statusKyc: string, startdate:string, urllink:string): Promise<Object> {
+  async updateStatusKyc(email: string, status: Boolean, statusKyc: string, startdate: string, urllink: string): Promise<Object> {
     let data = await this.userbasicModel.updateOne({ "email": email },
       {
         $set: {
@@ -6910,11 +6910,11 @@ export class UserbasicsService {
           "regSrc": 1,
           "icon": 1,
           "userBadge": 1,
-          "countries":1,
-          "states":1,
-          "cities":1,
-          "idProofNumber":1,
-          "idProofStatus":1,
+          "countries": 1,
+          "states": 1,
+          "cities": 1,
+          "idProofNumber": 1,
+          "idProofStatus": 1,
           "pin": 1,
           "tutor": 1,
           "otppinVerified": 1,
@@ -6992,12 +6992,12 @@ export class UserbasicsService {
           "regSrc": 1,
           "icon": 1,
           "userBadge": 1,
-          "countries":1,
-          "states":1,
-          "cities":1,
-          "idProofNumber":1,
-          "idProofStatus":1,
-          "pin":1,
+          "countries": 1,
+          "states": 1,
+          "cities": 1,
+          "idProofNumber": 1,
+          "idProofStatus": 1,
+          "pin": 1,
           "otppinVerified": 1,
           "tutor": 1,
           urluserBadge: {
@@ -7012,7 +7012,7 @@ export class UserbasicsService {
     return query[0];
   }
 
-  async updateTutor(email: string, key:string,value:boolean) {
+  async updateTutor(email: string, key: string, value: boolean) {
     console.log(email)
     console.log(key)
     console.log(value)
@@ -7031,8 +7031,7 @@ export class UserbasicsService {
     ).clone().exec();
   }
 
-  async listkycsummary2(startdate: string, enddate: string, jenisquery: string, keys: string, status:any[], descending: boolean, page: number, limit: number) 
-  {
+  async listkycsummary2(startdate: string, enddate: string, jenisquery: string, keys: string, status: any[], descending: boolean, page: number, limit: number) {
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -7049,9 +7048,9 @@ export class UserbasicsService {
       {
         "$expr":
         {
-            "$eq":
+          "$eq":
             [
-                "$_id", "$$fk_id"
+              "$_id", "$$fk_id"
             ]
         }
       },
@@ -7068,228 +7067,207 @@ export class UserbasicsService {
       },
     );
 
-    if (startdate != null && startdate !== undefined) 
-    {
+    if (startdate != null && startdate !== undefined) {
       firstmatch.push(
-        { 
-          createdAt: 
-          { 
-            "$gte": startdate 
-          } 
-        } 
+        {
+          createdAt:
+          {
+            "$gte": startdate
+          }
+        }
       );
     }
 
-    if (enddate != null && enddate !== undefined) 
-    {
+    if (enddate != null && enddate !== undefined) {
       firstmatch.push(
-        { 
-          createdAt: 
-          { 
-            "$lte": dateend 
-          } 
-        } 
+        {
+          createdAt:
+          {
+            "$lte": dateend
+          }
+        }
       );
     }
 
     pipeline.push(
       {
-          "$match":
+        "$match":
+        {
+          proofPict:
           {
-              proofPict:
+            "$exists": true
+          }
+        }
+      },
+      {
+        "$project":
+        {
+          _id: 0,
+          userId: "$_id",
+          proofPict: "$proofPict.$id",
+          email: 1,
+          profilePict: "$profilePict.$id"
+        }
+      },
+      {
+        "$lookup":
+        {
+          from: "mediaproofpicts",
+          as: "proof_data",
+          let:
+          {
+            fk_id: "$proofPict"
+          },
+          pipeline:
+            [
               {
-                  "$exists":true
+                "$match":
+                {
+                  "$and": firstmatch
+                }
               }
-          }
+            ]
+        }
       },
       {
-          "$project":
-          {
-              _id:0,
-              userId:"$_id",
-              proofPict:"$proofPict.$id",
-              email:1,
-              profilePict:"$profilePict.$id"
-          }
+        "$unwind":
+        {
+          path: "$proof_data"
+        }
       },
       {
-          "$lookup":
+        "$lookup":
+        {
+          "from": "userauths",
+          "localField": "email",
+          "foreignField": "email",
+          "as": "userAuth_data"
+        }
+      },
+      {
+        "$lookup": {
+          "from": "mediaprofilepicts",
+          "localField": "profilePict",
+          "foreignField": "_id",
+          "as": "profilePict_data"
+        }
+      },
+      {
+        "$project":
+        {
+          _id: "$proof_data._id",
+          createdAt: "$proof_data.createdAt",
+          idcardnumber: "$proof_data.idcardnumber",
+          kycHandle: "$proof_data.kycHandle",
+          email: 1,
+          userId: 1,
+          status: "$proof_data.status",
+          jumlahPermohonan: "1",
+          tahapan: "KTP",
+          username:
           {
-              from:"mediaproofpicts",
-              as:"proof_data",
-              let:
-              {
-                  fk_id:"$proofPict"
-              },
-              pipeline:
+            "$arrayElemAt":
               [
-                  {
-                      "$match":
-                      {
-                          "$and":firstmatch
-                      }
-                  }
+                "$userAuth_data.username", 0
+              ]
+          },
+          avatar:
+          {
+            "$arrayElemAt":
+              [
+                "$profilePict_data", 0
               ]
           }
+        },
       },
+
       {
-          "$unwind":
+        "$project":
+        {
+          email: 1,
+          username: 1,
+          createdAt: 1,
+          status:
           {
-              path:"$proof_data"
-          }
-      },
-      {
-          "$lookup": 
-          {
-              "from": "userauths",
-              "localField": "email",
-              "foreignField": "email",
-              "as": "userAuth_data"
-          }
-      },
-      {
-          "$lookup": {
-              "from": "mediaprofilepicts",
-              "localField": "profilePict",
-              "foreignField": "_id",
-              "as": "profilePict_data"
-          }
-      },
-      {
-          "$project":
-          {
-              _id:"$proof_data._id",
-              createdAt:"$proof_data.createdAt",
-              idcardnumber:"$proof_data.idcardnumber",
-              kycHandle:"$proof_data.kycHandle",
-              email:1,
-              userId:1,
-              status:"$proof_data.status",
-              jumlahPermohonan: "1",
-              tahapan: "KTP",
-              username:
-              {
-                  "$arrayElemAt":
-                  [
-                      "$userAuth_data.username", 0
-                  ]
-              },
-              avatar:
-              {
-                  "$arrayElemAt":
-                  [
-                      "$profilePict_data", 0
-                  ]
-              }
+            "$switch": {
+              "branches": [
+                {
+                  "case": {
+                    "$eq": [
+                      "$status",
+                      "IN_PROGGRESS"
+                    ]
+                  },
+                  "then": "BARU"
+                },
+                {
+                  "case": {
+                    "$eq": [
+                      "$status",
+                      "FAILED"
+                    ]
+                  },
+                  "then": "DITOLAK"
+                },
+                {
+                  "case": {
+                    "$eq": [
+                      "$status",
+                      "FINISH"
+                    ]
+                  },
+                  "then": "BYSYSTEM"
+                },
+                {
+                  "case": {
+                    "$eq": [
+                      "$status",
+                      "DISETUJUI"
+                    ]
+                  },
+                  "then": "DISETUJUI"
+                }
+              ],
+              "default": ""
+            }
           },
-      },
-      {
-          "$addFields": 
+          idcardnumber: 1,
+          jumlahPermohonan: 1,
+          tahapan: 1,
+          kycHandle: 1,
+          avatar:
           {
-              "concat": "/profilepict",
-              "pict": {
-                  "$replaceOne": {
-                      "input": "$avatar.mediaUri",
-                      "find": "_0001.jpeg",
-                      "replacement": ""
-                  }
-              }
+            mediaBasePath: "$avatar.mediaBasePath",
+            mediaUri: "$avatar.mediaUri",
+            mediaType: "$avatar.mediaType",
+            "mediaEndpoint": {
+              "$concat": ["/profilepict/", "$avatar.mediaID"]
+            }
+
           }
-      },
-      {
-          "$project": 
-          {
-              email: 1,
-              username: 1,
-              createdAt: 1,
-              status: 
-              {
-                  "$switch": {
-                      "branches": [
-                          {
-                              "case": {
-                                  "$eq": [
-                                      "$status",
-                                      "IN_PROGGRESS"
-                                  ]
-                              },
-                              "then": "BARU"
-                          },
-                          {
-                              "case": {
-                                  "$eq": [
-                                      "$status",
-                                      "FAILED"
-                                  ]
-                              },
-                              "then": "DITOLAK"
-                          },
-                          {
-                              "case": {
-                                  "$eq": [
-                                      "$status",
-                                      "FINISH"
-                                  ]
-                              },
-                              "then": "BYSYSTEM"
-                          },
-                          {
-                              "case": {
-                                  "$eq": [
-                                      "$status",
-                                      "DISETUJUI"
-                                  ]
-                              },
-                              "then": "DISETUJUI"
-                          }
-                      ],
-                      "default": ""
-                  }
-              },
-              idcardnumber: 1,
-              jumlahPermohonan: 1,
-              tahapan: 1,
-              kycHandle: 1,
-              avatar: 
-              {
-                  mediaBasePath: "$avatar.mediaBasePath",
-                  mediaUri: "$avatar.mediaUri",
-                  mediaType: "$avatar.mediaType",
-                  mediaEndpoint: 
-                  {
-                      "$concat": [
-                          "$concat",
-                          "/",
-                          "$pict"
-                      ]
-                  }
-              }
-          }
+        }
       },
     );
 
-    if(jenisquery == 'summary')
-    {
+    if (jenisquery == 'summary') {
       pipeline.push(
         {
           "$group":
           {
-            _id:"$status",
+            _id: "$status",
             myCount:
             {
-                $sum:1
+              $sum: 1
             },
           }
         }
       );
     }
-    else
-    {
-      if(keys != null && keys != undefined)
-      {
+    else {
+      if (keys != null && keys != undefined) {
         pipeline.push({
           $match: {
-  
+
             username: {
               $regex: keys, $options: 'i'
             },
@@ -7297,8 +7275,7 @@ export class UserbasicsService {
         });
       }
 
-      if (status != null && status !== undefined) 
-      {
+      if (status != null && status !== undefined) {
         pipeline.push(
           {
             $match: {
@@ -7308,15 +7285,14 @@ export class UserbasicsService {
                     $in: status
                   }
                 },
-  
+
               ]
             }
           }
         );
       }
 
-      if (descending === true) 
-      {
+      if (descending === true) {
         order = -1;
       } else {
         order = 1;
@@ -7330,13 +7306,11 @@ export class UserbasicsService {
         }
       );
 
-      if (page > 0) 
-      {
+      if (page > 0) {
         pipeline.push({ $skip: (page * limit) });
       }
 
-      if (limit > 0) 
-      {
+      if (limit > 0) {
         pipeline.push({ $limit: limit });
       }
     }
