@@ -7147,19 +7147,19 @@ export class UserbasicsService {
           }
         },
       },
-      {
-        "$addFields":
-        {
-          "concat": "/profilepict",
-          "pict": {
-            "$replaceOne": {
-              "input": "$avatar.mediaUri",
-              "find": "_0001.jpeg",
-              "replacement": ""
-            }
-          }
-        }
-      },
+      // {
+      //   "$addFields":
+      //   {
+      //     "concat": "/profilepict",
+      //     "pict": {
+      //       "$replaceOne": {
+      //         "input": "$avatar.mediaUri",
+      //         "find": "_0001.jpeg",
+      //         "replacement": ""
+      //       }
+      //     }
+      //   }
+      // },
       {
         "$project":
         {
