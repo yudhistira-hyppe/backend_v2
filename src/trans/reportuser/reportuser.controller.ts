@@ -1304,9 +1304,11 @@ export class ReportuserController {
             try {
                 query = await this.postsService.findreportuserdetail(postID);
                 lengUser = query.length;
+                reportedUserCount = query[0].reportedUserCount;
             } catch (e) {
                 query = null;
                 lengUser = 0;
+                reportedUserCount = 0;
             }
             let pict: String[] = [];
             var objk = {};
@@ -1500,7 +1502,8 @@ export class ReportuserController {
             } catch (e) {
                 datacount = null;
             }
-
+        
+            // reportedUserCount hanya mengambil data yang status nya true
             for (let i = 0; i < datacount.length; i++) {
                 let mycount = datacount[i].myCount;
                 let reason = datacount[i]._id;
@@ -1523,15 +1526,20 @@ export class ReportuserController {
             }
 
             if (lengreportuser > 0) {
-                for (let x = 0; x < lengreportuser; x++) {
-                    if (reportuser[x].active == false) {
-                        lengreportuser = lengreportuser - x;
-                        totalReport = lengreportuser - 1;
-                    } else {
-                        totalReport = lengreportuser;
-                    }
-                }
+                // for (let x = 0; x < lengreportuser; x++) {
+                //     if (reportuser[x].active == false) {
+                //         lengreportuser = lengreportuser - x;
+                //         totalReport = lengreportuser - 1;
+                //     } else {
+                //         totalReport = lengreportuser;
+                //     }
+                // }
+                totalReport = reportedUserCount;
 
+            }
+            else
+            {
+                totalReport = 0;
             }
 
             return { response_code: 202, totalReport, dataSum, data, messages };
@@ -1781,43 +1789,120 @@ export class ReportuserController {
 
                 if (reportedUser !== null || reportedUser !== undefined || lengUser > 0) {
 
+                    // for (let i = 0; i < lengUser; i++) {
+
+
+                    //     let createdAt = reportedUser[i].createdAt;
+                    //     let remark = reportedUser[i].description;
+                    //     let email = reportedUser[i].email;
+
+                    //     try {
+                    //         datauser = await this.userbasicsService.findOne(email);
+                    //     } catch (e) {
+                    //         datauser = null;
+                    //     }
+
+                    //     if (datauser !== null || datauser !== undefined) {
+                    //         try {
+                    //             media = datauser._doc.profilePict.oid;
+                    //         } catch (e) {
+                    //             media = null;
+                    //         }
+                    //         var fullName = datauser._doc.fullName;
+
+                    //         if (media !== null) {
+
+                    //             try {
+
+                    //                 mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
+                    //                 console.log(mediaprofilepicts)
+                    //                 var mediaID = mediaprofilepicts.mediaID;
+                    //                 let result = "/profilepict/" + mediaID;
+                    //                 mediaprofilepicts_res = {
+                    //                     mediaBasePath: mediaprofilepicts.mediaBasePath,
+                    //                     mediaUri: mediaprofilepicts.mediaUri,
+                    //                     mediaType: mediaprofilepicts.mediaType,
+                    //                     mediaEndpoint: result
+                    //                 };
+                    //             } catch (e) {
+
+                    //                 mediaprofilepicts_res = {
+                    //                     mediaBasePath: "",
+                    //                     mediaUri: "",
+                    //                     mediaType: "",
+                    //                     mediaEndpoint: ""
+                    //                 };
+                    //             }
+                    //         } else {
+                    //             mediaprofilepicts_res = {
+                    //                 mediaBasePath: "",
+                    //                 mediaUri: "",
+                    //                 mediaType: "",
+                    //                 mediaEndpoint: ""
+                    //             };
+                    //         }
+                    //     }
+
+                    //     objrepuser = {
+                    //         "fullName": fullName,
+                    //         "email": email,
+                    //         "createdAt": createdAt,
+                    //         "description": remark,
+                    //         "avatar": mediaprofilepicts_res,
+
+                    //     }
+
+                    //     arrRepuser.push(objrepuser);
+
+                    // }
+
                     for (let i = 0; i < lengUser; i++) {
 
+                        let cekactive = reportedUser[i].active;
+                        if(cekactive == true)
+                        {
+                            let createdAt = reportedUser[i].createdAt;
+                            let remark = reportedUser[i].description;
+                            let email = reportedUser[i].email;
 
-                        let createdAt = reportedUser[i].createdAt;
-                        let remark = reportedUser[i].description;
-                        let email = reportedUser[i].email;
-
-                        try {
-                            datauser = await this.userbasicsService.findOne(email);
-                        } catch (e) {
-                            datauser = null;
-                        }
-
-                        if (datauser !== null || datauser !== undefined) {
                             try {
-                                media = datauser._doc.profilePict.oid;
+                                datauser = await this.userbasicsService.findOne(email);
                             } catch (e) {
-                                media = null;
+                                datauser = null;
                             }
-                            var fullName = datauser._doc.fullName;
 
-                            if (media !== null) {
-
+                            if (datauser !== null || datauser !== undefined) {
                                 try {
-
-                                    mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
-                                    console.log(mediaprofilepicts)
-                                    var mediaID = mediaprofilepicts.mediaID;
-                                    let result = "/profilepict/" + mediaID;
-                                    mediaprofilepicts_res = {
-                                        mediaBasePath: mediaprofilepicts.mediaBasePath,
-                                        mediaUri: mediaprofilepicts.mediaUri,
-                                        mediaType: mediaprofilepicts.mediaType,
-                                        mediaEndpoint: result
-                                    };
+                                    media = datauser._doc.profilePict.oid;
                                 } catch (e) {
+                                    media = null;
+                                }
+                                var fullName = datauser._doc.fullName;
 
+                                if (media !== null) {
+
+                                    try {
+
+                                        mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
+                                        console.log(mediaprofilepicts)
+                                        var mediaID = mediaprofilepicts.mediaID;
+                                        let result = "/profilepict/" + mediaID;
+                                        mediaprofilepicts_res = {
+                                            mediaBasePath: mediaprofilepicts.mediaBasePath,
+                                            mediaUri: mediaprofilepicts.mediaUri,
+                                            mediaType: mediaprofilepicts.mediaType,
+                                            mediaEndpoint: result
+                                        };
+                                    } catch (e) {
+
+                                        mediaprofilepicts_res = {
+                                            mediaBasePath: "",
+                                            mediaUri: "",
+                                            mediaType: "",
+                                            mediaEndpoint: ""
+                                        };
+                                    }
+                                } else {
                                     mediaprofilepicts_res = {
                                         mediaBasePath: "",
                                         mediaUri: "",
@@ -1825,26 +1910,19 @@ export class ReportuserController {
                                         mediaEndpoint: ""
                                     };
                                 }
-                            } else {
-                                mediaprofilepicts_res = {
-                                    mediaBasePath: "",
-                                    mediaUri: "",
-                                    mediaType: "",
-                                    mediaEndpoint: ""
-                                };
                             }
+
+                            objrepuser = {
+                                "fullName": fullName,
+                                "email": email,
+                                "createdAt": createdAt,
+                                "description": remark,
+                                "avatar": mediaprofilepicts_res,
+
+                            }
+
+                            arrRepuser.push(objrepuser);
                         }
-
-                        objrepuser = {
-                            "fullName": fullName,
-                            "email": email,
-                            "createdAt": createdAt,
-                            "description": remark,
-                            "avatar": mediaprofilepicts_res,
-
-                        }
-
-                        arrRepuser.push(objrepuser);
 
                     }
 
