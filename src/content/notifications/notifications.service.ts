@@ -812,6 +812,7 @@ export class NotificationsService {
             {
                 _id:1,
                 email:1,
+                createdAt:1,
                 status:
                 {
                     "$filter":
@@ -836,6 +837,7 @@ export class NotificationsService {
             {
                 _id:1,
                 email:1,
+                createdAt:1,
                 status:
                 {
                     "$cond":
@@ -1155,6 +1157,7 @@ export class NotificationsService {
                 _id:1,
                 email:1,
                 status:1,
+                createdAt:1,
                 fullName:"$basic_data.fullName",
                 username:"$basic_data.username",
                 avatar:"$basic_data.avatar",
@@ -1275,7 +1278,7 @@ export class NotificationsService {
             {
                 "$sort":
                 {
-                    "fullname":setsorting
+                    "fullName":setsorting
                 }
             }
           );
