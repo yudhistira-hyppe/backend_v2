@@ -1521,7 +1521,8 @@ export class GetusercontentsController {
         };
 
         try {
-            datadetail = await this.getusercontentsService.detailcontent(postID, page, limit);
+            // datadetail = await this.getusercontentsService.detailcontent(postID, page, limit);
+            datadetail = await this.getusercontentsService.detailcontent2(postID, page, limit);
             lengdetail = datadetail.length;
         } catch (e) {
             datadetail = null;
