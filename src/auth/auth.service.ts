@@ -8454,7 +8454,7 @@ export class AuthService {
           CreateReferralDto_._class = "io.melody.core.domain.Referral";
           var insertdata = await this.referralService.create(CreateReferralDto_);
           var idref = insertdata._id;
-          // this.userChallenge(iduser.toString(), idref.toString(), "referral", "REFERAL");
+          this.userChallenge(iduser.toString(), idref.toString(), "referral", "REFERAL");
 
 
           var _id_1 = (await this.utilsService.generateId());
@@ -9215,14 +9215,14 @@ export class AuthService {
                         CreateReferralDto_._class = "io.melody.core.domain.Referral";
                         var insertdata = await this.referralService.create(CreateReferralDto_);
 
-                        // const databasic = await this.userbasicsService.findOne(
-                        //   req.body.referral,
-                        // );
+                        const databasic = await this.userbasicsService.findOne(
+                          req.body.referral,
+                        );
 
-                        // if (databasic !== null) {
-                        //   var idref = insertdata._id;
-                        //   this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
-                        // }
+                        if (databasic !== null) {
+                          var idref = insertdata._id;
+                          this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                        }
 
                         var _id_1 = (await this.utilsService.generateId());
                         var _id_2 = (await this.utilsService.generateId());

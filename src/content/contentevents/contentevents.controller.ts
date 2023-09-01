@@ -1181,7 +1181,7 @@ export class ContenteventsController {
                 error,
               );
             }
-            //this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+            this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
           }
 
         }
@@ -1417,14 +1417,14 @@ export class ContenteventsController {
           let idevent1 = ceck_data_FOLLOWING._id;
           //await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNFOLLOW", userbasic1._id);
 
-          // const databasic = await this.userbasicsService.findOne(
-          //   email_user
-          // );
-          // var iduser = null;
-          // if (databasic !== null) {
-          //   iduser = databasic._id;
-          //   this.userChallengeUnFollow(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW");
-          // }
+          const databasic = await this.userbasicsService.findOne(
+            email_user
+          );
+          var iduser = null;
+          if (databasic !== null) {
+            iduser = databasic._id;
+            this.userChallengeUnFollow(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW");
+          }
 
           this.checkFriendbasedString(email_user, email_receiverParty, "delete");
         } catch (error) {
