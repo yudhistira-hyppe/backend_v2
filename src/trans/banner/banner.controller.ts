@@ -138,8 +138,6 @@ export class BannerController {
         var insertdata = new Banner();
 
         insertdata.createdAt = timedate;
-        insertdata.active = true;
-        insertdata.statusTayang = false;
         insertdata.url = url;
         insertdata.title = title;
         insertdata.email = email;
