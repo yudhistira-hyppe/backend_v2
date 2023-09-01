@@ -64,7 +64,7 @@ export class MediastikerController {
         var mongoose = require('mongoose');
         var insertdata = new Mediastiker();
         insertdata._id = new mongoose.Types.ObjectId();
-
+        insertdata.name = name;
         insertdata.createdAt = timedate;
         insertdata.updatedAt = timedate;
         insertdata.isDelete = false;
@@ -113,13 +113,26 @@ export class MediastikerController {
     ) {
         var request_json = JSON.parse(JSON.stringify(request.body));
         var id = null;
+        var name = null;
+        var kategori = null;
+        var status = null;
+        var used = null;
         if (request_json["id"] !== undefined) {
             id = request_json["id"];
         } else {
             throw new BadRequestException("id required");
         }
 
+        if (request_json["name"] !== undefined) {
+            name = request_json["name"];
+        }
+        if (request_json["kategori"] !== undefined) {
+            kategori = request_json["kategori"];
+        }
 
+        if (request_json["status"] !== undefined) {
+            status = request_json["status"];
+        }
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
@@ -129,8 +142,10 @@ export class MediastikerController {
         var timedate = splitdate[0];
         var mongoose = require('mongoose');
         var insertdata = new Mediastiker();
-
+        insertdata.name = name;
         insertdata.updatedAt = timedate;
+        insertdata.status = status;
+        insertdata.kategori = kategori;
 
 
         if (files.image !== undefined) {
