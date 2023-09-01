@@ -7,7 +7,7 @@ import { UtilsService } from '../../utils/utils.service';
 import mongoose from 'mongoose';
 import { FileFieldsInterceptor } from '@nestjs/platform-express/multer';
 import { OssService } from 'src/stream/oss/oss.service';
-@Controller('api/Mediastiker')
+@Controller('api/mediastiker')
 export class MediastikerController {
 
     constructor(
