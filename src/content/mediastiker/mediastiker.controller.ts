@@ -66,6 +66,7 @@ export class MediastikerController {
         insertdata._id = new mongoose.Types.ObjectId();
 
         insertdata.createdAt = timedate;
+        insertdata.updatedAt = timedate;
         insertdata.isDelete = false;
         insertdata.status = status;
         insertdata.kategori = kategori;
