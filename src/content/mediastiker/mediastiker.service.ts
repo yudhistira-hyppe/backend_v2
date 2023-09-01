@@ -20,7 +20,9 @@ export class MediastikerService {
     async findOne(id: string): Promise<Mediastiker> {
         return this.MediastikerModel.findOne({ _id: new Types.ObjectId(id) }).exec();
     }
-
+    async findByname(name: string): Promise<Mediastiker> {
+        return this.MediastikerModel.findOne({ name: name }).exec();
+    }
     async findOne2(id: string) {
         var mongo = require('mongoose');
         var konvertid = mongo.Types.ObjectId(id);

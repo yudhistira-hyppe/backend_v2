@@ -32,7 +32,7 @@ export class MediastikerController {
         var name = null;
         var kategori = null;
         var status = null;
-        var used = null;
+        var datastiker = null;
 
         if (request_json["name"] !== undefined) {
             name = request_json["name"];
@@ -54,6 +54,16 @@ export class MediastikerController {
         if (files.image == undefined) {
             throw new BadRequestException("image required");
         }
+
+        try {
+            datastiker = await this.MediastikerService.findByname(name);
+
+        } catch (e) {
+            datastiker = null;
+
+        }
+
+
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
@@ -64,7 +74,14 @@ export class MediastikerController {
         var mongoose = require('mongoose');
         var insertdata = new Mediastiker();
         insertdata._id = new mongoose.Types.ObjectId();
-        insertdata.name = name;
+        if (datastiker !== null) {
+            await this.errorHandler.generateBadRequestException(
+                'Maaf Nama Stiker tidak boleh sama',
+            );
+        } else {
+            insertdata.name = name;
+        }
+
         insertdata.createdAt = timedate;
         insertdata.updatedAt = timedate;
         insertdata.isDelete = false;
@@ -116,7 +133,8 @@ export class MediastikerController {
         var name = null;
         var kategori = null;
         var status = null;
-        var used = null;
+        var datastiker = null;
+        var insertdata = new Mediastiker();
         if (request_json["id"] !== undefined) {
             id = request_json["id"];
         } else {
@@ -125,6 +143,20 @@ export class MediastikerController {
 
         if (request_json["name"] !== undefined) {
             name = request_json["name"];
+
+            try {
+                datastiker = await this.MediastikerService.findByname(name);
+
+            } catch (e) {
+                datastiker = null;
+
+            }
+
+            if (datastiker !== null) {
+
+            } else {
+                insertdata.name = name;
+            }
         }
         if (request_json["kategori"] !== undefined) {
             kategori = request_json["kategori"];
@@ -141,8 +173,6 @@ export class MediastikerController {
         var splitdate = repdate.split('.');
         var timedate = splitdate[0];
         var mongoose = require('mongoose');
-        var insertdata = new Mediastiker();
-        insertdata.name = name;
         insertdata.updatedAt = timedate;
         insertdata.status = status;
         insertdata.kategori = kategori;
