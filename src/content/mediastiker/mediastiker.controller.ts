@@ -150,7 +150,7 @@ export class MediastikerController {
 
         if (files.image !== undefined) {
             var insertMediastiker = files.image[0];
-            var path = "images/mediastiker/" + insertdata._id + "_mediastiker" + "." + "jpeg";
+            var path = "images/mediastiker/" + id + "_mediastiker" + "." + "jpeg";
             var result = await this.osservices.uploadFile(insertMediastiker, path);
             insertdata.image = result.url;
         }
