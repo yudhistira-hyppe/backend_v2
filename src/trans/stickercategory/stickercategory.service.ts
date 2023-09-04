@@ -26,6 +26,12 @@ export class StickerCategoryService {
             {
                 active:true
             }
+        },
+        {
+            "$sort":
+            {
+                createdAt:-1
+            }
         }
     );
 

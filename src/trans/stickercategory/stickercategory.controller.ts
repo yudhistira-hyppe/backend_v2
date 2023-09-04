@@ -175,8 +175,21 @@ export class StickerCategoryController {
       };
   }
 
-  // @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.stickerCategoryService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  @Get('delete/:id')
+  async remove(@Param('id') id: string) {
+    var updatedata = new CreateStickerCategoryDto();
+    updatedata.active = false;
+
+    await this.stickerCategoryService.update(id, updatedata, false);
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    return {
+        response_code:202,
+        message:messages
+    };
   }
 }
