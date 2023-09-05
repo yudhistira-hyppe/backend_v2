@@ -23,6 +23,30 @@ export class MediastikerService {
     async findByname(name: string): Promise<Mediastiker> {
         return this.MediastikerModel.findOne({ name: name }).exec();
     }
+    async findByKategori(target: string): Promise<Mediastiker[]> {
+        return this.MediastikerModel.aggregate([
+            { 
+                "$match":
+                {
+                    "$and":
+                    [
+                        {
+                            kategori: target
+                        },
+                        {
+                            isDelete:false
+                        }
+                    ]
+                } 
+            },
+            {
+                "$sort":
+                {
+                    index:1
+                }
+            }
+        ]);
+    }
     async findOne2(id: string) {
         var mongo = require('mongoose');
         var konvertid = mongo.Types.ObjectId(id);

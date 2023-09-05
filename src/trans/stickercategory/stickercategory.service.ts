@@ -108,6 +108,12 @@ export class StickerCategoryService {
                     ]
                 }
             },
+            {
+                "$sort":
+                {
+                    index:1
+                }
+            }
           ]
       }          
   })
