@@ -1725,6 +1725,37 @@ export class PostsController {
   async createPostV4new(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     console.log('============================================== CREATE POST HEADERS ==============================================', JSON.stringify(headers));
     console.log('============================================== CREATE POST BODY ==============================================', JSON.stringify(body));
+    // if (body.stiker !== undefined) {
+
+    //   var arrayStiker = [];
+    //   var stiker = body.stiker;
+
+    //   var splitreqdem = stiker.toString();
+    //   var splitreq2dem = splitreqdem.split(',');
+
+    //   for (var i = 0; i < splitreq2dem.length; i++) {
+    //     let iddem = splitreq2dem[i];
+
+    //     var objintr = new mongoose.Types.ObjectId(iddem);
+    //     arrayStiker.push(objintr);
+    //   }
+    //   body.stiker = arrayStiker;
+    // }
+
+    // if (body.text !== undefined) {
+
+    //   var arraytext = [];
+    //   var text = body.text;
+
+    //   var splitreqtext = text.toString();
+    //   var splitreq2text = splitreqtext.split(',');
+
+    //   for (var i = 0; i < splitreq2text.length; i++) {
+    //     let idtext = splitreq2text[i];
+    //     arraytext.push(idtext);
+    //   }
+    //   body.text = arraytext;
+    // }
     var data = await this.postContentService.createNewPostV5(file, body, headers);
     // var postID = data.data.postID;
 
