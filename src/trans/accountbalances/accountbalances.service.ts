@@ -45,17 +45,24 @@ export class AccountbalancesService {
         return query;
     }
 
-    async getReward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], similarity: any[], page: number, limit: number, sorting: boolean){
+    async getReward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], similarity: any[], page: number, limit: number, sorting: boolean, idtransaction:string){
         var paramaggregate = [];
         var $match = {};
 
         var andFilter = [];
         andFilter.push({
             type: "rewards"
-        },
-        {
-            idtrans: { $ne: null }
         });
+
+        if (idtransaction!=undefined){
+            andFilter.push({
+                idtrans: new mongoose.Types.ObjectId(idtransaction)
+            })
+        } else {
+            andFilter.push({
+                idtrans: { $ne: null }
+            })
+        }
 
         $match["$and"] = andFilter;
         // $match["type"] = "rewards";

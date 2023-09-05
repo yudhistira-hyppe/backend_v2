@@ -57,8 +57,9 @@ export class AdsService {
     }
 
     async count(): Promise<number> {
-        const _AdsDto_ = await this.adsModel.countDocuments();
-        return _AdsDto_;
+        const _AdsDto_ = await this.adsModel.find({ status: { $in: ["UNDER_REVIEW", "ACTIVE"] } }).exec();
+        //const _AdsDto_ = await this.adsModel.countDocuments();
+        return _AdsDto_.length;
     }
 
     async insertBalaceDebit(adsBalaceCreditDto: AdsBalaceCreditDto): Promise<AdsBalaceCredit> {
@@ -628,6 +629,7 @@ export class AdsService {
                         }
                     },
                     idApsara: 1,
+                    adsIdNumber: 1
                 }
             }
         ]);
@@ -3384,6 +3386,133 @@ export class AdsService {
         return query;
     }
 
+    async getAdsSatus(userId: string, start_date: any, end_date: any) {
+        var $match = {};
+        if (userId != undefined) {
+            $match['userID'] = new mongoose.Types.ObjectId(userId);
+        }
+        $match['adsObjectivitasId'] = { $ne: null };
+        $match['timestamp'] = {
+            $gte: start_date.toISOString(),
+            $lte: end_date.toISOString()
+        };
+        var query = await this.adsModel.aggregate(
+            [{
+                $match
+        }, {
+            "$project": {
+                "status": {
+                    "$switch": {
+                        "branches": [{
+                            "case": {
+                                "$eq": ["$status", "DRAFT"]
+                            },
+                            "then": "DRAFT"
+                        }, {
+                            "case": {
+                                "$or": [{
+                                    "$eq": ["$status", "FINISH"]
+                                }, {
+                                    "$eq": ["$status", "IN_ACTIVE"]
+                                }, {
+                                    "$eq": ["$status", "REPORTED"]
+                                }]
+                            },
+                            "then": "IN_ACTIVE"
+                        }, {
+                            "case": {
+                                "$or": [{
+                                    "$eq": ["$status", "APPROVE"]
+                                }, {
+                                    "$eq": ["$status", "ACTIVE"]
+                                }]
+                            },
+                            "then": "ACTIVE"
+                        }, {
+                            "case": {
+                                "$eq": ["$status", "UNDER_REVIEW"]
+                            },
+                            "then": "UNDER_REVIEW"
+                        }],
+                        "default": "OTHER"
+                    }
+                }
+            }
+        }, {
+            "$facet": {
+                "status": [{
+                    "$group": {
+                        "_id": "$status",
+                        "status": {
+                            "$first": "$status"
+                        },
+                        "count": {
+                            "$sum": 1
+                        }
+                    }
+                }]
+            }
+        }]
+        );
+        console.log(JSON.stringify([{
+            $match
+        }, {
+            "$project": {
+                "status": {
+                    "$switch": {
+                        "branches": [{
+                            "case": {
+                                "$eq": ["$status", "DRAFT"]
+                            },
+                            "then": "DRAFT"
+                        }, {
+                            "case": {
+                                "$or": [{
+                                    "$eq": ["$status", "FINISH"]
+                                }, {
+                                    "$eq": ["$status", "IN_ACTIVE"]
+                                }, {
+                                    "$eq": ["$status", "REPORTED"]
+                                }]
+                            },
+                            "then": "IN_ACTIVE"
+                        }, {
+                            "case": {
+                                "$or": [{
+                                    "$eq": ["$status", "APPROVE"]
+                                }, {
+                                    "$eq": ["$status", "ACTIVE"]
+                                }]
+                            },
+                            "then": "ACTIVE"
+                        }, {
+                            "case": {
+                                "$eq": ["$status", "UNDER_REVIEW"]
+                            },
+                            "then": "UNDER_REVIEW"
+                        }],
+                        "default": "OTHER"
+                    }
+                }
+            }
+        }, {
+            "$facet": {
+                "status": [{
+                    "$group": {
+                        "_id": "$status",
+                        "status": {
+                            "$first": "$status"
+                        },
+                        "count": {
+                            "$sum": 1
+                        }
+                    }
+                }]
+            }
+        }]));
+        return query;
+    }
+
     async list(userID: string, name_ads: string, start_date: any, end_date: any, type_ads: any[], plan_ads: any[], status_list: any[], page: number, limit: number, sorting: boolean) {
         var paramaggregate = [];
         var $match = {};
@@ -3894,7 +4023,8 @@ export class AdsService {
                     //         }
                     //     ]
                     // }
-                    timestamp:1
+                    timestamp: 1,
+                    adsIdNumber: 1
                 }
             }
         );
@@ -3984,9 +4114,9 @@ export class AdsService {
         return query;
     }
 
-    async list_reward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], similarity: any[], page: number, limit: number, sorting: boolean) {
+    async list_reward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], similarity: any[], page: number, limit: number, sorting: boolean, idtransaction: string) {
         similarity
-        const getReward = await this.AccountbalancesService.getReward(name, start_date, end_date, gender, age, areas, similarity, page, limit, sorting);
+        const getReward = await this.AccountbalancesService.getReward(name, start_date, end_date, gender, age, areas, similarity, page, limit, sorting, idtransaction);
         return getReward;
     }
 
@@ -5377,6 +5507,1387 @@ export class AdsService {
                 { $limit: 1 }
             ]
         );
+        console.log(JSON.stringify([
+            {
+                $set:
+                {
+                    email: email
+                }
+            },
+            {
+                $set:
+                {
+                    idUser: new mongoose.Types.ObjectId(idUser)
+                }
+            },
+            {
+                $set:
+                {
+                    tay:
+                    {
+                        $ifNull: ['$tayang', 0]
+                    }
+                }
+            },
+            {
+                $set: {
+                    "testDate":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [new Date(), 25200000]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $set: {
+                    "sekarang":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d",
+                            "date": {
+                                $add: [new Date(), 25200000]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $set: {
+                    "tayang": {
+                        $concat: [
+                            "$liveAt",
+                            " 00:00:00"
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    "tayangEnd": {
+                        $concat: [
+                            "$liveEnd",
+                            " 23:59:59"
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    hariCount: {
+                        $isoDayOfWeek: {
+                            $add: [new Date(), 25200000]
+                        }
+                    }
+                }
+            },
+            {
+                $set: {
+                    hari:
+                    {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [{
+                                            $isoDayOfWeek: {
+                                                $add: [new Date(), 25200000]
+                                            }
+                                        }, 1]
+                                    },
+                                    then: "$dayAds.monday"
+                                },
+                                {
+                                    case: {
+                                        $eq: [{
+                                            $isoDayOfWeek: {
+                                                $add: [new Date(), 25200000]
+                                            }
+                                        }, 2]
+                                    },
+                                    then: "$dayAds.tuesday"
+                                },
+                                {
+                                    case: {
+                                        $eq: [{
+                                            $isoDayOfWeek: {
+                                                $add: [new Date(), 25200000]
+                                            }
+                                        }, 3]
+                                    },
+                                    then: "$dayAds.wednesday"
+                                },
+                                {
+                                    case: {
+                                        $eq: [{
+                                            $isoDayOfWeek: {
+                                                $add: [new Date(), 25200000]
+                                            }
+                                        }, 4]
+                                    },
+                                    then: "$dayAds.thursday"
+                                },
+                                {
+                                    case: {
+                                        $eq: [{
+                                            $isoDayOfWeek: {
+                                                $add: [new Date(), 25200000]
+                                            }
+                                        }, 5]
+                                    },
+                                    then: "$dayAds.friday"
+                                },
+                                {
+                                    case: {
+                                        $eq: [{
+                                            $isoDayOfWeek: {
+                                                $add: [new Date(), 25200000]
+                                            }
+                                        }, 6]
+                                    },
+                                    then: "$dayAds.saturday"
+                                },
+                                {
+                                    case: {
+                                        $eq: [{
+                                            $isoDayOfWeek: {
+                                                $add: [new Date(), 25200000]
+                                            }
+                                        }, 7]
+                                    },
+                                    then: "$dayAds.sunday"
+                                },
+
+                            ],
+                            default: "error hari"
+                        }
+                    },
+
+                }
+            },
+            {
+                $set: {
+                    waktu:
+                    {
+                        $switch: {
+                            branches:
+                                [
+                                    {
+                                        case:
+                                        {
+                                            $and:
+                                                [
+                                                    {
+                                                        $eq: ["$timeAds.time_24_4", true]
+                                                    },
+                                                    {
+                                                        $gte: ["$testDate", {
+                                                            $concat: [
+                                                                "$sekarang",
+                                                                " 00:00:00"
+                                                            ]
+                                                        }]
+                                                    },
+                                                    {
+                                                        $lte: ["$testDate", {
+                                                            $concat: [
+                                                                "$sekarang",
+                                                                " 04:00:00"
+                                                            ]
+                                                        }]
+                                                    },
+
+                                                ],
+
+                                        },
+                                        then: true
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $and:
+                                                [
+                                                    {
+                                                        $eq: ["$timeAds.time_4_8", true]
+                                                    },
+                                                    {
+                                                        $gte: ["$testDate", {
+                                                            $concat: [
+                                                                "$sekarang",
+                                                                " 04:00:00"
+                                                            ]
+                                                        }]
+                                                    },
+                                                    {
+                                                        $lte: ["$testDate", {
+                                                            $concat: [
+                                                                "$sekarang",
+                                                                " 08:00:00"
+                                                            ]
+                                                        }]
+                                                    },
+
+                                                ]
+                                        },
+                                        then: true
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $and:
+                                                [
+                                                    {
+                                                        $eq: ["$timeAds.time_8_12", true]
+                                                    },
+                                                    {
+                                                        $gte: ["$testDate", {
+                                                            $concat: [
+                                                                "$sekarang",
+                                                                " 08:00:00"
+                                                            ]
+                                                        }]
+                                                    },
+                                                    {
+                                                        $lte: ["$testDate", {
+                                                            $concat: [
+                                                                "$sekarang",
+                                                                " 12:00:00"
+                                                            ]
+                                                        }]
+                                                    },
+
+                                                ]
+                                        },
+                                        then: true
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $and:
+                                                [
+                                                    {
+                                                        $eq: ["$timeAds.time_12_16", true]
+                                                    },
+                                                    {
+                                                        $gte: ["$testDate", {
+                                                            $concat: [
+                                                                "$sekarang",
+                                                                " 12:00:00"
+                                                            ]
+                                                        }]
+                                                    },
+                                                    {
+                                                        $lte: ["$testDate", {
+                                                            $concat: [
+                                                                "$sekarang",
+                                                                " 16:00:00"
+                                                            ]
+                                                        }]
+                                                    },
+
+                                                ]
+                                        },
+                                        then: true
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $and:
+                                                [
+                                                    {
+                                                        $eq: ["$timeAds.time_16_20", true]
+                                                    },
+                                                    {
+                                                        $gte: ["$testDate", {
+                                                            $concat: [
+                                                                "$sekarang",
+                                                                " 16:00:00"
+                                                            ]
+                                                        }]
+                                                    },
+                                                    {
+                                                        $lte: ["$testDate", {
+                                                            $concat: [
+                                                                "$sekarang",
+                                                                " 20:00:00"
+                                                            ]
+                                                        }]
+                                                    },
+
+                                                ]
+                                        },
+                                        then: true
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $and:
+                                                [
+                                                    {
+                                                        $eq: ["$timeAds.time_20_24", true]
+                                                    },
+                                                    {
+                                                        $gte: ["$testDate", {
+                                                            $concat: [
+                                                                "$sekarang",
+                                                                " 20:00:00"
+                                                            ]
+                                                        }]
+                                                    },
+                                                    {
+                                                        $lte: ["$testDate", {
+                                                            $concat: [
+                                                                "$sekarang",
+                                                                " 24:00:00"
+                                                            ]
+                                                        }]
+                                                    },
+
+                                                ]
+                                        },
+                                        then: true
+                                    },
+
+                                ],
+                            default: false
+                        }
+                    },
+
+                }
+            },
+            {
+                $set:
+                {
+                    co: ["MALE", " MALE", "Laki-laki", "Pria"]
+                },
+
+            },
+            {
+                $set:
+                {
+                    ce: ["FEMALE", " FEMALE", "Perempuan", "Wanita"]
+                }
+            },
+            {
+                $set:
+                {
+                    all: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria", "Other"]
+                }
+            },
+            {
+                $set:
+                {
+                    ceOther: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "Other"]
+                }
+            },
+            {
+                $set:
+                {
+                    coOther: ["MALE", " MALE", "Laki-laki", "Pria", "Other"]
+                }
+            },
+            {
+                $set:
+                {
+                    ceCo: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria"]
+                }
+            },
+            {
+                $set:
+                {
+                    other: ["Other"]
+                }
+            },
+            {
+                $set: {
+                    totKelamin: {
+                        $size: "$gender"
+                    }
+                }
+            },
+            {
+                $set: {
+                    tempValue: 0
+                }
+            },
+            {
+                $set: {
+                    tempValues: {
+                        $add: ["$tempValue", 20]
+                    }
+                }
+            },
+            {
+                $set: {
+                    totAge1:
+                    {
+                        $cond: {
+                            if: {
+                                $eq: ["$age.age_smaller_than_14", true]
+                            },
+                            then: {
+                                $add: ["$tempValue", 1]
+                            },
+                            else: "$tempValue"
+                        }
+                    },
+
+                }
+            },
+            {
+                $set: {
+                    totAge2:
+                    {
+                        $cond: {
+                            if: {
+                                $eq: ["$age.age_14_smaller_than_28", true]
+                            },
+                            then: {
+                                $add: ["$totAge1", 1]
+                            },
+                            else: "$totAge1"
+                        }
+                    },
+
+                }
+            },
+            {
+                $set: {
+                    totAge3:
+                    {
+                        $cond: {
+                            if: {
+                                $eq: ["$age.age_29_smaller_than_43", true]
+                            },
+                            then: {
+                                $add: ["$totAge2", 1]
+                            },
+                            else: "$totAge2"
+                        }
+                    },
+
+                }
+            },
+            {
+                $set: {
+                    totAge4:
+                    {
+                        $cond: {
+                            if: {
+                                $eq: ["$age.age_greater_than_44", true]
+                            },
+                            then: {
+                                $add: ["$totAge3", 1]
+                            },
+                            else: "$totAge3"
+                        }
+                    },
+
+                }
+            },
+            {
+                $set: {
+                    totAge:
+                    {
+                        $cond: {
+                            if: {
+                                $eq: ["$age.age_other", true]
+                            },
+                            then: {
+                                $add: ["$totAge4", 1]
+                            },
+                            else: "$totAge4"
+                        }
+                    },
+
+                }
+            },
+            {
+                $set: {
+                    totInterest: {
+                        $size: "$interestID"
+                    }
+                }
+            },
+            {
+                $set: {
+                    totLocation: {
+                        $size: "$demografisID"
+                    }
+                }
+            },
+            {
+                $set: {
+                    kelamin:
+                    {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["P"]]
+                                    },
+                                    then: "$ce"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["L"]]
+                                    },
+                                    then: "$co"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["O"]]
+                                    },
+                                    then: "$other"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["L", "P"]]
+                                    },
+                                    then: "$ceCo"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["P", "L"]]
+                                    },
+                                    then: "$ceCo"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["O", "L"]]
+                                    },
+                                    then: "$coOther"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["L", "O"]]
+                                    },
+                                    then: "$coOther"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["P", "O"]]
+                                    },
+                                    then: "$ceOther"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["O", "P"]]
+                                    },
+                                    then: "$ceOther"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["L", "P", "O"]]
+                                    },
+                                    then: "$all"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["L", "O", "P"]]
+                                    },
+                                    then: "$all"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["O", "P", "L"]]
+                                    },
+                                    then: "$all"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["O", "L", "P"]]
+                                    },
+                                    then: "$all"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["P", "L", "O"]]
+                                    },
+                                    then: "$all"
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$gender", ["P", "O", "L"]]
+                                    },
+                                    then: "$all"
+                                },
+
+                            ],
+                            default: "kancut"
+                        }
+                    }
+                }
+            },
+            {
+                "$lookup": {
+                    from: "userbasics",
+                    as: "userBasic",
+                    let: {
+                        localID: '$email'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr: {
+                                    $eq: ['$email', '$$localID']
+                                }
+                            }
+                        },
+                        {
+                            "$lookup":
+                            {
+                                from: "userauths",
+                                let:
+                                {
+                                    basic_fk: "$email"
+                                },
+                                as: 'userauth_data',
+                                pipeline:
+                                    [
+                                        {
+                                            "$match":
+                                            {
+                                                "$and":
+                                                    [
+                                                        {
+                                                            "$expr":
+                                                            {
+                                                                "$eq":
+                                                                    [
+                                                                        "$email",
+                                                                        "$$basic_fk"
+                                                                    ]
+                                                            },
+
+                                                        },
+
+                                                    ]
+                                            }
+                                        },
+
+                                    ]
+                            }
+                        },
+                        {
+                            $project: {
+                                "email": 1,
+                                "userName":
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$userauth_data.username",
+                                            0
+                                        ]
+                                },
+                                avatar:
+                                {
+                                    mediaEndpoint:
+                                    {
+                                        "$concat":
+                                            [
+                                                "/profilepict/",
+                                                "$profilePict.$id",
+
+                                            ]
+                                    }
+                                },
+                                "userInterests": 1,
+                                "states": ["$states"],
+                                "gender": ["$gender"],
+                                "age":
+                                {
+                                    $cond: {
+                                        if: {
+                                            $and: ['$dob', {
+                                                $ne: ["$dob", ""]
+                                            }]
+                                        },
+                                        then: {
+                                            $toInt: {
+                                                $divide: [{
+                                                    $subtract: [new Date(), {
+                                                        $toDate: "$dob"
+                                                    }]
+                                                }, (365 * 24 * 60 * 60 * 1000)]
+                                            }
+                                        },
+                                        else: 0
+                                    }
+                                },
+
+                            }
+                        }
+                    ],
+
+                }
+            },
+            {
+                $unwind: {
+                    path: "$userBasic"
+                }
+            },
+            {
+                "$lookup": {
+                    from: "settings",
+                    as: "adsAge",
+                    let: {
+                        ket: 'similarity',
+                        type: 'AdsAge'
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$remark', '$$ket']
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$jenis', '$$type']
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+
+                    ],
+
+                }
+            },
+            {
+                $unwind: {
+                    path: "$adsAge"
+                }
+            },
+            {
+                "$lookup": {
+                    from: "settings",
+                    as: "adsInterest",
+                    let: {
+                        ket: 'similarity',
+                        type: 'AdsInterest'
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$remark', '$$ket']
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$jenis', '$$type']
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+
+                    ],
+
+                }
+            },
+            {
+                $unwind: {
+                    path: "$adsInterest"
+                }
+            },
+            {
+                "$lookup": {
+                    from: "settings",
+                    as: "adsLocation",
+                    let: {
+                        ket: 'similarity',
+                        type: 'AdsLocation'
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$remark', '$$ket']
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$jenis', '$$type']
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+
+                    ],
+
+                }
+            },
+            {
+                $unwind: {
+                    path: "$adsLocation"
+                }
+            },
+            {
+                "$lookup": {
+                    from: "settings",
+                    as: "adsGender",
+                    let: {
+                        ket: 'similarity',
+                        type: 'AdsGender'
+                    },
+                    pipeline: [
+                        {
+                            $match: {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$remark', '$$ket']
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$jenis', '$$type']
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+
+                    ],
+
+                }
+            },
+            {
+                $unwind: {
+                    path: "$adsGender"
+                }
+            },
+            {
+                $set: {
+                    kelaminku:
+                    {
+                        $cond: {
+                            if: {
+                                $gt: [{
+                                    $size: {
+                                        $setIntersection: ["$kelamin", "$userBasic.gender"]
+                                    }
+                                }, 0]
+                            },
+                            then: {
+                                $size: {
+                                    $setIntersection: ["$kelamin", "$userBasic.gender"]
+                                }
+                            },
+                            else: 0
+                        }
+                    },
+
+                }
+            },
+            {
+                $set: {
+                    umur:
+                    {
+                        $cond: {
+                            if: {
+                                $and: [
+                                    {
+                                        $gte: ["$userBasic.age", "$ads.ageStart"]
+                                    },
+                                    {
+                                        $lte: ["$userBasic.age", "$ads.ageEnd"]
+                                    }
+                                ]
+                            },
+                            then: 1,
+                            else: 0,
+
+                        }
+                    },
+
+                }
+            },
+            {
+                $set: {
+                    demografis:
+                    {
+                        $cond: {
+                            if: {
+                                $gt: [{
+                                    $size: {
+                                        $setIntersection: ["$demografisID.$id", "$userBasic.states.$id"]
+                                    }
+                                }, 0]
+                            },
+                            then: {
+                                $size: {
+                                    $setIntersection: ["$demografisID.$id", "$userBasic.states.$id"]
+                                }
+                            },
+                            else: 0
+                        }
+                    },
+
+                }
+            },
+            {
+                $set: {
+                    userMinat:
+                    {
+                        $cond: {
+                            if: {
+                                $eq: ['$userBasic.userInterests', []]
+                            },
+                            then: "LAINNYA",
+                            else: "$userBasic.userInterests"
+                        }
+                    },
+
+                }
+            },
+            {
+                $set: {
+                    minat:
+                    {
+                        $cond: {
+                            if: {
+                                $gt: [{
+                                    $size: {
+                                        $setIntersection: ["$interestID.$id", "$userBasic.userInterests.$id"]
+                                    }
+                                }, 0]
+                            },
+                            then: {
+                                $size: {
+                                    $setIntersection: ["$interestID.$id", "$userBasic.userInterests.$id"]
+                                }
+                            },
+                            else:
+                            {
+                                $cond: {
+                                    if: {
+                                        $in: ['$userMinat', "$interestID"]
+                                    },
+                                    then: 1,
+                                    else: 0
+                                }
+                            },
+
+                        }
+                    },
+
+                }
+            },
+            {
+                $set: {
+                    scoreUmur: {
+                        $round: [
+                            {
+                                $multiply: [
+                                    "$adsAge.value",
+                                    {
+                                        $divide: ["$umur", "$totAge"]
+                                    }
+                                ]
+                            },
+                            1
+                        ]
+                    }
+                }
+            },
+            {
+                $set:
+                {
+                    scoreKelamin: {
+                        $round: [
+                            {
+                                $multiply: [
+                                    "$adsGender.value",
+                                    {
+                                        $divide: ["$kelaminku", "$totKelamin"]
+                                    }
+                                ]
+                            },
+                            1
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    scoreMinat: {
+                        $round: [
+                            {
+                                $multiply: [
+                                    "$adsInterest.value",
+                                    {
+                                        $divide: ["$minat", "$totInterest"]
+                                    }
+                                ]
+                            },
+                            1
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    scoreGeografis: {
+                        $round: [
+                            {
+                                $multiply: [
+                                    "$adsLocation.value",
+                                    {
+                                        $divide: ["$demografis", "$totLocation"]
+                                    }
+                                ]
+                            },
+                            1
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    scoreTotal:
+                    {
+                        $add: ["$scoreUmur", "$scoreKelamin", "$scoreMinat", "$scoreGeografis"]
+                    }
+                }
+            },
+            {
+                $match:
+                {
+                    $or: [{
+                        $and: [
+                            {
+                                "status": "ACTIVE"
+                            },
+                            {
+                                $expr: {
+                                    $lt: ["$tayang", "$testDate"]
+                                }
+                            },
+                            {
+                                "reportedUser":
+                                {
+                                    $ne: "$email"
+                                }
+                            },
+                            {
+                                "userID":
+                                {
+                                    $ne: "$idUser"
+                                }
+                            },
+                            {
+                                $expr: {
+                                    $lt: ["$tayang", "$testDate"]
+                                }
+                            },
+                            {
+                                $expr: {
+                                    $gte: ["$tayangEnd", "$testDate"]
+                                }
+                            },
+
+                        ]
+                    },]
+                }
+            },
+            {
+                "$lookup": {
+                    from: "userads",
+                    as: "adsUser",
+                    let: {
+                        idAds: "$_id",
+                        localID: '$idUser',
+                        frekwensi: "$audiensFrekuensi"
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$userID', '$$localID']
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$adsID', '$$idAds']
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $lte: ['$viewed', '$$frekwensi']
+                                        }
+                                    },
+                                    {
+                                        isActive: true
+                                    },
+                                ]
+                            },
+
+                        },
+                        {
+                            $project: {
+                                adsID: "$adsID",
+                                dodol: {
+                                    $toString: "$adsID"
+                                },
+                                userID: 1,
+                                viewed: "$viewed",
+                                isActive: 1,
+
+                            }
+                        },
+
+                    ],
+
+                }
+            },
+            {
+                "$lookup": {
+                    from: "adsobjectivitas",
+                    as: "objectivitas",
+                    let: {
+                        idObj: "$adsObjectivitasId",
+
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$_id', '$$idObj']
+                                        }
+                                    },
+
+                                ]
+                            },
+
+                        },
+                        {
+                            $project: {
+                                priority: 1,
+                                name_id: 1,
+                                name_en: 1,
+                                percentageMin: 1,
+
+                            }
+                        },
+
+                    ],
+
+                }
+            },
+            {
+                $unwind: {
+                    path: "$objectivitas",
+
+                }
+            },
+            {
+                $set: {
+                    sorts:
+                    {
+                        $cond: {
+                            if: {
+                                $gte: ['$scoreTotal', "$objectivitas.percentageMin"]
+                            },
+                            then: true,
+                            else: false
+                        }
+                    },
+
+                }
+            },
+            {
+                $set: {
+                    priority: "$objectivitas.priority"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$adsUser",
+                    preserveNullAndEmptyArrays: true
+
+                }
+            },
+            {
+                $set: {
+                    isValid: {
+                        $ifNull: ["$adsUser.isActive", true]
+                    }
+                }
+            },
+            {
+                $match: {
+                    $and: [
+                        {
+                            $expr: {
+                                $eq: ['$sorts', true]
+                            }
+                        },
+                        {
+                            $expr: {
+                                $eq: ['$isValid', true]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                $sort: {
+                    sorts: - 1,
+                    priority: 1,
+                    scoreTotal: - 1
+                }
+            },
+            {
+                "$lookup": {
+                    from: "settings",
+                    as: "cta",
+                    let: {
+                        localID: 'CTAButton',
+                        indexs: "$ctaButton"
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr: {
+                                    $eq: ['$jenis', '$$localID']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                jenis: 1,
+                                value: 1,
+
+                            }
+                        }
+                    ],
+
+                }
+            },
+            {
+                $unwind: {
+                    path: "$cta"
+                }
+            },
+            {
+                "$lookup": {
+                    from: "adstypes",
+                    as: "types",
+                    let: {
+                        localID: '$typeAdsID'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr: {
+                                    $eq: ['$_id', '$$localID']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "nameType": 1,
+
+                            }
+                        }
+                    ],
+
+                }
+            },
+            {
+                $unwind: {
+                    path: "$types",
+
+                }
+            },
+            {
+                $project: {
+                    //userBasic:1,
+                    username: "$userBasic.userName",
+                    avatar: "$userBasic.avatar",
+                    email: "$userBasic.email",
+                    ctaNames: {
+                        $arrayElemAt: ["$cta.value", "$ctaButton"]
+                    },
+                    test: 1,
+                    sekarang: 1,
+                    ctaButton: 1,
+                    viewed: "$adsUser.viewed",
+                    isAdsActive: "$adsUser.isActive",
+                    placingID: 1,
+                    placingName: 1,
+                    timestamps: 1,
+                    adsId: 1,
+                    userID: 1,
+                    liveAt: 1,
+                    liveTypeuserads: 1,
+                    nameType: "$types.nameType",
+                    createdAt: 1,
+                    kelaminku: 1,
+                    minat: 1,
+                    demografis: 1,
+                    umur: 1,
+                    testDate: 1,
+                    skipTime: 1,
+                    tayang: 1,
+                    tayangEnd: 1,
+                    adsUserId: 1,
+                    adsUser: 1,
+                    liveTypeAds: 1,
+                    typeAdsID: 1,
+                    description: 1,
+                    type: 1,
+                    idApsara: 1,
+                    duration: 1,
+                    urlLink: 1,
+                    priority: 1,
+                    scoreUmur: 1,
+                    scoreKelamin: 1,
+                    scoreMinat: 1,
+                    scoreGeografis: 1,
+                    scoreTotal: 1,
+                    isValid: 1,
+                    objectivitasId: "$objectivitas.name_id",
+                    objectivitasEn: "$objectivitas.name_en",
+                    mediaBasePath: 1,
+                    mediaUri: 1,
+                    mediaThumBasePath: 1,
+                    mediaThumUri: 1,
+                    width: 1,
+                    height: 1,
+
+                }
+            },
+            {
+                $match: {
+                    typeAdsID: new mongoose.Types.ObjectId(idTypeAds),
+                }
+            },
+            { $limit: 1 }
+        ]))
         return query;
     }
 

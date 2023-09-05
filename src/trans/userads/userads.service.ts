@@ -3767,16 +3767,16 @@ export class UserAdsService {
         },
             {
                 $project: {
-                    statusIklan: {
-                        "$arrayElemAt": [{
-                            "$let": {
-                                "vars": {
-                                    "tmp": { "$arrayElemAt": ["$status", 0] },
-                                },
-                                "in": "$$tmp.data.status"
-                            }
-                        }, 0]
-                    },
+                    // statusIklan: {
+                    //     "$arrayElemAt": [{
+                    //         "$let": {
+                    //             "vars": {
+                    //                 "tmp": { "$arrayElemAt": ["$status", 0] },
+                    //             },
+                    //             "in": "$$tmp.data.status"
+                    //         }
+                    //     }, 0]
+                    // },
                     saldoKredit: {
                         $sum: [
                             {
@@ -3826,6 +3826,7 @@ export class UserAdsService {
                     CTA: 1
                 }
             });
+        console.log(JSON.stringify(aggregateData));
         let query = await this.userAdsModel.aggregate(aggregateData);
         return query;
     }

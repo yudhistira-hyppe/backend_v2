@@ -21,6 +21,7 @@ import { LogapisModule } from 'src/trans/logapis/logapis.module';
 @Module({
     imports: [
         LogapisModule,
+        AdsBalaceCreditModule,
         AdslogsModule,
         AdsplacesModule,
         MediaprofilepictsModule,

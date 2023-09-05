@@ -68,6 +68,7 @@ export class UtilsService {
     private insightsService: InsightsService,
     private citiesService: CitiesService,
     private countriesService: CountriesService,
+    private readonly configService: ConfigService, 
     private areasService: AreasService,
     private interestsRepoService: InterestsRepoService,
     //private interestsService: InterestsService,
@@ -75,7 +76,6 @@ export class UtilsService {
     private mediaprofilepictsService: MediaprofilepictsService,
     private settingsService: SettingsService,
     private seaweedfsService: SeaweedfsService,
-    private readonly configService: ConfigService,
     private banksService: BanksService,
     private userdevicesService: UserdevicesService,
     private notificationsService: NotificationsService,
@@ -1803,18 +1803,27 @@ export class UtilsService {
     return TransactionNumber;
   }
 
-  async generateCampaignID(No: number, typeAdsID: string) {
+  async generateCampaignID(No: number, typeAdsID: string, ObjectivitasId: string) {
     var noCampaignID = "";
     var date_current = await this.getDateTimeString();
     var tahun_nember = date_current.substring(0, 4);
     noCampaignID += tahun_nember;
-    if (typeAdsID == "62e238a4f63d0000510026b3") {
-      noCampaignID += "-001";
-    } else if (typeAdsID == "62f0b435118731ecc0f45772") {
-      noCampaignID += "-002";
-    } else if (typeAdsID == "632a806ad2770000fd007a62") {
+    if (typeAdsID == this.configService.get("ID_ADS_IN_POPUP")) {
+      noCampaignID += "-01";
+    } else if (typeAdsID == this.configService.get("ID_ADS_IN_BETWEEN")) {
+      noCampaignID += "-02";
+    } else if (typeAdsID == this.configService.get("ID_ADS_IN_POPUP")) {
       noCampaignID += "-003";
     }
+
+    if (ObjectivitasId == this.configService.get("ID_ADS_OBJECTTIVITAS_AWARENESS")) {
+      noCampaignID += "-01";
+    } else if (ObjectivitasId == this.configService.get("ID_ADS_OBJECTTIVITAS_CONSIDERATION")) {
+      noCampaignID += "-02";
+    } else if (ObjectivitasId == this.configService.get("ID_ADS_OBJECTTIVITAS_ACTION")) {
+      noCampaignID += "-03";
+    }
+
 
     if ((No.toString().length) == 6) {
       noCampaignID += "-" + No;

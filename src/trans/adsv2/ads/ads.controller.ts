@@ -22,10 +22,11 @@ import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { OssContentPictService } from '../../../content/posts/osscontentpict.service';
 import { AdsLogsDto } from '../adslog/dto/adslog.dto';
 import { AdslogsService } from '../adslog/adslog.service';
-import { AccountbalancesService } from 'src/trans/accountbalances/accountbalances.service';
-import { CreateAccountbalancesDto } from 'src/trans/accountbalances/dto/create-accountbalances.dto';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { request } from 'http';
+import { AccountbalancesService } from '../../../trans/accountbalances/accountbalances.service';
+import { CreateAccountbalancesDto } from '../../../trans/accountbalances/dto/create-accountbalances.dto';
+import { AdsBalaceCreditService } from '../adsbalacecredit/adsbalacecredit.service';
 const sharp = require('sharp');
 
 @Controller('api/adsv2/ads')
@@ -47,8 +48,9 @@ export class AdsController {
         private readonly ossContentPictService: OssContentPictService, 
         private readonly adslogsService: AdslogsService,
         private accountbalancesService: AccountbalancesService,
-        private readonly adsService: AdsService,
-        private readonly logapiSS: LogapisService) {
+        private readonly logapiSS: LogapisService,
+        private adsBalaceCreditService: AdsBalaceCreditService,
+        private readonly adsService: AdsService) {
         this.locks = new Map();
     }
 
@@ -217,6 +219,14 @@ export class AdsController {
             AdsDto_.userID = new mongoose.Types.ObjectId(ubasic._id.toString());
         }
 
+        //VALIDASI PARAM adsIdNumber
+        var ceck_adsIdNumber = await this.utilsService.validateParam("adsIdNumber", AdsDto_.adsIdNumber, "string")
+        if (ceck_adsIdNumber != "") {
+            await this.errorHandler.generateBadRequestException(
+                ceck_adsIdNumber,
+            );
+        }
+
         //VALIDASI PARAM adsObjectivitasId
         var ceck_adsObjectivitasId = await this.utilsService.validateParam("adsObjectivitasId", AdsDto_.adsObjectivitasId, "string")
         if (ceck_adsObjectivitasId != "") {
@@ -226,7 +236,7 @@ export class AdsController {
             await this.errorHandler.generateBadRequestException(
                 ceck_adsObjectivitasId,
             );
-        }else{
+        } else {
             AdsDto_.adsObjectivitasId = new mongoose.Types.ObjectId(AdsDto_.adsObjectivitasId.toString());
         }
 
@@ -247,10 +257,10 @@ export class AdsController {
             var _id_InContentAds = this.configService.get("ID_ADS_IN_CONTENT");
             getAdsType = await this.adsTypeService.findOne(_id_InContentAds);
         } else if (AdsDto_.typeAdsID.toString() == this.configService.get("ID_ADS_IN_BETWEEN")) {
-            var _id_InBetweenAds = this.configService.get("ID_ADS_IN_CONTENT");
+            var _id_InBetweenAds = this.configService.get("ID_ADS_IN_BETWEEN");
             getAdsType = await this.adsTypeService.findOne(_id_InBetweenAds);
         } else if (AdsDto_.typeAdsID.toString() == this.configService.get("ID_ADS_IN_POPUP")) {
-            var _id_PopUpAds = this.configService.get("ID_ADS_IN_CONTENT");
+            var _id_PopUpAds = this.configService.get("ID_ADS_IN_POPUP");
             getAdsType = await this.adsTypeService.findOne(_id_PopUpAds);
         } else {
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -336,36 +346,39 @@ export class AdsController {
         }
 
         //VALIDASI PARAM skipTime
-        var ceck_skipTime = await this.utilsService.validateParam("skipTime", AdsDto_.skipTime, "number")
-        if (ceck_skipTime != "") {
-            var timestamps_end = await this.utilsService.getDateTimeString();
-            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
-
-            await this.errorHandler.generateBadRequestException(
-                ceck_skipTime,
-            );
-        }else{
-            if (!((Number(getAdsType.skipMax) >= Number(AdsDto_.skipTime)) && (Number(AdsDto_.skipTime) >= Number(getAdsType.skipMin)))) {
+        if (AdsDto_.typeAdsID.toString() == this.configService.get("ID_ADS_IN_POPUP") || AdsDto_.typeAdsID.toString() == this.configService.get("ID_ADS_IN_CONTENT")) {
+            var ceck_skipTime = await this.utilsService.validateParam("skipTime", AdsDto_.skipTime, "number")
+            if (ceck_skipTime != "") {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
-
                 await this.errorHandler.generateBadRequestException(
-                    'Unabled to proceed, skipTime required ' + getAdsType.skipMax.toString() + ' > skipTime >' + getAdsType.skipMin.toString(),
+                    ceck_skipTime,
                 );
+            } else {
+                console.log((Number(getAdsType.skipMax) >= Number(AdsDto_.skipTime)));
+                console.log((Number(AdsDto_.skipTime) >= Number(getAdsType.skipMin)))
+                if (!((Number(getAdsType.skipMax) >= Number(AdsDto_.skipTime)) && (Number(AdsDto_.skipTime) >= Number(getAdsType.skipMin)))) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+                    await this.errorHandler.generateBadRequestException(
+                        'Unabled to proceed, skipTime required ' + getAdsType.skipMax.toString() + ' > skipTime >' + getAdsType.skipMin.toString(),
+                    );
+                }
             }
         }
 
         //VALIDASI PARAM placingID
-        var ceck_placingID = await this.utilsService.validateParam("placingID", AdsDto_.placingID, "string")
-        if (ceck_placingID != "") {
-            var timestamps_end = await this.utilsService.getDateTimeString();
-            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
-
-            await this.errorHandler.generateBadRequestException(
-                ceck_placingID,
-            );
-        }else{
-            AdsDto_.placingID = new mongoose.Types.ObjectId(AdsDto_.placingID.toString());
+        if (AdsDto_.typeAdsID.toString() == this.configService.get("ID_ADS_IN_CONTENT")) {
+            var ceck_placingID = await this.utilsService.validateParam("placingID", AdsDto_.placingID, "string")
+            if (ceck_placingID != "") {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+                await this.errorHandler.generateBadRequestException(
+                    ceck_placingID,
+                );
+            } else {
+                AdsDto_.placingID = new mongoose.Types.ObjectId(AdsDto_.placingID.toString());
+            }
         }
 
         //VALIDASI PARAM liveAt
@@ -444,10 +457,24 @@ export class AdsController {
             const minPembelianCredit = (getAdsType.CPV * AdsDto_.tayang) + (getAdsType.CPA * AdsDto_.tayang);
             if (minPembelianCredit != AdsDto_.credit) {
                 AdsDto_.status = "DRAFT";
-            }else{
-                if (AdsDto_.status == undefined) {
-                    AdsDto_.status = "UNDER_REVIEW";
-                }
+            } else {
+                AdsDto_.status = "DRAFT";
+                // if (AdsDto_.status == undefined) {
+                //     var dataBalance = await this.adsBalaceCreditService.findsaldoKredit(ubasic._id);
+                //     if (await this.utilsService.ceckData(dataBalance)){
+                //         if (dataBalance.length > 0) {
+                //             if (dataBalance[0].saldoKredit > AdsDto_.credit) {
+                //                 AdsDto_.status = "UNDER_REVIEW";
+                //             } else {
+                //                 AdsDto_.status = "DRAFT";
+                //             }
+                //         } else {
+                //             AdsDto_.status = "DRAFT";
+                //         }
+                //     }else{
+                //         AdsDto_.status = "DRAFT";
+                //     }
+                // }
             }
         }
 
@@ -486,7 +513,7 @@ export class AdsController {
             for (var i = 0; i < AdsDto_.interestID.length; i++) {
                 let interestID_Object = AdsDto_.interestID[i];
                 if (interestID_Object == "Lainnya") {
-                    Array_Demografis.push("LAINNYA");
+                    Array_Interest.push("LAINNYA");
                 } else {
                     let interestID_Object_Dbref = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(interestID_Object), "$db": "ProdAll" }
                     Array_Interest.push(interestID_Object_Dbref);
@@ -566,6 +593,12 @@ export class AdsController {
                 ceck_ctaButton,
             );
         }
+        
+        //VALIDASI PARAM status
+        var ceck_status = await this.utilsService.validateParam("status", AdsDto_.status, "string")
+        if (ceck_status != "") {
+            AdsDto_.status = "DRAFT";
+        }
 
         //VALIDASI PARAM idApsara
         // var ceck_idApsara = await this.utilsService.validateParam("idApsara", AdsDto_.idApsara, "string")
@@ -584,12 +617,22 @@ export class AdsController {
             await this.errorHandler.generateBadRequestException(
                 ceck_urlLink,
             );
+        }
+
+        //VALIDASI PARAM urlLink
+        var ceck_urlLink = await this.utilsService.validateParam("urlLink", AdsDto_.urlLink, "string")
+        if (ceck_urlLink != "") {
+            await this.errorHandler.generateBadRequestException(
+                ceck_urlLink,
+            );
         } 
 
         //--------------------GENERATE CAMPAIG ID--------------------
-        const coutAds = await this.adsService.count();
-        const generateCampaignID = await this.utilsService.generateCampaignID(coutAds+1, AdsDto_.typeAdsID.toString());
-        AdsDto_.campaignId = generateCampaignID;
+        // if (AdsDto_.status == "UNDER_REVIEW") {
+        //     const coutAds = await this.adsService.count();
+        //     const generateCampaignID = await this.utilsService.generateCampaignID(coutAds + 1, AdsDto_.typeAdsID.toString());
+        //     AdsDto_.campaignId = generateCampaignID;
+        // }
 
         try {
             const currentDate = await this.utilsService.getDateTimeISOString();
@@ -693,6 +736,13 @@ export class AdsController {
             );
         }
 
+        //--------------------GENERATE CAMPAIG ID--------------------
+        if (AdsDto_.status == "UNDER_REVIEW") {
+            const coutAds = await this.adsService.count();
+            const generateCampaignID = await this.utilsService.generateCampaignID(coutAds + 1, ads.typeAdsID.toString(), ads.adsObjectivitasId.toString());
+            AdsDto_.campaignId = generateCampaignID;
+        }
+
         if (AdsDto_.status == "UNDER_REVIEW" || AdsDto_.status == "IN_ACTIVE"){
             const AdsBalaceCreditDto_ = new AdsBalaceCreditDto();
             AdsBalaceCreditDto_._id = new mongoose.Types.ObjectId;
@@ -703,7 +753,7 @@ export class AdsController {
                 if ((ads.status == "DRAFT") && (AdsDto_.status == "UNDER_REVIEW")) {
                     //--------------------INSERT BALANCE DEBET--------------------
                     AdsBalaceCreditDto_.iduser = ads.userID;
-                    AdsBalaceCreditDto_.debet = AdsDto_.credit;
+                    AdsBalaceCreditDto_.debet = ads.credit;
                     AdsBalaceCreditDto_.kredit = 0;
                     AdsBalaceCreditDto_.type = "USE";
                     AdsBalaceCreditDto_.description = "ADS CREATION";
@@ -932,10 +982,12 @@ export class AdsController {
         }
 
         try {
-            let ads_campaign_dashboard = await this.adsService.campaignDashboard(body.userId,start_date, end_date);
+            let ads_campaign_dashboard = await this.adsService.campaignDashboard(body.userId, start_date, end_date);
+            let ads_status_campaign_dashboard = await this.adsService.getAdsSatus(body.userId, start_date, end_date);
             if (await this.utilsService.ceckData(ads_campaign_dashboard)){
                 if (ads_campaign_dashboard.length>0){
                     ads_campaign_dashboard = ads_campaign_dashboard[0];
+                    ads_campaign_dashboard.statusIklan = ads_status_campaign_dashboard[0].status;
                 }
             }
             for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {
@@ -1370,7 +1422,7 @@ export class AdsController {
         body.type_ads = array_type_ads;
 
         try {
-            const ads_dashboard = await this.adsService.list_reward(body.name, body.startdate, body.enddate, body.gender, body.age, body.areas, body.similarity, body.page, body.limit, body.sorting); 
+            const ads_dashboard = await this.adsService.list_reward(body.name, body.startdate, body.enddate, body.gender, body.age, body.areas, body.similarity, body.page, body.limit, body.sorting, body.adsId); 
 
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
@@ -1475,9 +1527,8 @@ export class AdsController {
             );
         }
         AdsLogsDto_.iduser = new mongoose.Types.ObjectId(data_userbasic._id.toString());
-
         const data_ads = await this.adsService.getAdsUser(headers['x-auth-user'], data_userbasic._id.toString(), id);
-        console.log("data_ads",data_ads);
+        console.log(data_ads);
         if (await this.utilsService.ceckData(data_ads)) {
             var ceckData = await this.userAdsService.findAdsIDUserID(data_userbasic._id.toString(), data_ads[0]._id.toString());
             if (!(await this.utilsService.ceckData(ceckData))) {
@@ -1523,10 +1574,8 @@ export class AdsController {
             data_response['adsDescription'] = data_ads[0].description;
             data_response['name'] = data_ads[0].description;
             if (await this.utilsService.ceckData(ceckData)) {
-                console.log("ada", ceckData._id.toString());
                 data_response['useradsId'] = ceckData._id.toString();
             } else {
-                console.log("tidak ada", genIdUserAds.toString());
                 data_response['useradsId'] = genIdUserAds.toString();
             }
             data_response['idUser'] = data_userbasic_ads._id.toString();
@@ -1552,7 +1601,6 @@ export class AdsController {
             data_response['videoId'] = data_ads[0].idApsara; 
             data_response['duration'] = data_ads[0].duration;
             data_response['mediaBasePath'] = data_ads[0].mediaBasePath;
-            data_response['username'] = data_ads[0].username;
             data_response['mediaUri'] = data_ads[0].mediaUri;
             data_response['mediaThumBasePath'] = data_ads[0].mediaThumBasePath;
             data_response['mediaThumUri'] = data_ads[0].mediaThumUri;
@@ -1561,8 +1609,6 @@ export class AdsController {
 
             AdsLogsDto_.responseAds = JSON.stringify(data_response);
             await this.adslogsService.create(AdsLogsDto_);
-            var timestamps_end = await this.utilsService.getDateTimeString();
-            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
             return {
                 "response_code": 202,
                 "data": data_response,
@@ -1573,6 +1619,8 @@ export class AdsController {
                 }
             };
         } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
             AdsLogsDto_.responseAds = JSON.stringify({ response: "Unabled to proceed Ads not found" });
             await this.adslogsService.create(AdsLogsDto_);
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -1580,7 +1628,7 @@ export class AdsController {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Ads not found'
             );
-        }
+        } 
     }
 
     @UseGuards(JwtAuthGuard)
