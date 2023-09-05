@@ -114,6 +114,7 @@ import { AdsObjectivitasModule } from './trans/adsv2/adsobjectivitas/adsobjectiv
 import { VoucherpromoModule } from './trans/adsv2/voucherpromo/voucherpromo.module';
 import { BannerModule } from './trans/banner/banner.module';
 import { MediastikerModule } from './content/mediastiker/mediastiker.module';
+import { StickerCategoryModule } from './trans/stickercategory/stickercategory.module';
 @Module({
   imports: [
     BannerModule,
@@ -251,6 +252,7 @@ import { MediastikerModule } from './content/mediastiker/mediastiker.module';
     Settings2Module,
     JenischallengeModule,
     BadgeModule,
+    StickerCategoryModule,
     //  ChallengeModule
   ], providers: [],
 })

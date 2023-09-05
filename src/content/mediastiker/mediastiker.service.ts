@@ -67,6 +67,14 @@ export class MediastikerService {
         return data;
     }
 
-
+    async updatedatabasedonkategori(targetcat: string, changecat: string){
+        let data = await this.MediastikerModel.updateMany({ kategori: targetcat, isDelete:false },
+            {
+                $set: {
+                    "kategori": changecat
+                }
+            });
+        return data;
+    }
 
 }
