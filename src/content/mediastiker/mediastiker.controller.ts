@@ -34,8 +34,12 @@ export class MediastikerController {
         var kategori = null;
         var status = null;
         var datastiker = null;
-        var targetindex = null;
-
+        var dataurut = null;
+        var dataurutold = null;
+        var type = null;
+        var insertdata = new Mediastiker();
+        var nourut = null;
+        var dataurutoldganti = null;
         if (request_json["name"] !== undefined) {
             name = request_json["name"];
         } else {
@@ -52,11 +56,16 @@ export class MediastikerController {
         } else {
             throw new BadRequestException("status required");
         }
-
-        if (request_json["targetindex"] !== undefined) {
-            targetindex = request_json["targetindex"];
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
         } else {
-            throw new BadRequestException("targetindex required");
+            throw new BadRequestException("type required");
+        }
+
+        if (request_json["nourut"] !== undefined) {
+            nourut = request_json["nourut"];
+        } else {
+            throw new BadRequestException("nourut required");
         }
 
         if (files.image == undefined) {
@@ -71,12 +80,11 @@ export class MediastikerController {
 
         }
 
-        var listdatastiker = await this.MediastikerService.findByKategori(kategori);
-        var panjangdata = listdatastiker.length + 1;
-        if(parseInt(targetindex) <= 0 || parseInt(targetindex) > panjangdata)
-        {
-            throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
-        }
+        // var listdatastiker = await this.MediastikerService.findByKategori(kategori);
+        // var panjangdata = listdatastiker.length + 1;
+        // if (parseInt(targetindex) <= 0 || parseInt(targetindex) > panjangdata) {
+        //     throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+        // }
 
 
         var dt = new Date(Date.now());
@@ -102,8 +110,9 @@ export class MediastikerController {
         insertdata.isDelete = false;
         insertdata.status = status;
         insertdata.kategori = kategori;
-        insertdata.index = parseInt(targetindex);
+        insertdata.index = parseInt(nourut);
         insertdata.used = 0;
+        insertdata.type = type;
         var insertMediastiker = files.image[0];
         var path = "images/mediastiker/" + insertdata._id + "_mediastiker" + "." + "jpeg";
         var result = await this.osservices.uploadFile(insertMediastiker, path);
@@ -118,12 +127,44 @@ export class MediastikerController {
             "info": ["Todo is not found!"],
         };
 
+
+
+        try {
+            dataurutoldganti = await this.MediastikerService.findByIndex(parseInt(nourut), type);
+
+        } catch (e) {
+            dataurutoldganti = null;
+
+        }
+        if (dataurutoldganti !== null) {
+            var indexoldganti = dataurutoldganti.index;
+            var idganti = dataurutoldganti._id.toString();
+        }
+
+
+        try {
+            dataurut = await this.MediastikerService.findByNourut(parseInt(nourut), type);
+
+        } catch (e) {
+            dataurut = null;
+
+        }
+        if (dataurut !== undefined && dataurut.length > 0) {
+            for (let i = 0; i < dataurut.length; i++) {
+                let id = dataurut[i]._id.toString();
+                let urut = parseInt(dataurut[i].index) + 1;
+                await this.MediastikerService.updateIndex(id, urut, timedate);
+            }
+
+        }
+
+
+
         try {
             await this.MediastikerService.create(insertdata);
-            if(panjangdata > 1 && (panjangdata != targetindex))
-            {
-                this.sortingindex(insertdata, panjangdata, targetindex);
-            }
+            // if (panjangdata > 1 && (panjangdata != targetindex)) {
+            //     this.sortingindex(insertdata, panjangdata, targetindex);
+            // }
             return res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": insertdata,
@@ -154,8 +195,12 @@ export class MediastikerController {
         var kategori = null;
         var status = null;
         var datastiker = null;
+        var dataurut = null;
+        var dataurutold = null;
         var insertdata = new Mediastiker();
-        var targetindex = null;
+        var nourut = null;
+        var dataurutoldganti = null;
+        var type = null;
         if (request_json["id"] !== undefined) {
             id = request_json["id"];
         } else {
@@ -183,21 +228,19 @@ export class MediastikerController {
             kategori = request_json["kategori"];
         }
 
-        if (request_json["targetindex"] !== undefined) {
-            targetindex = request_json["targetindex"];
+        if (request_json["nourut"] !== undefined) {
+            nourut = request_json["nourut"];
         } else {
-            throw new BadRequestException("targetindex required");
+            throw new BadRequestException("nourut required");
         }
 
         if (request_json["status"] !== undefined) {
             status = request_json["status"];
         }
-
-        var listdatastiker = await this.MediastikerService.findByKategori(kategori);
-        var panjangdata = listdatastiker.length;
-        if(parseInt(targetindex) <= 0 || parseInt(targetindex) > panjangdata)
-        {
-            throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            throw new BadRequestException("type required");
         }
 
         var dt = new Date(Date.now());
@@ -211,8 +254,8 @@ export class MediastikerController {
         insertdata.updatedAt = timedate;
         insertdata.status = status;
         insertdata.kategori = kategori;
-        insertdata.index = targetindex;
-
+        insertdata.index = parseInt(nourut);
+        insertdata.type = type;
 
         if (files.image !== undefined) {
             var insertMediastiker = files.image[0];
@@ -232,14 +275,65 @@ export class MediastikerController {
         };
 
         try {
-            if(panjangdata > 1)
-            {
-                var olddata = await this.MediastikerService.findOne(id);
-                var currentindex = olddata.index;
-                var mongo = require('mongoose');
-                insertdata._id = mongo.Types.ObjectId(id);
-                this.sortingindex(insertdata, currentindex, targetindex);
+            dataurutold = await this.MediastikerService.findOne(id);
+
+        } catch (e) {
+            dataurutold = null;
+
+        }
+
+        try {
+            dataurutoldganti = await this.MediastikerService.findByIndex(parseInt(nourut), type);
+
+        } catch (e) {
+            dataurutoldganti = null;
+
+        }
+        if (dataurutoldganti !== null) {
+            var indexoldganti = dataurutoldganti.index;
+            var idganti = dataurutoldganti._id.toString();
+        }
+        if (dataurutold !== null) {
+            var indexold = dataurutold.index;
+        }
+
+        if (indexold < indexoldganti) {
+            try {
+                dataurut = await this.MediastikerService.findByNourutLebihkecil(parseInt(indexold), parseInt(indexoldganti), type);
+
+            } catch (e) {
+                dataurut = null;
+
             }
+            if (dataurut !== undefined && dataurut.length > 0) {
+                for (let i = 0; i < dataurut.length; i++) {
+                    let id = dataurut[i]._id.toString();
+                    let urut = parseInt(dataurut[i].index) - 1;
+                    await this.MediastikerService.updateIndex(id, urut, timedate);
+                }
+
+            }
+        } else if (indexold > indexoldganti) {
+            try {
+                dataurut = await this.MediastikerService.findByNourutLebihbesar(parseInt(indexold), parseInt(indexoldganti), type);
+
+            } catch (e) {
+                dataurut = null;
+
+            }
+            if (dataurut !== undefined && dataurut.length > 0) {
+                for (let i = 0; i < dataurut.length; i++) {
+                    let id = dataurut[i]._id.toString();
+                    let urut = parseInt(dataurut[i].index) + 1;
+                    await this.MediastikerService.updateIndex(id, urut, timedate);
+                }
+
+            }
+        }
+
+
+        try {
+
             await this.MediastikerService.update(id, insertdata);
             return res.status(HttpStatus.OK).json({
                 response_code: 202,
@@ -256,8 +350,7 @@ export class MediastikerController {
 
     @UseGuards(JwtAuthGuard)
     @Put('/index/update')
-    async updateindex(@Req() request)
-    {
+    async updateindex(@Req() request) {
         var id = null;
         var targetindex = null;
 
@@ -277,8 +370,7 @@ export class MediastikerController {
         var olddata = await this.MediastikerService.findOne(id);
         var listdatastiker = await this.MediastikerService.findByKategori(olddata.kategori);
         var panjangdata = listdatastiker.length;
-        if(parseInt(targetindex) <= 0 || parseInt(targetindex) > panjangdata)
-        {
+        if (parseInt(targetindex) <= 0 || parseInt(targetindex) > panjangdata) {
             throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
         }
 
@@ -286,8 +378,7 @@ export class MediastikerController {
         insertdata.index = targetindex;
         insertdata.updatedAt = await this.utilsService.getDateTimeString();
 
-        if(panjangdata > 1)
-        {
+        if (panjangdata > 1) {
             var currentindex = olddata.index;
             var mongo = require('mongoose');
             insertdata._id = mongo.Types.ObjectId(id);
@@ -300,8 +391,8 @@ export class MediastikerController {
         };
 
         return {
-            response_code : 202,
-            message:messages
+            response_code: 202,
+            message: messages
         }
     }
 
@@ -324,42 +415,35 @@ export class MediastikerController {
 
     }
 
-    async sortingindex(insertdata, currentindex, targetindex)
-    {
+    async sortingindex(insertdata, currentindex, targetindex) {
         var data = await this.MediastikerService.findByKategori(insertdata.kategori);
 
         var operasi = null;
         var start = null;
         var end = null;
-        if(currentindex > targetindex)
-        {
+        if (currentindex > targetindex) {
             operasi = "tambah";
             start = targetindex - 1;
             end = currentindex;
         }
-        else if(currentindex < targetindex)
-        {
+        else if (currentindex < targetindex) {
             operasi = "kurang";
             start = currentindex - 1;
             end = targetindex;
         }
 
         // var listdata = [];
-        
+
         var timenow = await this.utilsService.getDateTimeString();
-        for(var i = start; i < end; i++)
-        {
+        for (var i = start; i < end; i++) {
             var convertsdata = data[i]._id;
             var converttdata = insertdata._id;
-            if(convertsdata.toString() != converttdata.toString())
-            {
+            if (convertsdata.toString() != converttdata.toString()) {
                 var tempdata = null;
-                if(operasi == "tambah")
-                {
+                if (operasi == "tambah") {
                     tempdata = data[i].index + 1;
                 }
-                else
-                {
+                else {
                     tempdata = data[i].index - 1;
                 }
 

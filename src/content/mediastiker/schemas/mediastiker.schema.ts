@@ -24,5 +24,7 @@ export class Mediastiker {
     isDelete: boolean;
     @Prop()
     index: number;
+    @Prop()
+    type: string;
 }
 export const MediastikerSchema = SchemaFactory.createForClass(Mediastiker)

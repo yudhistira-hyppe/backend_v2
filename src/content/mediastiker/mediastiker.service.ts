@@ -23,26 +23,29 @@ export class MediastikerService {
     async findByname(name: string): Promise<Mediastiker> {
         return this.MediastikerModel.findOne({ name: name }).exec();
     }
+    async findByIndex(index: number, type: string): Promise<Mediastiker> {
+        return this.MediastikerModel.findOne({ index: index, type: type }).exec();
+    }
     async findByKategori(target: string): Promise<Mediastiker[]> {
         return this.MediastikerModel.aggregate([
-            { 
+            {
                 "$match":
                 {
                     "$and":
-                    [
-                        {
-                            kategori: target
-                        },
-                        {
-                            isDelete:false
-                        }
-                    ]
-                } 
+                        [
+                            {
+                                kategori: target
+                            },
+                            {
+                                isDelete: false
+                            }
+                        ]
+                }
             },
             {
                 "$sort":
                 {
-                    index:1
+                    index: 1
                 }
             }
         ]);
@@ -91,13 +94,64 @@ export class MediastikerService {
         return data;
     }
 
-    async updatedatabasedonkategori(targetcat: string, changecat: string){
-        let data = await this.MediastikerModel.updateMany({ kategori: targetcat, isDelete:false },
+
+    async updatedatabasedonkategori(targetcat: string, changecat: string) {
+        let data = await this.MediastikerModel.updateMany({ kategori: targetcat, isDelete: false },
             {
                 $set: {
                     "kategori": changecat
                 }
             });
+        return data;
+    }
+    async findByNourut(nourut: number, type: string) {
+        var query = this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    'index': { $gte: nourut }, 'type': type
+                }
+            },
+            {
+                $sort: { 'index': 1 }
+            }
+        ]);
+        return query;
+    }
+    async findByNourutLebihkecil(nourutStart: number, nourutEnd: number, type: string) {
+        var query = this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    'index': { $gte: nourutStart, $lte: nourutEnd }, 'type': type
+                }
+            },
+            {
+                $sort: { 'index': -1 }
+            }
+
+        ]);
+        return query;
+    }
+    async findByNourutLebihbesar(nourutStart: number, nourutEnd: number, type: string) {
+        var query = this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    'index': { $lte: nourutStart, $gte: nourutEnd }, 'type': type
+
+                }
+            },
+            {
+                $sort: { 'index': 1 }
+            }
+
+        ]);
+        return query;
+    }
+    async updateIndex(id: string, index: number, updatedAt: string) {
+        let data = await this.MediastikerModel.updateOne({ "_id": new Types.ObjectId(id) },
+            { $set: { "index": index, "updatedAt": updatedAt, } });
         return data;
     }
 
