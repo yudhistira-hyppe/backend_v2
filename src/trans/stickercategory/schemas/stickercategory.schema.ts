@@ -12,6 +12,9 @@ export class stickerCategory {
 
     @Prop()
     icon: String
+    
+    @Prop()
+    type: String
 
     @Prop()
     active: Boolean

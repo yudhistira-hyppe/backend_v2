@@ -421,6 +421,138 @@ export class MediastikerController {
 
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get('/trend')
+    async stickertrend()
+    {
+        var data = await this.MediastikerService.trend();
+
+        var response = {
+            "response_code": 202,
+            "data":data,
+            "messages": {
+                info: ['Successfuly'],
+            },
+        }
+        return response;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('listing')
+    async listinggeneral(@Req() request)
+    {
+        var nama = null;
+        var tipesticker = null;
+        var startdate = null;
+        var enddate = null;
+        var kategori = null;
+        var startused = null;
+        var endused = null;
+        var liststatus = null;
+        
+        var sorting = null;
+        var page = null;
+        var limit = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if(request_json['sorting'] == null && request_json['sorting'] == undefined)
+        {
+            throw new BadRequestException("Unabled to proceed, sorting field is required")
+        }
+
+        if(request_json['page'] == null && request_json['page'] == undefined)
+        {
+            throw new BadRequestException("Unabled to proceed, page field is required")
+        }
+
+        if(request_json['limit'] == null && request_json['limit'] == undefined)
+        {
+            throw new BadRequestException("Unabled to proceed, limit field is required")
+        }
+        
+        if(request_json['tipesticker'] == null && request_json['tipesticker'] == undefined)
+        {
+            throw new BadRequestException("Unabled to proceed, tipesticker field is required")
+        }
+        
+        tipesticker = request_json['tipesticker'];
+        sorting = request_json['sorting'];
+        page = request_json['page'];
+        limit = request_json['limit'];
+
+        if(request_json['nama'] != null && request_json['nama'] != undefined)
+        {
+            nama = request_json['nama'];
+        }
+
+
+        if(request_json['kategori'] != null && request_json['kategori'] != undefined)
+        {
+            kategori = request_json['kategori'];
+        }
+
+        if(request_json['liststatus'] != null && request_json['liststatus'] != undefined)
+        {
+            liststatus = request_json['liststatus'];
+        }
+
+        if(request_json['startused'] != null && request_json['startused'] != undefined && request_json['endused'] != null && request_json['endused'] != undefined)
+        {
+            endused = request_json['endused'];
+            startused = request_json['startused'];
+        }
+
+        if(request_json['startdate'] != null && request_json['startdate'] != undefined && request_json['enddate'] != null && request_json['enddate'] != undefined)
+        {
+            enddate = request_json['enddate'];
+            startdate = request_json['startdate'];
+        }
+
+        var data = await this.MediastikerService.listing(nama, tipesticker, startdate, enddate, startused, endused, kategori, liststatus, sorting, page, limit);
+        var panjangdata = await this.MediastikerService.listing(nama, tipesticker, startdate, enddate, startused, endused, kategori, liststatus, null, null, null);
+        var resultdata = panjangdata.length;
+        
+        var response = {
+            "response_code": 202,
+            "data":data,
+            "totaldata":resultdata,
+            "messages": {
+                info: ['Successfuly'],
+            },
+        }
+        return response;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('update/status')
+    async updatestatusTayang(@Request() req) {
+        var request_json = JSON.parse(JSON.stringify(req.body));
+        if (request_json['id'] == null || request_json['id'] == undefined) {
+            throw new BadRequestException("Unabled to proceed, id field required");
+        }
+
+        if (request_json['status'] == null || request_json['status'] == undefined) {
+            throw new BadRequestException("Unabled to proceed, status field required");
+        }
+
+        var id = request_json['id'];
+        var status = request_json['status'];
+
+        var updatedata = new Mediastiker();
+        updatedata.status = status;
+
+        await this.MediastikerService.update(id, updatedata);
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        return {
+            response_code: 202,
+            messages: messages,
+        };
+    }
+
     async sortingindex(insertdata, currentindex, targetindex) {
         var data = await this.MediastikerService.findByKategori(insertdata.kategori);
 

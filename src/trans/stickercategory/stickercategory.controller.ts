@@ -33,8 +33,13 @@ export class StickerCategoryController {
     {   
         throw new BadRequestException("Unabled to proceed, name field is required");
     }
+    var tipesticker = request_json['tipesticker'];
+    if(tipesticker == undefined || tipesticker == null)
+    {   
+        throw new BadRequestException("Unabled to proceed, tipesticker field is required");
+    }
 
-    var checkdata = await this.stickerCategoryService.findOne(name, "name");
+    var checkdata = await this.stickerCategoryService.findOne(name, tipesticker, "name");
     if(checkdata != null)
     {
         throw new NotAcceptableException("cannot create data, data still exist on database");   
@@ -45,6 +50,7 @@ export class StickerCategoryController {
     var tempid = new mongo.Types.ObjectId();
     insertdata._id = tempid;
     insertdata.name = name;
+    insertdata.type = tipesticker;
     insertdata.active = true;
     insertdata.createdAt = await this.utilService.getDateTimeString();
     insertdata.updatedAt = await this.utilService.getDateTimeString();
@@ -88,19 +94,29 @@ export class StickerCategoryController {
   async findAll(@Req() request) {
     var page = null;
     var limit = null;
-
+    var tipesticker = null;
+    
     var request_json = JSON.parse(JSON.stringify(request.body));
-    if(request_json['page'] != undefined && request_json['page'] != null)
+    if(request_json['tipesticker'] == undefined && request_json['tipesticker'] == null)
     {
-        page = request_json['page'];
+      throw new BadRequestException("Unabled to proceed, tipesticker field is required");
     }
-
-    if(request_json['limit'] != undefined && request_json['limit'] != null)
+    
+    if(request_json['page'] == undefined && request_json['page'] == null)
     {
-        limit = request_json['limit'];
+      throw new BadRequestException("Unabled to proceed, page field is required");
     }
+    
+    if(request_json['limit'] == undefined && request_json['limit'] == null)
+    {
+      throw new BadRequestException("Unabled to proceed, limit field is required");
+    }
+    
+    tipesticker = request_json['tipesticker'];
+    page = request_json['page'];
+    limit = request_json['limit'];
 
-    var data = await this.stickerCategoryService.findAll(page, limit);
+    var data = await this.stickerCategoryService.findAll(tipesticker, page, limit);
 
     const messages = {
       "info": ["The process successful"],
@@ -113,9 +129,9 @@ export class StickerCategoryController {
     }
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.stickerCategoryService.findOne(id, "id");
+  @Get(':id/:tipestiker')
+  findOne(@Param('id') id: string, @Param('tipestiker') tipesticker:string) {
+    return this.stickerCategoryService.findOne(id, tipesticker, "id");
   }
 
   @UseGuards(JwtAuthGuard)
@@ -124,6 +140,7 @@ export class StickerCategoryController {
       var id = null;
       var name = null;
       var updatechild = false;
+      var tipesticker = null;
 
       var request_json = JSON.parse(JSON.stringify(request.body));
       if(request_json['id'] == undefined && request_json['id'] == null)
@@ -136,10 +153,16 @@ export class StickerCategoryController {
           throw new BadRequestException("Unable to proceed. name field is required");
       }
 
+      if(request_json['tipesticker'] == undefined && request_json['tipesticker'] == null)
+      {   
+          throw new BadRequestException("Unabled to proceed, tipesticker field is required");
+      }
+      
       id = request_json['id'];
       name = request_json['name'];
+      tipesticker = request_json['tipesticker'];
 
-      var checkdata = await this.stickerCategoryService.findOne(name, "name");
+      var checkdata = await this.stickerCategoryService.findOne(name, tipesticker, "name");
 
       if(checkdata != null)
       {
@@ -162,6 +185,7 @@ export class StickerCategoryController {
 
       var updateStickerCategory = new CreateStickerCategoryDto();
       updateStickerCategory.name = name;
+      updateStickerCategory.type = tipesticker;
       
       await this.stickerCategoryService.update(id, updateStickerCategory, updatechild); 
 

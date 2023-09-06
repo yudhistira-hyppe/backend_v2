@@ -18,13 +18,21 @@ export class StickerCategoryService {
     return data;
   }
 
-  async findAll(page: number, limit: number) {
+  async findAll(tipesticker:string, page: number, limit: number) {
     var pipeline = [];
     pipeline.push(
         {
             "$match":
             {
-                active:true
+                "$and":
+                [
+                    {
+                        type:tipesticker
+                    },
+                    {
+                        active:true
+                    }
+                ]
             }
         },
         {
@@ -51,8 +59,17 @@ export class StickerCategoryService {
     return data;
   }
 
-  async findOne(id: string, target: string) {
+  async findOne(id: string, tipe:string, target: string) {
     var pipeline = [];
+
+    pipeline.push(
+        {
+            "$match":
+            {
+                type:tipe
+            }
+        }
+    )
 
     if(target == "id")
     {
@@ -84,7 +101,8 @@ export class StickerCategoryService {
           as:"stiker_data",
           let:
           {
-              fk_id:"$name"
+              fk_id:"$name",
+              fk_type:"$type"
           },
           pipeline:
           [
@@ -93,6 +111,9 @@ export class StickerCategoryService {
                 {
                     "$and":
                     [
+                        {
+                            "type":"$$fk_type"
+                        },
                         {
                             "$expr":
                             {
@@ -131,9 +152,10 @@ export class StickerCategoryService {
 
     if(updatechild == true)
     {
-      var convert = updateStickerCategoryDto.name;
-        var olddata = await this.findOne(convert.toString(), "name");
-        await this.mstikService.updatedatabasedonkategori(olddata.name, convert.toString());
+        var convert = updateStickerCategoryDto.name;
+        var converttipe = updateStickerCategoryDto.type;
+        var olddata = await this.findOne(convert.toString(), converttipe.toString(), "name");
+        await this.mstikService.updatedatabasedonkategori(olddata.name, convert.toString(), converttipe.toString());
     }
     return data;
   }
