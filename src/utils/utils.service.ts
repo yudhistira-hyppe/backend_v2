@@ -35,8 +35,10 @@ import { DeepArService } from '../trans/deepar/deepar.service';
 import { UserscoresService } from '../trans/userscores/userscores.service';
 import { UserscoresDto } from 'src/trans/userscores/dto/create-userscores.dto';
 
-import mongoose, { Types } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
+import { SettingsDocument, SettingsMixed } from 'src/trans/settings2/schemas/settings2.schema';
+import { InjectModel } from '@nestjs/mongoose';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -51,6 +53,8 @@ export class UtilsService {
   private readonly logger = new Logger(UtilsService.name);
 
   constructor(
+    @InjectModel(SettingsMixed.name, 'SERVER_FULL')
+    private readonly settingMixes: Model<SettingsDocument>,
     private userauthsService: UserauthsService,
     private jwtrefreshtokenService: JwtrefreshtokenService,
     private jwtService: JwtService,
@@ -129,6 +133,10 @@ export class UtilsService {
   public getRatio(width: number, height: number) {
     var ratio = width / height;
     return ratio;
+  }
+
+  async getSettingMixed(id: mongoose.Types.ObjectId): Promise<SettingsMixed> {
+    return this.settingMixes.findOne({ _id: id }).exec();
   }
 
   async getHeight(width: number, height: number, new_width: number) {
@@ -1740,7 +1748,29 @@ export class UtilsService {
             ProfileDTO_.statusKyc = "unverified";
           }
         }
-      }
+        if (get_userbasic.tutor != undefined) {
+          const SETTING_TUTOR = this.configService.get("SETTING_TUTOR");
+          const getSettingTutor = await this.getSettingMixed(SETTING_TUTOR);
+          if (await this.ceckData(getSettingTutor)) {
+            if (Array.isArray(getSettingTutor.value) && Array.isArray(get_userbasic.tutor)) {
+              if (getSettingTutor.value.length == get_userbasic.tutor.length) {
+                let arrayTutor = get_userbasic.tutor;
+                let arraySetting = getSettingTutor.value;
+                var data_ = await Promise.all(arrayTutor.map(async (item, index) => {
+                  console.log();
+                  return {
+                    "key": item.key,
+                    "textID": arraySetting[index].textID,
+                    "textEn": arraySetting[index].textEn,
+                    "status": item.status,
+                  }
+                }));
+                ProfileDTO_.tutor = data_;
+              }
+            }
+          }
+        }
+      } 
     }
     return ProfileDTO_;
   }

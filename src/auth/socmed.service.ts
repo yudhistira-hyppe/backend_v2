@@ -37,6 +37,7 @@ import { CreateGetcontenteventsDto } from '../trans/getusercontents/getcontentev
 import { CreateUserbasicnewDto } from '../trans/newuserbasic/dto/create-userbasicnew.dto';
 import { PostsService } from '../content/posts/posts.service';
 import { AuthService } from './auth.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SocmedService {
@@ -66,6 +67,7 @@ export class SocmedService {
     private adsUserCompareService: AdsUserCompareService,
     private contenteventsService: ContenteventsService,
     private postsService: PostsService,
+    private readonly configService: ConfigService,
   ) { }
 
   async signupsosmed(req: any) {
@@ -1433,6 +1435,29 @@ export class SocmedService {
         }
 
         var vesion = await this.utilsService.getversion();
+        let arrayTutor = [];
+        if (datauserbasicsService.tutor != undefined) {
+          const SETTING_TUTOR = this.configService.get("SETTING_TUTOR");
+          const getSettingTutor = await this.utilsService.getSettingMixed(SETTING_TUTOR);
+          if (await this.utilsService.ceckData(getSettingTutor)) {
+            if (Array.isArray(getSettingTutor.value) && Array.isArray(datauserbasicsService.tutor)) {
+              if (getSettingTutor.value.length == datauserbasicsService.tutor.length) {
+                arrayTutor = datauserbasicsService.tutor;
+                let arraySetting = getSettingTutor.value;
+                var data_ii = await Promise.all(arrayTutor.map(async (item, index) => {
+                  console.log();
+                  return {
+                    "key": item.key,
+                    "textID": arraySetting[index].textID,
+                    "textEn": arraySetting[index].textEn,
+                    "status": item.status,
+                  }
+                }));
+                arrayTutor = data_ii;
+              }
+            }
+          }
+        }
         return {
           response_code: 202,
           data: {
