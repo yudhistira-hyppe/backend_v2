@@ -45,11 +45,7 @@ export class MediastikerController {
         } else {
             throw new BadRequestException("name required");
         }
-        if (request_json["kategori"] !== undefined) {
-            kategori = request_json["kategori"];
-        } else {
-            throw new BadRequestException("kategori required");
-        }
+
 
         if (request_json["status"] !== undefined) {
             status = request_json["status"];
@@ -71,7 +67,17 @@ export class MediastikerController {
         if (files.image == undefined) {
             throw new BadRequestException("image required");
         }
+        if (request_json["kategori"] !== undefined) {
 
+            kategori = request_json["kategori"];
+        } else {
+            if (type !== "GIF") {
+                throw new BadRequestException("kategori required");
+            } else {
+
+            }
+
+        }
         try {
             datastiker = await this.MediastikerService.findByname(name);
 
