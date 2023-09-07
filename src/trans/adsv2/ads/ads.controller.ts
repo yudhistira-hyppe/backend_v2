@@ -1167,6 +1167,7 @@ export class AdsController {
     @HttpCode(HttpStatus.ACCEPTED)
     async getAds(@Param('id') id: string, @Headers() headers) {
         var current_date = await this.utilsService.getDateTimeString();
+        var dataPlace = null;
         var genIdUserAds = new mongoose.Types.ObjectId();
         var AdsLogsDto_ = new AdsLogsDto();
         var logRequest = {
@@ -1290,13 +1291,15 @@ export class AdsController {
             }
             try {
                 data_response['placingID'] = data_ads[0].placingID.toString();
+                dataPlace = await this.adsplacesService.findOne(data_ads[0].placingID.toString());
+                if (await this.utilsService.ceckData(dataPlace)) {
+                    data_response['adsPlace'] = dataPlace.namePlace;
+                }
             } catch (e) {
                 data_response['placingID'] = null;
+                data_response['adsPlace'] = null;
             }
-            var dataPlace = await this.adsplacesService.findOne(data_ads[0].placingID.toString());
-            if (await this.utilsService.ceckData(dataPlace)) {
-                data_response['adsPlace'] = dataPlace.namePlace;
-            }
+
             data_response['adsType'] = (await this.adsTypeService.findOne(data_ads[0].typeAdsID.toString())).nameType;
             data_response['adsSkip'] = (data_ads[0].skipTime != undefined) ? data_ads[0].skipTime : (await this.adsTypeService.findOne(data_ads[0].typeAdsID.toString())).AdsSkip;
             data_response['mediaType'] = data_ads[0].type;
