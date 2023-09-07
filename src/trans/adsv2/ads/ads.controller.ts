@@ -1288,7 +1288,11 @@ export class AdsController {
                     mediaEndpoint: (get_profilePict.mediaID != undefined) ? '/profilepict/' + get_profilePict.mediaID : null,
                 }
             }
-            data_response['placingID'] = data_ads[0].placingID.toString();
+            try {
+                data_response['placingID'] = data_ads[0].placingID.toString();
+            } catch (e) {
+                data_response['placingID'] = null;
+            }
             var dataPlace = await this.adsplacesService.findOne(data_ads[0].placingID.toString());
             if (await this.utilsService.ceckData(dataPlace)) {
                 data_response['adsPlace'] = dataPlace.namePlace;
