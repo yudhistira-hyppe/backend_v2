@@ -135,17 +135,17 @@ export class MediastikerController {
 
 
 
-        try {
-            dataurutoldganti = await this.MediastikerService.findByIndex(parseInt(nourut), type);
+        // try {
+        //     dataurutoldganti = await this.MediastikerService.findByIndex(parseInt(nourut), type);
 
-        } catch (e) {
-            dataurutoldganti = null;
+        // } catch (e) {
+        //     dataurutoldganti = null;
 
-        }
-        if (dataurutoldganti !== null) {
-            var indexoldganti = dataurutoldganti.index;
-            var idganti = dataurutoldganti._id.toString();
-        }
+        // }
+        // if (dataurutoldganti !== null) {
+        //     var indexoldganti = dataurutoldganti.index;
+        //     var idganti = dataurutoldganti._id.toString();
+        // }
 
 
         try {
@@ -423,13 +423,12 @@ export class MediastikerController {
 
     @UseGuards(JwtAuthGuard)
     @Get('/trend')
-    async stickertrend()
-    {
+    async stickertrend() {
         var data = await this.MediastikerService.trend();
 
         var response = {
             "response_code": 202,
-            "data":data,
+            "data": data,
             "messages": {
                 info: ['Successfuly'],
             },
@@ -439,8 +438,7 @@ export class MediastikerController {
 
     @UseGuards(JwtAuthGuard)
     @Post('listing')
-    async listinggeneral(@Req() request)
-    {
+    async listinggeneral(@Req() request) {
         var nama = null;
         var tipesticker = null;
         var startdate = null;
@@ -449,61 +447,52 @@ export class MediastikerController {
         var startused = null;
         var endused = null;
         var liststatus = null;
-        
+
         var sorting = null;
         var page = null;
         var limit = null;
 
         var request_json = JSON.parse(JSON.stringify(request.body));
-        if(request_json['sorting'] == null && request_json['sorting'] == undefined)
-        {
+        if (request_json['sorting'] == null && request_json['sorting'] == undefined) {
             throw new BadRequestException("Unabled to proceed, sorting field is required")
         }
 
-        if(request_json['page'] == null && request_json['page'] == undefined)
-        {
+        if (request_json['page'] == null && request_json['page'] == undefined) {
             throw new BadRequestException("Unabled to proceed, page field is required")
         }
 
-        if(request_json['limit'] == null && request_json['limit'] == undefined)
-        {
+        if (request_json['limit'] == null && request_json['limit'] == undefined) {
             throw new BadRequestException("Unabled to proceed, limit field is required")
         }
-        
-        if(request_json['tipesticker'] == null && request_json['tipesticker'] == undefined)
-        {
+
+        if (request_json['tipesticker'] == null && request_json['tipesticker'] == undefined) {
             throw new BadRequestException("Unabled to proceed, tipesticker field is required")
         }
-        
+
         tipesticker = request_json['tipesticker'];
         sorting = request_json['sorting'];
         page = request_json['page'];
         limit = request_json['limit'];
 
-        if(request_json['nama'] != null && request_json['nama'] != undefined)
-        {
+        if (request_json['nama'] != null && request_json['nama'] != undefined) {
             nama = request_json['nama'];
         }
 
 
-        if(request_json['kategori'] != null && request_json['kategori'] != undefined)
-        {
+        if (request_json['kategori'] != null && request_json['kategori'] != undefined) {
             kategori = request_json['kategori'];
         }
 
-        if(request_json['liststatus'] != null && request_json['liststatus'] != undefined)
-        {
+        if (request_json['liststatus'] != null && request_json['liststatus'] != undefined) {
             liststatus = request_json['liststatus'];
         }
 
-        if(request_json['startused'] != null && request_json['startused'] != undefined && request_json['endused'] != null && request_json['endused'] != undefined)
-        {
+        if (request_json['startused'] != null && request_json['startused'] != undefined && request_json['endused'] != null && request_json['endused'] != undefined) {
             endused = request_json['endused'];
             startused = request_json['startused'];
         }
 
-        if(request_json['startdate'] != null && request_json['startdate'] != undefined && request_json['enddate'] != null && request_json['enddate'] != undefined)
-        {
+        if (request_json['startdate'] != null && request_json['startdate'] != undefined && request_json['enddate'] != null && request_json['enddate'] != undefined) {
             enddate = request_json['enddate'];
             startdate = request_json['startdate'];
         }
@@ -511,11 +500,11 @@ export class MediastikerController {
         var data = await this.MediastikerService.listing(nama, tipesticker, startdate, enddate, startused, endused, kategori, liststatus, sorting, page, limit);
         var panjangdata = await this.MediastikerService.listing(nama, tipesticker, startdate, enddate, startused, endused, kategori, liststatus, null, null, null);
         var resultdata = panjangdata.length;
-        
+
         var response = {
             "response_code": 202,
-            "data":data,
-            "totaldata":resultdata,
+            "data": data,
+            "totaldata": resultdata,
             "messages": {
                 info: ['Successfuly'],
             },

@@ -36,14 +36,14 @@ export class AdsController {
         private readonly utilsService: UtilsService,
         private readonly errorHandler: ErrorHandler,
         private readonly userbasicsService: UserbasicsService,
-        private readonly adssettingService: AdssettingService, 
+        private readonly adssettingService: AdssettingService,
         private readonly adsTypeService: AdsTypeService,
-        private readonly configService: ConfigService, 
+        private readonly configService: ConfigService,
         private readonly userAdsService: UserAdsService,
-        private readonly postContentService: PostContentService, 
+        private readonly postContentService: PostContentService,
         private adsplacesService: AdsplacesService,
         private mediaprofilepictsService: MediaprofilepictsService,
-        private readonly ossContentPictService: OssContentPictService, 
+        private readonly ossContentPictService: OssContentPictService,
         private readonly adslogsService: AdslogsService,
         private accountbalancesService: AccountbalancesService,
         private adsBalaceCreditService: AdsBalaceCreditService,
@@ -149,14 +149,14 @@ export class AdsController {
 
             return await this.errorHandler.generateAcceptResponseCodeWithData(
                 "succesfully ", {
-                    mediaBasePath: path_file,
-                    mediaUri: url_filename,
-                    mediaThumBasePath: path_file_thumb,
-                    mediaThumUri: url_filename_thum,
-                    height: Number(New_height),
-                    width: Number(New_width)
-                }
-            ); 
+                mediaBasePath: path_file,
+                mediaUri: url_filename,
+                mediaThumBasePath: path_file_thumb,
+                mediaThumUri: url_filename_thum,
+                height: Number(New_height),
+                width: Number(New_width)
+            }
+            );
         }
     }
 
@@ -215,7 +215,7 @@ export class AdsController {
             await this.errorHandler.generateBadRequestException(
                 ceck_typeAdsID,
             );
-        } 
+        }
 
         //VALIDASI PARAM typeAdsID
         var getAdsType: AdsType;
@@ -241,12 +241,12 @@ export class AdsController {
             await this.errorHandler.generateBadRequestException(
                 ceck_name,
             );
-        }else{
+        } else {
             if (AdsDto_.name.length > Number(getAdsType.titleMax)) {
                 await this.errorHandler.generateBadRequestException(
                     'Unabled to proceed, name max length ' + getAdsType.titleMax.toString(),
                 );
-           } 
+            }
         }
 
         //VALIDASI PARAM dayAds
@@ -254,9 +254,9 @@ export class AdsController {
             await this.errorHandler.generateBadRequestException(
                 'Unabled to proceed param timeAds is required',
             );
-        }else{
+        } else {
             if (
-                AdsDto_.dayAds.sunday == undefined || 
+                AdsDto_.dayAds.sunday == undefined ||
                 AdsDto_.dayAds.monday == undefined ||
                 AdsDto_.dayAds.tuesday == undefined ||
                 AdsDto_.dayAds.wednesday == undefined ||
@@ -282,7 +282,7 @@ export class AdsController {
                 AdsDto_.timeAds.time_12_16 == undefined ||
                 AdsDto_.timeAds.time_16_20 == undefined ||
                 AdsDto_.timeAds.time_20_24 == undefined ||
-                AdsDto_.timeAds.time_24_4 == undefined 
+                AdsDto_.timeAds.time_24_4 == undefined
             ) {
                 await this.errorHandler.generateBadRequestException(
                     'Unabled to proceed param timeAds is required',
@@ -339,7 +339,7 @@ export class AdsController {
         const liveAt_ = new Date(AdsDto_.liveAt);
         const liveEnd_ = new Date(AdsDto_.liveEnd);
         const oneDay = 1000 * 60 * 60 * 24;
-        const diff = liveEnd_.getTime() - liveAt_.getTime(); 
+        const diff = liveEnd_.getTime() - liveAt_.getTime();
         const dayCount = Math.round(diff / oneDay);
 
         //VALIDASI PARAM Duration Day 
@@ -347,8 +347,8 @@ export class AdsController {
         var getSetting_AdsDurationMax = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsDurationMax));
         var getSetting_AdsPlanMin = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsPlanMin));
         var getSetting_AdsPlanMax = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsPlanMax));
-    
-        if (!((Number(getSetting_AdsDurationMax.value) >= Number(dayCount)) && (Number(dayCount) >= Number(getSetting_AdsDurationMin.value)))){
+
+        if (!((Number(getSetting_AdsDurationMax.value) >= Number(dayCount)) && (Number(dayCount) >= Number(getSetting_AdsDurationMin.value)))) {
             return await this.errorHandler.generateBadRequestException(
                 'Unabled to proceed, duration day tayang required ' + getSetting_AdsDurationMax.value.toString() + ' > Day Duration : ' + Number(dayCount) + ' > ' + getSetting_AdsDurationMin.value.toString(),
             );
@@ -365,7 +365,7 @@ export class AdsController {
                 return await this.errorHandler.generateBadRequestException(
                     'Unabled to proceed, plan tayang required ' + getSetting_AdsPlanMax.value.toString() + ' > tayang > ' + getSetting_AdsPlanMin.value.toString(),
                 );
-            } 
+            }
         }
 
         //VALIDASI PARAM credit
@@ -374,7 +374,7 @@ export class AdsController {
             await this.errorHandler.generateBadRequestException(
                 ceck_credit,
             );
-        }else{
+        } else {
             const minPembelianCredit = (getAdsType.CPV * AdsDto_.tayang) + (getAdsType.CPA * AdsDto_.tayang);
             if (minPembelianCredit != AdsDto_.credit) {
                 AdsDto_.status = "DRAFT";
@@ -405,7 +405,7 @@ export class AdsController {
             await this.errorHandler.generateBadRequestException(
                 'Unabled to proceed param demografisID is required',
             );
-        }else{
+        } else {
             for (var i = 0; i < AdsDto_.demografisID.length; i++) {
                 let demografisID_Object = AdsDto_.demografisID[i];
                 if (demografisID_Object == "Lainnya") {
@@ -435,7 +435,7 @@ export class AdsController {
                 }
             }
             AdsDto_.interestID = Array_Interest;
-        } 
+        }
 
         //VALIDASI PARAM audiensFrekuensi
         var ceck_audiensFrekuensi = await this.utilsService.validateParam("audiensFrekuensi", AdsDto_.audiensFrekuensi, "number")
@@ -443,7 +443,7 @@ export class AdsController {
             await this.errorHandler.generateBadRequestException(
                 ceck_audiensFrekuensi,
             );
-        }else{
+        } else {
             if (AdsDto_.audiensFrekuensi > 1) {
                 AdsDto_.liveTypeAds = true;
             } else {
@@ -460,7 +460,7 @@ export class AdsController {
             if (AdsDto_.gender.length == 0) {
                 await this.errorHandler.generateBadRequestException(
                     'Unabled to proceed param gender is required',
-                ); 
+                );
             }
         }
 
@@ -481,7 +481,7 @@ export class AdsController {
                     'Unabled to proceed param age is required',
                 );
             }
-        } 
+        }
 
         //VALIDASI PARAM status
         var ceck_status = await this.utilsService.validateParam("status", AdsDto_.status, "string")
@@ -511,7 +511,7 @@ export class AdsController {
             await this.errorHandler.generateBadRequestException(
                 ceck_urlLink,
             );
-        } 
+        }
 
         //--------------------GENERATE CAMPAIG ID--------------------
         // if (AdsDto_.status == "UNDER_REVIEW") {
@@ -529,26 +529,26 @@ export class AdsController {
             AdsDto_.totalUsedCredit = AdsDto_.credit;
             AdsDto_.objectifitas = "Lalu Lintas";
             AdsDto_.creditFree = 0;
-            AdsDto_.creditValue = 0; 
-            AdsDto_.usedCredit = 0; 
-            AdsDto_.startAge = 0; 
+            AdsDto_.creditValue = 0;
+            AdsDto_.usedCredit = 0;
+            AdsDto_.startAge = 0;
             AdsDto_.usedCreditFree = 0;
             AdsDto_.endAge = 0;
-            AdsDto_.totalView = 0; 
+            AdsDto_.totalView = 0;
             AdsDto_.isActive = false;
             let data = await this.adsService.create(AdsDto_);
-            if (AdsDto_.status == "UNDER_REVIEW"){
+            if (AdsDto_.status == "UNDER_REVIEW") {
                 //--------------------INSERT BALANCE DEBET--------------------
                 const AdsBalaceCreditDto_ = new AdsBalaceCreditDto();
                 AdsBalaceCreditDto_._id = new mongoose.Types.ObjectId;
                 AdsBalaceCreditDto_.iduser = AdsDto_.userID;
-                AdsBalaceCreditDto_.debet = AdsDto_.credit; 
+                AdsBalaceCreditDto_.debet = AdsDto_.credit;
                 AdsBalaceCreditDto_.kredit = 0;
                 AdsBalaceCreditDto_.type = "USE";
                 AdsBalaceCreditDto_.timestamp = await this.utilsService.getDateTimeString();
                 AdsBalaceCreditDto_.description = "USE ADS CREATE";
-                AdsBalaceCreditDto_.idtrans = data._id;  
-                await this.adsService.insertBalaceDebit(AdsBalaceCreditDto_); 
+                AdsBalaceCreditDto_.idtrans = data._id;
+                await this.adsService.insertBalaceDebit(AdsBalaceCreditDto_);
             }
 
             return await this.errorHandler.generateAcceptResponseCodeWithData(
@@ -604,7 +604,7 @@ export class AdsController {
             AdsDto_.campaignId = generateCampaignID;
         }
 
-        if (AdsDto_.status == "UNDER_REVIEW" || AdsDto_.status == "IN_ACTIVE"){
+        if (AdsDto_.status == "UNDER_REVIEW" || AdsDto_.status == "IN_ACTIVE") {
             const AdsBalaceCreditDto_ = new AdsBalaceCreditDto();
             AdsBalaceCreditDto_._id = new mongoose.Types.ObjectId;
             AdsBalaceCreditDto_.iduser = AdsDto_.userID;
@@ -679,7 +679,7 @@ export class AdsController {
         try {
             var data = await this.adsService.findOne(id);
             var AdsDto_ = new AdsDto();
-            AdsDto_._id = data._id; 
+            AdsDto_._id = data._id;
             AdsDto_.name = data.name;
             AdsDto_.typeAdsID = new mongoose.Types.ObjectId(data.typeAdsID.toString());
             AdsDto_.dayAds = data.dayAds;
@@ -687,7 +687,7 @@ export class AdsController {
             AdsDto_.skipTime = data.skipTime;
             AdsDto_.liveAt = data.liveAt;
             AdsDto_.liveEnd = data.liveEnd;
-            AdsDto_.liveEnd = data.liveEnd; 
+            AdsDto_.liveEnd = data.liveEnd;
             AdsDto_.tayang = data.tayang;
             AdsDto_.credit = data.credit;
             AdsDto_.placingID = new mongoose.Types.ObjectId(data.placingID.toString());
@@ -723,7 +723,7 @@ export class AdsController {
     @UseGuards(JwtAuthGuard)
     @Post('/dashboard')
     @HttpCode(HttpStatus.ACCEPTED)
-    async dashboard(@Body() body: any,@Headers() headers) {
+    async dashboard(@Body() body: any, @Headers() headers) {
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
@@ -790,8 +790,8 @@ export class AdsController {
         try {
             let ads_campaign_dashboard = await this.adsService.campaignDashboard(body.userId, start_date, end_date);
             let ads_status_campaign_dashboard = await this.adsService.getAdsSatus(body.userId, start_date, end_date);
-            if (await this.utilsService.ceckData(ads_campaign_dashboard)){
-                if (ads_campaign_dashboard.length>0){
+            if (await this.utilsService.ceckData(ads_campaign_dashboard)) {
+                if (ads_campaign_dashboard.length > 0) {
                     ads_campaign_dashboard = ads_campaign_dashboard[0];
                     ads_campaign_dashboard.statusIklan = ads_status_campaign_dashboard[0].status;
                 }
@@ -804,7 +804,7 @@ export class AdsController {
                     }
                     return false;
                 });
-                if (!isFoundreach){
+                if (!isFoundreach) {
                     ads_campaign_dashboard.reach.push({
                         "_id": DateFormat,
                         "reachView": 0
@@ -873,7 +873,7 @@ export class AdsController {
             await this.errorHandler.generateBadRequestException(
                 'Unabled to proceed, ads not found',
             );
-        } 
+        }
 
         //----------------START DATE----------------
         var start_date = null;
@@ -895,8 +895,8 @@ export class AdsController {
                 }
             }
 
-            if (ads_campaign_detail.summary.CTR==null){
-                ads_campaign_detail.summary.CTR="0%"
+            if (ads_campaign_detail.summary.CTR == null) {
+                ads_campaign_detail.summary.CTR = "0%"
             }
             for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {
                 var DateFormat = await this.utilsService.consvertDateTimeString(new Date(d));
@@ -939,10 +939,10 @@ export class AdsController {
             }
 
             var listdata = [];
-            if (ads_campaign_detail.adsDetail.idApsara!=undefined){
+            if (ads_campaign_detail.adsDetail.idApsara != undefined) {
                 listdata.push(ads_campaign_detail.adsDetail.idApsara);
             }
-            if (listdata.length>0){
+            if (listdata.length > 0) {
                 var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
                 if (apsaravideodata.VideoList.length > 0) {
                     if (apsaravideodata.VideoList[0] != undefined) {
@@ -1149,7 +1149,7 @@ export class AdsController {
         body.type_ads = array_type_ads;
 
         try {
-            const ads_dashboard = await this.adsService.list_reward(body.name, body.startdate, body.enddate, body.gender, body.age, body.areas, body.similarity, body.page, body.limit, body.sorting, body.adsId); 
+            const ads_dashboard = await this.adsService.list_reward(body.name, body.startdate, body.enddate, body.gender, body.age, body.areas, body.similarity, body.page, body.limit, body.sorting, body.adsId);
 
             return await this.errorHandler.generateAcceptResponseCodeWithData(
                 "Get Ads List succesfully", ads_dashboard, ads_dashboard.length, body.page
@@ -1181,7 +1181,7 @@ export class AdsController {
         AdsLogsDto_.type = "GET ADS";
         AdsLogsDto_.dateTime = await this.utilsService.getDateTimeString();
         AdsLogsDto_.nameActivitas = ["GetAds"];
-        
+
         //Validasi Token
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             AdsLogsDto_.responseAds = JSON.stringify({ response: "Unauthorized" });
@@ -1268,7 +1268,7 @@ export class AdsController {
             //Create Response
             var data_response = {};
             data_response['adsId'] = data_ads[0]._id.toString();
-            data_response['adsUrlLink'] = data_ads[0].urlLink; 
+            data_response['adsUrlLink'] = data_ads[0].urlLink;
             data_response['adsDescription'] = data_ads[0].description;
             data_response['name'] = data_ads[0].description;
             if (await this.utilsService.ceckData(ceckData)) {
@@ -1279,6 +1279,7 @@ export class AdsController {
             data_response['idUser'] = data_userbasic_ads._id.toString();
             data_response['fullName'] = data_userbasic_ads.fullName;
             data_response['email'] = data_userbasic_ads.email;
+            data_response['username'] = data_ads[0].username;
             if (await this.utilsService.ceckData(get_profilePict)) {
                 data_response['avartar'] = {
                     mediaBasePath: (get_profilePict.mediaBasePath != undefined) ? get_profilePict.mediaBasePath : null,
@@ -1296,7 +1297,7 @@ export class AdsController {
             data_response['adsSkip'] = (data_ads[0].skipTime != undefined) ? data_ads[0].skipTime : (await this.adsTypeService.findOne(data_ads[0].typeAdsID.toString())).AdsSkip;
             data_response['mediaType'] = data_ads[0].type;
             data_response['ctaButton'] = data_ads[0].ctaNames;
-            data_response['videoId'] = data_ads[0].idApsara; 
+            data_response['videoId'] = data_ads[0].idApsara;
             data_response['duration'] = data_ads[0].duration;
             data_response['mediaBasePath'] = data_ads[0].mediaBasePath;
             data_response['mediaUri'] = data_ads[0].mediaUri;
@@ -1439,11 +1440,11 @@ export class AdsController {
             );
         }
 
-        try{
+        try {
             //Update User Ads
             var data_Update_UserAds = {
-                statusView:true,
-                timeViewSecond: Number(AdsAction_.watchingTime), 
+                statusView: true,
+                timeViewSecond: Number(AdsAction_.watchingTime),
                 $inc: { 'viewed': 1 },
                 $push: { "updateAt": current_date, 'timeView': Number(AdsAction_.watchingTime) },
             }
