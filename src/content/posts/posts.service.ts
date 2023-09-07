@@ -4961,15 +4961,15 @@ export class PostsService {
           {
             "$filter":
             {
-              input:"$reportedUser",
-              as:"listuser",
+              input: "$reportedUser",
+              as: "listuser",
               cond:
               {
                 "$eq":
-                [
-                  "$$listuser.active",
-                  true
-                ]
+                  [
+                    "$$listuser.active",
+                    true
+                  ]
               }
             }
           },
@@ -5006,9 +5006,9 @@ export class PostsService {
           contentModeration: 1,
           contentModerationResponse: 1,
           reportedStatus: 1,
-          reportedUserCount: 
+          reportedUserCount:
           {
-            "$size":"$reportedUserCount"
+            "$size": "$reportedUserCount"
           },
           reportedUserHandle: 1,
           reportedUser: 1,
@@ -6553,19 +6553,19 @@ export class PostsService {
           komen: 1,
           isOwned: 1,
           tagPeople: 1,
-          reportedUserCount: 
+          reportedUserCount:
           {
             "$filter":
             {
-              input:"$reportedUser",
-              as:"listuser",
+              input: "$reportedUser",
+              as: "listuser",
               cond:
               {
                 "$eq":
-                [
-                  "$$listuser.active",
-                  true
-                ]
+                  [
+                    "$$listuser.active",
+                    true
+                  ]
               }
             }
           },
@@ -6902,9 +6902,9 @@ export class PostsService {
           apsaraId: 1,
           apsara: 1,
           tagPeople: 1,
-          reportedUserCount: 
+          reportedUserCount:
           {
-            "$size":"$reportedUserCount"
+            "$size": "$reportedUserCount"
           },
           reportedUserHandle: 1,
           reportedUser: 1,
@@ -99458,12 +99458,7 @@ export class PostsService {
       }
 
       pipeline.push(
-        {
-          $sort: {
-            createdAt: - 1,
 
-          }
-        },
         {
           "$unwind": {
             "path": "$boosted",
@@ -99672,11 +99667,22 @@ export class PostsService {
           }
         },
         {
+          $sort: {
+            createdAt: - 1,
+
+          }
+        },
+        {
           $match:
           {
             $or: [
               {
                 $and: [
+                  {
+                    $expr: {
+                      $gte: ["$createdAt", "2022-10-18 04:51:36"]
+                    }
+                  },
                   {
                     "reportedStatus": {
                       $ne: "OWNED"
@@ -101289,12 +101295,7 @@ export class PostsService {
 
       pipeline.push(
 
-        {
-          $sort: {
-            createdAt: - 1,
 
-          }
-        },
         {
           "$unwind": {
             "path": "$boosted",
@@ -101491,6 +101492,12 @@ export class PostsService {
                 else: 1
               }
             },
+
+          }
+        },
+        {
+          $sort: {
+            createdAt: - 1,
 
           }
         },
@@ -103106,12 +103113,7 @@ export class PostsService {
       }
 
       pipeline.push(
-        {
-          $sort: {
-            createdAt: - 1,
 
-          }
-        },
         {
           "$unwind": {
             "path": "$boosted",
@@ -103308,6 +103310,12 @@ export class PostsService {
                 else: 1
               }
             },
+
+          }
+        },
+        {
+          $sort: {
+            createdAt: - 1,
 
           }
         },
@@ -104914,7 +104922,6 @@ export class PostsService {
     var query = await this.PostsModel.aggregate(pipeline);
     return query;
   }
-
 
   async landingpageMy(email: string, type: string, skip: number, limit: number, emaillogin: string) {
     var pipeline = [];
@@ -115751,12 +115758,7 @@ export class PostsService {
       }
 
       pipeline.push(
-        {
-          $sort: {
-            createdAt: - 1,
 
-          }
-        },
         {
           "$unwind": {
             "path": "$boosted",
@@ -115966,11 +115968,22 @@ export class PostsService {
         },
 
         {
+          $sort: {
+            createdAt: - 1,
+
+          }
+        },
+        {
           $match:
           {
             $or: [
               {
                 $and: [
+                  {
+                    $expr: {
+                      $gte: ["$createdAt", "2022-10-18 04:51:36"]
+                    }
+                  },
                   {
                     "reportedStatus": {
                       $ne: "OWNED"
@@ -117656,12 +117669,7 @@ export class PostsService {
 
       pipeline.push(
 
-        {
-          $sort: {
-            createdAt: - 1,
 
-          }
-        },
         {
           "$unwind": {
             "path": "$boosted",
@@ -117869,13 +117877,23 @@ export class PostsService {
 
           }
         },
+        {
+          $sort: {
+            createdAt: - 1,
 
+          }
+        },
         {
           $match:
           {
             $or: [
               {
                 $and: [
+                  {
+                    $expr: {
+                      $gte: ["$createdAt", "2022-01-09 00:36:58"]
+                    }
+                  },
                   {
                     "reportedStatus": {
                       $ne: "OWNED"
@@ -119560,12 +119578,7 @@ export class PostsService {
       }
 
       pipeline.push(
-        {
-          $sort: {
-            createdAt: - 1,
 
-          }
-        },
         {
           "$unwind": {
             "path": "$boosted",
@@ -119775,11 +119788,22 @@ export class PostsService {
         },
 
         {
+          $sort: {
+            createdAt: - 1,
+
+          }
+        },
+        {
           $match:
           {
             $or: [
               {
                 $and: [
+                  {
+                    $expr: {
+                      $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                    }
+                  },
                   {
                     "reportedStatus": {
                       $ne: "OWNED"
