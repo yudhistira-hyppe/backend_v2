@@ -585,42 +585,41 @@ export class MediastikerController {
         return await this.MediastikerService.stickerchartbyId(id);
     }
 
-    //jangan diutak atik
-    // @UseGuards(JwtAuthGuard)
-    // @Post('listingapp')
-    // async listingapp(@Req() request) {
-    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    @UseGuards(JwtAuthGuard)
+    @Post('listingapp')
+    async listingapp(@Req() request) {
+        var request_json = JSON.parse(JSON.stringify(request.body));
         
-    //     var page = request_json['page'];
-    //     var limit = request_json['limit'];
-    //     var keyword = request_json['keyword'];
-    //     var tipesticker = request_json['tipestiker'];
-    //     if(page == null || page == undefined)
-    //     {
-    //         throw new BadRequestException("Unabled to proceed, page field is required");
-    //     }
+        var page = request_json['page'];
+        var limit = request_json['limit'];
+        var keyword = request_json['keyword'];
+        var tipesticker = request_json['tipestiker'];
+        if(page == null || page == undefined)
+        {
+            throw new BadRequestException("Unabled to proceed, page field is required");
+        }
 
-    //     if(limit == null || limit == undefined)
-    //     {
-    //         throw new BadRequestException("Unabled to proceed, limit field is required");
-    //     }
+        if(limit == null || limit == undefined)
+        {
+            throw new BadRequestException("Unabled to proceed, limit field is required");
+        }
 
-    //     if(tipesticker == null || tipesticker == undefined)
-    //     {
-    //         throw new BadRequestException("Unabled to proceed, tipestiker field is required");
-    //     }
+        if(tipesticker == null || tipesticker == undefined)
+        {
+            throw new BadRequestException("Unabled to proceed, tipestiker field is required");
+        }
 
-    //     var data = await this.MediastikerService.listingapp(keyword, tipesticker, page, limit);
+        var data = await this.MediastikerService.listingapp(keyword, tipesticker, page, limit);
         
-    //     if(keyword != null && keyword != null)
-    //     {
-    //         this.countstick.updatedata(data, "search");
-    //     }
-    //     return {
-    //         response_code:202,
-    //         data:data
-    //     }
-    // }
+        if(keyword != null && keyword != undefined)
+        {
+            this.countstick.updatedata(data, "search");
+        }
+        return {
+            response_code:202,
+            data:data
+        }
+    }
 
     async sortingindex(insertdata, currentindex, targetindex) {
         var data = await this.MediastikerService.findByKategori(insertdata.kategori);
