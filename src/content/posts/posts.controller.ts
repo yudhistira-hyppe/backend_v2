@@ -47,6 +47,7 @@ import { UserchallengesService } from 'src/trans/userchallenges/userchallenges.s
 import { ChallengeService } from 'src/trans/challenge/challenge.service';
 import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
 import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.schema';
+import { MediastikerService } from 'src/content/mediastiker/mediastiker.service';
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -73,6 +74,7 @@ export class PostsController {
     private readonly userchallengesService: UserchallengesService,
     private readonly challengeService: ChallengeService,
     private readonly postchallengeService: PostchallengeService,
+    private readonly MediastikerService: MediastikerService,
     private readonly methodepaymentsService: MethodepaymentsService) { }
 
   @Post()

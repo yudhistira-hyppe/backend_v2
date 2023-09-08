@@ -94,6 +94,21 @@ export class MediastikerService {
         return data;
     }
 
+    async updateUsed(_id: string) {
+        this.MediastikerModel.updateOne(
+            {
+                _id: new Types.ObjectId(_id),
+            },
+            { $inc: { used: 1 } },
+            function (err, docs) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(docs);
+                }
+            },
+        );
+    }
 
     async updatedatabasedonkategori(targetcat: string, changecat: string, tipe: string) {
         let data = await this.MediastikerModel.updateMany({ kategori: targetcat, type: tipe, isDelete: false },

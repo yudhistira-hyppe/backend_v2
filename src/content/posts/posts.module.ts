@@ -45,9 +45,11 @@ import { OssContentPictService } from './osscontentpict.service';
 import { UserchallengesModule } from 'src/trans/userchallenges/userchallenges.module';
 import { ChallengeModule } from 'src/trans/challenge/challenge.module';
 import { PostchallengeModule } from 'src/trans/postchallenge/postchallenge.module';
+import { MediastikerModule } from 'src/content/mediastiker/mediastiker.module';
 @Module({
 
     imports: [
+        MediastikerModule,
         PostchallengeModule,
         UserchallengesModule,
         ChallengeModule,
