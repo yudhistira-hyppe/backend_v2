@@ -143,9 +143,10 @@ export class MediastikerController {
         insertdata.used = 0;
         insertdata.type = type;
         var insertMediastiker = files.image[0];
-        var path = "images/mediastiker/" + insertdata._id + "_mediastiker" + "." + "jpeg";
+        var path = "images/mediastiker/" + insertdata._id + "_mediastiker" + "." + insertMediastiker.originalname.split(".").pop();
         var result = await this.osservices.uploadFile(insertMediastiker, path);
-        insertdata.image = result.url;
+        var resuldata = result.url;
+        insertdata.image = resuldata.replace("http", "https");
 
 
         const messages = {
@@ -291,9 +292,10 @@ export class MediastikerController {
 
         if (files.image !== undefined) {
             var insertMediastiker = files.image[0];
-            var path = "images/mediastiker/" + id + "_mediastiker" + "." + "jpeg";
+            var path = "images/mediastiker/" + id + "_mediastiker" + "." + insertMediastiker.originalname.split(".").pop();
             var result = await this.osservices.uploadFile(insertMediastiker, path);
-            insertdata.image = result.url;
+            var resuldata = result.url;
+            insertdata.image = resuldata.replace("http", "https");
         }
 
 
