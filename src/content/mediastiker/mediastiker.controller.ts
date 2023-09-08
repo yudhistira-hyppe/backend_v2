@@ -36,6 +36,7 @@ export class MediastikerController {
         var datastiker = null;
         var dataurut = null;
         var dataurutold = null;
+        var kategori = null;
         var type = null;
         var insertdata = new Mediastiker();
         var nourut = null;
@@ -57,7 +58,11 @@ export class MediastikerController {
         } else {
             throw new BadRequestException("type required");
         }
-
+        if (request_json["kategori"] !== undefined) {
+            kategori = request_json["kategori"];
+        } else {
+            throw new BadRequestException("kategori required");
+        }
         if (request_json["nourut"] !== undefined) {
             nourut = request_json["nourut"];
         } else {
@@ -86,7 +91,7 @@ export class MediastikerController {
 
         }
 
-        // var listdatastiker = await this.MediastikerService.findByKategori(kategori);
+        //var listdatastiker = await this.MediastikerService.findByKategori(kategori);
         // var panjangdata = listdatastiker.length + 1;
         // if (parseInt(targetindex) <= 0 || parseInt(targetindex) > panjangdata) {
         //     throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
@@ -149,7 +154,7 @@ export class MediastikerController {
 
 
         try {
-            dataurut = await this.MediastikerService.findByNourut(parseInt(nourut), type);
+            dataurut = await this.MediastikerService.findByNourut(parseInt(nourut), type, kategori);
 
         } catch (e) {
             dataurut = null;
@@ -289,7 +294,7 @@ export class MediastikerController {
         }
 
         try {
-            dataurutoldganti = await this.MediastikerService.findByIndex(parseInt(nourut), type);
+            dataurutoldganti = await this.MediastikerService.findByIndex(parseInt(nourut), type, kategori);
 
         } catch (e) {
             dataurutoldganti = null;
@@ -305,7 +310,7 @@ export class MediastikerController {
 
         if (indexold < indexoldganti) {
             try {
-                dataurut = await this.MediastikerService.findByNourutLebihkecil(parseInt(indexold), parseInt(indexoldganti), type);
+                dataurut = await this.MediastikerService.findByNourutLebihkecil(parseInt(indexold), parseInt(indexoldganti), type, kategori);
 
             } catch (e) {
                 dataurut = null;
@@ -321,7 +326,7 @@ export class MediastikerController {
             }
         } else if (indexold > indexoldganti) {
             try {
-                dataurut = await this.MediastikerService.findByNourutLebihbesar(parseInt(indexold), parseInt(indexoldganti), type);
+                dataurut = await this.MediastikerService.findByNourutLebihbesar(parseInt(indexold), parseInt(indexoldganti), type, kategori);
 
             } catch (e) {
                 dataurut = null;
