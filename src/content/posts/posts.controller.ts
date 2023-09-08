@@ -48,6 +48,7 @@ import { ChallengeService } from 'src/trans/challenge/challenge.service';
 import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
 import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.schema';
 import { MediastikerService } from 'src/content/mediastiker/mediastiker.service';
+import { CountstikerService } from 'src/content/mediastiker/countstiker.service';
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -75,6 +76,7 @@ export class PostsController {
     private readonly challengeService: ChallengeService,
     private readonly postchallengeService: PostchallengeService,
     private readonly MediastikerService: MediastikerService,
+    private readonly CountstikerService: CountstikerService,
     private readonly methodepaymentsService: MethodepaymentsService) { }
 
   @Post()
@@ -1773,6 +1775,8 @@ export class PostsController {
           arrayStiker.push(obj);
         }
         body.stiker = arrayStiker;
+
+
       }
     }
 
@@ -1791,6 +1795,12 @@ export class PostsController {
       body.text = arraytext;
     }
     var data = await this.postContentService.createNewPostV5(file, body, headers);
+
+    if (data !== undefined && data !== null) {
+      var stiker = data.data.stiker;
+      this.updateused(stiker, "used");
+    }
+
     // var postID = data.data.postID;
 
     // var email = data.data.email;
@@ -3648,5 +3658,8 @@ export class PostsController {
       }
     }
     return Response;
+  }
+  async updateused(list: any[], target: string) {
+    await this.CountstikerService.updatedata(list, target);
   }
 }
