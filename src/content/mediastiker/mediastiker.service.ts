@@ -118,6 +118,20 @@ export class MediastikerService {
         ]);
         return query;
     }
+    async findByTypekategori(type: string, kategori: string) {
+        var query = this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    'type': type, 'kategori': kategori
+                }
+            },
+            {
+                $sort: { 'index': -1 }
+            }
+        ]);
+        return query;
+    }
     async findByNourutLebihkecil(nourutStart: number, nourutEnd: number, type: string, kategori: string) {
         var query = this.MediastikerModel.aggregate([
             {
