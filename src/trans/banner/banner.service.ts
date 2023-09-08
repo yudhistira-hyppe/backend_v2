@@ -87,7 +87,8 @@ export class BannerService {
         let data = await this.BannerModel.updateOne({ "_id": id },
             {
                 $set: {
-                    "active": false
+                    "active": false,
+                    "statusTayang":false
                 }
             });
         return data;

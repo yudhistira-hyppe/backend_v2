@@ -126,6 +126,9 @@ export class StickerCategoryService {
                         {
                             isDelete:false
                         },
+                        {
+                            status:true
+                        }
                     ]
                 }
             },
