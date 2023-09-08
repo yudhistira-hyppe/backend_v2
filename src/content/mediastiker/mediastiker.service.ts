@@ -23,8 +23,8 @@ export class MediastikerService {
     async findByname(name: string): Promise<Mediastiker> {
         return this.MediastikerModel.findOne({ name: name }).exec();
     }
-    async findByIndex(index: number, type: string): Promise<Mediastiker> {
-        return this.MediastikerModel.findOne({ index: index, type: type }).exec();
+    async findByIndex(index: number, type: string, kategori: string): Promise<Mediastiker> {
+        return this.MediastikerModel.findOne({ index: index, type: type, kategori: kategori }).exec();
     }
     async findByKategori(target: string): Promise<Mediastiker[]> {
         return this.MediastikerModel.aggregate([
@@ -95,8 +95,8 @@ export class MediastikerService {
     }
 
 
-    async updatedatabasedonkategori(targetcat: string, changecat: string, tipe:string) {
-        let data = await this.MediastikerModel.updateMany({ kategori: targetcat, type:tipe, isDelete: false },
+    async updatedatabasedonkategori(targetcat: string, changecat: string, tipe: string) {
+        let data = await this.MediastikerModel.updateMany({ kategori: targetcat, type: tipe, isDelete: false },
             {
                 $set: {
                     "kategori": changecat
@@ -104,12 +104,12 @@ export class MediastikerService {
             });
         return data;
     }
-    async findByNourut(nourut: number, type: string) {
+    async findByNourut(nourut: number, type: string, kategori: string) {
         var query = this.MediastikerModel.aggregate([
             {
                 "$match":
                 {
-                    'index': { $gte: nourut }, 'type': type
+                    'index': { $gte: nourut }, 'type': type, 'kategori': kategori
                 }
             },
             {
@@ -118,12 +118,12 @@ export class MediastikerService {
         ]);
         return query;
     }
-    async findByNourutLebihkecil(nourutStart: number, nourutEnd: number, type: string) {
+    async findByNourutLebihkecil(nourutStart: number, nourutEnd: number, type: string, kategori: string) {
         var query = this.MediastikerModel.aggregate([
             {
                 "$match":
                 {
-                    'index': { $gte: nourutStart, $lte: nourutEnd }, 'type': type
+                    'index': { $gte: nourutStart, $lte: nourutEnd }, 'type': type, 'kategori': kategori
                 }
             },
             {
@@ -133,12 +133,12 @@ export class MediastikerService {
         ]);
         return query;
     }
-    async findByNourutLebihbesar(nourutStart: number, nourutEnd: number, type: string) {
+    async findByNourutLebihbesar(nourutStart: number, nourutEnd: number, type: string, kategori: string) {
         var query = this.MediastikerModel.aggregate([
             {
                 "$match":
                 {
-                    'index': { $lte: nourutStart, $gte: nourutEnd }, 'type': type
+                    'index': { $lte: nourutStart, $gte: nourutEnd }, 'type': type, 'kategori': kategori
 
                 }
             },
@@ -155,116 +155,116 @@ export class MediastikerService {
         return data;
     }
 
-    async trend(){
+    async trend() {
         var data = await this.MediastikerModel.aggregate([
             {
                 "$facet":
                 {
                     "stiker":
-                    [
-                        {
-                            "$match":
+                        [
                             {
-                                "$and":
-                                [
-                                    {
-                                        type:"STICKER"
-                                    },
-                                    {
-                                        status:true
-                                    },
-                                    {
-                                        isDelete:false
-                                    },
-                                    {
-                                        used:
-                                        {
-                                            "$ne":0
-                                        }
-                                    },
-                                ]
-                            }
-                        },
-                        {
-                            "$sort":
+                                "$match":
+                                {
+                                    "$and":
+                                        [
+                                            {
+                                                type: "STICKER"
+                                            },
+                                            {
+                                                status: true
+                                            },
+                                            {
+                                                isDelete: false
+                                            },
+                                            {
+                                                used:
+                                                {
+                                                    "$ne": 0
+                                                }
+                                            },
+                                        ]
+                                }
+                            },
                             {
-                                used:-1
+                                "$sort":
+                                {
+                                    used: -1
+                                }
+                            },
+                            {
+                                "$limit": 5
                             }
-                        },
-                        {
-                            "$limit":5
-                        }
-                    ],
+                        ],
                     "gif":
-                    [
-                        {
-                            "$match":
+                        [
                             {
-                                "$and":
-                                [
-                                    {
-                                        type:"GIF"
-                                    },
-                                    {
-                                        status:true
-                                    },
-                                    {
-                                        isDelete:false
-                                    },
-                                    {
-                                        used:
-                                        {
-                                            "$ne":0
-                                        }
-                                    },
-                                ]
-                            }
-                        },
-                        {
-                            "$sort":
+                                "$match":
+                                {
+                                    "$and":
+                                        [
+                                            {
+                                                type: "GIF"
+                                            },
+                                            {
+                                                status: true
+                                            },
+                                            {
+                                                isDelete: false
+                                            },
+                                            {
+                                                used:
+                                                {
+                                                    "$ne": 0
+                                                }
+                                            },
+                                        ]
+                                }
+                            },
                             {
-                                used:-1
+                                "$sort":
+                                {
+                                    used: -1
+                                }
+                            },
+                            {
+                                "$limit": 5
                             }
-                        },
-                        {
-                            "$limit":5
-                        }
-                    ],
+                        ],
                     "emoji":
-                    [
-                        {
-                            "$match":
+                        [
                             {
-                                "$and":
-                                [
-                                    {
-                                        type:"EMOJI"
-                                    },
-                                    {
-                                        status:true
-                                    },
-                                    {
-                                        isDelete:false
-                                    },
-                                    {
-                                        used:
-                                        {
-                                            "$ne":0
-                                        }
-                                    },
-                                ]
-                            }
-                        },
-                        {
-                            "$sort":
+                                "$match":
+                                {
+                                    "$and":
+                                        [
+                                            {
+                                                type: "EMOJI"
+                                            },
+                                            {
+                                                status: true
+                                            },
+                                            {
+                                                isDelete: false
+                                            },
+                                            {
+                                                used:
+                                                {
+                                                    "$ne": 0
+                                                }
+                                            },
+                                        ]
+                                }
+                            },
                             {
-                                used:-1
+                                "$sort":
+                                {
+                                    used: -1
+                                }
+                            },
+                            {
+                                "$limit": 5
                             }
-                        },
-                        {
-                            "$limit":5
-                        }
-                    ],
+                        ],
                 }
             }
         ]);
@@ -272,174 +272,159 @@ export class MediastikerService {
         return data;
     }
 
-    async listing(setname:string, settipesticker:string, startdate:string, enddate:string, startused:number, endused:number, listkategori:any[], liststatus:any[], sorting:string, page:number, limit:number)
-    {
+    async listing(setname: string, settipesticker: string, startdate: string, enddate: string, startused: number, endused: number, listkategori: any[], liststatus: any[], sorting: string, page: number, limit: number) {
         var pipeline = [];
-        
+
         pipeline.push(
             {
                 "$match":
                 {
                     "$and":
-                    [
-                        {
-                            "type":settipesticker
-                        },
-                        {
-                            "isDelete":false
-                        },
-                    ]
+                        [
+                            {
+                                "type": settipesticker
+                            },
+                            {
+                                "isDelete": false
+                            },
+                        ]
                 }
             }
         )
 
         var firstmatch = [];
-        if(setname != null)
-        {
+        if (setname != null) {
             firstmatch.push({
                 name:
                 {
-                    "$regex":setname,
-                    "$options":"i"
+                    "$regex": setname,
+                    "$options": "i"
                 }
             })
         }
 
-        if(startdate != null)
-        {
-            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1)); 
+        if (startdate != null) {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
             var dateend = currentdate.toISOString();
 
             firstmatch.push(
                 {
                     "createdAt":
                     {
-                        "$gte":startdate
+                        "$gte": startdate
                     }
                 },
                 {
                     "createdAt":
                     {
-                        "$lte":dateend
+                        "$lte": dateend
                     }
                 },
             );
         }
 
-        if(startused != null)
-        {
+        if (startused != null) {
             firstmatch.push(
                 {
                     "used":
                     {
-                        "$gte":startused
+                        "$gte": startused
                     }
                 },
                 {
                     "used":
                     {
-                        "$lte":endused
+                        "$lte": endused
                     }
                 },
             )
         }
 
-        if(listkategori != null && settipesticker != 'GIF')
-        {
+        if (listkategori != null && settipesticker != 'GIF') {
             firstmatch.push(
                 {
                     "kategori":
                     {
-                        "$in":listkategori
+                        "$in": listkategori
                     }
                 }
             )
         }
 
-        if(liststatus != null)
-        {
+        if (liststatus != null) {
             firstmatch.push(
                 {
                     "status":
                     {
-                        "$in":liststatus
+                        "$in": liststatus
                     }
                 }
             );
         }
 
-        if(firstmatch.length != 0)
-        {
+        if (firstmatch.length != 0) {
             pipeline.push(
                 {
                     "$match":
                     {
-                        "$and":firstmatch
+                        "$and": firstmatch
                     }
                 }
             )
         }
 
-        if(sorting != null)
-        {
-            if(sorting == "name+")
-            {
+        if (sorting != null) {
+            if (sorting == "name+") {
                 pipeline.push({
                     "$sort":
                     {
-                        name:1
+                        name: 1
                     }
                 })
             }
-            else if(sorting == "name-")
-            {
+            else if (sorting == "name-") {
                 pipeline.push({
                     "$sort":
                     {
-                        name:-1
+                        name: -1
                     }
                 })
             }
-            else if(sorting == "createdAt+")
-            {
+            else if (sorting == "createdAt+") {
                 pipeline.push({
                     "$sort":
                     {
-                        createdAt:1
+                        createdAt: 1
                     }
                 })
             }
-            else if(sorting == "createdAt-")
-            {
+            else if (sorting == "createdAt-") {
                 pipeline.push({
                     "$sort":
                     {
-                        createdAt:-1
+                        createdAt: -1
                     }
                 })
             }
-            else
-            {
+            else {
                 pipeline.push({
                     "$sort":
                     {
-                        used:-1
+                        used: -1
                     }
                 })
             }
         }
 
-        if(page > 0)
-        {
+        if (page > 0) {
             pipeline.push({
-                "$skip":limit * page
+                "$skip": limit * page
             });
         }
 
-        if(limit > 0)
-        {
-            pipeline.push({   
-                "$limit":limit
+        if (limit > 0) {
+            pipeline.push({
+                "$limit": limit
             });
         }
 
