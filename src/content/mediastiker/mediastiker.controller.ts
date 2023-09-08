@@ -40,6 +40,7 @@ export class MediastikerController {
         var type = null;
         var insertdata = new Mediastiker();
         var nourut = null;
+        var dataindex = null;
         var dataurutoldganti = null;
         if (request_json["name"] !== undefined) {
             name = request_json["name"];
@@ -91,6 +92,20 @@ export class MediastikerController {
 
         }
 
+        try {
+            dataindex = await this.MediastikerService.findByTypekategori(type, kategori);
+
+        } catch (e) {
+            dataindex = null;
+
+        }
+        if (dataindex !== undefined && dataindex.length > 0) {
+            var index = dataindex[0].index;
+        }
+
+        if (parseInt(nourut) > index && parseInt(nourut) < 1) {
+            throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+        }
         //var listdatastiker = await this.MediastikerService.findByKategori(kategori);
         // var panjangdata = listdatastiker.length + 1;
         // if (parseInt(targetindex) <= 0 || parseInt(targetindex) > panjangdata) {
@@ -138,19 +153,6 @@ export class MediastikerController {
             "info": ["Todo is not found!"],
         };
 
-
-
-        // try {
-        //     dataurutoldganti = await this.MediastikerService.findByIndex(parseInt(nourut), type);
-
-        // } catch (e) {
-        //     dataurutoldganti = null;
-
-        // }
-        // if (dataurutoldganti !== null) {
-        //     var indexoldganti = dataurutoldganti.index;
-        //     var idganti = dataurutoldganti._id.toString();
-        // }
 
 
         try {
@@ -212,6 +214,7 @@ export class MediastikerController {
         var nourut = null;
         var dataurutoldganti = null;
         var type = null;
+        var dataindex = null;
         if (request_json["id"] !== undefined) {
             id = request_json["id"];
         } else {
@@ -254,6 +257,20 @@ export class MediastikerController {
             throw new BadRequestException("type required");
         }
 
+        try {
+            dataindex = await this.MediastikerService.findByTypekategori(type, kategori);
+
+        } catch (e) {
+            dataindex = null;
+
+        }
+        if (dataindex !== undefined && dataindex.length > 0) {
+            var index = dataindex[0].index;
+        }
+
+        if (parseInt(nourut) > index && parseInt(nourut) < 1) {
+            throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+        }
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
