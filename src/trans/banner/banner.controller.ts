@@ -68,9 +68,11 @@ export class BannerController {
         insertdata.title = title;
         insertdata.email = email;
         var insertbanner = files.image[0];
-        var path = "images/banner/" + insertdata._id + "_banner" + "." + insertbanner.originalname.split(".")[1];
+        var path = "images/banner/" + insertdata._id + "_banner" + "." + insertbanner.originalname.split(".").pop();
         var result = await this.osservices.uploadFile(insertbanner, path);
-        insertdata.image = result.url;
+        var geturl = result.url;
+        var konvert = geturl.replace("http", "https");
+        insertdata.image = konvert;
 
 
         const messages = {
@@ -144,9 +146,11 @@ export class BannerController {
 
         if (files.image !== undefined) {
             var insertbanner = files.image[0];
-            var path = "images/banner/" + id + "_banner" + "." + insertbanner.originalname.split(".")[1];
+            var path = "images/banner/" + id + "_banner" + "." + insertbanner.originalname.split(".").pop();
             var result = await this.osservices.uploadFile(insertbanner, path);
-            insertdata.image = result.url;
+            var geturl = result.url;
+            var konvert = geturl.replace("http", "https");
+            insertdata.image = konvert;
         }
 
 
