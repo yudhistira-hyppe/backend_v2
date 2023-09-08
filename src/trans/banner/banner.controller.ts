@@ -68,7 +68,7 @@ export class BannerController {
         insertdata.title = title;
         insertdata.email = email;
         var insertbanner = files.image[0];
-        var path = "images/banner/" + insertdata._id + "_banner" + "." + "jpeg";
+        var path = "images/banner/" + insertdata._id + "_banner" + "." + insertbanner.originalname.split(".")[1];
         var result = await this.osservices.uploadFile(insertbanner, path);
         insertdata.image = result.url;
 
@@ -144,7 +144,7 @@ export class BannerController {
 
         if (files.image !== undefined) {
             var insertbanner = files.image[0];
-            var path = "images/banner/" + id + "_banner" + "." + "jpeg";
+            var path = "images/banner/" + id + "_banner" + "." + insertbanner.originalname.split(".")[1];
             var result = await this.osservices.uploadFile(insertbanner, path);
             insertdata.image = result.url;
         }
