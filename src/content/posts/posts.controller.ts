@@ -1725,37 +1725,69 @@ export class PostsController {
   async createPostV4new(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     console.log('============================================== CREATE POST HEADERS ==============================================', JSON.stringify(headers));
     console.log('============================================== CREATE POST BODY ==============================================', JSON.stringify(body));
-    // if (body.stiker !== undefined) {
+    if (body.stiker !== undefined && body.image !== undefined && body.type !== undefined && body.position !== undefined) {
 
-    //   var arrayStiker = [];
-    //   var stiker = body.stiker;
+      var arrayStiker = [];
+      var stiker = body.stiker;
 
-    //   var splitreqdem = stiker.toString();
-    //   var splitreq2dem = splitreqdem.split(',');
+      var splitstiker = stiker.toString();
+      var splitreq2stiker = splitstiker.split(',');
 
-    //   for (var i = 0; i < splitreq2dem.length; i++) {
-    //     let iddem = splitreq2dem[i];
 
-    //     var objintr = new mongoose.Types.ObjectId(iddem);
-    //     arrayStiker.push(objintr);
-    //   }
-    //   body.stiker = arrayStiker;
-    // }
+      var image = body.image;
+      var splitimage = image.toString();
+      var splitreq2image = splitimage.split(',');
 
-    // if (body.text !== undefined) {
+      var type = body.type;
+      var splittype = type.toString();
+      var splitreq2type = splittype.split(',');
 
-    //   var arraytext = [];
-    //   var text = body.text;
+      var position = body.position;
+      var splitposition = position.toString();
+      var splitreq2position = splitposition.split('#');
 
-    //   var splitreqtext = text.toString();
-    //   var splitreq2text = splitreqtext.split(',');
+      if (splitreq2stiker.length !== splitreq2image.length && splitreq2stiker.length !== splitreq2type.length && splitreq2stiker.length !== splitreq2position.length) {
+        throw new BadRequestException("Unabled to proceed,the amount of data must be the same");
+      } else {
+        for (var i = 0; i < splitreq2stiker.length; i++) {
+          let id = splitreq2stiker[i];
+          let image = splitreq2image[i];
+          let type = splitreq2type[i];
+          let position = splitreq2position[i];
+          var ids = new mongoose.Types.ObjectId(id);
+          let arrayPosition = [];
+          let splitpos = position.split(',');
+          for (let x = 0; x < splitpos.length; x++) {
+            var num = parseFloat(splitpos[x]);
+            arrayPosition.push(num);
+          }
 
-    //   for (var i = 0; i < splitreq2text.length; i++) {
-    //     let idtext = splitreq2text[i];
-    //     arraytext.push(idtext);
-    //   }
-    //   body.text = arraytext;
-    // }
+          var obj = {
+            "_id": ids,
+            "image": image,
+            "position": arrayPosition,
+            "type": type
+          };
+          arrayStiker.push(obj);
+        }
+        body.stiker = arrayStiker;
+      }
+    }
+
+    if (body.text !== undefined) {
+
+      var arraytext = [];
+      var text = body.text;
+
+      var splitreqtext = text.toString();
+      var splitreq2text = splitreqtext.split(',');
+
+      for (var i = 0; i < splitreq2text.length; i++) {
+        let idtext = splitreq2text[i];
+        arraytext.push(idtext);
+      }
+      body.text = arraytext;
+    }
     var data = await this.postContentService.createNewPostV5(file, body, headers);
     // var postID = data.data.postID;
 
