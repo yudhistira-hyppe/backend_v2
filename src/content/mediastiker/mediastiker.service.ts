@@ -1053,7 +1053,7 @@ export class MediastikerService {
         return data[0];
     }
 
-    async listingapp(keyword:string, sticker:string, page:number, limit:number)
+    async listingapp(keyword:string, jenis:string, page:number, limit:number)
     {
         var pipeline = [];
         pipeline.push(
@@ -1063,7 +1063,7 @@ export class MediastikerService {
                     "$and":
                     [
                         {
-                            "type":sticker
+                            "type":jenis
                         },
                         {
                             "status":true
@@ -1195,6 +1195,7 @@ export class MediastikerService {
             },
         )
 
+        
         if(keyword != null)
         {
             pipeline.push(
@@ -1207,11 +1208,28 @@ export class MediastikerService {
                             "$options":"i"
                         }
                     }
+                },
+                {
+                    "$sort":
+                    {
+                        countused:-1,
+                        name:1
+                    }
                 }
             )
         }
-
-        if(keyword == null || keyword == undefined)
+        else if(jenis == "GIF")
+        {
+            pipeline.push(
+                {
+                    "$sort":
+                    {
+                        "createdAt":1
+                    }
+                }
+            );
+        }
+        else if(jenis == "STICKER" || jenis == "EMOJI")
         {
             pipeline.push(
                 {
@@ -1223,7 +1241,7 @@ export class MediastikerService {
                 {
                     "$group":
                     {
-                        _id:"kategori",
+                        _id:"$kategori",
                         kategoritime:
                         {
                             "$first":"$kategoricreatedAt"
@@ -1255,43 +1273,6 @@ export class MediastikerService {
                         "kategoritime":1
                     }
                 },
-                {
-                    "$unwind":
-                    {
-                        path:"$data",
-                        preserveNullAndEmptyArrays:true
-                    }
-                },
-                {
-                    "$project":
-                    {
-                        _id: "$data._id",
-                        name: "$data.name",
-                        kategori: "$data.kategori",
-                        image: "$data.image",
-                        createdAt: "$data.createdAt",
-                        updatedAt: "$data.updatedAt",
-                        used: "$data.used",
-                        status: "$data.status",
-                        isDelete: "$data.isDelete",
-                        index: "$data.index",
-                        type: "$data.type",
-                        countused: "$data.countused",
-                        countsearch: "$data.countsearch",
-                    }
-                }
-            )
-        }
-        else
-        {
-            pipeline.push(
-                {
-                    "$sort":
-                    {
-                        countused:-1,
-                        name:1
-                    }
-                },
             );
         }
 
@@ -1307,6 +1288,19 @@ export class MediastikerService {
             pipeline.push({
                 "$limit":limit
             });
+        }
+
+        if(jenis == "STICKER" || jenis == "EMOJI")
+        {
+            pipeline.push(
+                {
+                    "$unwind":
+                    {
+                        path:"$data",
+                        preserveNullAndEmptyArrays:true
+                    }
+                }
+            )
         }
 
         var data = await this.MediastikerModel.aggregate(pipeline);
