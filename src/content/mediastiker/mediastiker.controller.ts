@@ -103,7 +103,10 @@ export class MediastikerController {
             var index = dataindex[0].index;
         }
 
-        if (parseInt(nourut) > index && parseInt(nourut) < 1) {
+        if (parseInt(nourut) > index) {
+            throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+        }
+        if (parseInt(nourut) < 1) {
             throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
         }
         //var listdatastiker = await this.MediastikerService.findByKategori(kategori);
@@ -170,8 +173,6 @@ export class MediastikerController {
             }
 
         }
-
-
 
         try {
             await this.MediastikerService.create(insertdata);
@@ -268,7 +269,10 @@ export class MediastikerController {
             var index = dataindex[0].index;
         }
 
-        if (parseInt(nourut) > index && parseInt(nourut) < 1) {
+        if (parseInt(nourut) > index) {
+            throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+        }
+        if (parseInt(nourut) < 1) {
             throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
         }
         var dt = new Date(Date.now());
