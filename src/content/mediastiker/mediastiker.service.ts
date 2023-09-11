@@ -1224,7 +1224,7 @@ export class MediastikerService {
                 {
                     "$sort":
                     {
-                        "createdAt":1
+                        "createdAt":-1
                     }
                 }
             );
