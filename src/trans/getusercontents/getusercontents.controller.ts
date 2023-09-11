@@ -6117,7 +6117,7 @@ export class GetusercontentsController {
             //     }
 
             // } 
-            if (postType == "pict") {
+            if (type == "pict") {
                 for (let i = 0; i < lengpict; i++) {
                     uploadSource = data[i].uploadSource;
                     try {
