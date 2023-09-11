@@ -17727,22 +17727,22 @@ export class GetusercontentsService {
                           }
                       }
                   },
-                  // {
-                  //     "$group":
-                  //     {
-                  //         _id:"$gender",
-                  //         count:
-                  //         {
-                  //             "$sum":1
-                  //         }
-                  //     }
-                  // },
-                  // {
-                  //     "$sort":
-                  //     {
-                  //         _id:-1
-                  //     }
-                  // }
+                  {
+                      "$group":
+                      {
+                          _id:"$gender",
+                          count:
+                          {
+                              "$sum":1
+                          }
+                      }
+                  },
+                  {
+                      "$sort":
+                      {
+                          _id:-1
+                      }
+                  }
               ]
           }
       },
